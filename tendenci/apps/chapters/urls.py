@@ -5,6 +5,7 @@ from .feeds import LatestEntriesFeed
 urlpatterns = [
     url(r'^chapters/$', views.search, name="chapters.search"),
     url(r'^chapters/add/$', views.add, name='chapters.add'),
+    url(r'^chapters/add/(?P<copy_from_id>\d+)/$', views.add, name='chapters.copy_from'),
     url(r'^chapters/edit/(?P<id>\d+)/$', views.edit, name='chapters.edit'),
     url(r'^chapters/edit/meta/(?P<id>\d+)/$', views.edit_meta, name="chapters.edit.meta"),
     url(r'^chapters/delete/(?P<id>\d+)/$', views.delete, name='chapters.delete'),

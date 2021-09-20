@@ -1,3 +1,18 @@
+### 12.5.10 [2021-09-08]
+
+* Bumped Pillow to 8.3.2
+
+
+### 12.5.9 [2021-09-07]
+
+* Resolved the issue about recap file is significantly larger than the original import file for memberships and profiles import.
+* Changed the character limit to match the max_length of username for memberships import.
+* Added the county field to the events search.
+* Avoided duplicate directory listings being created when a membership application is submitted again.
+* Fixed the missing captcha on embed forms
+* Removed impersonated_user from code.
+
+
 ### 12.5.8 [2021-08-11]
 
 * Added the option (setting "Hide Free Membership/Corporate Membership Invoices") to not display free membership and corp membership invoices on invoices search.

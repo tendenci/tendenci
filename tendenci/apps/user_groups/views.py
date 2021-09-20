@@ -23,7 +23,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.decorators import superuser_required
+from tendenci.apps.perms.decorators import staff_with_perm
 from tendenci.apps.perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from tendenci.apps.imports.forms import ImportForm
 from tendenci.apps.imports.models import Import
@@ -97,7 +97,9 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
 
     EventLog.objects.log(instance=group)
 
-    if request.user.profile.is_superuser or membership_view_perms != 'private':
+    if (request.user.profile.is_staff and \
+        has_perm(request.user,'user_groups.change_group')) or \
+            membership_view_perms != 'private':
         groupmemberships = GroupMembership.objects.filter(
             group=group,
             status=True,
@@ -109,7 +111,8 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     return render_to_resp(request=request, template_name=template_name,
         context=locals())
 
-@superuser_required
+
+@staff_with_perm('user_groups.change_group')
 def message(request, group_slug, template_name='user_groups/message.html'):
     """
     Send a message to the group

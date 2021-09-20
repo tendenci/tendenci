@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.videos.models import Video
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.user_groups.models import Group
 from .utils import get_embedly_client
 
 class VideoForm(TendenciBaseForm):
@@ -29,6 +30,7 @@ class VideoForm(TendenciBaseForm):
             'image',
             'video_url',
             'tags',
+            'group',
             'description',
             'release_dt',
             'allow_anonymous_view',
@@ -41,6 +43,8 @@ class VideoForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(VideoForm, self).__init__(*args, **kwargs)
         self.embedly_403 = False
+        self.fields['group'].queryset = Group.objects.filter(status=True,
+                                    status_detail="active").order_by('name')
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:

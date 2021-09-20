@@ -101,7 +101,7 @@ def search(request, template_name="chapters/search.html"):
 
 @is_enabled('chapters')
 @login_required
-def add(request, form_class=ChapterForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="chapters/add.html"):
+def add(request, copy_from_id=None, form_class=ChapterForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="chapters/add.html"):
 
     if not has_perm(request.user,'chapters.add_chapter'):
         raise Http403
@@ -171,7 +171,26 @@ def add(request, form_class=ChapterForm, meta_form_class=MetaForm, category_form
             'model': 'chapter',
             'pk': 0, #not used for this view but is required for the form
         }
-        form = form_class(user=request.user)
+        chapter_initial = {}
+        if copy_from_id:
+            try:
+                copy_from_id = int(copy_from_id)
+            except (ValueError, TypeError):
+                copy_from_id = None
+            if copy_from_id and Chapter.objects.filter(id=copy_from_id).exists():
+                copy_from_chapter = Chapter.objects.get(id=copy_from_id)
+                # they can't copy if they don't have the view perm of the copy_from_chapter
+                if has_perm(request.user, 'chapters.view_chapter', copy_from_chapter):
+                    for field in copy_from_chapter._meta.fields:
+                        if field.name in ('title', 'slug', 'content', 'view_contact_form',
+                                          'design_notes', 'syndicate', 'template', 'tags',
+                                          'mission', 'notes', 'sponsors', 'contact_name',
+                                          'contact_email', 'join_link', 'region',
+                                          'county', 'state',):
+                            chapter_initial[field.name] = getattr(copy_from_chapter, field.name)
+                    chapter_initial['title'] = f"Copy of {chapter_initial['title']}"
+                    chapter_initial['slug'] = f"copy-{chapter_initial['slug']}"
+        form = form_class(user=request.user, initial=chapter_initial)
         metaform = meta_form_class(prefix='meta')
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
 

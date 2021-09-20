@@ -10,15 +10,15 @@ from tendenci.apps.files.models import File, FilesCategory
 from tendenci.apps.files.utils import get_max_file_upload_size, get_allowed_upload_file_exts
 from tendenci.apps.perms.fields import GroupPermissionField, UserPermissionField, MemberPermissionField
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.perms.utils import update_perms_and_save, get_query_filters
+from tendenci.apps.perms.utils import update_perms_and_save, get_query_filters, get_groups_query_filters
 from tendenci.apps.user_groups.models import Group
 from form_utils.forms import BetterForm
 from tendenci.apps.files.validators import FileValidator
+from tendenci.apps.site_settings.utils import get_setting
 
 
 class FileForm(TendenciBaseForm):
 
-    group = forms.ChoiceField(required=True, choices=[])
     file_cat = forms.ModelChoiceField(label=_("Category"),
                                       queryset=FilesCategory.objects.filter(parent=None),
                                       empty_label="-----------",
@@ -85,20 +85,17 @@ class FileForm(TendenciBaseForm):
         else:
             post_data = None
 
-        if self.user and not self.user.profile.is_superuser:
+        if not self.user.profile.is_superuser:
             del self.fields['status_detail']
-            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-            groups = default_groups.filter(filters).distinct()
-            groups_list = list(groups.values_list('pk', 'name'))
 
-            users_groups = self.user.profile.get_groups()
-            for g in users_groups:
-                if [g.id, g.name] not in groups_list:
-                    groups_list.append([g.id, g.name])
-        else:
-            groups_list = default_groups.values_list('pk', 'name')
+            if get_setting('module', 'user_groups', 'permrequiredingd') == 'change':
+                filters = get_groups_query_filters(self.user,)
+            else:
+                filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            default_groups = default_groups.filter(filters).distinct()
 
-        self.fields['group'].choices = groups_list
+        self.fields['group'].queryset = default_groups
+        self.fields['group'].empty_label = None
 
         if self.instance and self.instance.pk:
             self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(
@@ -111,15 +108,6 @@ class FileForm(TendenciBaseForm):
                 self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
         if 'file' in self.fields:
             self.fields['file'].validators = [FileValidator()]
-
-    def clean_group(self):
-        group_id = self.cleaned_data['group']
-
-        try:
-            group = Group.objects.get(pk=group_id)
-            return group
-        except Group.DoesNotExist:
-            raise forms.ValidationError(_('Invalid group selected.'))
 
 
 class TinymceUploadForm(forms.ModelForm):

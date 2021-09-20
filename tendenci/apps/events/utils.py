@@ -1950,6 +1950,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
         'status_detail',
     ]
     place_fields = [
+        'virtual',
         'name',
         'description',
         'address',
@@ -1957,6 +1958,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
         'state',
         'zip',
         'country',
+        'national',
         'url',
     ]
     configuration_fields = [

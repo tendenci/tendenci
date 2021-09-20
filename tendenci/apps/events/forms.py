@@ -41,7 +41,7 @@ from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.emails.models import Email
 from tendenci.apps.files.utils import get_max_file_upload_size
-from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.perms.utils import get_query_filters, get_groups_query_filters
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
@@ -154,6 +154,11 @@ class EventSearchForm(forms.Form):
                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
     event_type = forms.ChoiceField(label=_('Event Type'), required=False, choices=[])
     event_group = forms.ChoiceField(label=_('Event Group'), required=False, choices=[])
+    event_place_type = forms.ChoiceField(label=_('Virtual or In Person'), required=False,
+                                         choices=[('', _('All')),
+                                                  ('virtual', _('Virtual')),
+                                                  ('in_person', _('In person')),])
+    national_only = forms.BooleanField(required=False)
     registration = forms.BooleanField(label=_("Events I Have Registered For"), required=False)
     search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
     q = forms.CharField(required=False)
@@ -166,6 +171,12 @@ class EventSearchForm(forms.Form):
             del self.fields['registration']
         if user and not user.is_superuser:
             self.fields['search_category'].choices = SEARCH_CATEGORIES
+        if not Place.objects.filter(virtual=True).exists():
+            # remove the virtual field if there is no virtual events
+            del self.fields['event_place_type']
+        if not Place.objects.filter(national=True).exists():
+            # remove the national field if there is no national events
+            del self.fields['national_only']
 
         type_choices = Type.objects.all().order_by('name').values_list('slug', 'name')
         self.fields['event_type'].choices = [('','All')] + list(type_choices)
@@ -176,7 +187,7 @@ class EventSearchForm(forms.Form):
         self.fields['start_dt'].initial = datetime.now().strftime('%Y-%m-%d')
         
         for field in self.fields:
-            if field not in ['registration']:
+            if field not in ['registration', 'national_only']:
                 widget_attrs = self.fields[field].widget.attrs 
                 if 'class' in widget_attrs:
                     class_attr = widget_attrs['class'] + ' form-control-custom'
@@ -808,8 +819,11 @@ class EventForm(TendenciBaseForm):
             # only superuser can change the priority bit
             if 'priority' in self.fields:
                 self.fields.pop('priority')
-            
-            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+
+            if get_setting('module', 'user_groups', 'permrequiredingd') == 'change':
+                filters = get_groups_query_filters(self.user,)
+            else:
+                filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
             default_groups = default_groups.filter(filters).distinct()
 
         #groups_list = [(0, '---------')] + list(groups_list)
@@ -977,6 +991,7 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
     label = _('Location Information')
 
     field_order = [
+                'virtual',
                 'place',
                 'name',
                 'description',
@@ -986,6 +1001,7 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
                 'zip',
                 'county',
                 'country',
+                'national',
                 'url',
             ]
 

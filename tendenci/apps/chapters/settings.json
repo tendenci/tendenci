@@ -15,5 +15,39 @@
         "scope_category": "chapters",
         "store": true,
         "updated_by": ""
+    },
+	{
+        "default_value": "",
+        "description": "A list of email addresses that receive admin notices from Chapters module on the site. Comma delimited.",
+        "data_type": "string",
+        "update_dt": "2021-09-09 13:56:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "chapterrecipients",
+        "value": "",
+        "label": "Chapter admin notice recipients",
+        "input_value": "",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "chapters",
+        "store": true,
+        "updated_by": ""
+    },
+    {
+        "default_value": "",
+        "description": "A relative or absolute URL that will be used as the default featured image if not specified.",
+        "data_type": "string",
+        "update_dt": "2021-09-09 13:56:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "defaultimage",
+        "value": "",
+        "label": "Chapter Default Featured Image URL",
+        "input_value": " ",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "chapters",
+        "store": true,
+        "updated_by": ""
     }
 ]

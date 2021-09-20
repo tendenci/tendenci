@@ -49,8 +49,15 @@
         </span></a>
         </h3>
         {% if event.place %}
-        <div class="place" itemprop="location">{{ event.place }}</div>
-         {% endif %}
+        <div class="place" itemprop="location">{{ event.place }}
+			{% if event.place.virtual %}
+				{% include 'events/include/display_virtual.html' %}
+			{% endif %}
+			{% if event.place.national %}
+				{% include 'events/include/display_national.html' %}
+			{% endif %}
+		</div>
+        {% endif %}
 
         <div class="time-period">
             {% if event.all_day %}

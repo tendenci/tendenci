@@ -137,7 +137,7 @@ def image_preview(request, app_label, model, id,  size):
 
 
 def custom_error(request, template_name="500.html"):
-    return render_to_resp(request=request, template_name=template_name)
+    return render_to_resp(request=request, template_name=template_name, status=500)
 
 
 def plugin_static_serve(request, plugin, path, show_indexes=False):
