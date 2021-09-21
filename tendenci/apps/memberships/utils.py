@@ -243,7 +243,7 @@ def get_membership_rows(
         memberships = MembershipDefault.objects.filter(
             status=True).exclude(status_detail='archive')
 
-        if export_status_detail:
+        if export_status_detail and export_status_detail != "all":
             if export_status_detail == 'pending':
                 memberships = memberships.filter(
                     status_detail__icontains='pending')
