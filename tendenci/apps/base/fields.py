@@ -132,8 +132,9 @@ class CountrySelectField(fields.ChoiceField):
 
 class StateSelectField(fields.ChoiceField):
     def __init__(self, *args, **kwargs):
+        empty_label = kwargs.pop('empty_label', '-----------')
         super(StateSelectField, self).__init__(*args, **kwargs)
-        choices = (('','-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
+        choices = (('',empty_label),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
                 + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
         choices = sorted(choices)
         self.choices = choices

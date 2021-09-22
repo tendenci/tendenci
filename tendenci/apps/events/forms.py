@@ -36,7 +36,7 @@ from form_utils.forms import BetterModelForm
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField
+from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, StateSelectField, PriceField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.emails.models import Email
@@ -185,6 +185,11 @@ class EventSearchForm(forms.Form):
         self.fields['event_group'].choices = [('','All')] + list(group_choices)
 
         self.fields['start_dt'].initial = datetime.now().strftime('%Y-%m-%d')
+        # state
+        if get_setting('module', 'events', 'stateusedropdown'):
+            self.fields['state'] = StateSelectField(label=_('Select a State'),
+                                                    empty_label=_('Select a State'),
+                                                    required=False)
         
         for field in self.fields:
             if field not in ['registration', 'national_only']:
@@ -1027,6 +1032,9 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+        if get_setting('module', 'events', 'stateusedropdown'):
+            self.fields['state'] = StateSelectField(label=_('State'), required=False)
+            self.add_form_control_class()
 
     def save(self, *args, **kwargs):
         commit = kwargs.pop('commit', True)
