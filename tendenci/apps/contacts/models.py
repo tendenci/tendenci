@@ -64,7 +64,7 @@ class Comment(models.Model):
     """
     contact = models.ForeignKey('Contact', related_name='comments', on_delete=models.CASCADE)
     comment = models.TextField()
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="contact_comments")
     update_dt = models.DateTimeField(auto_now=True)
     create_dt = models.DateTimeField(auto_now_add=True)
 
