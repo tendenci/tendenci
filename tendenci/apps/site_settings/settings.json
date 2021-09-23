@@ -885,6 +885,23 @@
     },
     {
         "default_value": "false",
+        "description": "If true, the state dropdown contains US states only. Otherwise, it also includes provinces and territories.",
+        "data_type": "boolean",
+        "update_dt": "2021-09-23 10:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "usstatesonly",
+        "value": "false",
+        "label": "State Dropdown Contains US States Only",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": true,
+        "updated_by": ""
+    },
+    {
+        "default_value": "false",
         "description": "If TRUE, overrides to CSS bootstrap will be applied",
         "data_type": "boolean",
         "update_dt": "2014-09-26 03:47:02",
