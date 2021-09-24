@@ -1,3 +1,21 @@
+### 12.5.11 [2021-09-24]
+
+* Added the clone feature for chapters.
+* Added two site settings for chapters: "Chapter admin notice recipients" (`/settings/module/chapters/#id_chapterrecipients`) and "Chapter Default Featured Image URL" (`/settings/module/chapters/#id_defaultimage`).
+* Added the option (`/settings/module/user_groups/#id_permrequiredingd`) to show groups (in the group dropdown) that user has the change perm (instead of view perm) for news, photos, events and files.
+* Added the group field to videos.
+* Staff users who has the group edit perm can now see group members and email members.
+* Added a section on user profiles to display their chapter, if any.
+* Added "Export All Members" to Membership export. (Thanks @bernd-wechner)
+* Improved expiry widget layout a little on membership types edit. (Thanks @bernd-wechner)
+* Added some simple help to two options, allow_renewal and renewal on membership types. (Thanks @bernd-wechner)
+* Added virtual and national fields to events.
+* The state field on events add/edit can now opt for a state dropdown instead of an input field (`/settings/module/events/#id_stateusedropdown`). And the state dropdown can be further narrowed to have US states only (`/settings/site/global/#id_usstatesonly`).
+* Tightened the permission for user groups.
+* Fixed an issue that an unhandled exception in a view returns a status 200. It returns 500 status code now. (Thanks @BenSturmfels)
+* Resolved a migration warning.
+
+
 ### 12.5.10 [2021-09-08]
 
 * Bumped Pillow to 8.3.2
