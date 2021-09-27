@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 
 from django_countries import countries as COUNTRIES
-from localflavor.us.us_states import STATE_CHOICES
+from localflavor.us.us_states import STATE_CHOICES, US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
@@ -270,9 +270,12 @@ class Field(OrderingBaseModel):
                                ('','-----------'))
             choices = initial_choices + tuple(countries)
         elif self.field_type == 'StateProvinceField':
-            choices = (('','-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
-                                + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
-            choices = sorted(choices)
+            if get_setting('site', 'global', 'usstatesonly'):
+                choices = (('', '-----------'),) + tuple((state, state_f.title()) for state, state_f in US_STATES)
+            else:
+                choices = (('','-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
+                                    + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
+                choices = sorted(choices)
         elif self.field_function == 'Recipients':
             choices = [(label+':'+val, label) for label, val in (i.split(":") for i in self.choices.split(","))]
         else:
