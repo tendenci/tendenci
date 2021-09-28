@@ -374,6 +374,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     event_type = ''
     event_place_type = None
     national_only = None
+    state = None
     with_registration = None
     form = EventSearchForm(request.GET or {'start_dt':start_dt.strftime('%Y-%m-%d')},
                            user=request.user)
@@ -383,6 +384,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         event_group = form.cleaned_data.get('event_group', None)
         event_place_type = form.cleaned_data.get('event_place_type', None)
         national_only = form.cleaned_data.get('national_only', None)
+        state = form.cleaned_data.get('state', None)
         start_dt = form.cleaned_data.get('start_dt', None)
         end_dt = form.cleaned_data.get('end_dt', None)
         cat = form.cleaned_data.get('search_category', None)
@@ -427,6 +429,8 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
             events = events.filter(place__virtual=False)
     if national_only:
         events = events.filter(place__national=True)
+    if state:
+        events = events.filter(place__state=state)
 
     if past:
         events = events.order_by('-start_dt', '-priority')

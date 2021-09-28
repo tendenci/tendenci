@@ -335,7 +335,14 @@
 	              </ul>
 			  {% endif %}
           {% endif %}
-          
+
+          <!-- chapter -->
+	        {% if memberships and memberships.0.chapter %}
+	        <h3> {% trans 'Chapter' %} </h3>
+	        <p>
+	          {{ memberships.0.chapter }}
+	        </p>
+	        {% endif %}
 
 		  <!-- DIRECTORIES -->
           {% if directories %}

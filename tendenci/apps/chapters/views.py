@@ -21,6 +21,7 @@ from tendenci.apps.chapters.models import Chapter, Officer
 from tendenci.apps.chapters.forms import ChapterForm, OfficerForm, OfficerBaseFormSet, ChapterSearchForm
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
+from tendenci.apps.site_settings.utils import get_setting
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -64,6 +65,10 @@ def detail(request, slug, template_name="chapters/detail.html"):
                 'show_officers_email': show_officers_email
             })
     else:
+        if chapter.status_detail.lower() == 'pending':
+            placeholder = get_setting('module', 'chapters', 'pendingplaceholder')
+            if placeholder:
+                return HttpResponseRedirect(placeholder)
         raise Http403
 
 
