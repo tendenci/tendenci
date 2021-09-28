@@ -258,6 +258,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             field_class = field.field_type.split("/")[0]
             if field_class == "EmailVerificationField":
                 return self.cleaned_data["field_%s" % field.id]
+            
+        user_email = getattr(self.user, "email", None).strip()
+        if validate_email(user_email):
+            return user_email
+        
         return None
 
 
