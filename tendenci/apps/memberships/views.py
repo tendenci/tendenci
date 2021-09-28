@@ -2350,8 +2350,6 @@ def report_member_roster(request, template_name='reports/membership_roster.html'
 def report_member_quick_list(request, template_name='reports/membership_quick_list.html'):
     """ Table view of current members fname, lname and company only.
     """
-    members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
-
     order_by = request.GET.get('order_by', 'user__last_name')
     
     descending = order_by.startswith('-')
