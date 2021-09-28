@@ -19,7 +19,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.http import Http404, HttpResponseRedirect, HttpResponse, StreamingHttpResponse
-from django.db.models.fields import AutoField
+from django.db.models.fields import AutoField, PositiveIntegerField
 from django.utils.encoding import smart_str
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
@@ -2351,6 +2351,33 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
     """ Table view of current members fname, lname and company only.
     """
     members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
+
+    order_by = request.GET.get('order_by', 'user__last_name')
+    
+    descending = order_by.startswith('-')
+    if descending:
+        order_by =  order_by[1:]
+    
+    members = MembershipDefault.objects.filter(status=1, status_detail='active')
+    
+    if order_by == 'member_number_int':
+        members = members.annotate(member_number_int=Cast('member_number', PositiveIntegerField()))
+
+    # If we want to be able order by an aggregated list of groups
+    # then we need to annotate the with that. Django provides no 
+    # generic means for creating such aggregates yet but the postgresql
+    # package provides one. So we can order by the group list only on
+    # postgresql systems for now. 
+    #
+    # Note the template can render a list without this annotation and
+    # shoudl fall on such a method.  
+    if connection.vendor == 'postgresql':
+        members = members.annotate(user_group_list=StringAgg('user__user_groups__name', ', ', ordering='user__user_groups__id'))
+    
+    if descending:
+        order_by = '-' + order_by
+        
+    members = members.order_by(order_by)
 
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
