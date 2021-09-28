@@ -273,7 +273,7 @@ class FormAdminForm(TendenciBaseForm):
     response = forms.CharField(required=False, label=_('Confirmation Text'),
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Form._meta.app_label,
-        'storme_model':Form._meta.model_name.lower()}))
+        'storme_model':Form._meta.model_name.lower()}), help_text=_("Optionally, after submission, display a page with this text. Alternately, specify a Completion URL."))
 
     email_text = forms.CharField(required=False, label=_('Email Text to Submitter'),
         widget=TinyMCE(attrs={'style':'width:100%'},
