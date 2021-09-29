@@ -2358,6 +2358,10 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
     
     members = MembershipDefault.objects.filter(status=1, status_detail='active')
     
+    # member_number is a string. If it is confidently a number (with no non-digits)
+    # then the template 'template_name' above can use 'member_number_int' to request
+    # integer sorting.Standard sorting will produce 1, 11, 12, 13, 2, 3, 4 ... while int
+    # sorting will produce 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ...  
     if order_by == 'member_number_int':
         members = members.annotate(member_number_int=Cast('member_number', PositiveIntegerField()))
 
