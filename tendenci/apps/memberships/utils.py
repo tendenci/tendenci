@@ -1702,21 +1702,21 @@ class ImportMembDefault(object):
                 profile.member_number = ''
                 profile.save()
 
-        # Add member to groups only if active 
-        if memb.is_active:
-            params = {'creator_id': self.request_user.pk,
-                      'creator_username': self.request_user.username,
-                      'owner_id': self.request_user.pk,
-                      'owner_username': self.request_user.username}
+        params = {'creator_id': self.request_user.pk,
+                  'creator_username': self.request_user.username,
+                  'owner_id': self.request_user.pk,
+                  'owner_username': self.request_user.username}
 
-            # add to groups if provided in import
-            group_ids = memb_data.get('groups', '')
-            if group_ids:
-                # we assumed group_ids is a cleaned list of existing group ids 
-                # i.e self.clean_groups() has been called
-                for group_id in group_ids:
-                    self.group_model.objects.get(id=group_id).add_user(memb.user, **params)
-            else:
+        # if "groups" are provided in the import, respect those an apply them
+        group_ids = memb_data.get('groups', '')
+        if group_ids:
+            # we assumed group_ids is a cleaned list of existing group ids 
+            # i.e self.clean_groups() has been called
+            for group_id in group_ids:
+                self.group_model.objects.get(id=group_id).add_user(memb.user, **params)
+        else:
+            # Add member to default group only if active (legacy behaviour) 
+            if memb.is_active:
                 # group associated to membership type
                 memb.membership_type.group.add_user(memb.user, **params)
 
