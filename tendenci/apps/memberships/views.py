@@ -23,6 +23,7 @@ from django.db.models.fields import AutoField, PositiveIntegerField
 from django.utils.encoding import smart_str
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
+from django.db import connection
 from django.db.models import ForeignKey, OneToOneField
 from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
@@ -31,6 +32,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.urls.resolvers import NoReverseMatch
+
+if connection.vendor == 'postgresql':
+    from django.contrib.postgres.aggregates import StringAgg
 
 #from geraldo.generators import PDFGenerator
 

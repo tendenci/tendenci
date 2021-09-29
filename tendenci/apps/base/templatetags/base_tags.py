@@ -1,5 +1,6 @@
 import re
 from urllib.request import urlopen
+from urllib.parse import urlencode
 from hashlib import md5
 
 from tagging.templatetags.tagging_tags import TagsForObjectNode
