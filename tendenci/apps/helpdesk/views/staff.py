@@ -402,7 +402,7 @@ def update_ticket(request, ticket_id, public=False):
     #get_template_from_string = engines['django'].from_string
     #comment = get_template_from_string(comment).render(context=context)
 
-    if owner is -1 and ticket.assigned_to:
+    if owner == -1 and ticket.assigned_to:
         owner = ticket.assigned_to.id
 
     f = FollowUp(ticket=ticket, date=timezone.now(), comment=comment)
@@ -414,7 +414,7 @@ def update_ticket(request, ticket_id, public=False):
 
     reassigned = False
 
-    if owner is not -1:
+    if owner != -1:
         if owner != 0 and ((ticket.assigned_to and owner != ticket.assigned_to.id) or not ticket.assigned_to):
             new_user = User.objects.get(id=owner)
             f.title = _('Assigned to %(username)s') % {
