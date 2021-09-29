@@ -1,18 +1,20 @@
 from builtins import str
 import os
 import math
-from decimal import Decimal
-from hashlib import md5
-#from dateutil.parser import parse
-from datetime import datetime, timedelta, date
+import simplejson
 import time as ttime
 import subprocess
 import calendar
+
+from decimal import Decimal
+from hashlib import md5
+from datetime import datetime, timedelta, date
 from collections import OrderedDict
 from dateutil.parser import parse as dparse, ParserError 
 from dateutil.relativedelta import relativedelta
  
 from django.urls import reverse
+from django.urls.resolvers import NoReverseMatch
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -21,17 +23,18 @@ from django.shortcuts import redirect, get_object_or_404
 from django.http import Http404, HttpResponseRedirect, HttpResponse, StreamingHttpResponse
 from django.db.models.fields import AutoField, PositiveIntegerField
 from django.utils.encoding import smart_str
-import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 from django.db.models import ForeignKey, OneToOneField
-from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
+from django.db.models.functions import Cast
 from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.urls.resolvers import NoReverseMatch
+from django.contrib.postgres.aggregates import StringAgg 
 
 if connection.vendor == 'postgresql':
     from django.contrib.postgres.aggregates import StringAgg
@@ -2390,9 +2393,12 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
     if ouput == 'csv':
 
         table_header = [
+            'member number',
+            'membership type', 
             'first name',
             'last name',
-            'company'
+            'company',
+            'groups'
         ]
 
         table_data = []
@@ -2401,10 +2407,14 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
                 company = mem.user.profile.company
             else:
                 company = ''
+            
             table_data.append([
+                mem.member_number,
+                mem.membership_type,
                 mem.user.first_name,
                 mem.user.last_name,
-                company
+                company,
+                [group.name for group in mem.user.user_groups.all()]
             ])
 
         return render_csv(
@@ -2416,7 +2426,7 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 
     EventLog.objects.log()
 
-    return render_to_resp(request=request, template_name=template_name, context={'members': members})
+    return render_to_resp(request=request, template_name=template_name, context={'members': members, 'order_by': order_by})
 
 
 @staff_member_required
