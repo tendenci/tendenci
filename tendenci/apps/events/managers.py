@@ -100,11 +100,6 @@ class EventTypeManager(Manager):
         sqs = SearchQuerySet()
         user = kwargs.get('user', None)
 
-        # check to see if there is impersonation
-        if hasattr(user, 'impersonated_user'):
-            if isinstance(user.impersonated_user, User):
-                user = user.impersonated_user
-
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
 

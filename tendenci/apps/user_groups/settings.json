@@ -83,5 +83,22 @@
         "scope_category": "user_groups",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "view",
+        "description": "Permission (view/change perm) required for groups to show in the group dropdown (on newsletters generator, news, events, photos add pages). By default, it requires view permission.",
+        "data_type": "string",
+        "update_dt": "2021-09-12 22:00:00",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "permrequiredingd",
+        "value": "view",
+        "label": "Permission (view/change perm) Required for Groups to Show up in Group Dropdown",
+        "input_value": "view,change",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "user_groups",
+        "store": true,
+        "updated_by": ""
     }
 ]

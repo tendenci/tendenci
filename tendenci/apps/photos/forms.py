@@ -5,7 +5,8 @@ from django.utils.safestring import mark_safe
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.photos.models import Image, PhotoSet, License
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.perms.utils import get_query_filters, get_groups_query_filters
+from tendenci.apps.site_settings.utils import get_setting
 
 class LicenseField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -96,7 +97,6 @@ class PhotoEditForm(TendenciBaseForm):
                 ('pending',_('Pending')),))
     license = LicenseField(queryset=License.objects.all(),
                 widget = forms.RadioSelect(), empty_label=None)
-    group = forms.ChoiceField(required=True, choices=[])
 
     class Meta:
         model = Image
@@ -149,27 +149,14 @@ class PhotoEditForm(TendenciBaseForm):
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         if self.user and not self.user.profile.is_superuser:
-            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-            groups = default_groups.filter(filters).distinct()
-            groups_list = list(groups.values_list('pk', 'name'))
+            if get_setting('module', 'user_groups', 'permrequiredingd') == 'change':
+                filters = get_groups_query_filters(self.user,)
+            else:
+                filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            default_groups = default_groups.filter(filters).distinct()
 
-            users_groups = self.user.profile.get_groups()
-            for g in users_groups:
-                if [g.id, g.name] not in groups_list:
-                    groups_list.append([g.id, g.name])
-        else:
-            groups_list = default_groups.values_list('pk', 'name')
-
-        self.fields['group'].choices = groups_list
-
-    def clean_group(self):
-        group_id = self.cleaned_data['group']
-
-        try:
-            group = Group.objects.get(pk=group_id)
-            return group
-        except Group.DoesNotExist:
-            raise forms.ValidationError(_('Invalid group selected.'))
+        self.fields['group'].queryset = default_groups
+        self.fields['group'].empty_label = None
 
 
 class PhotoSetAddForm(TendenciBaseForm):
@@ -177,7 +164,6 @@ class PhotoSetAddForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
-    group = forms.ChoiceField(required=True, choices=[])
 
     class Meta:
         model = PhotoSet
@@ -222,31 +208,18 @@ class PhotoSetAddForm(TendenciBaseForm):
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
 
-            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-            groups = default_groups.filter(filters).distinct()
-            groups_list = list(groups.values_list('pk', 'name'))
+            if get_setting('module', 'user_groups', 'permrequiredingd') == 'change':
+                filters = get_groups_query_filters(self.user,)
+            else:
+                filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            default_groups = default_groups.filter(filters).distinct()
 
-            users_groups = self.user.profile.get_groups()
-            for g in users_groups:
-                if [g.id, g.name] not in groups_list:
-                    groups_list.append([g.id, g.name])
-        else:
-            groups_list = default_groups.values_list('pk', 'name')
-
-        self.fields['group'].choices = groups_list
+        self.fields['group'].queryset = default_groups
+        self.fields['group'].empty_label = None
 
 #        if self.user.profile.is_superuser:
 #            self.fields['status_detail'] = forms.ChoiceField(
 #                choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
-
-    def clean_group(self):
-        group_id = self.cleaned_data['group']
-
-        try:
-            group = Group.objects.get(pk=group_id)
-            return group
-        except Group.DoesNotExist:
-            raise forms.ValidationError(_('Invalid group selected.'))
 
 
 class PhotoSetEditForm(TendenciBaseForm):
@@ -254,7 +227,6 @@ class PhotoSetEditForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
-    group = forms.ChoiceField(required=True, choices=[])
 
     class Meta:
         model = PhotoSet
@@ -295,28 +267,16 @@ class PhotoSetEditForm(TendenciBaseForm):
         super(PhotoSetEditForm, self).__init__(*args, **kwargs)
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
-        if self.user and not self.user.profile.is_superuser:
+        if not self.user.profile.is_superuser:
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
 
-            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-            groups = default_groups.filter(filters).distinct()
-            groups_list = list(groups.values_list('pk', 'name'))
+            if get_setting('module', 'user_groups', 'permrequiredingd') == 'change':
+                filters = get_groups_query_filters(self.user,)
+            else:
+                filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            default_groups = default_groups.filter(filters).distinct()
 
-            users_groups = self.user.profile.get_groups()
-            for g in users_groups:
-                if [g.id, g.name] not in groups_list:
-                    groups_list.append([g.id, g.name])
-        else:
-            groups_list = default_groups.values_list('pk', 'name')
+        self.fields['group'].queryset = default_groups
+        self.fields['group'].empty_label = None
 
-        self.fields['group'].choices = groups_list
-
-    def clean_group(self):
-        group_id = self.cleaned_data['group']
-
-        try:
-            group = Group.objects.get(pk=group_id)
-            return group
-        except Group.DoesNotExist:
-            raise forms.ValidationError(_('Invalid group selected.'))

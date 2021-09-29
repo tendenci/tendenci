@@ -1391,6 +1391,7 @@ class MembershipExportForm(forms.Form):
         ('active', _('Export Active Memberships')),
         ('pending', _('Export Pending Memberships')),
         ('expired', _('Export Expired Memberships')),
+        ('all', _('Export All Memberships')),
     )
 
     EXPORT_FIELD_CHOICES = (

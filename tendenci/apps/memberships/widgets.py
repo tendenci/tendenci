@@ -98,16 +98,20 @@ class TypeExpMethodWidget(forms.MultiWidget):
         period_unit_widget.choices = PERIOD_UNIT_CHOICE
         rendered_period_unit = self.render_widget(period_unit_widget,
                                                   name, value, attrs, self.pos_d['period_unit'][0], id_)
+        
+        # Attributes for the month day text inputs
+        month_day_attrs = {'size': '2', 'style': 'width: 4ch'}
+        
         # expiration_method_day
         rolling_option1_day_widget = self.pos_d['rolling_option1_day'][1]
-        rolling_option1_day_widget.attrs = {'size':'8'}
+        rolling_option1_day_widget.attrs = month_day_attrs 
         rendered_rolling_option1_day = self.render_widget(rolling_option1_day_widget,
                                                             name, value, attrs,
                                                             self.pos_d['rolling_option1_day'][0], id_)
         # expiration_method
         JOIN_EXP_METHOD_CHOICE = (
                                   ("0", _("End of full period")),
-                                  ("1", mark_safe("%s day(s) at signup month" %
+                                  ("1", mark_safe("day %s of signup month" %
                                                   rendered_rolling_option1_day)),)
         rolling_option_widget = self.pos_d['rolling_option'][1]
         rolling_option_widget.choices=JOIN_EXP_METHOD_CHOICE
@@ -117,22 +121,22 @@ class TypeExpMethodWidget(forms.MultiWidget):
 
         # rolling_renew_option1_day
         rolling_renew_option1_day_widget = self.pos_d['rolling_renew_option1_day'][1]
-        rolling_renew_option1_day_widget.attrs = {'size':'8'}
+        rolling_renew_option1_day_widget.attrs = month_day_attrs 
         rendered_rolling_renew_option1_day = self.render_widget(rolling_renew_option1_day_widget,
                                                             name, value, attrs,
                                                             self.pos_d['rolling_renew_option1_day'][0], id_)
         # renew_expiration_day2
         rolling_renew_option2_day_widget = self.pos_d['rolling_renew_option2_day'][1]
-        rolling_renew_option2_day_widget.attrs = {'size':'8'}
+        rolling_renew_option2_day_widget.attrs = month_day_attrs 
         rendered_rolling_renew_option2_day = self.render_widget(rolling_renew_option2_day_widget,
                                                             name, value, attrs,
                                                            self.pos_d['rolling_renew_option2_day'][0], id_)
         # renew_expiration_method
         RENEW_EXP_METHOD_CHOICE = (
                                   ("0", _("End of full period")),
-                                  ("1", mark_safe("%s day(s) at signup month" %
+                                  ("1", mark_safe("day %s of signup month" %
                                                   rendered_rolling_renew_option1_day)),
-                                  ("2", mark_safe("%s day(s) at renewal month" %
+                                  ("2", mark_safe("day %s of renewal month" %
                                                   rendered_rolling_renew_option2_day)),)
         rolling_renew_option_widget = self.pos_d['rolling_renew_option'][1]
         rolling_renew_option_widget.choices=RENEW_EXP_METHOD_CHOICE

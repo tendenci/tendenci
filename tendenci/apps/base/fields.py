@@ -9,7 +9,7 @@ from django.db import models
 import simplejson
 from django.core import exceptions
 from django_countries import countries as COUNTRIES
-from localflavor.us.us_states import STATE_CHOICES
+from localflavor.us.us_states import STATE_CHOICES, US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from tendenci.apps.base import forms
@@ -132,8 +132,12 @@ class CountrySelectField(fields.ChoiceField):
 
 class StateSelectField(fields.ChoiceField):
     def __init__(self, *args, **kwargs):
+        empty_label = kwargs.pop('empty_label', '-----------')
         super(StateSelectField, self).__init__(*args, **kwargs)
-        choices = (('','-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
+        if get_setting('site', 'global', 'usstatesonly'):
+            choices = (('',empty_label),) + tuple((state, state_f.title()) for state, state_f in US_STATES)
+        else:
+            choices = (('',empty_label),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
                 + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
         choices = sorted(choices)
         self.choices = choices

@@ -126,8 +126,8 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
     require_payment_approval = models.BooleanField(
         _('Auto-approval requires payment'), default=True,
         help_text=_('If checked, auto-approved memberships will require a successful online payment to be auto-approved.'))
-    allow_renewal = models.BooleanField(_('Allow Renewal'), default=True)
-    renewal = models.BooleanField(_('Renewal Only'), default=False)
+    allow_renewal = models.BooleanField(_('Allow Renewal'), default=True, help_text=_("If not selected, then this membership type cannot be renewed."))
+    renewal = models.BooleanField(_('Renewal Only'), default=False, help_text=_("Reserve this membership type for renewals only, not available to new members."))
     renewal_require_approval = models.BooleanField(_('Renewal Requires Approval'), default=True)
 
     admin_only = models.BooleanField(_('Admin Only'), default=False)  # from allowuseroption

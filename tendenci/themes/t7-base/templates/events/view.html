@@ -110,12 +110,19 @@ div.pricing-list-wrap li{
         </div>
         <div class="col-xs-7">
           <p><strong>{{ event.place.name }}</strong><br />
-            {{ event.place.address }} <br />
-            {{ event.place.city_state|join:", "}} {{ event.place.zip }} <br />
-            {% if event.place.county %}
-            {{ event.place.county }}<br />
-            {% endif %}
-            {{ event.place.country }}
+			{% if event.place.virtual %}
+				{% include 'events/include/display_virtual.html' %}
+			{% else %}
+	            {{ event.place.address }} <br />
+	            {{ event.place.city_state|join:", "}} {{ event.place.zip }} <br />
+	            {% if event.place.county %}
+	            {{ event.place.county }}<br />
+	            {% endif %}
+	            {{ event.place.country }}
+			{% endif %}
+			{% if event.place.national %}
+				{% include 'events/include/display_national.html' %}
+			{% endif %}
           </p>
         </div>
         <div class="col-xs-5">
@@ -306,12 +313,21 @@ div.pricing-list-wrap li{
       <div class="vitals place" itemprop="location" itemscope itemtype="https://schema.org/PostalAddress">
         <h4 class="time-period">{% trans "Location" %}</h4>
         <p><strong>{{ event.place.name }}</strong></p>
-        <p>{{ event.place.address }}<br />
-          {{ event.place.city_state|join:", "}} {{ event.place.zip }}<br />
-		  {% if event.place.county %}
-			{{ event.place.county }}<br />
-		  {% endif %}
-          {{ event.place.country }}</p>
+        <p>
+			{% if event.place.virtual %}
+				{% include 'events/include/display_virtual.html' %}
+			{% else %}
+			  {{ event.place.address }}<br />
+	          {{ event.place.city_state|join:", "}} {{ event.place.zip }}<br />
+			  {% if event.place.county %}
+				{{ event.place.county }}<br />
+			  {% endif %}
+	          {{ event.place.country }}
+			{% endif %}
+			{% if event.place.national %}
+				{% include 'events/include/display_national.html' %}
+			{% endif %}
+		</p>
         
         {% if event.place.description|striptags|wordcount > 50 %}
         <div class="line event-place-desc-short">
@@ -365,21 +381,22 @@ div.pricing-list-wrap li{
 <!-- LOCATION BOTTOM -->
 <div class="col-xs-12">
   <div class="hr"></div>
-  
-  {% if event.place.address and event.place.city_state %}
-  <h4 class="time-period">Location</h4>
-  <div class="map">
-    <iframe width="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;iwloc=near&amp;output=embed"></iframe>
-    <br />
-    <a class="btn btn-default pull-right" href="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed">{% trans 'View Larger Map' %}</a>
-    <br />
-    <div class="text-center">
-      <h3><strong>{{ event.place.name }}</strong></h3>
-      <h4>{{ event.place.address }}<br />
-        {{ event.place.city_state|join:", "}} {{ event.place.zip }}<br />
-        {{ event.place.country }}</h4>
-    </div>
-  </div>
+  {% if not event.place.virtual %}
+	  {% if event.place.address and event.place.city_state %}
+	  <h4 class="time-period">Location</h4>
+	  <div class="map">
+	    <iframe width="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;iwloc=near&amp;output=embed"></iframe>
+	    <br />
+	    <a class="btn btn-default pull-right" href="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed">{% trans 'View Larger Map' %}</a>
+	    <br />
+	    <div class="text-center">
+	      <h3><strong>{{ event.place.name }}</strong></h3>
+	      <h4>{{ event.place.address }}<br />
+	        {{ event.place.city_state|join:", "}} {{ event.place.zip }}<br />
+	        {{ event.place.country }}</h4>
+	    </div>
+	  </div>
+	  {% endif %}
   {% endif %}
     
     <br />

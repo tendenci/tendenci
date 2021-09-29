@@ -21,11 +21,6 @@ class FormManager(TendenciBaseManager):
         sqs = SearchQuerySet()
         user = kwargs.get('user', None)
 
-        # check to see if there is impersonation
-        if hasattr(user, 'impersonated_user'):
-            if isinstance(user.impersonated_user, User):
-                user = user.impersonated_user
-
         is_an_admin = user.profile.is_superuser
 
         if query:

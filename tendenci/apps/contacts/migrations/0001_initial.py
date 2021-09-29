@@ -144,6 +144,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='comment',
             name='creator',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='contact_comments', on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

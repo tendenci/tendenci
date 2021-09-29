@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 
 from django_countries import countries as COUNTRIES
-from localflavor.us.us_states import STATE_CHOICES
+from localflavor.us.us_states import STATE_CHOICES, US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
@@ -119,7 +119,7 @@ class Form(TendenciBaseModel):
         help_text=_("One or more email addresses for form recipients, separated by commas"),
         max_length=2000)
     completion_url = models.CharField(_("Completion URL"), max_length=1000, blank=True, null=True,
-        help_text=_("Redirect to this page after form completion. Absolute URLS should begin with http. Relative URLs should begin with a forward slash (/)."))
+        help_text=_("Optionally, redirect to this page after form completion. Absolute URLS should begin with http. Relative URLs should begin with a forward slash (/)."))
     template = models.CharField(_('Template'), max_length=50, blank=True)
     group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
 
@@ -270,9 +270,12 @@ class Field(OrderingBaseModel):
                                ('','-----------'))
             choices = initial_choices + tuple(countries)
         elif self.field_type == 'StateProvinceField':
-            choices = (('','-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
-                                + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
-            choices = sorted(choices)
+            if get_setting('site', 'global', 'usstatesonly'):
+                choices = (('', '-----------'),) + tuple((state, state_f.title()) for state, state_f in US_STATES)
+            else:
+                choices = (('','-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
+                                    + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
+                choices = sorted(choices)
         elif self.field_function == 'Recipients':
             choices = [(label+':'+val, label) for label, val in (i.split(":") for i in self.choices.split(","))]
         else:

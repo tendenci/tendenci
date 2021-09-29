@@ -2,6 +2,7 @@
 {% load admin_urls admin_modify bootstrapped_goodies_tags %}
 
 {% block object-tools-items %}
+    <li><a href="{% url "form_entries" object_id %}">{% trans 'List entries' %}</a></li>
     <li><a href="{% url "admin:forms_form_export" object_id %}">{% trans 'Export entries' %}</a></li>
     {% if has_files %}
     <li><a href="{% url "form_entries_export_full" object_id %}">{% trans 'Export entries (including uploaded files)' %}</a></li>

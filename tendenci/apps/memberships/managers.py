@@ -125,15 +125,6 @@ def user_sqs(sqs, **kwargs):
     return filtered_sqs
 
 
-def impersonation(user):
-    # check to see if there is impersonation
-    if hasattr(user, 'impersonated_user'):
-        if isinstance(user.impersonated_user, User):
-            user = user.impersonated_user
-
-    return user
-
-
 class MembershipDefaultManager(TendenciBaseManager):
     def first(self, **kwargs):
         """

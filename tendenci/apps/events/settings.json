@@ -69,6 +69,23 @@
     },
     {
         "default_value": "false",
+        "description": "If true, the state field on event add/edit will use a dropdown where users can select a US state instead of an input field where users enter their state.",
+        "data_type": "boolean",
+        "update_dt": "2021-09-21 16:20:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "stateusedropdown",
+        "value": "false",
+        "label": "Use Dropdown for State Field",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
+    },
+    {
+        "default_value": "false",
         "description": "If true, radio buttons will be displayed to the pricing list on event details page so that users can directly select a pricing to register without going to the intermediary page.",
         "data_type": "boolean",
         "update_dt": "2021-06-15 15:00:00",

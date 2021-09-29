@@ -11,6 +11,7 @@ from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.videos.managers import VideoManager
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.libs.abstracts.models import OrderingBaseModel
+from tendenci.apps.user_groups.models import Group
 from .utils import get_embedly_client, ASPECT_RATIO
 
 
@@ -55,6 +56,8 @@ class Video(OrderingBaseModel, TendenciBaseModel):
     video_url = models.CharField(max_length=500, help_text='Youtube, Vimeo, etc..')
     description = tinymce_models.HTMLField()
     release_dt = models.DateTimeField(_("Release Date"), null=True)
+    group = models.ForeignKey(
+        Group, null=True, default=None, on_delete=models.SET_NULL)
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
 
     perms = GenericRelation(ObjectPermission,
