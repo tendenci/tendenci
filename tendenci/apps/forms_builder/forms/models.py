@@ -5,8 +5,9 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
-
+from django.template.defaultfilters import truncatewords
 from django_countries import countries as COUNTRIES
+
 from localflavor.us.us_states import STATE_CHOICES, US_STATES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
@@ -234,6 +235,8 @@ class Field(OrderingBaseModel):
         help_text=_("Comma separated options where applicable"))
     default = models.CharField(_("Default"), max_length=1000, blank=True,
         help_text=_("Default value of the field"))
+    summary_position = models.CharField(_("Summary Position"), max_length=6, blank=True,
+        help_text=_("Position in the onle line form entry summary. Row, Position or just Position."))
 
     objects = FieldManager()
 
@@ -322,6 +325,63 @@ class FormEntry(models.Model):
 
     def __str__(self):
         return ('%s submission' % (self.form.title,))
+
+    @property
+    def summary(self):
+        field_map = {}
+        for entry_field in self.fields.all():
+            form_field = self.form.fields.get(id=entry_field.field_id)
+            vals = [p.strip() for p in form_field.summary_position.split(',')]
+            
+            if not vals[-1].isnumeric() or len(vals) > 2:
+                format = vals.pop()
+            else:
+                format = ""
+            
+            if len(vals) == 1:
+                row = 1
+                col = int(vals[0]) if vals[0].isnumeric() else 0 
+            elif vals:
+                row = int(vals[0]) if vals[0].isnumeric() else 0
+                col = int(vals[1]) if vals[1].isnumeric() else 0
+            else:
+                row = col = 0 # Don't display this value
+                
+            if row and not (row in field_map):
+                field_map[row] = {}
+                
+            if row and col:
+                if format.startswith("$"):
+                    try:
+                        value = f"${float(entry_field.value.strip()):.2f}"
+                    except:
+                        value = entry_field.value.strip()
+                elif format.startswith("b"):
+                    pfx = "NOT " if entry_field.value else ""
+                    value = f"{pfx}{entry_field.field.label}" 
+                elif format.startswith("w"):
+                    if format[1:].isnumeric():
+                        words = int(format[1:])
+                        value = truncatewords(entry_field.value.strip(), words) 
+                else:
+                    value = entry_field.value.strip()
+                    
+                field_map[row][col] = value
+
+        if not field_map.get(1, {}).get(1, None):
+            if not 1 in field_map:
+                field_map[1] = {}
+            field_map[1][1] = self.entry_time.strftime("%c")
+
+        rows = []
+        for row in sorted(field_map.keys()):
+            cols = []
+            for col in sorted(field_map[row].keys()):
+                 cols.append(field_map[row][col])
+            rows.append(" - ".join(cols))
+        
+        return rows
+
 
     def get_absolute_url(self):
         return reverse('form_entry_detail', kwargs={"id": self.pk})
