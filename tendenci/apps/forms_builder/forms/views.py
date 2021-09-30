@@ -297,7 +297,6 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
     return render_to_resp(request=request, template_name=template_name,
         context={'entry': entry})
 
-
 @is_enabled('forms')
 @login_required
 def entry_detail(request, id, template_name="forms/entry_detail.html"):
@@ -315,7 +314,6 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
         context={'entry':entry,
                  'form': entry.form,
                  'form_template': form_template})
-
 
 @is_enabled('forms')
 def entries_export(request, id, include_files=False):
@@ -403,13 +401,23 @@ def search(request, template_name="forms/search.html"):
 
 
 @is_enabled('forms')
-def form_detail(request, slug, template="forms/form_detail.html"):
+def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
     """
     Display a built form and handle submission.
     """
+    entry = FormEntry.objects.get(id=id) if id else None
+    
     published = Form.objects.published(for_user=request.user)
-    form = get_object_or_404(published, slug=slug)
-
+    
+    edit_mode = False
+    if entry:
+        form = get_object_or_404(published, entries=entry)
+        edit_mode = True
+    elif slug:
+        form = get_object_or_404(published, slug=slug)
+    else:
+        raise Http404
+    
     if not has_view_perm(request.user,'forms.view_form',form):
         raise Http403
 
@@ -437,8 +445,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     else:
         billing_form = None
 
-    form_for_form = FormForForm(form, request.user, request.session, request.POST or None, request.FILES or None)
-    
+    form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None, instance=entry)
+        
     if get_setting('site', 'global', 'captcha'): # add captcha
         if billing_form:
             # append the captcha to the end of the billing form
@@ -607,11 +615,15 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                         # redirect to invoice page
                         return redirect('invoice.view', invoice.id, invoice.guid)
 
-            # default redirect
-            if form.completion_url:
-                completion_url = form.completion_url.strip().replace('[entry_id]', str(entry.id))
-                return HttpResponseRedirect(completion_url)
-            return redirect("form_sent", form.slug)
+            if edit_mode:
+                return redirect("form_entry_detail", id)
+            else:
+                # default redirect
+                if form.completion_url:
+                    completion_url = form.completion_url.strip().replace('[entry_id]', str(entry.id))
+                    return HttpResponseRedirect(completion_url)
+                
+                return redirect("form_sent", form.slug)
 
     # set form's template to forms/base.html if no template or template doesn't exist
     if not form.template or not template_exists(form.template):

@@ -1,10 +1,14 @@
 {% load base_tags %}
 {% load perm_tags %}
 
+{% has_perm user forms.change_form as can_edit %}
 {% has_perm user forms.delete_form as can_delete %}
 
 <div class="t-iconrow">
 <ul>
+    {% if can_edit %}
+        <li><a class="btn btn-warning" href="{% url 'form_entry_edit' opt_object.pk %}">{% trans "Edit" %}</a></li>
+    {% endif %}
     {% if can_delete %}
         <li><a class="btn btn-danger" href="{% url 'form_entry_delete' opt_object.pk %}">{% trans "Delete" %}</a></li>
     {% endif %}
