@@ -276,8 +276,8 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
 
     return render_to_resp(request=request, template_name=template_name,
         context={'entry':entry,
-                                              'form': entry.form,
-                                              'form_template': form_template})
+                 'form': entry.form,
+                 'form_template': form_template})
 
 
 @is_enabled('forms')
