@@ -254,8 +254,10 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
 
     if request.method == "POST":
         messages.add_message(request, messages.SUCCESS, _('Successfully deleted entry %(e)s' % { 'e': entry}))
+        # hold the form here as the value of entry will be None after entry is deleted
+        form = entry.form
         entry.delete()
-        return HttpResponseRedirect(reverse('form_entries', args=[entry.form.id]))
+        return HttpResponseRedirect(reverse('form_entries', args=[form.id]))
 
     return render_to_resp(request=request, template_name=template_name,
         context={'entry': entry})
