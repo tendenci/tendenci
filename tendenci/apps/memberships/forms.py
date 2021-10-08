@@ -217,10 +217,12 @@ class MembershipTypeForm(TendenciBaseForm):
     def clean(self):
         cleaned_data = super(MembershipTypeForm, self).clean()
         # Make sure Expiretion Grace Period <= Renewal Period End
-        expiration_grace_period = self.cleaned_data['expiration_grace_period']
-        renewal_period_end = self.cleaned_data['renewal_period_end']
-        if expiration_grace_period > renewal_period_end:
-            raise forms.ValidationError(_("The Expiration Grace Period should be less than or equal to the Renewal Period End."))
+        if 'expiration_grace_period' in self.cleaned_data \
+            and 'expiration_grace_period' in self.cleaned_data:
+            expiration_grace_period = self.cleaned_data['expiration_grace_period']
+            renewal_period_end = self.cleaned_data['renewal_period_end']
+            if expiration_grace_period > renewal_period_end:
+                raise forms.ValidationError(_("The Expiration Grace Period should be less than or equal to the Renewal Period End."))
         return cleaned_data
 
 
