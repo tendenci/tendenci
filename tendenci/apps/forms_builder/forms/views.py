@@ -471,89 +471,91 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
             entry.save()
             entry.set_group_subscribers()
 
-            # Email
-            subject = generate_email_subject(form, entry)
-            email_headers = {}  # content type specified below
-            if form.email_from:
-                email_headers.update({'Reply-To':form.email_from})
-
-            # Email to submitter
-            # fields aren't included in submitter body to prevent spam
-            submitter_body = generate_submitter_email_body(entry, form_for_form)
-            email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
-            email_to = form_for_form.email_to()
-            is_spam = Email.is_blocked(email_to)
-            if is_spam:
-                # log the spam
-                description = "Email \"{0}\" blocked because it is listed in email_blocks.".format(email_to)
-                EventLog.objects.log(instance=form, description=description)
-
-                if form.completion_url:
-                    return HttpResponseRedirect(form.completion_url)
-                return redirect("form_sent", form.slug)
-
-            email = Email()
-            email.subject = subject
-            email.reply_to = form.email_from
-
-            if email_to and form.send_email and form.email_text:
-                # Send message to the person who submitted the form.
-                email.recipient = email_to
-                email.body = submitter_body
-                email.send(fail_silently=getattr(settings, 'EMAIL_FAIL_SILENTLY', True))
-                # log an event
-                EventLog.objects.log(instance=form, description='Confirmation email sent to {}'.format(email_to))
-
-            # Email copies to admin
-            admin_body = generate_admin_email_body(entry, form_for_form, user=request.user)
-            email_from = email_to or email_from # Send from the email entered.
-            email_headers = {}  # Reset the email_headers
-            email_headers.update({'Reply-To':email_from})
-            email_copies = [e.strip() for e in form.email_copies.split(',') if e.strip()]
-
-            subject = subject.encode(errors='ignore')
-            email_recipients = entry.get_function_email_recipients()
-            # reply_to of admin emails goes to submitter
-            email.reply_to = email_to
-
-            if email_copies or email_recipients:
-                # prepare attachments
-                attachments = []
-                # Commenting out the attachment block to not add attachments to the email for the reason below:
-                # According to SES message quotas https://docs.aws.amazon.com/ses/latest/DeveloperGuide/quotas.html, 
-                # the maximum message size (including attachments) is 10 MB per message (after base64 encoding) 
-                # which means the actual size should be less than 7.5 MB or so because text after encoded with the BASE64 
-                # algorithm increases its size by 1/3. But the allowed upload size is much larger than 7.5 MB.
-#                 try:
-#                     for f in form_for_form.files.values():
-#                         f.seek(0)
-#                         attachments.append((f.name, f.read()))
-#                 except ValueError:
-#                     attachments = []
-#                     for field_entry in entry.fields.all():
-#                         if field_entry.field.field_type == 'FileField':
-#                             try:
-#                                 f = default_storage.open(field_entry.value)
-#                             except IOError:
-#                                 pass
-#                             else:
-#                                 f.seek(0)
-#                                 attachments.append((f.name.split('/')[-1], f.read()))
-
-                fail_silently = getattr(settings, 'EMAIL_FAIL_SILENTLY', True)
-                # Send message to the email addresses listed in the copies
-                if email_copies:
-                    email.body = admin_body
-                    email.recipient = email_copies
-#                     if request.user.is_anonymous or not request.user.is_active:
-#                         email.content_type = 'text'
-                    email.send(fail_silently=fail_silently, attachments=attachments)
-
-                # Email copies to recipient list indicated in the form
-                if email_recipients:
-                    email.body = admin_body
-                    email.recipient = email_recipients
-                    email.send(fail_silently=fail_silently, attachments=attachments)
+            # Email - only one original submission. Subsequent edits of the entry we don't notify about
+            if not edit_mode:
+                subject = generate_email_subject(form, entry)
+                email_headers = {}  # content type specified below
+                if form.email_from:
+                    email_headers.update({'Reply-To':form.email_from})
+    
+                # Email to submitter
+                # fields aren't included in submitter body to prevent spam
+                submitter_body = generate_submitter_email_body(entry, form_for_form)
+                email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
+                email_to = form_for_form.email_to()
+                is_spam = Email.is_blocked(email_to)
+                if is_spam:
+                    # log the spam
+                    description = "Email \"{0}\" blocked because it is listed in email_blocks.".format(email_to)
+                    EventLog.objects.log(instance=form, description=description)
+    
+                    if form.completion_url:
+                        return HttpResponseRedirect(form.completion_url)
+                    return redirect("form_sent", form.slug)
+    
+                email = Email()
+                email.subject = subject
+                email.reply_to = form.email_from
+    
+                if email_to and form.send_email and form.email_text:
+                    # Send message to the person who submitted the form.
+                    email.recipient = email_to
+                    email.body = submitter_body
+                    email.send(fail_silently=getattr(settings, 'EMAIL_FAIL_SILENTLY', True))
+                    # log an event
+                    EventLog.objects.log(instance=form, description='Confirmation email sent to {}'.format(email_to))
+    
+                # Email copies to admin
+                admin_body = generate_admin_email_body(entry, form_for_form, user=request.user)
+                email_from = email_to or email_from # Send from the email entered.
+                email_headers = {}  # Reset the email_headers
+                email_headers.update({'Reply-To':email_from})
+                email_copies = [e.strip() for e in form.email_copies.split(',') if e.strip()]
+    
+                subject = subject.encode(errors='ignore')
+                email_recipients = entry.get_function_email_recipients()
+                # reply_to of admin emails goes to submitter
+                email.reply_to = email_to
+    
+                if email_copies or email_recipients:
+                    # prepare attachments
+                    attachments = []
+                    # Commenting out the attachment block to not add attachments to the email for the reason below:
+                    # According to SES message quotas https://docs.aws.amazon.com/ses/latest/DeveloperGuide/quotas.html, 
+                    # the maximum message size (including attachments) is 10 MB per message (after base64 encoding) 
+                    # which means the actual size should be less than 7.5 MB or so because text after encoded with the BASE64 
+                    # algorithm increases its size by 1/3. But the allowed upload size is much larger than 7.5 MB.
+                    #
+                    # try:
+                    #     for f in form_for_form.files.values():
+                    #         f.seek(0)
+                    #         attachments.append((f.name, f.read()))
+                    # except ValueError:
+                    #     attachments = []
+                    #     for field_entry in entry.fields.all():
+                    #         if field_entry.field.field_type == 'FileField':
+                    #             try:
+                    #                 f = default_storage.open(field_entry.value)
+                    #             except IOError:
+                    #                 pass
+                    #             else:
+                    #                 f.seek(0)
+                    #                 attachments.append((f.name.split('/')[-1], f.read()))
+    
+                    fail_silently = getattr(settings, 'EMAIL_FAIL_SILENTLY', True)
+                    # Send message to the email addresses listed in the copies
+                    if email_copies:
+                        email.body = admin_body
+                        email.recipient = email_copies
+                        # if request.user.is_anonymous or not request.user.is_active:
+                        #     email.content_type = 'text'
+                        email.send(fail_silently=fail_silently, attachments=attachments)
+    
+                    # Email copies to recipient list indicated in the form
+                    if email_recipients:
+                        email.body = admin_body
+                        email.recipient = email_recipients
+                        email.send(fail_silently=fail_silently, attachments=attachments)
 
             # payment redirect
             if (form.custom_payment or form.recurring_payment) and entry.pricing:
