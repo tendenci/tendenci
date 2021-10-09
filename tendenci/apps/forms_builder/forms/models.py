@@ -1,3 +1,4 @@
+from os import path
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -329,14 +330,14 @@ class FormEntry(models.Model):
     @property
     def summary(self):
         field_map = {}
-        for entry_field in self.fields.all():
+        for entry_field in self.entry_fields():
             form_field = self.form.fields.get(id=entry_field.field_id)
             vals = [p.strip() for p in form_field.summary_position.split(',')]
             
             if not vals[-1].isnumeric() or len(vals) > 2:
-                format = vals.pop()
+                fmt = vals.pop()
             else:
-                format = ""
+                fmt = ""
             
             if len(vals) == 1:
                 row = 1
@@ -351,24 +352,38 @@ class FormEntry(models.Model):
                 field_map[row] = {}
                 
             if row and col:
-                if format.startswith("$"):
+                if fmt.startswith("$"):
                     try:
                         value = f"${float(entry_field.value.strip()):.2f}"
                     except:
                         value = entry_field.value.strip()
-                elif format.startswith("b"):
-                    pfx = "NOT " if entry_field.value else ""
+                elif fmt.startswith("B"):
+                    value = path.basename(entry_field.value) 
+                elif fmt.startswith("b"):
+                    pfx = "NOT " if not entry_field.value else ""
                     value = f"{pfx}{entry_field.field.label}" 
-                elif format.startswith("w"):
-                    if format[1:].isnumeric():
-                        words = int(format[1:])
+                elif fmt.startswith("w"):
+                    if fmt[1:].isnumeric():
+                        words = int(fmt[1:])
                         value = truncatewords(entry_field.value.strip(), words) 
                 else:
                     value = entry_field.value.strip()
                     
                 field_map[row][col] = value
 
-        if not field_map.get(1, {}).get(1, None):
+        # If no field map is provided apply legacy format
+        # entry_time followed by first 3 fields by position truncated to 2 words or basename if file field
+        if not field_map:
+            field_map[1] = {}
+            field_map[1][1] = self.entry_time.strftime("%c")
+            for i, entry_field in enumerate(self.entry_fields()[:3]):
+                if entry_field.field.field_type ==  'FileField':
+                    field_map[1][i+2] = path.basename(entry_field.value) 
+                else:
+                    field_map[1][i+2] = truncatewords(entry_field.value.strip(), 2)
+
+        # If row 1, col 1 is empty, put the entry_time there. 
+        elif not field_map.get(1, {}).get(1, None):
             if not 1 in field_map:
                 field_map[1] = {}
             field_map[1][1] = self.entry_time.strftime("%c")
@@ -377,7 +392,7 @@ class FormEntry(models.Model):
         for row in sorted(field_map.keys()):
             cols = []
             for col in sorted(field_map[row].keys()):
-                 cols.append(field_map[row][col])
+                cols.append(field_map[row][col])
             rows.append(" - ".join(cols))
         
         return rows
