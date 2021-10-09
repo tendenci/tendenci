@@ -265,14 +265,19 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         self.cleaned_data['custom_price'] = custom_price
         return pricing_option
 
-    def save(self, **kwargs):
+    def save(self, edit_mode=False, **kwargs):
         """
         Create a FormEntry instance and related FieldEntry instances for each
         form field.
         """
         entry = super(FormForForm, self).save(commit=False)
         entry.form = self.form
-        entry.entry_time = datetime.now()
+        
+        # Entry time recorded only when the form is originally submitted.
+        # Subsequent edits to the form entry do not alter the entry_time
+        if not edit_mode:
+            entry.entry_time = datetime.now()
+            
         entry.save()
         for field in self.form_fields:
 <<<<<<< master
