@@ -23,7 +23,6 @@
                         <ul class="dropdown-menu" role="menu">
 					     {% if request.user.is_staff %}
                           <li><a class="edit-link" href="{% url "admin:forms_form_change" opt_object.pk %}">{% trans "Edit" %}</a></li>
-					      <li><a href="{% url "admin:forms_form_change" opt_object.pk %}">{% trans "Edit Fields" %}</a></li>
                          {% else %}
                           <li><a class="edit-link" href="{% url "form_edit" opt_object.pk %}">{% trans "Edit" %}</a></li>
 						 {% endif %}
