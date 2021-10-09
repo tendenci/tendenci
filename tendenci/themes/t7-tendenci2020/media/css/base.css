@@ -155,6 +155,7 @@ div#box-1 {
   height: 30px;
   padding: 0;
   margin: 0;
+  white-space: nowrap;
 }
 #t-admin-megamenu .navbar-right .dropdown-menu {
   left: auto;
