@@ -174,10 +174,17 @@ def update_authorized_domains(corp_profile, domain_names):
     """
     Update the authorized domains for this corporate membership.
     """
+    from urllib.parse import urlparse
     from tendenci.apps.corporate_memberships.models import CorpMembershipAuthDomain
     if domain_names.strip():
-        dname_list = domain_names.split(',')
-        dname_list = [name.strip() for name in dname_list]
+        dname_list = []
+        for name in domain_names.split(','):
+            name = name.strip().strip('/')
+            if name.startswith('http://') or name.startswith('https://'):
+                name = urlparse(name).netloc
+            if name.startswith('www.'):
+                name = name[4:]
+            dname_list.append(name)
 
         # if domain is not in the list domain_names, delete it from db
         # otherwise, remove it from list
