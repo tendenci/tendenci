@@ -230,6 +230,8 @@ class Field(OrderingBaseModel):
         choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
+    remember = models.BooleanField(_("Remember"), default=False, 
+        help_text=_("Remember the value entered between visits and initialise the form with that value."))
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text=_("Comma separated options where applicable"))
     default = models.CharField(_("Default"), max_length=1000, blank=True,
