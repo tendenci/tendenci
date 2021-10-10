@@ -59,7 +59,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
         def add_fields(form, form_fields):
             for field in form_fields:
-                field_key = "field_%s" % field.id
+                field_key = self.field_key(field)
                 if "/" in field.field_type:
                     field_class, field_widget = field.field_type.split("/")
                 else:
@@ -188,6 +188,12 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
         self.add_form_control_class()
 
+    def field_key(self, field, is_global=False):
+        key = "field_%s" % field.id
+        if is_global:
+            key = self.form.slug + "." + key
+        return key
+     
     def clean_pricing_option(self):
         pricing_pk = int(self.cleaned_data['pricing_option'])
         [pricing_option] = self.form.pricing_set.filter(pk=pricing_pk)[:1] or [None]
@@ -218,7 +224,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         entry.entry_time = datetime.now()
         entry.save()
         for field in self.form_fields:
-            field_key = "field_%s" % field.id
+            field_key = self.field_key(field)
             value = self.cleaned_data[field_key]
             if value and self.fields[field_key].widget.needs_multipart_form:
                 value = default_storage.save(join("forms", str(uuid4()), value.name), value)
