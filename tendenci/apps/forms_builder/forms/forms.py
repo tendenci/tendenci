@@ -1,8 +1,7 @@
-from builtins import str
+import re
 from datetime import datetime
 from os.path import join
 from uuid import uuid4
-import re
 
 from django import forms
 from importlib import import_module
@@ -10,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from tendenci.apps.base.utils import validate_email
 
 from tendenci.apps.site_settings.utils import get_setting
@@ -46,20 +46,25 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         model = FormEntry
         exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", 'custom_price',  "creator")
 
-    def __init__(self, form, user, *args, **kwargs):
+    def __init__(self, form, user, session={}, *args, **kwargs):
         """
         Dynamically add each of the form fields for the given form model
         instance and its related field model instances.
         """
+        self.instance = kwargs.get("instance", None)
         self.user = user
         self.form = form
-        self.form_fields = form.fields.visible().order_by('position')
+        self.form_fields = (form.fields.all() if self.instance else form.fields.visible()).order_by('position')
         self.auto_fields = form.fields.auto_fields().order_by('position')
+        self.session = session
         super(FormForForm, self).__init__(*args, **kwargs)
 
         def add_fields(form, form_fields):
+            instance_fields = {}
+            
             for field in form_fields:
                 field_key = "field_%s" % field.id
+                gfield_key = form.form.slug + "." + field_key
                 if "/" in field.field_type:
                     field_class, field_widget = field.field_type.split("/")
                 else:
@@ -98,7 +103,30 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     else:
                         default = False
                     field.default = default
-                field_args["initial"] = field.default
+                
+                if self.instance:
+                    #field_args["show_hidden_initial"] = True
+
+                    try:
+                        instance_field = self.instance.fields.get(field_id=field.id) 
+                    except:
+                        instance_field = None
+                    
+                    if instance_field:
+                        instance_fields[field_key] = instance_field
+                        field_args["initial"] = instance_field.value 
+                    elif field.remember and gfield_key in session:
+                        field_args["initial"] = session[gfield_key]
+                    else: 
+                        field_args["initial"] = field.default
+                    
+                    # As it's already been submitted (we have an instance) we don't require a 
+                    # new file upload. Moreover the FileField cannot be given an initial value
+                    # (Django prohibits rhis for security reasons).
+                    if field.field_type == "FileField":
+                        field.required = False
+                else:
+                    field_args["initial"] = field.default
 
                 if field_widget is not None:
                     module, widget = field_widget.rsplit(".", 1)
@@ -117,7 +145,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     field_args["max_length"] = FIELD_PHONE_LENGTH
                 elif field.field_type == 'FileField':
                     field_args["validators"] = [FileValidator()]
-
+                
                 form.fields[field_key] = field_class(**field_args)
 
                 if not field_class == EmailVerificationField:
@@ -131,7 +159,10 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     form.fields[field_key].widget.years = list(range(1920, THIS_YEAR + 10))
                 if widget_name in ('dateinput', 'selectdatewidget', 'datetimeinput'):
                     form.fields[field_key].initial = datetime.now()
-
+                    
+            for field_key, instance_field in instance_fields.items():
+                form.fields[field_key + "-id"] = forms.Field(widget=forms.HiddenInput(attrs={'value': instance_field.id}))
+                
         def add_pricing_fields(form, formforform):
             # include pricing options if any
             if (formforform.custom_payment or formforform.recurring_payment) and formforform.pricing_set.all():
@@ -175,7 +206,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                         widget=forms.RadioSelect(attrs={'class': 'payment-field'}),
                         initial=1,
                     )
-
+                
         if self.form.pricing_position < self.form.fields_position:
             add_pricing_fields(self, self.form)
             add_fields(self, self.form_fields)
@@ -208,20 +239,30 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         self.cleaned_data['custom_price'] = custom_price
         return pricing_option
 
-    def save(self, **kwargs):
+    def save(self, edit_mode=False, **kwargs):
         """
         Create a FormEntry instance and related FieldEntry instances for each
         form field.
         """
         entry = super(FormForForm, self).save(commit=False)
         entry.form = self.form
-        entry.entry_time = datetime.now()
+        
+        # Entry time recorded only when the form is originally submitted.
+        # Subsequent edits to the form entry do not alter the entry_time
+        if not edit_mode:
+            entry.entry_time = datetime.now()
+            
         entry.save()
         for field in self.form_fields:
             field_key = "field_%s" % field.id
+            gfield_key = self.form.slug + "." + field_key
+            
             value = self.cleaned_data[field_key]
-            if value and self.fields[field_key].widget.needs_multipart_form:
+            entry_id = self.cleaned_data.get(field_key + "-id", None)
+            
+            if value and isinstance(value,  InMemoryUploadedFile):
                 value = default_storage.save(join("forms", str(uuid4()), value.name), value)
+            
             # if the value is a list convert is to a comma delimited string
             if isinstance(value,list):
                 value = ','.join(value)
@@ -231,8 +272,18 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             if isinstance(value, str) and (self.user.is_anonymous or not self.user.is_active):
                 p = re.compile(r'(http[s]?)://([^\.]+)\.([^\./]+)')
                 value = re.subn(p, r'\1 : // \2 . \3 ', value)[0][:FIELD_MAX_LENGTH]
-            field_entry = FieldEntry(field_id = field.id, entry=entry, value = value)
-            field_entry.save()
+                
+            if entry_id:
+                field_entry = FieldEntry.objects.get(id=entry_id)
+                if value != field_entry.value:
+                    field_entry.value = value 
+                    field_entry.save()
+            else:
+                field_entry = FieldEntry(field_id = field.id, entry=entry, value = value)
+                field_entry.save()
+
+            if field.remember and self.session:
+                self.session[gfield_key] = value
 
         for field in self.auto_fields:
             value = field.choices
@@ -258,6 +309,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             field_class = field.field_type.split("/")[0]
             if field_class == "EmailVerificationField":
                 return self.cleaned_data["field_%s" % field.id]
+            
+        user_email = getattr(self.user, "email", None).strip()
+        if validate_email(user_email):
+            return user_email
+        
         return None
 
 
