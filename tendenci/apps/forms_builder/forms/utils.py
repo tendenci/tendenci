@@ -161,13 +161,14 @@ def form_entries_to_csv_writer(csv_writer, form):
     field_indexes = {}
     file_field_ids = []
     site_url = get_setting('site', 'global', 'siteurl')
-    for field in form.fields.all().order_by('position', 'id'):
-        columns.append(field.label)
-        field_indexes[field.id] = len(field_indexes)
-        if field.field_type == "FileField":
-            file_field_ids.append(field.id)
     entry_time_name = FormEntry._meta.get_field("entry_time").verbose_name
     columns.append(str(entry_time_name))
+    for field in form.fields.all().order_by('position', 'id'):
+        if not field.field_type.split('.')[-1] in ['Description', 'Header']:
+            columns.append(field.label)
+            field_indexes[field.id] = 1+len(field_indexes)
+            if field.field_type == "FileField":
+                file_field_ids.append(field.id)
     if form.custom_payment:
         columns.append(str("Pricing"))
         columns.append(str("Price"))
@@ -183,27 +184,27 @@ def form_entries_to_csv_writer(csv_writer, form):
 
         if form.custom_payment:
             if entry.pricing:
-                row[-4] = entry_time
                 row[-3] = entry.pricing.label
                 if not entry.pricing.price:
                     row[-2] = entry.custom_price
                 else:
                     row[-2] = entry.pricing.price
             row[-1] = entry.payment_method
-        else:
-            row[-1] = entry_time
+
+        row[0] = entry_time
 
         for field_entry in values:
-            value = escape_csv(field_entry.value)
-            # Create download URL for file fields.
-#             if field_entry.field_id in file_field_ids:
-#                 url = reverse("admin:forms_form_file", args=(field_entry.id,))
-#                 value = '{site_url}{url}'.format(site_url=site_url, url=url)
-            # Only use values for fields that currently exist for the form.
-            try:
-                row[field_indexes[field_entry.field_id]] = value
-            except KeyError:
-                pass
+            if not field_entry.field.field_type.split('.')[-1] in ['Description', 'Header']:
+                value = escape_csv(field_entry.value)
+                # Create download URL for file fields.
+                # if field_entry.field_id in file_field_ids:
+                #     url = reverse("admin:forms_form_file", args=(field_entry.id,))
+                #     value = '{site_url}{url}'.format(site_url=site_url, url=url)
+                # Only use values for fields that currently exist for the form.
+                try:
+                    row[field_indexes[field_entry.field_id]] = value
+                except KeyError:
+                    pass
         # Write out the row.
         csv_writer.writerow(row)
 
