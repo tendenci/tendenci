@@ -235,7 +235,7 @@ def copy(request, id):
 def entries(request, id, template_name="forms/entries.html"):
     form = get_object_or_404(Form, pk=id)
 
-    if not has_perm(request.user,'forms.change_form',form):
+    if not has_perm(request.user,'forms.view_formentry',form):
         raise Http403
 
     entries = form.entries.order_by('-entry_time')
@@ -284,7 +284,7 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
-    if not has_perm(request.user,'forms.delete_form',entry.form):
+    if not has_perm(request.user,'forms.delete_formentry',entry.form):
         raise Http403
 
     if request.method == "POST":
@@ -303,7 +303,7 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
-    if not has_perm(request.user,'forms.change_form',entry.form):
+    if not has_perm(request.user,'forms.view_formentry',entry.form):
         raise Http403
 
     form_template = entry.form.template
@@ -320,7 +320,7 @@ def entries_export(request, id, include_files=False):
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
-    if not has_perm(request.user,'forms.change_form',form_instance):
+    if not has_perm(request.user,'forms.view_formentry',form_instance):
         raise Http403
 
     EventLog.objects.log(instance=form_instance)
@@ -417,9 +417,11 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
         form = get_object_or_404(published, slug=slug)
     else:
         raise Http404
-    
-    if not has_view_perm(request.user,'forms.view_form',form):
-        raise Http403
+
+    # Permission only needed to edit. To submit the form no permission needed.    
+    if edit_mode:
+        if not has_view_perm(request.user,'forms.change_formentry',form):
+            raise Http403
 
     # If form has a recurring payment, make sure the user is logged in
     if form.recurring_payment:

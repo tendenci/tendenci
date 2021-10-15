@@ -12,8 +12,8 @@
 {% endblock %}
 
 {% block content %}
-{% has_perm user forms.change_form as can_edit %}
-{% has_perm user forms.delete_form as can_delete %}
+{% has_perm user forms.change_formentry as can_edit %}
+{% has_perm user forms.delete_formentry as can_delete %}
 
 <div id="form-entries">
   <div class="page-header">
