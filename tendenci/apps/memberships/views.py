@@ -1,4 +1,5 @@
-from builtins import str
+from functools import reduce
+import operator
 import os
 import math
 from decimal import Decimal
@@ -55,7 +56,7 @@ from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.memberships.models import (
     MembershipType, Notice, MembershipImport, MembershipDefault, MembershipSet,
-    MembershipImportData, MembershipApp, MembershipAppField)
+    MembershipImportData, MembershipApp, MembershipAppField, MembershipDemographic)
 from tendenci.apps.memberships.forms import (
     MembershipExportForm, AppCorpPreForm, MembershipDefaultForm,
     ReportForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
@@ -63,7 +64,8 @@ from tendenci.apps.memberships.forms import (
     DemographicsForm,
     MembershipDefault2Form,
     AutoRenewSetupForm,
-    MessageForm)
+    MessageForm,
+    MemberSearchForm)
 from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats,
     get_membership_stats, ImportMembDefault,
@@ -72,6 +74,71 @@ from tendenci.apps.memberships.utils import (prepare_chart_data,
 from tendenci.apps.base.forms import CaptchaForm
 from tendenci.apps.perms.decorators import is_enabled
 
+
+@login_required
+def memberships_search(request, app_id=0, template_name="memberships/search-per-app.html"):
+    app = get_object_or_404(MembershipApp, pk=app_id)
+    if not has_perm(request.user, 'memberships.change_membershipdefault'):
+        raise Http403
+
+    memberships = MembershipDefault.objects.filter(app_id=app.id
+                                    ).exclude(status_detail='archive')
+    app_fields = app.fields.filter(display=True).exclude(
+            field_name__in=['payment_method',
+                                'membership_type',
+                                'groups',
+                                'status',
+                                'status_detail',
+                                'directory',
+                                'industry',
+                                'region',
+                                ''])
+    form = MemberSearchForm(request.GET, app_fields=app_fields, user=request.user)
+    if form.is_valid():
+        user_fieldnames = [field.name for field in User._meta.fields if \
+                           field.get_internal_type() in ['CharField', 'TextField']]
+        profile_fieldnames = [field.name for field in Profile._meta.fields if \
+                           field.get_internal_type() in ['CharField', 'TextField']]
+        membership_fieldnames = [field.name for field in MembershipDefault._meta.fields if \
+                           field.get_internal_type() in ['CharField', 'TextField']]
+        demographic_fieldnames = [field.name for field in MembershipDemographic._meta.fields if \
+                           field.get_internal_type() in ['CharField', 'TextField']]
+
+        for field_name, field_value in form.cleaned_data.items():
+            if field_value:
+                if isinstance(field_value, list):
+                    if field_name in user_fieldnames:
+                        memberships = memberships.filter(reduce(operator.or_, 
+                            [Q(**{f'user__{field_name}__icontains': value}) for value in field_value]))
+                    elif field_name in profile_fieldnames:
+                        memberships = memberships.filter(reduce(operator.or_, 
+                            [Q(**{f'user__profile__{field_name}__icontains': value}) for value in field_value]))
+                    elif field_name in membership_fieldnames:
+                        memberships = memberships.filter(reduce(operator.or_, 
+                            [Q(**{f'{field_name}__icontains': value}) for value in field_value]))
+                    elif field_name in demographic_fieldnames:
+                        memberships = memberships.filter(reduce(operator.or_, 
+                            [Q(**{f'user__demographics__{field_name}__icontains': value}) for value in field_value]))
+                elif isinstance(field_value, str):
+                    if field_name in user_fieldnames:
+                        memberships = memberships.filter(Q(**{f'user__{field_name}__icontains': field_value}))
+                    elif field_name in profile_fieldnames:
+                        memberships = memberships.filter(Q(**{f'user__profile__{field_name}__icontains': field_value}))
+                    elif field_name in membership_fieldnames:
+                        memberships = memberships.filter(Q(**{f'{field_name}__icontains': field_value}))
+                    elif field_name in demographic_fieldnames:
+                        memberships = memberships.filter(Q(**{f'user__demographics__{field_name}__icontains': field_value}))
+
+    memberships = memberships.order_by('user__last_name', 'user__first_name')
+
+    EventLog.objects.log()
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+            'memberships': memberships,
+            'search_form': form,
+            'app': app,
+            'app_fields': app_fields})
 
 def membership_index(request):
     if request.user.profile:

@@ -4,6 +4,34 @@ from django.template import Library
 register = Library()
 
 
+@register.inclusion_tag('memberships/search-per-app-member-line.html')
+def render_member_row(membership, app_fields):
+    field_values_list = []
+    user = membership.user
+    if hasattr(user, 'profile'):
+        profile = user.profile
+    else:
+        profile = None
+    if hasattr(membership, 'demographics'):
+        ud = membership.demographics
+    else:
+        ud = None
+    
+    for field in app_fields:
+        field_name = field.field_name
+        value = ''
+        if hasattr(user, field_name):
+            value = getattr(user, field_name)
+        elif hasattr(profile, field_name):
+            value = getattr(profile, field_name)
+        elif hasattr(membership, field_name):
+            value = getattr(membership, field_name)
+        elif hasattr(ud, field_name):
+            value = getattr(ud, field_name)
+        field_values_list.append(value)
+    return {'membership': membership,
+            'field_values_list': field_values_list}
+
 @register.inclusion_tag("memberships/options.html", takes_context=True)
 def membership_options(context, user, membership):
     context.update({
