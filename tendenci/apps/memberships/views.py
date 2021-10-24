@@ -67,7 +67,7 @@ from tendenci.apps.memberships.forms import (
     MessageForm,
     MemberSearchForm)
 from tendenci.apps.memberships.utils import (prepare_chart_data,
-    get_days, get_over_time_stats,
+    get_days, get_over_time_stats, iter_memberships,
     get_membership_stats, ImportMembDefault,
     get_membership_app, get_membership_summary_data,
     email_pending_members)
@@ -130,6 +130,16 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
                         memberships = memberships.filter(Q(**{f'user__demographics__{field_name}__icontains': field_value}))
 
     memberships = memberships.order_by('user__last_name', 'user__first_name')
+
+    if 'export' in request.GET:
+        EventLog.objects.log(description="memberships export from memberships search")
+
+        response = StreamingHttpResponse(
+        streaming_content=(iter_memberships(memberships, app_fields)),
+        content_type='text/csv',)
+        response['Content-Disposition'] = f'attachment;filename=memberships_export_{ttime.time()}.csv'
+        return response
+
 
     EventLog.objects.log()
 
