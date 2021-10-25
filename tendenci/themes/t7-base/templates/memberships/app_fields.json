@@ -252,6 +252,20 @@
     "admin_only": "false"
     },
     {
+    "label": "Time Zone",
+    "field_name": "time_zone",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Language",
+    "field_name": "language",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
     "label": "User Defined 1",
     "field_name": "ud1",
     "display": "false",
