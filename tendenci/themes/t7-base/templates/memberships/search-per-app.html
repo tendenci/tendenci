@@ -71,6 +71,11 @@ h3{
 					{% for app_field in app_fields %}
 						<th nowrap>{{ app_field.label }}</th>
 					{% endfor %}
+					<th nowrap>{% trans "Create Date" %}</th>
+					<th nowrap>{% trans "Join Date" %}</th>
+					<th nowrap>{% trans "Renew Date" %}</th>
+					<th nowrap>{% trans "Expire Date" %}</th>
+					<th nowrap>{% trans "Status Detail" %}</th>
 					</tr>
 			
 					{% for membership in memberships %}
@@ -78,6 +83,11 @@ h3{
 						<td><a href="{% url "membership.details" membership.id  %}"><img src="{% static 'images/icons/external_16x16.png' %}" alt="View membership: {{ membership }}"></a></td>
 						<td><a href="{% url "membership_default.edit" membership.id  %}">{% trans "Edit" %}</a></td>
 						{% render_member_row membership app_fields %}
+						<td nowrap>{{ membership.create_dt|date:"N j, Y" }}</td>
+						<td nowrap>{{ membership.join_dt|date:"N j, Y" }}</td>
+						<td nowrap>{% if membership.renew_dt %}{{ membership.renew_dt|date:"N j, Y" }}{% endif %}</td>
+						<td nowrap>{% if membership.expire_dt %}{{ membership.expire_dt|date:"N j, Y" }}{% endif %}</td>
+						<td nowrap>{{ membership.status_detail }}</td>
 					</tr>
 					{% endfor %}
 				</table>

@@ -77,6 +77,8 @@ def get_membership_field_values(membership, app_fields):
 
 def iter_memberships(memberships, app_fields):
     field_labels = [field.label for field in app_fields]
+    field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
+                    _('Expire Date'), _('Status Detail')]
     
     writer = csv.DictWriter(Echo(), fieldnames=field_labels)
     # write headers - labels
@@ -84,6 +86,24 @@ def iter_memberships(memberships, app_fields):
 
     for membership in memberships:
         values_list = get_membership_field_values(membership, app_fields)
+        if membership.create_dt:
+            values_list.append(membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        if membership.join_dt:
+            values_list.append(membership.join_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        if membership.renew_dt:
+            values_list.append(membership.renew_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        if membership.expire_dt:
+            values_list.append(membership.expire_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        values_list.append(membership.status_detail)
+
         yield writer.writerow(dict(zip(field_labels, values_list)))
 
 
