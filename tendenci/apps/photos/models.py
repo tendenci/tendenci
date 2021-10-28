@@ -295,7 +295,10 @@ class ImageModel(models.Model):
 
         try:
             buffer = BytesIO()
-            im.save(buffer, im_format, quality=int(photosize.quality), optimize=True)
+            if im_format == 'TIFF':
+                im.save(buffer, im_format, optimize=True)
+            else:
+                im.save(buffer, im_format, quality=int(photosize.quality), optimize=True)
             default_storage.save(im_filename, ContentFile(buffer.getvalue()))
         except IOError as e:
             print(e)
