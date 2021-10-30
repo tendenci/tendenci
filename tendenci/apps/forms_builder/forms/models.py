@@ -153,6 +153,7 @@ class Form(TendenciBaseModel):
         verbose_name_plural = _("Forms")
 #         permissions = (("view_form", _("Can view form")),)
         app_label = 'forms'
+        ordering = ('-id',)
 
     def __str__(self):
         return self.title

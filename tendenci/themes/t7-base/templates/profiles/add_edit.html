@@ -418,7 +418,22 @@
 		      {% endif %}
 		    </div>
 	   </div>
-	   
+
+		<div class="form-group">
+		    <label for="id_county" class="col-sm-3 control-label">{{ form.county.label }}{%if from.county.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-5">
+		      {% if form.county.errors %}
+		         <div class="text-danger">{{ form.county.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.county }}
+		      
+		      {% if form.county.help_text %}
+		      <div class="help-block">{{ form.county.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+
 	   <div class="form-group">
 		    <label for="id_state" class="col-sm-3 control-label">{{ form.state.label }}{%if from.state.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
@@ -531,6 +546,21 @@
 		      
 		      {% if form.city_2.help_text %}
 		      <div class="help-block">{{ form.city_2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+
+		<div class="form-group">
+		    <label for="id_county_2" class="col-sm-3 control-label">{{ form.county_2.label }}</label>
+		    <div class="col-sm-5">
+		      {% if form.county_2.errors %}
+		         <div class="text-danger">{{ form.county_2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.county_2 }}
+		      
+		      {% if form.county_2.help_text %}
+		      <div class="help-block">{{ form.county_2.help_text }}</div>
 		      {% endif %}
 		    </div>
 	   </div>

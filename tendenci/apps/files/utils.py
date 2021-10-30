@@ -124,6 +124,9 @@ def get_image_binary(image, **options):
     image.format = image.format or 'JPEG'
 
     output = BytesIO()
+    if image.format.lower() == 'tiff' and 'quality' in options:
+        options.pop('quality')
+        
     image.save(output, image.format, **options)
     binary = output.getvalue()
     output.close()

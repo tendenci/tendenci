@@ -27,15 +27,15 @@
          </div>
         {% for field in entry.entry_fields %}
             {% if field.field.field_type == 'FileField' %}
-            <p>
-                <strong>{{ field.field.label }}</strong><br />
-                <a href="{{ field|media_url }}">{{ field.value|basename }}</a>
-            </p>
-            {% else %}
-            <p>
-                <strong>{{ field.field.label }}</strong><br />
-                <em>{{ field.value }}</em>
-            </p>
+	            <p>
+	                <strong>{{ field.field.label }}</strong><br />
+	                <a href="{{ field|media_url }}">{{ field.value|basename }}</a>
+	            </p>
+            {% elif field.field.field_type|slice:"-11:" != 'Description' %}
+	            <p>
+	                <strong>{{ field.field.label }}</strong><br />
+	                <em>{{ field.value }}</em>
+	            </p>
             {% endif %}
         {% endfor %}
 

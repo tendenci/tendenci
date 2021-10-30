@@ -50,6 +50,7 @@ class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
                         ('phone', _('Phone')),
                         ('city', _('City')),
                         ('region', _('Region')),
+                        ('county', _('County')),
                         ('state', _('State')),
                         ('zipcode', _('Zip Code')),
                         ('country', _('Country')),

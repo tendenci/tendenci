@@ -14,7 +14,7 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.utils import escape_csv
+from tendenci.apps.base.utils import escape_csv, Echo
 from tendenci.apps.files.models import File
 
 def invoice_pdf(request, invoice):
@@ -207,14 +207,6 @@ def process_invoice_export(start_dt=None, end_dt=None,
             subject=subject,
             body=body)
         email.send()
-
-class Echo:
-    """An object that implements just the write method of the file-like
-    interface.
-    """
-    def write(self, value):
-        """Write the value by returning it, instead of storing in a buffer."""
-        return value
 
 
 def get_invoice_data(invoice, field_names):

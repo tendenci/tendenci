@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.conf import settings
 
 from haystack.query import SearchQuerySet
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -46,6 +47,7 @@ from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.emails.models import Email
 from tendenci.apps.base.utils import validate_email
+from tendenci.apps.base.utils import get_timezone_choices
 
 
 THIS_YEAR = datetime.today().year
@@ -100,6 +102,44 @@ CLASS_AND_WIDGET = {
     'horizontal-rule': ('CharField', 'tendenci.apps.memberships.widgets.Description'),
     'corporate_membership_id': ('ChoiceField', None),
 }
+
+
+def assign_search_fields(form, app_field_objs):
+    for obj in app_field_objs:
+        # either choice field or text field
+        if obj.field_name and obj.field_type not in ['BooleanField']:
+            if obj.field_name == 'time_zone':
+                form.fields[obj.field_name] = forms.ChoiceField(label=obj.label,
+                                                    required=False,
+                                                    choices=[('', '--------')] + get_timezone_choices())
+            elif obj.field_name == 'country':
+                form.fields[obj.field_name] = CountrySelectField(label=obj.label,
+                                                    required=False)
+            elif obj.field_name == 'language':
+                form.fields[obj.field_name] = forms.ChoiceField(label=obj.label,
+                                                    required=False,
+                                                    choices=[('', '--------')] + settings.LANGUAGES)
+            elif obj.choices and obj.field_type in ('ChoiceField',
+                                  'ChoiceField/django.forms.RadioSelect',
+                                  'MultipleChoiceField',
+                                  'MultipleChoiceField/django.forms.CheckboxSelectMultiple',
+                                  'CountrySelectField'):
+                choices = [s.strip() for s in obj.choices.split(",")]
+                form.fields[obj.field_name] = forms.MultipleChoiceField(label=obj.label,
+                                                        required=False,
+                                                        widget=forms.CheckboxSelectMultiple,
+                                                        choices=list(zip(choices, choices)))
+            else:
+                form.fields[obj.field_name] = forms.CharField(label=obj.label, required=False)
+
+
+class MemberSearchForm(FormControlWidgetMixin, forms.Form):
+    def __init__(self, *args, **kwargs):
+        app_fields = kwargs.pop('app_fields')
+        user = kwargs.pop('user')
+        super(MemberSearchForm, self).__init__(*args, **kwargs)
+        assign_search_fields(self, app_fields)
+        self.add_form_control_class()
 
 
 def get_suggestions(entry):
@@ -217,10 +257,12 @@ class MembershipTypeForm(TendenciBaseForm):
     def clean(self):
         cleaned_data = super(MembershipTypeForm, self).clean()
         # Make sure Expiretion Grace Period <= Renewal Period End
-        expiration_grace_period = self.cleaned_data['expiration_grace_period']
-        renewal_period_end = self.cleaned_data['renewal_period_end']
-        if expiration_grace_period > renewal_period_end:
-            raise forms.ValidationError(_("The Expiration Grace Period should be less than or equal to the Renewal Period End."))
+        if 'expiration_grace_period' in self.cleaned_data \
+            and 'renewal_period_end' in self.cleaned_data:
+            expiration_grace_period = self.cleaned_data['expiration_grace_period']
+            renewal_period_end = self.cleaned_data['renewal_period_end']
+            if expiration_grace_period > renewal_period_end:
+                raise forms.ValidationError(_("The Expiration Grace Period should be less than or equal to the Renewal Period End."))
         return cleaned_data
 
 

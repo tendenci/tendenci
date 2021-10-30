@@ -1059,3 +1059,12 @@ def correct_filename(filename):
     root, ext = os.path.splitext(filename)
     root = (re.sub(r'[^a-zA-Z0-9]+', '-', root)).lower()
     return root + ext
+
+
+class Echo:
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value

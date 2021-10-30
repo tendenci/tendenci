@@ -150,6 +150,12 @@
               <td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
             </tr>
             {% endif %}
+			{% if profile.county %}
+			<tr>
+              <td>{% trans 'County' %}</td>
+              <td>{{ profile.county }}</td>
+            </tr>
+			{% endif %}
 
 			{% if industries %}
 				<tr>

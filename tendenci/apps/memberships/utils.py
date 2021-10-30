@@ -42,7 +42,69 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.apps.emails.models import Email
 from tendenci.apps.educations.models import Education
-from tendenci.apps.base.utils import escape_csv
+from tendenci.apps.base.utils import escape_csv, Echo
+
+
+def get_membership_field_values(membership, app_fields):
+    """
+    Get a list of membership field values corresponding to the app_fields.
+    """
+    data = []
+    user = membership.user
+    if hasattr(user, 'profile'):
+        profile = user.profile
+    else:
+        profile = None
+    if hasattr(membership, 'demographics'):
+        ud = membership.demographics
+    else:
+        ud = None
+    
+    for field in app_fields:
+        field_name = field.field_name
+        value = ''
+        if hasattr(user, field_name):
+            value = getattr(user, field_name)
+        elif hasattr(profile, field_name):
+            value = getattr(profile, field_name)
+        elif hasattr(membership, field_name):
+            value = getattr(membership, field_name)
+        elif hasattr(ud, field_name):
+            value = getattr(ud, field_name)
+        data.append(value)
+    return data
+
+
+def iter_memberships(memberships, app_fields):
+    field_labels = [field.label for field in app_fields]
+    field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
+                    _('Expire Date'), _('Status Detail')]
+    
+    writer = csv.DictWriter(Echo(), fieldnames=field_labels)
+    # write headers - labels
+    yield writer.writerow(dict(zip(field_labels, field_labels)))
+
+    for membership in memberships:
+        values_list = get_membership_field_values(membership, app_fields)
+        if membership.create_dt:
+            values_list.append(membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        if membership.join_dt:
+            values_list.append(membership.join_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        if membership.renew_dt:
+            values_list.append(membership.renew_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        if membership.expire_dt:
+            values_list.append(membership.expire_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        values_list.append(membership.status_detail)
+
+        yield writer.writerow(dict(zip(field_labels, values_list)))
 
 
 def get_default_membership_fields(use_for_corp=False):

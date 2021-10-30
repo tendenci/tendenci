@@ -82,6 +82,18 @@ class CorpMembershipImportProcessor(object):
             d['allow_member_view'] = True
         return d
 
+    def clean_directory(self, cmemb_data, **kwargs):
+        from tendenci.apps.directories.models import Directory
+        if 'directory' in cmemb_data:
+            if not cmemb_data['directory']:
+                cmemb_data['directory'] = None
+            else:
+                try:
+                    [cmemb_data['directory']] = Directory.objects.filter(
+                        id=int(cmemb_data['directory']))[:1] or [None]
+                except ValueError:
+                    cmemb_data['directory'] = None
+    
     def clean_corporate_membership_type(self, cmemb_data, **kwargs):
         """
         Ensure we have a valid corporate membership type.
@@ -135,6 +147,7 @@ class CorpMembershipImportProcessor(object):
 #             if cmemb_data['status_detail'] in ['archive', 'archived']:
 #                 error_msg.append('No import for archived.')
         is_valid, emsg = self.clean_corporate_membership_type(cmemb_data)
+        self.clean_directory(cmemb_data)
         if not is_valid:
             error_msg.append(emsg)
 
@@ -219,8 +232,9 @@ class CorpMembershipImportProcessor(object):
                     self.summary_d['update_insert'] += 1
 
                 # now do the update or insert
-                self.do_import_corp_membership(corp_profile, corp_memb,
+                corp_profile, corp_memb = self.do_import_corp_membership(corp_profile, corp_memb,
                                                   corp_memb_display)
+
                 # handle authorized_domain
                 if 'authorized_domains' in self.field_names:
                     update_authorized_domains(corp_profile,
@@ -349,6 +363,8 @@ class CorpMembershipImportProcessor(object):
         # bind members to their corporations by company names
         if self.mimport.bind_members:
             self.bind_members_to_corp_membership(corp_memb)
+
+        return corp_profile, corp_memb
 
     def bind_members_to_corp_membership(self, corp_memb):
         corp_profile = corp_memb.corp_profile

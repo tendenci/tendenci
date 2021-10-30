@@ -113,7 +113,7 @@ class Chapter(BasePage):
                     group.name = f'{group.name}{str(num)}'
 
             group.label = self.title
-            group.type = 'system_generated'
+            group.type = 'distribution'
             group.email_recipient = self.creator and self.creator.email or ''
             group.show_as_option = False
             group.allow_self_add = False

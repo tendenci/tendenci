@@ -646,7 +646,8 @@ clone_apps.short_description = 'Clone selected forms'
 class MembershipAppAdmin(TendenciBaseModelAdmin):
     inlines = (MembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('id', 'name', 'application_form_link', 'status_detail', 'field_sort_link')
+    list_display = ('id', 'name', 'application_form_link', 'status_detail',
+                    'field_sort_link', 'members_search_link')
     list_display_links = ('name',)
     search_fields = ('name', 'status_detail')
     fieldsets = (
@@ -691,6 +692,13 @@ class MembershipAppAdmin(TendenciBaseModelAdmin):
                         instance.id,
                         _('Sort Fields'))
     field_sort_link.short_description = ''
+
+    @mark_safe
+    def members_search_link(self, instance):
+        return '<a href="%s" title="%s"><i class="glyphicon glyphicon-search"></i> Search Members</a>' % (
+                reverse('memberships.search_per_app', args=[instance.id]),
+                        _('Search Members'))
+    members_search_link.short_description = _('Members Search Link')
 
 
 
