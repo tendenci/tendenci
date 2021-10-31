@@ -17,7 +17,13 @@ urlpatterns = [
     url(r'^%s/entries/export/(?P<task_id>[-\w]+)/check/$' % urlpath, views.entries_export_check, name="form_entries_export_check"),
     url(r'^%s/entries/export/(?P<task_id>[-\w]+)/download/$' % urlpath, views.entries_export_download, name="form_entries_export_download"),
 
-    url(r"^%s/entries/delete/(?P<id>\d+)$" % urlpath, views.entry_delete, name="form_entry_delete"),
+    url(r"^%s/entry/(?P<id>\d+)$" % urlpath, views.entry_detail, name="form_entry_detail"),
+    url(r"^%s/entry/edit/(?P<id>\d+)$" % urlpath, views.form_detail, name="form_entry_edit"),
+
+    # Form memory management
+    url(r"^%s/memories/(?P<id>\d+)$" % urlpath, views.memories, name="form_memories"),
+
+    # Form design
     url(r"^%s/add/$" % urlpath, views.add, name="form_add"),
     url(r"^%s/export/$" % urlpath, views.export, name="form_export"),
     url(r"^%s/update_fields/(?P<id>\d+)$" % urlpath, views.update_fields, name="form_field_update"),
