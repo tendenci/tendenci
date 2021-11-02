@@ -92,6 +92,7 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
                                 'directory',
                                 'industry',
                                 'region',
+                                'password',
                                 ''])
     form = MemberSearchForm(request.GET, app_fields=app_fields, user=request.user)
     if form.is_valid():
