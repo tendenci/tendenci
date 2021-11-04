@@ -4,8 +4,14 @@ from django import forms
 from django.contrib.auth.models import User
 from django.forms import BaseInlineFormSet
 from django.utils.translation import ugettext_lazy as _
+from django.forms.models import BaseModelFormSet
 
-from tendenci.apps.chapters.models import Chapter, Officer
+from form_utils.forms import BetterModelForm
+from tendenci.apps.chapters.models import (Chapter, Officer,
+                        ChapterMembershipType,
+                        ChapterMembershipApp,
+                        ChapterMembershipAppField,
+                        CustomizedAppField)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -13,6 +19,350 @@ from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.base.fields import StateSelectField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.regions.models import Region
+from tendenci.apps.base.fields import PriceField
+from tendenci.apps.memberships.fields import TypeExpMethodField
+from tendenci.apps.memberships.widgets import (
+    CustomRadioSelect, TypeExpMethodWidget)
+
+
+type_exp_method_fields = (
+    'period_type', 'period', 'period_unit', 'rolling_option',
+    'rolling_option1_day', 'rolling_renew_option', 'rolling_renew_option1_day',
+    'rolling_renew_option2_day', 'fixed_option', 'fixed_option1_day',
+    'fixed_option1_month', 'fixed_option1_year', 'fixed_option2_day',
+    'fixed_option2_month', 'fixed_option2_can_rollover',
+    'fixed_option2_rollover_days'
+)
+
+type_exp_method_widgets = (
+    forms.Select(),
+    forms.TextInput(),
+    forms.Select(),
+    CustomRadioSelect(),
+    forms.TextInput(),
+    CustomRadioSelect(),
+    forms.TextInput(),
+    forms.TextInput(),
+    CustomRadioSelect(),
+    forms.Select(),
+    forms.Select(),
+    forms.Select(),
+    forms.Select(),
+    forms.Select(),
+    forms.CheckboxInput(),
+    forms.TextInput(),
+)
+
+class ChapterMembershipTypeForm(TendenciBaseForm):
+    type_exp_method = TypeExpMethodField(label=_('Period Type'))
+    description = forms.CharField(label=_('Notes'), max_length=500, required=False,
+                               widget=forms.Textarea(attrs={'rows': '3'}))
+    price = PriceField(decimal_places=2, help_text=_("Set 0 for free membership."))
+    renewal_price = PriceField(decimal_places=2, required=False,
+                                 help_text=_("Set 0 for free membership."))
+    status_detail = forms.ChoiceField(
+        choices=(('active', _('Active')), ('inactive', _('Inactive')))
+    )
+
+    class Meta:
+        model = ChapterMembershipType
+        fields = (
+                  #'app',
+                  'name',
+                  'price',
+                  'description',
+                  'type_exp_method',
+                  'renewal_price',
+                  'allow_renewal',
+                  'renewal',
+                  'never_expires',
+                  'require_approval',
+                  'require_payment_approval',
+                  'admin_only',
+                  'renewal_require_approval',
+                  'renewal_period_start',
+                  'renewal_period_end',
+                  'expiration_grace_period',
+                  'position',
+                  'status',
+                  'status_detail',
+                  )
+
+    def __init__(self, *args, **kwargs):
+        super(ChapterMembershipTypeForm, self).__init__(*args, **kwargs)
+
+        self.type_exp_method_fields = type_exp_method_fields
+
+        initial_list = []
+        if self.instance.pk:
+            for field in self.type_exp_method_fields:
+                field_value = getattr(self.instance, field)
+                if field == 'fixed_option2_can_rollover' and (not field_value):
+                    field_value = ''
+                else:
+                    if not field_value:
+                        field_value = ''
+                initial_list.append(str(field_value))
+            self.fields['type_exp_method'].initial = ','.join(initial_list)
+
+        else:
+            self.fields['type_exp_method'].initial = "rolling,1,years,0,1,0,1,1,0,1,1,,1,1,,1"
+
+        # a field position dictionary - so we can retrieve data later
+        fields_pos_d = {}
+        for i, field in enumerate(self.type_exp_method_fields):
+            fields_pos_d[field] = (i, type_exp_method_widgets[i])
+
+        self.fields['type_exp_method'].widget = TypeExpMethodWidget(attrs={'id': 'type_exp_method'},
+                                                                    fields_pos_d=fields_pos_d)
+
+    def clean(self):
+        cleaned_data = super(ChapterMembershipTypeForm, self).clean()
+        # Make sure Expiretion Grace Period <= Renewal Period End
+        if 'expiration_grace_period' in self.cleaned_data \
+            and 'renewal_period_end' in self.cleaned_data:
+            expiration_grace_period = self.cleaned_data['expiration_grace_period']
+            renewal_period_end = self.cleaned_data['renewal_period_end']
+            if expiration_grace_period > renewal_period_end:
+                raise forms.ValidationError(_("The Expiration Grace Period should be less than or equal to the Renewal Period End."))
+        return cleaned_data
+
+
+    def clean_expiration_grace_period(self):
+        value = self.cleaned_data['expiration_grace_period']
+        if value > 100:
+            raise forms.ValidationError(_("This number should be less than 100 (days)."))
+        return value
+
+    def clean_type_exp_method(self):
+        value = self.cleaned_data['type_exp_method']
+
+        # if never expires is checked, no need to check further
+        if self.cleaned_data['never_expires']:
+            return value
+
+        data_list = value.split(',')
+        d = dict(zip(self.type_exp_method_fields, data_list))
+        if d['period_type'] == 'rolling':
+            if d['period']:
+                try:
+                    d['period'] = int(d['period'])
+                except:
+                    raise forms.ValidationError(_("Period must be a numeric number."))
+            else:
+                raise forms.ValidationError(_("Period is a required field."))
+            try:
+                d['rolling_option'] = int(d['rolling_option'])
+            except:
+                raise forms.ValidationError(_("Please select a expiration option for join."))
+            if d['rolling_option'] not in [0, 1]:
+                raise forms.ValidationError(_("Please select a expiration option for join."))
+            if d['rolling_option'] == 1:
+                try:
+                    d['rolling_option1_day'] = int(d['rolling_option1_day'])
+                except:
+                    raise forms.ValidationError(_("The day(s) field in option 2 of Expires On must be a numeric number."))
+            # renew expiration
+            try:
+                d['rolling_renew_option'] = int(d['rolling_renew_option'])
+            except:
+                raise forms.ValidationError(_("Please select a expiration option for renewal."))
+            if d['rolling_renew_option'] not in [0, 1, 2]:
+                raise forms.ValidationError(_("Please select a expiration option for renewal."))
+            if d['rolling_renew_option'] == 1:
+                try:
+                    d['rolling_renew_option1_day'] = int(d['rolling_renew_option1_day'])
+                except:
+                    raise forms.ValidationError(_("The day(s) field in option 2 of Renew Expires On must be a numeric number."))
+            if d['rolling_renew_option'] == 2:
+                try:
+                    d['rolling_renew_option2_day'] = int(d['rolling_renew_option2_day'])
+                except:
+                    raise forms.ValidationError(_("The day(s) field in option 3 of Renew Expires On must be a numeric number."))
+
+        else:  # d['period_type'] == 'fixed'
+            try:
+                d['fixed_option'] = int(d['fixed_option'])
+            except:
+                raise forms.ValidationError(_("Please select an option for fixed period."))
+            if d['fixed_option'] not in [0, 1]:
+                raise forms.ValidationError(_("Please select an option for fixed period."))
+            if d['fixed_option'] == 0:
+                try:
+                    d['fixed_option1_day'] = int(d['fixed_option1_day'])
+                except:
+                    raise forms.ValidationError(_("The day(s) field in the option 1 of Expires On must be a numeric number."))
+            if d['fixed_option'] == 1:
+                try:
+                    d['fixed_option2_day'] = int(d['fixed_option2_day'])
+                except:
+                    raise forms.ValidationError(_("The day(s) field in the option 2 of Expires On must be a numeric number."))
+
+            if 'fixed_option2_can_rollover' in d:
+                try:
+                    d['fixed_option2_rollover_days'] = int(d['fixed_option2_rollover_days'])
+                except:
+                    raise forms.ValidationError(_("The grace period day(s) for optoin 2 must be a numeric number."))
+
+        return value
+
+
+class ChapterMembershipAppForm(TendenciBaseForm):
+
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style': 'width:100%'},
+        mce_attrs={'storme_app_label': ChapterMembershipApp._meta.app_label,
+        'storme_model': ChapterMembershipApp._meta.model_name.lower()}))
+
+    confirmation_text = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style': 'width:100%'},
+        mce_attrs={'storme_app_label': ChapterMembershipApp._meta.app_label,
+        'storme_model': ChapterMembershipApp._meta.model_name.lower()}))
+
+    status_detail = forms.ChoiceField(
+        choices=(
+            ('draft', _('Draft')),
+            ('published', _('Published')),
+            ('inactive', _('Inactive'))
+        ),
+        initial='published'
+    )
+
+    class Meta:
+        model = ChapterMembershipApp
+        fields = (
+            'name',
+            'slug',
+            'description',
+            'confirmation_text',
+            'notes',
+            'membership_types',
+            'payment_methods',
+            'use_captcha',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status_detail',
+            )
+
+    def __init__(self, *args, **kwargs):
+        super(ChapterMembershipAppForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['description'].widget.mce_attrs[
+                            'app_instance_id'] = self.instance.pk
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+
+        if self.instance.pk:
+            self.fields['confirmation_text'].widget.mce_attrs[
+                            'app_instance_id'] = self.instance.pk
+        else:
+            self.fields['confirmation_text'].widget.mce_attrs[
+                                    'app_instance_id'] = 0
+
+
+class ChapterMembershipAppFieldAdminForm(forms.ModelForm):
+    class Meta:
+        model = ChapterMembershipAppField
+        fields = (
+                'membership_app',
+                'label',
+                'field_name',
+                'required',
+                'display',
+                'customizable',
+                'admin_only',
+                'field_type',
+                'description',
+                'help_text',
+                'choices',
+                'default_value',
+                'css_class'
+                  )
+
+    def __init__(self, *args, **kwargs):
+        super(ChapterMembershipAppFieldAdminForm, self).__init__(*args, **kwargs)
+        if self.instance:
+            if not self.instance.field_name:
+                self.fields['field_type'].choices = ChapterMembershipAppField.FIELD_TYPE_CHOICES2
+            else:
+                self.fields['field_type'].choices = ChapterMembershipAppField.FIELD_TYPE_CHOICES1
+
+    def save(self, *args, **kwargs):
+        self.instance = super(ChapterMembershipAppFieldAdminForm, self).save(*args, **kwargs)
+        if self.instance:
+            if not self.instance.field_name:
+                if self.instance.field_type != 'section_break':
+                    self.instance.field_type = 'section_break'
+                    self.instance.save()
+            else:
+                if self.instance.field_type == 'section_break':
+                    self.instance.field_type = 'CharField'
+                    self.instance.save()
+        return self.instance
+
+
+class AppFieldCustomForm(FormControlWidgetMixin, BetterModelForm):
+    choices = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows':'1'}),
+                              help_text=_("Comma separated options where applicable"))
+    class Meta:
+        model = ChapterMembershipAppField
+
+        fields = (
+            'field_name',
+            'label',
+            'choices',
+            'help_text',
+            'default_value',
+        )
+
+        fieldsets = [(_('Application Field'), {
+          'fields': ['field_name',
+                    'label',
+                    'choices',
+                    'help_text',
+                    'default_value',
+                    ],
+          'legend': '',
+          'classes': ['boxy-grey'],
+          })
+        ]
+
+    def __init__(self, *args, chapter, **kwargs):
+        self.chapter = chapter
+        super(AppFieldCustomForm, self).__init__(*args, **kwargs)
+        [self.cfield] = self.chapter.customizedappfield_set.filter(
+            app_field__id=self.instance.id)[:1] or [None]
+        if self.cfield:
+            # override with the value in CustomizedAppField (saved previously, if any)
+            self.initial['choices'] = self.cfield.choices
+            self.initial['help_text'] = self.cfield.help_text
+            self.initial['default_value'] = self.cfield.default_value
+
+        # set these fields as readyonly as chapter leaders should not change them
+        readonly_fields = ['field_name', 'label',]
+        for field in readonly_fields:
+            self.fields[field].widget.attrs['readonly'] = True
+
+        if 'ChoiceField' not in self.instance.field_type:
+            del self.fields['choices']
+
+    def save(self, commit=True):
+        if not self.cfield:
+            self.cfield = CustomizedAppField(app_field=self.instance,
+                                        chapter=self.chapter)
+        self.cfield.choices = self.cleaned_data.get('choices', '')
+        self.cfield.help_text = self.cleaned_data['help_text']
+        self.cfield.default_value = self.cleaned_data['default_value']
+        self.cfield.save()
+        return self.cfield
+
+
+class AppFieldBaseFormSet(BaseModelFormSet):
+    def save(self, commit=True):
+        return self.save_existing_objects(commit)
+    
 
 class ChapterForm(TendenciBaseForm):
     mission = forms.CharField(required=False,

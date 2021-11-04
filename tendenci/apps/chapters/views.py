@@ -1,3 +1,4 @@
+import simplejson
 from datetime import date
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -7,6 +8,12 @@ from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from django.forms.models import modelformset_factory
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -17,8 +24,12 @@ from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
 from tendenci.apps.files.models import File
 from tendenci.apps.perms.decorators import is_enabled
-from tendenci.apps.chapters.models import Chapter, Officer
-from tendenci.apps.chapters.forms import ChapterForm, OfficerForm, OfficerBaseFormSet, ChapterSearchForm
+from tendenci.apps.chapters.models import Chapter, Officer, ChapterMembershipAppField
+from tendenci.apps.chapters.forms import (ChapterForm, OfficerForm,
+                                          OfficerBaseFormSet,
+                                          ChapterSearchForm,
+                                          AppFieldCustomForm,
+                                          AppFieldBaseFormSet)
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 from tendenci.apps.site_settings.utils import get_setting
@@ -373,3 +384,59 @@ def delete(request, id, template_name="chapters/delete.html"):
 
     return render_to_resp(request=request, template_name=template_name,
         context={'chapter': chapter})
+
+
+@csrf_exempt
+@staff_member_required
+def get_app_fields_json(request):
+    """
+    Get the app fields and return as json
+    """
+    complete_list = simplejson.loads(
+        render_to_string(template_name='chapters/app_fields.json'))
+    return HttpResponse(simplejson.dumps(complete_list), content_type="application/json")
+
+
+@is_enabled('chapters')
+@login_required
+def edit_app_fields(request, id, form_class=AppFieldCustomForm, template_name="chapters/edit_app_fields.html"):
+    chapter = get_object_or_404(Chapter, pk=id)
+
+    if not has_perm(request.user, 'chapters.change_chaptermembershipappfield') \
+            and not chapter.is_chapter_leader(request.user):
+        raise Http403
+
+    AppFieldFormSet = modelformset_factory(
+        ChapterMembershipAppField,
+        formset=AppFieldBaseFormSet,
+        form=form_class,
+        extra=0,
+        can_delete=False
+    )
+    formset_app_fields = AppFieldFormSet(
+            request.POST or None,
+            queryset=ChapterMembershipAppField.objects.filter(
+                customizable=True).exclude(field_name__in=['membership_type', 'payment_method']),
+            prefix='app_field',
+            form_kwargs={'chapter': chapter,}
+        )
+    if request.method == "POST":
+        if formset_app_fields.is_valid():
+            cfields = formset_app_fields.save()
+            
+            msg_string = _('Successfully saved fields: ') + \
+                ', '.join([cfield.app_field.label for cfield in cfields])
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+            #TODO: redirect to application add
+
+    # response
+    return render_to_resp(request=request, template_name=template_name,
+        context={'chapter': chapter, 'formset_app_fields': formset_app_fields,})
+
+
+
+
+
+
+
