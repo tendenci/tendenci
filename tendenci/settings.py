@@ -703,10 +703,16 @@ STRIPE_SECRET_KEY = ''
 STRIPE_PUBLISHABLE_KEY = ''
 STRIPE_API_VERSION = '2019-08-14'
 
+# Square
+SQUARE_ENVIRONMENT = 'sandbox' # Acceptable values are sandbox or production
+SQUARE_APPLICATION_ID = ''
+SQUARE_LOCATION_ID = ''
+SQUARE_ACCESS_TOKEN = ''
+
 # List of merchant accounts you can set up.
 # If you want to set up multiple payment methods (gateways) for memberships,
 # the machine name of the payment methods specified should be in this list. 
-MERCHANT_ACCOUNT_NAMES = ('stripe', 'authorizenet', 'firstdatae4', 'paypal')
+MERCHANT_ACCOUNT_NAMES = ('stripe', 'authorizenet', 'firstdatae4', 'paypal', 'square')
 
 
 # ---------------------------------------------------------------------------- #
