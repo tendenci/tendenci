@@ -3,21 +3,21 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from .models import StripeAccount, Charge
+from .models import SquareAccount, Charge
 
-class StripeAccountAdmin(TendenciBaseModelAdmin):
-    list_display = ('account_name', 'email', 'default_currency', 'stripe_user_id', 'scope',
+class SquareAccountAdmin(TendenciBaseModelAdmin):
+    list_display = ('account_name', 'email', 'default_currency', 'square_user_id', 'scope',
                      'status_detail')
     list_filter = ('status_detail',)
     search_fields = ('account_name', 'email')
-    readonly_fields=('stripe_user_id', 'scope')
+    readonly_fields=('square_user_id', 'scope')
     fields = ('account_name', 'email', 'default_currency',
-              'stripe_user_id', 'scope',
+              'square_user_id', 'scope',
             'status_detail')
     ordering = ['-update_dt']
 
     def add_view(self, request, form_url='', extra_context=None):
-        return HttpResponseRedirect(reverse('stripe_connect.authorize'))
+        return HttpResponseRedirect(reverse('square_connect.authorize'))
 
 
 class ChargeAdmin(admin.ModelAdmin):
@@ -31,8 +31,8 @@ class ChargeAdmin(admin.ModelAdmin):
         return False
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        return HttpResponseRedirect(reverse('admin:stripe_charge_changelist'))
+        return HttpResponseRedirect(reverse('admin:square_charge_changelist'))
 
 
-admin.site.register(StripeAccount, StripeAccountAdmin)
+admin.site.register(SquareAccount, SquareAccountAdmin)
 admin.site.register(Charge, ChargeAdmin)

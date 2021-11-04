@@ -49,7 +49,8 @@ DUE_SORE_CHOICES = (
 
 class RecurringPayment(models.Model):
     PLATFORM_CHOICES = (('authorizenet', 'authorizenet'),
-                        ('stripe', 'stripe'))
+                        ('stripe', 'stripe'),
+                        ('square', 'square'))
     guid = models.CharField(max_length=50)
     platform = models.CharField(max_length=50, blank=True, default='authorizenet')
     # gateway assigned ID associated with the customer profile

@@ -4,8 +4,8 @@ from tendenci.apps.base.forms import FormControlWidgetMixin
 #from form_utils.forms import BetterModelForm
 
 
-class StripeCardForm(forms.Form):
-    stripe_token = forms.CharField(required=True, widget=forms.HiddenInput(attrs={'class': 'form-control'}))
+class SquareCardForm(forms.Form):
+    square_token = forms.CharField(required=True, widget=forms.HiddenInput(attrs={'class': 'form-control'}))
 
 
 class BillingInfoForm(FormControlWidgetMixin, forms.ModelForm):

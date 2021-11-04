@@ -14,15 +14,15 @@ class SquareAccount(TendenciBaseModel):
     email = models.CharField(max_length=200, default='')
     default_currency = models.CharField(max_length=5, default='usd')
     country = models.CharField(max_length=5, default='US')
-    stripe_user_id = models.CharField(_(u'Stripe user id'), max_length=200, unique=True)
+    square_user_id = models.CharField(_(u'Square user id'), max_length=200, unique=True)
     
     scope = models.CharField(max_length=20)
 #     token_type = models.CharField(max_length=20)
 #     refresh_token = models.CharField(max_length=200)
 #     livemode_access_token = models.CharField(max_length=200)
 #     testmode_access_token = models.CharField(max_length=200)
-#     livemode_stripe_publishable_key = models.CharField(max_length=200)
-#     testmode_stripe_publishable_key = models.CharField(max_length=200)
+#     livemode_square_publishable_key = models.CharField(max_length=200)
+#     testmode_square_publishable_key = models.CharField(max_length=200)
 
     def __str__(self):
         return self.account_name
