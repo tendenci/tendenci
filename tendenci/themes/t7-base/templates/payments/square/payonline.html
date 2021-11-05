@@ -127,16 +127,22 @@
     await card.attach(fieldEl);
 
     async function eventHandler(event) {
+      event.preventDefault();
       // Clear any existing messages
       window.paymentFlowMessageEl.innerText = '';
 
       try {
+        buttonEl.disabled = true;
+        $('#submit-loader').show();
         const result = await card.tokenize();
         if (result.status === 'OK') {
-          // Use global method from sq-payment-flow.js
+          // appends to form and submits
           squareTokenHandler(result.token);
         }
       } catch (e) {
+        buttonEl.disabled = false;
+        $('#submit-loader').hide();
+        
         if (e.message) {
           window.showError(`Error: ${e.message}`);
         } else {
