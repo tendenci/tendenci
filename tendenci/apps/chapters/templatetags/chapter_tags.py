@@ -83,3 +83,20 @@ def chapter_officer_formset(context, formset):
         'formset': formset
     })
     return context
+
+
+@register.inclusion_tag("memberships/applications/render_membership_field.html")
+def render_chapter_membership_field(request, field_obj,
+                            chapter_membership_form):
+    field_pwd = None
+    if field_obj.field_type == "section_break":
+        field = None
+    else:
+        field_name = field_obj.field_name
+        if field_name in chapter_membership_form.fields:
+            field = chapter_membership_form[field_name]
+        else:
+            field = None
+
+    return {'request': request, 'field_obj': field_obj,
+            'field': field, 'field_pwd': field_pwd}

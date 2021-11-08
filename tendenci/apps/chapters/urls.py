@@ -13,5 +13,17 @@ urlpatterns = [
     url(r'^chapters/feed/$', LatestEntriesFeed(), name='chapters.feed'),
     url(r"^chapters/get_app_fields/$", views.get_app_fields_json,
                             name="chapters.get_app_fields"),
+
+    # membership default add
+    url(r"^chapters/memberships/(?P<chapter_membership_id>\d+)/$",
+        views.membership_details,
+        name="chapters.membership_details"),
+    url(r"^chapters/(?P<chapter_id>\d+)/applications/(?P<slug>[\w\-]+)/$",
+        views.chapter_membership_add,
+        name="chapters.membership_add"),
+    url(r"^chapters/applications/add_conf/(?P<id>\d+)/$",
+        views.chapter_membership_add_conf,
+        name="chapters.membership_add_conf"),
+
     url(r'^chapters/(?P<slug>[\w\-\/]+)/$', views.detail, name="chapters.detail"),
 ]

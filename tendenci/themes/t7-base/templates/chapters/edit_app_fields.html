@@ -1,4 +1,4 @@
-{% extends "chapters/base.html" %}
+{% extends "chapters/base-wide.html" %}
 {% load chapter_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
@@ -13,6 +13,7 @@ form#caf-form fieldset{
 	border-radius: 5px;
 	padding: 10px;
 	margin-bottom: 2em;
+	overflow-x: auto;
 }
 </style>
 {% endblock %}
@@ -20,8 +21,8 @@ form#caf-form fieldset{
 {% block content %}
 
 <div class="t">
-    <h1>{% trans "Customize Application Fields" %}</h1>
-	<h3><a href="{% url 'chapters.detail' chapter.slug %}">{{ chapter.title }}</a></h3>
+	<h1><a href="{% url 'chapters.detail' chapter.slug %}">{{ chapter.title }}</a></h1>
+	<h3>{% trans "Customize Application Fields" %}</h3>
 	<div class="alert alert-info" role="alert">{% trans "Chapter leaders: Please customize the following fields to fit your chapter's need." %}</div>
     <form id="caf-form" class="form-horizontal" action="." method="post">{% csrf_token %}
          {{ formset_app_fields|styled_form_set }}

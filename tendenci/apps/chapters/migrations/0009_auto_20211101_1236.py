@@ -208,7 +208,7 @@ class Migration(migrations.Migration):
                 ('chapter', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='chapters.Chapter')),
                 ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembership_creator', to=settings.AUTH_USER_MODEL)),
                 ('entity', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembership_entity', to='entities.Entity')),
-                ('invoice', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='invoices.Invoice')),
+                ('invoice', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='invoices.Invoice')),
                 ('membership_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='chapters.ChapterMembershipType')),
                 ('owner', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembership_owner', to=settings.AUTH_USER_MODEL)),
                 ('payment_method', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='payments.PaymentMethod')),

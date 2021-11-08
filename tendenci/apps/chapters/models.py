@@ -1,14 +1,20 @@
-from datetime import date
+from datetime import date, datetime
 import uuid
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 from django.db.models import Q
 from django.db import models
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.template.defaultfilters import slugify
+from django import forms
+from django.utils.safestring import mark_safe
+from django.template import engines
+from importlib import import_module
 
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.pages.models import BasePage
@@ -18,15 +24,17 @@ from tendenci.apps.chapters.managers import (ChapterManager,
                     ChapterMembershipManager,
                     ChapterMembershipAppManager)
 from tendenci.apps.chapters.module_meta import ChapterMeta
-from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.files.models import File
-from tendenci.apps.base.fields import SlugField
+from tendenci.apps.base.fields import SlugField, CountrySelectField
 from tendenci.apps.regions.models import Region
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.files.validators import FileValidator
+from tendenci.apps.base.utils import tcurrency, day_validate
 
 
 class Chapter(BasePage):
@@ -287,6 +295,138 @@ class ChapterMembershipType(OrderingBaseModel, TendenciBaseModel):
         self.guid = self.guid or uuid.uuid4().hex
         super(ChapterMembershipType, self).save(*args, **kwargs)
 
+    def get_price_display(self, renew_mode=False):        
+        if renew_mode:
+            price_display = f'{self.name} - {tcurrency(self.renewal_price)} Renewal'
+        else:
+            price_display = f'{self.name} - {tcurrency(self.price)}'
+
+        return mark_safe(price_display)
+
+
+    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None, previous_expire_dt=None):
+        """
+        Calculate the expiration date - for join or renew (renewal=True)
+
+        Examples:
+
+            For join:
+            expiration_dt = membership_type.get_expiration_dt(join_dt=chapter_membership.join_dt)
+
+            For renew:
+            expiration_dt = membership_type.get_expiration_dt(renewal=True,
+                                                              join_dt=chapter_membership.join_dt,
+                                                              renew_dt=chapter_membership.renew_dt,
+                                                              previous_expire_dt=None)
+        """
+        now = datetime.now()
+
+        if not join_dt or not isinstance(join_dt, datetime):
+            join_dt = now
+        if renewal and (not renew_dt or not isinstance(renew_dt, datetime)):
+            renew_dt = now
+
+        if self.never_expires:
+            return None
+
+        if self.period_type == 'rolling':
+            if self.period_unit == 'days':
+                return now + timedelta(days=self.period)
+
+            elif self.period_unit == 'months':
+                return now + relativedelta(months=self.period)
+
+            else:  # if self.period_unit == 'years':
+                if not renewal:
+                    if self.rolling_option == '0':
+                        # expires on end of full period
+                        return join_dt + relativedelta(years=self.period)
+                    else:  # self.expiration_method == '1':
+                        # expires on ? days at signup (join) month
+                        if not self.rolling_option1_day:
+                            self.rolling_option1_day = 1
+                        expiration_dt = join_dt + relativedelta(years=self.period)
+                        self.rolling_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1),
+                                                                    self.rolling_option1_day)
+
+                        return datetime(expiration_dt.year, join_dt.month,
+                            self.rolling_option1_day, expiration_dt.hour, expiration_dt.minute, expiration_dt.second)
+
+                else:  # renewal = True
+                    if self.rolling_renew_option == '0':
+                        # expires on the end of full period
+
+                        # if they are renewing before expiration, the new expiration date
+                        # should start from the previous expiration date instead of the renew date
+                        if isinstance(previous_expire_dt, datetime):
+                            if previous_expire_dt > now:
+                                return previous_expire_dt + relativedelta(years=self.period)
+
+                        return renew_dt + relativedelta(years=self.period)
+                    elif self.rolling_renew_option == '1':
+                        # expires on the ? days at signup (join) month
+                        if not self.rolling_renew_option1_day:
+                            self.rolling_renew_option1_day = 1
+                        expiration_dt = renew_dt + relativedelta(years=self.period)
+                        self.rolling_renew_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1),
+                            self.rolling_renew_option1_day)
+
+                        return datetime(expiration_dt.year, join_dt.month,
+                                                 self.rolling_renew_option1_day, expiration_dt.hour,
+                                                 expiration_dt.minute, expiration_dt.second)
+                    else:
+                        # expires on the ? days at renewal month
+                        if not self.rolling_renew_option2_day:
+                            self.rolling_renew_option2_day = 1
+                        expiration_dt = renew_dt + relativedelta(years=self.period)
+                        self.rolling_renew_option2_day = day_validate(datetime(expiration_dt.year, renew_dt.month, 1),
+                            self.rolling_renew_option2_day)
+
+                        return datetime(expiration_dt.year, renew_dt.month, self.rolling_renew_option2_day, expiration_dt.hour,
+                            expiration_dt.minute, expiration_dt.second)
+
+        else:  # self.period_type == 'fixed':
+            if self.fixed_option == '0':
+                # expired on the fixed day, fixed month, fixed year
+                if not self.fixed_option1_day:
+                    self.fixed_option1_day = 1
+                if not self.fixed_option1_month:
+                    self.fixed_option1_month = 1
+                if self.fixed_option1_month > 12:
+                    self.fixed_option1_month = 12
+                if not self.fixed_option1_year:
+                    self.fixed_option1_year = now.year
+
+                self.fixed_option1_day = day_validate(datetime(self.fixed_option1_year,
+                    self.fixed_option1_month, 1), self.fixed_option1_day)
+
+                return datetime(self.fixed_option1_year, self.fixed_option1_month,
+                    self.fixed_option1_day)
+
+            else:  # self.fixed_option == '1'
+                # expired on the fixed day, fixed month of current year
+                if not self.fixed_option2_day:
+                    self.fixed_option2_day = 1
+                if not self.fixed_option2_month:
+                    self.fixed_option2_month = 1
+                if self.fixed_option2_month > 12:
+                    self.fixed_option2_month = 12
+
+                self.fixed_option2_day = day_validate(datetime(now.year,
+                    self.fixed_option2_month, 1), self.fixed_option2_day)
+
+                expiration_dt = datetime(now.year, self.fixed_option2_month,
+                                        self.fixed_option2_day)
+                if expiration_dt <= now:
+                    expiration_dt = expiration_dt + relativedelta(years=1)
+                if self.fixed_option2_can_rollover:
+                    if not self.fixed_option2_rollover_days:
+                        self.fixed_option2_rollover_days = 0
+                    if (expiration_dt - now).days < self.fixed_option2_rollover_days:
+                        expiration_dt = expiration_dt + relativedelta(years=1)
+
+                return expiration_dt
+
 
 class ChapterMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
@@ -342,7 +482,7 @@ class ChapterMembership(TendenciBaseModel):
     payment_received_dt = models.DateTimeField(null=True)
     payment_method = models.ForeignKey(PaymentMethod, null=True,
                                        on_delete=models.SET_NULL)
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+    invoice = models.ForeignKey(Invoice, null=True, on_delete=models.CASCADE)
 
     app = models.ForeignKey("ChapterMembershipApp", null=True, on_delete=models.SET_NULL)
 
@@ -360,7 +500,373 @@ class ChapterMembership(TendenciBaseModel):
         """
         Returns admin change_form page.
         """
-        return reverse('chapter.membership_details', args=[self.pk])
+        return reverse('chapters.membership_details', args=[self.pk])
+
+    def create_member_number(self):
+        #TODO: Decide how member numbers should be generated for chapter members
+        return str(self.id)
+
+    def set_member_number(self):
+        """
+        Sets chapter membership number via previous record, or from their
+        regular membership.
+        """
+        # if member_number; get out
+        if not self.member_number:
+            [member_number] = ChapterMembership.objects.filter(
+                    user=self.user, chapter=self.chapter).exclude(
+                        member_number='').order_by('-pk'
+                        ).values_list('member_number', flat=True)[:1] or [None]
+
+            if not member_number:
+                [member_number] = self.user.membershipdefault_set.filter(
+                    status=True).exclude(member_number='').order_by('-pk'
+                        ).values_list('member_number', flat=True)[:1] or [None]
+
+            if not member_number:
+                member_number = self.create_member_number()
+
+            self.member_number = member_number
+
+        return self.member_number
+
+    def get_price(self):
+        if self.renewal:
+            return self.membership_type.renewal_price or 0
+        else:
+            return self.membership_type.price or 0
+
+    def save_invoice(self, **kwargs):
+        creator = kwargs.get('creator')
+        if not isinstance(creator, User):
+            creator = self.user
+
+        status_detail = kwargs.get('status_detail', 'estimate')
+
+        if not self.invoice:
+            invoice = Invoice()
+            invoice.entity = self.entity
+            invoice.title = "Chapter Membership Invoice"
+            content_type = ContentType.objects.get(
+                app_label=self._meta.app_label, model=self._meta.model_name)
+            invoice.object_type = content_type
+            invoice.object_id = self.pk
+
+            invoice.bill_to_user(self.user)
+            invoice.ship_to_user(self.user)
+            invoice.set_creator(creator)
+            invoice.set_owner(self.user)
+    
+            # price information ----------
+            price = self.get_price()
+
+            invoice.subtotal = price
+            invoice.total = price
+            invoice.balance = price
+    
+            invoice.due_date = datetime.now()
+            invoice.ship_date = datetime.now()
+    
+            invoice.save()
+            self.invoice = invoice
+            self.save()
+
+        self.invoice.status_detail = status_detail
+        if status_detail == 'estimate':
+            self.invoice.estimate = True
+        elif status_detail == 'tendered':
+            self.invoice.tender(self.user)
+
+        self.invoice.save()
+
+        return self.invoice
+
+    def approval_required(self):
+        """
+        Returns a boolean value on whether approval is required
+        This is dependent on whether membership is a join or renewal.
+        """
+        if self.renewal:
+            if not self.membership_type.renewal_require_approval:
+                if not self.membership_type.require_payment_approval \
+                  or (self.invoice and self.invoice.balance <= 0):
+                    # auto approve if not require approval or paid or free
+                    return False
+        else: # join
+            if not self.membership_type.require_approval:
+                if not self.membership_type.require_payment_approval \
+                  or (self.invoice and self.invoice.balance <= 0):
+                    return False
+        return True
+
+    def set_join_dt(self):
+        """
+        Looks through old memberships first to discover join dt
+        """
+        # cannot set join dt if not approved
+        if not self.approve_dt:
+            return None
+
+        # previous chapter memberships with join_dt
+        chapter_memberships = ChapterMembership.objects.filter(
+                    user=self.user, chapter=self.chapter,
+                     join_dt__isnull=False
+                    ).exclude(status_detail='disapproved'
+                    ).exclude(status_detail='pending')
+
+        if self.pk:
+            chapter_memberships = chapter_memberships.exclude(pk=self.pk)
+
+        if chapter_memberships:
+            self.join_dt = chapter_memberships[0].join_dt
+        else:
+            self.join_dt = self.join_dt or self.approve_dt
+
+    def set_renew_dt(self):
+        """
+        Dependent on self.application_approved and
+        self.approve_dt
+
+        If qualified memberships exists for this
+        Membership.user set
+        Membership.renew_dt = Membership.approve_dt
+        """
+
+        approved = (
+            self.approved,
+            self.approve_dt,
+        )
+
+        # if not approved
+        # set renew_dt and get out
+        if not all(approved):
+            self.renew_dt = None
+            return None
+
+        if self.renewal:
+            self.renew_dt = self.approve_dt
+
+    def set_expire_dt(self):
+        """
+        User ChapterMembershipType to set expiration dt
+        """
+
+        approved = (
+            self.approved,
+            self.approve_dt,
+        )
+
+        # if not approved
+        # set expire_dt and get out
+        if not all(approved):
+            self.expire_dt = None
+            return None
+
+        if self.renew_dt:
+            if self.renew_from_id:
+                [previous_expire_dt] = ChapterMembership.objects.filter(
+                                            id=self.renew_from_id).values_list(
+                                            'expire_dt', flat=True)[:1] or [None]
+            else:
+                previous_expire_dt = None
+            self.expire_dt = self.membership_type.get_expiration_dt(
+                renewal=self.is_renewal(), renew_dt=self.renew_dt, previous_expire_dt=previous_expire_dt
+            )
+        elif self.join_dt:
+            self.expire_dt = self.membership_type.get_expiration_dt(
+                renewal=self.is_renewal(), join_dt=self.join_dt
+            )
+
+    def group_refresh(self):
+        """
+        Look at the memberships status and decide
+        whether the user should or should not be in
+        the group.
+        """
+
+        active = (self.status, self.status_detail.lower() == 'active')
+
+        if all(active):  # should be in group; make sure they're in
+            self.chapter.group.add_user(self.user)
+        else:  # should not be in group; make sure they're out
+            GroupMembership.objects.filter(
+                member=self.user,
+                group=self.chapter.group
+            ).delete()
+
+    def archive_old_memberships(self):
+        """
+        Archive old memberships that are active, pending, and expired
+        and of this chapter.  Making sure not to archive the newest membership.
+        """
+        chapter_memberships = ChapterMembership.objects.filter(
+                            user=self.user,
+                            chapter=self.chapter).exclude(id=self.id)
+        for chapter_membership in chapter_memberships:
+            chapter_membership.status_detail = 'archive'
+            chapter_membership.save()
+
+    def approve(self, request_user=AnonymousUser()):
+        """
+        Approve this membership.
+            - Assert user is in group.
+            - Create new invoice.
+            - Archive old memberships [of same type].
+
+        Will not approve:
+            - Active memberships
+            - Expired memberships
+            - Archived memberships
+        """
+
+        good = (
+            not self.is_expired(),
+            not self.is_archived(),
+        )
+
+        if not all(good):
+            return False
+
+        NOW = datetime.now()
+
+        self.status = True
+        self.status_detail = 'active'
+
+        # application approved ---------------
+        self.approved = True
+        self.approve_dt = \
+            self.approve_dt or NOW
+
+        if request_user and request_user.is_authenticated:  # else: don't set
+            self.approved_user = request_user
+
+        # check creator and owner
+        if not (self.creator and self.creator_username):
+            self.creator = self.user
+            self.creator_username = self.user.username
+        if not (self.owner and self.owner_username):
+            self.owner = self.user
+            self.owner_username = self.user.username
+
+        self.set_join_dt()
+        self.set_renew_dt()
+        self.set_expire_dt()
+        self.set_member_number()
+        self.save()
+
+        # user in [membership] group
+        self.group_refresh()
+
+        # new invoice; bound via ct and object_id
+        self.save_invoice(status_detail='tendered')
+
+        # archive other membership [of this type] [in this chapter]
+        self.archive_old_memberships()
+
+        return self
+
+    def pend(self):
+        """
+        Set the membership to pending.
+        This should not be a method available
+        to the end-user.  Used within membership process.
+        """
+        if self.status_detail == 'archive':
+            return False
+
+        self.status = True
+        self.status_detail = 'pending'
+
+        # application approved ---------------
+        self.approved = False
+        self.approve_dt = None
+        self.approved_user = None
+
+        self.set_join_dt()
+        self.set_renew_dt()
+        self.set_expire_dt()
+
+        # add to chapter group
+        self.group_refresh()
+
+        # new invoice; bound via ct and object_id
+        self.save_invoice(status_detail='estimate')
+
+        return True
+
+    def is_forever(self):
+        """
+        Returns boolean.
+        Tests if expiration datetime exists.
+        """
+        return not self.expire_dt
+
+    def get_expire_dt(self):
+        """
+        Returns None type object
+        or datetime object
+        """
+        grace_period = self.membership_type.expiration_grace_period
+
+        if not self.expire_dt:
+            return None
+
+        return self.expire_dt + relativedelta(days=grace_period)
+
+    def is_expired(self):
+        """
+        status=True, status_detail='active' or 'expired',
+        out of the grace period.
+        """
+        if self.status and self.status_detail.lower() in ('active', 'expired'):
+            if self.expire_dt:
+                return self.expire_dt <= datetime.now() and \
+                    (not self.in_grace_period())
+        return False
+
+    def is_pending(self):
+        """
+        Return boolean; The memberships pending state.
+        """
+        return self.status and self.status_detail == 'pending'
+
+    def is_active(self):
+        """
+        status = True, status_detail = 'active', and has not expired
+        considers grace period when evaluating expiration date-time
+        """
+        return self.status and self.status_detail.lower() == 'active'
+
+    def is_approved(self):
+        """
+        self.is_active()
+        self.application_approved
+        """
+        if self.is_active():
+
+            # membership does not expire
+            if self.is_forever():
+                return True
+
+            # membership has not expired
+            if not self.is_expired():
+                return True
+
+        return False
+
+    def is_archived(self):
+        """
+        self.is_active()
+        self.status_detail = 'archive'
+        """
+        return self.status and self.status_detail.lower() == 'archive'
+
+    def get_status(self):
+        """
+        Returns status of membership
+        'pending', 'active', 'disapproved', 'expired', 'archive'
+        """
+        return self.status_detail.lower()
 
 
 class ChapterMembershipApp(TendenciBaseModel):
@@ -394,6 +900,11 @@ class ChapterMembershipApp(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid4())
         super(ChapterMembershipApp, self).save(*args, **kwargs)
+
+    def render_items(self, context):
+        for field_name in ['name', 'description', 'confirmation_text']:
+            template = engines['django'].from_string(getattr(self, field_name))
+            setattr(self, field_name, template.render(context=context))
 
 
 class ChapterMembershipAppField(OrderingBaseModel):
@@ -460,6 +971,47 @@ class ChapterMembershipAppField(OrderingBaseModel):
 #         if self.field_name:
 #             return f'{self.label} (field name: {self.field_name})'
 #         return self.label
+
+    def get_field_class(self, initial=None):
+        """
+            Generate the form field class for this field.
+        """
+        FIELD_MAX_LENGTH = 2000 
+        if self.field_type and self.id:
+            if "/" in self.field_type:
+                field_class, field_widget = self.field_type.split("/")
+            else:
+                field_class, field_widget = self.field_type, None
+            if field_class == 'CountrySelectField':
+                field_class = CountrySelectField
+            else:
+                field_class = getattr(forms, field_class)
+            field_args = {"label": self.label,
+                          "required": self.required,
+                          'help_text': self.help_text}
+            arg_names = field_class.__init__.__code__.co_varnames
+            if initial:
+                field_args['initial'] = initial
+            else:
+                if self.default_value:
+                    field_args['initial'] = self.default_value
+            if "max_length" in arg_names:
+                field_args["max_length"] = FIELD_MAX_LENGTH
+            if "choices" in arg_names:
+                if self.field_name not in ['membership_type', 'payment_method']:
+                    choices = [s.strip() for s in self.choices.split(",")]
+                    if self.field_name == 'sex':
+                        field_args["choices"] = [(s.split(':')[0].strip(), s.split(':')[-1].strip()) for s in choices]
+                    else:
+                        field_args["choices"] = list(zip(choices, choices))
+            if field_widget is not None:
+                module, widget = field_widget.rsplit(".", 1)
+                field_args["widget"] = getattr(import_module(module), widget)
+            if self.field_type == 'FileField':
+                field_args["validators"] = [FileValidator()]
+
+            return field_class(**field_args)
+        return None
 
     @staticmethod
     def get_default_field_type(field_name):

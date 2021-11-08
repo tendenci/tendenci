@@ -11,7 +11,8 @@ from tendenci.apps.chapters.models import (Chapter, Officer,
                         ChapterMembershipType,
                         ChapterMembershipApp,
                         ChapterMembershipAppField,
-                        CustomizedAppField)
+                        CustomizedAppField,
+                        ChapterMembership)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -23,6 +24,8 @@ from tendenci.apps.base.fields import PriceField
 from tendenci.apps.memberships.fields import TypeExpMethodField
 from tendenci.apps.memberships.widgets import (
     CustomRadioSelect, TypeExpMethodWidget)
+from tendenci.apps.payments.fields import PaymentMethodModelChoiceField
+from .fields import ChapterMembershipTypeModelChoiceField
 
 
 type_exp_method_fields = (
@@ -362,7 +365,89 @@ class AppFieldCustomForm(FormControlWidgetMixin, BetterModelForm):
 class AppFieldBaseFormSet(BaseModelFormSet):
     def save(self, commit=True):
         return self.save_existing_objects(commit)
-    
+
+
+class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
+    STATUS_DETAIL_CHOICES = (
+            ('active', _('Active')),
+            ('pending', _('Pending')),
+            ('admin_hold', _('Admin Hold')),
+            ('inactive', _('Inactive')),
+            ('expired', _('Expired')),
+            ('archive', _('Archive')),
+    )
+    payment_method = PaymentMethodModelChoiceField(
+        label=_('Payment Method'),
+        widget=forms.RadioSelect(),
+        empty_label=None,
+        queryset=None
+    )
+    membership_type = ChapterMembershipTypeModelChoiceField(
+        label=_('Membership Type'),
+        empty_label=None,
+        queryset=None
+    )
+
+    class Meta:
+        model = ChapterMembership
+        fields = "__all__"
+
+    def __init__(self, app_field_objs, chapter, *args, **kwargs):
+        self.request_user = kwargs.pop('request_user')
+        self.renew_mode = kwargs.pop('renew_mode', False)
+        self.edit_mode = kwargs.pop('edit_mode', False)
+        self.app = kwargs.pop('app')
+        self.chapter = chapter
+        super(ChapterMembershipForm, self).__init__(*args, **kwargs)
+        
+        from tendenci.apps.memberships.forms import assign_fields
+        assign_fields(self, app_field_objs)
+        
+        # membership types query set
+        self.fields['membership_type'].renew_mode = self.renew_mode
+        membership_types_qs = self.app.membership_types.all()
+        if not self.request_user.is_superuser:
+            membership_types_qs = membership_types_qs.filter(admin_only=False)
+        membership_types_qs = membership_types_qs.order_by('position')
+        self.fields['membership_type'].queryset = membership_types_qs
+
+        if 'status_detail' in self.fields:
+            self.fields['status_detail'].widget = forms.widgets.Select(
+                        choices=self.STATUS_DETAIL_CHOICES)
+
+        require_payment = True
+        if self.edit_mode:
+            require_payment = False
+
+        if not require_payment:
+            if 'payment_method' in self.fields:
+                del self.fields['payment_method']
+        else:
+            payment_method_qs = self.app.payment_methods.all()
+            if not self.request_user.is_superuser:
+                payment_method_qs = payment_method_qs.exclude(admin_only=True)
+            self.fields['payment_method'].queryset = payment_method_qs
+            if payment_method_qs.count() == 1:
+                self.fields['payment_method'].initial = payment_method_qs[0]
+
+        self.field_names = [name for name in self.fields]
+        self.add_form_control_class()
+
+    def save(self):
+        chapter_membership = super(ChapterMembershipForm, self).save(commit=False)
+        
+        chapter_membership.entity = self.chapter.entity
+        chapter_membership.user = self.request_user
+        chapter_membership.renewal = False
+        chapter_membership.app = self.app
+        chapter_membership.chapter = self.chapter
+        chapter_membership.save()
+
+        chapter_membership.set_member_number()
+        chapter_membership.save()
+
+        return chapter_membership
+
 
 class ChapterForm(TendenciBaseForm):
     mission = forms.CharField(required=False,

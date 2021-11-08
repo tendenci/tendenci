@@ -11,7 +11,7 @@ from django.db.models import Q
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.forms.models import modelformset_factory
 from django.utils.translation import gettext_lazy as _
 
@@ -24,15 +24,20 @@ from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
 from tendenci.apps.files.models import File
 from tendenci.apps.perms.decorators import is_enabled
-from tendenci.apps.chapters.models import Chapter, Officer, ChapterMembershipAppField
+from tendenci.apps.chapters.models import (Chapter, Officer,
+                                           ChapterMembershipAppField,
+                                           ChapterMembershipApp,
+                                           ChapterMembership)
 from tendenci.apps.chapters.forms import (ChapterForm, OfficerForm,
                                           OfficerBaseFormSet,
                                           ChapterSearchForm,
                                           AppFieldCustomForm,
-                                          AppFieldBaseFormSet)
+                                          AppFieldBaseFormSet,
+                                          ChapterMembershipForm)
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.forms import CaptchaForm
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -435,8 +440,112 @@ def edit_app_fields(request, id, form_class=AppFieldCustomForm, template_name="c
         context={'chapter': chapter, 'formset_app_fields': formset_app_fields,})
 
 
+@is_enabled('chapters')
+@login_required
+def membership_details(request, chapter_membership_id=0,
+                       template_name="memberships/details.html"):
+    pass
 
 
+@is_enabled('chapters')
+@login_required
+def chapter_membership_add(request, chapter_id, slug='',
+                           template='chapters/applications/add.html', **kwargs):
+    """
+    Chapter membership application form.
+    """
+    chapter = get_object_or_404(Chapter, id=chapter_id)
+    if not request.user.is_superuser:
+        app = get_object_or_404(ChapterMembershipApp, slug=slug,
+                                status_detail__in=['active', 'published'])
+    else:
+        app = get_object_or_404(ChapterMembershipApp, slug=slug)
+
+    if not has_perm(request.user, 'memberships.view_app', app):
+        raise Http403
+
+    #TODO: check if there is an existing membership for this user in this chapter
+
+    # app fields
+    app_fields = app.fields.filter(display=True)
+    if not request.user.is_superuser:
+        app_fields = app_fields.filter(admin_only=False)
+    app_fields = app_fields.order_by('position')
+    for field in app_fields:
+        [cfield] = field.customized_fields.filter(chapter=chapter)[:1] or [None]
+        if cfield:
+            field.help_text = cfield.help_text
+            field.choices = cfield.choices
+            field.default_value = cfield.default_value
+    
+    params = {
+        'request_user': request.user,
+        'renew_mode': False,
+        'edit_mode': False,
+        'app': app,
+    }
+    chapter_membership_form = ChapterMembershipForm(app_fields, chapter, request.POST or None, **params)
+
+    if request.method == 'POST':
+        if chapter_membership_form.is_valid():
+            # create a chapter membership
+            chapter_membership = chapter_membership_form.save()
+            # create an invoice
+            chapter_membership.save_invoice()
+            if chapter_membership.approval_required():
+                # approval is required - set pending
+                chapter_membership.pend()
+                chapter_membership.save()
+                #TODO: send notifications
+            else:
+                # not require approval - approve it!
+                chapter_membership.approve(request_user=request.user)
+                #TODO: send notifications
+                #chapter_membership.send_email(request, 'approve')
+
+            # log an event
+            EventLog.objects.log(instance=chapter_membership)
+
+            # handle online payment
+            if chapter_membership.payment_method.is_online and \
+                    chapter_membership.invoice.balance > 0:
+                return HttpResponseRedirect(
+                                reverse('payment.pay_online',
+                                args=[chapter_membership.invoice.id,
+                                      chapter_membership.invoice.guid]))
+            else:
+                return HttpResponseRedirect(reverse('chapters.membership_add_conf',
+                                    args=[chapter_membership.id]))
+
+#     captcha_form = CaptchaForm(request.POST or None)
+#     if request.user.is_authenticated or not app.use_captcha:
+#         del captcha_form.fields['captcha']
+
+    app.render_items({'chapter': chapter})
+
+    context = {
+        'chapter': chapter,
+        'app': app,
+        'app_fields': app_fields,
+        'chapter_membership_form': chapter_membership_form,
+        'is_edit': False,
+    }
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
+@is_enabled('chapters')
+@login_required
+def chapter_membership_add_conf(request, id,
+            template="chapters/applications/add_conf.html"):
+    """
+        Chapter membership add conf
+    """
+    chapter_membership = get_object_or_404(ChapterMembership, id=id)
+    app = chapter_membership.app
+    app.render_items({'chapter': chapter_membership.chapter})
+
+    EventLog.objects.log(instance=chapter_membership)
+
+    context = {'app': app, "chapter_membership": chapter_membership}
+    return render_to_resp(request=request, template_name=template, context=context)
 
