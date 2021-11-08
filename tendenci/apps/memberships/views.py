@@ -4,6 +4,7 @@ import os
 import math
 from decimal import Decimal
 from hashlib import md5
+import csv
 #from dateutil.parser import parse
 from datetime import datetime, timedelta, date
 import time as ttime
@@ -41,7 +42,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.decorators import password_required
-from tendenci.apps.base.utils import send_email_notification
+from tendenci.apps.base.utils import send_email_notification, Echo
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.corporate_memberships.models import (CorpMembership,
                                                           CorpProfile,
@@ -2199,40 +2200,44 @@ def report_active_members(request, template_name='reports/membership_list.html')
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
     if ouput == 'csv':
+        def iter_mems(mems):
+            header_row = [
+                'username',
+                'full name',
+                'email',
+                'type',
+                'join',
+                'expiration',
+                'invoice',
+            ]
 
-        table_header = [
-            'username',
-            'full name',
-            'email',
-            'application',
-            'type',
-            'join',
-            'expiration',
-            'invoice',
-        ]
+            writer = csv.DictWriter(Echo(), fieldnames=header_row)
+            
+            yield writer.writerow(dict(zip(header_row, header_row)))
+                
+            for mem in mems:
+    
+                invoice_pk = ''
+                if mem.get_invoice():
+                    invoice_pk = '%i' % mem.get_invoice().pk
+    
+                mem_row = [
+                    mem.user.username,
+                    mem.user.get_full_name(),
+                    mem.user.email,
+                    mem.membership_type.name,
+                    mem.join_dt,
+                    mem.expire_dt,
+                    invoice_pk,
+                ]
+                yield writer.writerow(dict(zip(header_row, mem_row)))
 
-        table_data = []
-        for mem in mems:
+        response = StreamingHttpResponse(streaming_content=(
+                    iter_mems(mems)),
+                    content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment;filename=active-memberships.csv'
 
-            invoice_pk = u''
-            if mem.get_invoice():
-                invoice_pk = u'%i' % mem.get_invoice().pk
-
-            table_data.append([
-                mem.user.username,
-                mem.user.get_full_name(),
-                mem.user.email,
-                mem.membership_type.name,
-                mem.join_dt,
-                mem.expire_dt,
-                invoice_pk,
-            ])
-
-        return render_csv(
-            'active-memberships.csv',
-            table_header,
-            table_data,
-        )
+        return response
     # ------------------------------------
 
     return render_to_resp(request=request, template_name=template_name, context={
