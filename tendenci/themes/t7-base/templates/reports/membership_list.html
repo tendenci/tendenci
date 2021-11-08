@@ -113,8 +113,8 @@ Currently showing members who expired in the last {{ days }} days.
       </th>
       <th>
         {% trans "Invoice" %}&nbsp;
-        <a href="{% url "reports-active-members" %}?sort=invoice" ><i class="fa fa-arrow-up"></i></a>&nbsp;
-        <a href="{% url "reports-active-members" %}?sort=-invoice" ><i class="fa fa-arrow-down"></i></a>
+        <a href="{% url "reports-active-members" %}" ></a>&nbsp;
+        <a href="{% url "reports-active-members" %}" ></a>
       </th>
 
       {% else %}
@@ -152,8 +152,8 @@ Currently showing members who expired in the last {{ days }} days.
       </th>
       <th>
         {% trans "Invoice" %}&nbsp;
-        <a href="{% url "reports-expired-members" %}?sort=invoice" ><i class="fa fa-arrow-up"></i></a>&nbsp;
-        <a href="{% url "reports-expired-members" %}?sort=-invoice" ><i class="fa fa-arrow-down"></i></a>
+        <a href="{% url "reports-expired-members" %}" ></a>&nbsp;
+        <a href="{% url "reports-expired-members" %}" ></a>
       </th>
       {% endif %}
     </tr>

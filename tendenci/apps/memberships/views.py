@@ -2180,17 +2180,19 @@ def report_active_members(request, template_name='reports/membership_list.html')
     elif sort == '-expiration':
         mems = mems.order_by('-expire_dt')
         is_ascending_expiration = True
-    elif sort == 'invoice':
-        # since we need to sort by a related field with the proper
-        # conditions we'll need to bring the sorting to the python level
-        mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=True)
-        is_ascending_invoice = False
-
-    elif sort == '-invoice':
-        # since we need to sort by a related field with the proper
-        # conditions we'll need to bring the sorting to the python level
-        mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=False)
-        is_ascending_invoice = True
+    # COMMENT OUT THIS INVOICE SORTING - because it is a very resource intensive 
+    # operation and easily to cause timeout with large volume of memberships.
+#     elif sort == 'invoice':
+#         # since we need to sort by a related field with the proper
+#         # conditions we'll need to bring the sorting to the python level
+#         mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=True)
+#         is_ascending_invoice = False
+# 
+#     elif sort == '-invoice':
+#         # since we need to sort by a related field with the proper
+#         # conditions we'll need to bring the sorting to the python level
+#         mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=False)
+#         is_ascending_invoice = True
 
     EventLog.objects.log()
 
