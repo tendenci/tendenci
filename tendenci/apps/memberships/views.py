@@ -2569,12 +2569,16 @@ def report_renewal_period_members(request, template_name='reports/renewal_period
                 'member_number': member.member_number,
                 'first_name': member.user.first_name,
                 'last_name': member.user.last_name,
-                'city': member.user.profile.city,
-                'state': member.user.profile.state,
-                'country': member.user.profile.country,
                 'membership_type': member.membership_type,
                 'expire_dt': member.expire_dt
             }
+            if hasattr(member.user, 'profile'):
+                city = member.user.profile.city
+                state = member.user.profile.state
+                country = member.user.profile.country
+            else:
+                city = state = country = ''
+            member_dict.update({'city': city, 'state':state,  'country': country})
             members.append(member_dict)
 
     members = sorted(members, key=lambda k: k['expire_dt'])
