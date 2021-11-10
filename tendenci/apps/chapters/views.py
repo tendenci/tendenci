@@ -33,7 +33,8 @@ except:
 def detail(request, slug, template_name="chapters/detail.html"):
     chapter = get_object_or_404(Chapter, slug=slug)
 
-    if has_perm(request.user, 'chapters.view_chapter', chapter):
+    if has_perm(request.user, 'chapters.view_chapter', chapter) \
+            or chapter.is_chapter_leader(request.user):
         EventLog.objects.log(instance=chapter)
         officers = chapter.officers().filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))
 
@@ -213,7 +214,8 @@ def edit(request, id, form_class=ChapterForm, meta_form_class=MetaForm, category
 
     chapter = get_object_or_404(Chapter, pk=id)
 
-    if not has_perm(request.user,'chapters.change_chapter',chapter):
+    if not (has_perm(request.user,'chapters.change_chapter',chapter) \
+            or chapter.is_chapter_leader(request.user)):
         raise Http403
 
     content_type = get_object_or_404(ContentType, app_label='chapters',model='chapter')
@@ -317,7 +319,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="chapters/edit-met
 
     # check permission
     chapter = get_object_or_404(Chapter, pk=id)
-    if not has_perm(request.user, 'chapters.change_chapter', chapter):
+    if not (has_perm(request.user, 'chapters.change_chapter', chapter) \
+            or chapter.is_chapter_leader(request.user)):
         raise Http403
 
     EventLog.objects.log(instance=chapter)
