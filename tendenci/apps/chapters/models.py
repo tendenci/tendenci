@@ -181,7 +181,7 @@ class Chapter(BasePage):
         Check if this user is one of the chapter leaders.
         """
         return self.officers().filter(Q(expire_dt__isnull=True) | Q(
-            expire_dt__gte=date.today())).filter(user=user).exist()
+            expire_dt__gte=date.today())).filter(user=user).exists()
 
 
 class Position(models.Model):
@@ -530,6 +530,18 @@ class ChapterMembership(TendenciBaseModel):
 
         return self.member_number
 
+    def get_since_dt(self):
+        chapter_memberships = ChapterMembership.objects.filter(
+            user=self.user,
+            chapter=self.chapter,
+            status=True,
+            join_dt__isnull=False
+        ).order_by('pk')
+
+        return chapter_memberships[0].join_dt if chapter_memberships else self.create_dt
+
+
+
     def get_price(self):
         if self.renewal:
             return self.membership_type.renewal_price or 0
@@ -867,6 +879,45 @@ class ChapterMembership(TendenciBaseModel):
         'pending', 'active', 'disapproved', 'expired', 'archive'
         """
         return self.status_detail.lower()
+
+    def in_grace_period(self):
+        """ Returns True if a member's expiration date has passed but status detail is still active.
+        """
+        expire_with_grace_period_dt = self.get_expire_dt()
+
+        if not expire_with_grace_period_dt:
+            return False
+
+        return all([
+            self.expire_dt < datetime.now(),
+            expire_with_grace_period_dt > datetime.now(),
+            self.status_detail == "active"])
+
+    def get_renewal_period_dt(self):
+        """
+         Returns a none type object or 2-tuple with start_dt and end_dt
+        """
+        if not self.membership_type.allow_renewal:
+            return None
+
+        if not isinstance(self.expire_dt, datetime):
+            return None  # membership does not expire
+
+        start_dt = self.expire_dt - timedelta(
+            days=self.membership_type.renewal_period_start
+        )
+
+        # the end_dt should be the end of the end_dt not start of the end_dt
+        # not datetime.datetime(2021, 11, 9, 0, 0),
+        # but datetime.datetime(2021, 11, 9, 23, 59, 59)
+        end_dt = self.get_renewal_period_end_dt()
+
+        return (start_dt, end_dt)
+
+    def get_renewal_period_end_dt(self):
+        return self.expire_dt + timedelta(
+            days=self.membership_type.renewal_period_end + 1
+        ) - timedelta(seconds=1)
 
 
 class ChapterMembershipApp(TendenciBaseModel):

@@ -443,9 +443,40 @@ def edit_app_fields(request, id, form_class=AppFieldCustomForm, template_name="c
 @is_enabled('chapters')
 @login_required
 def membership_details(request, chapter_membership_id=0,
-                       template_name="memberships/details.html"):
-    pass
+                       template_name="chapters/memberships/details.html"):
+    chapter_membership = get_object_or_404(ChapterMembership, id=chapter_membership_id)
+    chapter = chapter_membership.chapter
+    is_chapter_leader = chapter.is_chapter_leader(request.user)
+    has_change_perm = has_perm(request.user, 'chapters.change_chaptermembership')
+    has_approve_perm = is_chapter_leader or has_change_perm
+    if not any((is_chapter_leader,
+            request.user == chapter_membership.user,
+            has_change_perm)):
+        raise Http403
 
+    app = chapter_membership.app
+    app_fields = app.fields.filter(display=True)
+    if not (is_chapter_leader and request.user.is_superuser):
+        app_fields = app_fields.filter(admin_only=False)
+
+    if not has_perm(request.user, 'memberships.approve_membershipdefault'):
+        app_fields = app_fields.filter(admin_only=False)
+
+    app_fields = app_fields.order_by('position')
+    
+    # assign values
+    for field in app_fields:
+        field_name = field.field_name
+        if field_name and hasattr(chapter_membership, field_name):
+            field.value = getattr(chapter_membership, field_name)
+
+    EventLog.objects.log(instance=chapter_membership)
+    return render_to_resp(
+        request=request, template_name=template_name, context={
+            'chapter_membership': chapter_membership,
+            'has_approve_perm': has_approve_perm,
+            'app_fields': app_fields
+        })
 
 @is_enabled('chapters')
 @login_required
