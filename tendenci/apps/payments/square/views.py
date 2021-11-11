@@ -7,7 +7,7 @@ import uuid
 from django.shortcuts import get_object_or_404
 #from django.http import HttpResponse
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 # from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -225,3 +225,89 @@ def thank_you(request, payment_id, guid='', template_name='payments/receipt.html
 
     return render_to_resp(request=request, template_name=template_name,
                               context={'payment':payment})
+
+def ajax_giftcard_balance(request):
+    api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
+    token = request.POST.get('gc_token')
+    client = Client(
+        access_token=api_key,
+        environment= settings.SQUARE_ENVIRONMENT,
+    )
+
+    gift_card = client.gift_cards.retrieve_gift_card_from_nonce(
+        body={                           
+                "nonce": token,                            
+            }
+    )
+
+    # {
+    #     "gift_card": {
+    #         "balance_money": {
+    #         "amount": 5000,
+    #         "currency": "USD"
+    #         },
+    #         "created_at": "2021-05-20T22:26:54.000Z",
+    #         "gan": "7783320001001635",
+    #         "gan_source": "SQUARE",
+    #         "id": "gftc:6944163553804e439d89adb47caf806a",
+    #         "state": "ACTIVE",
+    #         "type": "DIGITAL"
+    #     }
+    # }
+
+    if gift_card.is_success():
+        #if state = Active and balance currency = USD
+        return JsonResponse(gift_card.body)
+    elif gift_card.is_error():
+        return JsonResponse(gift_card.errors)
+
+def ajax_charge_giftcard(request, payment_id, guid=''):
+    with transaction.atomic():
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id, guid=guid)
+        
+        currency = get_setting('site', 'global', 'currency')
+        if not currency:
+            currency = 'usd'
+        if request.method == "POST":
+            # get square token and make a payment immediately
+            api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
+            token = request.POST.get('square_token')
+            amount = request.POST.get('gc_amount')
+            client = Client(
+                access_token=api_key,
+                environment= settings.SQUARE_ENVIRONMENT,
+            )
+
+            # create the charge on Square's servers - this will charge the user's card
+            params = {
+                       "source_id": token,
+                        "idempotency_key": str(uuid.uuid4()),
+                        "amount_money": {
+                            "amount": math.trunc(amount * 100), # amount in cents, again
+                            "currency": currency,
+                        },
+                       'note': payment.description
+                      }
+            
+            charge_response = client.payments.create_payment(body=params)
+                # an example of response: https://github.com/square/square-python-sdk/blob/master/doc/models/create-payment-response.md
+            if charge_response.is_error():
+                # it's a decline
+                charge_response = '{cat} error={message}, code={code}'.format(
+                            message=charge_response.detail, cat=charge_response.category, code=charge_response.code)
+
+            # update payment status and object
+            if not payment.is_approved:  # if not already processed
+                payment_update_square(request, charge_response, payment)
+                payment_processing_object_updates(request, payment)
+
+                # log an event
+                log_payment(request, payment)
+
+                # send payment recipients notification
+                send_payment_notice(request, payment)
+
+    if charge_response.is_success():
+        return JsonResponse(charge_response.body)
+    elif charge_response.is_error():
+        return JsonResponse(charge_response.errors)
