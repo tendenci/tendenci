@@ -8,8 +8,12 @@
 <script type="text/javascript" src="{{ payment_form_url}}"></script>
 
 <script type="application/javascript">
-    window.applicationId = '{{ SQUARE_APPLICATION_ID }}';
-    window.locationId = '{{ SQUARE_LOCATION_ID }}';
+    window.squareInfo = {
+      applicationId: '{{ SQUARE_APPLICATION_ID }}',
+      locationId: '{{ SQUARE_LOCATION_ID }}',
+      payment_id: '{{ payment.pk }}',
+      guid: '{{ payment.guid }}'
+    };
 </script>
 
 {% endblock %}
@@ -159,7 +163,7 @@
     CardPay(document.getElementById('card-element'), document.getElementById('card-submit'));
   }
 
-  window.payments = Square.payments(window.applicationId, window.locationId);
+  window.payments = Square.payments(squareInfo.applicationId, squareInfo.locationId);
 
   window.paymentFlowMessageEl = document.getElementById('card-errors');
 

@@ -257,14 +257,14 @@ def ajax_giftcard_balance(request):
 
     if gift_card.is_success():
         #if state = Active and balance currency = USD
-        return JsonResponse(gift_card.body)
+        return JsonResponse(gift_card)
     elif gift_card.is_error():
         return JsonResponse(gift_card.errors)
 
-def ajax_charge_giftcard(request, payment_id, guid=''):
-    with transaction.atomic():
-        payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id, guid=guid)
-        
+def ajax_charge_card(request):
+    #this is meant for gift cards but could be used for all card transactions
+
+    with transaction.atomic():        
         currency = get_setting('site', 'global', 'currency')
         if not currency:
             currency = 'usd'
@@ -272,7 +272,12 @@ def ajax_charge_giftcard(request, payment_id, guid=''):
             # get square token and make a payment immediately
             api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
             token = request.POST.get('square_token')
-            amount = request.POST.get('gc_amount')
+            amount = request.POST.get('amount_money') #this should be an int, the amount in cents
+            payment_id = request.POST.get('payment_id')
+            guid = request.POST.get('guid')
+
+            payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id, guid=guid)
+
             client = Client(
                 access_token=api_key,
                 environment= settings.SQUARE_ENVIRONMENT,
@@ -283,7 +288,7 @@ def ajax_charge_giftcard(request, payment_id, guid=''):
                        "source_id": token,
                         "idempotency_key": str(uuid.uuid4()),
                         "amount_money": {
-                            "amount": math.trunc(amount * 100), # amount in cents, again
+                            "amount": amount, # amount in cents, again
                             "currency": currency,
                         },
                        'note': payment.description
@@ -292,13 +297,11 @@ def ajax_charge_giftcard(request, payment_id, guid=''):
             charge_response = client.payments.create_payment(body=params)
                 # an example of response: https://github.com/square/square-python-sdk/blob/master/doc/models/create-payment-response.md
             if charge_response.is_error():
-                # it's a decline
-                charge_response = '{cat} error={message}, code={code}'.format(
-                            message=charge_response.detail, cat=charge_response.category, code=charge_response.code)
+                return JsonResponse(charge_response.errors)
 
             # update payment status and object
             if not payment.is_approved:  # if not already processed
-                payment_update_square(request, charge_response, payment)
+                payment_update_square(request, charge_response.payment, payment)
                 payment_processing_object_updates(request, payment)
 
                 # log an event
@@ -307,7 +310,5 @@ def ajax_charge_giftcard(request, payment_id, guid=''):
                 # send payment recipients notification
                 send_payment_notice(request, payment)
 
-    if charge_response.is_success():
-        return JsonResponse(charge_response.body)
-    elif charge_response.is_error():
-        return JsonResponse(charge_response.errors)
+        return JsonResponse(charge_response.payment)
+        
