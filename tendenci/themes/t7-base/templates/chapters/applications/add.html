@@ -16,14 +16,12 @@
       {% if app.description %}<p>{{ app.description|safe }}</p>{% endif %}
     </div>
     <form class="form-horizontal" action="." method="post" enctype="multipart/form-data">{% csrf_token %}
-	    {% if user_form.errors.values or profile_form.errors.values or demographics_form.errors.values or membership_form.errors.values or education_form.errors.values or captcha_form.errors.values and not is_edit %}
+                {% if chapter_membership_form.errors.values %}
             <div class="form-errors">
                 {% trans 'There were some problems in the form. Please review. Thanks!' %}
-                {% if chapter_membership_form.errors.values %}
                     {% for error in chapter_membership_form.non_field_errors %}
                         <p><a href="#">{{ error }}</a></p>
                     {% endfor %}
-                {% endif %}
 
                 {% for field in chapter_membership_form %}
                     {% if field.errors %}

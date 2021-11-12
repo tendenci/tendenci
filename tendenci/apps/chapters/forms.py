@@ -410,6 +410,12 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
             membership_types_qs = membership_types_qs.filter(admin_only=False)
         membership_types_qs = membership_types_qs.order_by('position')
         self.fields['membership_type'].queryset = membership_types_qs
+        self.fields['membership_type'].widget = forms.widgets.RadioSelect(
+                choices=self.fields['membership_type'].choices,
+            )
+        if self.edit_mode:
+            self.fields['membership_type'].required = False
+            self.fields['membership_type'].widget.attrs['disabled'] = 'disabled'
 
         if 'status_detail' in self.fields:
             self.fields['status_detail'].widget = forms.widgets.Select(
@@ -417,7 +423,8 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
 
         require_payment = True
         if self.edit_mode:
-            require_payment = False
+            self.fields['payment_method'].required = False
+            self.fields['payment_method'].widget.attrs['disabled'] = 'disabled'
 
         if not require_payment:
             if 'payment_method' in self.fields:
@@ -433,18 +440,32 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
         self.field_names = [name for name in self.fields]
         self.add_form_control_class()
 
+    def clean_membership_type(self):
+        if self.edit_mode:
+            return self.instance.membership_type
+        else:
+            return self.cleaned_data['membership_type']
+
+    def clean_payment_method(self):
+        if self.edit_mode:
+            return self.instance.payment_method
+        else:
+            return self.cleaned_data['payment_method']
+
     def save(self):
         chapter_membership = super(ChapterMembershipForm, self).save(commit=False)
-        
-        chapter_membership.entity = self.chapter.entity
-        chapter_membership.user = self.request_user
-        chapter_membership.renewal = False
-        chapter_membership.app = self.app
-        chapter_membership.chapter = self.chapter
-        chapter_membership.save()
-
-        chapter_membership.set_member_number()
-        chapter_membership.save()
+        if not self.edit_mode:
+            chapter_membership.entity = self.chapter.entity
+            chapter_membership.user = self.request_user
+            chapter_membership.renewal = False
+            chapter_membership.app = self.app
+            chapter_membership.chapter = self.chapter
+            chapter_membership.save()
+    
+            chapter_membership.set_member_number()
+            chapter_membership.save()
+        else:
+            chapter_membership.save()
 
         return chapter_membership
 

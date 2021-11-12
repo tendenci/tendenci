@@ -180,8 +180,9 @@ class Chapter(BasePage):
         """
         Check if this user is one of the chapter leaders.
         """
-        return self.officers().filter(Q(expire_dt__isnull=True) | Q(
-            expire_dt__gte=date.today())).filter(user=user).exists()
+        if user and user.is_authenticated:
+            return self.officers().filter(Q(expire_dt__isnull=True) | Q(
+                expire_dt__gte=date.today())).filter(user=user).exists()
 
 
 class Position(models.Model):
@@ -502,6 +503,14 @@ class ChapterMembership(TendenciBaseModel):
         """
         return reverse('chapters.membership_details', args=[self.pk])
 
+    def allow_edit_by(self, request_user):
+        if request_user.is_superuser or \
+            self.chapter.is_chapter_leader(request_user) or \
+            self.user == request_user:
+            return True
+
+        return False
+
     def create_member_number(self):
         #TODO: Decide how member numbers should be generated for chapter members
         return str(self.id)
@@ -511,7 +520,6 @@ class ChapterMembership(TendenciBaseModel):
         Sets chapter membership number via previous record, or from their
         regular membership.
         """
-        # if member_number; get out
         if not self.member_number:
             [member_number] = ChapterMembership.objects.filter(
                     user=self.user, chapter=self.chapter).exclude(
@@ -540,7 +548,69 @@ class ChapterMembership(TendenciBaseModel):
 
         return chapter_memberships[0].join_dt if chapter_memberships else self.create_dt
 
+    def can_renew(self):
+        """
+        Checks if ...
+        membership.is_forever() i.e. never ends
+        membership type allows renewals
+        membership renewal period was specified
+        membership is within renewal period
 
+        returns boolean
+        """
+        renewal_period = self.get_renewal_period_dt()
+
+        # renewal not allowed; or no renewal period
+        if not renewal_period:
+            return False
+
+        # can only renew from active or expired
+        if self.get_status() not in ['active', 'expired']:
+            return False
+
+        # assert that we're within the renewal period
+        start_dt, end_dt = renewal_period
+        return (datetime.now() >= start_dt and datetime.now() <= end_dt)
+
+    def get_actions(self, user):
+        """
+        Returns a list of tuples with (link, label)
+ 
+        Possible actions:
+            approve
+            disapprove
+            make pending
+            archive
+        """
+        actions = []
+        status = self.get_status()
+ 
+        is_superuser = user.is_superuser
+        is_chapter_leader = self.chapter.is_chapter_leader(user)
+ 
+        renew_link = ''
+ 
+        details_link = reverse('chapters.membership_details', args=[self.pk])
+        approve_link = f'{details_link}?approve'
+        disapprove_link = f'{details_link}?disapprove'
+        expire_link = f'{details_link}?expire'
+ 
+        if self.can_renew() and renew_link:
+            actions.append((renew_link, _('Renew')))
+        elif (is_superuser or is_chapter_leader) and renew_link:
+            actions.append((renew_link, _('Admin: Renew')))
+ 
+        if is_superuser or is_chapter_leader:
+            if status == 'active':
+                actions.append((expire_link, _('Expire Chapter Membership')))
+            elif status == 'pending':
+                actions.append((approve_link, _('Approve')))
+                actions.append((disapprove_link, _('Disapprove')))
+                actions.append((expire_link, _('Expire Chapter Membership')))
+            elif status == 'expired':
+                actions.append((approve_link, _('Approve Chapter Membership')))
+ 
+        return actions
 
     def get_price(self):
         if self.renewal:
@@ -682,11 +752,11 @@ class ChapterMembership(TendenciBaseModel):
             else:
                 previous_expire_dt = None
             self.expire_dt = self.membership_type.get_expiration_dt(
-                renewal=self.is_renewal(), renew_dt=self.renew_dt, previous_expire_dt=previous_expire_dt
+                renewal=self.renewal, renew_dt=self.renew_dt, previous_expire_dt=previous_expire_dt
             )
         elif self.join_dt:
             self.expire_dt = self.membership_type.get_expiration_dt(
-                renewal=self.is_renewal(), join_dt=self.join_dt
+                renewal=self.renewal, join_dt=self.join_dt
             )
 
     def group_refresh(self):
@@ -805,6 +875,63 @@ class ChapterMembership(TendenciBaseModel):
         self.save_invoice(status_detail='estimate')
 
         return True
+
+    def disapprove(self, request_user=None):
+        """
+        Disapprove this chapter membership.
+
+        Will not disapprove:
+            - Archived chapter memberships
+            - Expired chapter memberships (instead: you should renew it)
+        """
+        if self.is_expired() or self.status_detail == 'archive':
+            return False
+
+        NOW = datetime.now()
+
+        self.status = True
+        self.status_detail = 'disapproved'
+
+        # application rejected ---------------
+        self.rejected = True
+        self.rejected_dt = self.rejected_dt or NOW
+        if request_user:  # else: don't set
+            self.rejected_user = request_user
+
+        self.save()
+
+        # user in [membership] group
+        self.group_refresh()
+
+        # new invoice; bound via ct and object_id
+        self.save_invoice(status_detail='tendered')
+
+        # archive other membership [of this type]
+        self.archive_old_memberships()
+
+        return True
+
+    def expire(self, request_user):
+        """
+        Expire this chapter membership.
+            - Set status_detail to 'expired'
+            - Remove from group.
+
+        Will only expire approved memberships.
+        """
+
+        if self.is_approved() or (self.is_expired() and self.status_detail == 'active'):
+            self.status = True
+            self.status_detail = 'expired'
+
+            self.save()
+
+            # remove from group
+            self.group_refresh()
+
+            return True
+
+        return False
 
     def is_forever(self):
         """
@@ -956,6 +1083,22 @@ class ChapterMembershipApp(TendenciBaseModel):
         for field_name in ['name', 'description', 'confirmation_text']:
             template = engines['django'].from_string(getattr(self, field_name))
             setattr(self, field_name, template.render(context=context))
+
+    def get_app_fields(self, chapter, request_user):
+        """
+        Retrieves a list of fields for the chapter.
+        """
+        app_fields = self.fields.filter(display=True)
+        if not (request_user.is_superuser or chapter.is_chapter_leader(request_user)):
+            app_fields = app_fields.filter(admin_only=False)
+        app_fields = app_fields.order_by('position')
+        for field in app_fields:
+            [cfield] = field.customized_fields.filter(chapter=chapter)[:1] or [None]
+            if cfield:
+                field.help_text = cfield.help_text
+                field.choices = cfield.choices
+                field.default_value = cfield.default_value
+        return app_fields
 
 
 class ChapterMembershipAppField(OrderingBaseModel):

@@ -454,6 +454,21 @@ def membership_details(request, chapter_membership_id=0,
             has_change_perm)):
         raise Http403
 
+    if request.user.is_superuser or is_chapter_leader:
+        if 'approve' in request.GET:
+            chapter_membership.approve(request_user=request.user)
+            #chapter_membership.send_email(request, ('approve_renewal' if chapter_membership.renewal else 'approve'))
+            messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
+
+        if 'disapprove' in request.GET:
+            chapter_membership.disapprove(request_user=request.user)
+            messages.add_message(request, messages.SUCCESS, _('Successfully Disapproved'))
+
+        if 'expire' in request.GET:
+            chapter_membership.expire(request_user=request.user)
+            messages.add_message(request, messages.SUCCESS, _('Successfully Expired'))
+
+
     app = chapter_membership.app
     app_fields = app.fields.filter(display=True)
     if not (is_chapter_leader and request.user.is_superuser):
@@ -463,7 +478,7 @@ def membership_details(request, chapter_membership_id=0,
         app_fields = app_fields.filter(admin_only=False)
 
     app_fields = app_fields.order_by('position')
-    
+
     # assign values
     for field in app_fields:
         field_name = field.field_name
@@ -475,52 +490,45 @@ def membership_details(request, chapter_membership_id=0,
         request=request, template_name=template_name, context={
             'chapter_membership': chapter_membership,
             'has_approve_perm': has_approve_perm,
-            'app_fields': app_fields
+            'app_fields': app_fields,
+            'actions': chapter_membership.get_actions(request.user)
         })
 
 @is_enabled('chapters')
 @login_required
-def chapter_membership_add(request, chapter_id, slug='',
+def chapter_membership_add(request, chapter_id=0,
                            template='chapters/applications/add.html', **kwargs):
     """
     Chapter membership application form.
     """
+    # chapter membership add
+    chapter_membership = None
     chapter = get_object_or_404(Chapter, id=chapter_id)
-    if not request.user.is_superuser:
-        app = get_object_or_404(ChapterMembershipApp, slug=slug,
-                                status_detail__in=['active', 'published'])
-    else:
-        app = get_object_or_404(ChapterMembershipApp, slug=slug)
+    app = ChapterMembershipApp.objects.current_app()
 
-    if not has_perm(request.user, 'memberships.view_app', app):
+    if not has_perm(request.user, 'chapters.view_chaptermembershipapp', app):
         raise Http403
 
+    edit_mode = False
     #TODO: check if there is an existing membership for this user in this chapter
 
     # app fields
-    app_fields = app.fields.filter(display=True)
-    if not request.user.is_superuser:
-        app_fields = app_fields.filter(admin_only=False)
-    app_fields = app_fields.order_by('position')
-    for field in app_fields:
-        [cfield] = field.customized_fields.filter(chapter=chapter)[:1] or [None]
-        if cfield:
-            field.help_text = cfield.help_text
-            field.choices = cfield.choices
-            field.default_value = cfield.default_value
+    app_fields = app.get_app_fields(chapter, request.user)
     
     params = {
         'request_user': request.user,
         'renew_mode': False,
-        'edit_mode': False,
+        'edit_mode': edit_mode,
         'app': app,
     }
-    chapter_membership_form = ChapterMembershipForm(app_fields, chapter, request.POST or None, **params)
+    chapter_membership_form = ChapterMembershipForm(app_fields, chapter,
+                            request.POST or None, instance=chapter_membership, **params)
 
     if request.method == 'POST':
         if chapter_membership_form.is_valid():
             # create a chapter membership
             chapter_membership = chapter_membership_form.save()
+
             # create an invoice
             chapter_membership.save_invoice()
             if chapter_membership.approval_required():
@@ -560,6 +568,57 @@ def chapter_membership_add(request, chapter_id, slug='',
         'app_fields': app_fields,
         'chapter_membership_form': chapter_membership_form,
         'is_edit': False,
+    }
+    return render_to_resp(request=request, template_name=template, context=context)
+
+
+@is_enabled('chapters')
+@login_required
+def chapter_membership_edit(request, chapter_membership_id=0,
+                           template='chapters/applications/add.html', **kwargs):
+    """
+    Chapter membership edit.
+    """
+    
+    chapter_membership = get_object_or_404(ChapterMembership, id=chapter_membership_id)
+    if not chapter_membership.allow_edit_by(request.user):
+        raise Http403
+    app = chapter_membership.app
+    chapter = chapter_membership.chapter
+    edit_mode = True
+
+    # app fields
+    app_fields = app.get_app_fields(chapter, request.user)
+    
+    params = {
+        'request_user': request.user,
+        'renew_mode': False,
+        'edit_mode': edit_mode,
+        'app': app,
+    }
+    chapter_membership_form = ChapterMembershipForm(app_fields, chapter,
+                            request.POST or None, instance=chapter_membership, **params)
+
+    if request.method == 'POST':
+        if chapter_membership_form.is_valid():
+            # save changes
+            chapter_membership = chapter_membership_form.save()
+
+            # log an event
+            EventLog.objects.log(instance=chapter_membership)
+
+            messages.success(request, _('Successfully updated Chapter Membership Information.'))
+            return HttpResponseRedirect(reverse('chapters.membership_details',
+                                args=[chapter_membership.id]))
+
+    app.render_items({'chapter': chapter})
+
+    context = {
+        'chapter': chapter,
+        'app': app,
+        'app_fields': app_fields,
+        'chapter_membership_form': chapter_membership_form,
+        'is_edit': edit_mode,
     }
     return render_to_resp(request=request, template_name=template, context=context)
 
