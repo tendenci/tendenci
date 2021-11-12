@@ -124,10 +124,10 @@ def pay_online(request, payment_id, guid='', template_name='payments/square/payo
             if charge_response.is_error():
                 # it's a decline
                 charge_response = '{cat} error={message}, code={code}'.format(
-                            message=charge_response.detail, cat=charge_response.category, code=charge_response.code)
+                            message=charge_response.errors[0].detail, cat=charge_response.errors[0].category, code=charge_response.errors[0].code)
 
             # add a rp entry now
-            if hasattr(charge_response,'status') and charge_response.status == "COMPLETED":
+            elif hasattr(charge_response,'status') and charge_response.status == "COMPLETED":
                 if customer and membership:
                     kwargs = {'platform': 'square',
                               'customer_profile_id': customer.id,
@@ -135,16 +135,16 @@ def pay_online(request, payment_id, guid='', template_name='payments/square/payo
                               }
                     membership.get_or_create_rp(request.user, **kwargs)
 
-            # update payment status and object
-            if not payment.is_approved:  # if not already processed
-                payment_update_square(request, charge_response, payment)
-                payment_processing_object_updates(request, payment)
+                # update payment status and object
+                if not payment.is_approved:  # if not already processed
+                    payment_update_square(request, charge_response, payment)
+                    payment_processing_object_updates(request, payment)
 
-                # log an event
-                log_payment(request, payment)
+                    # log an event
+                    log_payment(request, payment)
 
-                # send payment recipients notification
-                send_payment_notice(request, payment)
+                    # send payment recipients notification
+                    send_payment_notice(request, payment)
 
             # redirect to thankyou
             return HttpResponseRedirect(reverse('square.thank_you', args=[payment.id, payment.guid]))
@@ -267,7 +267,7 @@ def ajax_charge_card(request):
     with transaction.atomic():        
         currency = get_setting('site', 'global', 'currency')
         if not currency:
-            currency = 'usd'
+            currency = 'USD'
         if request.method == "POST":
             # get square token and make a payment immediately
             api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
@@ -276,7 +276,7 @@ def ajax_charge_card(request):
             payment_id = request.POST.get('payment_id')
             guid = request.POST.get('guid')
 
-            payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id, guid=guid)
+            payment = Payment.objects.get(pk=payment_id)
 
             client = Client(
                 access_token=api_key,
@@ -288,7 +288,7 @@ def ajax_charge_card(request):
                        "source_id": token,
                         "idempotency_key": str(uuid.uuid4()),
                         "amount_money": {
-                            "amount": amount, # amount in cents, again
+                            "amount": int(amount), # amount in cents, again
                             "currency": currency,
                         },
                        'note': payment.description
@@ -297,11 +297,11 @@ def ajax_charge_card(request):
             charge_response = client.payments.create_payment(body=params)
                 # an example of response: https://github.com/square/square-python-sdk/blob/master/doc/models/create-payment-response.md
             if charge_response.is_error():
-                return JsonResponse(charge_response.errors)
+                return JsonResponse(charge_response.errors, safe=False)
 
             # update payment status and object
             if not payment.is_approved:  # if not already processed
-                payment_update_square(request, charge_response.payment, payment)
+                payment_update_square(request, charge_response.body['payment'], payment)
                 payment_processing_object_updates(request, payment)
 
                 # log an event
@@ -310,5 +310,5 @@ def ajax_charge_card(request):
                 # send payment recipients notification
                 send_payment_notice(request, payment)
 
-        return JsonResponse(charge_response.payment)
+        return JsonResponse(charge_response.body['payment'], safe=False)
         

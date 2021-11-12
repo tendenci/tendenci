@@ -116,6 +116,19 @@
 		  form.submit();
 	}
 
+  function squarePaymentTest(token) {
+
+   $.post( '/payments/square/card/charge/', {
+      payment_id: squareInfo.payment_id,
+      guid: squareInfo.guid,
+      square_token: token,
+      amount_money: 1000
+   } )
+    .done(function( data ) {
+        console.log(data);
+    });
+ }
+
   async function CardPay(fieldEl, buttonEl) {
     // Create a card payment object and attach to page
     const card = await window.payments.card({
@@ -141,7 +154,7 @@
         const result = await card.tokenize();
         if (result.status === 'OK') {
           // appends to form and submits
-          squareTokenHandler(result.token);
+          squarePaymentTest(result.token);
         }
       } catch (e) {
         buttonEl.disabled = false;
@@ -178,6 +191,10 @@
     window.paymentFlowMessageEl.classList.remove('success');
     window.paymentFlowMessageEl.innerText = message;
   }
+
+  $.ajaxSetup({
+      data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+  });
 
   SquarePaymentFlow();
 </script>
