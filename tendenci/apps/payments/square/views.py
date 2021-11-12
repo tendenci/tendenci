@@ -116,7 +116,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/square/payo
                        'note': payment.description
                       }
             if customer:
-                params.update({'customer_id': customer.id})
+                params.update({'customer_id': customer["customer"]['id']})
 
             
             charge_response = client.payments.create_payment(body=params)
@@ -124,20 +124,27 @@ def pay_online(request, payment_id, guid='', template_name='payments/square/payo
             if charge_response.is_error():
                 # it's a decline
                 charge_response = '{cat} error={message}, code={code}'.format(
-                            message=charge_response.errors[0].detail, cat=charge_response.errors[0].category, code=charge_response.errors[0].code)
+                            message=charge_response.errors[0]['detail'], cat=charge_response.errors[0]['category'], code=charge_response.errors[0]['code'])
 
             # add a rp entry now
-            elif hasattr(charge_response,'status') and charge_response.status == "COMPLETED":
+            elif 'status' in charge_response and charge_response['status'] == "COMPLETED":
                 if customer and membership:
+                    # {
+                    # "idempotency_key": "4d9287dc-60dd-4a78-9550-3c48139ff531",
+                    # "source_id": "cnon:card-nonce-ok",
+                    # "card": {
+                    # "customer_id": "5P0XEAVK9GSAZFFNC869PQKYE8"
+                    # }
+
                     kwargs = {'platform': 'square',
-                              'customer_profile_id': customer.id,
+                              'customer_profile_id': customer["customer"]['id'],
                               'token': token,
                               }
                     membership.get_or_create_rp(request.user, **kwargs)
 
                 # update payment status and object
                 if not payment.is_approved:  # if not already processed
-                    payment_update_square(request, charge_response, payment)
+                    payment_update_square(request, charge_response.body['payment'], payment)
                     payment_processing_object_updates(request, payment)
 
                     # log an event
@@ -160,7 +167,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/square/payo
 # this needs fully built out before it can be live
 @login_required
 def update_card(request, rp_id):
-    rp = get_object_or_404(RecurringPayment, pk=rp_id, platform='square')
+    rp = get_object_or_404(RecurringPayment, pk=rp_id)
     if not has_perm(request.user, 'recurring_payments.change_recurringpayment', rp) \
         and not (rp.user and rp.user.id == request.user.id):
         raise Http403
@@ -172,7 +179,7 @@ def update_card(request, rp_id):
         environment= settings.SQUARE_ENVIRONMENT,
     )
 
-    if not rp.customer_profile_id:
+    if not rp.customer_profile_id or rp.platform != 'square':
         customer = client.customer.create_customer(
                 body={                           
                 "idempotency_key": str(uuid.uuid4()),
@@ -180,13 +187,22 @@ def update_card(request, rp_id):
                 "note": rp.description,                    
             }                             
         )
-        rp.customer_profile_id = customer.id
+        rp.customer_profile_id = customer["customer"]['id']
+        rp.platform = 'square'
         rp.save()
     else:
         customer = client.customer.retrieve_customer(rp.customer_profile_id)
 
     #square has a many to one relationship with CC cards to customer
     #we can allow just one to keep things simple for now
+
+    #list their cards
+
+    #disable current cards unless it matches this token
+
+    #if it matches update the info
+
+    #add the new card
 
     # try:
     #     client.cards.create_card(body={
@@ -257,9 +273,9 @@ def ajax_giftcard_balance(request):
 
     if gift_card.is_success():
         #if state = Active and balance currency = USD
-        return JsonResponse(gift_card)
+        return JsonResponse(gift_card.body['gift_card']['balance_money'], status=gift_card.status_code)
     elif gift_card.is_error():
-        return JsonResponse(gift_card.errors)
+        return JsonResponse(gift_card.errors, safe=False, status=gift_card.status_code)
 
 def ajax_charge_card(request):
     #this is meant for gift cards but could be used for all card transactions
@@ -297,18 +313,21 @@ def ajax_charge_card(request):
             charge_response = client.payments.create_payment(body=params)
                 # an example of response: https://github.com/square/square-python-sdk/blob/master/doc/models/create-payment-response.md
             if charge_response.is_error():
-                return JsonResponse(charge_response.errors, safe=False)
+                return JsonResponse(charge_response.errors, safe=False, status=charge_response.status_code)
 
-            # update payment status and object
-            if not payment.is_approved:  # if not already processed
-                payment_update_square(request, charge_response.body['payment'], payment)
-                payment_processing_object_updates(request, payment)
+            if charge_response.is_success():
+                # update payment status and object
+                if not payment.is_approved:  # if not already processed
+                    payment_update_square(request, charge_response.body['payment'], payment)
+                    payment_processing_object_updates(request, payment)
 
-                # log an event
-                log_payment(request, payment)
+                    # log an event
+                    log_payment(request, payment)
 
-                # send payment recipients notification
-                send_payment_notice(request, payment)
-
-        return JsonResponse(charge_response.body['payment'], safe=False)
+                    # send payment recipients notification
+                    send_payment_notice(request, payment)
+            
+                messages.add_message(request, messages.SUCCESS, "Card Charge Successful")
+                return JsonResponse(charge_response.body['payment'], safe=False, status=charge_response.status_code)
+        return JsonResponse("This needs to be a POST")
         
