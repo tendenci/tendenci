@@ -238,6 +238,8 @@ class ChapterMembershipAppForm(TendenciBaseForm):
             'slug',
             'description',
             'confirmation_text',
+            'renewal_description',
+            'renewal_confirmation_text',
             'notes',
             'membership_types',
             'payment_methods',
@@ -394,7 +396,8 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
 
     def __init__(self, app_field_objs, chapter, *args, **kwargs):
         self.request_user = kwargs.pop('request_user')
-        self.renew_mode = kwargs.pop('renew_mode', False)
+        self.is_renewal = kwargs.pop('is_renewal', False)
+        self.renew_from_id = kwargs.pop('renew_from_id', None)
         self.edit_mode = kwargs.pop('edit_mode', False)
         self.app = kwargs.pop('app')
         self.chapter = chapter
@@ -404,15 +407,24 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
         assign_fields(self, app_field_objs)
         
         # membership types query set
-        self.fields['membership_type'].renew_mode = self.renew_mode
+        self.fields['membership_type'].renew_mode = self.is_renewal
         membership_types_qs = self.app.membership_types.all()
         if not self.request_user.is_superuser:
             membership_types_qs = membership_types_qs.filter(admin_only=False)
         membership_types_qs = membership_types_qs.order_by('position')
+        if not self.is_renewal and not self.edit_mode:
+            membership_types_qs = membership_types_qs.exclude(renewal=True)
         self.fields['membership_type'].queryset = membership_types_qs
         self.fields['membership_type'].widget = forms.widgets.RadioSelect(
                 choices=self.fields['membership_type'].choices,
             )
+
+        if 'renew_dt' in self.fields:
+            if not (self.instance and self.instance.renew_dt):
+                del self.fields['renew_dt']
+            else:
+                self.fields['renew_dt'].widget = forms.TextInput(attrs={'readonly': 'readonly'})
+
         if self.edit_mode:
             self.fields['membership_type'].required = False
             self.fields['membership_type'].widget.attrs['disabled'] = 'disabled'
@@ -452,12 +464,24 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
         else:
             return self.cleaned_data['payment_method']
 
+    def clean(self):
+        cleaned_data = super(ChapterMembershipForm, self).clean()
+        if not (self.is_renewal or self.edit_mode):
+            # check if a chapter membership already exists
+            if ChapterMembership.objects.filter(user=self.request_user,
+                                        chapter=self.chapter).exclude(
+                                            status_detail='archive'):
+                raise forms.ValidationError(_('You have already signed up for this chapter.'))
+        return cleaned_data
+
     def save(self):
         chapter_membership = super(ChapterMembershipForm, self).save(commit=False)
         if not self.edit_mode:
             chapter_membership.entity = self.chapter.entity
             chapter_membership.user = self.request_user
-            chapter_membership.renewal = False
+            chapter_membership.renewal = self.is_renewal
+            if self.renew_from_id:
+                chapter_membership.renew_from_id = self.renew_from_id
             chapter_membership.app = self.app
             chapter_membership.chapter = self.chapter
             chapter_membership.save()

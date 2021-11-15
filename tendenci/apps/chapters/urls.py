@@ -27,6 +27,9 @@ urlpatterns = [
     url(r"^chapters/memberships/edit/(?P<chapter_membership_id>\d+)/$",
         views.chapter_membership_edit,
         name="chapters.membership_edit"),
+    url(r"^chapters/memberships/renew/(?P<chapter_membership_id>\d+)/$",
+        views.chapter_membership_renew,
+        name="chapters.membership_renew"),
 
     url(r'^chapters/(?P<slug>[\w\-\/]+)/$', views.detail, name="chapters.detail"),
 ]

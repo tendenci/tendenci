@@ -180,9 +180,17 @@ class Chapter(BasePage):
         """
         Check if this user is one of the chapter leaders.
         """
-        if user and user.is_authenticated:
+        if not user.is_anonymous:
             return self.officers().filter(Q(expire_dt__isnull=True) | Q(
                 expire_dt__gte=date.today())).filter(user=user).exists()
+
+        return False
+
+    def is_chapter_member(self, user):
+        if not user.is_anonymous:
+            return self.chaptermembership_set.filter(user=user).exists()
+
+        return False
 
 
 class Position(models.Model):
@@ -437,6 +445,7 @@ class ChapterMembership(TendenciBaseModel):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE)
 
     renewal = models.BooleanField(blank=True, default=False)
+    renew_from_id = models.IntegerField(blank=True, null=True)
     certifications = models.CharField(max_length=500, blank=True, default='')
     work_experience = models.TextField(blank=True, default='')
     referral = models.CharField(max_length=500, blank=True, default='')
@@ -1056,6 +1065,8 @@ class ChapterMembershipApp(TendenciBaseModel):
         help_text=_("Description of this application. " +
         "Displays at top of application."))
     confirmation_text = tinymce_models.HTMLField()
+    renewal_description = tinymce_models.HTMLField(blank=True, default='')
+    renewal_confirmation_text = tinymce_models.HTMLField(blank=True, default='')
     notes = models.TextField(blank=True, default='')
     use_captcha = models.BooleanField(_("Use Captcha"), default=True)
     membership_types = models.ManyToManyField(ChapterMembershipType,

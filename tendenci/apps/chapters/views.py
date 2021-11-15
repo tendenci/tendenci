@@ -78,7 +78,8 @@ def detail(request, slug, template_name="chapters/detail.html"):
                 'files': files,
                 'has_group_view_permission': has_group_view_permission,
                 'show_officers_phone': show_officers_phone,
-                'show_officers_email': show_officers_email
+                'show_officers_email': show_officers_email,
+                'is_chapter_member': chapter.is_chapter_member(request.user)
             })
     else:
         if chapter.status_detail.lower() == 'pending':
@@ -510,14 +511,13 @@ def chapter_membership_add(request, chapter_id=0,
         raise Http403
 
     edit_mode = False
-    #TODO: check if there is an existing membership for this user in this chapter
 
     # app fields
     app_fields = app.get_app_fields(chapter, request.user)
     
     params = {
         'request_user': request.user,
-        'renew_mode': False,
+        'is_renewal': False,
         'edit_mode': edit_mode,
         'app': app,
     }
@@ -568,6 +568,7 @@ def chapter_membership_add(request, chapter_id=0,
         'app_fields': app_fields,
         'chapter_membership_form': chapter_membership_form,
         'is_edit': False,
+        'is_renewal': False,
     }
     return render_to_resp(request=request, template_name=template, context=context)
 
@@ -592,7 +593,7 @@ def chapter_membership_edit(request, chapter_membership_id=0,
     
     params = {
         'request_user': request.user,
-        'renew_mode': False,
+        'is_renewal': False,
         'edit_mode': edit_mode,
         'app': app,
     }
@@ -619,6 +620,90 @@ def chapter_membership_edit(request, chapter_membership_id=0,
         'app_fields': app_fields,
         'chapter_membership_form': chapter_membership_form,
         'is_edit': edit_mode,
+        'is_renewal': False,
+        'chapter_membership': chapter_membership
+    }
+    return render_to_resp(request=request, template_name=template, context=context)
+
+
+@is_enabled('chapters')
+@login_required
+def chapter_membership_renew(request, chapter_membership_id=0,
+                           template='chapters/applications/add.html', **kwargs):
+    """
+    Chapter membership renew.
+    """
+    chapter_membership = get_object_or_404(ChapterMembership, id=chapter_membership_id)
+    if not chapter_membership.allow_edit_by(request.user):
+        raise Http403
+
+    if not chapter_membership.can_renew():
+        return HttpResponseRedirect(reverse('chapters.membership_details',
+                    args=[chapter_membership.id]))
+
+    app = chapter_membership.app
+    chapter = chapter_membership.chapter
+    renew_from_id = chapter_membership.id
+    
+    # app fields
+    app_fields = app.get_app_fields(chapter, request.user)
+    membership_initial = {}
+    for app_field in app_fields:
+        field_name = app_field.field_name
+        if field_name and hasattr(chapter_membership, field_name):
+            membership_initial[field_name] = getattr(chapter_membership, field_name)
+        
+    
+    params = {
+        'request_user': request.user,
+        'renew_from_id': renew_from_id,
+        'is_renewal': True,
+        'app': app,
+    }
+    chapter_membership_form = ChapterMembershipForm(app_fields, chapter,
+                request.POST or None, initial=membership_initial, **params)
+    if request.method == 'POST':
+        if chapter_membership_form.is_valid():
+            # create a chapter membership
+            chapter_membership = chapter_membership_form.save()
+
+            # create an invoice
+            chapter_membership.save_invoice()
+            if chapter_membership.approval_required():
+                # approval is required - set pending
+                chapter_membership.pend()
+                chapter_membership.save()
+                #TODO: send notifications
+            else:
+                # not require approval - approve it!
+                chapter_membership.approve(request_user=request.user)
+                #TODO: send notifications
+                #chapter_membership.send_email(request, 'approve_renewal')
+
+            # log an event
+            EventLog.objects.log(instance=chapter_membership)
+
+            # handle online payment
+            if chapter_membership.payment_method.is_online and \
+                    chapter_membership.invoice.balance > 0:
+                return HttpResponseRedirect(
+                                reverse('payment.pay_online',
+                                args=[chapter_membership.invoice.id,
+                                      chapter_membership.invoice.guid]))
+            else:
+                return HttpResponseRedirect(reverse('chapters.membership_add_conf',
+                                    args=[chapter_membership.id]))
+
+    app.render_items({'chapter': chapter})
+
+    context = {
+        'chapter': chapter,
+        'app': app,
+        'app_fields': app_fields,
+        'chapter_membership_form': chapter_membership_form,
+        'is_edit': False,
+        'is_renewal': True,
+        'chapter_membership': chapter_membership
     }
     return render_to_resp(request=request, template_name=template, context=context)
 

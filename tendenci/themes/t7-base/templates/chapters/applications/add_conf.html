@@ -14,8 +14,11 @@
 <div class="application-entry-wrap">
 
         <h1>{% trans "Chapter Membership Confirmation" %}</h1>
-
+        {% if chapter_membership.renewal %}
+        {% firstof app.renewal_confirmation_text|safe "Thank you for your submission!" %}
+        {% else %}
         {% firstof app.confirmation_text|safe "Thank you for your submission!" %}
+        {% endif %}
 
         {% if chapter_membership.is_pending %}
             <p><span style="background-color: #ECF716;">

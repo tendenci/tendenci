@@ -106,7 +106,8 @@ class ChapterMembershipAppAdmin(TendenciBaseModelAdmin):
     search_fields = ('name', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'description',
-                           'confirmation_text', 'notes',
+                           'confirmation_text', 'renewal_description', 
+                           'renewal_confirmation_text', 'notes',
                            'membership_types', 'payment_methods',
                            'use_captcha')},),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),

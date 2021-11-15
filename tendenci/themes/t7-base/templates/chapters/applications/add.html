@@ -12,9 +12,20 @@
 
 <div class="t">
     <div class="page-header">
-       <h1>{{ app.name }}</h1>
-      {% if app.description %}<p>{{ app.description|safe }}</p>{% endif %}
+       <h1>{% if is_renewal %}{% trans 'Chapter Membership Renew' %}{% elif is_edit %}{% trans 'Chapter Membership Edit' %}{% else %}{{ app.name }}{% endif %}</h1>
+      {% if is_renewal %}
+          {% if app.renewal_description %}<p>{{ app.renewal_description|safe }}</p>{% endif %}
+      {% else %}
+          {% if not is_edit %}
+          {% if app.description %}<p>{{ app.description|safe }}</p>{% endif %}
+          {% endif %}
+      {% endif %}
     </div>
+	{% if is_renewal or is_edit %}
+	{% if chapter_membership and request.user != chapter_membership.user %}
+	<div>{% trans 'Member: ' %}<a href="{% url 'profile' chapter_membership.user.username %}">{{ chapter_membership.user.get_full_name }}</a></div>
+	{% endif %}
+	{% endif %}
     <form class="form-horizontal" action="." method="post" enctype="multipart/form-data">{% csrf_token %}
                 {% if chapter_membership_form.errors.values %}
             <div class="form-errors">
