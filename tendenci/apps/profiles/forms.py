@@ -1,5 +1,6 @@
 import datetime
 import re
+import chardet
 
 from django import forms
 from django.contrib import auth
@@ -879,7 +880,10 @@ class UserUploadForm(forms.ModelForm):
         if not key:
             raise forms.ValidationError(_('Please specify the key to identify duplicates'))
 
-        file_content = upload_file.read().decode('utf-8') # decode from bytes to string
+        file_content = upload_file.read()
+        # decode from bytes to string
+        encoding = chardet.detect(file_content)["encoding"]
+        file_content = file_content.decode(encoding)
         upload_file.seek(0)
         header_line_index = file_content.find('\n')
         header_list = ((file_content[:header_line_index]
