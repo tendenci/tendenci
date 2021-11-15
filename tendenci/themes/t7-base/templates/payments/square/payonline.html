@@ -145,6 +145,7 @@
    } )
     .done( function( data ) {
         window.showSuccess('Card successfully charged.');
+        window.location = location.origin + '/payments/payonline/{{ payment.invoice.id }}/';
     } )
     .fail( function( data ) {
       buttonEl.disabled = false;
@@ -164,7 +165,7 @@
         $('#gc-loader').hide();
         document.getElementById('gift-card-info').innerText = `Available Balance: ${(data['amount'] / 100)} ${data['currency']}`
 
-        return data['amount'];
+        squareInfo.gc_balance = data['amount'];
     } )
     .fail( function( data ) {
       balanceEl.disabled = false;
@@ -173,7 +174,7 @@
       console.log(data);
       document.getElementById('gift-card-info').innerText = `Error: ${data.responseJSON[0]['detail']}`;
 
-      return 0;
+      squareInfo.gc_balance = 0;
     } );
  }
 
@@ -198,7 +199,7 @@
             token = result.token;
           }
         }
-        squareInfo.gc_balance = squareBalanceAsync(token, balanceEl, payEl);
+        squareBalanceAsync(token, balanceEl, payEl);
       } catch (e) {
         balanceEl.disabled = false;
         payEl.disabled = false;
@@ -216,6 +217,8 @@
       event.preventDefault();
       // Clear any existing messages
       window.paymentFlowMessageEl.innerText = '';
+      //clear for actual payment
+      token = '';
 
       try {
         balanceEl.disabled = true;
@@ -226,14 +229,13 @@
           const result = await giftCard.tokenize();
           if (result.status === 'OK') {
             token = result.token;
-            squareInfo.gc_balance = squareBalanceAsync(token, balanceEl, payEl);
+            squareBalanceAsync(token, balanceEl, payEl);
           }
         }
 
         if (squareInfo.amount >= squareInfo.gc_balance) {
           //charge the whole GC balance then return to the amount left
           squarePaymentAsync(token, squareInfo.gc_balance);
-          window.location('/payments/payonline/{{ payment.invoice.id }}/');
         } else {
           // appends to form and submits
           squarePaymentByForm(token);

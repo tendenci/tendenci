@@ -127,7 +127,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/square/payo
                             message=charge_response.errors[0]['detail'], cat=charge_response.errors[0]['category'], code=charge_response.errors[0]['code'])
 
             # add a rp entry now
-            elif 'status' in charge_response and charge_response['status'] == "COMPLETED":
+            elif 'status' in charge_response.body['payment'] and charge_response.body['payment']['status'] == "COMPLETED":
                 if customer and membership:
                     # {
                     # "idempotency_key": "4d9287dc-60dd-4a78-9550-3c48139ff531",
@@ -244,17 +244,26 @@ def thank_you(request, payment_id, guid='', template_name='payments/receipt.html
 
 def ajax_giftcard_balance(request):
     api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
-    token = request.POST.get('gc_token')
+    token = request.POST.get('gc_token')   
+
     client = Client(
         access_token=api_key,
         environment= settings.SQUARE_ENVIRONMENT,
     )
 
-    gift_card = client.gift_cards.retrieve_gift_card_from_nonce(
+    if settings.SQUARE_ENVIRONMENT == 'sandbox':
+        # the sandbox makes testing gift card info more difficult
+        gift_card = client.gift_cards.retrieve_gift_card_from_gan(
         body={                           
-                "nonce": token,                            
+                "gan": '7783320009963521',                            
             }
     )
+    else: 
+        gift_card = client.gift_cards.retrieve_gift_card_from_nonce(
+            body={                           
+                    "nonce": token,                            
+                }
+        )
 
     # {
     #     "gift_card": {
