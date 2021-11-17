@@ -21,11 +21,14 @@ from tendenci.apps.base.fields import StateSelectField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.regions.models import Region
 from tendenci.apps.base.fields import PriceField
-from tendenci.apps.memberships.fields import TypeExpMethodField
+from tendenci.apps.memberships.fields import TypeExpMethodField, NoticeTimeTypeField
 from tendenci.apps.memberships.widgets import (
     CustomRadioSelect, TypeExpMethodWidget)
 from tendenci.apps.payments.fields import PaymentMethodModelChoiceField
 from .fields import ChapterMembershipTypeModelChoiceField
+from .models import Notice
+from .widgets import ChapterNoticeTimeTypeWidget
+from .utils import get_notice_token_help_text
 
 
 type_exp_method_fields = (
@@ -492,6 +495,60 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
             chapter_membership.save()
 
         return chapter_membership
+
+
+class NoticeForm(forms.ModelForm):
+    notice_time_type = NoticeTimeTypeField(label=_('When to Send'),
+                                          widget=ChapterNoticeTimeTypeWidget)
+    email_content = forms.CharField(widget=TinyMCE(attrs={'style': 'width:70%'},
+        mce_attrs={'storme_app_label': Notice._meta.app_label,
+        'storme_model': Notice._meta.model_name.lower()}), help_text=_("Click here to view available tokens"))
+
+    class Meta:
+        model = Notice
+        fields = (
+                  'notice_name',
+                  'notice_time_type',
+                  'chapter',
+                  'membership_type',
+                  'subject',
+                  'content_type',
+                  'sender',
+                  'sender_display',
+                  'email_content',
+                  'status',
+                  'status_detail',
+                  )
+
+    def __init__(self, *args, **kwargs):
+        super(NoticeForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['email_content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['email_content'].widget.mce_attrs['app_instance_id'] = 0
+
+        initial_list = []
+        if self.instance.pk:
+            initial_list.append(str(self.instance.num_days))
+            initial_list.append(str(self.instance.notice_time))
+            initial_list.append(str(self.instance.notice_type))
+        else:
+            initial_list = ['0', 'attimeof', 'apply']
+
+        self.fields['notice_time_type'].initial = initial_list
+        self.fields['email_content'].help_text = get_notice_token_help_text(self.instance)
+
+    def clean_notice_time_type(self):
+        value = self.cleaned_data['notice_time_type']
+
+        data_list = value.split(',')
+        d = dict(zip(['num_days', 'notice_time', 'notice_type'], data_list))
+
+        try:
+            d['num_days'] = int(d['num_days'])
+        except:
+            raise forms.ValidationError(_("Num days must be a numeric number."))
+        return value
 
 
 class ChapterForm(TendenciBaseForm):

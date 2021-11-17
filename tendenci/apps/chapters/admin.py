@@ -9,20 +9,27 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import SimpleListFilter
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.http.response import HttpResponseRedirect
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.chapters.models import (Chapter, Position, Officer,
                             ChapterMembershipType,
                             ChapterMembershipAppField,
-                            ChapterMembershipApp)
+                            ChapterMembershipApp,
+                            ChapterMembership,
+                            Notice,
+                            NoticeLog,
+                            NoticeDefaultLogRecord)
 from tendenci.apps.chapters.forms import (ChapterAdminForm,
                         ChapterAdminChangelistForm,
                         UserModelChoiceField,
                         ChapterMembershipTypeForm,
                         ChapterMembershipAppForm,
-                        ChapterMembershipAppFieldAdminForm)
+                        ChapterMembershipAppFieldAdminForm,
+                        NoticeForm)
 from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.base.utils import tcurrency
 
 
 class ChapterMembershipTypeAdmin(TendenciBaseModelAdmin):
@@ -240,6 +247,260 @@ class ChapterMembershipAppField2Admin(admin.ModelAdmin):
         return None
 
 
+class PaymentStatusFilter(admin.SimpleListFilter):
+    title = _('Payment Status')
+    parameter_name = 'paid'
+
+    def lookups(self, request, model_admin):
+        return (
+                ('1', _('Paid')),
+                ('0', _('Not Paid')))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value is None:
+            return queryset
+        else:
+            if value == '1':
+                return queryset.filter(invoice__balance__lte=0)
+            else:
+                return queryset.filter(invoice__balance__gt=0)
+
+
+class ChapterMembershipAdmin(admin.ModelAdmin):
+    list_display = ['id',
+                    'view_on_site',
+                    'user_link',
+                    'chapter_link',
+                    'm_type',
+                    'approved',
+                    'join_date', 
+                    'renewal',
+                    'renew_date',
+                    'expire_date',
+                    'status_detail',
+                    'invoice_url',
+                    'paid',]
+    list_filter = ['membership_type', 'status_detail', 'renewal', PaymentStatusFilter]
+    search_fields = ('user__first_name', 'user__last_name', 'user__email', 'chapter__title')
+
+    def get_queryset(self, request):
+        """
+        Excludes archive
+        """
+        return super(ChapterMembershipAdmin, self).get_queryset(request
+                    ).exclude(status_detail='archive'
+                              ).filter(status=True).order_by('-create_dt')
+
+#     @mark_safe
+#     def edit_link(self, instance):
+#         return '<a href="%s" title="edit chapter membership">%s</a>' % (
+#                 reverse('chapters.membership_edit',args=[instance.id]),
+#                 _('Edit'),)
+#     edit_link.short_description = _('edit')
+    
+    @mark_safe
+    def view_on_site(self, obj):
+        if not hasattr(obj, 'get_absolute_url'):
+            return None
+
+        link_icon = static('images/icons/external_16x16.png')
+        link = '<a href="%s" title="%s"><img src="%s" alt="view chapter membership" title="view chapter membership"/></a>' % (
+            obj.get_absolute_url(),
+            strip_tags(obj),
+            link_icon,
+        )
+        return link
+    view_on_site.short_description = _('view')
+
+    def paid(self, instance):
+        if instance.invoice:
+            return instance.invoice.balance <= 0
+    paid.boolean = True
+
+    @mark_safe
+    def user_link(self, instance):
+        if instance.user:
+            profile_url = reverse('profile',
+                      args=[instance.user.username])
+            name = instance.user.get_full_name()
+            if name:
+                return f'<a href="{profile_url}">{name}</a>'
+            return f'<a href="{profile_url}">{instance.user.username}</a>'
+ 
+        return "-"
+    user_link.short_description = _('User')
+    user_link.allow_tags = True
+    user_link.admin_order_field = 'user'
+
+    @mark_safe
+    def chapter_link(self, instance):
+        chapter_url = reverse('chapters.detail',
+                  args=[instance.chapter.slug])
+        return f'<a href="{chapter_url}">{instance.chapter.title}</a>'
+
+    chapter_link.short_description = _('Chapter')
+    chapter_link.allow_tags = True
+    chapter_link.admin_order_field = 'Chapter'
+
+    @mark_safe
+    def invoice_url(self, instance):
+        invoice = instance.invoice
+        if invoice:
+            if invoice.balance > 0:
+                return f'<a href="{invoice.get_absolute_url()}">Invoice {invoice.pk} ({tcurrency(invoice.balance)})</a>' 
+            else:
+                return f'<a href="{invoice.get_absolute_url()}">Invoice {invoice.pk}</a>'
+        return ""
+    invoice_url.short_description = 'Invoice'
+
+    @mark_safe
+    def m_type(self, instance):
+        if not instance.membership_type:
+            return ''
+        mtype_url = reverse('admin:chapters_chaptermembershiptype_change',
+                      args=[instance.membership_type.id])
+        return f'<a href="{mtype_url}">{instance.membership_type.name}</a>'
+    m_type.short_description = _('Membership Type')
+    m_type.admin_order_field = 'membership_type'
+    
+    def join_date(self, instance):
+        if not instance.join_dt:
+            return ''
+        return instance.join_dt.strftime('%m-%d-%Y')
+    join_date.short_description = _('Join Date')
+    join_date.admin_order_field = 'join_dt'
+
+    def renew_date(self, instance):
+        if not instance.renew_dt:
+            return ''
+        return instance.renew_dt.strftime('%m-%d-%Y')
+    renew_date.short_description = _('Renew Date')
+    renew_date.admin_order_field = 'renew_dt'
+
+    def expire_date(self, instance):
+        if not instance.expire_dt:
+            return ''
+        return instance.expire_dt.strftime('%m-%d-%Y')
+    expire_date.short_description = _('Expire Date')
+    expire_date.admin_order_field = 'expire_dt'
+
+    def has_add_permission(self, request):
+        return False
+
+    def change_view(self, request, object_id, form_url='',
+                    extra_context=None):
+        return HttpResponseRedirect(reverse('chapters.membership_edit',
+                                            args=[object_id]))
+
+
+class NoticeAdmin(admin.ModelAdmin):
+    list_display = ['id', 'notice_name', 'notice_logs', 'content_type',
+                    'chapter', 'membership_type', 'status', 'status_detail']
+    list_display_links = ('notice_name',)
+    list_filter = ['notice_type', 'status_detail']
+
+    fieldsets = (
+        (None, {'fields': ('notice_name', 'notice_time_type', 'chapter', 'membership_type')}),
+        (_('Email Fields'), {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
+        (_('Other Options'), {'fields': ('status', 'status_detail')}),
+    )
+
+    form = NoticeForm
+
+    class Media:
+        js = (
+            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
+            static('js/global/tinymce.event_handlers.js'),
+            static('js/admin/membnotices.js'),
+        )
+
+    @mark_safe
+    def notice_logs(self, obj):
+        logs_url = reverse('admin:chapterss_noticelog_changelist')
+        return f'<a href="{logs_url}?notice__id__exact={obj.id}">View logs</a>' 
+
+    def save_model(self, request, object, form, change):
+        instance = form.save(commit=False)
+
+        notice_time_type = form.cleaned_data['notice_time_type']
+        notice_time_type_list = notice_time_type.split(",")
+        instance.num_days = notice_time_type_list[0]
+        instance.notice_time = notice_time_type_list[1]
+        instance.notice_type = notice_time_type_list[2]
+
+        if not change:
+            instance.creator = request.user
+            instance.creator_username = request.user.username
+            instance.owner = request.user
+            instance.owner_username = request.user.username
+
+        instance.save()
+
+        return instance
+
+
+class NoticeLogAdmin(admin.ModelAdmin):
+    list_display = ['id', 'show_notice', 'log_records', 'notice_sent_dt', 'num_sent']
+    list_filter = ['notice',]
+    can_delete = False
+    search_fields = ['notice__notice_name']
+
+    @mark_safe
+    def show_notice(self, obj):
+        notice_url = reverse('admin:chapters_notice_change', args=[obj.notice.id])
+        return f'<a href="{notice_url}">{obj.notice.notice_name}</a>'
+    show_notice.short_description = 'Notice'
+    show_notice.allow_tags = True
+    show_notice.admin_order_field = 'obj.notice.notice_name'
+
+    @mark_safe
+    def log_records(self, obj):
+        logs_url = reverse('admin:chapters_noticedefaultlogrecord_changelist')
+        return f'<a href="{logs_url}?notice_log__id__exact={obj.id}">View log records</a>' 
+
+    def get_actions(self, request):
+        return None
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        return False
+
+class NoticeDefaultLogRecordAdmin(admin.ModelAdmin):
+    list_display = ['id', 'show_notice', 'chapter_membership', 'emails_sent', 'sent_date']
+    list_filter = ['notice_log__notice',]
+    can_delete = False
+
+    @mark_safe
+    def show_notice(self, obj):
+        notice_url = reverse('admin:chapters_notice_change', args=[obj.id])
+        return f'<a href="{notice_url}">{obj.notice_log.notice.notice_name}</a>'
+    show_notice.short_description = 'Notice'
+    show_notice.allow_tags = True
+    
+    def sent_date(self, obj):
+        return obj.create_dt
+    sent_date.short_description = 'Sent date'
+    sent_date.admin_order_field = 'create_dt'
+    
+    def get_actions(self, request):
+        return None
+
+    def has_add_permission(self, request):
+        return False
+
+#     def has_delete_permission(self, request, obj=None):
+#         return False
+    
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
 class OfficerAdminInline(admin.TabularInline):
     fieldsets = (
         (None, {
@@ -396,3 +657,8 @@ admin.site.register(Position)
 admin.site.register(ChapterMembershipType, ChapterMembershipTypeAdmin)
 admin.site.register(ChapterMembershipApp, ChapterMembershipAppAdmin)
 admin.site.register(ChapterMembershipAppField, ChapterMembershipAppField2Admin)
+admin.site.register(ChapterMembership, ChapterMembershipAdmin)
+admin.site.register(Notice, NoticeAdmin)
+admin.site.register(NoticeLog, NoticeLogAdmin)
+admin.site.register(NoticeDefaultLogRecord, NoticeDefaultLogRecordAdmin)
+

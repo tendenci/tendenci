@@ -1,7 +1,10 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
+import time
 import uuid
-from datetime import datetime, timedelta
+import re
 from dateutil.relativedelta import relativedelta
+import traceback
+import logging
 
 from django.db.models import Q
 from django.db import models
@@ -35,6 +38,12 @@ from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.base.utils import tcurrency, day_validate
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.utils import fieldify
+from tendenci.apps.base.utils import validate_email
+from tendenci.apps.notifications import models as notification
+
+logger = logging.getLogger(__name__)
 
 
 class Chapter(BasePage):
@@ -1273,4 +1282,409 @@ class ChapterMembershipFile(File):
     to User Defined fields for Chapter Membership UD fields
     """
     class Meta:
+        app_label = 'chapters'
+
+
+NOTICE_TYPES = (
+    ('apply', _('Apply Date')),
+    ('renewal', _('Renewal Date')),
+    ('expiration', _('Expiration Date')),
+    ('approve', _('Approval Date')),
+    ('reject', _('Reject Date')),
+    ('approve_renewal', _('Renewal Approval Date')),
+    ('reject_renewal', _('Renewal Reject Date')),
+)
+
+class Notice(models.Model):
+
+    NOTICE_BEFORE = 'before'
+    NOTICE_AFTER = 'after'
+    NOTICE_ATTIMEOF = 'attimeof'
+
+    NOTICE_CHOICES = (
+        (NOTICE_BEFORE, _('Before')),
+        (NOTICE_AFTER,  _('After')),
+        (NOTICE_ATTIMEOF, _('At Time Of'))
+    )
+
+    CONTENT_TYPE_HTML = 'html'
+
+    CONTENT_TYPE_CHOICES = (
+        (CONTENT_TYPE_HTML, _('HTML')),
+    )
+
+    STATUS_DETAIL_ACTIVE = 'active'
+    STATUS_DETAIL_HOLD = 'admin_hold'
+
+    STATUS_DETAIL_CHOICES = (
+        (STATUS_DETAIL_ACTIVE, 'Active'),
+        (STATUS_DETAIL_HOLD, 'Admin Hold')
+    )
+
+    guid = models.CharField(max_length=50, editable=False)
+    notice_name = models.CharField(_("Name"), max_length=250)
+    num_days = models.IntegerField(default=0)
+    notice_time = models.CharField(_("Notice Time"), max_length=20, choices=NOTICE_CHOICES)
+    notice_type = models.CharField(_("For Notice Type"), max_length=20, choices=NOTICE_TYPES)
+    chapter = models.ForeignKey(
+        "Chapter",
+        blank=True,
+        null=True,
+        help_text=_("Note that if you don't select a chapter, the notice will go out to all chapter members."),
+        on_delete=models.CASCADE)
+    membership_type = models.ForeignKey(
+        "ChapterMembershipType",
+        blank=True,
+        null=True,
+        help_text=_("Note that if you don't select a membership type, the notice will go out to all members."),
+        on_delete=models.CASCADE)
+    subject = models.CharField(max_length=255)
+    content_type = models.CharField(_("Content Type"),
+                                    choices=CONTENT_TYPE_CHOICES,
+                                    max_length=10,
+                                    default=CONTENT_TYPE_HTML)
+    sender = models.EmailField(max_length=255, blank=True, null=True)
+    sender_display = models.CharField(max_length=255, blank=True, null=True)
+    email_content = tinymce_models.HTMLField(_("Email Content"))
+
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(User, related_name="chapter_membership_creator_notices",  null=True, on_delete=models.SET_NULL)
+    creator_username = models.CharField(max_length=150, null=True)
+    owner = models.ForeignKey(User, related_name="chapter_membership_owner_notices", null=True, on_delete=models.SET_NULL)
+    owner_username = models.CharField(max_length=150, null=True)
+    status_detail = models.CharField(choices=STATUS_DETAIL_CHOICES,
+                                     default=STATUS_DETAIL_ACTIVE, max_length=50)
+    status = models.BooleanField(default=True)
+
+    class Meta:
+        app_label = 'chapters'
+
+    def __str__(self):
+        return self.notice_name
+
+    def get_default_context(self, chapter_membership):
+        """
+        Returns a dictionary with default context items.
+        """
+        site_display_name = get_setting('site', 'global', 'sitedisplayname')
+        site_contact_name = get_setting('site', 'global', 'sitecontactname')
+        site_contact_email = get_setting('site', 'global', 'sitecontactemail')
+        site_url = get_setting('site', 'global', 'siteurl')
+        now = datetime.now()
+        nowstr = time.strftime("%d-%b-%y %I:%M %p", now.timetuple())
+        global_context = {'site_display_name': site_display_name,
+                          'site_contact_name': site_contact_name,
+                          'site_contact_email': site_contact_email,
+                          'time_submitted': nowstr,
+                          'sitedisplayname': site_display_name,
+                          'sitecontactname': site_contact_name,
+                          'sitecontactemail': site_contact_email,
+                          'timesubmitted': nowstr,
+                          }
+        context = {}
+        context['chapter_membership'] = chapter_membership
+        context.update(global_context)
+
+        if chapter_membership and chapter_membership.expire_dt:
+            context.update({
+                'expire_dt': time.strftime(
+                "%d-%b-%y %I:%M %p",
+                chapter_membership.expire_dt.timetuple()),
+            })
+
+        if chapter_membership and chapter_membership.payment_method:
+            payment_method_name = chapter_membership.payment_method.human_name
+        else:
+            payment_method_name = ''
+
+        view_link = f'{site_url}{chapter_membership.get_absolute_url()}'
+        edit_link = '{0}{1}'.format(site_url, reverse('chapters.membership_edit',
+                                    args=[chapter_membership.id]))
+        renew_link = '{0}{1}'.format(site_url, reverse('chapters.membership_renew',
+                                    args=[chapter_membership.id]))
+        if chapter_membership.invoice:
+            invoice_link = '{0}{1}'.format(site_url, reverse('invoice.view',
+                                        args=[chapter_membership.invoice.id]))
+            total_amount = chapter_membership.invoice.total
+        else:
+            invoice_link = ""
+            total_amount = ""
+        if chapter_membership.expire_dt:
+            expire_dt = time.strftime("%d-%b-%y %I:%M %p",
+                                      chapter_membership.expire_dt.timetuple())
+        else:
+            expire_dt = ''
+
+        context.update({
+            'first_name': chapter_membership.user.first_name,
+            'last_name': chapter_membership.user.last_name,
+            'email': chapter_membership.user.email,
+            'username': chapter_membership.user.username,
+            'member_number': chapter_membership.member_number,
+            'membership_type': chapter_membership.membership_type.name,
+            'membership_price': chapter_membership.get_price(),
+            'total_amount': total_amount,
+            'payment_method': payment_method_name,
+            'expire_dt': expire_dt,
+            'view_link': view_link,
+            'edit_link': edit_link,
+            'renew_link': renew_link,
+            'invoice_link': invoice_link
+        })
+
+        return context
+
+    def get_subject(self, chapter_membership, context=None):
+        """
+        Return self.subject replace shortcode (context) variables
+        """
+        if not context:
+            context = self.get_default_context(chapter_membership)
+        return self.build_notice(self.subject, context=context)
+
+    def get_content(self, chapter_membership, context=None):
+        """
+        Return self.email_content with footer appended and replace shortcode
+        (context) variables
+        """
+        content = self.email_content
+        if not context:
+            context = self.get_default_context(chapter_membership)
+
+        return self.build_notice(content, context=context)
+
+    def build_notice(self, content, *args, **kwargs):
+        """
+        Replace values in a string and return the updated content
+        Values are pulled from chapter_membership, user, profile, and site_settings
+        """
+        content = fieldify(content)
+        template = engines['django'].from_string(content)
+
+        context = kwargs.get('context') or {}
+
+        return template.render(context=context)
+
+
+    def email_chapter_member(self, chapter_membership, verbosity=1):
+        """
+        Send emails to this chapter member.
+        """
+
+        email_context = {
+            'sender_display': self.sender_display,
+            'reply_to': self.sender
+            }
+        email_context.update({'content_type': self.content_type})
+
+        user = chapter_membership.user
+
+        context = self.get_default_context(chapter_membership)
+
+        email_recipient = user.email
+        # skip if not a valid email address
+        if not validate_email(email_recipient):
+            return False
+
+        context.update({'first_name': user.first_name})
+        subject = self.get_subject(chapter_membership, context=context)
+        subject = subject.replace('(name)',
+                                    user.get_full_name())
+        body = self.get_content(chapter_membership, context=context)
+
+        email_context.update({
+            'subject':subject,
+            'content':body})
+        if self.sender:
+            email_context.update({
+                #'sender':notice.sender,
+                'reply_to':self.sender})
+        if self.sender_display:
+            email_context.update({'sender_display':self.sender_display})
+
+        notification.send_emails([email_recipient], 'chapter_membership_notice_email',
+                                 email_context)
+        if verbosity > 1:
+            print('To ', email_recipient, subject)
+
+        return True
+
+    def process_notice(self, chapter_membership=None, verbosity=1):
+        """
+        Gather a list of chapter memberships that meet the criteria of this notice
+        and send email notifications to the members.
+        """
+        self.chapter_memberships_processed = []
+        num_sent = 0
+        now = datetime.now()
+        if self.notice_time in ['before', 'after']:
+            if self.notice_time == 'before':
+                start_dt = now + timedelta(days=self.num_days)
+            else:
+                start_dt = now - timedelta(days=self.num_days)
+
+            chapter_memberships = ChapterMembership.objects.exclude(status_detail__in=('archive',))
+
+            if self.notice_type == 'reject' or self.notice_type == 'reject_renewal':
+                chapter_memberships = chapter_memberships.filter(
+                                    rejected=True,
+                                    rejected_dt__year=start_dt.year,
+                                    rejected_dt__month=start_dt.month,
+                                    rejected_dt__day=start_dt.day,
+                                    )
+                if self.notice_type == 'reject':
+                    chapter_memberships = chapter_memberships.filter(renewal=False)
+                else:
+                    chapter_memberships = chapter_memberships.filter(renewal=True)
+            elif self.notice_type == 'apply':
+                chapter_memberships = chapter_memberships.filter(
+                                    create_dt__year=start_dt.year,
+                                    create_dt__month=start_dt.month,
+                                    create_dt__day=start_dt.day,
+                                    renewal=False)
+            elif self.notice_type == 'renewal':
+                chapter_memberships = chapter_memberships.filter(
+                                    renew_dt__year=start_dt.year,
+                                    renew_dt__month=start_dt.month,
+                                    renew_dt__day=start_dt.day,
+                                    renewal=True)
+            elif self.notice_type == 'approve' or self.notice_type == 'approve_renewal':
+                chapter_memberships = chapter_memberships.filter(
+                                    approve_dt__year=start_dt.year,
+                                    approve_dt__month=start_dt.month,
+                                    approve_dt__day=start_dt.day,
+                                    approved=True)
+                if self.notice_type == 'approve':
+                    chapter_memberships = chapter_memberships.filter(renewal=False)
+                else:
+                    chapter_memberships = chapter_memberships.filter(renewal=True)
+            else:
+                # notice_type == 'expiration'
+                chapter_memberships = chapter_memberships.filter(
+                                    expire_dt__year=start_dt.year,
+                                    expire_dt__month=start_dt.month,
+                                    expire_dt__day=start_dt.day,)
+
+
+            # filter by chapter membership type
+            if self.membership_type:
+                chapter_memberships = chapter_memberships.filter(
+                                membership_type=self.membership_type)
+            memberships_count = chapter_memberships.count()
+        else:
+            # notice_time == 'attimeof'
+            if not chapter_membership:
+                return
+            chapter_memberships = [chapter_membership]
+            memberships_count = 1
+
+        if memberships_count > 0:
+            # log notice sent
+            notice_log = NoticeLog(notice=self,
+                                   num_sent=0)
+            notice_log.save()
+            self.log = notice_log
+
+            for chapter_membership in chapter_memberships:
+                try:
+                    num_email_sent, list_emails_sent = self.email_chapter_member(chapter_membership, verbosity=verbosity)
+                    if num_email_sent > 0:
+                        num_sent += num_email_sent
+                        if memberships_count <= 50:
+                            self.chapter_memberships_processed.append(chapter_membership)
+
+                        # log record
+
+                        notice_log_record = NoticeDefaultLogRecord(
+                                                notice_log=notice_log,
+                                                chapter_membership=chapter_membership,
+                                                emails_sent=', '.join(list_emails_sent))
+                        notice_log_record.save()
+                except:
+                    # log the exception
+                    logger.error(traceback.format_exc())
+
+            if num_sent > 0:
+                notice_log.num_sent = num_sent
+                notice_log.save()
+
+        return num_sent
+
+    @classmethod
+    def send_notices(cls, **kwargs):
+        """
+        Send auto responder notices with notice_type specified
+        and chapter membership specified
+        Returns boolean.
+
+        Example:
+
+          notice_sent =  Notice.send_notices(
+                            notice_type='join',
+                            chapter_membership=chapter_membership,
+                            membership_type=chapter_membership.membership_type,
+                        )
+        """
+
+        notice_type = kwargs.get('notice_type') or 'apply'
+        membership_type = kwargs.get('membership_type')
+        chapter_membership = kwargs.get('chapter_membership')
+
+        if not membership_type:
+            return False
+
+        if not isinstance(chapter_membership, ChapterMembership):
+            return False
+
+        field_dict = {
+            'notice_time': 'attimeof',
+            'notice_type': notice_type,
+            'status': True,
+            'status_detail': 'active',
+        }
+
+        # send to applicant
+        for notice in Notice.objects.filter(**field_dict):
+            notice_requirments = (
+                notice.membership_type == membership_type,
+                not notice.membership_type
+            )
+
+            if any(notice_requirments):
+                notice.process_notice(chapter_membership=chapter_membership)
+
+        return True
+
+
+class NoticeLog(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice = models.ForeignKey(Notice, related_name="logs", on_delete=models.CASCADE)
+    notice_sent_dt = models.DateTimeField(auto_now_add=True)
+    num_sent = models.IntegerField()
+
+    class Meta:
+        verbose_name = _("Notice Log")
+        verbose_name_plural = _("Notice Logs")
+        app_label = 'chapters'
+
+    def __str__(self):
+        sent_dt = self.notice_sent_dt.strftime("%m/%d/%y")
+        return f'Log for {self.notice} ({sent_dt})'
+
+
+class NoticeDefaultLogRecord(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice_log = models.ForeignKey(NoticeLog,
+                                   related_name="default_log_records",
+                                   on_delete=models.CASCADE)
+    chapter_membership = models.ForeignKey("ChapterMembership",
+                                      related_name="default_log_records",
+                                      on_delete=models.CASCADE)
+    emails_sent = models.CharField(max_length=500, default='')
+    create_dt = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("Notice Log Record")
+        verbose_name_plural = _("Notice Log Records")
         app_label = 'chapters'
