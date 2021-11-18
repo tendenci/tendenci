@@ -244,6 +244,7 @@ def update_card(request, rp_id, template_name='payments/square/card_update.html'
 
     return render_to_resp(request=request, template_name=template_name,
         context={'form': form,
+                 'rp': rp,
                 'payment_form_url': payment_form_url,
                 'SQUARE_APPLICATION_ID': settings.SQUARE_APPLICATION_ID,
                 'SQUARE_LOCATION_ID': settings.SQUARE_LOCATION_ID,
