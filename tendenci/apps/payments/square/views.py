@@ -116,7 +116,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/square/payo
                        'note': payment.description
                       }
             if customer:
-                params.update({'customer_id': customer["customer"]['id']})
+                params.update({'customer_id': customer.body["customer"]['id']})
 
             
             charge_response = client.payments.create_payment(body=params)
@@ -129,18 +129,22 @@ def pay_online(request, payment_id, guid='', template_name='payments/square/payo
             # add a rp entry now
             elif 'status' in charge_response.body['payment'] and charge_response.body['payment']['status'] == "COMPLETED":
                 if customer and membership:
-                    # {
-                    # "idempotency_key": "4d9287dc-60dd-4a78-9550-3c48139ff531",
-                    # "source_id": "cnon:card-nonce-ok",
-                    # "card": {
-                    # "customer_id": "5P0XEAVK9GSAZFFNC869PQKYE8"
-                    # }
-
-                    kwargs = {'platform': 'square',
-                              'customer_profile_id': customer["customer"]['id'],
-                              'token': token,
-                              }
-                    membership.get_or_create_rp(request.user, **kwargs)
+                    new_card = client.cards.create_card(
+                        body={
+                        "idempotency_key": str(uuid.uuid4()),
+                        "source_id": token,
+                        "card": {
+                            "customer_id": customer.body["customer"]['id'],
+                        }
+                        }
+                    )
+                    
+                    if new_card.is_success():
+                        # for square it's actually the card id
+                        kwargs = {'platform': 'square',
+                                'customer_profile_id': new_card.body["card"]['id']
+                                }
+                        membership.get_or_create_rp(request.user, **kwargs)
 
                 # update payment status and object
                 if not payment.is_approved:  # if not already processed
@@ -164,75 +168,87 @@ def pay_online(request, payment_id, guid='', template_name='payments/square/payo
                                               'SQUARE_LOCATION_ID': settings.SQUARE_LOCATION_ID,
                                               'payment': payment})
 
-# this needs fully built out before it can be live
+
 @login_required
-def update_card(request, rp_id):
+def update_card(request, rp_id, template_name='payments/square/card_update.html'):
+    # square simply needs to keep the stored Card ID which gives all other data
     rp = get_object_or_404(RecurringPayment, pk=rp_id)
     if not has_perm(request.user, 'recurring_payments.change_recurringpayment', rp) \
         and not (rp.user and rp.user.id == request.user.id):
         raise Http403
 
-    api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
-    token = request.POST.get('square_token')
-    client = Client(
-        access_token=api_key,
-        environment= settings.SQUARE_ENVIRONMENT,
-    )
-
-    if not rp.customer_profile_id or rp.platform != 'square':
-        customer = client.customer.create_customer(
-                body={                           
-                "idempotency_key": str(uuid.uuid4()),
-                "email_address": rp.user.email,
-                "note": rp.description,                    
-            }                             
+    form = SquareCardForm(request.POST or None)
+    if settings.SQUARE_ENVIRONMENT == 'sandbox':
+        payment_form_url = "https://sandbox.web.squarecdn.com/v1/square.js"
+    else:
+        payment_form_url = "https://web.squarecdn.com/v1/square.js"
+        
+    if request.method == "POST" and form.is_valid():
+        api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
+        token = request.POST.get('square_token')
+        client = Client(
+            access_token=api_key,
+            environment= settings.SQUARE_ENVIRONMENT,
         )
-        rp.customer_profile_id = customer["customer"]['id']
-        rp.platform = 'square'
-        rp.save()
-    else:
-        customer = client.customer.retrieve_customer(rp.customer_profile_id)
 
-    #square has a many to one relationship with CC cards to customer
-    #we can allow just one to keep things simple for now
-
-    #list their cards
-
-    #disable current cards unless it matches this token
-
-    #if it matches update the info
-
-    #add the new card
-
-    # try:
-    #     client.cards.create_card(body={
-    #         "idempotency_key": str(uuid.uuid4()),
-    #         "source_id": token,
-    #         "card": {
-    #             "customer_id": customer.id,
-    #         }
-    #     })
+        # the older method was stripe that can still be used
+        # this keeps all the other data but updates the method to square
+        if not rp.customer_profile_id or rp.platform != 'square':
+            customer = client.customer.create_customer(
+                    body={                           
+                    "idempotency_key": str(uuid.uuid4()),
+                    "email_address": rp.user.email,
+                    "note": rp.description,                    
+                }                             
+            )
             
-    # except square.error.CardError as e:
-    #     # it's a decline
-    #     json_body = e.json_body
-    #     err  = json_body and json_body['error']
-    #     code = err and err['code']
-    #     message = err and err['message']
-    #     message_status = messages.ERROR
-    #     msg_string = '{message} status={status}, code={code}'.format(
-    #                         message=message, status=e.http_status, code=code)
-    # except Exception as e:
-    #     # Something else happened, completely unrelated to Square
-    #     message_status = messages.ERROR
-    #     msg_string = 'Error updating payment method: {}'.format(e)
+            if customer.is_success():
+                new_card = client.cards.create_card(
+                    body={
+                    "idempotency_key": str(uuid.uuid4()),
+                    "source_id": token,
+                    "card": {
+                        "customer_id": customer.body["customer"]['id'],
+                    }
+                    }
+                )
+                        
+                if new_card.is_success():
+                    rp.customer_profile_id = new_card.body["card"]['id']
+                    rp.platform = 'square'
+                    rp.save()
+        else:
+            # the card includes the customer ID so we can use that to add the new card and save it
+            old_card = client.cards.retrieve_card(rp.customer_profile_id) # for square it's the card id
 
-    # messages.add_message(request, message_status, _(msg_string))
-    next_page = request.GET.get('next')
-    if next_page:
-        return HttpResponseRedirect(next_page)
-    else:
-        return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
+            # square has a many to one relationship with CC cards to customer
+            # we can save just one to keep things simple for now
+
+            # add the new card
+
+            if old_card.is_success():
+                new_card = client.cards.create_card(
+                    body={
+                    "idempotency_key": str(uuid.uuid4()),
+                    "source_id": token,
+                    "card": {
+                        "customer_id": old_card.body["card"]['customer_id'],
+                    }
+                    }
+                )
+                        
+                if new_card.is_success():
+                    rp.customer_profile_id = new_card.body["card"]['id']
+                    rp.platform = 'square'
+                    rp.save()
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form,
+                'payment_form_url': payment_form_url,
+                'SQUARE_APPLICATION_ID': settings.SQUARE_APPLICATION_ID,
+                'SQUARE_LOCATION_ID': settings.SQUARE_LOCATION_ID,
+                }
+        )
 
 
 def thank_you(request, payment_id, guid='', template_name='payments/receipt.html'):
