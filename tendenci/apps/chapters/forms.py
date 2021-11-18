@@ -59,6 +59,66 @@ type_exp_method_widgets = (
     forms.TextInput(),
 )
 
+
+def assign_search_fields(form, app_field_objs):
+    for obj in app_field_objs:
+        # either choice field or text field
+        if obj.field_name and obj.field_type not in ['BooleanField']:
+            if obj.choices and obj.field_type in ('ChoiceField',
+                                  'ChoiceField/django.forms.RadioSelect',
+                                  'MultipleChoiceField',
+                                  'MultipleChoiceField/django.forms.CheckboxSelectMultiple',
+                                  'CountrySelectField'):
+                choices = [s.strip() for s in obj.choices.split(",")]
+                form.fields[obj.field_name] = forms.MultipleChoiceField(label=obj.label,
+                                                        required=False,
+                                                        widget=forms.CheckboxSelectMultiple,
+                                                        choices=list(zip(choices, choices)))
+            else:
+                form.fields[obj.field_name] = forms.CharField(label=obj.label, required=False)
+
+
+class ChapterMemberSearchForm(FormControlWidgetMixin, forms.Form):
+    def __init__(self, *args, **kwargs):
+        app_fields = kwargs.pop('app_fields')
+        user = kwargs.pop('user')
+        self.chapter = kwargs.pop('chapter')
+        super(ChapterMemberSearchForm, self).__init__(*args, **kwargs)
+        if not self.chapter:
+            # chapter field
+            chapter_choices = [(0, _('All'))]
+            chapter_choices += [(c.id, c.title) for c in Chapter.objects.all().order_by('title')]
+            self.fields['chapter'] = forms.IntegerField(
+                                    required=False,
+                                    label=_('Chapter'),
+                                    widget = forms.widgets.Select(
+                                    choices=chapter_choices))
+        # membership_type field
+        membership_type_choices = [(0, _('All'))]
+        membership_type_choices += [(mt.id, mt.name) for mt in ChapterMembershipType.objects.filter(
+                                        status_detail='active').order_by('name')]
+        self.fields['membership_type'] = forms.IntegerField(
+                                required=False,
+                                label=_('Membership Type'),
+                                widget = forms.widgets.Select(
+                                choices=membership_type_choices))
+        # payment_status
+        self.fields['payment_status'] = forms.ChoiceField(
+                    required=False,
+                    choices=(('', _('All')),
+                             ('paid', _('Paid')),
+                             ('not_paid', _('Not Paid'))))
+        # status_detail
+        self.fields['status_detail'] = forms.ChoiceField(
+                    required=False,
+                    choices=(('', _('All')),
+                            ('active', _('Active')),
+                            ('pending', _('Pending')),
+                            ('expired', _('Expired'))))
+        assign_search_fields(self, app_fields)
+        self.add_form_control_class()
+
+
 class ChapterMembershipTypeForm(TendenciBaseForm):
     type_exp_method = TypeExpMethodField(label=_('Period Type'))
     description = forms.CharField(label=_('Notes'), max_length=500, required=False,

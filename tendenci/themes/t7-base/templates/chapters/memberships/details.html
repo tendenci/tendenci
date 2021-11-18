@@ -32,7 +32,7 @@
                     <h1>{{ chapter_membership.user.get_full_name }}</h1>
 
                     {% if chapter_membership.invoice %}
-                        <div class="membership-details-balance"><a href="{% url "invoice.view" chapter_membership.invoice.pk chapter_membership.invoice.guid %}">{% trans 'Balance Due' %}: ${{ chapter_membership.invoice.balance|floatformat:"2" }}</a></div>
+                        <div class="membership-details-balance"><a href="{% url "invoice.view" chapter_membership.invoice.pk chapter_membership.invoice.guid %}">{% trans 'Balance Due' %}: {{ chapter_membership.invoice.balance|format_currency }}</a></div>
                     {% endif %}
 
                 </div>

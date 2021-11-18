@@ -108,7 +108,7 @@ class ChapterMembershipAppFieldAdmin(admin.TabularInline):
 class ChapterMembershipAppAdmin(TendenciBaseModelAdmin):
     inlines = (ChapterMembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('id', 'name', 'status_detail')
+    list_display = ('id', 'name', 'status_detail', 'members_search_link')
     list_display_links = ('name',)
     search_fields = ('name', 'status_detail')
     fieldsets = (
@@ -152,6 +152,13 @@ class ChapterMembershipAppAdmin(TendenciBaseModelAdmin):
                 'admin:chapters_chaptermembershipapp_changelist',
             ))
         return super(ChapterMembershipAppAdmin, self).add_view(request)
+
+    @mark_safe
+    def members_search_link(self, instance):
+        return '<a href="%s" title="%s"><i class="glyphicon glyphicon-search"></i> Search Chapter Members</a>' % (
+                reverse('chapters.memberships_search'),
+                        _('Search Chapter Members'))
+    members_search_link.short_description = _('Chapter Members Search Link')
 
 
 class AppListFilter(SimpleListFilter):

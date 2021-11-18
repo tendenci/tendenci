@@ -1,8 +1,13 @@
+from functools import reduce
+import operator
 import simplejson
 from datetime import date
+import time as ttime
+import csv
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, StreamingHttpResponse
 from django.urls import reverse
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
@@ -33,16 +38,14 @@ from tendenci.apps.chapters.forms import (ChapterForm, OfficerForm,
                                           ChapterSearchForm,
                                           AppFieldCustomForm,
                                           AppFieldBaseFormSet,
-                                          ChapterMembershipForm)
+                                          ChapterMembershipForm,
+                                          ChapterMemberSearchForm)
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.forms import CaptchaForm
-
-try:
-    from tendenci.apps.notifications import models as notification
-except:
-    notification = None
+from tendenci.apps.notifications import models as notification
+from tendenci.apps.base.utils import Echo
+from tendenci.apps.chapters.utils import get_chapter_membership_field_values
 
 
 @is_enabled('chapters')
@@ -390,6 +393,117 @@ def delete(request, id, template_name="chapters/delete.html"):
 
     return render_to_resp(request=request, template_name=template_name,
         context={'chapter': chapter})
+
+
+@is_enabled('chapters')
+@login_required
+def chapter_memberships_search(request, chapter_id=0,
+                               template_name="chapters/memberships/search.html"):
+    if chapter_id:
+        chapter = get_object_or_404(Chapter, pk=chapter_id)
+    else:
+        chapter = None
+
+    app = ChapterMembershipApp.objects.current_app()
+    if not app:
+        raise Http404
+
+    if not (has_perm(request.user, 'chapters.change_chaptermembership') or \
+            (chapter and chapter.is_chapter_leader(request.user))):
+        raise Http403
+    chapter_memberships = ChapterMembership.objects.filter(app_id=app.id
+                                    ).exclude(status_detail__in=['archive', 'inactive', 'admin_hold'])
+    if chapter:
+        chapter_memberships = chapter_memberships.filter(chapter=chapter)
+    app_fields = app.fields.filter(display=True).exclude(
+            field_name__in=['payment_method',
+                            'membership_type',
+                            'groups',
+                            'status',
+                            'status_detail',
+                            ''])
+    form = ChapterMemberSearchForm(request.GET, app_fields=app_fields,
+                                   user=request.user, chapter=chapter)
+    if form.is_valid():
+        membership_fieldnames = [field.name for field in ChapterMembership._meta.fields if \
+                           field.get_internal_type() in ['CharField', 'TextField']]
+        chapter_selected = form.cleaned_data.get('chapter', None)
+        membership_type = form.cleaned_data.get('membership_type')
+        payment_status = form.cleaned_data.get('payment_status')
+        status_detail = form.cleaned_data.get('status_detail')
+        if chapter_selected:
+            chapter_memberships = chapter_memberships.filter(chapter__id=chapter_selected)
+        if membership_type:
+            chapter_memberships = chapter_memberships.filter(membership_type__id=membership_type)
+        if payment_status == 'paid':
+            chapter_memberships = chapter_memberships.filter(invoice__balance__lte=0)
+        elif payment_status == 'not_paid':
+            chapter_memberships = chapter_memberships.filter(invoice__balance__gt=0)
+        if status_detail:
+            chapter_memberships = chapter_memberships.filter(status_detail__iexact=status_detail)
+        for field_name, field_value in form.cleaned_data.items():
+            if field_value:
+                if isinstance(field_value, list):
+                    if field_name in membership_fieldnames:
+                        chapter_memberships = chapter_memberships.filter(reduce(operator.or_, 
+                            [Q(**{f'{field_name}__icontains': value}) for value in field_value]))
+                elif isinstance(field_value, str):
+                    if field_name in membership_fieldnames:
+                        chapter_memberships = chapter_memberships.filter(Q(**{f'{field_name}__icontains': field_value}))
+    chapter_memberships = chapter_memberships.order_by('user__last_name', 'user__first_name')
+
+    if 'export' in request.GET:
+        EventLog.objects.log(description="chapter memberships export")
+        import csv
+        def iter_chapter_memberships(chapter_memberships, app_fields):
+            field_labels = [field.label for field in app_fields]
+            field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
+                            _('Expire Date'), _('Status Detail')]
+            field_labels.insert(0, _('Chapter'))
+            
+            writer = csv.DictWriter(Echo(), fieldnames=field_labels)
+            # write headers - labels
+            yield writer.writerow(dict(zip(field_labels, field_labels)))
+        
+            for chapter_membership in chapter_memberships:
+                values_list = get_chapter_membership_field_values(chapter_membership, app_fields)
+                if chapter_membership.create_dt:
+                    values_list.append(chapter_membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
+                else:
+                    values_list.append('')
+                if chapter_membership.join_dt:
+                    values_list.append(chapter_membership.join_dt.strftime('%Y-%m-%d %H:%M:%S'))
+                else:
+                    values_list.append('')
+                if chapter_membership.renew_dt:
+                    values_list.append(chapter_membership.renew_dt.strftime('%Y-%m-%d %H:%M:%S'))
+                else:
+                    values_list.append('')
+                if chapter_membership.expire_dt:
+                    values_list.append(chapter_membership.expire_dt.strftime('%Y-%m-%d %H:%M:%S'))
+                else:
+                    values_list.append('')
+                values_list.append(chapter_membership.status_detail)
+                
+                values_list.insert(0, chapter_membership.chapter.title)
+        
+                yield writer.writerow(dict(zip(field_labels, values_list)))
+
+        response = StreamingHttpResponse(
+        streaming_content=(iter_chapter_memberships(chapter_memberships, app_fields)),
+        content_type='text/csv',)
+        response['Content-Disposition'] = f'attachment;filename=chapter_memberships_export_{ttime.time()}.csv'
+        return response
+
+    EventLog.objects.log()
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+            'chapter_memberships': chapter_memberships,
+            'search_form': form,
+            'app': app,
+            'chapter': chapter,
+            'app_fields': app_fields})
 
 
 @csrf_exempt

@@ -1,6 +1,30 @@
 from tendenci.apps.chapters.models import ChapterMembershipApp
 
 
+def get_chapter_membership_field_values(chapter_membership, app_fields):
+    """
+    Get a list of chapter membership field values corresponding to the app_fields.
+    """
+    data = []
+    user = chapter_membership.user
+    if hasattr(user, 'profile'):
+        profile = user.profile
+    else:
+        profile = None
+    
+    for field in app_fields:
+        field_name = field.field_name
+        value = ''
+        if hasattr(user, field_name):
+            value = getattr(user, field_name)
+        elif hasattr(profile, field_name):
+            value = getattr(profile, field_name)
+        elif hasattr(chapter_membership, field_name):
+            value = getattr(chapter_membership, field_name)
+        data.append(value)
+    return data
+
+
 def get_notice_token_help_text(notice=None):
     """Get the help text for how to add the token in the email content,
         and display a list of available token.
