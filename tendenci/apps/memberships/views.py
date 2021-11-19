@@ -4,6 +4,7 @@ import os
 import math
 from decimal import Decimal
 from hashlib import md5
+import csv
 #from dateutil.parser import parse
 from datetime import datetime, timedelta, date
 import time as ttime
@@ -41,7 +42,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.decorators import password_required
-from tendenci.apps.base.utils import send_email_notification
+from tendenci.apps.base.utils import send_email_notification, Echo
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.corporate_memberships.models import (CorpMembership,
                                                           CorpProfile,
@@ -92,6 +93,7 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
                                 'directory',
                                 'industry',
                                 'region',
+                                'password',
                                 ''])
     form = MemberSearchForm(request.GET, app_fields=app_fields, user=request.user)
     if form.is_valid():
@@ -2179,57 +2181,63 @@ def report_active_members(request, template_name='reports/membership_list.html')
     elif sort == '-expiration':
         mems = mems.order_by('-expire_dt')
         is_ascending_expiration = True
-    elif sort == 'invoice':
-        # since we need to sort by a related field with the proper
-        # conditions we'll need to bring the sorting to the python level
-        mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=True)
-        is_ascending_invoice = False
-
-    elif sort == '-invoice':
-        # since we need to sort by a related field with the proper
-        # conditions we'll need to bring the sorting to the python level
-        mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=False)
-        is_ascending_invoice = True
+    # COMMENT OUT THIS INVOICE SORTING - because it is a very resource intensive 
+    # operation and easily to cause timeout with large volume of memberships.
+#     elif sort == 'invoice':
+#         # since we need to sort by a related field with the proper
+#         # conditions we'll need to bring the sorting to the python level
+#         mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=True)
+#         is_ascending_invoice = False
+# 
+#     elif sort == '-invoice':
+#         # since we need to sort by a related field with the proper
+#         # conditions we'll need to bring the sorting to the python level
+#         mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=False)
+#         is_ascending_invoice = True
 
     EventLog.objects.log()
 
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
     if ouput == 'csv':
+        def iter_mems(mems):
+            header_row = [
+                'username',
+                'full name',
+                'email',
+                'type',
+                'join',
+                'expiration',
+                'invoice',
+            ]
 
-        table_header = [
-            'username',
-            'full name',
-            'email',
-            'application',
-            'type',
-            'join',
-            'expiration',
-            'invoice',
-        ]
+            writer = csv.DictWriter(Echo(), fieldnames=header_row)
+            
+            yield writer.writerow(dict(zip(header_row, header_row)))
+                
+            for mem in mems:
+    
+                invoice_pk = ''
+                if mem.get_invoice():
+                    invoice_pk = '%i' % mem.get_invoice().pk
+    
+                mem_row = [
+                    mem.user.username,
+                    mem.user.get_full_name(),
+                    mem.user.email,
+                    mem.membership_type.name,
+                    mem.join_dt,
+                    mem.expire_dt,
+                    invoice_pk,
+                ]
+                yield writer.writerow(dict(zip(header_row, mem_row)))
 
-        table_data = []
-        for mem in mems:
+        response = StreamingHttpResponse(streaming_content=(
+                    iter_mems(mems)),
+                    content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment;filename=active-memberships.csv'
 
-            invoice_pk = u''
-            if mem.get_invoice():
-                invoice_pk = u'%i' % mem.get_invoice().pk
-
-            table_data.append([
-                mem.user.username,
-                mem.user.get_full_name(),
-                mem.user.email,
-                mem.membership_type.name,
-                mem.join_dt,
-                mem.expire_dt,
-                invoice_pk,
-            ])
-
-        return render_csv(
-            'active-memberships.csv',
-            table_header,
-            table_data,
-        )
+        return response
     # ------------------------------------
 
     return render_to_resp(request=request, template_name=template_name, context={
@@ -2561,12 +2569,16 @@ def report_renewal_period_members(request, template_name='reports/renewal_period
                 'member_number': member.member_number,
                 'first_name': member.user.first_name,
                 'last_name': member.user.last_name,
-                'city': member.user.profile.city,
-                'state': member.user.profile.state,
-                'country': member.user.profile.country,
                 'membership_type': member.membership_type,
                 'expire_dt': member.expire_dt
             }
+            if hasattr(member.user, 'profile'):
+                city = member.user.profile.city
+                state = member.user.profile.state
+                country = member.user.profile.country
+            else:
+                city = state = country = ''
+            member_dict.update({'city': city, 'state':state,  'country': country})
             members.append(member_dict)
 
     members = sorted(members, key=lambda k: k['expire_dt'])

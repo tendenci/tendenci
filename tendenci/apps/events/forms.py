@@ -763,8 +763,8 @@ class EventForm(TendenciBaseForm):
                     ]
 
     def __init__(self, *args, **kwargs):
-        edit_mode = kwargs.pop('edit_mode', False)
-        recurring_mode = kwargs.pop('recurring_mode', False)
+        self.edit_mode = kwargs.pop('edit_mode', False)
+        self.recurring_mode = kwargs.pop('recurring_mode', False)
         is_template = kwargs.pop('is_template', False)
         super(EventForm, self).__init__(*args, **kwargs)
 
@@ -795,7 +795,7 @@ class EventForm(TendenciBaseForm):
             self.fields['start_dt'].help_text = message
             self.fields['end_dt'].help_text = message
 
-        if edit_mode:
+        if self.edit_mode:
             self.fields.pop('is_recurring_event')
             self.fields.pop('repeat_type')
             self.fields.pop('frequency')
@@ -811,7 +811,7 @@ class EventForm(TendenciBaseForm):
                 self.fields['end_recurring'].widget = forms.HiddenInput()
                 self.fields['recurs_on'].widget = forms.HiddenInput()
 
-        if edit_mode and recurring_mode:
+        if self.edit_mode and self.recurring_mode:
             self.fields.pop('start_dt')
             self.fields.pop('end_dt')
             self.fields.pop('start_event_date')
@@ -868,30 +868,34 @@ class EventForm(TendenciBaseForm):
         return end_recurring
 
     def clean(self):
-        cleaned_data = super(EventForm, self).clean()
-        start_dt = cleaned_data.get("start_dt")
-        end_dt = cleaned_data.get("end_dt")
-        start_event_date = cleaned_data.get('start_event_date')
-        end_event_date = cleaned_data.get('end_event_date')
-        
-        if not isinstance(start_dt, datetime):
-            raise forms.ValidationError(_('Please enter a valid Start Date/Time.'))
-        if not isinstance(end_dt, datetime):
-            raise forms.ValidationError(_('Please enter a valid End Date/Time.'))
+        if self.edit_mode and self.recurring_mode:
+            # those 4 fields - start_dt, end_dt, start_event_date, and end_event_date - are excluded on recurring events
+            return super(EventForm, self).clean()
+        else:
+            cleaned_data = super(EventForm, self).clean()
+            start_dt = cleaned_data.get("start_dt")
+            end_dt = cleaned_data.get("end_dt")
+            start_event_date = cleaned_data.get('start_event_date')
+            end_event_date = cleaned_data.get('end_event_date')
 
-        if start_dt > end_dt:
-            errors = self._errors.setdefault("end_dt", ErrorList())
-            errors.append(_(u"This cannot be \
-                earlier than the start date."))
+            if not isinstance(start_dt, datetime):
+                raise forms.ValidationError(_('Please enter a valid Start Date/Time.'))
+            if not isinstance(end_dt, datetime):
+                raise forms.ValidationError(_('Please enter a valid End Date/Time.'))
 
-        if start_event_date and end_event_date:
-            if start_event_date > end_event_date:
-                errors = self._errors.setdefault("end_event_date", ErrorList())
+            if start_dt > end_dt:
+                errors = self._errors.setdefault("end_dt", ErrorList())
                 errors.append(_(u"This cannot be \
                     earlier than the start date."))
 
-        # Always return the full collection of cleaned data.
-        return cleaned_data
+            if start_event_date and end_event_date:
+                if start_event_date > end_event_date:
+                    errors = self._errors.setdefault("end_event_date", ErrorList())
+                    errors.append(_(u"This cannot be \
+                        earlier than the start date."))
+
+            # Always return the full collection of cleaned data.
+            return cleaned_data
 
     def save(self, *args, **kwargs):
         event = super(EventForm, self).save(*args, **kwargs)
@@ -1890,7 +1894,7 @@ class RegistrantForm(forms.Form):
             [profile] = Profile.objects.filter(user__email__iexact=email,
                                              user__is_active=True,
                                              status=True,
-                                             status_detail='active'
+                                             status_detail__iexact='active'
                                              ).order_by('-member_number'
                                             )[:1] or [None]
             if profile:

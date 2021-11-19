@@ -43,20 +43,15 @@ class Command(BaseCommand):
                 default_storage.save(path2, ContentFile(''))
                 f = default_storage.open(uimport.upload_file.name)
                 f2 = default_storage.open(path2, 'wb+')
-                encoding_updated = False
-                for chunk in f.chunks():
-                    encoding = chardet.detect(chunk)['encoding']
-                    print(encoding)
-                    if encoding not in ('ascii', 'utf8'):
-                        if encoding == 'ISO-8859-1' or \
-                            encoding == 'ISO-8859-2':
-                            encoding = 'latin-1'
+                encoding = chardet.detect(f.read())['encoding']
+                if encoding == 'ISO-8859-1' or encoding == 'ISO-8859-2':
+                    encoding = 'latin-1'
+                if encoding not in ('ascii', 'utf-8', 'utf8'):
+                    for chunk in f.chunks():
                         chunk = chunk.decode(encoding)
                         chunk = chunk.encode('utf8')
-                        encoding_updated = True
-                    f2.write(chunk)
-                f2.close()
-                if encoding_updated:
+                        f2.write(chunk)
+                    f2.close()
                     uimport.upload_file.file = f2
                     uimport.upload_file.name = f2.name
                     uimport.save()

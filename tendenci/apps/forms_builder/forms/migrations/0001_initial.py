@@ -86,6 +86,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Form',
                 'verbose_name_plural': 'Forms',
+                'ordering': ('-id',),
             },
         ),
         migrations.CreateModel(
