@@ -105,6 +105,13 @@
                                     </span>
                                 </li>
                             {% endif %}
+                            {% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+                             <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'chapters.memberships_search_single_chapter' app_object.pk %}">{% trans "Chapter Members" %}</a>
+                                    </span>
+                             </li>
+                            {% endif %}
                             {% endif %}
 
                             <li class="content-item">
