@@ -328,6 +328,12 @@ class Invoice(models.Model):
             if self.guid == guid:
                 return True
 
+        obj = self.get_object()
+        if obj and hasattr(obj, 'allow_adjust_invoice_by'):
+            # example: chapter leaders can view/adjust invoices for their chapter memberships.
+            if obj.allow_adjust_invoice_by(user2_compare):
+                return True
+
         if user2_compare.is_authenticated:
             if user2_compare in [self.creator, self.owner] or \
                     user2_compare.email == self.bill_to_email:
@@ -339,27 +345,32 @@ class Invoice(models.Model):
         return self.allow_view_by(user2_compare,  guid)
 
     # if this invoice allows edit by user2_compare
-    def allow_edit_by(self, user2_compare, guid=''):
-        boo = False
+    def allow_edit_by(self, user2_compare):
         if user2_compare.is_superuser:
-            boo = True
+            return True
         else:
             if user2_compare and user2_compare.id > 0:
                 if has_perm(user2_compare, 'invoices.change_invoice'):
                     return True
 
-                if self.creator == user2_compare or \
-                        self.owner == user2_compare or \
-                        self.bill_to_email == user2_compare.email:
-                    if self.status == 1:
-                        # user can only edit a non-tendered invoice
-                        if not self.is_tendered:
-                            boo = True
-            else:
-                if self.guid and self.guid == guid:  # for anonymous user
-                    if self.status == 1 and not self.is_tendered:
-                        boo = True
-        return boo
+                obj = self.get_object()
+                if obj and hasattr(obj, 'allow_adjust_invoice_by'):
+                    # example: chapter leaders can view/adjust invoices for their chapter memberships.
+                    if obj.allow_adjust_invoice_by(user2_compare):
+                        return True
+
+#                 if self.creator == user2_compare or \
+#                         self.owner == user2_compare or \
+#                         self.bill_to_email == user2_compare.email:
+#                     if self.status:
+#                         # user can only edit a non-tendered invoice
+#                         if not self.is_tendered:
+#                             return True
+#             else:
+#                 if self.guid and self.guid == guid:  # for anonymous user
+#                     if self.status and not self.is_tendered:
+#                         return True
+        return False
 
     def make_payment(self, user, amount):
         """

@@ -125,12 +125,8 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     if not invoice.allow_view_by(request.user, guid):
         raise Http403
 
-    allowed_tuple = (
-        request.user.profile.is_superuser,
-        has_perm(request.user, 'invoices.change_invoice'))
-
     form = None
-    if any(allowed_tuple):
+    if invoice.allow_edit_by(request.user):
         if request.method == "POST":
             form = form_class(request.POST, instance=invoice)
             if form.is_valid():
@@ -159,6 +155,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
         'guid': guid,
         'notify': notify,
         'form': form,
+        'can_edit': invoice.allow_edit_by(request.user),
         'can_pay': invoice.allow_payment_by(request.user, guid),
         'merchant_login': merchant_login})
 
@@ -170,7 +167,7 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
     """
     invoice = get_object_or_404(Invoice, pk=id)
 
-    if not has_perm(request.user, 'payments.change_payment'):
+    if not invoice.allow_edit_by(request.user):
         raise Http403
 
     if request.method == 'POST':
@@ -236,7 +233,7 @@ def void_payment(request, id):
 
     invoice = get_object_or_404(Invoice, pk=id)
 
-    if not (request.user.profile.is_superuser): raise Http403
+    if not invoice.allow_edit_by(request.user): raise Http403
 
     amount = invoice.payments_credits
     invoice.void_payment(request.user, amount)
@@ -508,7 +505,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
     original_balance = invoice.balance
     original_variance = invoice.variance
 
-    if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
+    if not invoice.allow_edit_by(request.user): raise Http403
 
     if request.method == "POST":
         form = form_class(request.POST, instance=invoice)
@@ -565,12 +562,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
 def detail(request, id, template_name="invoices/detail.html"):
     invoice = get_object_or_404(Invoice.objects.all_invoices(), pk=id)
 
-    allowed_list = (
-        request.user.profile.is_superuser,
-        has_perm(request.user, 'invoices.change_invoice')
-    )
-
-    if not any(allowed_list):
+    if not invoice.allow_edit_by(request.user):
         raise Http403
 
     from tendenci.apps.accountings.models import AcctEntry
@@ -613,7 +605,7 @@ def detail(request, id, template_name="invoices/detail.html"):
 @is_enabled('invoices')
 def download_pdf(request, id):
     invoice = get_object_or_404(Invoice, pk=id)
-    if not has_perm(request.user, 'invoices.change_invoice', invoice):
+    if not invoice.allow_edit_by(request.user):
         raise Http403
 
     result = invoice_pdf(request, invoice)

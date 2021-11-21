@@ -529,6 +529,17 @@ class ChapterMembership(TendenciBaseModel):
 
         return False
 
+    def allow_adjust_invoice_by(self, request_user):
+        """
+        Returns whether or not the request_user can adjust invoice
+        for this chapter membership.
+        """
+        if not request_user.is_anonymous:
+            return request_user.is_superuser or \
+                 self.chapter.is_chapter_leader(request_user)
+
+        return False
+
     def create_member_number(self):
         #TODO: Decide how member numbers should be generated for chapter members
         return str(self.id)
@@ -671,12 +682,12 @@ class ChapterMembership(TendenciBaseModel):
             self.invoice = invoice
             self.save()
 
-        self.invoice.status_detail = status_detail
         if status_detail == 'estimate':
             self.invoice.estimate = True
         elif status_detail == 'tendered':
             self.invoice.tender(self.user)
 
+        self.invoice.status_detail = status_detail
         self.invoice.save()
 
         return self.invoice
