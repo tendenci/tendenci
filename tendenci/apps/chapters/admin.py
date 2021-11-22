@@ -424,7 +424,7 @@ class NoticeAdmin(admin.ModelAdmin):
 
     @mark_safe
     def notice_logs(self, obj):
-        logs_url = reverse('admin:chapterss_noticelog_changelist')
+        logs_url = reverse('admin:chapters_noticelog_changelist')
         return f'<a href="{logs_url}?notice__id__exact={obj.id}">View logs</a>' 
 
     def save_model(self, request, object, form, change):
@@ -485,7 +485,7 @@ class NoticeDefaultLogRecordAdmin(admin.ModelAdmin):
 
     @mark_safe
     def show_notice(self, obj):
-        notice_url = reverse('admin:chapters_notice_change', args=[obj.id])
+        notice_url = reverse('admin:chapters_notice_change', args=[obj.notice_log.notice.id])
         return f'<a href="{notice_url}">{obj.notice_log.notice.notice_name}</a>'
     show_notice.short_description = 'Notice'
     show_notice.allow_tags = True

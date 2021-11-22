@@ -64,6 +64,7 @@ def get_notice_token_help_text(notice=None):
                     'applications.</div>'
 
     other_labels = [
+                    'chapter_name',
                     'first_name',
                     'last_name',
                     'email',

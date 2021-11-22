@@ -1428,6 +1428,7 @@ class Notice(models.Model):
             expire_dt = ''
 
         context.update({
+            'chapter_name': chapter_membership.chapter.title,
             'first_name': chapter_membership.user.first_name,
             'last_name': chapter_membership.user.last_name,
             'email': chapter_membership.user.email,
@@ -1582,6 +1583,10 @@ class Notice(models.Model):
             if self.membership_type:
                 chapter_memberships = chapter_memberships.filter(
                                 membership_type=self.membership_type)
+            if self.chapter:
+                chapter_memberships = chapter_memberships.filter(
+                                chapter=self.chapter)
+
             memberships_count = chapter_memberships.count()
         else:
             # notice_time == 'attimeof'
@@ -1599,18 +1604,17 @@ class Notice(models.Model):
 
             for chapter_membership in chapter_memberships:
                 try:
-                    num_email_sent, list_emails_sent = self.email_chapter_member(chapter_membership, verbosity=verbosity)
-                    if num_email_sent > 0:
-                        num_sent += num_email_sent
+                    boo_sent = self.email_chapter_member(chapter_membership, verbosity=verbosity)
+                    if boo_sent:
+                        num_sent += 1
                         if memberships_count <= 50:
                             self.chapter_memberships_processed.append(chapter_membership)
 
                         # log record
-
                         notice_log_record = NoticeDefaultLogRecord(
                                                 notice_log=notice_log,
                                                 chapter_membership=chapter_membership,
-                                                emails_sent=', '.join(list_emails_sent))
+                                                emails_sent=chapter_membership.user.email)
                         notice_log_record.save()
                 except:
                     # log the exception
