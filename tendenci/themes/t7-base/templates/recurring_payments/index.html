@@ -30,6 +30,11 @@
 
  </style>
 
+<script type="text/javascript" src="{% static 'js/jquery.form.min.js' %}"></script>
+<!-- this should live somewhere else to use live vs sandbox -->
+<script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+
+
 {% endblock %}
 
 {% block content %}
@@ -44,7 +49,21 @@
         <h1>{% trans 'Recurring Payment Account' %} <small> - {{ rp.description }}</small> </h1>
 
         {% if is_active %}
-        {% if rp.platform == 'stripe' %}
+        {% comment %} Allow switching from stripe to square while old methods are not removed. {% endcomment %}
+        {% if site_merchant == 'square' %}
+            <!-- Modal -->
+            <div class="modal" id="crewModal" tabindex="-1" role="dialog" aria-labelledby="crewMemberModal" aria-hidden="true">
+            </div><!-- /.modal -->
+            <div class="text-right">
+              <a class="btn btn-primary" data-toggle="modal" href="{% url 'square.update_card' rp.id %}" data-target="#crewModal" title="{% if rp.customer_profile_id %}Update Payment Method{% else %}Add Payment Method{% endif %}" data-tooltip>{% if rp.customer_profile_id %}Update Payment Method{% else %}Add Payment Method{% endif %}</a>
+              <br />
+              {% with rp.get_source_data as source_data %}
+              {% if source_data %}
+              <small class="text-muted">{% trans "Current card: " %} {{ source_data.card_brand }} &nbsp;&nbsp;&nbsp; ····{{ source_data.last4 }} &nbsp;&nbsp;&nbsp; {{ source_data.exp_month }}/{{ source_data.exp_year }}</small>
+              {% endif %}
+              {% endwith %}
+            </div>
+        {% elif rp.platform == 'stripe' %}
             <div class="pull-right">
                 <form action="{% url 'stripe.update_card' rp.id %}?next={{ request.path }}" method="POST">{% csrf_token %}
                   <script
@@ -443,6 +462,26 @@ $(document).ready(function(){
         var disable_account = confirm('Are you sure you want to disable this account?');    // confirm
         if(disable_account) $('form[name="rp-disable"]').submit(); // disable: if OK
         return false;    // cancel
+    });
+
+    //square payment processor modal
+    $('#crewModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var url = button.attr('href');
+        var modal = $(this);
+
+        $.get( url )
+        .done(function( data ) {
+        modal.html(data);
+        });
+    });
+
+    $('#crewModal').on('hidden.bs.modal',  function () {
+        $(this).removeData('bs.modal');
+    });
+
+    $.ajaxSetup({
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
     });
 </script>
 

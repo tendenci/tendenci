@@ -16,6 +16,9 @@ def _verify_settings(*args):
 def _check_stripe():
     return _verify_settings('STRIPE_SECRET_KEY', 'STRIPE_PUBLISHABLE_KEY')
 
+def _check_square():
+    return _verify_settings('SQUARE_APPLICATION_ID', 'SQUARE_ACCESS_TOKEN', 'SQUARE_LOCATION_ID')
+
 def _check_authorize_net():
     return _verify_settings('MERCHANT_LOGIN', 'MERCHANT_TXN_KEY')
 
@@ -24,6 +27,8 @@ def has_supported_merchant_account(platform):
         return _check_authorize_net()
     elif platform == 'stripe':
         return _check_stripe()
+    elif platform == 'square':
+        return _check_square()
 
 
 class Command(BaseCommand):

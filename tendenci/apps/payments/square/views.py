@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 #from django.http import HttpResponse
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.template.loader import render_to_string
 from django.urls import reverse
 # from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -93,7 +94,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/square/payo
             if obj_user:
                 try:
                     # Create a Customer:
-                    customer = client.customer.create_customer(
+                    customer = client.customers.create_customer(
                          body={                           
                             "idempotency_key": str(uuid.uuid4()),
                             "email_address": obj_user.email,
@@ -194,7 +195,7 @@ def update_card(request, rp_id, template_name='payments/square/card_update.html'
         # the older method was stripe that can still be used
         # this keeps all the other data but updates the method to square
         if not rp.customer_profile_id or rp.platform != 'square':
-            customer = client.customer.create_customer(
+            customer = client.customers.create_customer(
                     body={                           
                     "idempotency_key": str(uuid.uuid4()),
                     "email_address": rp.user.email,
@@ -217,6 +218,7 @@ def update_card(request, rp_id, template_name='payments/square/card_update.html'
                     rp.customer_profile_id = new_card.body["card"]['id']
                     rp.platform = 'square'
                     rp.save()
+                    return HttpResponse(render_to_string('payments/square/success.html'))
         else:
             # the card includes the customer ID so we can use that to add the new card and save it
             old_card = client.cards.retrieve_card(rp.customer_profile_id) # for square it's the card id
@@ -241,6 +243,7 @@ def update_card(request, rp_id, template_name='payments/square/card_update.html'
                     rp.customer_profile_id = new_card.body["card"]['id']
                     rp.platform = 'square'
                     rp.save()
+                    return HttpResponse(render_to_string('payments/square/success.html'))
 
     return render_to_resp(request=request, template_name=template_name,
         context={'form': form,

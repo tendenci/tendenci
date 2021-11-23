@@ -452,6 +452,13 @@ class Invoice(models.Model):
         """
         [payment] = self.payment_set.filter(status_detail='approved')[:1] or [None]
         return payment
+    
+    def get_approved_payments(self):
+        """
+        Returns all approved payments in ascending order
+        """
+        [payments] = self.payment_set.filter(status_detail='approved') or [None]
+        return payments
 
 # add signals
 post_save.connect(update_profiles_total_spend, sender=Invoice,
