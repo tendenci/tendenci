@@ -457,7 +457,7 @@ class Invoice(models.Model):
         """
         Returns all approved payments in ascending order
         """
-        [payments] = self.payment_set.filter(status_detail='approved') or [None]
+        payments = self.payment_set.filter(status_detail='approved') or None
         return payments
 
 # add signals
