@@ -150,6 +150,8 @@ class News(TendenciBaseModel):
 
     @property
     def is_released(self):
+        if not self.release_dt_local:
+            self.assign_release_dt_local()
         return self.release_dt_local <= datetime.now()
 
     @property
