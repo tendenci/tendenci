@@ -3,7 +3,6 @@ import operator
 import simplejson
 from datetime import date
 import time as ttime
-import csv
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -32,7 +31,8 @@ from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.chapters.models import (Chapter, Officer,
                                            ChapterMembershipAppField,
                                            ChapterMembershipApp,
-                                           ChapterMembership)
+                                           ChapterMembership,
+                                           Notice)
 from tendenci.apps.chapters.forms import (ChapterForm, OfficerForm,
                                           OfficerBaseFormSet,
                                           ChapterSearchForm,
@@ -645,22 +645,26 @@ def chapter_membership_add(request, chapter_id=0,
         if chapter_membership_form.is_valid():
             # create a chapter membership
             chapter_membership = chapter_membership_form.save()
-
             # create an invoice
             chapter_membership.save_invoice()
+
             if chapter_membership.approval_required():
                 # approval is required - set pending
                 chapter_membership.pend()
                 chapter_membership.save()
-                #TODO: send notifications
-            else:
+
+            # send notification to user
+            chapter_membership.send_email(notice_type='apply')
+
+            if not chapter_membership.approval_required():
                 # not require approval - approve it!
                 chapter_membership.approve(request_user=request.user)
-                #TODO: send notifications
-                #chapter_membership.send_email(request, 'approve')
 
             # log an event
             EventLog.objects.log(instance=chapter_membership)
+            
+            # TODO: email notification to admin
+            # Who should be notified? site admin or chapter leaders?
 
             # handle online payment
             if chapter_membership.payment_method.is_online and \
@@ -790,15 +794,19 @@ def chapter_membership_renew(request, chapter_membership_id=0,
                 # approval is required - set pending
                 chapter_membership.pend()
                 chapter_membership.save()
-                #TODO: send notifications
-            else:
+
+            # send notification to user
+            chapter_membership.send_email(notice_type='renewal')
+
+            if not chapter_membership.approval_required():
                 # not require approval - approve it!
                 chapter_membership.approve(request_user=request.user)
-                #TODO: send notifications
-                #chapter_membership.send_email(request, 'approve_renewal')
 
             # log an event
             EventLog.objects.log(instance=chapter_membership)
+
+            # TODO: email notification to admin
+            # Who should be notified? site admin or chapter leaders?
 
             # handle online payment
             if chapter_membership.payment_method.is_online and \

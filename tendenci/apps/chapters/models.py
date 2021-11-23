@@ -874,6 +874,13 @@ class ChapterMembership(TendenciBaseModel):
         # archive other membership [of this type] [in this chapter]
         self.archive_old_memberships()
 
+        # email notification to member
+        if self.renewal:
+            notice_type = 'approve_renewal'
+        else:
+            notice_type = 'approve'
+        self.send_email(notice_type=notice_type)
+
         return self
 
     def pend(self):
@@ -937,6 +944,13 @@ class ChapterMembership(TendenciBaseModel):
 
         # archive other membership [of this type]
         self.archive_old_memberships()
+
+        # email notification to member
+        if self.renewal:
+            notice_type = 'reject_renewal'
+        else:
+            notice_type = 'reject'
+        self.send_email(notice_type=notice_type)
 
         return True
 
@@ -1074,6 +1088,20 @@ class ChapterMembership(TendenciBaseModel):
         return self.expire_dt + timedelta(
             days=self.membership_type.renewal_period_end + 1
         ) - timedelta(seconds=1)
+
+    def send_email(self, notice_type):
+        """
+        Convenience method for sending
+            typical membership emails.
+        Returns outcome via boolean.
+        """
+        notice_sent =  Notice.send_notices(
+                notice_type=notice_type,
+                chapter_membership=self,
+                membership_type=self.membership_type,
+            )
+
+        return notice_sent
 
 
 class ChapterMembershipApp(TendenciBaseModel):
@@ -1481,7 +1509,7 @@ class Notice(models.Model):
 
     def email_chapter_member(self, chapter_membership, verbosity=1):
         """
-        Send emails to this chapter member.
+        Send emails (with the content of this notice) to this chapter member.
         """
 
         email_context = {
@@ -1636,7 +1664,7 @@ class Notice(models.Model):
         Example:
 
           notice_sent =  Notice.send_notices(
-                            notice_type='join',
+                            notice_type='apply',
                             chapter_membership=chapter_membership,
                             membership_type=chapter_membership.membership_type,
                         )
@@ -1665,8 +1693,12 @@ class Notice(models.Model):
                 notice.membership_type == membership_type,
                 not notice.membership_type
             )
+            chapter_requirments = (
+                notice.chapter == chapter_membership.chapter,
+                not notice.chapter
+            )
 
-            if any(notice_requirments):
+            if any(notice_requirments) and any(chapter_requirments):
                 notice.process_notice(chapter_membership=chapter_membership)
 
         return True
