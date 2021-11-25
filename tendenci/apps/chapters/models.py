@@ -1402,6 +1402,10 @@ class Notice(models.Model):
     def __str__(self):
         return self.notice_name
 
+    def save(self, *args, **kwargs):
+        self.guid = self.guid or str(uuid.uuid4())
+        super(Notice, self).save(*args, **kwargs)
+
     def get_default_context(self, chapter_membership):
         """
         Returns a dictionary with default context items.
