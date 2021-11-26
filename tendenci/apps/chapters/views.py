@@ -660,6 +660,10 @@ def chapter_membership_add(request, chapter_id=0,
                 # not require approval - approve it!
                 chapter_membership.approve(request_user=request.user)
 
+            # add user to the newsletter group, if any
+            if chapter.newsletter_group:
+                chapter.newsletter_group.add_user(chapter_membership.user)
+
             # log an event
             EventLog.objects.log(instance=chapter_membership)
             

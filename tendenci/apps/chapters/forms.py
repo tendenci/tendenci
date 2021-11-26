@@ -28,7 +28,7 @@ from tendenci.apps.payments.fields import PaymentMethodModelChoiceField
 from .fields import ChapterMembershipTypeModelChoiceField
 from .models import Notice
 from .widgets import ChapterNoticeTimeTypeWidget
-from .utils import get_notice_token_help_text
+from .utils import get_notice_token_help_text, get_newsletter_group_queryset
 
 
 type_exp_method_fields = (
@@ -631,6 +631,7 @@ class ChapterForm(TendenciBaseForm):
     photo_upload = forms.FileField(label=_('Featured Image'), required=False,
                                    validators=[FileValidator(allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],)
     state = StateSelectField(required=False)
+    #newsletter_group = forms.ModelChoiceField(required=False, queryset=None)
 
 
     class Meta:
@@ -638,6 +639,7 @@ class ChapterForm(TendenciBaseForm):
         fields = (
         'title',
         'slug',
+        'newsletter_group',
         'region',
         'state',
         'county',
@@ -657,6 +659,7 @@ class ChapterForm(TendenciBaseForm):
         fieldsets = [('Chapter Information', {
                       'fields': ['title',
                                  'slug',
+                                 'newsletter_group',
                                  'region',
                                  'state',
                                  'county',
@@ -700,7 +703,10 @@ class ChapterForm(TendenciBaseForm):
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
-            
+
+        # newsletter group
+        self.fields['newsletter_group'].queryset = get_newsletter_group_queryset()
+
     def save(self, *args, **kwargs):
         chapter = super(ChapterForm, self).save(*args, **kwargs)
         # save photo
@@ -737,6 +743,7 @@ class ChapterAdminForm(TendenciBaseForm):
         fields = (
         'title',
         'slug',
+        'newsletter_group',
         'region',
         'state',
         'county',
@@ -766,6 +773,7 @@ class ChapterAdminForm(TendenciBaseForm):
         if self.instance.featured_image:
             self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
             self.fields['photo_upload'].required = False
+        self.fields['newsletter_group'].queryset = get_newsletter_group_queryset()
 
 
 class ChapterAdminChangelistForm(TendenciBaseForm):

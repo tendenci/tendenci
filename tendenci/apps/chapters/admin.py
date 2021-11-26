@@ -540,13 +540,14 @@ class OfficerAdminInline(admin.TabularInline):
 
 
 class ChapterAdmin(TendenciBaseModelAdmin):
-    list_display = ('view_on_site', 'edit_link', 'title', 'group_link', 'entity', 'admin_perms', 'admin_status')
+    list_display = ('view_on_site', 'edit_link', 'title', 'group_link', 'newsletter_group_link', 'entity', 'admin_perms', 'admin_status')
     search_fields = ('title', 'content',)
     list_editable = ('title',)
     fieldsets = (
         (None, {'fields': (
             'title',
             'slug',
+            'newsletter_group',
             'region',
             'state',
             'county',
@@ -646,6 +647,17 @@ class ChapterAdmin(TendenciBaseModelAdmin):
         return f'<a href="{group_url}" title="{group_name}">{group_name}</a>'
     group_link.short_description = _('group')
     group_link.admin_order_field = 'group'
+    
+    @mark_safe
+    def newsletter_group_link(self, instance):
+        if instance.newsletter_group:
+            group_url = reverse('group.detail',args=[instance.newsletter_group.slug])
+            group_name = instance.newsletter_group.name
+                                
+            return f'<a href="{group_url}" title="{group_name}">{group_name}</a>'
+        return ''
+    newsletter_group_link.short_description = _('newsletter group')
+    newsletter_group_link.admin_order_field = 'newsletter_group'
 
     @mark_safe
     def view_on_site(self, obj):

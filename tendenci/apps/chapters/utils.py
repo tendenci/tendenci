@@ -1,4 +1,15 @@
-from tendenci.apps.chapters.models import ChapterMembershipApp
+from tendenci.apps.chapters.models import Chapter, ChapterMembershipApp
+from tendenci.apps.user_groups.models import Group
+
+
+def get_newsletter_group_queryset():
+    groups_qs = Group.objects.filter(status_detail="active",
+                                     allow_self_add=True,
+                                    ).order_by('name')
+    if Chapter.objects.exists():
+        groups_qs = groups_qs.exclude(id__in=Chapter.objects.values_list('group', flat=True))
+
+    return groups_qs
 
 
 def get_chapter_membership_field_values(chapter_membership, app_fields):
