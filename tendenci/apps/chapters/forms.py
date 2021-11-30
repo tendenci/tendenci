@@ -1,4 +1,6 @@
 from os.path import splitext, basename
+import codecs
+from csv import reader
 
 from django import forms
 from django.contrib.auth.models import User
@@ -26,7 +28,7 @@ from tendenci.apps.memberships.widgets import (
     CustomRadioSelect, TypeExpMethodWidget)
 from tendenci.apps.payments.fields import PaymentMethodModelChoiceField
 from .fields import ChapterMembershipTypeModelChoiceField
-from .models import Notice
+from .models import Notice, ChapterMembershipImport
 from .widgets import ChapterNoticeTimeTypeWidget
 from .utils import get_notice_token_help_text, get_newsletter_group_queryset
 
@@ -862,4 +864,59 @@ class ChapterSearchForm(FormControlWidgetMixin, forms.Form):
             self.fields['county'].widget.attrs.update({'placeholder': _('County')})
         else:
             del self.fields['county']
+
+
+class ChapterMembershipUploadForm(FormControlWidgetMixin, forms.ModelForm):
+    KEY_CHOICES = (
+               ('username,membership_type_id,chapter_id', _('username and membership_type_id and chapter_id')),
+               )
+    key = forms.ChoiceField(label="Identify duplicates by", required=True,
+                            choices=KEY_CHOICES)
+    class Meta:
+        model = ChapterMembershipImport
+        fields = ('override', 'key', 'upload_file',)
+
+    def __init__(self, *args, **kwargs):
+        self.chapter = kwargs.pop('chapter')
+        super(ChapterMembershipUploadForm, self).__init__(*args, **kwargs)
+        self.fields['upload_file'].validators = [FileValidator(allowed_extensions=['.csv'], allowed_mimetypes=['text/csv', 'text/plain'])]
+        if self.chapter:
+            self.fields['key'].choices = (('username,membership_type_id', _('username and membership_type_id')),)
+
+    def clean(self):
+        cleaned_data = super(ChapterMembershipUploadForm, self).clean()
+
+        # check for valid content in the csv file
+        if 'upload_file' not in cleaned_data:
+            return cleaned_data
+
+        upload_file = cleaned_data['upload_file']
+        csv_reader = reader(codecs.iterdecode(upload_file, 'utf-8'))
+        header_row = next(csv_reader)
+        if not header_row:
+            raise forms.ValidationError(_('There is no data in the spreadsheet.'))
+
+        first_row = None
+        if header_row != None:
+            for row in csv_reader:
+                first_row = row
+                break
+        upload_file.seek(0)
+        if not first_row:
+            raise forms.ValidationError(_('There is no data rows in the spreadsheet.'))
+
+        # check for valid key
+        key = cleaned_data['key']
+        
+
+        key_list = [k for k in key.split(',')]
+        missing_columns = [item for item in key_list if item not in header_row]
+        if missing_columns:
+            raise forms.ValidationError(_(
+                        """
+                        Field(s) "%(fields)s" used to identify the duplicates
+                        should be included in the .csv file.
+                        """ % {'fields' : ', '.join(missing_columns)}))
+
+        return cleaned_data
 

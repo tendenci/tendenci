@@ -1,10 +1,11 @@
 from datetime import date, datetime, timedelta
 import time
 import uuid
-import re
+import os
 from dateutil.relativedelta import relativedelta
 import traceback
 import logging
+from csv import reader
 
 from django.db.models import Q
 from django.db import models
@@ -17,6 +18,7 @@ from django.template.defaultfilters import slugify
 from django import forms
 from django.utils.safestring import mark_safe
 from django.template import engines
+from django.core.files.storage import default_storage
 from importlib import import_module
 
 from tendenci.libs.tinymce import models as tinymce_models
@@ -42,6 +44,8 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import fieldify
 from tendenci.apps.base.utils import validate_email
 from tendenci.apps.notifications import models as notification
+from tendenci.apps.base.models import BaseImport, BaseImportData
+from tendenci.apps.base.utils import UnicodeWriter
 
 logger = logging.getLogger(__name__)
 
@@ -1741,4 +1745,83 @@ class NoticeDefaultLogRecord(models.Model):
     class Meta:
         verbose_name = _("Notice Log Record")
         verbose_name_plural = _("Notice Log Records")
+        app_label = 'chapters'
+
+
+def get_import_file_path(instance, filename):
+    return "imports/chapters/{uuid}/{filename}".format(
+                            uuid=uuid.uuid4().hex[:8],
+                            filename=filename)
+
+
+class ChapterMembershipImport(BaseImport):
+    chapter = models.ForeignKey(Chapter, null=True, on_delete=models.SET_NULL)
+    upload_file = models.FileField(_("Upload File"), max_length=260,
+                                   upload_to=get_import_file_path,
+                                   null=True)
+    recap_file = models.FileField(_("Recap File"), max_length=260,
+                                   null=True)
+    key = models.CharField(_('Key'), max_length=50, default='')
+
+    class Meta:
+        app_label = 'chapters'
+
+    def get_total_number_of_rows(self):
+        """
+        Get the total number of rows.
+        """
+        total_num = 0
+        if self.upload_file:
+            read_obj = default_storage.open(self.upload_file.name, 'r')
+            total_num = len(list(reader(read_obj))) - 1
+            read_obj.close()
+
+        return total_num
+
+    def get_header_and_first_row(self):
+        if self.upload_file:
+            header_row = None
+            first_row = None
+            with default_storage.open(self.upload_file.name, 'r') as read_obj:
+                csv_reader = reader(read_obj)
+                header_row = next(csv_reader)
+                if header_row != None:
+                    for row in csv_reader:
+                        first_row = row
+                        break
+        if header_row != None:
+            header_row = [item.strip() for item in header_row]
+        return header_row, first_row
+
+    def generate_recap(self):
+        if not self.recap_file and self.header_line:
+            file_name = 'chapter_memberships_import_%d_recap.csv' % self.id
+            file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
+                                   file_name)
+            f = default_storage.open(file_path, 'wb')
+            recap_writer = UnicodeWriter(f, encoding='utf-8')
+            header_row = self.header_line.split(',')
+            if 'status' in header_row:
+                header_row.remove('status')
+            if 'status_detail' in header_row:
+                header_row.remove('status_detail')
+            header_row.extend(['action', 'error'])
+            recap_writer.writerow(header_row)
+            data_list = ChapterMembershipImportData.objects.filter(
+                mimport=self).order_by('row_num')
+            for idata in data_list:
+                data_dict = idata.row_data
+                row = [data_dict[k] for k in header_row if k in data_dict]
+                row.extend([idata.action_taken, idata.error])
+                recap_writer.writerow(row)
+
+            f.close()
+            self.recap_file.name = file_path
+            self.save()
+
+
+class ChapterMembershipImportData(BaseImportData):
+    mimport = models.ForeignKey(ChapterMembershipImport, related_name="import_data", on_delete=models.CASCADE)
+
+    class Meta:
         app_label = 'chapters'

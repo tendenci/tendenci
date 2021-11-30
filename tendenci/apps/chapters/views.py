@@ -3,6 +3,10 @@ import operator
 import simplejson
 from datetime import date
 import time as ttime
+import math
+import subprocess
+from dateutil.parser import parse as dparse, ParserError 
+import os
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -17,7 +21,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
 from django.http import HttpResponse, Http404
 from django.forms.models import modelformset_factory
+from django.db.models.fields import AutoField
 from django.utils.translation import gettext_lazy as _
+from django.core.files.storage import default_storage
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -32,6 +38,9 @@ from tendenci.apps.chapters.models import (Chapter, Officer,
                                            ChapterMembershipAppField,
                                            ChapterMembershipApp,
                                            ChapterMembership,
+                                           ChapterMembershipType,
+                                           ChapterMembershipImport,
+                                           ChapterMembershipImportData,
                                            Notice)
 from tendenci.apps.chapters.forms import (ChapterForm, OfficerForm,
                                           OfficerBaseFormSet,
@@ -39,13 +48,16 @@ from tendenci.apps.chapters.forms import (ChapterForm, OfficerForm,
                                           AppFieldCustomForm,
                                           AppFieldBaseFormSet,
                                           ChapterMembershipForm,
-                                          ChapterMemberSearchForm)
+                                          ChapterMemberSearchForm,
+                                          ChapterMembershipUploadForm)
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.utils import Echo
-from tendenci.apps.chapters.utils import get_chapter_membership_field_values
+from tendenci.apps.chapters.utils import get_chapter_membership_field_values, ImportChapterMembership
+from tendenci.apps.exports.utils import render_csv
+from tendenci.libs.utils import python_executable
 
 
 @is_enabled('chapters')
@@ -852,4 +864,352 @@ def chapter_membership_add_conf(request, id,
 
     context = {'app': app, "chapter_membership": chapter_membership}
     return render_to_resp(request=request, template_name=template, context=context)
+
+
+def has_import_perm(user, chapter=None):
+    if user.is_superuser:
+        return True
+    if has_perm(user, 'chapters.change_chapter'):
+        return True
+    if chapter and chapter.is_chapter_leader(user):
+        return True
+    return False
+
+
+@is_enabled('chapters')
+@login_required
+def download_import_template(request, chapter_id=None):
+    """
+    Download chapter memberships import template
+    """
+    if chapter_id:
+        chapter = get_object_or_404(Chapter, id=chapter_id)
+    else:
+        chapter = None
+
+    if not has_import_perm(request.user, chapter=chapter):
+        raise Http403
+
+    filename = "chapter_memberships_import_template.csv"
+
+    exclude_fields = ['user', 'membership_type', 'chapter',
+                      'guid', 'renew_from_id',
+                      'invoice', 'app',]
+    title_list = [field.name for field in ChapterMembership._meta.fields
+                     if not field.__class__ == AutoField and not field.name in exclude_fields]
+    # adjust the order for some fields
+    key_fields = ['username', 'membership_type_id']
+    if not chapter:
+        key_fields.append('chapter_id')
+    title_list = key_fields + title_list[14:] + title_list[:14]
+
+    data_row_list = []
+
+    return render_csv(filename, title_list,
+                        data_row_list)
+
+
+@is_enabled('chapters')
+@login_required
+def chapter_memberships_import_upload(request, chapter_id=None,
+                template_name='chapters/memberships/import/upload.html'):
+    """
+    Chapter memberships import - Step 1. Upload
+    """
+    if chapter_id:
+        chapter = get_object_or_404(Chapter, id=chapter_id)
+    else:
+        chapter = None
+
+    if not has_import_perm(request.user, chapter=chapter):
+        raise Http403
+
+    form = ChapterMembershipUploadForm(request.POST or None, request.FILES or None, chapter=chapter)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            mimport = form.save(commit=False)
+            if chapter:
+                mimport.chapter = chapter
+            mimport.creator = request.user
+            mimport.save()
+
+            # redirect to preview page.
+            return HttpResponseRedirect(reverse('chapters.memberships_import_preview', args=[mimport.id]))
+
+    return render_to_resp(request=request, template_name=template_name,
+                          context={'form': form, 'chapter': chapter})
+
+
+@is_enabled('chapters')
+@login_required
+def chapter_memberships_import_preview(request, mimport_id,
+                template_name='chapters/memberships/import/preview.html'):
+    """
+    Chapter memberships import - Step 2. Preview
+    """
+    mimport = get_object_or_404(ChapterMembershipImport, pk=mimport_id)
+
+    if not has_import_perm(request.user, chapter=mimport.chapter):
+        raise Http403
+
+    if mimport.status == 'preprocess_done':
+
+        try:
+            curr_page = int(request.GET.get('page', 1))
+        except:
+            curr_page = 1
+
+        num_items_per_page = 10
+
+        total_rows = ChapterMembershipImportData.objects.filter(mimport=mimport).count()
+
+        # if total_rows not updated, update it
+        if mimport.total_rows != total_rows:
+            mimport.total_rows = total_rows
+            mimport.save()
+        num_pages = int(math.ceil(total_rows * 1.0 / num_items_per_page))
+        if curr_page <= 0 or curr_page > num_pages:
+            curr_page = 1
+
+        # calculate the page range to display if the total # of pages > 35
+        # display links in 3 groups - first 10, middle 10 and last 10
+        # the middle group will contain the current page.
+        start_num = 35
+        max_num_in_group = 10
+        if num_pages > start_num:
+            # first group
+            page_range = list(range(1, max_num_in_group + 1))
+            # middle group
+            i = curr_page - int(max_num_in_group / 2)
+            if i <= max_num_in_group:
+                i = max_num_in_group
+            else:
+                page_range.extend(['...'])
+            j = i + max_num_in_group
+            if j > num_pages - max_num_in_group:
+                j = num_pages - max_num_in_group
+            page_range.extend(list(range(i, j + 1)))
+            if j < num_pages - max_num_in_group:
+                page_range.extend(['...'])
+            # last group
+            page_range.extend(list(range(num_pages - max_num_in_group,
+                                         num_pages + 1)))
+        else:
+            page_range = list(range(1, num_pages + 1))
+
+        # slice the data_list
+        start_index = (curr_page - 1) * num_items_per_page + 2
+        end_index = curr_page * num_items_per_page + 2
+        if end_index - 2 > total_rows:
+            end_index = total_rows + 2
+        data_list = ChapterMembershipImportData.objects.filter(
+                                mimport=mimport,
+                                row_num__gte=start_index,
+                                row_num__lt=end_index).order_by(
+                                    'row_num')
+
+        users_list = []
+        #print data_list
+        imd = ImportChapterMembership(request.user, mimport, dry_run=True)
+        # to be efficient, we only process chapter memberships on the current page
+        fieldnames = None
+        for idata in data_list:
+            user_display = imd.process_chapter_membership(idata)
+
+            user_display['row_num'] = idata.row_num
+            for f in ['join_dt', 'expire_dt', 'membership_type']:
+                if f in idata.row_data:
+                    user_display[f] = idata.row_data[f]
+            
+            users_list.append(user_display)
+            if not fieldnames:
+                fieldnames = list(idata.row_data.keys())
+                
+        # DateTime fields are sensitive to parse failures
+        # They are not parsed in the preview yet, in fact all 
+        # data travens as strings to be cleaned and parsd just 
+        # before being saved to the respecive models. Datetimes 
+        # and dates are parsed with dateutil.parser, so we do
+        # that here specifically so that someone importing dates
+        # sees a preview of the parse success/failure before 
+        # committing.
+        #
+        # We elect join_dt and expire_dt as the two most likely 
+        # dates of interest to someone importing members en 
+        # masse.
+        for dt in ['join_dt', 'expire_dt']:
+            if dt in fieldnames:
+                for u in users_list:
+                    if u[dt].strip():
+                        try:
+                            u[dt] = str(dparse(u[dt]))
+                        except ParserError:
+                            u[dt] = "Error"
+                    else:
+                        u[dt] = "None"
+
+        # Similarly membership_type if imported must be 
+        # imported as the id of a membership_type and it's 
+        # useful to get feedback on integrity at the preview
+        # before committing the import.
+        # TODO: This could generalize to all ID type imports supported
+        if 'membership_type_id' in fieldnames:
+            mts = {mt.pk:mt.name for mt in ChapterMembershipType.objects.all()}
+
+            for u in users_list:
+                try:
+                    mt = int(str(u['membership_type_id']))
+                except ValueError:
+                    mt = 'Value Error'
+                    
+                u['membership_type_id'] = mts.get(mt, 'None')
+        if not mimport.chapter:
+            if 'chapter_id' in fieldnames:
+                u['chapter_id'] = (Chapter.objects.filter(id=int(str(u['chapter_id'])))[:1] or [None])[0]
+
+        return render_to_resp(request=request, template_name=template_name, context={
+            'mimport': mimport,
+            'users_list': users_list,
+            'curr_page': curr_page,
+            'total_rows': total_rows,
+            'prev': curr_page - 1,
+            'next': curr_page + 1,
+            'num_pages': num_pages,
+            'page_range': page_range,
+            'fieldnames': fieldnames,
+            })
+    else:
+        if mimport.status in ('processing', 'completed'):
+                return HttpResponseRedirect(reverse('chapters.memberships_import_status',
+                                     args=[mimport.id]))
+        else:
+            if mimport.status == 'not_started':
+                subprocess.Popen([python_executable(), "manage.py",
+                              "chapter_membership_import_preprocess",
+                              str(mimport.pk)])
+
+            return render_to_resp(request=request, template_name=template_name, context={
+                'mimport': mimport,
+                })
+
+
+@is_enabled('chapters')
+@csrf_exempt
+@login_required
+def chapter_memberships_import_check_preprocess_status(request, mimport_id):
+    """
+    Get the import encoding status
+    """
+    mimport = get_object_or_404(ChapterMembershipImport,
+                                    pk=mimport_id)
+
+    if not has_import_perm(request.user, chapter=mimport.chapter):
+        raise Http403
+
+    return HttpResponse(mimport.status)
+
+
+@is_enabled('chapters')
+@login_required
+def chapter_memberships_import_process(request, mimport_id):
+    """
+    Process the import
+    """
+    mimport = get_object_or_404(ChapterMembershipImport,
+                                    pk=mimport_id)
+
+    if not has_import_perm(request.user, chapter=mimport.chapter):
+        raise Http403
+
+    if mimport.status == 'preprocess_done':
+        mimport.status = 'processing'
+        mimport.num_processed = 0
+        mimport.save()
+        # start the process
+        subprocess.Popen([python_executable(), "manage.py",
+                          "import_chapter_memberships",
+                          str(mimport.pk),
+                          str(request.user.pk)])
+
+        # log an event
+        EventLog.objects.log()
+
+    # redirect to status page
+    return HttpResponseRedirect(reverse('chapters.memberships_import_status',
+                                     args=[mimport.id]))
+
+
+@is_enabled('chapters')
+@login_required
+def chapter_memberships_import_status(request, mimport_id,
+                    template_name='chapters/memberships/import/status.html'):
+    """
+    Display import status
+    """
+    mimport = get_object_or_404(ChapterMembershipImport,
+                                    pk=mimport_id)
+
+    if not has_import_perm(request.user, chapter=mimport.chapter):
+        raise Http403
+
+    if mimport.status not in ('processing', 'completed'):
+        return HttpResponseRedirect(reverse('chapters.memberships_import'))
+
+    return render_to_resp(request=request, template_name=template_name, context={
+        'mimport': mimport,
+        })
+
+
+@is_enabled('chapters')
+@login_required
+def chapter_memberships_import_download_recap(request, mimport_id):
+    """
+    Download import recap.
+    """
+    mimport = get_object_or_404(ChapterMembershipImport,
+                                    pk=mimport_id)
+
+    if not has_import_perm(request.user, chapter=mimport.chapter):
+        raise Http403
+
+    mimport.generate_recap()
+    filename = os.path.split(mimport.recap_file.name)[1]
+
+    recap_path = mimport.recap_file.name
+    if default_storage.exists(recap_path):
+        response = HttpResponse(default_storage.open(recap_path).read(),
+                                content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        return response
+    else:
+        raise Http404
+
+
+@is_enabled('chapters')
+@csrf_exempt
+@login_required
+def chapter_memberships_import_get_status(request, mimport_id):
+    """
+    Get the import status and return as json
+    """
+    mimport = get_object_or_404(ChapterMembershipImport,
+                                    pk=mimport_id)
+
+    if not has_import_perm(request.user, chapter=mimport.chapter):
+        raise Http403
+
+    status_data = {'status': mimport.status,
+                   'total_rows': str(mimport.total_rows),
+                   'num_processed': str(mimport.num_processed)}
+
+    if mimport.status == 'completed':
+        summary_list = mimport.summary.split(',')
+        status_data['num_insert'] = summary_list[0].split(':')[1]
+        status_data['num_update'] = summary_list[1].split(':')[1]
+        status_data['num_invalid'] = summary_list[3].split(':')[1]
+
+    return HttpResponse(simplejson.dumps(status_data))
+
+
 
