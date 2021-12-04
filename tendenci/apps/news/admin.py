@@ -50,6 +50,7 @@ class NewsAdmin(TendenciBaseModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form_model = super(NewsAdmin, self).get_form(request, obj, **kwargs)
         form_model.user = request.user
+        form_model.admin_backend = True
         return form_model
 
 admin.site.register(News, NewsAdmin)
