@@ -40,9 +40,6 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='educations_education_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
                 ('user', models.ForeignKey(related_name='educations', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
-            options={
-                'verbose_name': 'Education',
-                'verbose_name_plural': 'Educations',
-            },
+            options={'ordering': ('-graduation_dt', '-graduation_year'), 'verbose_name': 'Education', 'verbose_name_plural': 'Educations'},
         ),
     ]
