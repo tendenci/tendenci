@@ -1138,7 +1138,7 @@ class ChapterMembershipApp(TendenciBaseModel):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('membership_default.add', args=[self.slug])
+        return reverse('chapters.membership_add_pre')
 
     def save(self, *args, **kwargs):
         if not self.id:

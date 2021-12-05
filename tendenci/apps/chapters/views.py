@@ -49,7 +49,8 @@ from tendenci.apps.chapters.forms import (ChapterForm, OfficerForm,
                                           AppFieldBaseFormSet,
                                           ChapterMembershipForm,
                                           ChapterMemberSearchForm,
-                                          ChapterMembershipUploadForm)
+                                          ChapterMembershipUploadForm,
+                                          ChapterMembershipAppPreForm)
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 from tendenci.apps.site_settings.utils import get_setting
@@ -624,6 +625,32 @@ def membership_details(request, chapter_membership_id=0,
             'app_fields': app_fields,
             'actions': chapter_membership.get_actions(request.user)
         })
+
+
+@is_enabled('chapters')
+@login_required
+def chapter_membership_add_pre(request,
+                           template_name='chapters/applications/add_pre.html', **kwargs):
+    """
+    Chapter membership application form.
+    """
+    # chapter membership add pre
+    app = ChapterMembershipApp.objects.current_app()
+
+    if not has_perm(request.user, 'chapters.view_chaptermembershipapp', app):
+        raise Http403
+
+    form = ChapterMembershipAppPreForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            chapter_id = form.cleaned_data['chapter_id']
+            return HttpResponseRedirect(reverse('chapters.membership_add',
+                                    args=[chapter_id]))
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={'app': app, "form": form})
+
 
 @is_enabled('chapters')
 @login_required

@@ -275,6 +275,18 @@ class ChapterMembershipTypeForm(TendenciBaseForm):
         return value
 
 
+class ChapterMembershipAppPreForm(FormControlWidgetMixin, forms.Form):
+    chapter_id = forms.ChoiceField(label=_('Select a Chapter'))
+
+    def __init__(self, *args, **kwargs):
+        super(ChapterMembershipAppPreForm, self).__init__(*args, **kwargs)
+        chapters_list = [(0, 'SELECT ONE')]
+        chapters = Chapter.objects.filter(status_detail='active').order_by('title')
+        for chapter in chapters:
+            chapters_list.append((chapter.id, chapter.title))
+        self.fields['chapter_id'].choices = chapters_list
+
+
 class ChapterMembershipAppForm(TendenciBaseForm):
 
     description = forms.CharField(required=False,
