@@ -58,6 +58,7 @@ from tendenci.apps.base.utils import Echo
 from tendenci.apps.chapters.utils import get_chapter_membership_field_values, ImportChapterMembership
 from tendenci.apps.exports.utils import render_csv
 from tendenci.libs.utils import python_executable
+from tendenci.apps.base.utils import send_email_notification
 
 
 @is_enabled('chapters')
@@ -587,7 +588,7 @@ def membership_details(request, chapter_membership_id=0,
     if request.user.is_superuser or is_chapter_leader:
         if 'approve' in request.GET:
             chapter_membership.approve(request_user=request.user)
-            #chapter_membership.send_email(request, ('approve_renewal' if chapter_membership.renewal else 'approve'))
+            chapter_membership.send_email(request, ('approve_renewal' if chapter_membership.renewal else 'approve'))
             messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
 
         if 'disapprove' in request.GET:
@@ -681,6 +682,15 @@ def chapter_membership_add(request, chapter_id=0,
             
             # TODO: email notification to admin
             # Who should be notified? site admin or chapter leaders?
+            send_email_notification(
+                    'chapter_membership_joined_to_admin',
+                    get_notice_recipients(
+                        'module', 'chapters',
+                        'chapterrecipients'),
+                    {'chapter_membership': chapter_membership,
+                        'app': app,
+                        'request': request
+                    })
 
             # handle online payment
             if chapter_membership.payment_method.is_online and \
@@ -823,6 +833,15 @@ def chapter_membership_renew(request, chapter_membership_id=0,
 
             # TODO: email notification to admin
             # Who should be notified? site admin or chapter leaders?
+            send_email_notification(
+                    'chapter_membership_renewed_to_admin',
+                    get_notice_recipients(
+                        'module', 'chapters',
+                        'chapterrecipients'),
+                    {'chapter_membership': chapter_membership,
+                        'app': app,
+                        'request': request
+                    })
 
             # handle online payment
             if chapter_membership.payment_method.is_online and \
