@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 import traceback
 import logging
 from csv import reader
+import hashlib
 
 from django.db.models import Q
 from django.db import models
@@ -46,6 +47,7 @@ from tendenci.apps.base.utils import validate_email
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.models import BaseImport, BaseImportData
 from tendenci.apps.base.utils import UnicodeWriter
+from tendenci.apps.base.utils import correct_filename
 
 logger = logging.getLogger(__name__)
 
@@ -1322,13 +1324,34 @@ class CustomizedAppField(models.Model):
         unique_together = ('app_field', 'chapter',)
 
 
-class ChapterMembershipFile(File):
+def file_directory(instance, filename):
+    filename = correct_filename(filename)
+    m = hashlib.md5()
+    m.update(filename.encode())
+
+    hex_digest = m.hexdigest()[:8]
+
+    return f'chapters/files/{hex_digest}/{filename}'
+
+
+class ChapterMembershipFile(models.Model):
     """
     This model will be used as handlers of File upload assigned
     to User Defined fields for Chapter Membership UD fields
     """
+    chapter_membership = models.ForeignKey("ChapterMembership", related_name="files", on_delete=models.CASCADE)
+    field = models.ForeignKey("ChapterMembershipAppField", related_name="files", on_delete=models.CASCADE)
+    file = models.FileField(max_length=260, upload_to=file_directory)
+
     class Meta:
+        unique_together = ('chapter_membership', 'field')
         app_label = 'chapters'
+
+    def basename(self):
+        return os.path.basename(str(self.file.name))
+
+    def ext(self):
+        return os.path.splitext(self.basename())[-1]
 
 
 NOTICE_TYPES = (

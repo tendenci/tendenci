@@ -1,4 +1,4 @@
-from os.path import splitext, basename
+from os.path import splitext, basename, join
 import codecs
 from csv import reader
 
@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.forms import BaseInlineFormSet
 from django.utils.translation import ugettext_lazy as _
 from django.forms.models import BaseModelFormSet
+from django.urls import reverse
 
 from form_utils.forms import BetterModelForm
 from tendenci.apps.chapters.models import (Chapter, Officer,
@@ -14,7 +15,8 @@ from tendenci.apps.chapters.models import (Chapter, Officer,
                         ChapterMembershipApp,
                         ChapterMembershipAppField,
                         CustomizedAppField,
-                        ChapterMembership)
+                        ChapterMembership,
+                        ChapterMembershipFile)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -478,11 +480,34 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
         self.edit_mode = kwargs.pop('edit_mode', False)
         self.app = kwargs.pop('app')
         self.chapter = chapter
+        self.app_field_objs = app_field_objs
         super(ChapterMembershipForm, self).__init__(*args, **kwargs)
         
         from tendenci.apps.memberships.forms import assign_fields
-        assign_fields(self, app_field_objs)
+        assign_fields(self, self.app_field_objs)
         
+        # handle file upload on edit
+        if self.edit_mode:
+            for field_obj in  self.app_field_objs:
+                if field_obj.field_type == 'FileField':
+                    field_key = field_obj.field_name
+                    field_current_value = getattr(self.instance, field_key, None)
+                    if field_current_value:
+                        cm_file = (ChapterMembershipFile.objects.filter(id=field_current_value)[:1] or [None])[0]
+                        if cm_file:
+                            file_name = cm_file.basename()
+                            file_url = reverse('chapters.cm_file_display', args=[cm_file.id])
+                            if not self.fields[field_key].required:
+                                self.fields[field_key].help_text = f"""
+                                <input name="remove_{field_key}" id="id_remove_{field_key}" type="checkbox"/>
+                                Remove current file: <a target="_blank" href="{file_url}">{file_name}</a>
+                                """
+                            else:
+                                self.fields[field_key].help_text = f"""
+                                Current file: <a target="_blank" href="{file_url}">{file_name}</a>
+                                """
+                                self.fields[field_key].required = False
+
         # membership types query set
         self.fields['membership_type'].renew_mode = self.is_renewal
         membership_types_qs = self.app.membership_types.all()
@@ -553,6 +578,7 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
 
     def save(self):
         chapter_membership = super(ChapterMembershipForm, self).save(commit=False)
+
         if not self.edit_mode:
             chapter_membership.entity = self.chapter.entity
             chapter_membership.user = self.request_user
@@ -567,6 +593,39 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
             chapter_membership.save()
         else:
             chapter_membership.save()
+            
+        for field_obj in  self.app_field_objs:
+            field_key = field_obj.field_name
+            
+            if field_key in self.fields and self.fields[field_key].widget.needs_multipart_form:
+                
+                # handle file upload
+                # save file to the value field of ChapterMembershipFile
+                # and assign the id of ChapterMembershipFile to the value of the field
+                value = self.cleaned_data[field_key]
+                if value:
+                    cm_file, created = ChapterMembershipFile.objects.get_or_create(
+                                    field_id=field_obj.id,
+                                    chapter_membership=chapter_membership)
+                    cm_file.file = value
+                    #cm_file.value = default_storage.save(join("chapters", "memberships", str(uuid4()), value.name), value)
+                    cm_file.save()
+                    setattr(chapter_membership, field_key, cm_file.id)
+                    chapter_membership.save()
+                else:
+                    if self.edit_mode:
+                        remove_value = self.request.POST.get(f"remove_{field_key}", False)
+                        cm_file = (ChapterMembershipFile.objects.filter(
+                                    field_id=field_obj.id,
+                                    chapter_membership=chapter_membership)[:1] or [None])[0]
+                        if remove_value and not field_obj.required:
+                            if cm_file:
+                                cm_file.delete()
+                            value = ''
+                        else:
+                            value = cm_file.id
+                        setattr(chapter_membership, field_key, value)
+                        chapter_membership.save()
 
         return chapter_membership
 

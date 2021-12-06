@@ -7,6 +7,7 @@ import math
 import subprocess
 from dateutil.parser import parse as dparse, ParserError 
 import os
+import mimetypes
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -24,6 +25,7 @@ from django.forms.models import modelformset_factory
 from django.db.models.fields import AutoField
 from django.utils.translation import gettext_lazy as _
 from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -41,7 +43,8 @@ from tendenci.apps.chapters.models import (Chapter, Officer,
                                            ChapterMembershipType,
                                            ChapterMembershipImport,
                                            ChapterMembershipImportData,
-                                           Notice)
+                                           Notice,
+                                           ChapterMembershipFile)
 from tendenci.apps.chapters.forms import (ChapterForm, OfficerForm,
                                           OfficerBaseFormSet,
                                           ChapterSearchForm,
@@ -616,6 +619,14 @@ def membership_details(request, chapter_membership_id=0,
         field_name = field.field_name
         if field_name and hasattr(chapter_membership, field_name):
             field.value = getattr(chapter_membership, field_name)
+            if field.field_type == 'FileField':
+                try:
+                    field.value = int(field.value)
+                except ValueError:
+                    field.value = ''
+
+                if field.value:
+                    field.value = (ChapterMembershipFile.objects.filter(id=field.value)[:1] or [None])[0]
 
     EventLog.objects.log(instance=chapter_membership)
     return render_to_resp(
@@ -679,7 +690,8 @@ def chapter_membership_add(request, chapter_id=0,
         'app': app,
     }
     chapter_membership_form = ChapterMembershipForm(app_fields, chapter,
-                            request.POST or None, instance=chapter_membership, **params)
+                            request.POST or None, request.FILES or None,
+                            instance=chapter_membership, **params)
 
     if request.method == 'POST':
         if chapter_membership_form.is_valid():
@@ -772,7 +784,8 @@ def chapter_membership_edit(request, chapter_membership_id=0,
         'app': app,
     }
     chapter_membership_form = ChapterMembershipForm(app_fields, chapter,
-                            request.POST or None, instance=chapter_membership, **params)
+                            request.POST or None, request.FILES or None,
+                            instance=chapter_membership, **params)
 
     if request.method == 'POST':
         if chapter_membership_form.is_valid():
@@ -835,7 +848,8 @@ def chapter_membership_renew(request, chapter_membership_id=0,
         'app': app,
     }
     chapter_membership_form = ChapterMembershipForm(app_fields, chapter,
-                request.POST or None, initial=membership_initial, **params)
+                request.POST or None, request.FILES or None,
+                initial=membership_initial, **params)
     if request.method == 'POST':
         if chapter_membership_form.is_valid():
             # create a chapter membership
@@ -910,6 +924,39 @@ def chapter_membership_add_conf(request, id,
 
     context = {'app': app, "chapter_membership": chapter_membership}
     return render_to_resp(request=request, template_name=template, context=context)
+
+
+@is_enabled('chapters')
+@login_required
+def file_display(request, cm_id):
+    """
+    Display a file for chapter memberships.  Allows us to handle privacy.
+    """
+    cm_file = get_object_or_404(ChapterMembershipFile, pk=cm_id)
+    chapter_membership = cm_file.chapter_membership
+    chapter = chapter_membership.chapter
+
+    if not any((chapter.is_chapter_leader(request.user),
+            request.user == chapter_membership.user,
+            has_perm(request.user, 'chapters.change_chaptermembership'))):
+        raise Http403
+
+    base_name = cm_file.basename()
+    mime_type = mimetypes.guess_type(base_name)[0]
+
+    if not mime_type:
+        raise Http404
+
+    try:
+        data = cm_file.file.read()
+        cm_file.file.close()
+    except IOError:  # no such file or directory
+        raise Http404
+
+    EventLog.objects.log()
+    response = HttpResponse(data, content_type=mime_type)
+    response['Content-Disposition'] = 'filename="%s"' % base_name
+    return response
 
 
 def has_import_perm(user, chapter=None):

@@ -39,6 +39,8 @@ urlpatterns = [
     url(r"^chapters/memberships/search/$",
         views.chapter_memberships_search,
         name="chapters.memberships_search"),
+    url(r"^chapters/memberships/files/(?P<cm_id>\d+)/$", views.file_display,
+            name="chapters.cm_file_display"),
 
     # chapter memberships import
     url(r"^chapters/memberships/import/$",

@@ -118,6 +118,11 @@
                             {% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
                              <li class="content-item">
                                     <span class="app-name">
+                                        <a href="{% url 'chapters.edit_app_fields' app_object.pk %}">{% trans "Customize App Fields" %}</a>
+                                    </span>
+                             </li>
+                             <li class="content-item">
+                                    <span class="app-name">
                                         <a href="{% url 'chapters.memberships_search_single_chapter' app_object.pk %}">{% trans "Chapter Members" %}</a>
                                     </span>
                              </li>

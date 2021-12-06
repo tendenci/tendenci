@@ -136,7 +136,11 @@
 					{% if app_field.field_type == 'BooleanField' or app_field.field_name == 'volunteer_availability' %}
 					{{ app_field.value|yesno }}
 					{% else %}
-				    {{ app_field.value }}
+						{% if app_field.field_type == 'FileField' and app_field.value %}
+							<a href="{% url "chapters.cm_file_display" app_field.value.id %}">{{ app_field.value.basename }}</a>
+						{% else %}
+				    		{{ app_field.value }}
+						{% endif %}
 					{% endif %}
 				  </div>
 				</div>
