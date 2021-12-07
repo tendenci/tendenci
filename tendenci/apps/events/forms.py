@@ -1894,7 +1894,7 @@ class RegistrantForm(forms.Form):
             [profile] = Profile.objects.filter(user__email__iexact=email,
                                              user__is_active=True,
                                              status=True,
-                                             status_detail='active'
+                                             status_detail__iexact='active'
                                              ).order_by('-member_number'
                                             )[:1] or [None]
             if profile:

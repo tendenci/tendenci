@@ -858,9 +858,9 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             user.email = validate_email(user.email) and user.email or user_attrs['email']
             user.first_name = user.first_name or user_attrs['first_name']
             user.last_name = user.last_name or user_attrs['last_name']
-        elif User.objects.filter(email=user_attrs['email']).exists():
+        elif User.objects.filter(email__iexact=user_attrs['email']).exists():
             created = False
-            user = User.objects.filter(email=user_attrs['email']).order_by('-last_login')[0]
+            user = User.objects.filter(email__iexact=user_attrs['email']).order_by('-last_login')[0]
             user.first_name = user.first_name or user_attrs['first_name']
             user.last_name = user.last_name or user_attrs['last_name']
         else:

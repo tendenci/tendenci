@@ -127,6 +127,8 @@ class NewsForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(NewsForm, self).__init__(*args, **kwargs)
+        if not hasattr(self, 'admin_backend'):
+            self.admin_backend = False
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
@@ -136,7 +138,7 @@ class NewsForm(TendenciBaseForm):
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         #if not self.user.profile.is_superuser:
-        if not self.user.is_superuser:
+        if not (self.user.is_superuser or self.admin_backend):
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
 

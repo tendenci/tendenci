@@ -489,7 +489,7 @@ class FormEntry(models.Model):
         anonymous_creator = None
 
         if emailfield:
-            user_list = User.objects.filter(email=emailfield).order_by('-last_login')
+            user_list = User.objects.filter(email__iexact=emailfield).order_by('-last_login')
             if user_list:
                 anonymous_creator = user_list[0]
             else:

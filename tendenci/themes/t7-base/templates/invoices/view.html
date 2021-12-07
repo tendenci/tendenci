@@ -32,7 +32,7 @@
   {% endif %}
   {% endif %}
 
-  {% if request.user.is_superuser %}
+  {% if request.user.is_superuser or can_edit %}
   {% if invoice.balance > 0 and invoice.is_tendered %}
   <div class="invoice-options">
     <ul>
@@ -91,7 +91,7 @@
   
    {% endif %}
 
-  {% if request.user.is_superuser or can_edit_invoice %}
+  {% if request.user.is_superuser or can_edit %}
   <div class="invoice-admin-notes">
     <form method="post" action=".">
       {% csrf_token %}

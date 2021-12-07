@@ -48,6 +48,7 @@ class Education(TendenciBaseModel):
 #         permissions = (("view_education", _("Can view education")),)
         verbose_name = _("Education")
         verbose_name_plural = _("Educations")
+        ordering = ('-graduation_dt', '-graduation_year',)
 
     def __str__(self):
         return '%s - %s' %  (self.school, self.user)
