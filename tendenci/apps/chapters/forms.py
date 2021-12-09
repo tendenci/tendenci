@@ -15,7 +15,8 @@ from tendenci.apps.chapters.models import (Chapter, Officer,
                         ChapterMembershipAppField,
                         CustomizedAppField,
                         ChapterMembership,
-                        ChapterMembershipFile)
+                        ChapterMembershipFile,
+                        CustomizedType)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -442,7 +443,51 @@ class AppFieldCustomForm(FormControlWidgetMixin, forms.ModelForm):
         return self.cfield
 
 
+class CustomMembershipTypeForm(FormControlWidgetMixin, forms.ModelForm):
+    price = PriceField(decimal_places=2, help_text=_("Set 0 for free membership."))
+    renewal_price = PriceField(decimal_places=2, required=False,
+                                 help_text=_("Set 0 for free membership."))
+    class Meta:
+        model = ChapterMembershipType
+
+        fields = (
+            'name',
+            'price',
+            'renewal_price',
+        )
+
+    def __init__(self, *args, chapter, **kwargs):
+        self.chapter = chapter
+        super(CustomMembershipTypeForm, self).__init__(*args, **kwargs)
+        self.fields['name'].label = _('Membership Type')
+        [self.ctype] = self.chapter.customizedtype_set.filter(
+            membership_type__id=self.instance.id)[:1] or [None]
+        if self.ctype:
+            # override with the value in CustomizedAppField (saved previously, if any)
+            self.initial['price'] = self.ctype.price
+            self.initial['renewal_price'] = self.ctype.renewal_price
+
+        # set membership type name as readyonly as chapter leaders should not change it
+        readonly_fields = ['name',]
+        for field in readonly_fields:
+            self.fields[field].widget.attrs['readonly'] = True
+
+    def save(self, commit=True):
+        if not self.ctype:
+            self.ctype = CustomizedType(membership_type=self.instance,
+                                        chapter=self.chapter)
+        self.ctype.price = self.cleaned_data['price']
+        self.ctype.renewal_price = self.cleaned_data['renewal_price']
+        self.ctype.save()
+        return self.ctype
+
+
 class AppFieldBaseFormSet(BaseModelFormSet):
+    def save(self, commit=True):
+        return self.save_existing_objects(commit)
+
+
+class MembershipTypeBaseFormSet(AppFieldBaseFormSet):
     def save(self, commit=True):
         return self.save_existing_objects(commit)
 
@@ -509,6 +554,7 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
 
         # membership types query set
         self.fields['membership_type'].renew_mode = self.is_renewal
+        self.fields['membership_type'].chapter = self.chapter
         membership_types_qs = self.app.membership_types.all()
         if not self.request_user.is_superuser:
             membership_types_qs = membership_types_qs.filter(admin_only=False)

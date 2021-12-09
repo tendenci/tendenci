@@ -13,6 +13,9 @@ urlpatterns = [
 
     # chapter memberships
     re_path(r'^chapters/edit_app_fields/(?P<id>\d+)/$', views.edit_app_fields, name='chapters.edit_app_fields'),
+    re_path(r'^chapters/edit_membership_types/(?P<id>\d+)/$',
+            views.edit_membership_types,
+            name='chapters.edit_membership_types'),
     re_path(r"^chapters/get_app_fields/$", views.get_app_fields_json,
                             name="chapters.get_app_fields"),
     re_path(r"^chapters/memberships/(?P<chapter_membership_id>\d+)/$",

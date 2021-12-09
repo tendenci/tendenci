@@ -322,11 +322,19 @@ class ChapterMembershipType(OrderingBaseModel, TendenciBaseModel):
         self.guid = self.guid or uuid.uuid4().hex
         super(ChapterMembershipType, self).save(*args, **kwargs)
 
-    def get_price_display(self, renew_mode=False):        
+    def get_price_display(self, renew_mode=False, chapter=None):
+        price = self.price
+        renewal_price = self.renewal_price
+        if chapter:
+            customized_type = (self.customized_types.filter(chapter=chapter)[:1] or [None])[0]
+            if customized_type:
+                price = customized_type.price
+                renewal_price = customized_type.renewal_price
+                    
         if renew_mode:
-            price_display = f'{self.name} - {tcurrency(self.renewal_price)} Renewal'
+            price_display = f'{self.name} - {tcurrency(renewal_price)} Renewal'
         else:
-            price_display = f'{self.name} - {tcurrency(self.price)}'
+            price_display = f'{self.name} - {tcurrency(price)}'
 
         return mark_safe(price_display)
 
@@ -651,9 +659,14 @@ class ChapterMembership(TendenciBaseModel):
         return actions
 
     def get_price(self):
+        customized_type = (self.membership_type.customized_types.filter(chapter=self.chapter)[:1] or [None])[0]
         if self.renewal:
+            if customized_type:
+                return customized_type.renewal_price
             return self.membership_type.renewal_price or 0
         else:
+            if customized_type:
+                return customized_type.price
             return self.membership_type.price or 0
 
     def save_invoice(self, **kwargs):
@@ -1322,6 +1335,33 @@ class CustomizedAppField(models.Model):
 
     class Meta:
         unique_together = ('app_field', 'chapter',)
+        app_label = 'chapters'
+
+
+class CustomizedType(models.Model):
+    """
+    Chapter customized membership type so that chapter can set
+    their own price and renewal_price.
+    """
+    membership_type = models.ForeignKey(ChapterMembershipType,
+                                        related_name="customized_types",
+                                        on_delete=models.CASCADE)
+    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
+    price = models.DecimalField(
+        _('Price'),
+        max_digits=15,
+        decimal_places=2,
+        blank=True,
+        default=0,
+        help_text=_("Set 0 for free membership.")
+    )
+    renewal_price = models.DecimalField(_('Renewal Price'), max_digits=15, decimal_places=2,
+        blank=True, default=0, null=True, help_text=_("Set 0 for free membership."))
+
+
+    class Meta:
+        unique_together = ('membership_type', 'chapter',)
+        app_label = 'chapters'
 
 
 def file_directory(instance, filename):

@@ -4,9 +4,11 @@ from django.core.exceptions import ValidationError
 
 class ChapterMembershipTypeModelChoiceField(forms.ModelChoiceField):
     renew_mode = False
+    chapter = None
 
     def label_from_instance(self, obj):
-        return obj.get_price_display(renew_mode=self.renew_mode)
+        return obj.get_price_display(renew_mode=self.renew_mode,
+                                     chapter=self.chapter)
 
     def to_python(self, value):
         if value in self.empty_values:

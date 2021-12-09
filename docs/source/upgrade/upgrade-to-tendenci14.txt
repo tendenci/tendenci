@@ -1,6 +1,8 @@
 Upgrade 12.X to 14.0
 ====================
 
+.. note:: If you have addons on your site, make sure you have your addons upgraded to be Django 3.2 LTS compatible before upgrading your site to Tendenci 14.
+
 
 Step 1: Prepare for Upgrade
 ---------------------------

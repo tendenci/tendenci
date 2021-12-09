@@ -53,7 +53,9 @@ from tendenci.apps.chapters.forms import (ChapterForm, OfficerForm,
                                           ChapterMembershipForm,
                                           ChapterMemberSearchForm,
                                           ChapterMembershipUploadForm,
-                                          ChapterMembershipAppPreForm)
+                                          ChapterMembershipAppPreForm,
+                                          CustomMembershipTypeForm,
+                                          MembershipTypeBaseFormSet)
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 from tendenci.apps.site_settings.utils import get_setting
@@ -540,6 +542,9 @@ def get_app_fields_json(request):
 @is_enabled('chapters')
 @login_required
 def edit_app_fields(request, id, form_class=AppFieldCustomForm, template_name="chapters/edit_app_fields.html"):
+    """
+    Custom app fields for a chapter.
+    """
     chapter = get_object_or_404(Chapter, pk=id)
 
     if not has_perm(request.user, 'chapters.change_chaptermembershipappfield') \
@@ -553,10 +558,11 @@ def edit_app_fields(request, id, form_class=AppFieldCustomForm, template_name="c
         extra=0,
         can_delete=False
     )
+    app_fields_qs = ChapterMembershipAppField.objects.filter(
+                customizable=True).exclude(field_name__in=['membership_type', 'payment_method'])
     formset_app_fields = AppFieldFormSet(
             request.POST or None,
-            queryset=ChapterMembershipAppField.objects.filter(
-                customizable=True).exclude(field_name__in=['membership_type', 'payment_method']),
+            queryset=app_fields_qs,
             prefix='app_field',
             form_kwargs={'chapter': chapter,}
         )
@@ -572,7 +578,59 @@ def edit_app_fields(request, id, form_class=AppFieldCustomForm, template_name="c
 
     # response
     return render_to_resp(request=request, template_name=template_name,
-        context={'chapter': chapter, 'formset_app_fields': formset_app_fields,})
+        context={'chapter': chapter,
+                 'app_fields_exists': app_fields_qs.exists(),
+                 'formset_app_fields': formset_app_fields,})
+
+
+@is_enabled('chapters')
+@login_required
+def edit_membership_types(request, id, form_class=CustomMembershipTypeForm,
+                          template_name="chapters/edit_membership_types.html"):
+    """
+    Custom the price and renewal_price of membership types for a chapter.
+    """
+    chapter = get_object_or_404(Chapter, pk=id)
+
+    if not has_perm(request.user, 'chapters.change_chaptermembershiptype') \
+            and not chapter.is_chapter_leader(request.user):
+        raise Http403
+
+    if not ChapterMembershipType.objects.filter(
+                status=True, status_detail='active'
+                ).exclude(admin_only=True).exists():
+        raise Http404
+
+    MembershipTypeFormSet = modelformset_factory(
+        ChapterMembershipType,
+        formset=MembershipTypeBaseFormSet,
+        form=form_class,
+        extra=0,
+        can_delete=False
+    )
+    chapter_membership_types = ChapterMembershipType.objects.filter(
+                status=True, status_detail='active').exclude(admin_only=True)
+    formset_membership_types = MembershipTypeFormSet(
+            request.POST or None,
+            queryset=chapter_membership_types,
+            prefix='membership_type',
+            form_kwargs={'chapter': chapter,}
+        )
+    if request.method == "POST":
+        if formset_membership_types.is_valid():
+            c_membership_types = formset_membership_types.save()
+            
+            msg_string = _('Successfully saved membership types: ') + \
+                ', '.join([c_membership_type.membership_type.name for c_membership_type in c_membership_types])
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+            #TODO: redirect to application add
+
+    # response
+    return render_to_resp(request=request, template_name=template_name,
+        context={'chapter': chapter,
+                 'chapter_membership_types_exists': chapter_membership_types.exists(),
+                 'formset_membership_types': formset_membership_types,})
 
 
 @is_enabled('chapters')

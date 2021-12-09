@@ -115,12 +115,18 @@
                                     </span>
                                 </li>
                             {% endif %}
-                            {% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+
                              <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'chapters.edit_app_fields' app_object.pk %}">{% trans "Customize App Fields" %}</a>
                                     </span>
                              </li>
+                            <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'chapters.edit_membership_types' app_object.pk %}">{% trans "Set/Update Prices" %}</a>
+                                    </span>
+                             </li>
+                            {% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
                              <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'chapters.memberships_search_single_chapter' app_object.pk %}">{% trans "Chapter Members" %}</a>
