@@ -277,6 +277,20 @@ class Invoice(models.Model):
             _object = None
         return _object
 
+    @property
+    def use_third_party_payment(self):
+        obj = self.get_object()
+        if hasattr(obj, 'use_third_party_payment'):
+            return getattr(obj, 'use_third_party_payment')
+        return False
+
+    @property
+    def external_payment_link(self):
+        obj = self.get_object()
+        if hasattr(obj, 'external_payment_link'):
+            return getattr(obj, 'external_payment_link')
+        return ''
+
     def get_donation_amount(self):
         obj = self.get_object()
         if obj and hasattr(obj, 'donation_amount'):

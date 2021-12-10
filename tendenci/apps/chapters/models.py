@@ -76,6 +76,9 @@ class Chapter(BasePage):
     region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
     county = models.CharField(_('county'), max_length=50, blank=True)
     state = models.CharField(_('state'), max_length=50, blank=True, default='')
+    external_payment_link = models.URLField(_('External payment link'),
+                blank=True, default='',
+                help_text=_('A third party payment link. If specified, users will be redirected to it to pay their chapter memberships dues online.'))
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -556,6 +559,16 @@ class ChapterMembership(TendenciBaseModel):
                  self.chapter.is_chapter_leader(request_user)
 
         return False
+
+    @property
+    def use_third_party_payment(self):
+        return get_setting('module', 'chapters', 'usethirdpartypayment')
+
+    @property
+    def external_payment_link(self):
+        if self.use_third_party_payment:
+            return self.chapter.external_payment_link
+        return ''
 
     def create_member_number(self):
         #TODO: Decide how member numbers should be generated for chapter members

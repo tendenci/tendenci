@@ -768,6 +768,7 @@ class ChapterForm(TendenciBaseForm):
         'contact_email',
         'join_link',
         'tags',
+        'external_payment_link',
         'allow_anonymous_view',
         'syndicate',
         'status_detail',
@@ -787,7 +788,8 @@ class ChapterForm(TendenciBaseForm):
                                  'contact_name',
                                  'contact_email',
                                  'join_link',
-                                 'tags'
+                                 'tags',
+                                 'external_payment_link',
                                  ],
                       'legend': '',
                       }),

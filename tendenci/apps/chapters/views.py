@@ -792,6 +792,15 @@ def chapter_membership_add(request, chapter_id=0,
             # handle online payment
             if chapter_membership.payment_method.is_online and \
                     chapter_membership.invoice.balance > 0:
+                if chapter_membership.use_third_party_payment:
+                    # if chapter uses third party payment, redirect them to the external payment link
+                    if chapter_membership.external_payment_link:
+                        return HttpResponseRedirect(chapter_membership.external_payment_link)
+                    # no external payment link set up, redirect to the conf page with the message
+                    messages.add_message(request, messages.WARNING, _("Payment not set up yet for the chapter. Please contact the chapter to complete the payment process."))
+                    return HttpResponseRedirect(reverse('chapters.membership_add_conf',
+                                    args=[chapter_membership.id]))
+                # chapter does not use third party payment, redirect to online paymemt as normal
                 return HttpResponseRedirect(
                                 reverse('payment.pay_online',
                                 args=[chapter_membership.invoice.id,
@@ -945,6 +954,16 @@ def chapter_membership_renew(request, chapter_membership_id=0,
             # handle online payment
             if chapter_membership.payment_method.is_online and \
                     chapter_membership.invoice.balance > 0:
+                if chapter_membership.use_third_party_payment:
+                    # if chapter uses third party payment, redirect them to the external payment link
+                    if chapter_membership.external_payment_link:
+                        return HttpResponseRedirect(chapter_membership.external_payment_link)
+                    # no external payment link set up, redirect to the conf page with the message
+                    messages.add_message(request, messages.WARNING, _("Payment not set up yet for the chapter. Please contact the chapter to complete the payment process."))
+                    return HttpResponseRedirect(reverse('chapters.membership_add_conf',
+                                    args=[chapter_membership.id]))
+
+                # chapter does not use third party payment, redirect to online paymemt as normal
                 return HttpResponseRedirect(
                                 reverse('payment.pay_online',
                                 args=[chapter_membership.invoice.id,

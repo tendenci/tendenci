@@ -66,6 +66,18 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
                                 'event.registration_confirmation',
                                 args=(event.id, obj.registrant.hash)))
 
+    # check if this invoice requires third party payment
+    if invoice.use_third_party_payment:
+        external_payment_link = invoice.external_payment_link
+        if external_payment_link:
+            return HttpResponseRedirect(external_payment_link)
+        else:
+            # it requires third party payment but they don't have
+            # external payment link set up. redirect back to invoice
+            messages.add_message(request, messages.WARNING,
+                gettext("This invoice requires third party payment which hasn't been set up yet."))
+            return HttpResponseRedirect(invoice.get_absolute_url())
+
     # generate the payment
     payment = Payment()
 

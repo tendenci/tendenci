@@ -83,5 +83,22 @@
         "scope_category": "chapters",
         "store": true,
         "updated_by": ""
+    },
+	{
+        "default_value": "false",
+        "description": "Chapter memberships uses third party payment. If turned on, each chapter will be able to specify their own payment link for members to pay their dues.",
+        "data_type": "boolean",
+        "update_dt": "2021-12-09 14:50:00",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "usethirdpartypayment",
+        "value": "false",
+        "label": "Chapter Memberships Uses Third Party Payment",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "chapters",
+        "store": true,
+        "updated_by": ""
     }
 ]
