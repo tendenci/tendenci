@@ -48,6 +48,7 @@ from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.models import BaseImport, BaseImportData
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.base.utils import correct_filename
+from tendenci.apps.event_logs.models import EventLog
 
 logger = logging.getLogger(__name__)
 
@@ -864,6 +865,8 @@ class ChapterMembership(TendenciBaseModel):
             - Expired memberships
             - Archived memberships
         """
+        if self.is_approved():
+            return self
 
         good = (
             not self.is_expired(),
@@ -905,6 +908,16 @@ class ChapterMembership(TendenciBaseModel):
 
         # new invoice; bound via ct and object_id
         self.save_invoice(status_detail='tendered')
+        
+        # if external payment, mark as paid on approval
+        if self.use_third_party_payment:
+            if self.invoice.balance > 0:
+                notes = 'Paid via third party payment.'
+                if not self.invoice.admin_notes:
+                    self.invoice.admin_notes = notes
+                else:
+                    self.invoice.admin_notes += '\n' + notes
+                self.invoice.make_payment(request_user, self.invoice.balance)
 
         # archive other membership [of this type] [in this chapter]
         self.archive_old_memberships()
@@ -1137,6 +1150,29 @@ class ChapterMembership(TendenciBaseModel):
             )
 
         return notice_sent
+
+    def auto_update_paid_object(self, request, payment):
+        """
+        Update chapter membership status and dates. Created archives if
+        necessary.  Send out notices.  Log approval event.
+        """
+        open_renewal = (
+            self.renewal,
+            not self.membership_type.renewal_require_approval)
+
+        open_join = (
+            not self.renewal,
+            not self.membership_type.require_approval)
+
+        can_approve = all(open_renewal) or all(open_join)
+        can_approve = can_approve or request.user.profile.is_superuser
+
+        if can_approve:
+            self.approve(request.user)
+            EventLog.objects.log(
+                instance=self,
+                action='chapter_membership_approved'
+            )
 
 
 class ChapterMembershipApp(TendenciBaseModel):

@@ -650,7 +650,6 @@ def membership_details(request, chapter_membership_id=0,
     if request.user.is_superuser or is_chapter_leader:
         if 'approve' in request.GET:
             chapter_membership.approve(request_user=request.user)
-            chapter_membership.send_email(('approve_renewal' if chapter_membership.renewal else 'approve'))
             messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
 
         if 'disapprove' in request.GET:
