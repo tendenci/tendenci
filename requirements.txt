@@ -53,7 +53,7 @@ tendenci-django-admin-bootstrapped>=5.0
 django-bootstrap3==15.0.0
 django-annoying==0.10.6
 unidecode
-Markdown
+Markdown==3.3.4
 bleach>=3.3.1
 unicodecsv
 Embedly>=0.5.0
