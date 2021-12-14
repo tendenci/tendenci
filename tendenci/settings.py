@@ -715,11 +715,12 @@ CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 CAPTCHA_IMAGE_SIZE = (172,80)
 
 # Google reCAPTCHA
-NORECAPTCHA_SITE_KEY = ''
-NORECAPTCHA_SECRET_KEY = ''
-NORECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
-NORECAPTCHA_WIDGET_TEMPLATE = 'base/nocaptcha_recaptcha/widget.html'
-
+# NORECAPTCHA_SITE_KEY = ''
+# NORECAPTCHA_SECRET_KEY = ''
+# NORECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
+# NORECAPTCHA_WIDGET_TEMPLATE = 'base/nocaptcha_recaptcha/widget.html'
+RECAPTCHA_PUBLIC_KEY = ''
+RECAPTCHA_PRIVATE_KEY = ''
 
 # ---------------------------------------------------------------------------- #
 # Django Admin Bootstrapped

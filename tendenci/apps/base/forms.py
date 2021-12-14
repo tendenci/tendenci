@@ -9,7 +9,8 @@ from django.forms.fields import CharField
 from django.utils.translation import gettext_lazy as _
 # from captcha.fields import CaptchaField, CaptchaTextInput
 from captcha.fields import CaptchaField
-from nocaptcha_recaptcha.fields import NoReCaptchaField
+
+from tendenci.libs.recaptcha.fields import ReCaptchaField
 SIMPLE_ANSWER = 22
 SIMPLE_QUESTION = _('What is 9 + 13? (security question -just so we know you\'re not a bot)')
 
@@ -124,8 +125,9 @@ class PasswordForm(forms.Form):
 
 
 def CustomCatpchaField(**kwargs):
-    if settings.NORECAPTCHA_SITE_KEY and settings.NORECAPTCHA_SECRET_KEY:
-        return NoReCaptchaField(label='', gtag_attrs={'data-size':'normal'})
+    if settings.RECAPTCHA_PUBLIC_KEY and settings.RECAPTCHA_PRIVATE_KEY:
+        return ReCaptchaField(label='')
+
     return CaptchaField(**kwargs)
 
 

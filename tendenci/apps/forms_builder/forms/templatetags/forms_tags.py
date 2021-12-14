@@ -122,9 +122,9 @@ def embed_form(context, pk, *args, **kwargs):
         context['embed_form'] = form_obj
         context['embed_form_for_form'] = FormForForm(form_obj, AnonymousUser())
         if 'captcha' in context['embed_form_for_form'].fields and 'gsize' in kwargs:
-            if hasattr(context['embed_form_for_form'].fields['captcha'].widget, 'gtag_attrs'):
-                context['embed_form_for_form'].fields['captcha'].widget.gtag_attrs.update(
-                                {'data-size': kwargs['gsize']})
+#             if hasattr(context['embed_form_for_form'].fields['captcha'].widget, 'gtag_attrs'):
+            context['embed_form_for_form'].fields['captcha'].widget.attrs.update(
+                            {'data-size': kwargs['gsize']})
         template = context.template.engine.get_template(template_name)
         output = '<div class="embed-form">%s</div>' % template.render(context=context)
         return mark_safe(output)
