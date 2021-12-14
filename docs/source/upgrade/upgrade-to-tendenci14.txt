@@ -15,6 +15,9 @@ Replace the content of the ``requirements/tendenci.txt`` with the following:
     tendenci>=14,<15
 
 
+We recommend to create a new virtual env instead of using the existing one.
+
+
 Step 2: Upgrade Tendenci
 ------------------------
 
@@ -30,3 +33,15 @@ Run:
     python manage.py migrate
     python manage.py deploy
     python manage.py clear_cache
+
+
+If you have Google reCAPTCHA set up, please rename these two settings:
+
+    Rename `NORECAPTCHA_SITE_KEY` to `RECAPTCHA_PUBLIC_KEY`
+
+    Rename `NORECAPTCHA_SECRET_KEY` to `RECAPTCHA_PRIVATE_KEY`
+
+
+After update is done, restart your site.
+
+
