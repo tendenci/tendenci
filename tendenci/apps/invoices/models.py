@@ -360,6 +360,9 @@ class Invoice(models.Model):
 
     # if this invoice allows edit by user2_compare
     def allow_edit_by(self, user2_compare):
+        if not user2_compare.is_authenticated:
+            return False
+
         if user2_compare.is_superuser:
             return True
         else:

@@ -38,7 +38,7 @@ from django.utils.functional import keep_lazy_text
 from django.utils.text import capfirst, Truncator
 from django.utils.encoding import smart_str
 from django.db import router
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.contrib.auth import get_permission_codename
 from django.utils.html import format_html, strip_tags
 from django.utils.translation import gettext as _
@@ -739,7 +739,7 @@ entities_re = re.compile(r'&(?:\w+|#\d+);')
 def strip_entities(value):
     """Returns the given HTML with all entities (&something;) stripped."""
     # This was copied from Django 1.9 since it is removed in Django 1.10
-    return entities_re.sub('', force_text(value))
+    return entities_re.sub('', force_str(value))
 
 
 def strip_html(value):
