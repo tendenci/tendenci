@@ -13,6 +13,7 @@ import calendar
 from collections import OrderedDict
 from dateutil.parser import parse as dparse, ParserError 
 from dateutil.relativedelta import relativedelta
+from urllib.parse import urlparse
  
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -377,12 +378,17 @@ def membership_applications(request, template_name="memberships/applications/lis
 def referer_url(request):
     """
     Save the membership-referer-url
-    in sessions.  Then redirect to the 'next' URL
+    in sessions.  Then redirect to the 'next_url' URL
     """
-    next = request.GET.get('next')
+    next_url = request.GET.get('next')
     site_url = get_setting('site', 'global', 'siteurl')
 
-    if not next:
+    if not next_url:
+        raise Http404
+
+    # avoid redirecting to external sites
+    o = urlparse(next_url)
+    if o.hostname and o.hostname not in site_url:
         raise Http404
 
     #  make referer-url relative if possible; remove domain
@@ -391,7 +397,7 @@ def referer_url(request):
         request.session['membership-referer-url'] = referer_url
 
     try:
-        return redirect(next)
+        return redirect(next_url)
     except NoReverseMatch:
         raise Http404 
 
