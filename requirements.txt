@@ -68,6 +68,6 @@ nameparser
 Authlib==0.15.4
 django-admin-rangefilter==0.8.1
 # for forums tests
-lxml==4.6.3
+lxml==4.6.5
 
 
