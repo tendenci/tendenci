@@ -386,6 +386,7 @@ def referer_url(request):
     if not next_url:
         raise Http404
 
+    # this view is only used at "Become a member" for events.
     # avoid redirecting to external sites
     o = urlparse(next_url)
     if o.hostname and o.hostname not in site_url:
