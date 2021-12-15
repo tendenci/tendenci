@@ -1,4 +1,4 @@
-### 14.0 [2021-12-12]
+### 14.0 [2021-12-15]
  
 * **Requires Django 3.2 LTS**. Django 2.2 LTS is not supported.
 * T12 sites can be smoothly migrated to T14. For migration, please follow the guide in docs/source/upgrade/upgrade-to-tendenci14.txt.
