@@ -60,14 +60,24 @@
                         </li>
                     {% endif %}
 
-					{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
 					{% if request.user.is_superuser %}
+					{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+					<li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'chapters.memberships_search' %}">{% trans "Search Chapter Members" %}</a>
+                            </span>
+                     </li>
 					<li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'chapters.memberships_import' %}">{% trans "Import Chapter Memberships" %}</a>
                         </span>
                     </li>
                     {% endif %}
+					<li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'admin:app_list' 'chapters' %}">{% trans 'Admin Backend' %}</a>
+                        </span>
+                    </li>
                 	{% endif %}
 
                 </ul>
