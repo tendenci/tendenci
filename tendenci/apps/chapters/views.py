@@ -55,16 +55,20 @@ from tendenci.apps.chapters.forms import (ChapterForm, OfficerForm,
                                           ChapterMembershipUploadForm,
                                           ChapterMembershipAppPreForm,
                                           CustomMembershipTypeForm,
-                                          MembershipTypeBaseFormSet)
+                                          MembershipTypeBaseFormSet,
+                                          EmailChapterMemberForm)
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.utils import Echo
-from tendenci.apps.chapters.utils import get_chapter_membership_field_values, ImportChapterMembership
+from tendenci.apps.chapters.utils import (get_chapter_membership_field_values,
+                                          ImportChapterMembership,
+                                          email_chapter_members)
 from tendenci.apps.exports.utils import render_csv
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.utils import send_email_notification
+from tendenci.apps.theme.utils import get_template_content_raw
 
 
 @is_enabled('chapters')
@@ -444,8 +448,13 @@ def chapter_memberships_search(request, chapter_id=0,
                             'status',
                             'status_detail',
                             ''])
-    form = ChapterMemberSearchForm(request.GET, app_fields=app_fields,
+    if 'email_members' in request.POST or 'email_members_selected' in request.POST:
+        form = ChapterMemberSearchForm(request.POST, app_fields=app_fields,
                                    user=request.user, chapter=chapter)
+    else:
+        form = ChapterMemberSearchForm(request.GET, app_fields=app_fields,
+                                       user=request.user, chapter=chapter)
+
     if form.is_valid():
         membership_fieldnames = [field.name for field in ChapterMembership._meta.fields if \
                            field.get_internal_type() in ['CharField', 'TextField']]
@@ -472,57 +481,104 @@ def chapter_memberships_search(request, chapter_id=0,
                 elif isinstance(field_value, str):
                     if field_name in membership_fieldnames:
                         chapter_memberships = chapter_memberships.filter(Q(**{f'{field_name}__icontains': field_value}))
-    chapter_memberships = chapter_memberships.order_by('user__last_name', 'user__first_name')
-
-    if 'export' in request.GET:
-        EventLog.objects.log(description="chapter memberships export")
-        import csv
-        def iter_chapter_memberships(chapter_memberships, app_fields):
-            field_labels = [field.label for field in app_fields]
-            field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
-                            _('Expire Date'), _('Status Detail')]
-            field_labels.insert(0, _('Chapter'))
-            
-            writer = csv.DictWriter(Echo(), fieldnames=field_labels)
-            # write headers - labels
-            yield writer.writerow(dict(zip(field_labels, field_labels)))
-        
-            for chapter_membership in chapter_memberships:
-                values_list = get_chapter_membership_field_values(chapter_membership, app_fields)
-                if chapter_membership.create_dt:
-                    values_list.append(chapter_membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
-                else:
-                    values_list.append('')
-                if chapter_membership.join_dt:
-                    values_list.append(chapter_membership.join_dt.strftime('%Y-%m-%d %H:%M:%S'))
-                else:
-                    values_list.append('')
-                if chapter_membership.renew_dt:
-                    values_list.append(chapter_membership.renew_dt.strftime('%Y-%m-%d %H:%M:%S'))
-                else:
-                    values_list.append('')
-                if chapter_membership.expire_dt:
-                    values_list.append(chapter_membership.expire_dt.strftime('%Y-%m-%d %H:%M:%S'))
-                else:
-                    values_list.append('')
-                values_list.append(chapter_membership.status_detail)
+        chapter_memberships = chapter_memberships.order_by('user__last_name', 'user__first_name')
+    
+        if 'export' in request.GET:
+            EventLog.objects.log(description="chapter memberships export")
+            import csv
+            def iter_chapter_memberships(chapter_memberships, app_fields):
+                field_labels = [field.label for field in app_fields]
+                field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
+                                _('Expire Date'), _('Status Detail')]
+                field_labels.insert(0, _('Chapter'))
                 
-                values_list.insert(0, chapter_membership.chapter.title)
-        
-                yield writer.writerow(dict(zip(field_labels, values_list)))
+                writer = csv.DictWriter(Echo(), fieldnames=field_labels)
+                # write headers - labels
+                yield writer.writerow(dict(zip(field_labels, field_labels)))
+            
+                for chapter_membership in chapter_memberships:
+                    values_list = get_chapter_membership_field_values(chapter_membership, app_fields)
+                    if chapter_membership.create_dt:
+                        values_list.append(chapter_membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
+                    else:
+                        values_list.append('')
+                    if chapter_membership.join_dt:
+                        values_list.append(chapter_membership.join_dt.strftime('%Y-%m-%d %H:%M:%S'))
+                    else:
+                        values_list.append('')
+                    if chapter_membership.renew_dt:
+                        values_list.append(chapter_membership.renew_dt.strftime('%Y-%m-%d %H:%M:%S'))
+                    else:
+                        values_list.append('')
+                    if chapter_membership.expire_dt:
+                        values_list.append(chapter_membership.expire_dt.strftime('%Y-%m-%d %H:%M:%S'))
+                    else:
+                        values_list.append('')
+                    values_list.append(chapter_membership.status_detail)
+                    
+                    values_list.insert(0, chapter_membership.chapter.title)
+            
+                    yield writer.writerow(dict(zip(field_labels, values_list)))
+    
+            response = StreamingHttpResponse(
+            streaming_content=(iter_chapter_memberships(chapter_memberships, app_fields)),
+            content_type='text/csv',)
+            response['Content-Disposition'] = f'attachment;filename=chapter_memberships_export_{ttime.time()}.csv'
+            return response
 
-        response = StreamingHttpResponse(
-        streaming_content=(iter_chapter_memberships(chapter_memberships, app_fields)),
-        content_type='text/csv',)
-        response['Content-Disposition'] = f'attachment;filename=chapter_memberships_export_{ttime.time()}.csv'
-        return response
+        # set up email form with default values
+        if chapter:
+            default_sender_display = chapter.title
+        else:
+            default_sender_display = get_setting('site', 'global', 'sitedisplayname')
+        default_subject = request.session.get('email_subject', '') or 'Your Chapter Membership Application Needs Attention'
+        default_body = request.session.get('email_body', '')
+        if not default_body:
+            default_body = get_template_content_raw('chapters/memberships/message/email-chapter-members-body.txt')
+        email_form = EmailChapterMemberForm(request.POST or None,
+                            initial={'subject': default_subject,
+                                     'body': default_body,
+                                    'sender_display': default_sender_display,
+                                    'reply_to': request.user.email})
+
+        if ('email_members' in request.POST or 'email_members_selected' in request.POST) \
+                and email_form.is_valid():
+            if 'email_members_selected' in request.POST:
+                selected_members = request.POST.getlist('selected_members')
+                if selected_members:
+                    selected_members = [int(m) for m in selected_members]
+                    chapter_memberships = chapter_memberships.filter(id__in=selected_members)
+
+            email = email_form.save()
+            if not email.sender_display:
+                email.sender_display = request.user.get_full_name()
+            if not email.reply_to:
+                email.reply_to = request.user.email
+            email.content_type = "html"
+            email.allow_anonymous_view = False
+            email.allow_user_view = False
+            email.allow_member_view = False
+            email.save(request.user)
+            retn_content = email_chapter_members(email,
+                                                 chapter_memberships,
+                                                 request=request)
+    
+            EventLog.objects.log(instance=email)
+            return StreamingHttpResponse(streaming_content=retn_content)
+    else:
+        # search_form is invalid
+        chapter_memberships = chapter_memberships.none()
+        email_form = None
 
     EventLog.objects.log()
 
     return render_to_resp(request=request, template_name=template_name,
         context={
             'chapter_memberships': chapter_memberships,
+            'total_members': chapter_memberships.count(),
             'search_form': form,
+            'email_form': email_form,
+            'total_members': chapter_memberships.count(),
             'app': app,
             'chapter': chapter,
             'app_fields': app_fields})

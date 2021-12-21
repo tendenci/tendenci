@@ -34,6 +34,11 @@ h3{
 	margin-left: 8px;
 	white-space: nowrap;
 }
+#toggle-cm-email-form{
+	border-top: 1px solid #ccc; 
+	margin-top: 2em;
+	padding-top: 10px;
+}
 
 </style>
 {% endblock %}
@@ -90,11 +95,13 @@ h3{
 		            <p>{% trans "0 chapter members found."%}</p>
 		        {% endif %}
 
+				<form id="chapters-email-form" class="form-horizontal" action="." method="post">{% csrf_token %}
 
 				{% if paginator.count > 0  %}
 				<div id="members-wrap">
 				<table class="table table-striped table-bordered">
 					<tr>
+					<th><input type="checkbox" id="select_members_all" class="action-select"></th>
 					<th>{% trans "View" %}</th>
 					<th>{% trans "Edit" %}</th>
 					{% if not chapter %}
@@ -115,6 +122,7 @@ h3{
 			
 					{% for chapter_membership in chapter_memberships %}
 					<tr>
+						<td><input type="checkbox" name="selected_members" value="{{ chapter_membership.id }}" class="action-select"></td>
 						<td><a href="{% url "chapters.membership_details" chapter_membership.id  %}"><img src="{% static 'images/icons/external_16x16.png' %}" alt="View chapter membership: {{ chapter_membership }}"></a></td>
 						<td><a href="{% url "chapters.membership_edit" chapter_membership.id  %}">{% trans "Edit" %}</a></td>
 						{% if not chapter %}
@@ -142,7 +150,50 @@ h3{
 
 		
 		        {% paginate %}
-						
+				
+				
+				{# display email_form here #}
+				
+				{% if total_members > 0 and not search_form.errors.values %}
+				<div id="toggle-cm-email-form"><a href="javascript:;">Click to show/hide email form</a></div>
+				
+				<div id="cm-email-form">
+
+				<p class="well">
+				{% blocktrans %}Note: To send email to the <strong>selected</strong> members, 
+				please select the checkboxes next to each member, 
+				and click the button "Send Email to Selected Members". Otherwise, use the
+				other button.
+				{% endblocktrans %}
+				<p>
+
+		        {{ email_form|styled_form }}
+		
+		        <div class="form-group">
+					<div class="col-sm-offset-3 col-sm-9">
+		            <em><strong><font color="red">{% trans "This message will be sent IMMEDIATELY. DO NOT HIT REFRESH!" %}</font></strong></em>.
+					</div>
+		        </div>
+		
+				<div class="form-group">
+		            <div class="col-sm-offset-3 col-sm-9">
+						<button type="submit" name="email_members_selected" class="btn btn-primary text-capitalize">
+                         {% trans 'Send Email to Selected Members' %}
+		                </button>
+						&nbsp;&nbsp;&nbsp;
+		                <button type="submit" name="email_members" class="btn btn-default text-capitalize">
+                         {% blocktrans with m_ps=total_members|pluralize %}Send Email to total {{ total_members }} member{{ m_ps }}{% endblocktrans %}
+		                </button>
+		            </div>
+		        </div>
+
+					<div class="hide">
+					{{ search_form|styled_form }}
+					</div>
+				 
+				</div>
+				{% endif %}
+			</form>	
 			</div>
 		</div>
 
@@ -151,6 +202,9 @@ h3{
 
 {% block extra_body %}
 {{ block.super }}
+{{ email_form.media }}
+<script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script type="text/javascript">
 	$(".clearall").on("click", function(event) {
 		event.preventDefault();
@@ -160,4 +214,21 @@ h3{
 		$("#members-search-form select option:selected").prop('selected', false);
 	});
 </script>
+{% if total_members > 0 and not search_form.errors.values %}
+<script>
+    (function($) {
+        $(document).ready(function() {
+            $('#cm-email-form').hide();
+            $('#toggle-cm-email-form').click(function () {
+                $('#cm-email-form').toggle("slow");
+            });
+
+			$('#select_members_all').change(function() {
+			  	var checkboxes = $(this).closest('#members-wrap').find(':checkbox');
+			  	checkboxes.prop('checked', $(this).is(':checked'));
+			});
+        });
+    }(jQuery));
+</script>
+{% endif %}
 {% endblock %}

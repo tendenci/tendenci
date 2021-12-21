@@ -4,12 +4,17 @@ from decimal import Decimal
 
 from django.core import exceptions
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
+from django.template import Context, Template
+from django.template.loader import get_template
+from django.urls.base import reverse
 
 from tendenci.apps.chapters.models import (
         Chapter, ChapterMembershipApp,
         ChapterMembership, ChapterMembershipType)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.shortcuts import _strip_content_above_doctype
 
 
 def get_newsletter_group_queryset():
@@ -128,6 +133,83 @@ def get_notice_token_help_text(notice=None):
                 """
 
     return help_text
+
+
+def email_chapter_members(email, chapter_memberships, **kwargs):
+    """
+    Email to pending members or corporate members.
+    """
+    site_url = get_setting('site', 'global', 'siteurl')
+    site_display_name = get_setting('site', 'global', 'sitedisplayname')
+    tmp_body = email.body
+    
+    request = kwargs.get('request')
+    total_sent = 0
+    subject = email.subject
+    
+    msg = '<div class="hide" id="m-streaming-content" style="margin: 2em 5em;text-align: left; line-height: 1.3em;">'
+    msg += '<h1>Processing ...</h1>'
+
+    for member in chapter_memberships:
+        first_name = member.user.first_name
+        last_name = member.user.last_name
+
+        email.recipient = member.user.email
+
+        if email.recipient:
+            view_url = '{0}{1}'.format(site_url, reverse('chapters.membership_details', args=[member.id]))
+            edit_url = '{0}{1}'.format(site_url, reverse('chapters.membership_edit', args=[member.id]))
+            template = Template(email.body)
+            context = Context({'site_url': site_url,
+                               'site_display_name': site_display_name,
+                               "first_name": first_name,
+                               'last_name': last_name,
+                               'view_url': view_url,
+                               'edit_url': edit_url,
+                               'chapter_name': member.chapter.title})
+            email.body = template.render(context)
+
+            email.send()
+            total_sent += 1
+
+            msg += f'{total_sent}. Email sent to {first_name} {last_name} {email.recipient}<br />'
+
+            if total_sent % 10 == 0:
+                yield msg
+                msg = ''
+
+        email.body = tmp_body  # restore to the original
+
+    request.session['email_subject'] = email.subject
+    request.session['email_body'] = email.body
+
+    dest = _('Chapter members')
+
+    opts = {}
+    opts['summary'] = '<font face=""Arial"" color=""#000000"">'
+    opts['summary'] += 'Emails sent to {0} ({1})</font><br><br>'.format(dest, total_sent)
+    opts['summary'] += '<font face=""Arial"" color=""#000000"">'
+    opts['summary'] += 'Email Sent Appears Below in Raw Format'
+    opts['summary'] += '</font><br><br>'
+    opts['summary'] += email.body
+
+    # send summary
+    email.subject = 'SUMMARY: %s' % email.subject
+    email.body = opts['summary']
+    email.recipient = request.user.email
+    email.send()
+
+    msg += f'DONE!<br /><br />Successfully sent email "{subject}" to <strong>{total_sent}</strong> pending members.'
+    msg += '</div>'
+    yield msg
+    
+    template_name='chapters/memberships/message/email-chapter-members-conf.html'
+    template = get_template(template_name)
+    context={'total_sent': total_sent,
+             'chapter_memberships': chapter_memberships}
+    rendered = template.render(context=context, request=request)
+    rendered = _strip_content_above_doctype(rendered)
+    yield rendered
 
 
 class ImportChapterMembership(object):

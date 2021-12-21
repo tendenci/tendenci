@@ -29,6 +29,7 @@ from tendenci.apps.memberships.fields import TypeExpMethodField, NoticeTimeTypeF
 from tendenci.apps.memberships.widgets import (
     CustomRadioSelect, TypeExpMethodWidget)
 from tendenci.apps.payments.fields import PaymentMethodModelChoiceField
+from tendenci.apps.emails.models import Email
 from .fields import ChapterMembershipTypeModelChoiceField
 from .models import Notice, ChapterMembershipImport
 from .widgets import ChapterNoticeTimeTypeWidget
@@ -121,6 +122,36 @@ class ChapterMemberSearchForm(FormControlWidgetMixin, forms.Form):
                             ('expired', _('Expired'))))
         assign_search_fields(self, app_fields)
         self.add_form_control_class()
+
+
+class EmailChapterMemberForm(FormControlWidgetMixin, forms.ModelForm):
+    subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
+    body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label': Email._meta.app_label,
+        'storme_model': Email._meta.model_name.lower()}),
+        label=_('Email Content'),
+        help_text=_("""Available tokens:
+                    <ul><li>{{ first_name }}</li>
+                    <li>{{ last_name }}</li>
+                    <li>{{ chapter_name }}</li>
+                    <li>{{ view_url }}</li>
+                    <li>{{ edit_url }}</li>
+                    <li>{{ site_url }}</li>
+                    <li>{{ site_display_name }}</li></ul>"""))
+
+    class Meta:
+        model = Email
+        fields = ('subject',
+                  'body',
+                  'sender_display',
+                  'reply_to',)
+
+    def __init__(self, *args, **kwargs):
+        super(EmailChapterMemberForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
 
 class ChapterMembershipTypeForm(TendenciBaseForm):
