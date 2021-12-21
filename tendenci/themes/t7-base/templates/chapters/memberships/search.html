@@ -155,15 +155,18 @@ h3{
 				{# display email_form here #}
 				
 				{% if total_members > 0 and not search_form.errors.values %}
-				<div id="toggle-cm-email-form"><a href="javascript:;">Click to show/hide email form</a></div>
-				
-				<div id="cm-email-form">
+				<div class="big" style="margin-top: 2em;">				
+					<a id="toggle-cm-email-form"  data-toggle="collapse" href="#cm-email-form" aria-expanded="false" aria-controls="cm-email-form">
+					  <span id="show-w">Show</span><span id="hide-w" class="hide">Hide</span> Email Form
+					</a>
+				</div>
+				<div id="cm-email-form" class="collapse">
 
 				<p class="well">
 				{% blocktrans %}Note: To send email to the <strong>selected</strong> members, 
 				please select the checkboxes next to each member, 
 				and click the button "Send Email to Selected Members". Otherwise, use the
-				other button.
+				other submit button.
 				{% endblocktrans %}
 				<p>
 
@@ -218,9 +221,10 @@ h3{
 <script>
     (function($) {
         $(document).ready(function() {
-            $('#cm-email-form').hide();
             $('#toggle-cm-email-form').click(function () {
-                $('#cm-email-form').toggle("slow");
+				$('#show-w').toggleClass('hide');
+				$('#hide-w').toggleClass('hide');
+
             });
 
 			$('#select_members_all').change(function() {
