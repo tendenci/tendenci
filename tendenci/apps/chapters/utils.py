@@ -168,6 +168,10 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
                                'edit_url': edit_url,
                                'chapter_name': member.chapter.title})
             email.body = template.render(context)
+            
+            # replace relative to absolute urls
+            email.body = email.body.replace("src=\"/", f"src=\"{site_url}/")
+            email.body = email.body.replace("href=\"/", f"href=\"{site_url}/")
 
             email.send()
             total_sent += 1
