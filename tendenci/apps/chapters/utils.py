@@ -15,6 +15,7 @@ from tendenci.apps.chapters.models import (
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.shortcuts import _strip_content_above_doctype
+from tendenci.apps.newsletters.utils import get_newsletter_connection, is_newsletter_relay_set
 
 
 def get_newsletter_group_queryset():
@@ -143,6 +144,12 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
     site_display_name = get_setting('site', 'global', 'sitedisplayname')
     tmp_body = email.body
     
+    # if possible, use the email backend set up for newsletters
+    if is_newsletter_relay_set():
+        connection = get_newsletter_connection()
+    else:
+        connection = None
+
     request = kwargs.get('request')
     total_sent = 0
     subject = email.subject
@@ -173,7 +180,7 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
             email.body = email.body.replace("src=\"/", f"src=\"{site_url}/")
             email.body = email.body.replace("href=\"/", f"href=\"{site_url}/")
 
-            email.send()
+            email.send(connection)
             total_sent += 1
 
             msg += f'{total_sent}. Email sent to {first_name} {last_name} {email.recipient}<br />'
@@ -201,7 +208,7 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
     email.subject = 'SUMMARY: %s' % email.subject
     email.body = opts['summary']
     email.recipient = request.user.email
-    email.send()
+    email.send(connection)
 
     msg += f'DONE!<br /><br />Successfully sent email "{subject}" to <strong>{total_sent}</strong> pending members.'
     msg += '</div>'
