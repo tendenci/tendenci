@@ -441,13 +441,17 @@ def chapter_memberships_search(request, chapter_id=0,
                                     ).exclude(status_detail__in=['archive', 'inactive', 'admin_hold'])
     if chapter:
         chapter_memberships = chapter_memberships.filter(chapter=chapter)
-    app_fields = app.fields.filter(display=True).exclude(
-            field_name__in=['payment_method',
+    field_names_to_exclude = ['payment_method',
                             'membership_type',
                             'groups',
                             'status',
                             'status_detail',
-                            ''])
+                            '']
+    if chapter:
+        app_fields = app.get_app_fields(chapter, request.user, field_names_to_exclude=field_names_to_exclude)
+    else:
+        app_fields = app.fields.filter(display=True).exclude(
+                field_name__in=field_names_to_exclude)
     if 'email_members' in request.POST or 'email_members_selected' in request.POST:
         form = ChapterMemberSearchForm(request.POST, app_fields=app_fields,
                                    user=request.user, chapter=chapter)

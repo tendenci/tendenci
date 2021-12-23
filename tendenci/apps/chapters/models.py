@@ -1214,13 +1214,15 @@ class ChapterMembershipApp(TendenciBaseModel):
             template = engines['django'].from_string(getattr(self, field_name))
             setattr(self, field_name, template.render(context=context))
 
-    def get_app_fields(self, chapter, request_user):
+    def get_app_fields(self, chapter, request_user, field_names_to_exclude=[]):
         """
         Retrieves a list of fields for the chapter.
         """
         app_fields = self.fields.filter(display=True)
         if not (request_user.is_superuser or chapter.is_chapter_leader(request_user)):
             app_fields = app_fields.filter(admin_only=False)
+        if field_names_to_exclude:
+            app_fields = app_fields.exclude(field_name__in=field_names_to_exclude)
         app_fields = app_fields.order_by('position')
         for field in app_fields:
             [cfield] = field.customized_fields.filter(chapter=chapter)[:1] or [None]
