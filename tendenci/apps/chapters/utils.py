@@ -317,7 +317,7 @@ class ImportChapterMembership(object):
         username = memb_data.get('username')
         if not username:
             return False, _('username not specified.')
-        if not User.objects.filter(username=username).exists:
+        if not User.objects.filter(username=username).exists():
             return False, _('username does not exist.')
         return True, ''
 
@@ -328,7 +328,7 @@ class ImportChapterMembership(object):
         chapter_id = memb_data.get('chapter_id')
         if not chapter_id:
             return False, _('chapter_id not specified.')
-        if not Chapter.objects.filter(id=chapter_id).exists:
+        if not Chapter.objects.filter(id=chapter_id).exists():
             return False, _('chapter_id does not exist.')
         return True, ''
 
