@@ -883,7 +883,8 @@ class UserUploadForm(forms.ModelForm):
         file_content = upload_file.read()
         # decode from bytes to string
         encoding = chardet.detect(file_content)["encoding"]
-        file_content = file_content.decode(encoding)
+        if encoding:
+            file_content = file_content.decode(encoding)
         upload_file.seek(0)
         header_line_index = file_content.find('\n')
         header_list = ((file_content[:header_line_index]
