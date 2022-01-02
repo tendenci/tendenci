@@ -61,15 +61,15 @@ source_suffix = '.txt'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Tendenci'
-copyright = u'2020, Tendenci'
+project = 'Tendenci'
+copyright = '2021, Tendenci'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '12.0'
+version = '14.0'
 # The full version, including alpha/beta/rc tags.
 release = tendenci_version
 
@@ -128,7 +128,7 @@ html_title = "Tendenci - The Open Source AMS Software for NGOs and Governments"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
-html_short_title= "Tendenci 12"
+html_short_title= "Tendenci 14"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
@@ -235,8 +235,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'tendenci', u'Tendenci Open AMS Documentation',
-        [u'Tendenci'], 1)
+    ('index', 'tendenci', 'Tendenci Open AMS Documentation',
+        ['Tendenci'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -249,8 +249,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'Tendenci', u'Tendenci AMS Docs',
-        u'Tendenci', 'Tendenci', 'The Open Source AMS for NGOs and Governments',
+    ('index', 'Tendenci', 'Tendenci AMS Docs',
+        'Tendenci', 'Tendenci', 'The Open Source AMS for NGOs and Governments',
         'Open Source AMS'),
 ]
 

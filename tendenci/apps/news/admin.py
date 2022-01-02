@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.news.models import News
@@ -50,6 +50,7 @@ class NewsAdmin(TendenciBaseModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form_model = super(NewsAdmin, self).get_form(request, obj, **kwargs)
         form_model.user = request.user
+        form_model.admin_backend = True
         return form_model
 
 admin.site.register(News, NewsAdmin)

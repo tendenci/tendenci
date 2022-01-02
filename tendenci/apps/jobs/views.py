@@ -13,7 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 from django.http import Http404
 

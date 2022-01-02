@@ -13,6 +13,7 @@ import calendar
 from collections import OrderedDict
 from dateutil.parser import parse as dparse, ParserError 
 from dateutil.relativedelta import relativedelta
+from urllib.parse import urlparse
  
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -29,7 +30,7 @@ from django.db.models import ForeignKey, OneToOneField
 from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
 from django.core.files.storage import default_storage
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.urls.resolvers import NoReverseMatch
@@ -377,12 +378,18 @@ def membership_applications(request, template_name="memberships/applications/lis
 def referer_url(request):
     """
     Save the membership-referer-url
-    in sessions.  Then redirect to the 'next' URL
+    in sessions.  Then redirect to the 'next_url' URL
     """
-    next = request.GET.get('next')
+    next_url = request.GET.get('next')
     site_url = get_setting('site', 'global', 'siteurl')
 
-    if not next:
+    if not next_url:
+        raise Http404
+
+    # this view is only used at "Become a member" for events.
+    # avoid redirecting to external sites
+    o = urlparse(next_url)
+    if o.hostname and o.hostname not in site_url:
         raise Http404
 
     #  make referer-url relative if possible; remove domain
@@ -391,7 +398,7 @@ def referer_url(request):
         request.session['membership-referer-url'] = referer_url
 
     try:
-        return redirect(next)
+        return redirect(next_url)
     except NoReverseMatch:
         raise Http404 
 

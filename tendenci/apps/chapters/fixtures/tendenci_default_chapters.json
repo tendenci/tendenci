@@ -1,0 +1,80 @@
+[
+{
+    "model": "chapters.notice",
+    "pk": 1,
+    "fields": {
+        "guid": "",
+        "notice_name": "Chapter Membership Expiration Notice 7 Days Before Expiration",
+        "num_days": 7,
+        "notice_time": "before",
+        "notice_type": "expiration",
+        "chapter": null,
+        "membership_type": null,
+        "subject": "Chapter Membership Expiration Notice",
+        "content_type": "html",
+        "sender": null,
+        "sender_display": "Tendenci Inc",
+        "email_content": "<p>Dear {{ first_name }},</p>\r\n<p>Your chapter membership with for {{ name }} with {{ site_display_name }} will expire in <strong>7</strong> days.</p>\r\n<p>To renew your chapter membership visit {{ renew_link }}</p>\r\n<p>Thank you!</p>\r\n<p><br />{{ site_contact_name }}<br />{{ site_display_name }}</p>",
+        "create_dt": "2021-11-16T17:31:57.424",
+        "update_dt": "2021-11-24T20:31:16.249",
+        "creator": 1,
+        "creator_username": "system_generated",
+        "owner": 1,
+        "owner_username": "system_generated",
+        "status_detail": "active",
+        "status": true
+    }
+},
+{
+    "model": "chapters.notice",
+    "pk": 2,
+    "fields": {
+        "guid": "",
+        "notice_name": "Chapter Membership Approval Notice",
+        "num_days": 0,
+        "notice_time": "attimeof",
+        "notice_type": "approve",
+        "chapter": null,
+        "membership_type": null,
+        "subject": "Chapter Membership Approval with {{ site_display_name }} for {{ chapter_name }}",
+        "content_type": "html",
+        "sender": null,
+        "sender_display": null,
+        "email_content": "<p>Dear {{ first_name }},</p>\r\n<p>Thank you for your chapter membership application to join {{ chapter_name }} with <span class=\"help-block\">{{ site_display_name }}</span>.</p>\r\n<p><span class=\"help-block\">Your application for&nbsp;{{ membership_type }} has been processed and approved. </span></p>\r\n<p>To view and update your application, please go to <span class=\"help-block\">{{ view_link }}</span>.</p>\r\n<p>&nbsp;</p>\r\n<p>Thanks!</p>\r\n<p><span class=\"help-block\">{{ chapter_name }}</span></p>\r\n<p><span class=\"help-block\">{{ site_display_name }}</span></p>\r\n<p>&nbsp;</p>",
+        "create_dt": "2021-11-24T20:41:28.008",
+        "update_dt": "2021-11-24T20:41:28.008",
+        "creator": 1,
+        "creator_username": "system_generated",
+        "owner": 1,
+        "owner_username": "system_generated",
+        "status_detail": "active",
+        "status": true
+    }
+},
+{
+    "model": "chapters.notice",
+    "pk": 3,
+    "fields": {
+        "guid": "",
+        "notice_name": "Chapter Membership Renewal Notice",
+        "num_days": 0,
+        "notice_time": "attimeof",
+        "notice_type": "renewal",
+        "chapter": null,
+        "membership_type": null,
+        "subject": "Thank You for Your {{ chapter_name }} Chapter Membership Renewal with {{ site_display_name }}",
+        "content_type": "html",
+        "sender": null,
+        "sender_display": null,
+        "email_content": "<p>Dear {{ first_name }},</p>\r\n<p>Your&nbsp;<span class=\"help-block\">{{ chapter_name }}</span> chapter membership renewal with {{ site_display_name }} has been received. You'll be notified once your application has been reviewed and approved.</p>\r\n<p>To view your application, please go to <span class=\"help-block\">{{ view_link }}</span>.</p>\r\n<p>&nbsp;</p>\r\n<p>Thanks!</p>\r\n<p>{{ site_display_name }}</p>",
+        "create_dt": "2021-11-24T20:46:53.088",
+        "update_dt": "2021-11-24T20:47:38.746",
+        "creator": 1,
+        "creator_username": "system_generated",
+        "owner": 1,
+        "owner_username": "system_generated",
+        "status_detail": "active",
+        "status": true
+    }
+}
+]

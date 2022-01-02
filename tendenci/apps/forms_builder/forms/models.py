@@ -1,6 +1,6 @@
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
@@ -180,13 +180,13 @@ class Form(TendenciBaseModel):
     @mark_safe
     def admin_link_view(self):
         url = self.get_absolute_url()
-        return "<a href='%s'>%s</a>" % (url, ugettext("View on site"))
+        return "<a href='%s'>%s</a>" % (url, gettext("View on site"))
     admin_link_view.short_description = ""
 
     @mark_safe
     def admin_link_export(self):
         url = reverse("admin:forms_form_export", args=(self.id,))
-        return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
+        return "<a href='%s'>%s</a>" % (url, gettext("Export entries"))
     admin_link_export.short_description = ""
 
     def has_files(self):

@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.admin import SimpleListFilter
-from django.utils.translation import ugettext_lazy as _
-from django.conf.urls import url
+from django.utils.translation import gettext_lazy as _
+from django.urls import path, re_path
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.safestring import mark_safe
 
@@ -419,7 +419,7 @@ class NoticeAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(NoticeAdmin, self).get_urls()
         extra_urls = [
-            url(r'^clone/(?P<pk>\d+)/$',
+            re_path(r'^clone/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.clone),
                 name='corporate_membership_notice.admin_clone'),
         ]

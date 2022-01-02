@@ -4,7 +4,7 @@ from functools import reduce
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter, helpers
 from django.contrib.admin.utils import get_deleted_objects, model_ngettext
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.encoding import iri_to_uri, force_text
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied

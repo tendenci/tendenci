@@ -1,7 +1,7 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
-from form_utils.forms import BetterModelForm
+from django.utils.translation import gettext_lazy as _
 
+from tendenci.libs.form_utils.forms import BetterModelForm
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.base.forms import FormControlWidgetMixin
 

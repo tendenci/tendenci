@@ -1,5 +1,5 @@
 
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group, GroupMembership

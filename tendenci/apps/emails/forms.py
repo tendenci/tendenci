@@ -1,6 +1,6 @@
 from django import forms
 from tendenci.apps.emails.models import Email
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.libs.tinymce.widgets import TinyMCE
 
 class EmailForm(forms.ModelForm):

@@ -1,0 +1,57 @@
+
+Chapter Memberships
+===================
+
+
+Steps to Get Started With Chapter Memberships
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+1) Build a chapter membership application form at admin backend, if not already exist.
+    
+    - Add chapter membership types at https://www.example.com/admin/chapters/chaptermembershiptype/
+
+    - Add a chapter membership App at https://www.example.com/admin/chapters/chaptermembershipapp/ (only one is allowed). Some fields can be marked as customizable to allow chapter leaders to customize. 
+
+2) If application fields are marked as customizable, they can be customized by Chapter leaders to fit their chapter's needs. The link "Customize App Fields" can be accessed in the top menu. 
+
+3) Each chapter can also set their own prices for each chapter membership types by accessing the link "Set/Update Prices" in the top menu. 
+
+4) Enable chapter memberships by turning on the setting "Chapter Memberships Enabled" to true (so that related links would show on top menu). https://www.example.com/settings/module/chapters/#id_membershipsenabled
+
+5) Logged in users can then join a chapter by clicking the button "Join Chapter" on chapter details page, and fill out and submit the application form. Chapter leaders can then approve pending chapter memberships on chapter membership details page.
+
+
+Chapter Groups
+^^^^^^^^^^^^^^
+
+When a chapter is created, a group is automatically created and associated with the chapter. As a chapter leader or superuser, you can also specify a Newsletter group for your chapter by editing the chapter. https://www.example.com/admin/chapters/chapter/1/change/
+
+
+Users will be automatically added to the newsletter group on join, and to the associated group upon approval of their chapter memberships. 
+
+
+Payment Options
+^^^^^^^^^^^^^^^
+
+If each chapter wants to collect their membership dues separately and externally, you can enable third party payment by turning on the setting "Chapter Memberships Uses Third Party Payment" https://www.example.com/settings/module/chapters/, then let the leaders of each chapter edit their chapters and enter an external payment link to the field "External payment link". 
+
+If third party payment is enabled, invoices will be marked as paid upon approval of the chapter memberships. Likewise, chapter memberships will be approved when the associated invoices are marked as paid.
+
+
+Import Chapter Memberships
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Chapter leaders can import chapter memberships into their own chapters. The import link can be accessed at top menu under "This Chapter". Admin can import chapter memberships for all chapters.
+
+
+Chapter Memberships Search / Filter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Chapter leaders can search /filter chapter memberships (with export), and access and adjust their invoices. Admin can search / filter chapter memberships for all chapters (with export). Admin can also view or search a list of chapter memberships at admin backend https://www.example.com/admin/chapters/chaptermembership/.
+
+
+Notices to Chapter Memberships
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Chapter memberships notices for join, renewal and renewal reminders can be set up at admin backend https://www.example.com/admin/chapters/notice/.

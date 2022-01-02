@@ -26,7 +26,7 @@ from django.template.loader import render_to_string
 from django.http import Http404
 from django.db.models import ForeignKey, OneToOneField
 from django.db.models.fields import AutoField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models.functions import Lower
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp

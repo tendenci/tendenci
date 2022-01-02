@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.apps.email_blocks.models import EmailBlock
 from tendenci.apps.perms.forms import TendenciBaseForm
 

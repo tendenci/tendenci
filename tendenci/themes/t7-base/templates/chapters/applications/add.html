@@ -1,0 +1,94 @@
+{% extends "chapters/base-wide.html" %}
+{% load chapter_tags %}
+
+{% block title %}{% trans "Chapter Membership Application" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<style>
+div.form-errors{
+    margin-left: 0;
+    background-color: #ffebe8;
+    border: 2px solid #ff8b78;
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 75%;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <div class="page-header">
+       <h1>{% if is_renewal %}{% trans 'Chapter Membership Renew' %}{% elif is_edit %}{% trans 'Chapter Membership Edit' %}{% else %}{{ app.name }}{% endif %}</h1>
+      {% if is_renewal %}
+          {% if app.renewal_description %}<p>{{ app.renewal_description|safe }}</p>{% endif %}
+      {% else %}
+          {% if not is_edit %}
+          {% if app.description %}<p>{{ app.description|safe }}</p>{% endif %}
+          {% endif %}
+      {% endif %}
+    </div>
+	{% if is_renewal or is_edit %}
+	{% if chapter_membership and request.user != chapter_membership.user %}
+	<div>{% trans 'Member: ' %}<a href="{% url 'profile' chapter_membership.user.username %}">{{ chapter_membership.user.get_full_name }}</a></div>
+	{% endif %}
+	{% endif %}
+    <form class="form-horizontal" action="." method="post" enctype="multipart/form-data">{% csrf_token %}
+                {% if chapter_membership_form.errors.values %}
+            <div class="form-errors">
+                {% trans 'There were some problems in the form. Please review. Thanks!' %}
+                    {% for error in chapter_membership_form.non_field_errors %}
+                        <p><a href="#">{{ error }}</a></p>
+                    {% endfor %}
+
+                {% for field in chapter_membership_form %}
+                    {% if field.errors %}
+                          {% for error in field.errors %}
+                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                          {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if not is_edit %}
+                    {% for field in captcha_form %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endif %}
+
+		{% for field_obj in app_fields %}
+            {% render_chapter_membership_field request field_obj chapter_membership_form %}
+        {% endfor %}
+
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+      <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+      <script src="{% static 'timepicker/timepicker.js' %}" type="text/javascript"></script>
+      <script type="text/javascript">
+      (function($){
+        $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+        $('.timepicker').timepicker({'step':15});
+      })(jQuery);
+        $(document).ready(function(){
+
+        });
+      </script>
+{% endblock extra_body %}

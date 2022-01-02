@@ -1,7 +1,7 @@
 from tendenci.apps.careers.models import Career
 from tendenci.apps.perms.forms import TendenciBaseForm
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class CareerForm(TendenciBaseForm):

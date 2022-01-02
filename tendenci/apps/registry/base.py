@@ -3,7 +3,7 @@ from builtins import str
 from django.urls import reverse
 from django.utils.functional import lazy
 from django.contrib.admin import site as admin_site
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.registry.exceptions import FieldNotAllowed, FieldError, PackageImportError
 

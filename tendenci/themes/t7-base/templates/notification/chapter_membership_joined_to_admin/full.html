@@ -1,0 +1,38 @@
+
+{% load perm_tags %}
+{% load base_filters %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"https://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Chapter Membership Application Submission" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+    <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Chapter Membership Submission" %}</div>
+	<div>{% trans "Chapter:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{{ chapter_membership.chapter.get_absolute_url }}">{{ chapter_membership.chapter.title }}</a></div>
+
+    {% if chapter_membership.membership_type.price %}
+        <div style="margin-bottom:20px;">{% trans "Membership Type:"%} {{ chapter_membership.membership_type }} {{ chapter_membership.membership_type.price|format_currency }}</div>
+    {% else %}
+        <div style="margin-bottom:20px;">{% trans "Membership Type:"%} {{ membership_type }} (Free)</div>
+    {% endif %}
+
+    <div>{{ chapter_membership.user.first_name }} {{ chapter_membership.user.last_name }}</div>
+    <div>{{ chapter_membership.user.email }}</div>
+    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ chapter_membership.get_absolute_url }}">
+        <a href="{{ SITE_GLOBAL_SITEURL }}{{ chapter_membership.get_absolute_url }}">{% trans "View Submitted Application" %}</a>
+        (<span style="color:{% if chapter_membership.is_pending %}red{% else %}green{% endif %};">{{ chapter_membership.get_status }}</span>)
+    </a></div>
+
+    {% if chapter_membership.is_pending %}
+    <div>
+       {% trans "To approve this chapter membership, go to: " %}<br />
+       <a href="{{ SITE_GLOBAL_SITEURL }}{{ chapter_membership.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ chapter_membership.get_absolute_url }}</a>
+    </div>
+    {% endif %}
+    <p>&nbsp;</p>
+
+</body>
+</html>

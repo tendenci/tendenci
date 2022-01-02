@@ -12,7 +12,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, Http404, HttpResponse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.template.loader import get_template
 from django.db.models import Sum
@@ -72,10 +72,10 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
         invoice_total_balance = invoices.aggregate(Sum('balance'))['balance__sum'] or 0
         total_cc = payments.aggregate(Sum('amount'))['amount__sum'] or 0
 
-        total_amount_by_object_type = invoices.values('object_type__app_label').order_by('-sum').annotate(sum=Sum('total'))
-        amount_paid_by_object_type = invoices.filter(balance__lte=0).values('object_type__app_label').order_by('-sum').annotate(sum=Sum('total'))
-        total_balance_by_object_type = invoices.filter(balance__gt=0).values('object_type__app_label').order_by('-balance_sum').annotate(balance_sum=Sum('balance'))
-        total_cc_by_object_type = payments.filter(invoice__balance__lte=0).values('invoice__object_type__app_label').order_by('-sum').annotate(sum=Sum('amount'))
+        total_amount_by_object_type = invoices.values('object_type__app_label').annotate(sum=Sum('total')).order_by('-sum')
+        amount_paid_by_object_type = invoices.filter(balance__lte=0).values('object_type__app_label').annotate(sum=Sum('total')).order_by('-sum')
+        total_balance_by_object_type = invoices.filter(balance__gt=0).values('object_type__app_label').annotate(balance_sum=Sum('balance')).order_by('-balance_sum')
+        total_cc_by_object_type = payments.filter(invoice__balance__lte=0).values('invoice__object_type__app_label').annotate(sum=Sum('amount')).order_by('-sum')
 
         total_amount_d = {}
         amount_paid_d = {}
@@ -125,12 +125,8 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     if not invoice.allow_view_by(request.user, guid):
         raise Http403
 
-    allowed_tuple = (
-        request.user.profile.is_superuser,
-        has_perm(request.user, 'invoices.change_invoice'))
-
     form = None
-    if any(allowed_tuple):
+    if invoice.allow_edit_by(request.user):
         if request.method == "POST":
             form = form_class(request.POST, instance=invoice)
             if form.is_valid():
@@ -159,6 +155,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
         'guid': guid,
         'notify': notify,
         'form': form,
+        'can_edit': invoice.allow_edit_by(request.user),
         'can_pay': invoice.allow_payment_by(request.user, guid),
         'merchant_login': merchant_login})
 
@@ -170,7 +167,7 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
     """
     invoice = get_object_or_404(Invoice, pk=id)
 
-    if not has_perm(request.user, 'payments.change_payment'):
+    if not invoice.allow_edit_by(request.user):
         raise Http403
 
     if request.method == 'POST':
@@ -190,6 +187,15 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
             action_taken = invoice.make_payment(payment.creator,
                                                 payment.amount)
             if action_taken:
+                if invoice.use_third_party_payment:
+                    # it's a third party payment (external payment),
+                    # approve this chapter membership if invoice is marked
+                    # as paid.
+                    obj = invoice.get_object()
+                    if obj and obj.__class__.__name__ == 'ChapterMembership':
+                        if not obj.is_approved():
+                            obj.approve(request_user=request.user)
+                
                 EventLog.objects.log(instance=invoice)
                 messages.add_message(
                     request,
@@ -236,7 +242,7 @@ def void_payment(request, id):
 
     invoice = get_object_or_404(Invoice, pk=id)
 
-    if not (request.user.profile.is_superuser): raise Http403
+    if not invoice.allow_edit_by(request.user): raise Http403
 
     amount = invoice.payments_credits
     invoice.void_payment(request.user, amount)
@@ -508,7 +514,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
     original_balance = invoice.balance
     original_variance = invoice.variance
 
-    if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
+    if not invoice.allow_edit_by(request.user): raise Http403
 
     if request.method == "POST":
         form = form_class(request.POST, instance=invoice)
@@ -565,12 +571,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
 def detail(request, id, template_name="invoices/detail.html"):
     invoice = get_object_or_404(Invoice.objects.all_invoices(), pk=id)
 
-    allowed_list = (
-        request.user.profile.is_superuser,
-        has_perm(request.user, 'invoices.change_invoice')
-    )
-
-    if not any(allowed_list):
+    if not invoice.allow_edit_by(request.user):
         raise Http403
 
     from tendenci.apps.accountings.models import AcctEntry
@@ -613,7 +614,7 @@ def detail(request, id, template_name="invoices/detail.html"):
 @is_enabled('invoices')
 def download_pdf(request, id):
     invoice = get_object_or_404(Invoice, pk=id)
-    if not has_perm(request.user, 'invoices.change_invoice', invoice):
+    if not invoice.allow_edit_by(request.user):
         raise Http403
 
     result = invoice_pdf(request, invoice)

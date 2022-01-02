@@ -6,8 +6,8 @@ import warnings
 import uuid
 
 from importlib import import_module
-from django.utils.six import string_types
-from django.utils.translation import ugettext as _
+
+from django.utils.translation import gettext as _
 from . import compat
 
 from .compat import get_username_field, get_user_model
@@ -60,7 +60,7 @@ def get_markup_engine(name=None):
     else:
         engine = PYBB_MARKUP_ENGINES[name]
         # TODO In a near future, we should stop to support callable
-        if isinstance(engine, string_types):
+        if isinstance(engine, str):
             # This is a path, import it
             engine = resolve_class(engine)
     _MARKUP_ENGINES[name] = engine
@@ -83,7 +83,7 @@ def _get_markup_formatter(name=None):
         engine = BaseParser().format
     else:
         engine = PYBB_MARKUP_ENGINES[name]
-        if isinstance(engine, string_types):
+        if isinstance(engine, str):
             # This is a path, import it
             engine = resolve_class(engine).format
 
@@ -108,7 +108,7 @@ def _get_markup_quoter(name=None):
         engine = BaseParser().quote
     else:
         engine = PYBB_QUOTE_ENGINES[name]
-        if isinstance(engine, string_types):
+        if isinstance(engine, str):
             # This is a path, import it
             engine = resolve_class(engine).quote
 
@@ -117,7 +117,7 @@ def _get_markup_quoter(name=None):
 
 
 def get_body_cleaner(name):
-    return resolve_function(name) if isinstance(name, string_types) else name
+    return resolve_function(name) if isinstance(name, str) else name
 
 
 def unescape(text):

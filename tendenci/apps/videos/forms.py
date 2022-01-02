@@ -1,22 +1,26 @@
 from datetime import datetime
 from django import forms
 from django.contrib.admin import widgets
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.videos.models import Video
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.perms.utils import get_query_filters, get_groups_query_filters
 from .utils import get_embedly_client
 
 class VideoForm(TendenciBaseForm):
-    release_dt = forms.SplitDateTimeField(label=_('Release Date/Time'))
+    release_dt = forms.SplitDateTimeField(label=_('Release Date/Time'),
+                                          input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
+                                          input_time_formats=['%I:%M %p', '%H:%M:%S'])
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Video._meta.app_label,
         'storme_model':Video._meta.model_name.lower()}))
 
-    status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
+    status_detail = forms.ChoiceField(choices=(('active', 'Active'),('pending', 'Pending')))
 
     clear_image = forms.BooleanField(required=False)
 
@@ -38,6 +42,23 @@ class VideoForm(TendenciBaseForm):
             'group_perms',
             'member_perms',
             'status_detail',
+        )
+        fieldsets = (
+            (None, {
+                'fields': ('title', 'slug', 'category',
+                           'video_type', 'image', 'clear_image',
+                           'video_url', 'group', 'tags',
+                           'description', 'release_dt')}),
+            (_('Permissions'), {
+                'fields': ['allow_anonymous_view',
+                         'user_perms',
+                         'member_perms',
+                         'group_perms',
+                         ],
+              'classes': ['permissions'],
+                      }),
+            (_('Publishing Status'), {
+                'fields': ('status_detail',)}),
         )
 
     def __init__(self, *args, **kwargs):
@@ -86,6 +107,32 @@ class VideoForm(TendenciBaseForm):
         if self.cleaned_data['clear_image']:
             video.image.delete()
         return video
+
+
+class VideoFrontEndForm(VideoForm):
+
+    def __init__(self, *args, **kwargs):
+        self.request_user = kwargs.pop('user', None)
+        super(VideoFrontEndForm, self).__init__(*args, **kwargs)
+
+        self.fields['release_dt'].widget.attrs.update({'class': 'form-control'})
+
+        # set queryset for the group field
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+        if not self.request_user.is_superuser:
+
+            if get_setting('module', 'user_groups', 'permrequiredingd') == 'change':
+                filters = get_groups_query_filters(self.request_user,)
+            else:
+                filters = get_query_filters(self.request_user, 'user_groups.view_group', **{'perms_field': False})
+            default_groups = default_groups.filter(filters).distinct()
+        self.fields['group'].queryset = default_groups
+
+        # status_detail
+        if not self.request_user.is_superuser:
+            self.fields.pop('status_detail')
+
+
 
 class VideoSearchForm(forms.Form):
     q = forms.CharField(label=_("Search"), required=False, max_length=200,)

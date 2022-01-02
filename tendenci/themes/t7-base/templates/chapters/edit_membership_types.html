@@ -1,0 +1,39 @@
+{% extends "chapters/base-wide.html" %}
+{% load chapter_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% trans "Customize Membership Types" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+form#caf-form fieldset{
+	border-bottom: 1px solid #ccc;
+	border-radius: 5px;
+	padding: 10px;
+	margin-bottom: 2em;
+	overflow-x: auto;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+	<h1><a href="{% url 'chapters.detail' chapter.slug %}">{{ chapter.title }}</a></h1>
+	<h3>{% trans "Customize Membership Type Prices" %}</h3>
+	{% if not chapter_membership_types_exists %}
+	<p>{% trans "No chapter membership types available yet." %}</p>
+	{% else %}
+	<div class="alert alert-info" role="alert">{% trans "Chapter leaders: Please customize membership prices for each membership type." %}</div>
+    <form id="caf-form" class="form-horizontal" action="." method="post">{% csrf_token %}
+         {{ formset_membership_types|styled_form_set }}
+
+        <input class="btn btn-primary" type="submit" value="{% trans 'Save Changes' %}" />
+          
+      </form>
+	{% endif %}
+</div>
+{% endblock %}
+

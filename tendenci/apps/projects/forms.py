@@ -1,7 +1,7 @@
 import imghdr
 from os.path import splitext, basename
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.projects.models import Project, Photo, TeamMembers, Documents, Category
 from tendenci.apps.perms.forms import TendenciBaseForm

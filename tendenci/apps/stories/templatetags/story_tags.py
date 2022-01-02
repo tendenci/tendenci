@@ -8,7 +8,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.db import models
 from django.db.models import Q
 from django.template import Library, TemplateSyntaxError, Variable
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 
 from tendenci.apps.stories.models import Story

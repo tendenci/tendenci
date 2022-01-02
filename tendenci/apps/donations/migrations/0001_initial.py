@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ('creator_username', models.CharField(max_length=50, null=True)),
                 ('owner_username', models.CharField(max_length=50, null=True)),
                 ('status_detail', models.CharField(default='estimate', max_length=50)),
-                ('status', models.NullBooleanField(default=True)),
+                ('status', models.BooleanField(default=True, null=True)),
                 ('creator', models.ForeignKey(related_name='donation_creator', to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('invoice', models.ForeignKey(blank=True, to='invoices.Invoice', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('owner', models.ForeignKey(related_name='donation_owner', to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE)),

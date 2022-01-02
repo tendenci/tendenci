@@ -9,7 +9,8 @@
 | 6.x.x   | :x: |
 | 7.x.x   | :x: |
 | 11.x.x  | :x: |
-| 12.5.11  | :white_check_mark: |
+| 12.x.x  | :x: |
+| 14.0  | :white_check_mark: |
 
 **Note:** The latest version is the only supported version.
 

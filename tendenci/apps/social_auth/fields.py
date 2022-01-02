@@ -29,7 +29,7 @@ class JSONField(models.TextField):
         else:
             return value
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         return self.to_python(value)
 
     def validate(self, value, model_instance):

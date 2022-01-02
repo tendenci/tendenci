@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 DURATION_CHOICES = (
     (14, _('14 Days from Activation date')),

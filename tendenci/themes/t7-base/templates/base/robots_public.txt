@@ -2,5 +2,6 @@ User-agent: *
 
 Crawl-delay: 2
 Disallow: /admin/
+Disallow: /memberships/referer-url/
 
 Sitemap: {{ site_url }}/sitemap.xml

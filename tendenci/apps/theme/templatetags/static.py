@@ -4,11 +4,11 @@
 
 from warnings import warn
 import os
+from urllib.parse import quote, urljoin
 from django import template
 from django.conf import settings
 from django.templatetags.static import (get_static_prefix as _get_static_prefix,
                                         StaticNode)
-from django.utils.six.moves.urllib.parse import quote, urljoin
 from tendenci.apps.theme.utils import (get_active_theme, get_theme,
                                        get_theme_search_order, is_builtin_theme,
                                        get_builtin_theme_dir, get_theme_root)

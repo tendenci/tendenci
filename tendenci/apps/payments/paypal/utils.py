@@ -1,6 +1,5 @@
-from urllib.parse import urlencode
+from urllib.parse import urlencode, parse_qsl
 from urllib.request import urlopen, Request
-import cgi
 from decimal import Decimal
 
 from django.conf import settings
@@ -60,7 +59,7 @@ def parse_pdt_validation(data):
             success = (item.lower() == 'success')
         else:
             # the item is url encoded - decode it
-            result_params.update(cgi.parse_qsl(item))
+            result_params.update(parse_qsl(item))
 
     return success, result_params
 

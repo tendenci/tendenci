@@ -1,8 +1,7 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
-from form_utils.forms import BetterModelForm
-
+from tendenci.libs.form_utils.forms import BetterModelForm
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
 from tendenci.apps.user_groups.models import Group

@@ -1,12 +1,13 @@
 from unittest import TestCase
 from selenium import webdriver
+from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.common.keys import Keys
-from django.test.simple import DjangoTestSuiteRunner
+from django.test.runner import DiscoverRunner
 from django.contrib.auth.models import User
 from django.conf import settings
 
 
-class NoDbTestRunner(DjangoTestSuiteRunner):
+class NoDbTestRunner(DiscoverRunner):
     """
     A test runner to test withouth database creation
     """
@@ -27,7 +28,7 @@ class NoDbTestRunner(DjangoTestSuiteRunner):
 class TestCase(TestCase):
 
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        self.browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
         self.get_or_create_user()
         self.sign_in()
 

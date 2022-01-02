@@ -3,7 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.validators import validate_comma_separated_integer_list
 
 from tendenci.apps.event_logs.managers import EventLogManager

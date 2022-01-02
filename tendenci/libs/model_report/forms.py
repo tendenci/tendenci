@@ -1,7 +1,7 @@
 # coding=utf-8
 from builtins import str
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 from tendenci.libs.model_report.widgets import RangeField
 

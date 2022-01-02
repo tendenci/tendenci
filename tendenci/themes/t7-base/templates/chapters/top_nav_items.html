@@ -60,6 +60,26 @@
                         </li>
                     {% endif %}
 
+					{% if request.user.is_superuser %}
+					{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+					<li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'chapters.memberships_search' %}">{% trans "Search Chapter Members" %}</a>
+                            </span>
+                     </li>
+					<li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'chapters.memberships_import' %}">{% trans "Import Chapter Memberships" %}</a>
+                        </span>
+                    </li>
+                    {% endif %}
+					<li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'admin:app_list' 'chapters' %}">{% trans 'Admin Backend' %}</a>
+                        </span>
+                    </li>
+                	{% endif %}
+
                 </ul>
 
                 {% if app_object %}
@@ -104,6 +124,30 @@
                                         <a href="{% url 'category.update' app_object.opt_app_label chapter.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>
                                     </span>
                                 </li>
+                            {% endif %}
+
+                             <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'chapters.edit_app_fields' app_object.pk %}">{% trans "Customize App Fields" %}</a>
+                                    </span>
+                             </li>
+                            <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'chapters.edit_membership_types' app_object.pk %}">{% trans "Set/Update Prices" %}</a>
+                                    </span>
+                             </li>
+                            {% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+                             <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'chapters.memberships_search_single_chapter' app_object.pk %}">{% trans "Chapter Members" %}</a>
+                                    </span>
+                             </li>
+
+							<li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'chapters.memberships_import_single_chapter' app_object.pk %}">{% trans "Import Chapter Memberships" %}</a>
+                                </span>
+                            </li>
                             {% endif %}
                             {% endif %}
 

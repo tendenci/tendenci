@@ -4,10 +4,9 @@
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.db import models, transaction, DatabaseError
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.html import strip_tags
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now as tznow
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import OneToOneField
@@ -23,7 +22,6 @@ from .util import unescape, FilePathGenerator, _get_markup_formatter
 from annoying.fields import AutoOneToOneField
 
 
-@python_2_unicode_compatible
 class Category(TendenciBaseModel):
     name = models.CharField(_('Name'), max_length=80)
     position = models.IntegerField(_('Position'), blank=True, default=0)
@@ -61,7 +59,6 @@ class Category(TendenciBaseModel):
         return Post.objects.filter(topic__forum__category=self).select_related()
 
 
-@python_2_unicode_compatible
 class Forum(models.Model):
     category = models.ForeignKey(Category, related_name='forums', verbose_name=_('Category'), on_delete=models.CASCADE)
     parent = models.ForeignKey('self', related_name='child_forums', verbose_name=_('Parent forum'),
@@ -130,7 +127,6 @@ class Forum(models.Model):
         return parents
 
 
-@python_2_unicode_compatible
 class Topic(models.Model):
     POLL_TYPE_NONE = 0
     POLL_TYPE_SINGLE = 1
@@ -252,7 +248,6 @@ class RenderableItem(models.Model):
         self.body_text = unescape(text)
 
 
-@python_2_unicode_compatible
 class Post(RenderableItem):
     topic = models.ForeignKey(Topic, related_name='posts', verbose_name=_('Topic'), on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model_path(), related_name='posts', verbose_name=_('User'), null=True, on_delete=models.SET_NULL)
@@ -441,7 +436,6 @@ class ForumReadTracker(models.Model):
         unique_together = ('user', 'forum')
 
 
-@python_2_unicode_compatible
 class PollAnswer(models.Model):
     topic = models.ForeignKey(Topic, related_name='poll_answers', verbose_name=_('Topic'), on_delete=models.CASCADE)
     text = models.CharField(max_length=255, verbose_name=_('Text'))
@@ -464,7 +458,6 @@ class PollAnswer(models.Model):
             return 0
 
 
-@python_2_unicode_compatible
 class PollAnswerUser(models.Model):
     poll_answer = models.ForeignKey(PollAnswer, related_name='users', verbose_name=_('Poll answer'), on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model_path(), related_name='poll_answers', verbose_name=_('User'), on_delete=models.CASCADE)

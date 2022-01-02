@@ -20,8 +20,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext, get_language, activate
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, get_language, activate
 from django.utils.safestring import mark_safe
 
 from tendenci.apps.site_settings.utils import get_setting
@@ -375,7 +375,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     )  # TODO make formats configurable
 
     extra_context.update({
-        "notice": ugettext(notice_type.display),
+        "notice": gettext(notice_type.display),
         "notices_url": notices_url,
         "current_site": current_site,
         'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
@@ -530,7 +530,7 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
 
             extra_context.update({
                 "user": user,
-                "notice": ugettext(notice_type.display),
+                "notice": gettext(notice_type.display),
                 "notices_url": notices_url,
                 "current_site": current_site,
             })

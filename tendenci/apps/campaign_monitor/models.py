@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.forms_builder.forms.models import FormEntry
 from tendenci.apps.files.models import file_directory

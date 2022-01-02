@@ -30,9 +30,9 @@ from django.contrib.auth.backends import ModelBackend
 import simplejson
 from importlib import import_module
 
-from tendenci.apps.social_auth.models import UserSocialAuth
-from tendenci.apps.social_auth.store import DjangoOpenIDStore
-from tendenci.apps.social_auth.signals import pre_update, socialauth_registered
+from ..models import UserSocialAuth
+from ..store import DjangoOpenIDStore
+from ..signals import pre_update, socialauth_registered
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog

@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.mail import get_connection
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.events.models import Type

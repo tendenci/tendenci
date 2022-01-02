@@ -1,3 +1,4 @@
+from django.core.management.base import no_translations
 from django.core.management.commands.migrate import Command as MigrateCommand
 
 class Command(MigrateCommand):
@@ -5,4 +6,8 @@ class Command(MigrateCommand):
     # which attempt to access the database.  This will prevent the database from
     # being initialized.  To work around that, disable the system checks on the
     # initial migration.
-    requires_system_checks = False
+
+    @no_translations
+    def handle(self, *args, **options):
+        options['skip_checks'] = True
+        super(Command, self).handle(*args, **options)

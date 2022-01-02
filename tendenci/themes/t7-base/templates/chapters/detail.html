@@ -7,7 +7,13 @@
     <div class="page-header">
       <h1>{{ chapter.title }}</h1>
     </div>
-
+	{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+	{% if not is_chapter_member %}
+  	<div class="text-right">
+		<a href="{% url 'chapters.membership_add' chapter.id %}" class="btn btn-sm btn-info">{% trans 'Join Chapter' %}</a>
+	</div>
+	{% endif %}
+	{% endif %}
     {% if chapter.featured_image %}
     <div class="chapter-featured-image">
         <img src="{% url 'file' chapter.featured_image.id %}" alt="{{ chapter.title }}" title="{{ chapter.title  }}">

@@ -24,7 +24,7 @@ from django.db.models.fields import AutoField
 from django.db.models import ForeignKey, OneToOneField
 from django.urls import reverse
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.files.base import ContentFile
 
 from tendenci.libs.utils import python_executable

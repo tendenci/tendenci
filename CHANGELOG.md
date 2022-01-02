@@ -1,3 +1,19 @@
+### 14.0 [2021-12-15]
+ 
+* **Requires Django 3.2 LTS**. Django 2.2 LTS is not supported.
+* T12 sites can be smoothly migrated to T14. For migration, please follow the guide in docs/source/upgrade/upgrade-to-tendenci14.txt.
+* Added memberships search/filter that can search fields based on each app. It also includes the export feature. Linked at /admin/memberships/membershipapp/.
+* Added chapter memberships functionality.
+* Made time_zone and language fields available to the membership application forms.
+* Added the county field to profiles view, edit and search.
+* Disabled captcha for authenticated users for custom forms (Thanks @bernd-wechner).
+* Used logged in users email as fallback for form submissions (Thanks @bernd-wechner).
+* Fixed a format issue for membership application.
+* Fiexed an issue where recurring events not being updated on event edit
+* Refactored export Active Memberships Report /memberships/reports/active_members/ to resolve timeout issue due to large volume of memberships.
+* Other minor fixes.
+
+
 ### 12.5.11 [2021-09-24]
 
 * Added the clone feature for chapters.

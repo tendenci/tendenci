@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.base.fields import PriceField
 from tendenci.apps.recurring_payments.models import RecurringPayment

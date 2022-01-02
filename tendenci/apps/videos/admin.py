@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 
@@ -46,7 +46,7 @@ class VideoAdmin(TendenciBaseModelAdmin):
             return dt.strftime('%x')
         return u''
     get_release_dt.short_description = _('Release Date')
-    list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt', 'show_group']
+    list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt', 'show_group', 'status_detail']
     list_editable = ['category', 'video_type']
     if not get_setting('module', 'videos', 'order_by_release_dt'):
         list_display.append('position')
