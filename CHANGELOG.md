@@ -1,3 +1,13 @@
+### 14.0.1 [2022-01-02]
+
+* **SECURITY**: Avoided the page /memberships/referer-url/ being redirected to external sites.
+* Disallowed /memberships/referer-url/ in robots_public.txt to avoid bots from crawling /memberships/referer-url/.
+* Resolved an installation error with python 3.8 due to Embedly package not compatible with python 3.8.
+* Added a new feature "email to chapter members" to chapter memberships.
+* Added front-end videos add/edit pages.
+* Other minor fixes. 
+
+
 ### 14.0 [2021-12-15]
  
 * **Requires Django 3.2 LTS**. Django 2.2 LTS is not supported.

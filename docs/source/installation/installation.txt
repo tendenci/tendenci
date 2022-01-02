@@ -387,7 +387,7 @@ Clone the Tendenci repository:
     cd /srv/
     git clone https://github.com/tendenci/tendenci.git tendenci-git
 
-Edit ``/var/www/mysite/requirements/tendenci.txt`` and comment out ``tendenci>=8,<9``
+Edit ``/var/www/mysite/requirements/tendenci.txt`` and comment out ``tendenci>=14,<15``
 
 Edit ``/var/www/mysite/requirements/common.txt`` and add:
 ::
