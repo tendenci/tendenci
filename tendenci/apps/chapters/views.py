@@ -579,7 +579,6 @@ def chapter_memberships_search(request, chapter_id=0,
     return render_to_resp(request=request, template_name=template_name,
         context={
             'chapter_memberships': chapter_memberships,
-            'total_members': chapter_memberships.count(),
             'search_form': form,
             'email_form': email_form,
             'total_members': chapter_memberships.count(),

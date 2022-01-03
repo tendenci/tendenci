@@ -26,7 +26,11 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.core.files.base import ContentFile
+from django.template import Context, Template
+from django.template.loader import get_template
 
+from tendenci.apps.theme.shortcuts import _strip_content_above_doctype
+from tendenci.apps.newsletters.utils import get_newsletter_connection, is_newsletter_relay_set
 from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import has_perm
@@ -2139,5 +2143,89 @@ def email_pending_members(email, **kwargs):
     rendered = _strip_content_above_doctype(rendered)
     yield rendered
 
+
+def email_membership_members(email, memberships, **kwargs):
+    """
+    Email to membership members.
+    """
+    site_url = get_setting('site', 'global', 'siteurl')
+    site_display_name = get_setting('site', 'global', 'sitedisplayname')
+    tmp_body = email.body
     
+    # if possible, use the email backend set up for newsletters
+    if is_newsletter_relay_set():
+        connection = get_newsletter_connection()
+    else:
+        connection = None
+
+    request = kwargs.get('request')
+    total_sent = 0
+    subject = email.subject
+    
+    msg = '<div class="hide" id="m-streaming-content" style="margin: 2em 5em;text-align: left; line-height: 1.3em;">'
+    msg += '<h1>Processing ...</h1>'
+
+    for member in memberships:
+        first_name = member.user.first_name
+        last_name = member.user.last_name
+
+        email.recipient = member.user.email
+
+        if email.recipient:
+            view_url = '{0}{1}'.format(site_url, reverse('membership.details', args=[member.id]))
+            edit_url = '{0}{1}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
+            template = Template(email.body)
+            context = Context({'site_url': site_url,
+                               'site_display_name': site_display_name,
+                               "first_name": first_name,
+                               'last_name': last_name,
+                               'view_url': view_url,
+                               'edit_url': edit_url,})
+            email.body = template.render(context)
+            
+            # replace relative to absolute urls
+            email.body = email.body.replace("src=\"/", f"src=\"{site_url}/")
+            email.body = email.body.replace("href=\"/", f"href=\"{site_url}/")
+
+            email.send(connection)
+            total_sent += 1
+
+            msg += f'{total_sent}. Email sent to {first_name} {last_name} {email.recipient}<br />'
+
+            if total_sent % 10 == 0:
+                yield msg
+                msg = ''
+
+        email.body = tmp_body  # restore to the original
+
+    request.session['email_subject'] = email.subject
+    request.session['email_body'] = email.body
+
+    dest = _('Members')
+
+    opts = {}
+    opts['summary'] = '<font face=""Arial"" color=""#000000"">'
+    opts['summary'] += 'Emails sent to {0} ({1})</font><br><br>'.format(dest, total_sent)
+    opts['summary'] += '<font face=""Arial"" color=""#000000"">'
+    opts['summary'] += 'Email Sent Appears Below in Raw Format'
+    opts['summary'] += '</font><br><br>'
+    opts['summary'] += email.body
+
+    # send summary
+    email.subject = 'SUMMARY: %s' % email.subject
+    email.body = opts['summary']
+    email.recipient = request.user.email
+    email.send(connection)
+
+    msg += f'DONE!<br /><br />Successfully sent email "{subject}" to <strong>{total_sent}</strong> pending members.'
+    msg += '</div>'
+    yield msg
+    
+    template_name='memberships/message/email-members-conf.html'
+    template = get_template(template_name)
+    context={'total_sent': total_sent,
+             'memberships': memberships}
+    rendered = template.render(context=context, request=request)
+    rendered = _strip_content_above_doctype(rendered)
+    yield rendered
 

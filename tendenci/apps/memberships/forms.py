@@ -348,6 +348,35 @@ class MembershipTypeForm(TendenciBaseForm):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
 
 
+class EmailMembersForm(FormControlWidgetMixin, forms.ModelForm):
+    subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
+    body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label': Email._meta.app_label,
+        'storme_model': Email._meta.model_name.lower()}),
+        label=_('Email Content'),
+        help_text=_("""Available tokens:
+                    <ul><li>{{ first_name }}</li>
+                    <li>{{ last_name }}</li>
+                    <li>{{ view_url }}</li>
+                    <li>{{ edit_url }}</li>
+                    <li>{{ site_url }}</li>
+                    <li>{{ site_display_name }}</li></ul>"""))
+
+    class Meta:
+        model = Email
+        fields = ('subject',
+                  'body',
+                  'sender_display',
+                  'reply_to',)
+
+    def __init__(self, *args, **kwargs):
+        super(EmailMembersForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+
+
 class MessageForm(FormControlWidgetMixin, forms.ModelForm):
     recipient_type = forms.ChoiceField(
         label=_("Recipients"),
