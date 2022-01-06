@@ -684,7 +684,7 @@ def membership_default_import_preview(request, mimport_id,
             users_list.append(user_display)
             if not fieldnames:
                 fieldnames = list(idata.row_data.keys())
-                
+
         # DateTime fields are sensitive to parse failures
         # They are not parsed in the preview yet, in fact all 
         # data travens as strings to be cleaned and parsd just 
@@ -714,14 +714,17 @@ def membership_default_import_preview(request, mimport_id,
         # before committing the import.
         # TODO: This could generalize to all ID type imports supported
         if 'membership_type' in fieldnames:
-            mts = {mt.pk:mt.name for mt in MembershipType.objects.all()}
+            mts = {mt.pk: mt.name for mt in MembershipType.objects.all()}
 
             for u in users_list:
-                try:
-                    mt = int(str(u['membership_type']))
-                except ValueError:
-                    mt = 'Value Error'
-                    
+                if 'membership_type' in u:
+                    try:
+                        mt = int(str(u['membership_type']))
+                    except ValueError:
+                        mt = 'Value Error'
+                else:
+                    mt = None
+
                 u['membership_type'] = mts.get(mt, 'None')
 
         return render_to_resp(request=request, template_name=template_name, context={
