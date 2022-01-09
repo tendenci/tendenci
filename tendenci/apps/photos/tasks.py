@@ -3,9 +3,9 @@ import zipfile
 
 from django.conf import settings
 
-from celery.task import Task
+import celery
 
-class ZipPhotoSetTask(Task):
+class ZipPhotoSetTask(celery.Task):
 
     def run(self, photo_set, **kwargs):
         """
