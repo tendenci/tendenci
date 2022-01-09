@@ -83,14 +83,12 @@ class OldGenerateForm(forms.ModelForm):
         self.fields['event_start_dt'].initial = datetime.date.today()
         self.fields['event_end_dt'].initial = datetime.date.today() + datetime.timedelta(days=30)
         
-        default_groups = Group.objects.filter(status=True, status_detail="active")
+        default_groups = Group.objects.filter(status=True, status_detail="active",
+                                              sync_newsletters=True)
         if not self.request.user.is_superuser:
-
             if get_setting('module', 'user_groups', 'permrequiredingd') == 'change':
                 filters = get_groups_query_filters(self.request.user,)
-            else:
-                filters = get_query_filters(self.request.user, 'user_groups.view_group', **{'perms_field': False})
-            default_groups = default_groups.filter(filters).distinct()
+                default_groups = default_groups.filter(filters).distinct()
         self.fields['group'].queryset = default_groups
 
         for key in not_required:
