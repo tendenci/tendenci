@@ -27,7 +27,7 @@ from django.utils.dates import MONTHS_3
 from django.utils.translation import gettext as _
 from django.utils.html import escape
 from django import forms
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 import simplejson
 
 try:
@@ -448,7 +448,7 @@ def update_ticket(request, ticket_id, public=False):
     if request.FILES:
         import mimetypes
         for file in request.FILES.getlist('attachment'):
-            filename = smart_text(file.name)
+            filename = smart_str(file.name)
             a = Attachment(
                 followup=f,
                 filename=filename,

@@ -1,18 +1,14 @@
 import logging
-import os
-import socket
 import sys
-import warnings
 
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import ValidationError
-from django.utils.encoding import force_text
 from django.utils.translation import gettext_lazy as _
 
 from . import client
-from ._compat import HTTPError, urlencode
+from ._compat import HTTPError
 from .constants import TEST_PRIVATE_KEY, TEST_PUBLIC_KEY
 from .widgets import ReCaptchaV2Checkbox, ReCaptchaBase, ReCaptchaV3
 

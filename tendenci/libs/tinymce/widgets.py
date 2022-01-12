@@ -18,15 +18,9 @@ try:
 except ImportError:
     from django.utils.datastructures import SortedDict
 from django.utils.safestring import mark_safe
-from django.utils.translation import get_language, ugettext as _
+from django.utils.translation import get_language, gettext as _
+from django.utils.encoding import smart_str
 import json
-try:
-    from django.utils.encoding import smart_text as smart_text
-except ImportError:
-    try:
-        from django.utils.encoding import smart_text
-    except ImportError:
-        from django.forms.util import smart_text
 import tendenci.libs.tinymce.settings as tinymce_settings
 from tendenci.apps.theme.templatetags.static import static
 
@@ -89,7 +83,7 @@ class TinyMCE(forms.Textarea):
     def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
-        value = smart_text(value)
+        value = smart_str(value)
         final_attrs = attrs.copy()
         final_attrs['name'] = name
         final_attrs['class'] = 'tinymce'

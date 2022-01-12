@@ -148,7 +148,7 @@ class LazyEncoder(DjangoJSONEncoder):
     """
     def default(self, obj):
         if isinstance(obj, Promise):
-            return force_text(obj)
+            return force_str(obj)
         return super(LazyEncoder, self).default(obj)
 
 
@@ -180,7 +180,7 @@ def get_deleted_objects(objs, user):
         opts = obj._meta
 
         no_edit_link = '%s: %s' % (capfirst(opts.verbose_name),
-                                   force_text(obj))
+                                   force_str(obj))
 
         p = '%s.%s' % (opts.app_label,
                            get_permission_codename('delete', opts))

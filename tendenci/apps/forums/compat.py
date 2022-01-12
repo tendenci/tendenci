@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from django.conf import settings
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from unidecode import unidecode
 
 
@@ -78,4 +78,4 @@ def slugify(text):
     """
     from django.utils.text import slugify as django_slugify
 
-    return django_slugify(force_text(unidecode(text)))
+    return django_slugify(force_str(unidecode(text)))
