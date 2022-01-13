@@ -1,3 +1,13 @@
+### 14.0.2 [2022-01-13]
+
+* **SECURITY**: Bumped Pillow from 8.3.2 to 9.0.0.
+* Bumped celery from 4.4.7 to 5.2.3 .
+* Added a new email to members feature on members search.
+* Excluded irrelevant tables (event_logs, sessions...) from database dump.
+* Changed to company name (instead of site display name) in "Invoice For" for the invoice PDF. 
+* Resolved some RemovedInDjango40Warning.
+
+
 ### 14.0.1 [2022-01-02]
 
 * **SECURITY**: Avoided the page /memberships/referer-url/ being redirected to external sites.
