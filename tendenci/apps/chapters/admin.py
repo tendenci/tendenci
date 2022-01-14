@@ -348,7 +348,7 @@ class ChapterMembershipAdmin(admin.ModelAdmin):
 
     chapter_link.short_description = _('Chapter')
     chapter_link.allow_tags = True
-    chapter_link.admin_order_field = 'Chapter'
+    chapter_link.admin_order_field = 'chapter'
 
     @mark_safe
     def invoice_url(self, instance):
