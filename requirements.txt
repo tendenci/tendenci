@@ -18,7 +18,7 @@ django-debug-toolbar>=3.2.1
 django-sql-explorer==2.1.2
 django-apptemplates>=1.5
 feedparser>=6.0.8
-pytz==2021.1
+pytz==2021.3
 simplejson>=3.17.3
 webcolors>=1.11.1
 xlrd>=2.0.1
