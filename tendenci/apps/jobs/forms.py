@@ -293,7 +293,6 @@ class JobForm(TendenciBaseForm):
 
         if not self.user.profile.is_superuser:
             fields_to_pop += [
-                'slug',
                 'entity',
                 'group',
                 'allow_anonymous_view',
