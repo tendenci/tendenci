@@ -1,3 +1,11 @@
+### 14.0.3 [2022-01-17]
+
+* Upgraded Pytz version to fix dependency conflict resulting from Celery upgrade to version 5.2.3. (Thanks @rob-hills)
+* Fixed a format issue for events speakers list.
+* Fixed a potential IntegrityError on membership applications where username is not included on the form.
+* Avoided a potential DataError for jobs add due to slug is not presented.  
+
+
 ### 14.0.2 [2022-01-13]
 
 * **SECURITY**: Bumped Pillow from 8.3.2 to 9.0.0.
