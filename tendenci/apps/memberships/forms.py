@@ -782,10 +782,10 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
 
         data = self.cleaned_data
 
-        un = data.get('username', u'').strip()
-        pw = data.get('password', u'').strip()
-        pw_confirm = data.get('confirm_password', u'').strip()
-        email = data.get('email', u'').strip()
+        un = data.get('username', '').strip()
+        pw = data.get('password', '').strip()
+        pw_confirm = data.get('confirm_password', '').strip()
+        email = data.get('email', '').strip()
         u = None
         login_link = _('click <a href="/accounts/login/?next=%s">HERE</a> to log in before completing your application.') % self.request.get_full_path()
         username_validate_err_msg = mark_safe(_('This Username already exists in the system. If this is your Username, %s Else, select a new Username to continue.') % login_link)
@@ -837,7 +837,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
 
             if not u and not self.is_renewal:
                 # we didn't find user, check if email address is already in use
-                if un and email:
+                if email:
                     if User.objects.filter(email=email).exists():
                         if self.request.user.is_authenticated:
                             # user is logged in
