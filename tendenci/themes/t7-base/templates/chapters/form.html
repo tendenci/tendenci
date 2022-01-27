@@ -3,11 +3,14 @@
 {% load chapter_tags %}
 {% load base_filters %}
 
-{% if form.errors.values %}
+{% if form.errors.values or formset.errors %}
 <div class="errors">
 There were some problems in the form. Please review. Thanks!
 {% for error in form.non_field_errors %}
     <p><a href="#">{{ error }}</a></p>
+{% endfor %}
+{% for error in formset.errors %}
+    <p>{{ error }}</p>
 {% endfor %}
 {% if form.fieldsets.fieldsets %}
     {% for fieldset in form.fieldsets %}
