@@ -721,6 +721,7 @@ CAPTCHA_IMAGE_SIZE = (172,80)
 # NORECAPTCHA_WIDGET_TEMPLATE = 'base/nocaptcha_recaptcha/widget.html'
 RECAPTCHA_PUBLIC_KEY = ''
 RECAPTCHA_PRIVATE_KEY = ''
+USE_RECAPTCHA_V3 = False
 
 # ---------------------------------------------------------------------------- #
 # Django Admin Bootstrapped
