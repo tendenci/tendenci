@@ -1,3 +1,10 @@
+### 14.0.4 [2022-02-04]
+
+* Added the option to use Google reCaptcha v3. This help file includes the info on how to set up reCaptcha v3 for your site https://www.tendenci.com/help-files/how-use-google-recaptcha-tendenci-site/.
+* Fixed the issue regarding page edit not recording event logs.
+* Avoided the possible error: "check_number" violates not-null constraint.
+
+
 ### 14.0.3 [2022-01-17]
 
 * Upgraded Pytz version to fix dependency conflict resulting from Celery upgrade to version 5.2.3. (Thanks @rob-hills)
