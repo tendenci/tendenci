@@ -42,6 +42,13 @@ If you have Google reCAPTCHA set up, please rename these two settings:
     Rename `NORECAPTCHA_SECRET_KEY` to `RECAPTCHA_PRIVATE_KEY`
 
 
-Replace the virtualenv in cron jobs and systemd unit file. After update is done, restart your site.
+Step 3: Upgrade System Commands
+-------------------------------
+
+Replace the virtualenv in:
+    - cron jobs 
+    - systemd unit file. 
+
+After update is done, restart your site.
 
 
