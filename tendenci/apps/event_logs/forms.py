@@ -48,7 +48,8 @@ class EventLogSearchForm(BetterForm):
         help_text=_('GET = whether a page/item was viewed. POST = an item was edited or added')
       )
 
-    object_id = forms.CharField(
+    object_id = forms.IntegerField(
+        min_value=1,
         required=False,
         help_text=_("This is the ID Tendenci uses for all objects. "
         "This is the number you sometimes see in URLs. For example, "
