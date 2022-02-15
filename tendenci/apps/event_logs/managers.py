@@ -51,7 +51,7 @@ class EventLogManager(Manager):
 
         if f_data['request_method']:
             if f_data['request_method'] != 'all':
-                qs.append(Q(request_method=f_data['request_method']))
+                qs.append(Q(request_method__iexact=f_data['request_method']))
 
         if f_data['user_id']:
             qs.append(Q(user=f_data['user_id']))
