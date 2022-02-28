@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
     def send_newsletter(self, newsletter_id, **kwargs):
         from tendenci.apps.emails.models import Email
-        from tendenci.apps.newsletters.models import Newsletter
+        from tendenci.apps.newsletters.models import Newsletter, NewsletterRecurringData
         from tendenci.apps.site_settings.utils import get_setting
         from tendenci.apps.base.utils import validate_email
 
@@ -162,6 +162,13 @@ class Command(BaseCommand):
         newsletter.email_sent_count = counter
 
         newsletter.save()
+        if newsletter.schedule:
+            # save the date_email_sent and email_sent_count for the recurring
+            nr_data = NewsletterRecurringData(
+                        newsletter=newsletter,
+                        date_email_sent=datetime.datetime.now(),
+                        email_sent_count=newsletter.email_sent_count)
+            nr_data.save()
 
         print("Successfully sent %s newsletter emails." % counter)
 

@@ -68,5 +68,5 @@ Authlib==0.15.4
 django-admin-rangefilter==0.8.1
 # for forums tests
 lxml==4.6.5
-
+django-q==1.3.9
 

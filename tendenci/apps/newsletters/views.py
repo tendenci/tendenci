@@ -187,6 +187,7 @@ class MarketingActionStepFiveView(NewsletterPermStatMixin, NewsletterPassedSLAMi
     template_name = 'newsletters/actions/step5.html'
     form_class = MarketingStepFiveForm
     newsletter_permission = 'newsletters.change_newsletter'
+    extra_context={'schedule_enabled': settings.NEWSLETTER_SCHEDULE_ENABLED}
 
     def get_success_url(self):
         obj = self.get_object()
@@ -206,6 +207,7 @@ class NewsletterDetailView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, 
     model = Newsletter
     template_name = 'newsletters/actions/view.html'
     newsletter_permission = 'newsletters.view_newsletter'
+    extra_context={'schedule_enabled': settings.NEWSLETTER_SCHEDULE_ENABLED}
 
     def get(self, request, *args, **kwargs):
         EventLog.objects.log(instance=self.get_object(), action='view')

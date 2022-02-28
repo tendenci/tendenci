@@ -180,6 +180,7 @@ INSTALLED_APPS = [
     'timezone_field',
     'gunicorn',
     'rangefilter',
+    'django_q',
 
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',
@@ -554,6 +555,8 @@ NEWSLETTER_EMAIL_HOST_PASSWORD = ''
 NEWSLETTER_EMAIL_USE_TLS = True
 NEWSLETTER_EMAIL_BACKEND = 'tendenci.apps.emails.backends.NewsletterEmailBackend'
 
+NEWSLETTER_SCHEDULE_ENABLED = False
+
 # Mobile App
 MOBILE_COOKIE_NAME = "tendenci_mobile"
 
@@ -783,6 +786,12 @@ def EXPLORER_PERMISSION_VIEW(r):
     return r.user.is_superuser
 def EXPLORER_PERMISSION_CHANGE(r):
     return r.user.is_superuser
+
+
+# Configure Django-Q cluster
+Q_CLUSTER = {
+    "orm": "default",
+}
 
 # ---------------------------------------------------------------------------- #
 # Debugging Tools

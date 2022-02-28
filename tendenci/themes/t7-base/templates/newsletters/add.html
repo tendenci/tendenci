@@ -21,9 +21,23 @@
       <p>{% trans "This form will create a Tendenci newsletter for you with the following information." %}</p>
       <p>{% trans "You will still have the ability to make edits before sending." %}</p>
       <br />
-      {% if form.non_field_errors %}
-      {{ form.non_field_errors }}
-      {% endif %}
+      {% if form.errors.values %}
+      <div class="alert alert-danger" role="alert">
+        <p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>
+
+        {% for error in form.non_field_errors %}
+            <p><a href="#" class="alert-link">{{ error }}</a></p>
+        {% endfor %}
+
+        {% for field in form %}
+            {% if field.errors %}
+                  {% for error in field.errors %}
+                      <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
+                  {% endfor %}
+            {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
 
       <form name="newsletteraddform" id="newsletteraddform" method="post" action=".">{% csrf_token %}
         <div class="form-group">
