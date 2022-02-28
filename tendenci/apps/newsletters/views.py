@@ -196,7 +196,7 @@ class MarketingActionStepFiveView(NewsletterPermStatMixin, NewsletterPassedSLAMi
     def form_valid(self, form):
         EventLog.objects.log(instance=self.get_object(), action='send')
         messages.success(self.request,
-            "Your newsletter has been scheduled to send within the next 10 minutes. "
+            "Your newsletter has been scheduled to send. "
             "Please note that it may take several hours to complete the process depending "
             "on the size of your user group. You will receive an email notification when it's done."
             )
