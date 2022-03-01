@@ -66,6 +66,15 @@ class Command(BaseCommand):
 
         newsletter.save()
 
+        if newsletter.schedule:
+            # save start_dt and status for the recurring
+            nr_data = NewsletterRecurringData(
+                        newsletter=newsletter,
+                        start_dt=datetime.datetime.now(),
+                        send_status=newsletter.send_status)
+            nr_data.save()
+            newsletter.nr_data = nr_data
+
         recipients = newsletter.get_recipients()
         email = newsletter.email
         # replace relative to absolute urls
@@ -162,13 +171,12 @@ class Command(BaseCommand):
         newsletter.email_sent_count = counter
 
         newsletter.save()
-        if newsletter.schedule:
-            # save the date_email_sent and email_sent_count for the recurring
-            nr_data = NewsletterRecurringData(
-                        newsletter=newsletter,
-                        date_email_sent=datetime.datetime.now(),
-                        email_sent_count=newsletter.email_sent_count)
-            nr_data.save()
+        if newsletter.nr_data:
+            # save the finish_dt and email_sent_count for the recurring
+            newsletter.nr_data.finish_dt = datetime.datetime.now()
+            newsletter.nr_data.email_sent_count = newsletter.email_sent_count
+            newsletter.nr_data.send_status = newsletter.send_status
+            newsletter.nr_data.save()
 
         print("Successfully sent %s newsletter emails." % counter)
 

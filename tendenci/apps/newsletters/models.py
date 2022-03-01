@@ -238,6 +238,13 @@ class Newsletter(models.Model):
     def get_absolute_url(self):
         return reverse('newsletter.detail.view', args=[self.pk])
 
+    def total_runs_left(self):
+        if self.schedule:
+            if self.repeats > 0:
+                return self.schedule.repeats
+            return self.repeats
+        return 0
+
     def schedule_type_verbose(self):
         if self.schedule_type == "O":
             return _("Once")
@@ -525,8 +532,8 @@ class Newsletter(models.Model):
 
 class NewsletterRecurringData(models.Model):
     newsletter = models.ForeignKey(Newsletter, related_name="recurring_data", on_delete=models.CASCADE)
-    date_email_sent = models.DateTimeField(null=True, blank=True)
+    start_dt = models.DateTimeField(null=True, blank=True)
+    finish_dt = models.DateTimeField(null=True, blank=True)
     # number of emails sent
     email_sent_count = models.IntegerField(null=True, blank=True, default=0)
-
-
+    send_status = models.CharField(max_length=30, default='queued')
