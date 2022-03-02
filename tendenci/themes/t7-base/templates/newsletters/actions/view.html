@@ -164,9 +164,20 @@
 		{% endwith %}
 		
 		<div>
-			<strong>{% trans 'Total runs left:' %}</strong> {{ object.total_runs_left }}
+			<strong>{% trans 'Total remaining runs:' %}</strong> 
+				{% if  object.total_runs_left == -1 %}
+				{% trans 'unlimited' %}
+				{% else %}
+				{{ object.total_runs_left }}
+				{% endif %}
 			{% if  object.total_runs_left != 0 %}
-			<a class="btn btn-sm" href="">{% trans 'Cancel' %}</a>
+			&nbsp;&nbsp;&nbsp;<a id="cancel-schedule" href="javascript:void(0);">{% trans 'Cancel' %}</a>
+			<form name="cancel-schedule-form" method="POST" action="{% url "newsletter.cancel_schedule" object.pk %}">{% csrf_token %}
+		    </form>
+			{% else %}
+				{% if object.repeats != 0 %}
+				&nbsp;&nbsp;&nbsp;<span class="text-warning">{% trans 'Canceled!' %}</span>
+				{% endif %}
 			{% endif %}
 		</div>
 		
@@ -247,4 +258,22 @@
   });
 </script>
 {% endif %}
+
+{% if  object.total_runs_left != 0 %}
+<script type="text/javascript">
+    $(document).ready(function(j){
+        // cancel confirmation
+        j('#cancel-schedule').on("click", function(){
+            var cancel_confirm = confirm('{% trans "Are you sure you want to cancel the runs left?" %}');  // confirm
+            if(cancel_confirm) 
+			{
+				j('form[name="cancel-schedule-form"]').submit();
+			} else {
+				return false;
+			}
+        });
+    });
+</script>
+{% endif %}
+
 {% endblock %}

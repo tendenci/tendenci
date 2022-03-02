@@ -214,6 +214,36 @@ class NewsletterDetailView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, 
         return super(NewsletterDetailView, self).get(request, *args, **kwargs)
 
 
+@login_required
+def cancel_schedule(request, newsletter_id):
+    """
+    Cancel scheduled runs left so far. We can not cancel the ones that have been run.
+    """
+    newsletter = get_object_or_404(Newsletter, pk=newsletter_id)
+
+    # check permission
+    if not has_perm(request.user, 'newsletters.view_newsletter'):
+        raise Http403
+
+    if request.method == "POST":
+        if newsletter.schedule:
+            # log an event
+            description = 'Newsletter schedule canceled for the remaining runs: '
+            if newsletter.schedule.repeats == -1:
+                description += 'unlimited'
+            else:
+                description += str(newsletter.schedule.repeats)
+            EventLog.objects.log(instance=newsletter,
+                                 description=description)
+            newsletter.schedule.repeats = 0
+            newsletter.schedule.save()
+
+        return HttpResponseRedirect(reverse('newsletter.detail.view',
+                                            kwargs={'pk': newsletter.pk}))
+
+    raise Http403
+
+
 class NewsletterResendView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, DetailView):
     model = Newsletter
     template_name = 'newsletters/actions/view.html'

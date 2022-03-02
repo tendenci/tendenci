@@ -27,4 +27,5 @@ urlpatterns = [
     re_path(r'^%s/clone/(?P<pk>\d+)/$' % urlpath, login_required(views.NewsletterCloneView.as_view()), name='newsletter.clone'),
     re_path(r'^%s/resend/(?P<pk>\d+)/$' % urlpath, login_required(views.NewsletterResendView.as_view()), name='newsletter.resend.view'),
     re_path(r'^%s/delete/(?P<pk>\d+)/$' % urlpath, login_required(views.NewsletterDeleteView.as_view()), name='newsletter.delete'),
+    re_path(r'^%s/cancel-schedule/(?P<newsletter_id>\d+)/$' % urlpath, views.cancel_schedule, name='newsletter.cancel_schedule'),
 ]
