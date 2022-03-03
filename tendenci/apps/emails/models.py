@@ -63,7 +63,7 @@ class Email(TendenciBaseModel):
         email_domain_p2 = email_domain.split('.')[-1]
         return EmailBlock.objects.filter(Q(email=email_to_test) 
                                          | Q(email_domain=email_domain)
-                                         | Q(email_domain__iendswith=email_domain_p2)
+                                         | Q(email_domain=email_domain_p2)
                                          ).exists()
 
     def send(self, fail_silently=False, **kwargs):
