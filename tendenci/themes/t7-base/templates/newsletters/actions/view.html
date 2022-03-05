@@ -128,6 +128,7 @@
 		</strong>
 		{% else %}
 		<h3>{% trans 'Schedule Details:' %}</h3>
+		<div class="pull-right"><a href="{% url 'newsletter.action.edit_schedule' object.id %}"><span class="glyphicon glyphicon-edit"></span> {% trans 'Edit' %}</a></div>
 		<table class="table table-striped">
 			<tr>
 				<th>{% trans 'Initial Start Date/Time' %}</th>

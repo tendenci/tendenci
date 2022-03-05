@@ -284,6 +284,53 @@ class MarketingStepFiveForm(FormControlWidgetMixin, forms.ModelForm):
         return newsletter
 
 
+class MarketingEditScheduleForm(FormControlWidgetMixin, forms.ModelForm):
+    schedule_send_dt = forms.SplitDateTimeField(label=_('Starts On'),
+                                  input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
+                                  input_time_formats=['%I:%M %p', '%H:%M:%S'])
+    class Meta:
+        model = Newsletter
+        fields = ('schedule_send_dt',
+                  'schedule_type',
+                  'repeats',)
+
+    def clean_schedule_send_dt(self):
+        schedule_send_dt = self.cleaned_data['schedule_send_dt']
+        if schedule_send_dt and schedule_send_dt < datetime.datetime.now() + datetime.timedelta(minutes=1):
+            raise forms.ValidationError(_('Please select a time at least 5 minutes from now'))
+        return schedule_send_dt
+
+    def save(self, *args, **kwargs):
+        newsletter = super(MarketingEditScheduleForm, self).save(*args, **kwargs)
+        if newsletter.schedule_type == 'O':
+            newsletter.repeats = 0
+        newsletter.save()
+
+        # update a schedule
+        repeats = newsletter.repeats
+        if repeats == 0:
+            # set it to 1 otherwise django-q wont run
+            repeats = 1
+        if newsletter.schedule:
+            s = newsletter.schedule
+            s.schedule_type = newsletter.schedule_type
+            s.next_run = newsletter.schedule_send_dt
+            s.repeats = repeats
+            s.save()
+        else:
+            s = schedule(
+                    'django.core.management.call_command',
+                    'send_newsletter',
+                    newsletter.id,
+                    schedule_type=newsletter.schedule_type,
+                    next_run=newsletter.schedule_send_dt,
+                    repeats=repeats)
+            newsletter.schedule = s
+            newsletter.save()
+
+        return newsletter
+
+
 class NewslettterEmailUpdateForm(forms.ModelForm):
     class Meta:
         model = Newsletter

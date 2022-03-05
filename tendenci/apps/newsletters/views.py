@@ -26,7 +26,8 @@ from tendenci.apps.newsletters.forms import (
     MarketingStepFourForm,
     MarketingStepFiveForm,
     MarketingStep2EmailFilterForm,
-    NewslettterEmailUpdateForm
+    NewslettterEmailUpdateForm,
+    MarketingEditScheduleForm
     )
 from tendenci.apps.newsletters.mixins import (
     NewsletterEditLogMixin,
@@ -201,6 +202,30 @@ class MarketingActionStepFiveView(NewsletterPermStatMixin, NewsletterPassedSLAMi
             "on the size of your user group. You will receive an email notification when it's done."
             )
         return super(MarketingActionStepFiveView, self).form_valid(form)
+
+
+class MarketingActionEditScheduleView(NewsletterPermissionMixin, UpdateView):
+    model = Newsletter
+    template_name = 'newsletters/actions/edit-schedule.html'
+    form_class = MarketingEditScheduleForm
+    newsletter_permission = 'newsletters.change_newsletter'
+    extra_context={'schedule_enabled': settings.NEWSLETTER_SCHEDULE_ENABLED}
+
+    def dispatch(self, request, *args, **kwargs):
+        if not settings.NEWSLETTER_SCHEDULE_ENABLED:
+            raise Http404
+        return super(MarketingActionEditScheduleView, self).dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.detail.view', kwargs={'pk': obj.pk})
+
+    def form_valid(self, form):
+        EventLog.objects.log(instance=self.get_object(), action='edit_schedule')
+        messages.success(self.request,
+            "Your newsletter schedule has been edited. "
+            )
+        return super(MarketingActionEditScheduleView, self).form_valid(form)
 
 
 class NewsletterDetailView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, DetailView):
