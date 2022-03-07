@@ -777,6 +777,14 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             Username and password did not match
             This username exists. If it's yours,
                 please provide a password.
+            If username field is blank or not presented:
+                 if email address is in the system
+                     if user is not logged in
+                        if the user record with this email address is active
+                            prompts them to log in
+                        else
+                            let them activate the account before applying for membership
+
         """
         # super(UserForm, self).clean()
 
