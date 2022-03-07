@@ -841,17 +841,19 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                     if User.objects.filter(email=email).exists():
                         if self.request.user.is_authenticated:
                             # user is logged in
-                            raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
+                            if 'username' in data:
+                                # username is presented on form
+                                raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
+                        else:
+                            # user is not logged in. prompt them to log in if the user record with this email address is active
+                            u = User.objects.filter(email=email).order_by('-is_active')[0]
+                            [profile] = Profile.objects.filter(user=u)[:1] or [None]
+                            if (profile and profile.is_active) or u.is_active:
+                                raise forms.ValidationError(email_validate_err_msg)
 
-                        # user is not logged in. prompt them to log in if the user record with this email address is active
-                        u = User.objects.filter(email=email).order_by('-is_active')[0]
-                        [profile] = Profile.objects.filter(user=u)[:1] or [None]
-                        if (profile and profile.is_active) or u.is_active:
-                            raise forms.ValidationError(email_validate_err_msg)
-
-                        # at this point, user is not logged in and user record with this email is inactive
-                        # let them activate the account before applying for membership
-                        raise forms.ValidationError(inactive_user_err_msg)
+                            # at this point, user is not logged in and user record with this email is inactive
+                            # let them activate the account before applying for membership
+                            raise forms.ValidationError(inactive_user_err_msg)
 
         return data
 
