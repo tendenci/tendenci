@@ -840,7 +840,7 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
                             )[:1] or [None]
 
             if industry_field:
-                industries = Industry.objects.all().order_by('industry_name')
+                industries = Industry.objects.all()
                 if industries:
                     industries_choices = [(0, _('Select One'))]
                     for industry in industries:
