@@ -505,6 +505,9 @@ def display_header_image(request, id):
                         page):
         raise Http403
 
+    if not page.header_image:
+        raise Http404
+
     return file_display(request, page.header_image.file.name)
 
 
