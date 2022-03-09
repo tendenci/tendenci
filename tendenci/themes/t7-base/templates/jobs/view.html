@@ -14,7 +14,9 @@
         <div class="page-header">
             <h1>{{ job.title }}</h1>
         </div>
-
+	{% if job.header_image %}
+    <img src="{% url 'file' job.header_image.id %}" alt="job header" title="job header" class="img-responsive" />
+    {% endif %} 
         <div class="t-jobs-job-body">
             <section class="t-jobs-job-information">
                 <h2>

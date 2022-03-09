@@ -16,7 +16,7 @@
     <h1>Add {% firstof MODULE_JOBS_LABEL trans 'Job' %}</h1>
 
     <div class="job-wrap">
-    <form action="{% url "job.add" %}" class="form-horizontal" method="post">{% csrf_token %}
+    <form action="{% url "job.add" %}" class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {% if MODULE_JOBS_JOBSREQUIRESPAYMENT %}
                  <div class="pricing-table-block">
