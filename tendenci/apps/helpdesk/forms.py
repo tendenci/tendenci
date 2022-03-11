@@ -9,7 +9,7 @@ forms.py - Definitions of newforms-based forms for creating and maintaining
 from django import forms
 from django.forms import widgets
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 try:
     from django.contrib.auth import get_user_model
     User = get_user_model()

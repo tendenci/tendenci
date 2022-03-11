@@ -13,7 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 from django.http import Http404
 
@@ -221,6 +221,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
                 job.slug = '%s-%d' % (slugify(job.title), int(time.time()))
 
             job = update_perms_and_save(request, form, job)
+            form.save_header_image(request, job)
 
             # create invoice
             job_set_inv_payment(request.user, job, pricing)
@@ -292,6 +293,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
         raise Http403
 
     form = form_class(request.POST or None,
+                      request.FILES or None,
                         instance=job,
                         user=request.user)
 
@@ -314,6 +316,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
             job = form.save(commit=False)
 
             job = update_perms_and_save(request, form, job)
+            form.save_header_image(request, job)
 
             msg_string = u'Successfully updated {}'.format(str(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))

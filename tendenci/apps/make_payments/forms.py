@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django_countries import countries as COUNTRIES
 
 from tendenci.apps.make_payments.models import MakePayment

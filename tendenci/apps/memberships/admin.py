@@ -5,12 +5,12 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
-from django.conf.urls import url
+from django.urls import path, re_path
 from django.template.defaultfilters import slugify
 from django.utils.encoding import iri_to_uri
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.utils.html import strip_tags
 
@@ -521,16 +521,16 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         urls = super(MembershipDefaultAdmin, self).get_urls()
 
         extra_urls = [
-            url(r'^approve/(?P<pk>\d+)/$',
+            re_path(r'^approve/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.approve),
                 name='membership.admin_approve'),
-            url(r'^renew/(?P<pk>\d+)/$',
+            re_path(r'^renew/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.renew),
                 name='membership.admin_renew'),
-            url(r'^disapprove/(?P<pk>\d+)/$',
+            re_path(r'^disapprove/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.disapprove),
                 name='membership.admin_disapprove'),
-            url(r'^expire/(?P<pk>\d+)/$',
+            re_path(r'^expire/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.expire),
                 name='membership.admin_expire'),
         ]
@@ -646,7 +646,8 @@ clone_apps.short_description = 'Clone selected forms'
 class MembershipAppAdmin(TendenciBaseModelAdmin):
     inlines = (MembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('id', 'name', 'application_form_link', 'status_detail', 'field_sort_link')
+    list_display = ('id', 'name', 'application_form_link', 'status_detail',
+                    'field_sort_link', 'members_search_link')
     list_display_links = ('name',)
     search_fields = ('name', 'status_detail')
     fieldsets = (
@@ -691,6 +692,13 @@ class MembershipAppAdmin(TendenciBaseModelAdmin):
                         instance.id,
                         _('Sort Fields'))
     field_sort_link.short_description = ''
+
+    @mark_safe
+    def members_search_link(self, instance):
+        return '<a href="%s" title="%s"><i class="glyphicon glyphicon-search"></i> Search Members</a>' % (
+                reverse('memberships.search_per_app', args=[instance.id]),
+                        _('Search Members'))
+    members_search_link.short_description = _('Members Search Link')
 
 
 
@@ -859,7 +867,7 @@ class NoticeAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(NoticeAdmin, self).get_urls()
         extra_urls = [
-            url(r'^clone/(?P<pk>\d+)/$',
+            re_path(r'^clone/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.clone),
                 name='membership_notice.admin_clone'),
         ]

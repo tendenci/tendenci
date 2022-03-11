@@ -1,0 +1,1 @@
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ chapter_membership.chapter.title }} - {% trans "Chapter Membership application submission" %} {{ chapter_membership.user.first_name }} {{ chapter_membership.user.last_name }}

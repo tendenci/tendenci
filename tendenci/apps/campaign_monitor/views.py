@@ -9,7 +9,7 @@ from django.template import engines
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.http import Http404, HttpResponse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from createsend import Template as CST
 from createsend import Campaign as CSC

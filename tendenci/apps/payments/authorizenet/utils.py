@@ -17,7 +17,7 @@ def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
            x_amount
            ])+'^'
 
-    return hmac.new(settings.MERCHANT_TXN_KEY.encode(), msg.encode()).hexdigest()
+    return hmac.new(settings.MERCHANT_TXN_KEY.encode(), msg.encode(), digestmod=hashlib.md5).hexdigest()
 
 def prepare_authorizenet_sim_form(request, payment):
     x_fp_timestamp = str(int(time.time()))

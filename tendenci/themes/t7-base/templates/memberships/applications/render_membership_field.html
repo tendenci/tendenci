@@ -64,19 +64,18 @@
 	                {% else %}
 	                    <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="col-sm-3 control-label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">{{ field_obj.label }}</label>
 	
-	                    {% if field|is_checkboxselectmultiple %}
-	                        {% if field.help_text %}
-	                            <span class="help-block checkmultiple">{{ field.help_text|safe }}</span>
-	                        {% endif %}
-	                    {% endif %}
-	
-	                    {% if field|is_fileinput %}
-	                        {% if field.help_text %}
-	                            <span class="help-block">{{ field.help_text|safe }}</span>
-	                        {% endif %}
-	                    {% endif %}
-	
 	                    <div class="col-sm-{{ field|col_sm_width }} {% if field|is_fileinput %}fileinputbox{% else %}{{ field_obj.field_div_class }}{% endif %}">
+                            {% if field|is_checkboxselectmultiple %}
+		                        {% if field.help_text %}
+		                            <span class="help-block checkmultiple">{{ field.help_text|safe }}</span>
+		                        {% endif %}
+		                    {% endif %}
+		
+		                    {% if field|is_fileinput %}
+		                        {% if field.help_text %}
+		                            <span class="help-block">{{ field.help_text|safe }}</span>
+		                        {% endif %}
+		                    {% endif %}
 	                        {% if field.errors %}
 	                            <div class="error">
 	                                {% for error in field.errors %}

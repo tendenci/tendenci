@@ -10,7 +10,7 @@ from django.template import engines
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView, FormView, UpdateView, DetailView, ListView, DeleteView
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -26,7 +26,8 @@ from tendenci.apps.newsletters.forms import (
     MarketingStepFourForm,
     MarketingStepFiveForm,
     MarketingStep2EmailFilterForm,
-    NewslettterEmailUpdateForm
+    NewslettterEmailUpdateForm,
+    MarketingEditScheduleForm
     )
 from tendenci.apps.newsletters.mixins import (
     NewsletterEditLogMixin,
@@ -187,6 +188,7 @@ class MarketingActionStepFiveView(NewsletterPermStatMixin, NewsletterPassedSLAMi
     template_name = 'newsletters/actions/step5.html'
     form_class = MarketingStepFiveForm
     newsletter_permission = 'newsletters.change_newsletter'
+    extra_context={'schedule_enabled': settings.NEWSLETTER_SCHEDULE_ENABLED}
 
     def get_success_url(self):
         obj = self.get_object()
@@ -195,21 +197,76 @@ class MarketingActionStepFiveView(NewsletterPermStatMixin, NewsletterPassedSLAMi
     def form_valid(self, form):
         EventLog.objects.log(instance=self.get_object(), action='send')
         messages.success(self.request,
-            "Your newsletter has been scheduled to send within the next 10 minutes. "
+            "Your newsletter has been scheduled to send. "
             "Please note that it may take several hours to complete the process depending "
             "on the size of your user group. You will receive an email notification when it's done."
             )
         return super(MarketingActionStepFiveView, self).form_valid(form)
 
 
+class MarketingActionEditScheduleView(NewsletterPermissionMixin, UpdateView):
+    model = Newsletter
+    template_name = 'newsletters/actions/edit-schedule.html'
+    form_class = MarketingEditScheduleForm
+    newsletter_permission = 'newsletters.change_newsletter'
+    extra_context={'schedule_enabled': settings.NEWSLETTER_SCHEDULE_ENABLED}
+
+    def dispatch(self, request, *args, **kwargs):
+        if not settings.NEWSLETTER_SCHEDULE_ENABLED:
+            raise Http404
+        return super(MarketingActionEditScheduleView, self).dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.detail.view', kwargs={'pk': obj.pk})
+
+    def form_valid(self, form):
+        EventLog.objects.log(instance=self.get_object(), action='edit_schedule')
+        messages.success(self.request,
+            "Your newsletter schedule has been edited. "
+            )
+        return super(MarketingActionEditScheduleView, self).form_valid(form)
+
+
 class NewsletterDetailView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, DetailView):
     model = Newsletter
     template_name = 'newsletters/actions/view.html'
     newsletter_permission = 'newsletters.view_newsletter'
+    extra_context={'schedule_enabled': settings.NEWSLETTER_SCHEDULE_ENABLED}
 
     def get(self, request, *args, **kwargs):
         EventLog.objects.log(instance=self.get_object(), action='view')
         return super(NewsletterDetailView, self).get(request, *args, **kwargs)
+
+
+@login_required
+def cancel_schedule(request, newsletter_id):
+    """
+    Cancel scheduled runs left so far. We can not cancel the ones that have been run.
+    """
+    newsletter = get_object_or_404(Newsletter, pk=newsletter_id)
+
+    # check permission
+    if not has_perm(request.user, 'newsletters.view_newsletter'):
+        raise Http403
+
+    if request.method == "POST":
+        if newsletter.schedule:
+            # log an event
+            description = 'Newsletter schedule canceled for the remaining runs: '
+            if newsletter.schedule.repeats == -1:
+                description += 'unlimited'
+            else:
+                description += str(newsletter.schedule.repeats)
+            EventLog.objects.log(instance=newsletter,
+                                 description=description)
+            newsletter.schedule.repeats = 0
+            newsletter.schedule.save()
+
+        return HttpResponseRedirect(reverse('newsletter.detail.view',
+                                            kwargs={'pk': newsletter.pk}))
+
+    raise Http403
 
 
 class NewsletterResendView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, DetailView):

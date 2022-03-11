@@ -2,7 +2,7 @@ from builtins import str
 from csv import writer
 from datetime import datetime
 
-from django.conf.urls import url
+from django.urls import path, re_path
 from django.contrib import admin
 from django.contrib.admin.utils import unquote
 from django.core.files.base import ContentFile
@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -142,10 +142,10 @@ class FormAdmin(TendenciBaseModelAdmin):
         """
         urls = super(FormAdmin, self).get_urls()
         extra_urls = [
-            url(r'^export/(?P<form_id>\d+)/$',
+            re_path(r'^export/(?P<form_id>\d+)/$',
                 self.admin_site.admin_view(self.export_view),
                 name="forms_form_export"),
-            url(r'^file/(?P<field_entry_id>\d+)/$',
+            re_path(r'^file/(?P<field_entry_id>\d+)/$',
                 self.admin_site.admin_view(self.file_view),
                 name="forms_form_file"),
         ]

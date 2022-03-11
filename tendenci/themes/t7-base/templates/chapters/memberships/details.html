@@ -1,0 +1,157 @@
+{% extends "chapters/base-wide.html" %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+<style>
+ .membership-details-inner-wrap{
+	border-radius: 5px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="membership-detail-wrap">
+
+        <fieldset>
+            <div class="fieldset-label">{% trans 'Chapter Membership Details' %}</div>
+            <div class="membership-detail-nav">
+                <a href="{% url "profile" chapter_membership.user.username %}">
+                    {% trans "View Profile" %}</a>
+
+					<a href="{% url "chapters.membership_edit" chapter_membership.pk %}">{% trans "Edit" %}</a>
+            </div>
+            <div style="clear:both;"></div>
+
+            <div class="membership-details-inner-wrap">
+
+                <div class="membership-details-name">
+                    <h1>{{ chapter_membership.user.get_full_name }}</h1>
+
+                    {% if chapter_membership.invoice %}
+                        <div class="membership-details-balance"><a href="{% url "invoice.view" chapter_membership.invoice.pk chapter_membership.invoice.guid %}">{% trans 'Balance Due' %}: {{ chapter_membership.invoice.balance|format_currency }}</a></div>
+                    {% endif %}
+
+                </div>
+
+                <table id="membership-details-info">
+                    <tr>
+                        <td id="timeline">
+                            <p>{% trans 'Chapter:' %} <strong><a href="{{ chapter_membership.chapter.get_absolute_url }}">{{ chapter_membership.chapter.title }}</a></strong></p>
+                            <p>{% trans 'Chapter Member#:' %} <strong>{{ chapter_membership.member_number }}</strong></p>
+
+                            <p>{% trans 'Membership type:' %} <strong>{{ chapter_membership.membership_type }}</strong></p>
+
+                            <p title="{{ membership.get_since_dt|timesince }} ago">
+                                {% trans 'Since' %} <strong>{{ chapter_membership.get_since_dt|date:"N j, Y" }}</strong></p>
+
+                            {% if chapter_membership.renewal %}
+                            <p title="{{ chapter_membership.renew_dt|timesince }} ago">
+                                {% trans 'Renewed' %} <strong>{{ chapter_membership.renew_dt|date:"N j, Y" }}</strong></p>
+                            {% endif %}
+
+                            {% if chapter_membership.is_approved %}
+                                {% if chapter_membership.is_forever %}
+                                    <p>{% trans "Never expires" %}</p>
+                                {% else %}
+                                    <p>{% if chapter_membership.is_expired %}{% trans 'Expired' %}{% else %}{% trans 'Expires' %}{% endif %} <strong>{{ chapter_membership.expire_dt|date:"N j, Y" }}</strong> ({% trans 'grace period' %}: {{ chapter_membership.membership_type.expiration_grace_period }} {% trans 'days' %})</p>
+                                {% endif %}
+
+	                            {% if chapter_membership.get_renewal_period_dt %}
+	                                <p>{% trans 'Renew between' %} {{ chapter_membership.get_renewal_period_dt.0|date:"N j, Y" }} {% trans 'and' %} {{ chapter_membership.get_renewal_period_dt.1|date:"N j, Y" }}</p>
+	                            {% else %}
+	                                <p>{% trans 'Membership type does not allow renewals.' %}</p>
+	                            {% endif %}
+                            {% endif %}
+                        </td>
+                        <td id="status" style="vertical-align: top;">
+                            <div class="status-label {{ chapter_membership.get_status }}">
+                                {{ chapter_membership.get_status|capfirst }} Membership</div>
+
+                            {% if user.is_superuser or has_approve_perm %}
+                            <div class="status-action">
+                                <ul class="nav nav-pills nav-stacked">
+                                    {% for link, label in actions %}
+                                        {% if link %}
+                                        <li><a href="{{ link }}">{{ label }}</a></li>
+                                        {% else %}
+                                        <li>{{ label }}</li>
+                                        {% endif %}
+                                    {% empty %}
+                                        <li>{{ chapter_membership.status_note }}</li>
+                                    {% endfor %}
+
+                                     {% if chapter_membership.approved and membership.approved_user %}
+                                      {% url 'profile' chapter_membership.approved_user.username as approved_user_url %}
+                                     <li><i class="pull-right">{% blocktrans with approved_by=chapter_membership.approved_user.username approved_dt=chapter_membership.approved_dt|date:'m/d/Y' %}
+                                      Approved by <a href="{{ approved_user_url }}">{{ approved_by }}</a> on {{ approved_dt }} {% endblocktrans %}</i></li>
+                                     {% elif chapter_membership.rejected and chapter_membership.rejected_user %}
+                                        {% url 'profile' chapter_membership.rejected_user.username as denied_user_url %}
+                                     <li><i>{% blocktrans with denied_by=chapter_membership.rejected_user.username denied_dt=chapter_membership.rejected_dt|date:'m/d/Y' %}
+                                      Rejected by <a href="{{ denied_user_url }}">{{ denied_by }}</a> on {{ denied_dt }} {% endblocktrans %}</i></li>
+                                     {% endif %}
+                                </ul>
+                            </div>
+                            {% else %}
+                            <div class="status-action">
+                            {% if chapter_membership.user == request.user %}
+                            {% if chapter_membership.can_renew %}
+                                    {% if chapter_membership.app %}
+                                    <a href="{# url "chapters.membership_renew" chapter_membership.app.slug chapter_membership.id #}">{% trans 'Renew' %}</a>
+                                    {% endif %}
+                            {% else %}
+                                {% if chapter_membership.app %}
+                                    {% if chapter_membership.is_expired %}
+                                    <a href="{# url "chapters.membership_add" membership.app.slug #}">{% trans "This chapter membership is expired, sign up for new membership." %}</a>
+                                    {% else %}
+                                        <div>{% trans 'No pending actions required, good job!' %}</div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {% endif %}
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <div class="fieldset-label">{% trans 'More Details' %}</div>
+            <div style="clear:both;"></div>
+
+            {% for app_field in app_fields %}
+				{% if app_field.field_name == '' %}
+					<h4>{{ app_field.label }}</h4>
+				{% else %}
+				{% if app_field.value != '' %}
+				<div class="panel {% if field_entry.field.admin_only %}panel-info{% else %}panel-default{% endif %}">
+				  <div class="panel-heading">{{ app_field.label }}</div>
+				  <div class="panel-body">&nbsp;&nbsp;&nbsp;
+					{% if app_field.field_type == 'BooleanField' or app_field.field_name == 'volunteer_availability' %}
+					{{ app_field.value|yesno }}
+					{% else %}
+						{% if app_field.field_type == 'FileField' and app_field.value %}
+							<a href="{% url "chapters.cm_file_display" app_field.value.id %}">{{ app_field.value.basename }}</a>
+						{% else %}
+				    		{{ app_field.value }}
+						{% endif %}
+					{% endif %}
+				  </div>
+				</div>
+				{% endif %}
+				{% endif %}
+				
+			{% endfor %}
+
+        
+
+
+    </div>
+</div>
+{% endblock %}

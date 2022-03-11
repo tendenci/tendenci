@@ -10,7 +10,7 @@ views/public.py - All public facing views, eg non-staff (no authentication
 import requests
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.helpdesk import settings as helpdesk_settings

@@ -3,7 +3,7 @@ from operator import itemgetter
 
 from django.utils.html import strip_tags
 from django.utils.text import unescape_entities
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'among','an','and','any','are','as','at','be','because',

@@ -22,9 +22,9 @@ from django.core.files.storage import default_storage
 from django.core.exceptions import SuspiciousOperation
 from django.conf import settings
 from django.core.cache import cache
-from django.utils.encoding import smart_str, force_text
-from django.utils.functional import curry
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import smart_str, force_str
+from functools import partial as curry
+from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 import simplejson
 import requests
@@ -159,7 +159,7 @@ class ImageModel(models.Model):
         return os.path.join(settings.MEDIA_URL, self.cache_path())
 
     def image_filename(self):
-        return os.path.basename(force_text(self.image))
+        return os.path.basename(force_str(self.image))
 
     def _get_filename_for_size(self, size):
         size = getattr(size, 'name', size)
@@ -295,7 +295,10 @@ class ImageModel(models.Model):
 
         try:
             buffer = BytesIO()
-            im.save(buffer, im_format, quality=int(photosize.quality), optimize=True)
+            if im_format == 'TIFF':
+                im.save(buffer, im_format, optimize=True)
+            else:
+                im.save(buffer, im_format, quality=int(photosize.quality), optimize=True)
             default_storage.save(im_filename, ContentFile(buffer.getvalue()))
         except IOError as e:
             print(e)

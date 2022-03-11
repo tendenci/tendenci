@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django import forms
 
-from form_utils.forms import BetterForm
+from tendenci.libs.form_utils.forms import BetterForm
 
 from .utils import get_app_list_choices
 
@@ -48,7 +48,8 @@ class EventLogSearchForm(BetterForm):
         help_text=_('GET = whether a page/item was viewed. POST = an item was edited or added')
       )
 
-    object_id = forms.CharField(
+    object_id = forms.IntegerField(
+        min_value=1,
         required=False,
         help_text=_("This is the ID Tendenci uses for all objects. "
         "This is the number you sometimes see in URLs. For example, "

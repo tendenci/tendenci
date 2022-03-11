@@ -1,4 +1,4 @@
-from api.models import APIAccessKey
+from .models import APIAccessKey
 
 def validate_api_request(data):
     """Validate if this is a valid api request.

@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import template_exists, checklist_update
@@ -504,6 +504,9 @@ def display_header_image(request, id):
                         '[pages.view_page',
                         page):
         raise Http403
+
+    if not page.header_image:
+        raise Http404
 
     return file_display(request, page.header_image.file.name)
 

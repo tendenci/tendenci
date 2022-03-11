@@ -1,7 +1,7 @@
 from builtins import str
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 from tagging.fields import TagField
@@ -28,7 +28,6 @@ class ClientList(models.Model):
 class CategoryPhoto(File):
     class Meta:
         app_label = 'projects'
-        manager_inheritance_from_future = True
 
 
 class Category(models.Model):

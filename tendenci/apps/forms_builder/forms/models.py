@@ -1,6 +1,6 @@
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
@@ -153,6 +153,7 @@ class Form(TendenciBaseModel):
         verbose_name_plural = _("Forms")
 #         permissions = (("view_form", _("Can view form")),)
         app_label = 'forms'
+        ordering = ('-id',)
 
     def __str__(self):
         return self.title
@@ -179,13 +180,13 @@ class Form(TendenciBaseModel):
     @mark_safe
     def admin_link_view(self):
         url = self.get_absolute_url()
-        return "<a href='%s'>%s</a>" % (url, ugettext("View on site"))
+        return "<a href='%s'>%s</a>" % (url, gettext("View on site"))
     admin_link_view.short_description = ""
 
     @mark_safe
     def admin_link_export(self):
         url = reverse("admin:forms_form_export", args=(self.id,))
-        return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
+        return "<a href='%s'>%s</a>" % (url, gettext("Export entries"))
     admin_link_export.short_description = ""
 
     def has_files(self):
@@ -490,7 +491,7 @@ class FormEntry(models.Model):
         anonymous_creator = None
 
         if emailfield:
-            user_list = User.objects.filter(email=emailfield).order_by('-last_login')
+            user_list = User.objects.filter(email__iexact=emailfield).order_by('-last_login')
             if user_list:
                 anonymous_creator = user_list[0]
             else:

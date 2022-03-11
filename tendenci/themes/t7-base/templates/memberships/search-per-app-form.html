@@ -1,0 +1,33 @@
+{% load styled_forms %}
+
+<h3>{% trans "Filter By" %}</h3>
+<i>{% trans "** Scroll down for more fields" %}</i>
+<form id="members-search-form" action="." method="get">
+<div id="profile-search-fields">
+	<div class="form-group">
+	    <div class="col-sm-offset-1">
+	        <button type="submit" class="btn btn-success">
+				<i class="glyphicon glyphicon-search" alt="Search Users"></i>
+	            {% trans "Search" %}
+	        </button>
+			<a href="" class="clearall">{% trans "Clear All" %}</a>
+			<button type="submit" name="export" id="export-btn" class="btn btn-xs btn-info">{% trans 'Export' %}</button>
+	    </div>
+	</div>
+
+	{{ search_form|styled_form }}
+
+	<div class="form-group">
+	    <div class="col-sm-offset-1">
+	        <button type="submit" class="btn btn-success">
+				<i class="glyphicon glyphicon-search" alt="Search Users"></i>
+	            {% trans "Search" %}
+	        </button>
+			<a href="" class="clearall">{% trans "Clear All" %}</a>
+	    </div>
+	</div>
+
+</div>
+
+
+</form>

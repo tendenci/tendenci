@@ -43,7 +43,7 @@
                     {% if can_add_video %}
                         <li class="content-item">
                             <span class="app-name">
-                                <a href="{% url 'admin:videos_video_add' %}">{% trans "Add Video" %}</a>
+                                <a href="{% url 'video.add' %}">{% trans "Add Video" %}</a>
                             </span>
                         </li>
                     {% endif %}
@@ -67,7 +67,7 @@
                             {% if can_edit_video %}
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a href="{% url 'admin:videos_video_change' app_object.pk %}">{% trans "Edit Video" %}</a>
+                                        <a href="{% if request.user.is_superuser %}{% url 'admin:videos_video_change' app_object.pk %}{% else %}{% url 'video.edit' app_object.pk %}{% endif %}">{% trans "Edit Video" %}</a>
                                     </span>
                                 </li>
                             {% endif %}

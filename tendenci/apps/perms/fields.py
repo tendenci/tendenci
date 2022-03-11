@@ -4,9 +4,9 @@ from django.forms import MultipleChoiceField, CheckboxInput
 from django.contrib.contenttypes.models import ContentType
 from django.forms.widgets import CheckboxSelectMultiple
 from django.utils.safestring import mark_safe
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import conditional_escape
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group
@@ -123,7 +123,7 @@ class UserPermissionWidget(CheckboxSelectMultiple):
         table_rows = u''
 
         # Normalize to strings
-        str_values = set([force_text(v) for v in value])
+        str_values = set([force_str(v) for v in value])
 
         # setup the id attr
         if has_id:
@@ -143,8 +143,8 @@ class UserPermissionWidget(CheckboxSelectMultiple):
             </table>
         """
         for i, (user_label, user_perm) in enumerate(groupby(self.choices, lambda x: x[1])):
-            view_input_value = force_text(next(user_perm)[0])
-            change_input_value = force_text(next(user_perm)[0])
+            view_input_value = force_str(next(user_perm)[0])
+            change_input_value = force_str(next(user_perm)[0])
 
             if has_id:
                 final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
@@ -166,7 +166,7 @@ class UserPermissionWidget(CheckboxSelectMultiple):
                     <td>%(change_checkbox)s</td>
                 </tr>
             """ % {'tr_class': tr_class,
-                   'user_label': conditional_escape(force_text(user_label)),
+                   'user_label': conditional_escape(force_str(user_label)),
                    'view_checkbox': rendered_cb_view,
                    'change_checkbox': rendered_cb_change
                   }
@@ -208,7 +208,7 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
         table_rows = u''
 
         # Normalize to strings
-        str_values = set([force_text(v) for v in value])
+        str_values = set([force_str(v) for v in value])
 
         # setup the id attr
         if has_id:
@@ -228,8 +228,8 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
             </table>
         """
         for i, (member_label, member_perm) in enumerate(groupby(self.choices, lambda x: x[1])):
-            view_input_value = force_text(next(member_perm)[0])
-            change_input_value = force_text(next(member_perm)[0])
+            view_input_value = force_str(next(member_perm)[0])
+            change_input_value = force_str(next(member_perm)[0])
 
             if has_id:
                 final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
@@ -251,7 +251,7 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
                     <td>%(change_checkbox)s</td>
                 </tr>
             """ % {'tr_class': tr_class,
-                   'member_label': conditional_escape(force_text(member_label)),
+                   'member_label': conditional_escape(force_str(member_label)),
                    'view_checkbox': rendered_cb_view,
                    'change_checkbox': rendered_cb_change
                   }
@@ -293,7 +293,7 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
         table_rows = u''
 
         # Normalize to strings
-        str_values = set([force_text(v) for v in value])
+        str_values = set([force_str(v) for v in value])
 
         # setup the id attr
         if has_id:
@@ -313,8 +313,8 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
             </table>
         """
         for i, (group_name, group) in enumerate(groupby(self.choices, lambda x: x[1])):
-            view_input_value = force_text(next(group)[0])
-            change_input_value = force_text(next(group)[0])
+            view_input_value = force_str(next(group)[0])
+            change_input_value = force_str(next(group)[0])
 
             if has_id:
                 final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
@@ -336,7 +336,7 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
                     <td>%(change_checkbox)s</td>
                 </tr>
             """ % {'tr_class': tr_class,
-                   'group_name': conditional_escape(force_text(group_name)),
+                   'group_name': conditional_escape(force_str(group_name)),
                    'view_checkbox': rendered_cb_view,
                    'change_checkbox': rendered_cb_change
                   }

@@ -165,8 +165,8 @@ class OfficerForm(forms.ModelForm):
 
     def __init__(self, study_group, *args, **kwargs):
         kwargs.update({'use_required_attribute': False})
+        self.field_order = ['user', 'position', 'phone',]
         super(OfficerForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['position', 'user', 'phone']
         # Initialize user.  Label depends on nullability.
         # Priority
         # 1. fullname

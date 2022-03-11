@@ -1,0 +1,54 @@
+{% extends "chapters/base-wide.html" %}
+{% load chapter_tags %}
+
+{% block title %}{% trans "Chapter Membership Confirmation" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+<div class="application-entry-wrap">
+
+        <h1>{% trans "Chapter Membership Confirmation" %}</h1>
+        {% if chapter_membership.renewal %}
+        {% firstof app.renewal_confirmation_text|safe "Thank you for your submission!" %}
+        {% else %}
+        {% firstof app.confirmation_text|safe "Thank you for your submission!" %}
+        {% endif %}
+
+        {% if chapter_membership.is_pending %}
+            <p><span style="background-color: #ECF716;">
+                    {% if request.user.profile.is_superuser %}
+                    {% trans "This chapter membership is pending." %}
+                    {% else %}
+                    {% trans "Your chapter membership is pending for admin approval." %}
+                    <br />{% trans "You will be notified shortly after your application is approved." %}
+                    {% endif %}
+            </span></p>
+        {% endif %}
+
+        <h4>{% trans 'What would you like to do now?' %}</h4>
+        <ul>
+
+            {% if chapter_membership.invoice and chapter_membership.invoice.total > 0 %}
+            <li>
+                <a href="{% url "invoice.view" chapter_membership.invoice.id %}">{% trans 'View Invoice' %}{% if chapter_membership.invoice.balance > 0 and SITE_GLOBAL_MERCHANTACCOUNT %} {% trans 'and Make Online Payment' %}{% endif %}</a>
+            </li>
+            {% endif %}
+
+            <li><a href="{% url "profile" chapter_membership.user.username %}">{% trans 'View Profile' %}</a></li>
+
+        </ul>
+
+
+
+
+        <p>&nbsp;</p>
+</div>
+</div>
+{% endblock %}
+

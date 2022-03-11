@@ -8,7 +8,7 @@ from os.path import join
 from datetime import datetime
 from functools import reduce
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.files.storage import FileSystemStorage
 from django.forms.fields import ChoiceField
 #from django.template.defaultfilters import slugify
@@ -840,7 +840,7 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
                             )[:1] or [None]
 
             if industry_field:
-                industries = Industry.objects.all().order_by('industry_name')
+                industries = Industry.objects.all()
                 if industries:
                     industries_choices = [(0, _('Select One'))]
                     for industry in industries:

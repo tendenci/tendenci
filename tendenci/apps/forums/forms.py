@@ -7,9 +7,9 @@ import inspect
 from django import forms
 from django.core.exceptions import FieldError
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
-from django.utils.translation import ugettext, ugettext_lazy
 from django.utils.timezone import now as tznow
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
 from tendenci.apps.perms.forms import TendenciBaseForm
 
 from . import compat, defaults, util
@@ -57,9 +57,9 @@ class BasePollAnswerFormset(BaseInlineFormSet):
                      len(self.deleted_forms))
         if forms_cnt > defaults.PYBB_POLL_MAX_ANSWERS:
             raise forms.ValidationError(
-                ugettext('You can''t add more than %s answers for poll' % defaults.PYBB_POLL_MAX_ANSWERS))
+                gettext('You can''t add more than %s answers for poll' % defaults.PYBB_POLL_MAX_ANSWERS))
         if forms_cnt < 2:
-            raise forms.ValidationError(ugettext('Add two or more answers for this poll'))
+            raise forms.ValidationError(gettext('Add two or more answers for this poll'))
 
 
 PollAnswerFormSet = inlineformset_factory(Topic, PollAnswer, extra=2, max_num=defaults.PYBB_POLL_MAX_ANSWERS,
@@ -67,13 +67,13 @@ PollAnswerFormSet = inlineformset_factory(Topic, PollAnswer, extra=2, max_num=de
 
 
 class PostForm(forms.ModelForm):
-    name = forms.CharField(label=ugettext_lazy('Subject'))
-    poll_type = forms.TypedChoiceField(label=ugettext_lazy('Poll type'), choices=Topic.POLL_TYPE_CHOICES, coerce=int)
+    name = forms.CharField(label=_('Subject'))
+    poll_type = forms.TypedChoiceField(label=_('Poll type'), choices=Topic.POLL_TYPE_CHOICES, coerce=int)
     poll_question = forms.CharField(
-        label=ugettext_lazy('Poll question'),
+        label=_('Poll question'),
         required=False,
         widget=forms.Textarea(attrs={'class': 'no-markitup'}))
-    slug = forms.CharField(label=ugettext_lazy('Topic slug'), required=False)
+    slug = forms.CharField(label=_('Topic slug'), required=False)
 
     class Meta(object):
         model = Post
@@ -137,7 +137,7 @@ class PostForm(forms.ModelForm):
         poll_type = self.cleaned_data.get('poll_type', None)
         poll_question = self.cleaned_data.get('poll_question', None)
         if poll_type is not None and poll_type != Topic.POLL_TYPE_NONE and not poll_question:
-            raise forms.ValidationError(ugettext('Poll''s question is required when adding a poll'))
+            raise forms.ValidationError(gettext('Poll''s question is required when adding a poll'))
 
         return self.cleaned_data
 
@@ -190,7 +190,7 @@ class AdminPostForm(PostForm):
     Superusers can post messages from any user and from any time
     If no user with specified name - new user will be created
     """
-    login = forms.CharField(label=ugettext_lazy('User'))
+    login = forms.CharField(label=_('User'))
 
     def __init__(self, *args, **kwargs):
         if args:
@@ -230,7 +230,7 @@ try:
 
         def clean_avatar(self):
             if self.cleaned_data['avatar'] and (self.cleaned_data['avatar'].size > defaults.PYBB_MAX_AVATAR_SIZE):
-                forms.ValidationError(ugettext('Avatar is too large, max size: %s bytes' %
+                forms.ValidationError(gettext('Avatar is too large, max size: %s bytes' %
                                                defaults.PYBB_MAX_AVATAR_SIZE))
             return self.cleaned_data['avatar']
 

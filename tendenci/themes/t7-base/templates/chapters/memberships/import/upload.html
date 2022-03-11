@@ -1,0 +1,58 @@
+{% extends "chapters/base-wide.html" %}
+{% load base_filters %}
+{% load styled_forms %}
+{% load perm_tags %}
+
+
+{% block title %}{% trans 'Chapter Memberships Import' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+{% endblock extra_head %}
+
+{% block content %}
+
+    <h1>{% trans "Import Chapter Memberships" %}</h1>
+	{% if chapter %}
+	<h3>{% trans "Import Into Chapter:" %} <a href="{% url 'chapters.detail' chapter.slug %}">{{ chapter.title }}</a></h3>
+	{% endif %}
+	 <div class="well">
+		<!-- TEMPLATE -->
+		<div class="pull-right">
+	      <a class="btn btn-sm btn-default" href="{% if chapter %}{% url "chapters.download_import_template_single_chapter" chapter.id %}{% else %}{% url "chapters.download_import_template" %}{% endif %}">
+	        <i class="fa fa-table"></i>&nbsp;&nbsp;{% trans "Download Template" %}
+	      </a>
+		</div>
+
+		{% blocktrans %}
+        <strong>Step 1: </strong> Upload -->
+		<strong>Step 2: </strong> Preview -->
+		<strong>Step 3: </strong> Submit for processing. 
+		<br />
+		<br />
+		<strong>Note:</strong> Users with their <code>username</code> specified should already exist in the system.
+		For <code>membership_type_id</code> field, please use the id of the membership_type.
+		For <code>chapter_id</code> field, please use id of the chapter. IDs can be found 
+		at admin backend.
+        {% endblocktrans %}
+		
+	 </div>
+	
+	<div style="width: 80%;">
+	<h3 class="import-step">{% trans "Step 1/3 - Upload" %}</h3>
+ 	<form class="form-horizontal" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+		{{ form|styled_form }}
+
+       <div>&nbsp;</div>
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary text-capitalize">{% trans "Continue" %}</button>
+            </div>
+        </div>
+
+
+    </form>
+	</div>    
+
+{% endblock %}
+

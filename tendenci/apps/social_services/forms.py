@@ -2,8 +2,9 @@ import datetime
 
 from django import forms
 from django.forms.widgets import SelectDateWidget
-from django.utils.translation import ugettext_lazy as _
-from form_utils.forms import BetterModelForm
+from django.utils.translation import gettext_lazy as _
+
+from tendenci.libs.form_utils.forms import BetterModelForm
 from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.profiles.models import Profile

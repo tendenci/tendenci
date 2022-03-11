@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils import formats
 
 class Output(forms.Widget):
@@ -16,7 +16,7 @@ class Output(forms.Widget):
     def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
-        return force_text(self.format_value(value))
+        return force_str(self.format_value(value))
 
 class Header(Output):
     """

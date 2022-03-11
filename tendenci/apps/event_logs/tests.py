@@ -79,7 +79,7 @@ class EventLogTest(TestCase):
             'event_id': 111111,
             'event_data': 'Event Data',
             'description': 'unit testing',
-            'request': response.request
+            'request': None
         }
         self.assertRaises(Exception, EventLog.objects.log(**event_log_defaults))
 
@@ -110,7 +110,7 @@ class EventLogTest(TestCase):
             'event_id': 111111,
             'event_data': 'Event Data',
             'description': 'unit testing',
-            'request': response.request,
+            'request': None,
             'user': self.user,
             'instance': self.user,
         }

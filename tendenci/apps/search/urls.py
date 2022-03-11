@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.SearchView(), name='haystack_search'),
-    url(r'^open-search/$', views.open_search, name='open_search')
+    re_path(r'^$', views.SearchView(), name='haystack_search'),
+    re_path(r'^open-search/$', views.open_search, name='open_search')
 ]

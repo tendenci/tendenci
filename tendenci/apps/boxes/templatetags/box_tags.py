@@ -2,7 +2,7 @@ from builtins import str
 
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser, User
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs

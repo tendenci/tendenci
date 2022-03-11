@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
     def send_newsletter(self, newsletter_id, **kwargs):
         from tendenci.apps.emails.models import Email
-        from tendenci.apps.newsletters.models import Newsletter
+        from tendenci.apps.newsletters.models import Newsletter, NewsletterRecurringData
         from tendenci.apps.site_settings.utils import get_setting
         from tendenci.apps.base.utils import validate_email
 
@@ -65,6 +65,15 @@ class Command(BaseCommand):
             newsletter.send_status == 'resending'
 
         newsletter.save()
+
+        if newsletter.schedule:
+            # save start_dt and status for the recurring
+            nr_data = NewsletterRecurringData(
+                        newsletter=newsletter,
+                        start_dt=datetime.datetime.now(),
+                        send_status=newsletter.send_status)
+            nr_data.save()
+            newsletter.nr_data = nr_data
 
         recipients = newsletter.get_recipients()
         email = newsletter.email
@@ -162,6 +171,12 @@ class Command(BaseCommand):
         newsletter.email_sent_count = counter
 
         newsletter.save()
+        if newsletter.nr_data:
+            # save the finish_dt and email_sent_count for the recurring
+            newsletter.nr_data.finish_dt = datetime.datetime.now()
+            newsletter.nr_data.email_sent_count = newsletter.email_sent_count
+            newsletter.nr_data.send_status = newsletter.send_status
+            newsletter.nr_data.save()
 
         print("Successfully sent %s newsletter emails." % counter)
 

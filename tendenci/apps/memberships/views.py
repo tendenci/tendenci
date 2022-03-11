@@ -1,8 +1,10 @@
-from builtins import str
+from functools import reduce
+import operator
 import os
 import math
 from decimal import Decimal
 from hashlib import md5
+import csv
 #from dateutil.parser import parse
 from datetime import datetime, timedelta, date
 import time as ttime
@@ -11,6 +13,7 @@ import calendar
 from collections import OrderedDict
 from dateutil.parser import parse as dparse, ParserError 
 from dateutil.relativedelta import relativedelta
+from urllib.parse import urlparse
  
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -27,7 +30,7 @@ from django.db.models import ForeignKey, OneToOneField
 from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
 from django.core.files.storage import default_storage
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.urls.resolvers import NoReverseMatch
@@ -40,7 +43,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.decorators import password_required
-from tendenci.apps.base.utils import send_email_notification
+from tendenci.apps.base.utils import send_email_notification, Echo
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.corporate_memberships.models import (CorpMembership,
                                                           CorpProfile,
@@ -55,7 +58,7 @@ from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.memberships.models import (
     MembershipType, Notice, MembershipImport, MembershipDefault, MembershipSet,
-    MembershipImportData, MembershipApp, MembershipAppField)
+    MembershipImportData, MembershipApp, MembershipAppField, MembershipDemographic)
 from tendenci.apps.memberships.forms import (
     MembershipExportForm, AppCorpPreForm, MembershipDefaultForm,
     ReportForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
@@ -63,15 +66,141 @@ from tendenci.apps.memberships.forms import (
     DemographicsForm,
     MembershipDefault2Form,
     AutoRenewSetupForm,
-    MessageForm)
+    MessageForm,
+    MemberSearchForm,
+    EmailMembersForm)
 from tendenci.apps.memberships.utils import (prepare_chart_data,
-    get_days, get_over_time_stats,
+    get_days, get_over_time_stats, iter_memberships,
     get_membership_stats, ImportMembDefault,
     get_membership_app, get_membership_summary_data,
-    email_pending_members)
+    email_pending_members,
+    email_membership_members)
 from tendenci.apps.base.forms import CaptchaForm
 from tendenci.apps.perms.decorators import is_enabled
+from tendenci.apps.theme.utils import get_template_content_raw
 
+
+@login_required
+def memberships_search(request, app_id=0, template_name="memberships/search-per-app.html"):
+    app = get_object_or_404(MembershipApp, pk=app_id)
+    if not has_perm(request.user, 'memberships.change_membershipdefault'):
+        raise Http403
+
+    memberships = MembershipDefault.objects.filter(app_id=app.id
+                                    ).exclude(status_detail='archive')
+    app_fields = app.fields.filter(display=True).exclude(
+            field_name__in=['payment_method',
+                                'membership_type',
+                                'groups',
+                                'status',
+                                'status_detail',
+                                'directory',
+                                'industry',
+                                'region',
+                                'password',
+                                ''])
+    if 'email_members' in request.POST or 'email_members_selected' in request.POST:
+        form = MemberSearchForm(request.POST, app_fields=app_fields, user=request.user)
+    else:
+        form = MemberSearchForm(request.GET, app_fields=app_fields, user=request.user)
+    if form.is_valid():
+        user_fieldnames = [field.name for field in User._meta.fields if \
+                           field.get_internal_type() in ['CharField', 'TextField']]
+        profile_fieldnames = [field.name for field in Profile._meta.fields if \
+                           field.get_internal_type() in ['CharField', 'TextField']]
+        membership_fieldnames = [field.name for field in MembershipDefault._meta.fields if \
+                           field.get_internal_type() in ['CharField', 'TextField']]
+        demographic_fieldnames = [field.name for field in MembershipDemographic._meta.fields if \
+                           field.get_internal_type() in ['CharField', 'TextField']]
+
+        for field_name, field_value in form.cleaned_data.items():
+            if field_value:
+                if isinstance(field_value, list):
+                    if field_name in user_fieldnames:
+                        memberships = memberships.filter(reduce(operator.or_, 
+                            [Q(**{f'user__{field_name}__icontains': value}) for value in field_value]))
+                    elif field_name in profile_fieldnames:
+                        memberships = memberships.filter(reduce(operator.or_, 
+                            [Q(**{f'user__profile__{field_name}__icontains': value}) for value in field_value]))
+                    elif field_name in membership_fieldnames:
+                        memberships = memberships.filter(reduce(operator.or_, 
+                            [Q(**{f'{field_name}__icontains': value}) for value in field_value]))
+                    elif field_name in demographic_fieldnames:
+                        memberships = memberships.filter(reduce(operator.or_, 
+                            [Q(**{f'user__demographics__{field_name}__icontains': value}) for value in field_value]))
+                elif isinstance(field_value, str):
+                    if field_name in user_fieldnames:
+                        memberships = memberships.filter(Q(**{f'user__{field_name}__icontains': field_value}))
+                    elif field_name in profile_fieldnames:
+                        memberships = memberships.filter(Q(**{f'user__profile__{field_name}__icontains': field_value}))
+                    elif field_name in membership_fieldnames:
+                        memberships = memberships.filter(Q(**{f'{field_name}__icontains': field_value}))
+                    elif field_name in demographic_fieldnames:
+                        memberships = memberships.filter(Q(**{f'user__demographics__{field_name}__icontains': field_value}))
+
+        memberships = memberships.order_by('user__last_name', 'user__first_name')
+    
+        if 'export' in request.GET:
+            EventLog.objects.log(description="memberships export from memberships search")
+    
+            response = StreamingHttpResponse(
+            streaming_content=(iter_memberships(memberships, app_fields)),
+            content_type='text/csv',)
+            response['Content-Disposition'] = f'attachment;filename=memberships_export_{ttime.time()}.csv'
+            return response
+
+        # set up email form with default values
+        default_sender_display = get_setting('site', 'global', 'sitedisplayname')
+        default_subject = request.session.get('email_subject', '') or 'Your Membership Application Needs Attention'
+        default_body = request.session.get('email_body', '')
+        if not default_body:
+            default_body = get_template_content_raw('memberships/message/email-members-body.txt')
+        email_form = EmailMembersForm(request.POST or None,
+                            initial={'subject': default_subject,
+                                     'body': default_body,
+                                    'sender_display': default_sender_display,
+                                    'reply_to': request.user.email})
+
+        if ('email_members' in request.POST or 'email_members_selected' in request.POST) \
+                and email_form.is_valid():
+            if 'email_members_selected' in request.POST:
+                selected_members = request.POST.getlist('selected_members')
+                if selected_members:
+                    selected_members = [int(m) for m in selected_members]
+                    memberships = memberships.filter(id__in=selected_members)
+
+            email = email_form.save()
+            if not email.sender_display:
+                email.sender_display = request.user.get_full_name()
+            if not email.reply_to:
+                email.reply_to = request.user.email
+            email.content_type = "html"
+            email.allow_anonymous_view = False
+            email.allow_user_view = False
+            email.allow_member_view = False
+            email.save(request.user)
+            retn_content = email_membership_members(email,
+                                    memberships,
+                                    request=request)
+    
+            EventLog.objects.log(instance=email)
+            return StreamingHttpResponse(streaming_content=retn_content)
+
+    else:
+        # search_form is invalid
+        memberships = memberships.none()
+        email_form = None
+
+    EventLog.objects.log()
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+            'memberships': memberships,
+            'search_form': form,
+            'email_form': email_form,
+            'total_members': memberships.count(),
+            'app': app,
+            'app_fields': app_fields})
 
 def membership_index(request):
     if request.user.profile:
@@ -298,12 +427,18 @@ def membership_applications(request, template_name="memberships/applications/lis
 def referer_url(request):
     """
     Save the membership-referer-url
-    in sessions.  Then redirect to the 'next' URL
+    in sessions.  Then redirect to the 'next_url' URL
     """
-    next = request.GET.get('next')
+    next_url = request.GET.get('next')
     site_url = get_setting('site', 'global', 'siteurl')
 
-    if not next:
+    if not next_url:
+        raise Http404
+
+    # this view is only used at "Become a member" for events.
+    # avoid redirecting to external sites
+    o = urlparse(next_url)
+    if o.hostname and o.hostname not in site_url:
         raise Http404
 
     #  make referer-url relative if possible; remove domain
@@ -312,7 +447,7 @@ def referer_url(request):
         request.session['membership-referer-url'] = referer_url
 
     try:
-        return redirect(next)
+        return redirect(next_url)
     except NoReverseMatch:
         raise Http404 
 
@@ -549,7 +684,7 @@ def membership_default_import_preview(request, mimport_id,
             users_list.append(user_display)
             if not fieldnames:
                 fieldnames = list(idata.row_data.keys())
-                
+
         # DateTime fields are sensitive to parse failures
         # They are not parsed in the preview yet, in fact all 
         # data travens as strings to be cleaned and parsd just 
@@ -579,14 +714,17 @@ def membership_default_import_preview(request, mimport_id,
         # before committing the import.
         # TODO: This could generalize to all ID type imports supported
         if 'membership_type' in fieldnames:
-            mts = {mt.pk:mt.name for mt in MembershipType.objects.all()}
+            mts = {mt.pk: mt.name for mt in MembershipType.objects.all()}
 
             for u in users_list:
-                try:
-                    mt = int(str(u['membership_type']))
-                except ValueError:
-                    mt = 'Value Error'
-                    
+                if 'membership_type' in u:
+                    try:
+                        mt = int(str(u['membership_type']))
+                    except ValueError:
+                        mt = 'Value Error'
+                else:
+                    mt = None
+
                 u['membership_type'] = mts.get(mt, 'None')
 
         return render_to_resp(request=request, template_name=template_name, context={
@@ -2102,57 +2240,63 @@ def report_active_members(request, template_name='reports/membership_list.html')
     elif sort == '-expiration':
         mems = mems.order_by('-expire_dt')
         is_ascending_expiration = True
-    elif sort == 'invoice':
-        # since we need to sort by a related field with the proper
-        # conditions we'll need to bring the sorting to the python level
-        mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=True)
-        is_ascending_invoice = False
-
-    elif sort == '-invoice':
-        # since we need to sort by a related field with the proper
-        # conditions we'll need to bring the sorting to the python level
-        mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=False)
-        is_ascending_invoice = True
+    # COMMENT OUT THIS INVOICE SORTING - because it is a very resource intensive 
+    # operation and easily to cause timeout with large volume of memberships.
+#     elif sort == 'invoice':
+#         # since we need to sort by a related field with the proper
+#         # conditions we'll need to bring the sorting to the python level
+#         mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=True)
+#         is_ascending_invoice = False
+# 
+#     elif sort == '-invoice':
+#         # since we need to sort by a related field with the proper
+#         # conditions we'll need to bring the sorting to the python level
+#         mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=False)
+#         is_ascending_invoice = True
 
     EventLog.objects.log()
 
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
     if ouput == 'csv':
+        def iter_mems(mems):
+            header_row = [
+                'username',
+                'full name',
+                'email',
+                'type',
+                'join',
+                'expiration',
+                'invoice',
+            ]
 
-        table_header = [
-            'username',
-            'full name',
-            'email',
-            'application',
-            'type',
-            'join',
-            'expiration',
-            'invoice',
-        ]
+            writer = csv.DictWriter(Echo(), fieldnames=header_row)
+            
+            yield writer.writerow(dict(zip(header_row, header_row)))
+                
+            for mem in mems:
+    
+                invoice_pk = ''
+                if mem.get_invoice():
+                    invoice_pk = '%i' % mem.get_invoice().pk
+    
+                mem_row = [
+                    mem.user.username,
+                    mem.user.get_full_name(),
+                    mem.user.email,
+                    mem.membership_type.name,
+                    mem.join_dt,
+                    mem.expire_dt,
+                    invoice_pk,
+                ]
+                yield writer.writerow(dict(zip(header_row, mem_row)))
 
-        table_data = []
-        for mem in mems:
+        response = StreamingHttpResponse(streaming_content=(
+                    iter_mems(mems)),
+                    content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment;filename=active-memberships.csv'
 
-            invoice_pk = u''
-            if mem.get_invoice():
-                invoice_pk = u'%i' % mem.get_invoice().pk
-
-            table_data.append([
-                mem.user.username,
-                mem.user.get_full_name(),
-                mem.user.email,
-                mem.membership_type.name,
-                mem.join_dt,
-                mem.expire_dt,
-                invoice_pk,
-            ])
-
-        return render_csv(
-            'active-memberships.csv',
-            table_header,
-            table_data,
-        )
+        return response
     # ------------------------------------
 
     return render_to_resp(request=request, template_name=template_name, context={
@@ -2484,12 +2628,16 @@ def report_renewal_period_members(request, template_name='reports/renewal_period
                 'member_number': member.member_number,
                 'first_name': member.user.first_name,
                 'last_name': member.user.last_name,
-                'city': member.user.profile.city,
-                'state': member.user.profile.state,
-                'country': member.user.profile.country,
                 'membership_type': member.membership_type,
                 'expire_dt': member.expire_dt
             }
+            if hasattr(member.user, 'profile'):
+                city = member.user.profile.city
+                state = member.user.profile.state
+                country = member.user.profile.country
+            else:
+                city = state = country = ''
+            member_dict.update({'city': city, 'state':state,  'country': country})
             members.append(member_dict)
 
     members = sorted(members, key=lambda k: k['expire_dt'])

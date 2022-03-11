@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
-from api.utils import validate_api_request
+from .utils import validate_api_request
 
 
 @csrf_exempt

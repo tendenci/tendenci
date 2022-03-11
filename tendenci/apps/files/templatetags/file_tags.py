@@ -1,6 +1,6 @@
 from builtins import str
 from django.template import Library, Node, TemplateSyntaxError, Variable, VariableDoesNotExist
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.apps.files.models import File
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 

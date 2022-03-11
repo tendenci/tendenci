@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.donations.managers import DonationManager
@@ -33,7 +33,7 @@ class Donation(models.Model):
     owner = models.ForeignKey(User, null=True, related_name="donation_owner", on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=150, null=True)
     status_detail = models.CharField(max_length=50, default='estimate')
-    status = models.NullBooleanField(default=True)
+    status = models.BooleanField(default=True, null=True)
 
     objects = DonationManager()
 

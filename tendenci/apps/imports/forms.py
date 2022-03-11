@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.imports.utils import get_header_list_from_content
 from tendenci.apps.imports.models import Import

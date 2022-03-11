@@ -1,7 +1,7 @@
 from django.template import TemplateSyntaxError, TemplateDoesNotExist, Variable
 from django.template import Library
 from django.template.loader_tags import IncludeNode
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from haystack.models import SearchResult
 
 register = Library()

@@ -1,10 +1,12 @@
 from datetime import datetime
+from os.path import splitext, basename
 
 from django import forms
 from django.contrib.admin import widgets
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+from django.contrib.contenttypes.models import ContentType
 
 # from captcha.fields import CaptchaField
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -18,6 +20,10 @@ from tendenci.apps.jobs.models import Category as JobCategory
 from tendenci.apps.jobs.utils import get_payment_method_choices, pricing_choices
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.forms import CustomCatpchaField
+from tendenci.apps.files.validators import FileValidator
+from tendenci.apps.files.utils import get_allowed_upload_file_exts
+from tendenci.apps.files.models import File
+from tendenci.apps.perms.utils import assign_files_perms
 
 
 request_duration_defaults = {
@@ -49,6 +55,8 @@ STATUS_CHOICES = (
 )
 
 class JobForm(TendenciBaseForm):
+    header_image = forms.ImageField(required=False)
+    remove_photo = forms.BooleanField(label=_('Remove the current header image'), required=False)
 
     description = forms.CharField(
         required=False,
@@ -175,6 +183,7 @@ class JobForm(TendenciBaseForm):
                     'salary_to',
                     'is_agency',
                     'tags',
+                    'header_image',
                     'pricing',
                     'activation_dt',
                     'expiration_dt',
@@ -234,6 +243,13 @@ class JobForm(TendenciBaseForm):
         if hasattr(self, 'user'):
             kwargs.update({'user': self.user})
         super(JobForm, self).__init__(*args, **kwargs)
+        if self.instance.header_image:
+            print('A' * 30)
+            print(self.instance.header_image)
+            self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> %s: <a target="_blank" href="/files/%s/">%s</a>' % (_('Remove current image'), self.instance.header_image.id, basename(self.instance.header_image.file.name))
+        else:
+            self.fields.pop('remove_photo')
+        self.fields['header_image'].validators = [FileValidator(allowed_extensions=get_allowed_upload_file_exts('image'))]
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             #self.fields['pricing'].initial = JobPricing.objects.filter(duration=self.instance.requested_duration)[0]
@@ -293,7 +309,6 @@ class JobForm(TendenciBaseForm):
 
         if not self.user.profile.is_superuser:
             fields_to_pop += [
-                'slug',
                 'entity',
                 'group',
                 'allow_anonymous_view',
@@ -331,11 +346,31 @@ class JobForm(TendenciBaseForm):
         chosen pricing.
         """
         job = super(JobForm, self).save(commit=False)
+        if self.cleaned_data.get('remove_photo'):
+            job.header_image = None
         if 'pricing' in self.cleaned_data:
             job.requested_duration = self.cleaned_data['pricing'].duration
         if kwargs['commit']:
             job.save()
         return job
+
+    def save_header_image(self, request, job):
+        if self.is_valid():
+            f = self.cleaned_data['header_image']
+            if f:
+                header_image = File()
+                header_image.content_type = ContentType.objects.get_for_model(Job)
+                header_image.object_id = job.id
+                header_image.creator = request.user
+                header_image.creator_username = request.user.username
+                header_image.owner = request.user
+                header_image.owner_username = request.user.username
+                filename = "%s-%s" % (job.slug, f.name)
+                f.file.seek(0)
+                header_image.file.save(filename, f)
+                job.header_image = header_image
+                job.save()
+                assign_files_perms(job, files=[job.header_image])
 
 
 class JobAdminForm(JobForm):

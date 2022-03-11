@@ -167,7 +167,7 @@ function get_registrant_pricing_obj($block){
         $override_price = $block.find('.admin-override_price input'),
         price = 0;
 
-    if ($override.length > 0) {
+    if ($override.length > 0 && $override_price.val() != "") {
         price = $override_price.val();
     } else if ($checked_price.length > 0) {
         price = $checked_price.next('strong').find('span').data('price');
@@ -262,7 +262,7 @@ function override_update_summary_entry(prefix, registrant_form){
         override_price_node = $(registrant_form).find('.admin-override_price');
     // if override is checked, find the value of the input
     if ($($(override_node).find('input[type=checkbox]:checked')).length > 0){
-        input_box = $(override_price_node).find('input[type=text]');
+        input_box = $(override_price_node).find('input[type=number]');
 
         name_attr = $(input_box).attr('name');
         idx = get_idx(name_regexp, name_attr);
@@ -279,7 +279,7 @@ function override_update_summary_entry(prefix, registrant_form){
 
     if (!override){
         var this_pricing = $(registrant_form).find('.registrant-pricing');
-        name_attr = $(this_pricing).eq(0).attr('name');
+        name_attr = $(this_pricing).eq(1).attr('name');
         idx = get_idx(name_regexp, name_attr);
         var pricing_obj = get_registrant_pricing_obj($(registrant_form));
         if (pricing_obj == false ){

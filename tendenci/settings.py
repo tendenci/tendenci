@@ -58,6 +58,10 @@ DEBUG = False
 
 SITE_ID = 1
 
+# Maintaining the historical behavior, the default value for DEFAULT_AUTO_FIELD is AutoField.
+# Starting with 3.2 new projects are generated with DEFAULT_AUTO_FIELD set to BigAutoField.
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 ROOT_URLCONF = 'tendenci.urls'
 
 DATABASES = {
@@ -122,7 +126,7 @@ TEMPLATES = [
       ],
       'loaders': [
         ('tendenci.apps.theme.template_loaders.CachedLoader', [
-          'app_namespace.Loader',
+          'apptemplates.Loader',
           'tendenci.apps.theme.template_loaders.ThemeLoader',
           'django.template.loaders.filesystem.Loader',
           'django.template.loaders.app_directories.Loader',
@@ -131,7 +135,7 @@ TEMPLATES = [
       'libraries': {
         # tendenci.apps.theme.templatetags.static replaces these, so rename them
         # to avoid conflicts
-        'django.static': 'django.contrib.staticfiles.templatetags.staticfiles',
+        'django.static': 'django.templatetags.static',
         'django.staticfiles': 'django.templatetags.static',
       },
       'builtins': [
@@ -176,6 +180,7 @@ INSTALLED_APPS = [
     'timezone_field',
     'gunicorn',
     'rangefilter',
+    'django_q',
 
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',
@@ -468,12 +473,12 @@ EXTRA_LANG_INFO = {
         'name': 'Tagalog',
         'name_local': u'Tagalog', #unicode codepoints here
     },
-    'tl_PH': {
-        'bidi': False, # right-to-left
-        'code': 'tl_PH',
-        'name': 'Tagalog (Philippines)',
-        'name_local': u'Tagalog (Philippines)',
-    },
+#     'tl_PH': {
+#         'bidi': False, # right-to-left
+#         'code': 'tl_PH',
+#         'name': 'Tagalog (Philippines)',
+#         'name_local': u'Tagalog (Philippines)',
+#     },
     'he': {
         'bidi': True, # right-to-left
         'code': 'he',
@@ -527,7 +532,7 @@ GAVATAR_DEFAULT_URL = 'images/icons/default-user-80.jpg'
 DEFAULT_IMAGE_URL = 'images/default-photo.jpg'
 
 # User agent for external retrieval of files/images
-TENDENCI_USER_AGENT = 'Tendenci/12 (+https://www.tendenci.com)'
+TENDENCI_USER_AGENT = 'Tendenci/14 (+https://www.tendenci.com)'
 
 # Google Static Maps URL signing secret used to generate a digital signature
 GOOGLE_SMAPS_URL_SIGNING_SECRET = ''
@@ -549,6 +554,8 @@ NEWSLETTER_EMAIL_HOST_USER = ''
 NEWSLETTER_EMAIL_HOST_PASSWORD = ''
 NEWSLETTER_EMAIL_USE_TLS = True
 NEWSLETTER_EMAIL_BACKEND = 'tendenci.apps.emails.backends.NewsletterEmailBackend'
+
+NEWSLETTER_SCHEDULE_ENABLED = False
 
 # Mobile App
 MOBILE_COOKIE_NAME = "tendenci_mobile"
@@ -709,14 +716,15 @@ MERCHANT_ACCOUNT_NAMES = ('stripe', 'authorizenet', 'firstdatae4', 'paypal')
 CAPTCHA_FONT_SIZE = 50
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 CAPTCHA_IMAGE_SIZE = (172,80)
-CAPTCHA_OUTPUT_FORMAT = u'%(image)s <br />%(hidden_field)s %(text_field)s'
 
 # Google reCAPTCHA
-NORECAPTCHA_SITE_KEY = ''
-NORECAPTCHA_SECRET_KEY = ''
-NORECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
-NORECAPTCHA_WIDGET_TEMPLATE = 'base/nocaptcha_recaptcha/widget.html'
-
+# NORECAPTCHA_SITE_KEY = ''
+# NORECAPTCHA_SECRET_KEY = ''
+# NORECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
+# NORECAPTCHA_WIDGET_TEMPLATE = 'base/nocaptcha_recaptcha/widget.html'
+RECAPTCHA_PUBLIC_KEY = ''
+RECAPTCHA_PRIVATE_KEY = ''
+USE_RECAPTCHA_V3 = False
 
 # ---------------------------------------------------------------------------- #
 # Django Admin Bootstrapped
@@ -778,6 +786,12 @@ def EXPLORER_PERMISSION_VIEW(r):
     return r.user.is_superuser
 def EXPLORER_PERMISSION_CHANGE(r):
     return r.user.is_superuser
+
+
+# Configure Django-Q cluster
+Q_CLUSTER = {
+    "orm": "default",
+}
 
 # ---------------------------------------------------------------------------- #
 # Debugging Tools

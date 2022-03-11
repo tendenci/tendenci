@@ -6,9 +6,12 @@ import re
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
+from django.utils import timezone
+from django_q.models import Schedule
+from django.core.validators import MinValueValidator
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.articles.models import Article
@@ -178,6 +181,30 @@ class Newsletter(models.Model):
     # field pointing to the article if created on send
     article = models.ForeignKey(Article, null=True, blank=True, on_delete=models.SET_NULL)
 
+    # fields for scheduling and recurring
+    schedule = models.ForeignKey(Schedule, null=True, blank=True, on_delete=models.SET_NULL)
+    ONCE = "O"
+    DAILY = "D"
+    WEEKLY = "W"
+    MONTHLY = "M"
+    YEARLY = "Y"
+    TYPE = (
+        (ONCE, _("Once")),
+        (DAILY, _("Daily")),
+        (WEEKLY, _("Weekly")),
+        (MONTHLY, _("Monthly")),
+        (YEARLY, _("Yearly")),
+        )
+    
+    schedule_send_dt = models.DateTimeField(
+        verbose_name=_("Starts On"), null=True, blank=True,)
+    schedule_type = models.CharField(
+        max_length=1, choices=TYPE, default=TYPE[0][0], verbose_name=_("Frequency"), blank=True,)
+    repeats = models.IntegerField(
+        default=0, verbose_name=_("Repeats"),
+        validators=[MinValueValidator(-1)],
+        help_text=_("n = n times, -1 = forever"), blank=True,)
+
     # indicate the send status of the newsletter
     send_status = models.CharField(
         max_length=30,
@@ -210,6 +237,27 @@ class Newsletter(models.Model):
 
     def get_absolute_url(self):
         return reverse('newsletter.detail.view', args=[self.pk])
+
+    def total_runs_left(self):
+        if self.schedule:
+            if self.repeats > 0:
+                return self.schedule.repeats
+            return self.repeats
+        return 0
+
+    def schedule_type_verbose(self):
+        if self.schedule_type == "O":
+            return _("Once")
+        elif self.schedule_type == "D":
+            return _("Daily")
+        elif self.schedule_type == "W":
+            return _("Weekly")
+        elif self.schedule_type == "M":
+            return _("Monthly")
+        elif self.schedule_type == "Y":
+            return _("Yearly")
+        else:
+            return ''
 
     def generate_newsletter(self, request, template):
         if self.default_template:
@@ -480,3 +528,12 @@ class Newsletter(models.Model):
     def get_browser_view_url(self):
         site_url = get_setting('site', 'global', 'siteurl')
         return "%s%s?key=%s" % (site_url, reverse('newsletter.view_from_browser', args=[self.pk]), self.security_key)
+
+
+class NewsletterRecurringData(models.Model):
+    newsletter = models.ForeignKey(Newsletter, related_name="recurring_data", on_delete=models.CASCADE)
+    start_dt = models.DateTimeField(null=True, blank=True)
+    finish_dt = models.DateTimeField(null=True, blank=True)
+    # number of emails sent
+    email_sent_count = models.IntegerField(null=True, blank=True, default=0)
+    send_status = models.CharField(max_length=30, default='queued')

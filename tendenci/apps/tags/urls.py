@@ -1,8 +1,8 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.tags_list, name="tags_list"),
-    url(r'^(?P<id>\d+)/$', views.detail, name="tag.detail"),
-    url(r'^autocomplete/$', views.autocomplete, name="tag.autocomplete"),
+    re_path(r'^$', views.tags_list, name="tags_list"),
+    re_path(r'^(?P<id>\d+)/$', views.detail, name="tag.detail"),
+    re_path(r'^autocomplete/$', views.autocomplete, name="tag.autocomplete"),
 ]

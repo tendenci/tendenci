@@ -390,6 +390,23 @@
         "store": true,
         "updated_by": ""
     },
+	{
+        "default_value": "0.5",
+        "description": "It should be a value between 0 and 1, default 0.5 (1.0 is very likely a good interaction, 0.0 is very likely a bot). For more details, please view <a href=\"https://developers.google.com/recaptcha/docs/v3#interpreting_the_score\">https://developers.google.com/recaptcha/docs/v3#interpreting_the_score</a>. ",
+        "data_type": "decimal",
+        "update_dt": "2022-02-01 12:59:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "recaptchascorelimit",
+        "value": "0.5",
+        "label": "Google reCAPTCHA Score Threshold",
+        "input_value": " ",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": true,
+        "updated_by": ""
+    },
     {
         "default_value": "USD",
         "description": "Currency your site is using.",
