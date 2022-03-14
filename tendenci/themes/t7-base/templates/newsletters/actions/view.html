@@ -175,10 +175,6 @@
 			&nbsp;&nbsp;&nbsp;<a id="cancel-schedule" href="javascript:void(0);">{% trans 'Cancel' %}</a>
 			<form name="cancel-schedule-form" method="POST" action="{% url "newsletter.cancel_schedule" object.pk %}">{% csrf_token %}
 		    </form>
-			{% else %}
-				{% if object.repeats != 0 %}
-				&nbsp;&nbsp;&nbsp;<span class="text-warning">{% trans 'Canceled!' %}</span>
-				{% endif %}
 			{% endif %}
 		</div>
 		
