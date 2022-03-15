@@ -562,6 +562,9 @@ class Profile(Person):
                 default = '%s%s'%(site_url,
                                 static(settings.GAVATAR_DEFAULT_URL))
 
+        if get_setting('module', 'users', 'disablegravatar'):
+            return default or static(settings.GAVATAR_DEFAULT_URL)
+
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
         gravatar_url += urlencode({'d':default, 's':str(size)})
         return gravatar_url

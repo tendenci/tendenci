@@ -340,6 +340,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "false",
+        "description": "Due to GDPR or some other reasons, you might want to disable Gravatar http://en.gravatar.com/ from your site.",
+        "data_type": "boolean",
+        "update_dt": "2022-03-15 14:27:00",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "disablegravatar",
+        "value": "false",
+        "label": "Disable Gravatar",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "users",
+        "store": true,
+        "updated_by": ""
+    },
+    {
         "default_value": "profiles",
         "description": "The root url for the profiles module. Use letters and dashes only.",
         "data_type": "string",
