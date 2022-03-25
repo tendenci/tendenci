@@ -36,14 +36,9 @@
         
         <li class="pull-left">
           <a href="{{ entry.get_absolute_url }}">
-            {{ entry.entry_time }}
-            {% for field in entry.fields.all|slice:":3" %}
-            {% if field.field.field_type == 'FileField' %}
-            &nbsp;&ndash;&nbsp;{{ field.value|basename }}
-            {% else %}
-            &nbsp;&ndash;&nbsp;{{ field.value|truncatewords:"2" }}
-            {% endif %}
-            {% endfor %}
+          	{% for row in entry.summary %}
+            	{{ row }}<br>
+          	{% endfor %}
           </a>
         </li>
         
