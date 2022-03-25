@@ -1,3 +1,4 @@
+from re import RegexFlag
 from os import path
 from django.db import models
 from django.urls import reverse
@@ -244,7 +245,9 @@ class Field(OrderingBaseModel):
         help_text=_("Default value of the field"))
     summary_position = models.CharField(_("Summary Position"), max_length=6, blank=True,
         help_text=_("Position in the one line form entry summary. Row, Position or just Position.\nSome examples:\n2,1   for row 1, position 1\n2      for row 1, positon 2."),
-        validators=[validators.validate_comma_separated_integer_list])
+        validators=[validators.RegexValidator(r"^\s*\d+(\s*,\s*\d+)?(\s*,\s*(b|\$|w\d+))?$",
+                                              "Summary position must have 1 to 3 comma separated values:\nrow,column,format\nrow is optional and assumed to be 1 if missing, supported formats are: $ for numbers, b for boolean and wn for first n words.",
+                                              flags=RegexFlag.IGNORECASE)])
 
     objects = FieldManager()
 
