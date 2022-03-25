@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.core.cache import cache
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.base.template_tags import parse_tag_kwargs
 from tendenci.apps.base.utils import url_exists, google_cmap_sign_url

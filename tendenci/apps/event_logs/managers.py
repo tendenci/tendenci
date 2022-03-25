@@ -51,7 +51,7 @@ class EventLogManager(Manager):
 
         if f_data['request_method']:
             if f_data['request_method'] != 'all':
-                qs.append(Q(request_method=f_data['request_method']))
+                qs.append(Q(request_method__iexact=f_data['request_method']))
 
         if f_data['user_id']:
             qs.append(Q(user=f_data['user_id']))
@@ -103,6 +103,8 @@ class EventLogManager(Manager):
                 request = inspect.getargvalues(stack[2][0]).locals['request']
             elif 'request' in inspect.getargvalues(stack[3][0]).locals:
                 request = inspect.getargvalues(stack[3][0]).locals['request']
+            elif len(stack) >= 5 and 'request' in inspect.getargvalues(stack[4][0]).locals:
+                request = inspect.getargvalues(stack[4][0]).locals['request']
 
         # If this eventlog is being triggered by something without a request, we
         # do not want to log it. This is usually some other form of logging

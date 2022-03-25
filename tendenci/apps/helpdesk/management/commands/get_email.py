@@ -21,7 +21,6 @@ import socket
 import chardet
 
 from datetime import timedelta
-from email.header import decode_header
 from email.utils import parseaddr, collapse_rfc2231_value
 
 from email_reply_parser import EmailReplyParser
@@ -29,10 +28,10 @@ from email_reply_parser import EmailReplyParser
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from django.db.models import Q
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.template.defaultfilters import striptags
 from django.utils.encoding import DjangoUnicodeDecodeError
-from html.parser import HTMLParser
+import html
 from tendenci.apps.helpdesk import settings
 
 try:
@@ -43,7 +42,7 @@ except ImportError:
 from tendenci.apps.helpdesk.lib import send_templated_mail, safe_template_context
 from tendenci.apps.helpdesk.models import Queue, Ticket, FollowUp, Attachment, IgnoreEmail
 
-unescape = HTMLParser().unescape
+unescape = html.unescape
 
 
 class Command(BaseCommand):

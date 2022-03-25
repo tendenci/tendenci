@@ -1,7 +1,7 @@
 from django import template
 from django.urls import reverse
 from django.template import TemplateSyntaxError, Variable
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 register = template.Library()
 

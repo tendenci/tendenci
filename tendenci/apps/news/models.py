@@ -4,7 +4,7 @@ from django.db import models
 from django.urls import reverse
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.conf import settings
 
@@ -27,7 +27,6 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 class NewsImage(File):
     class Meta:
         app_label = 'news'
-        manager_inheritance_from_future = True
 
 
 class News(TendenciBaseModel):
@@ -150,6 +149,8 @@ class News(TendenciBaseModel):
 
     @property
     def is_released(self):
+        if not self.release_dt_local:
+            self.assign_release_dt_local()
         return self.release_dt_local <= datetime.now()
 
     @property

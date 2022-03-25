@@ -14,7 +14,7 @@ from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 from django.core.files.storage import default_storage
-from celery.task import Task
+import celery
 
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.forms_builder.forms.models import Form
@@ -22,7 +22,7 @@ from tendenci.apps.forms_builder.forms.utils import form_entries_to_csv_writer
 from tendenci.apps.base.utils import escape_csv
 
 
-class FormsExportTask(Task):
+class FormsExportTask(celery.Task):
     """Export Task for Celery
     This exports all forms along with their fields.
     """
@@ -132,7 +132,7 @@ class FormsExportTask(Task):
         return render_csv(file_name, fields, data_row_list)
 
 
-class FormEntriesExportTask(Task):
+class FormEntriesExportTask(celery.Task):
 
     def run(self, form_instance, entries, include_files, **kwargs):
 

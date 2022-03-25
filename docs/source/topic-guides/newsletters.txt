@@ -1,0 +1,26 @@
+Newsletters Scheduling
+======================
+
+Newsletters can be set to send immediately or schedule a later date/time to send. By default, scheduling is not enabled due to additional setup needed. To enable newsletters scheduling, follow these steps:
+
+1. Add the setting `NEWSLETTER_SCHEDULE_ENABLED = True` to your conf/settings.py.
+
+2. Make sure a process is started for the management command `qcluster`. On Ubuntu, you can create a qcluster service like this:
+
+  ::
+
+    [Unit]
+    Description=Django-Q qcluster
+    After=network.target
+
+    [Service]
+    WorkingDirectory=/var/www/mysite
+    ExecStart=/srv/mysite/bin/python \
+        /var/www/mysite/manage.py \
+        qcluster
+
+    [Install]
+    WantedBy=multi-user.target
+
+
+Once the newsletters scheduling is enabled, you can make a schedule in the step 5 when adding a newsletter. Just check the "Schedule to Send?" checkbox, you can then specify when to send and how often to send (if needed).  

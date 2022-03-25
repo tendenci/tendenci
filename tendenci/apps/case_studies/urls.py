@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 from tendenci.apps.site_settings.utils import get_setting
 from . import views
 from .feeds import LatestEntriesFeed
@@ -8,11 +8,11 @@ if not urlpath:
     urlpath = "case-studies"
 
 urlpatterns = [
-    url(r'^%s/$' % urlpath, views.search, name="case_study"),
-    url(r'^%s/search/$' % urlpath, views.search_redirect, name="case_study.search"),
-    url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='case_study.feed'),
-    url(r'^%s/technology/(?P<id>\d+)/$' % urlpath, views.technology, name="case_study.technology"),
-    url(r'^%s/service/(?P<id>\d+)/$' % urlpath, views.service, name="case_study.service"),
-    url(r'^%s/print-view/(?P<id>\d+)/$' % urlpath, views.print_view, name="case_study.print_view"),
-    url(r'^%s/(?P<slug>[\w\-]+)/$' % urlpath, views.detail, name="case_study.view"),
+    re_path(r'^%s/$' % urlpath, views.search, name="case_study"),
+    re_path(r'^%s/search/$' % urlpath, views.search_redirect, name="case_study.search"),
+    re_path(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='case_study.feed'),
+    re_path(r'^%s/technology/(?P<id>\d+)/$' % urlpath, views.technology, name="case_study.technology"),
+    re_path(r'^%s/service/(?P<id>\d+)/$' % urlpath, views.service, name="case_study.service"),
+    re_path(r'^%s/print-view/(?P<id>\d+)/$' % urlpath, views.print_view, name="case_study.print_view"),
+    re_path(r'^%s/(?P<slug>[\w\-]+)/$' % urlpath, views.detail, name="case_study.view"),
 ]

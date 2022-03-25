@@ -5938,6 +5938,126 @@
 },
 {
     "fields": {
+        "default_value": "",
+        "field_type": "",
+        "admin_only": false,
+        "description": "",
+        "css_class": "",
+        "membership_app": 1,
+        "required": false,
+        "label": "Highest Level of Education",
+        "content_type": null,
+        "help_text": "",
+        "position": 25,
+        "choices": "",
+        "field_name": "education",
+        "display": false
+    },
+    "model": "memberships.membershipappfield",
+    "pk": 279
+},
+{
+    "fields": {
+        "default_value": "",
+        "field_type": "",
+        "admin_only": false,
+        "description": "",
+        "css_class": "",
+        "membership_app": 2,
+        "required": false,
+        "label": "Highest Level of Education",
+        "content_type": null,
+        "help_text": "",
+        "position": 25,
+        "choices": "",
+        "field_name": "education",
+        "display": false
+    },
+    "model": "memberships.membershipappfield",
+    "pk": 280
+},
+{
+    "fields": {
+        "default_value": "",
+        "field_type": "",
+        "admin_only": false,
+        "description": "",
+        "css_class": "",
+        "membership_app": 1,
+        "required": false,
+        "label": "Time Zone",
+        "content_type": null,
+        "help_text": "",
+        "position": 25,
+        "choices": "",
+        "field_name": "time_zone",
+        "display": false
+    },
+    "model": "memberships.membershipappfield",
+    "pk": 281
+},
+{
+    "fields": {
+        "default_value": "",
+        "field_type": "",
+        "admin_only": false,
+        "description": "",
+        "css_class": "",
+        "membership_app": 1,
+        "required": false,
+        "label": "Language",
+        "content_type": null,
+        "help_text": "",
+        "position": 25,
+        "choices": "",
+        "field_name": "language",
+        "display": false
+    },
+    "model": "memberships.membershipappfield",
+    "pk": 282
+},
+{
+    "fields": {
+        "default_value": "",
+        "field_type": "",
+        "admin_only": false,
+        "description": "",
+        "css_class": "",
+        "membership_app": 2,
+        "required": false,
+        "label": "Time Zone",
+        "content_type": null,
+        "help_text": "",
+        "position": 25,
+        "choices": "",
+        "field_name": "time_zone",
+        "display": false
+    },
+    "model": "memberships.membershipappfield",
+    "pk": 283
+},
+{
+    "fields": {
+        "default_value": "",
+        "field_type": "",
+        "admin_only": false,
+        "description": "",
+        "css_class": "",
+        "membership_app": 2,
+        "required": false,
+        "label": "Language",
+        "content_type": null,
+        "help_text": "",
+        "position": 25,
+        "choices": "",
+        "field_name": "language",
+        "display": false
+    },
+    "model": "memberships.membershipappfield",
+    "pk": 284
+},
+{
+    "fields": {
         "ud2": "",
         "ud3": "",
         "ud1": "",

@@ -2,7 +2,7 @@ import re
 from django.db import models
 from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericRelation
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tagging.fields import TagField

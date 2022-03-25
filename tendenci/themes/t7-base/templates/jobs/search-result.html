@@ -14,7 +14,10 @@
   
   <div class="panel-body t-search-result-body">
     <p class="item-content">
-      {{ job.description|striptags|truncatewords:20|safe }}
+	  {% if job.header_image %}
+      <img src="{% url 'file' job.header_image.id %}" alt="job header" title="job header" class="img-responsive" />
+      {% endif %}
+      {{ job.description|truncatewords_html:80|safe }}
     </p>
   </div>
   

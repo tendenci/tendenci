@@ -8,9 +8,10 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.conf import settings
 
 from haystack.query import SearchQuerySet
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -46,6 +47,7 @@ from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.emails.models import Email
 from tendenci.apps.base.utils import validate_email
+from tendenci.apps.base.utils import get_timezone_choices
 
 
 THIS_YEAR = datetime.today().year
@@ -100,6 +102,44 @@ CLASS_AND_WIDGET = {
     'horizontal-rule': ('CharField', 'tendenci.apps.memberships.widgets.Description'),
     'corporate_membership_id': ('ChoiceField', None),
 }
+
+
+def assign_search_fields(form, app_field_objs):
+    for obj in app_field_objs:
+        # either choice field or text field
+        if obj.field_name and obj.field_type not in ['BooleanField']:
+            if obj.field_name == 'time_zone':
+                form.fields[obj.field_name] = forms.ChoiceField(label=obj.label,
+                                                    required=False,
+                                                    choices=[('', '--------')] + get_timezone_choices())
+            elif obj.field_name == 'country':
+                form.fields[obj.field_name] = CountrySelectField(label=obj.label,
+                                                    required=False)
+            elif obj.field_name == 'language':
+                form.fields[obj.field_name] = forms.ChoiceField(label=obj.label,
+                                                    required=False,
+                                                    choices=[('', '--------')] + settings.LANGUAGES)
+            elif obj.choices and obj.field_type in ('ChoiceField',
+                                  'ChoiceField/django.forms.RadioSelect',
+                                  'MultipleChoiceField',
+                                  'MultipleChoiceField/django.forms.CheckboxSelectMultiple',
+                                  'CountrySelectField'):
+                choices = [s.strip() for s in obj.choices.split(",")]
+                form.fields[obj.field_name] = forms.MultipleChoiceField(label=obj.label,
+                                                        required=False,
+                                                        widget=forms.CheckboxSelectMultiple,
+                                                        choices=list(zip(choices, choices)))
+            else:
+                form.fields[obj.field_name] = forms.CharField(label=obj.label, required=False)
+
+
+class MemberSearchForm(FormControlWidgetMixin, forms.Form):
+    def __init__(self, *args, **kwargs):
+        app_fields = kwargs.pop('app_fields')
+        user = kwargs.pop('user')
+        super(MemberSearchForm, self).__init__(*args, **kwargs)
+        assign_search_fields(self, app_fields)
+        self.add_form_control_class()
 
 
 def get_suggestions(entry):
@@ -217,10 +257,12 @@ class MembershipTypeForm(TendenciBaseForm):
     def clean(self):
         cleaned_data = super(MembershipTypeForm, self).clean()
         # Make sure Expiretion Grace Period <= Renewal Period End
-        expiration_grace_period = self.cleaned_data['expiration_grace_period']
-        renewal_period_end = self.cleaned_data['renewal_period_end']
-        if expiration_grace_period > renewal_period_end:
-            raise forms.ValidationError(_("The Expiration Grace Period should be less than or equal to the Renewal Period End."))
+        if 'expiration_grace_period' in self.cleaned_data \
+            and 'renewal_period_end' in self.cleaned_data:
+            expiration_grace_period = self.cleaned_data['expiration_grace_period']
+            renewal_period_end = self.cleaned_data['renewal_period_end']
+            if expiration_grace_period > renewal_period_end:
+                raise forms.ValidationError(_("The Expiration Grace Period should be less than or equal to the Renewal Period End."))
         return cleaned_data
 
 
@@ -304,6 +346,35 @@ class MembershipTypeForm(TendenciBaseForm):
 
     def save(self, *args, **kwargs):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
+
+
+class EmailMembersForm(FormControlWidgetMixin, forms.ModelForm):
+    subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
+    body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label': Email._meta.app_label,
+        'storme_model': Email._meta.model_name.lower()}),
+        label=_('Email Content'),
+        help_text=_("""Available tokens:
+                    <ul><li>{{ first_name }}</li>
+                    <li>{{ last_name }}</li>
+                    <li>{{ view_url }}</li>
+                    <li>{{ edit_url }}</li>
+                    <li>{{ site_url }}</li>
+                    <li>{{ site_display_name }}</li></ul>"""))
+
+    class Meta:
+        model = Email
+        fields = ('subject',
+                  'body',
+                  'sender_display',
+                  'reply_to',)
+
+    def __init__(self, *args, **kwargs):
+        super(EmailMembersForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
 
 class MessageForm(FormControlWidgetMixin, forms.ModelForm):
@@ -706,15 +777,23 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             Username and password did not match
             This username exists. If it's yours,
                 please provide a password.
+            If username field is blank or not presented:
+                 if email address is in the system
+                     if user is not logged in
+                        if the user record with this email address is active
+                            prompts them to log in
+                        else
+                            let them activate the account before applying for membership
+
         """
         # super(UserForm, self).clean()
 
         data = self.cleaned_data
 
-        un = data.get('username', u'').strip()
-        pw = data.get('password', u'').strip()
-        pw_confirm = data.get('confirm_password', u'').strip()
-        email = data.get('email', u'').strip()
+        un = data.get('username', '').strip()
+        pw = data.get('password', '').strip()
+        pw_confirm = data.get('confirm_password', '').strip()
+        email = data.get('email', '').strip()
         u = None
         login_link = _('click <a href="/accounts/login/?next=%s">HERE</a> to log in before completing your application.') % self.request.get_full_path()
         username_validate_err_msg = mark_safe(_('This Username already exists in the system. If this is your Username, %s Else, select a new Username to continue.') % login_link)
@@ -766,21 +845,23 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
 
             if not u and not self.is_renewal:
                 # we didn't find user, check if email address is already in use
-                if un and email:
+                if email:
                     if User.objects.filter(email=email).exists():
                         if self.request.user.is_authenticated:
                             # user is logged in
-                            raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
+                            if 'username' in data:
+                                # username is presented on form
+                                raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
+                        else:
+                            # user is not logged in. prompt them to log in if the user record with this email address is active
+                            u = User.objects.filter(email=email).order_by('-is_active')[0]
+                            [profile] = Profile.objects.filter(user=u)[:1] or [None]
+                            if (profile and profile.is_active) or u.is_active:
+                                raise forms.ValidationError(email_validate_err_msg)
 
-                        # user is not logged in. prompt them to log in if the user record with this email address is active
-                        u = User.objects.filter(email=email).order_by('-is_active')[0]
-                        [profile] = Profile.objects.filter(user=u)[:1] or [None]
-                        if (profile and profile.is_active) or u.is_active:
-                            raise forms.ValidationError(email_validate_err_msg)
-
-                        # at this point, user is not logged in and user record with this email is inactive
-                        # let them activate the account before applying for membership
-                        raise forms.ValidationError(inactive_user_err_msg)
+                            # at this point, user is not logged in and user record with this email is inactive
+                            # let them activate the account before applying for membership
+                            raise forms.ValidationError(inactive_user_err_msg)
 
         return data
 
@@ -816,9 +897,9 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             user.email = validate_email(user.email) and user.email or user_attrs['email']
             user.first_name = user.first_name or user_attrs['first_name']
             user.last_name = user.last_name or user_attrs['last_name']
-        elif User.objects.filter(email=user_attrs['email']).exists():
+        elif User.objects.filter(email__iexact=user_attrs['email']).exists():
             created = False
-            user = User.objects.filter(email=user_attrs['email']).order_by('-last_login')[0]
+            user = User.objects.filter(email__iexact=user_attrs['email']).order_by('-last_login')[0]
             user.first_name = user.first_name or user_attrs['first_name']
             user.last_name = user.last_name or user_attrs['last_name']
         else:

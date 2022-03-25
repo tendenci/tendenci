@@ -38,11 +38,13 @@
         <div class="page-header">
             <h1>{% trans "Corporate Membership" %}<br />&nbsp;<small>{{ corp_profile.name }}  &nbsp; &nbsp; &nbsp;{% if corporate_membership.status_detail == 'pending' or corporate_membership.status_detail == 'paid - pending approval'  %}<span class="text-warning">{{ corporate_membership.status_detail|capfirst }}</span>{% endif %}</small> </h1>
         </div>
+		{% if request.user.is_authenticated %}
         {% with corporate_membership as corp_membership %}
         <div class="pull-right">
         {% include "corporate_memberships/action_options.html" %}
         </div>
         {% endwith %}
+		{% endif %}
 
 		{% include "corporate_memberships/directory_link.html" %}
 

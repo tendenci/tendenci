@@ -24,9 +24,13 @@ from django.db.models.fields import AutoField
 from django.db.models import ForeignKey, OneToOneField
 from django.urls import reverse
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.files.base import ContentFile
+from django.template import Context, Template
+from django.template.loader import get_template
 
+from tendenci.apps.theme.shortcuts import _strip_content_above_doctype
+from tendenci.apps.newsletters.utils import get_newsletter_connection, is_newsletter_relay_set
 from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import has_perm
@@ -42,7 +46,69 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.apps.emails.models import Email
 from tendenci.apps.educations.models import Education
-from tendenci.apps.base.utils import escape_csv
+from tendenci.apps.base.utils import escape_csv, Echo
+
+
+def get_membership_field_values(membership, app_fields):
+    """
+    Get a list of membership field values corresponding to the app_fields.
+    """
+    data = []
+    user = membership.user
+    if hasattr(user, 'profile'):
+        profile = user.profile
+    else:
+        profile = None
+    if hasattr(membership, 'demographics'):
+        ud = membership.demographics
+    else:
+        ud = None
+    
+    for field in app_fields:
+        field_name = field.field_name
+        value = ''
+        if hasattr(user, field_name):
+            value = getattr(user, field_name)
+        elif hasattr(profile, field_name):
+            value = getattr(profile, field_name)
+        elif hasattr(membership, field_name):
+            value = getattr(membership, field_name)
+        elif hasattr(ud, field_name):
+            value = getattr(ud, field_name)
+        data.append(value)
+    return data
+
+
+def iter_memberships(memberships, app_fields):
+    field_labels = [field.label for field in app_fields]
+    field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
+                    _('Expire Date'), _('Status Detail')]
+    
+    writer = csv.DictWriter(Echo(), fieldnames=field_labels)
+    # write headers - labels
+    yield writer.writerow(dict(zip(field_labels, field_labels)))
+
+    for membership in memberships:
+        values_list = get_membership_field_values(membership, app_fields)
+        if membership.create_dt:
+            values_list.append(membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        if membership.join_dt:
+            values_list.append(membership.join_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        if membership.renew_dt:
+            values_list.append(membership.renew_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        if membership.expire_dt:
+            values_list.append(membership.expire_dt.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+        values_list.append(membership.status_detail)
+
+        yield writer.writerow(dict(zip(field_labels, values_list)))
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -2077,5 +2143,89 @@ def email_pending_members(email, **kwargs):
     rendered = _strip_content_above_doctype(rendered)
     yield rendered
 
+
+def email_membership_members(email, memberships, **kwargs):
+    """
+    Email to membership members.
+    """
+    site_url = get_setting('site', 'global', 'siteurl')
+    site_display_name = get_setting('site', 'global', 'sitedisplayname')
+    tmp_body = email.body
     
+    # if possible, use the email backend set up for newsletters
+    if is_newsletter_relay_set():
+        connection = get_newsletter_connection()
+    else:
+        connection = None
+
+    request = kwargs.get('request')
+    total_sent = 0
+    subject = email.subject
+    
+    msg = '<div class="hide" id="m-streaming-content" style="margin: 2em 5em;text-align: left; line-height: 1.3em;">'
+    msg += '<h1>Processing ...</h1>'
+
+    for member in memberships:
+        first_name = member.user.first_name
+        last_name = member.user.last_name
+
+        email.recipient = member.user.email
+
+        if email.recipient:
+            view_url = '{0}{1}'.format(site_url, reverse('membership.details', args=[member.id]))
+            edit_url = '{0}{1}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
+            template = Template(email.body)
+            context = Context({'site_url': site_url,
+                               'site_display_name': site_display_name,
+                               "first_name": first_name,
+                               'last_name': last_name,
+                               'view_url': view_url,
+                               'edit_url': edit_url,})
+            email.body = template.render(context)
+            
+            # replace relative to absolute urls
+            email.body = email.body.replace("src=\"/", f"src=\"{site_url}/")
+            email.body = email.body.replace("href=\"/", f"href=\"{site_url}/")
+
+            email.send(connection)
+            total_sent += 1
+
+            msg += f'{total_sent}. Email sent to {first_name} {last_name} {email.recipient}<br />'
+
+            if total_sent % 10 == 0:
+                yield msg
+                msg = ''
+
+        email.body = tmp_body  # restore to the original
+
+    request.session['email_subject'] = email.subject
+    request.session['email_body'] = email.body
+
+    dest = _('Members')
+
+    opts = {}
+    opts['summary'] = '<font face=""Arial"" color=""#000000"">'
+    opts['summary'] += 'Emails sent to {0} ({1})</font><br><br>'.format(dest, total_sent)
+    opts['summary'] += '<font face=""Arial"" color=""#000000"">'
+    opts['summary'] += 'Email Sent Appears Below in Raw Format'
+    opts['summary'] += '</font><br><br>'
+    opts['summary'] += email.body
+
+    # send summary
+    email.subject = 'SUMMARY: %s' % email.subject
+    email.body = opts['summary']
+    email.recipient = request.user.email
+    email.send(connection)
+
+    msg += f'DONE!<br /><br />Successfully sent email "{subject}" to <strong>{total_sent}</strong> pending members.'
+    msg += '</div>'
+    yield msg
+    
+    template_name='memberships/message/email-members-conf.html'
+    template = get_template(template_name)
+    context={'total_sent': total_sent,
+             'memberships': memberships}
+    rendered = template.render(context=context, request=request)
+    rendered = _strip_content_above_doctype(rendered)
+    yield rendered
 

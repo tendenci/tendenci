@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.db.models.functions import Concat
 from django.db.models import Value
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.payments.models import Payment, PaymentMethod
 from tendenci.apps.theme.templatetags.static import static

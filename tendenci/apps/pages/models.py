@@ -2,7 +2,7 @@ import uuid
 
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 
 from tagging.fields import TagField
@@ -24,7 +24,8 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 class HeaderImage(File):
     class Meta:
         app_label = 'pages'
-        manager_inheritance_from_future = True
+        # removed in django 3.2
+        #manager_inheritance_from_future = True
 
 
 class BasePage(TendenciBaseModel):

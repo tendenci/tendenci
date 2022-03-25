@@ -38,10 +38,10 @@ from django.utils.functional import keep_lazy_text
 from django.utils.text import capfirst, Truncator
 from django.utils.encoding import smart_str
 from django.db import router
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.contrib.auth import get_permission_codename
 from django.utils.html import format_html, strip_tags
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.core.validators import EmailValidator
 
 from django.utils.functional import Promise
@@ -148,7 +148,7 @@ class LazyEncoder(DjangoJSONEncoder):
     """
     def default(self, obj):
         if isinstance(obj, Promise):
-            return force_text(obj)
+            return force_str(obj)
         return super(LazyEncoder, self).default(obj)
 
 
@@ -180,7 +180,7 @@ def get_deleted_objects(objs, user):
         opts = obj._meta
 
         no_edit_link = '%s: %s' % (capfirst(opts.verbose_name),
-                                   force_text(obj))
+                                   force_str(obj))
 
         p = '%s.%s' % (opts.app_label,
                            get_permission_codename('delete', opts))
@@ -384,7 +384,7 @@ def generate_meta_keywords(value):
         from operator import itemgetter
 
         from django.utils.text import unescape_entities
-        from django.utils.translation import ugettext_lazy as _
+        from django.utils.translation import gettext_lazy as _
 
         # translate the stop words
         TR_STOP_WORDS = _(' '.join(STOP_WORDS))
@@ -739,7 +739,7 @@ entities_re = re.compile(r'&(?:\w+|#\d+);')
 def strip_entities(value):
     """Returns the given HTML with all entities (&something;) stripped."""
     # This was copied from Django 1.9 since it is removed in Django 1.10
-    return entities_re.sub('', force_text(value))
+    return entities_re.sub('', force_str(value))
 
 
 def strip_html(value):
@@ -1059,3 +1059,12 @@ def correct_filename(filename):
     root, ext = os.path.splitext(filename)
     root = (re.sub(r'[^a-zA-Z0-9]+', '-', root)).lower()
     return root + ext
+
+
+class Echo:
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value

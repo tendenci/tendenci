@@ -1,11 +1,10 @@
-from builtins import str
-from celery.task import Task
+import celery
 
 from tendenci.apps.locations.models import Location
 from tendenci.apps.locations.importer.utils import parse_locs_from_csv
 
 
-class ImportLocationsTask(Task):
+class ImportLocationsTask(celery.Task):
 
     def run(self, user, file_path, fields, **kwargs):
 

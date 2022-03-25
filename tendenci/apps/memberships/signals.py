@@ -1,5 +1,5 @@
 from django.db.models.signals import post_save, post_delete
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 from tendenci.apps.memberships.models import MembershipDefault, MembershipApp
 from tendenci.apps.contributions.signals import save_contribution
 from tendenci.apps.notifications import models as notification

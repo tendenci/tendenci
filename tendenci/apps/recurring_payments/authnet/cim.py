@@ -3,7 +3,7 @@ from urllib.request import urlopen, Request
 from xml.etree import ElementTree as ET
 
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.apps.recurring_payments.authnet.utils import to_camel_case
 
 BILL_TO_FIELDS = ('firstName', 'lastName', 'company', 'address', 'city', 'state', 'zip',

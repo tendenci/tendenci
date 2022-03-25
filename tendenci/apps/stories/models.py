@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from django.db import models
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 
@@ -23,7 +23,6 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 class StoryPhoto(File):
     class Meta:
         app_label = 'stories'
-        manager_inheritance_from_future = True
 
 
 class Story(OrderingBaseModel, TendenciBaseModel):

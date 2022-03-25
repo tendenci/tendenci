@@ -1,0 +1,194 @@
+{% extends "memberships/base-wide.html" %}
+{% load base_filters %}
+{% load bootstrap_pagination_tags %}
+{% load perm_tags %}
+{% load profile_tags %}
+{% load search_tags %}
+{% load membership_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{% trans "Members Search" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/profiles.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/search.css' %}" type="text/css">
+
+<style>
+div.ex1 {
+	max-height: 100vh;
+	overflow-y: auto;
+	/*position: sticky;*/
+	top: 0;
+}
+#members-search-form .control-label {
+	text-align: left!important;
+	width: 100%;
+	font-size: 1.1em;
+}
+h3{
+	border-bottom: 1px solid #ccc; padding: 10px 0;
+}
+#members-wrap{
+	overflow-x: auto;
+}
+.clearall, #export-btn{
+	margin-left: 8px;
+	white-space: nowrap;
+}
+#toggle-email-form{
+	border-top: 1px solid #ccc; 
+	margin-top: 2em;
+	padding-top: 10px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+        <h1>{% trans "Members Search" %}</h1>
+
+		<div class="row">
+			<div class="col-sm-3 ex1">
+				{% include "memberships/search-per-app-form.html" %}
+			</div>
+			<div class="col-sm-9">
+				<h3>{% trans "Members Applied" %} <a href="{{ app.get_absolute_url }}">{{ app.name }}</a>
+				</h3>
+				
+				{% autopaginate memberships 20 %}
+
+		        {% if memberships %}
+		            <span><em>{{ paginator.count }} Member{{ paginator.count|pluralize }} {% trans "Found" %}</em></span>
+		        {% else %}
+		            <p>{% trans "Sorry, we didn't find anything for your search."%}</p>
+		        {% endif %}
+
+				<form id="email-members-form" class="form-horizontal" action="." method="post">{% csrf_token %}
+
+				{% if paginator.count > 0  %}
+				<div id="members-wrap">
+				<table class="table table-striped table-bordered">
+					<tr>
+					<th><input type="checkbox" id="select_members_all" class="action-select"></th>
+					<th>View</th>
+					<th>Edit</th>
+					{% for app_field in app_fields %}
+						<th nowrap>{{ app_field.label }}</th>
+					{% endfor %}
+					<th nowrap>{% trans "Create Date" %}</th>
+					<th nowrap>{% trans "Join Date" %}</th>
+					<th nowrap>{% trans "Renew Date" %}</th>
+					<th nowrap>{% trans "Expire Date" %}</th>
+					<th nowrap>{% trans "Status Detail" %}</th>
+					</tr>
+			
+					{% for membership in memberships %}
+					<tr>
+						<td><input type="checkbox" name="selected_members" value="{{ membership.id }}" class="action-select"></td>
+						<td><a href="{% url "membership.details" membership.id  %}"><img src="{% static 'images/icons/external_16x16.png' %}" alt="View membership: {{ membership }}"></a></td>
+						<td><a href="{% url "membership_default.edit" membership.id  %}">{% trans "Edit" %}</a></td>
+						{% render_member_row membership app_fields %}
+						<td nowrap>{{ membership.create_dt|date:"N j, Y" }}</td>
+						<td nowrap>{{ membership.join_dt|date:"N j, Y" }}</td>
+						<td nowrap>{% if membership.renew_dt %}{{ membership.renew_dt|date:"N j, Y" }}{% endif %}</td>
+						<td nowrap>{% if membership.expire_dt %}{{ membership.expire_dt|date:"N j, Y" }}{% endif %}</td>
+						<td nowrap>{{ membership.status_detail }}</td>
+					</tr>
+					{% endfor %}
+				</table>
+				</div>
+				<i>{% trans "** Scroll left to view more columns" %}</i>
+				{% endif %}
+
+		
+		        {% paginate %}
+
+				{# display email_form here #}
+				
+				{% if total_members > 0 and not search_form.errors.values %}
+				<div class="big" style="margin-top: 2em;">				
+					<a id="toggle-email-form"  data-toggle="collapse" href="#email-form" aria-expanded="false" aria-controls="email-form">
+					  <span id="show-w">Show</span><span id="hide-w" class="hide">Hide</span> Email Form
+					</a>
+				</div>
+				<div id="email-form" class="collapse">
+
+				<p class="well">
+				{% blocktrans %}Note: To send email to the <strong>selected</strong> members, 
+				please select the checkboxes next to each member, 
+				and click the button "Send Email to Selected Members". Otherwise, use the
+				other submit button.
+				{% endblocktrans %}
+				<p>
+
+		        {{ email_form|styled_form }}
+		
+		        <div class="form-group">
+					<div class="col-sm-offset-3 col-sm-9">
+		            <em><strong><font color="red">{% trans "This message will be sent IMMEDIATELY. DO NOT HIT REFRESH!" %}</font></strong></em>.
+					</div>
+		        </div>
+		
+				<div class="form-group">
+		            <div class="col-sm-offset-3 col-sm-9">
+						<button type="submit" name="email_members_selected" class="btn btn-primary text-capitalize">
+                         {% trans 'Send Email to Selected Members' %}
+		                </button>
+						&nbsp;&nbsp;&nbsp;
+		                <button type="submit" name="email_members" class="btn btn-default text-capitalize">
+                         {% blocktrans with m_ps=total_members|pluralize %}Send Email to total {{ total_members }} member{{ m_ps }}{% endblocktrans %}
+		                </button>
+		            </div>
+		        </div>
+
+					<div class="hide">
+					{{ search_form|styled_form }}
+					</div>
+				 
+				</div>
+				{% endif %}
+
+				</form>
+			</div>
+		</div>
+
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{{ email_form.media }}
+<script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript">
+	$(".clearall").on("click", function(event) {
+		event.preventDefault();
+	    $("#members-search-form")[0].reset();
+		$("#members-search-form input[type='text']").val('');
+		$("#members-search-form input[type='checkbox']:checked").prop('checked', false);
+		$("#members-search-form select option:selected").prop('selected', false);
+	});
+</script>
+{% if total_members > 0 and not search_form.errors.values %}
+<script>
+    (function($) {
+        $(document).ready(function() {
+            $('#toggle-email-form').click(function () {
+				$('#show-w').toggleClass('hide');
+				$('#hide-w').toggleClass('hide');
+
+            });
+
+			$('#select_members_all').change(function() {
+			  	var checkboxes = $(this).closest('#members-wrap').find(':checkbox');
+			  	checkboxes.prop('checked', $(this).is(':checked'));
+			});
+        });
+    }(jQuery));
+</script>
+{% endif %}
+{% endblock %}

@@ -14,7 +14,8 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.core.files.storage import default_storage
-from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 # from djcelery.models import TaskMeta
 
 from tendenci.apps.perms.decorators import is_enabled
@@ -254,8 +255,10 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
 
     if request.method == "POST":
         messages.add_message(request, messages.SUCCESS, _('Successfully deleted entry %(e)s' % { 'e': entry}))
+        # hold the form here as the value of entry will be None after entry is deleted
+        form = entry.form
         entry.delete()
-        return HttpResponseRedirect(reverse('forms'))
+        return HttpResponseRedirect(reverse('form_entries', args=[form.id]))
 
     return render_to_resp(request=request, template_name=template_name,
         context={'entry': entry})
@@ -276,8 +279,8 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
 
     return render_to_resp(request=request, template_name=template_name,
         context={'entry':entry,
-                                              'form': entry.form,
-                                              'form_template': form_template})
+                 'form': entry.form,
+                 'form_template': form_template})
 
 
 @is_enabled('forms')

@@ -1,10 +1,11 @@
 import datetime
 import re
+import chardet
 
 from django import forms
 from django.contrib import auth
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.forms.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
 from django.db.models import Q
@@ -50,6 +51,7 @@ class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
                         ('phone', _('Phone')),
                         ('city', _('City')),
                         ('region', _('Region')),
+                        ('county', _('County')),
                         ('state', _('State')),
                         ('zipcode', _('Zip Code')),
                         ('country', _('Country')),
@@ -878,7 +880,11 @@ class UserUploadForm(forms.ModelForm):
         if not key:
             raise forms.ValidationError(_('Please specify the key to identify duplicates'))
 
-        file_content = upload_file.read().decode('utf-8') # decode from bytes to string
+        file_content = upload_file.read()
+        # decode from bytes to string
+        encoding = chardet.detect(file_content)["encoding"]
+        if encoding:
+            file_content = file_content.decode(encoding)
         upload_file.seek(0)
         header_line_index = file_content.find('\n')
         header_list = ((file_content[:header_line_index]

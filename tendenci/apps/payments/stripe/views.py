@@ -11,7 +11,7 @@ from django.urls import reverse
 # from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 from django.shortcuts import render
 from django.views.generic import TemplateView
@@ -20,7 +20,7 @@ from django.shortcuts import Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.middleware.csrf import _compare_salted_tokens
+from django.middleware.csrf import _compare_masked_tokens
 import requests
 import stripe
 
@@ -135,7 +135,7 @@ class FetchAccessToken(View):
         if not code:
             raise Http404
         # if csrf_token doesn't match, raise 403
-        if not _compare_salted_tokens(state, csrf_token):
+        if not _compare_masked_tokens(state, csrf_token):
             raise Http403
 
         # fetch access token

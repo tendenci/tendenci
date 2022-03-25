@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.template import Library, TemplateSyntaxError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.news.models import News

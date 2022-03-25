@@ -17,7 +17,7 @@ from django.core.cache import cache
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.files.storage import default_storage
 from django.dispatch import receiver
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tagging.fields import TagField
 from tendenci.libs.boto_s3.utils import set_s3_file_permission

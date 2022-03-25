@@ -9,7 +9,7 @@ from io import BytesIO
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.files.storage import default_storage
 from django.core.files import File
 from django.conf import settings
@@ -561,6 +561,9 @@ class Profile(Person):
             else:
                 default = '%s%s'%(site_url,
                                 static(settings.GAVATAR_DEFAULT_URL))
+
+        if get_setting('module', 'users', 'disablegravatar'):
+            return default or static(settings.GAVATAR_DEFAULT_URL)
 
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
         gravatar_url += urlencode({'d':default, 's':str(size)})

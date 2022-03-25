@@ -24,14 +24,15 @@ class TestKBDisabled(TestCase):
     def test_navigation(self):
         """Test proper rendering of navigation.html by accessing the dashboard"""
 
-        self.client.login(username=get_staff_user().get_username(), password='password')
-        self.assertRaises(NoReverseMatch, reverse, 'helpdesk_kb_index')
-        try:
-            response = self.client.get(reverse('helpdesk_dashboard'))
-        except NoReverseMatch as e:
-            if 'helpdesk_kb_index' in e.message:
-                self.fail("Please verify any unchecked references to helpdesk_kb_index (start with navigation.html)")
+        if not self.HELPDESK_KB_ENABLED:
+            self.client.login(username=get_staff_user().get_username(), password='password')
+            self.assertRaises(NoReverseMatch, reverse, 'helpdesk_kb_index')
+            try:
+                response = self.client.get(reverse('helpdesk_dashboard'))
+            except NoReverseMatch as e:
+                if 'helpdesk_kb_index' in e.message:
+                    self.fail("Please verify any unchecked references to helpdesk_kb_index (start with navigation.html)")
+                else:
+                    raise
             else:
-                raise
-        else:
-            self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.status_code, 200)

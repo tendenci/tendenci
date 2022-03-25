@@ -24,10 +24,10 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.dates import MONTHS_3
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils.html import escape
 from django import forms
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 import simplejson
 
 try:
@@ -402,7 +402,7 @@ def update_ticket(request, ticket_id, public=False):
     #get_template_from_string = engines['django'].from_string
     #comment = get_template_from_string(comment).render(context=context)
 
-    if owner is -1 and ticket.assigned_to:
+    if owner == -1 and ticket.assigned_to:
         owner = ticket.assigned_to.id
 
     f = FollowUp(ticket=ticket, date=timezone.now(), comment=comment)
@@ -414,7 +414,7 @@ def update_ticket(request, ticket_id, public=False):
 
     reassigned = False
 
-    if owner is not -1:
+    if owner != -1:
         if owner != 0 and ((ticket.assigned_to and owner != ticket.assigned_to.id) or not ticket.assigned_to):
             new_user = User.objects.get(id=owner)
             f.title = _('Assigned to %(username)s') % {
@@ -448,7 +448,7 @@ def update_ticket(request, ticket_id, public=False):
     if request.FILES:
         import mimetypes
         for file in request.FILES.getlist('attachment'):
-            filename = smart_text(file.name)
+            filename = smart_str(file.name)
             a = Attachment(
                 followup=f,
                 filename=filename,

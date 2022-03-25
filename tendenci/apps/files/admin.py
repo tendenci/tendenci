@@ -1,8 +1,8 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 from django.contrib import admin, messages
 from django.urls import reverse
 from django.shortcuts import redirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
@@ -96,7 +96,7 @@ class MultipleFileAdmin(admin.ModelAdmin):
         """
         urls = super(MultipleFileAdmin, self).get_urls()
         extra_urls = [
-            url("^add",
+            re_path("^add",
                 self.admin_site.admin_view(self.add_multiple_file_view),
                 name="multiplefile_add"),
         ]

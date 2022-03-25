@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.base.fields import DictField

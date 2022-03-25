@@ -4,7 +4,7 @@ import os.path
 import warnings
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.six import string_types
+
 from tendenci.apps.theme.templatetags.static import static
 
 PYBB_TOPIC_PAGE_SIZE = getattr(settings, 'PYBB_TOPIC_PAGE_SIZE', 10)
@@ -63,7 +63,7 @@ def getsetting_with_deprecation_check(all_settings, setting_name):
     setting_value = getattr(all_settings, setting_name)
     values = setting_value if type(setting_value) is not dict else setting_value.values()
     for value in values:
-        if isinstance(value, string_types):
+        if isinstance(value, str):
             continue
         warnings.warn(
             callable_warning % {'setting_name': setting_name, },

@@ -1,0 +1,111 @@
+{% extends "newsletters/base.html" %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}
+{{ block.super }}{% trans 'Tendenci Newsletter Generator - Edit Schedule'%}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}">
+<style>
+#id_schedule_type, #id_schedule_send_dt_0, #id_schedule_send_dt_1{
+	width: 200px;
+}
+#id_repeats{
+	width: 100px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div id="t-newsletters">
+    <div class="page-header">
+      <h1>{% trans 'Edit Newsletter Schedule' %}</h1>
+    </div>
+
+      <div class="form-inline">
+        <p>
+          <label>{% trans 'Campaign Name' %}:</label>&nbsp;&nbsp;{{ newsletter.actionname }}
+        </p>
+      </div>
+
+	{% if form.errors.values %}
+	<div class="alert alert-danger" role="alert">
+	<p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>
+	     <ul>
+	    {% if form.non_field_errors %}
+	        {% for error in form.non_field_errors %}
+	        <li>{{error}}</li>
+	        {% endfor %}
+	    {% endif %}
+		{% for field in form %}
+	        {% if field.errors %}
+	              {% for error in field.errors %}
+	                  <li><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{{ error }}</a></li>
+	              {% endfor %}
+	        {% endif %}
+	    {% endfor %}
+		</ul>
+	 </div>
+	{% endif %}
+
+  <p>
+	<strong>{% trans 'Newsletter Recipients: ' %}</strong>
+	{% if object.member_only %}
+	{% trans 'ALL members' %}
+	{% elif object.group %}
+	{% trans 'Usergroup ' %} <a href="{% url 'group.detail' object.group.slug %}">{{ object.group }}</a>
+	{% endif %}
+	({% trans 'total:' %} {{ object.get_recipients.count }})
+  </p>
+
+    <form action="" method="POST">{% csrf_token %}
+	{{ form|styled_form }}
+
+      <div class='step-section cf'>
+
+        <div class="step-contents">
+	      <a href="{% url 'newsletter.detail.view' object.pk %}">{% trans 'Cancel' %}</a>
+          <input class="btn btn-primary btn-lg pull-right" type="submit" value="{% trans 'Save' %}" />
+
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
+
+{% if schedule_enabled %}
+<script>
+    (function($) {
+		function toggle_schedule_fields(this_chk){
+			if($(this_chk).is(":checked")){
+	            $('#schedule-fields').show();
+	        }else{
+				$('#schedule-fields').hide();
+			}	
+		}
+        $(document).ready(function() {
+			toggle_schedule_fields($('#id_schedule_send'));
+            $('#id_schedule_send').click(function () {
+				toggle_schedule_fields(this);
+            });
+
+			// date and time pickers
+			$('#id_schedule_send_dt_0').datepicker({ dateFormat: 'yy-mm-dd', minDate: 0 });
+            $('#id_schedule_send_dt_1').timepicker({'timeFormat': 'h:i A'});
+        });
+    }(jQuery));
+</script>
+{% endif %}
+
+{% endblock %}

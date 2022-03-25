@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 import hashlib
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from . import defaults, util
 from .compat import get_image_field_class
 from tendenci.apps.site_settings.utils import get_setting

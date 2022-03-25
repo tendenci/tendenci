@@ -1,0 +1,31 @@
+{% extends "chapters/base.html" %}
+
+{% block content %}
+
+<div class="t-message-pending">
+    <h1>{% trans "Email to Chapter Members Confirmation" %}</h1>
+	<div>{% trans "Total sent:" %} {{ total_sent }}</div>
+	<div>&nbsp;</div>
+	
+	<ol>
+    {% for chapter_membership in chapter_memberships %}
+	<li>
+		<a href="{{ chapter_membership.get_absolute_url }}">{{ chapter_membership.user.get_full_name }} ({{ chapter_membership.user.username }})</a> - {{ chapter_membership.chapter.title }}
+	</li>
+	{% endfor %}
+	</ol>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    
+<script type="text/javascript">  
+    (function($) {
+        $('#m-streaming-content').remove();
+     })(jQuery);
+ </script>
+
+{% endblock %}
+
+

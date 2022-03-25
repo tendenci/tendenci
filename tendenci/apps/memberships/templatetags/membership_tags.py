@@ -1,8 +1,16 @@
 from django.template import Library
 
+from tendenci.apps.memberships.utils import get_membership_field_values
 
 register = Library()
 
+
+@register.inclusion_tag('memberships/search-per-app-member-line.html')
+def render_member_row(membership, app_fields):
+    field_values_list = get_membership_field_values(membership, app_fields)
+
+    return {'membership': membership,
+            'field_values_list': field_values_list}
 
 @register.inclusion_tag("memberships/options.html", takes_context=True)
 def membership_options(context, user, membership):

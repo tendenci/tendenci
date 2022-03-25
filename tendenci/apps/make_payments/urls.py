@@ -1,9 +1,9 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 from . import views
 
 
 urlpatterns = [
-    url(r'^$', views.add, name="make_payment.add"),
-    url(r'^conf/(?P<id>\d+)/$', views.add_confirm, name="make_payment.add_confirm"),
-    url(r'^(?P<id>\d+)/$', views.view, name="make_payment.view"),
+    re_path(r'^$', views.add, name="make_payment.add"),
+    re_path(r'^conf/(?P<id>\d+)/$', views.add_confirm, name="make_payment.add_confirm"),
+    re_path(r'^(?P<id>\d+)/$', views.view, name="make_payment.view"),
 ]

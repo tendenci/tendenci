@@ -1,5 +1,5 @@
 from django.db.models.signals import post_save
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.articles.models import Article

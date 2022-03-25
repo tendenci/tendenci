@@ -19,14 +19,14 @@
     min-height: 400px;
 }
 
-.change-list .filtered {
+/*.change-list .filtered {
     background: white url(../img/admin/changelist-bg.gif) top right repeat-y !important;
-}
+}*/
 
-.change-list .filtered table, .change-list .filtered .paginator, .filtered #toolbar, .filtered div.xfull {
+/*.change-list .filtered table, .change-list .filtered .paginator, .filtered #toolbar, .filtered div.xfull {
     margin-right: 160px !important;
     width: auto !important;
-}
+}*/
 
 .change-list .filtered table tbody th {
     padding-right: 1em;

@@ -2,7 +2,7 @@ import uuid
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -166,6 +166,7 @@ class Payment(models.Model):
             # hard coded here - same as in T4
             self.method = 'cc'
             self.status = True
+            self.check_number = ''
 
             # default description
             self.description = 'Tendenci Invoice %d Payment (%d).' % (

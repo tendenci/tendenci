@@ -2,7 +2,7 @@ from builtins import str
 from django.core.exceptions import ValidationError
 from django.db import models
 import simplejson
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 # from south.modelsinspector import add_introspection_rules
 #
 # # introspection rules for south migration for the JSONField
@@ -29,7 +29,7 @@ class JSONField(models.TextField):
         else:
             return value
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         return self.to_python(value)
 
     def validate(self, value, model_instance):
@@ -50,4 +50,4 @@ class JSONField(models.TextField):
 
     def value_to_string(self, obj):
         """Return value from object converted to string properly"""
-        return smart_text(self.get_prep_value(self.value_from_obj(obj)))
+        return smart_str(self.get_prep_value(self.value_from_obj(obj)))

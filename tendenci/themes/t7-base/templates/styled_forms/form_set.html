@@ -2,7 +2,7 @@
 {% load styled_forms %}
 
 
-{% if form_set.errors %}
+{% if form_set.errors.values %}
     <div class="alert alert-danger" role="alert">
         <p>{% trans "There were some problems in the formset. Please review. Thanks!" %}</p>
 
@@ -11,6 +11,8 @@
         {% endfor %}
     </div>
 {% endif %}
+
+{{ form_set.management_form }}
 
 {% for form in form_set.forms %}
     <fieldset>

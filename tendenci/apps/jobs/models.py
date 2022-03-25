@@ -5,7 +5,7 @@ from django.db import models
 from django.urls import reverse
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import AnonymousUser
@@ -20,6 +20,8 @@ from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.jobs.module_meta import JobMeta
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.files.models import File
+from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
 class Category(models.Model):
@@ -49,6 +51,7 @@ class BaseJob(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=250)
     slug = SlugField(_('URL Path'), unique=True)
+    header_image = models.ForeignKey(File, null=True, on_delete=models.SET_NULL)
     description = tinymce_models.HTMLField()
     list_type = models.CharField(max_length=50)  # premium or regular
 

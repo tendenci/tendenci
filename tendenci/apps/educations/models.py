@@ -7,7 +7,7 @@ from datetime import datetime
 
 from django.db import models
 #from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import User
 
@@ -48,6 +48,7 @@ class Education(TendenciBaseModel):
 #         permissions = (("view_education", _("Can view education")),)
         verbose_name = _("Education")
         verbose_name_plural = _("Educations")
+        ordering = ('-graduation_dt', '-graduation_year',)
 
     def __str__(self):
         return '%s - %s' %  (self.school, self.user)

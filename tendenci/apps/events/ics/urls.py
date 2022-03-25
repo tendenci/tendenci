@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
-    url(r'^(?P<ics_id>\d+)/$', views.status, name="ics.status"),
-    url(r'^(?P<ics_id>\d+)/download/$', views.download, name="ics.download"),
+    re_path(r'^(?P<ics_id>\d+)/$', views.status, name="ics.status"),
+    re_path(r'^(?P<ics_id>\d+)/download/$', views.download, name="ics.download"),
 ]

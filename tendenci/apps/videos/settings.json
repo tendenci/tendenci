@@ -17,6 +17,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "",
+        "description": "A list of email addresses that receive admin notices from Videos module on the site. Comma delimited.",
+        "data_type": "string",
+        "update_dt": "2021-12-28 14:00:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "videorecipients",
+        "value": "",
+        "label": "Video admin notice recipients",
+        "input_value": "",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "videos",
+        "store": true,
+        "updated_by": ""
+    },
+    {
         "default_value": "Video",
         "description": "The singular name of the plugin.",
         "data_type": "string",

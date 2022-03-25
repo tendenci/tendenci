@@ -207,3 +207,28 @@ def get_theme_search_order(theme=None):
         cache.set(cache_key, search_order)
 
     return search_order
+
+
+def get_template_content_raw(template_relative_path):
+    """
+    Get the raw (not rendered) content from a template.
+    
+    Example: get_template_content_raw('chapters/memberships/message/email-chapter-members-body.txt')
+    """
+    raw_content = ''
+    for theme in get_theme_search_order():
+        if is_builtin_theme(theme):
+            theme_root = get_theme_root(theme)
+        else:
+            theme_root = get_theme_root()
+        file_path = os.path.join(theme_root, 'templates', template_relative_path)
+        
+        if os.path.isfile(file_path):
+            with open(file_path) as fp:
+                raw_content = fp.read()
+            break
+
+    return raw_content
+    
+    
+    

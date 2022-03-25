@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import path, re_path, include
 
 from .api import SafeApi
 from .settings.resources import SettingResource
@@ -32,5 +32,5 @@ api.register(TypeResource())
 api.register(PlaceResource())
 
 urlpatterns = [
-    url(r'^', include(api.urls)),
+    re_path(r'^', include(api.urls)),
 ]

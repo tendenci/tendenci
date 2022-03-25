@@ -2,6 +2,7 @@ from django.template import Library, TemplateSyntaxError
 
 from tendenci.apps.chapters.models import Chapter
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.chapters.utils import get_chapter_membership_field_values
 
 register = Library()
 
@@ -83,3 +84,28 @@ def chapter_officer_formset(context, formset):
         'formset': formset
     })
     return context
+
+
+@register.inclusion_tag("memberships/applications/render_membership_field.html")
+def render_chapter_membership_field(request, field_obj,
+                            chapter_membership_form):
+    field_pwd = None
+    if field_obj.field_type == "section_break":
+        field = None
+    else:
+        field_name = field_obj.field_name
+        if field_name in chapter_membership_form.fields:
+            field = chapter_membership_form[field_name]
+        else:
+            field = None
+
+    return {'request': request, 'field_obj': field_obj,
+            'field': field, 'field_pwd': field_pwd}
+
+
+@register.inclusion_tag('chapters/memberships/search-member-line.html')
+def render_chapter_member_row(chapter_membership, app_fields):
+    field_values_list = get_chapter_membership_field_values(chapter_membership, app_fields)
+
+    return {'chapter_membership': chapter_membership,
+            'field_values_list': field_values_list}

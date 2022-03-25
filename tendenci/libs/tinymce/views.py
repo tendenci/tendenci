@@ -6,7 +6,7 @@ import logging
 from django.http import HttpResponse
 from django.template import loader
 #from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.tinymce.compressor import gzip_compressor

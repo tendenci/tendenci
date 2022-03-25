@@ -1,17 +1,11 @@
 from datetime import datetime
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.apps.payments.models import Payment, PaymentMethod
-
-PAYMENT_METHODS = PaymentMethod.objects.filter().values_list(
-    'machine_name', 'human_name').exclude()
 
 
 class MarkAsPaidForm(forms.ModelForm):
-
-    payment_method = forms.CharField(
-        max_length=20,
-        widget=forms.Select(choices=PAYMENT_METHODS))
+    payment_method = forms.CharField(max_length=20)
 
     submit_dt = forms.SplitDateTimeField(
         label=_('Submit Date and Time'),
@@ -25,6 +19,12 @@ class MarkAsPaidForm(forms.ModelForm):
             'check_number',
             'submit_dt',
         )
+
+    def __init__(self, *args, **kwargs):
+        super(MarkAsPaidForm, self).__init__(*args, **kwargs)
+        self.fields['payment_method'].widget = forms.Select(
+            choices=PaymentMethod.objects.filter().values_list(
+                    'machine_name', 'human_name').exclude())
 
     def save(self, user, invoice, *args, **kwargs):
         """

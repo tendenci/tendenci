@@ -1,4 +1,4 @@
-from embedly import Embedly
+from .embedly_client import Embedly
 from tendenci.apps.site_settings.utils import get_setting
 
 ASPECT_RATIO = 1.78

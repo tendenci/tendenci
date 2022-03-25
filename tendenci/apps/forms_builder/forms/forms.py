@@ -6,7 +6,7 @@ import re
 
 from django import forms
 from importlib import import_module
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
@@ -59,7 +59,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
         def add_fields(form, form_fields):
             for field in form_fields:
-                field_key = "field_%s" % field.id
+                field_key = self.field_key(field)
                 if "/" in field.field_type:
                     field_class, field_widget = field.field_type.split("/")
                 else:
@@ -183,11 +183,17 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             add_fields(self, self.form_fields)
             add_pricing_fields(self, self.form)
 
-        if get_setting('site', 'global', 'captcha'): # add captcha if not logged in
+        if get_setting('site', 'global', 'captcha') and not user.is_authenticated: # add captcha if not logged in
             self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
 
         self.add_form_control_class()
 
+    def field_key(self, field, is_global=False):
+        key = "field_%s" % field.id
+        if is_global:
+            key = self.form.slug + "." + key
+        return key
+     
     def clean_pricing_option(self):
         pricing_pk = int(self.cleaned_data['pricing_option'])
         [pricing_option] = self.form.pricing_set.filter(pk=pricing_pk)[:1] or [None]
@@ -218,7 +224,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         entry.entry_time = datetime.now()
         entry.save()
         for field in self.form_fields:
-            field_key = "field_%s" % field.id
+            field_key = self.field_key(field)
             value = self.cleaned_data[field_key]
             if value and self.fields[field_key].widget.needs_multipart_form:
                 value = default_storage.save(join("forms", str(uuid4()), value.name), value)
@@ -258,6 +264,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             field_class = field.field_type.split("/")[0]
             if field_class == "EmailVerificationField":
                 return self.cleaned_data["field_%s" % field.id]
+            
+        user_email = getattr(self.user, "email", "").strip() 
+        if validate_email(user_email):
+            return user_email
+        
         return None
 
 

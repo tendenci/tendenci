@@ -5,7 +5,7 @@ from django.template import TemplateSyntaxError, VariableDoesNotExist
 from django.template import Library, Variable
 from django.template.loader_tags import do_extends, do_include, IncludeNode
 from django.contrib.auth.models import AnonymousUser, User
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.boxes.models import Box
 from tendenci.apps.perms.utils import get_query_filters

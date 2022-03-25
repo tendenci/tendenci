@@ -1,6 +1,6 @@
 import os
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import filesizeformat
 
@@ -12,7 +12,7 @@ from tendenci.apps.perms.fields import GroupPermissionField, UserPermissionField
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.perms.utils import update_perms_and_save, get_query_filters, get_groups_query_filters
 from tendenci.apps.user_groups.models import Group
-from form_utils.forms import BetterForm
+from tendenci.libs.form_utils.forms import BetterForm
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.site_settings.utils import get_setting
 

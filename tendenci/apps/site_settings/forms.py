@@ -7,10 +7,10 @@ from django.conf import settings as django_settings
 from django.core.files import File
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.utils.encoding import force_text, DjangoUnicodeDecodeError
+from django.utils.encoding import force_str, DjangoUnicodeDecodeError
 from django_countries import countries as COUNTRIES
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.base.utils import (get_timezone_choices, checklist_update,
     get_languages_with_local_name)
@@ -114,7 +114,7 @@ def build_settings_form(user, settings):
             continue
 
         try:
-            setting_value = force_text(setting.get_value())
+            setting_value = force_str(setting.get_value())
         except DjangoUnicodeDecodeError:
             setting_value = ''
 

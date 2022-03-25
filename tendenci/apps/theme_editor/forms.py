@@ -7,7 +7,7 @@ from urllib.request import urlopen
 from django import forms
 from django.core.files import File
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.cache import cache
 
 # local

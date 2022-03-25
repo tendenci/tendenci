@@ -50,7 +50,7 @@
                         {{ field }}
                     {% else %}
                         <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classes }}{% endif %}">
-                            <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{{ field.label }}{% if field.name == 'linkedin' or field.name == 'facebook' or field.name == 'twitter' or field.name == 'instagram' or field.name == 'youtube' %} <span class="fa fa-{{ field.name }}"></span>{% endif %}</label>
+                            <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required and field.name != 'captcha' %} required{% endif %}">{{ field.label }}{% if field.name == 'linkedin' or field.name == 'facebook' or field.name == 'twitter' or field.name == 'instagram' or field.name == 'youtube' %} <span class="fa fa-{{ field.name }}"></span>{% endif %}</label>
 
                             <div class="col-sm-9">
                                 {% if field|is_checkbox %}
@@ -103,7 +103,7 @@
             <p class="section-description">{{ field.label }}</p>
         {% else %}
             <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classses }}{% endif %}">
-                <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{{ field.label }}</label>
+                <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required and field.name != 'captcha' %} required{% endif %}">{{ field.label }}</label>
 
                 <div class="col-sm-9">
                     {% if field|is_checkbox %}

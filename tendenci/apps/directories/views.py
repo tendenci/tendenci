@@ -15,7 +15,7 @@ from django.template.defaultfilters import slugify
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
