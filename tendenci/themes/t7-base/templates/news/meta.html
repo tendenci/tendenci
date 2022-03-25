@@ -1,6 +1,9 @@
 {% load base_filters %}
 {% load base_tags %}
+{% load perm_tags %}
 
+{% has_perm user news.change_news as can_edit %}
+{% has_perm user news.delete_news as can_delete %}
 
 <ul class="list-unstyled t-meta-data">
     {% if news.slug %}<li class="pull-right"><a href="{% url 'news.print_view' news.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
@@ -89,7 +92,7 @@
 
 </ul>
 
-{% if user.profile.is_superuser %}
+{% if user.profile.is_superuser or can_edit or can_delete %}
     <nav class="navbar navbar-default t-meta-editor-bar">
         <div class="container-fluid">
             <div class="collapse navbar-collapse">
@@ -105,19 +108,32 @@
                         {% endspaceless %}</a>
 
                         <ul class="dropdown-menu" role="menu">
-                           <li><a class="edit-link" href="{% url 'news.edit' news.pk %}">{% trans "Edit" %}</a></li>
-                           <li><a class="eventlog-link" href="{% url 'event_log.search' %}?object_id={{ news.pk }}&source={{ news.opt_app_label }}">{% trans "Eventlogs" %}</a></li> 
+                           {% if user.profile.is_superuser or can_edit %}
+                           <li>
+                               <a class="edit-link" href="{% url 'news.edit' news.pk %}">{% trans "Edit" %}</a>
+                           </li>
+                           {% endif %}
 
+                           {% if user.profile.is_superuser %}
+                           <li>
+                               <a class="eventlog-link" href="{% url 'event_log.search' %}?object_id={{ news.pk }}&source={{ news.opt_app_label }}">{% trans "Eventlogs" %}</a>
+                           </li>
+                           {% endif %}
+
+                           {% if user.profile.is_superuser or can_edit %}
                             <li>
                                 <a href="{% url 'news.edit.meta' news.pk %}">{% trans "Edit Meta" %}</a>
                             </li>
-
                             <li>
                                 <a href="{% url 'category.update' news.opt_app_label news.opt_module_name news.pk %}">{% trans "Edit Categories" %}</a>
                             </li>
+                           {% endif %}
+
+                           {% if user.profile.is_superuser or can_delete %}
                             <li>
                                 <a class="delete" href="{% url 'news.delete' news.pk %}">{% trans "Delete" %}</a>
                             </li>
+                           {% endif %}
                         </ul>
                     </li>
                 </ul>
