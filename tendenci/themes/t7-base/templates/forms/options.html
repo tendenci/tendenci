@@ -27,6 +27,7 @@
                           <li><a class="edit-link" href="{% url "form_edit" opt_object.pk %}">{% trans "Edit" %}</a></li>
 						 {% endif %}
 					      <li><a href="{% url 'form_entries' opt_object.pk %}">{% trans "Entries" %}</a></li>
+					      <li><a href="{% url 'form_memories' opt_object.pk %}">{% trans "Memories" %}</a></li>
 					      <li><a href="{% url "admin:forms_form_export" opt_object.pk %}">{% trans "Export Entries" %}</a></li>
 					      {% if can_add %}
 					      <li><a href="{% url 'form_copy' opt_object.pk %}">{% trans "Copy" %}</a></li>

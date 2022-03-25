@@ -12,10 +12,13 @@ if not urlpath:
 urlpatterns = [
     re_path(r"^%s/$" % urlpath, views.search, name="forms"),
     re_path(r"^%s/entries/export/(?P<id>\d+)/full$" % urlpath, views.entries_export,
-            {'include_files': True,}, name="form_entries_export_full"),
+            {'include_files': True, }, name="form_entries_export_full"),
     re_path(r'^%s/entries/export/(?P<task_id>[-\w]+)/status/$' % urlpath, views.entries_export_status, name="form_entries_export_status"),
     re_path(r'^%s/entries/export/(?P<task_id>[-\w]+)/check/$' % urlpath, views.entries_export_check, name="form_entries_export_check"),
     re_path(r'^%s/entries/export/(?P<task_id>[-\w]+)/download/$' % urlpath, views.entries_export_download, name="form_entries_export_download"),
+
+    # Form memory management
+    re_path(r"^%s/memories/(?P<id>\d+)$" % urlpath, views.memories, name="form_memories"),
 
     re_path(r"^%s/entries/delete/(?P<id>\d+)$" % urlpath, views.entry_delete, name="form_entry_delete"),
     re_path(r"^%s/add/$" % urlpath, views.add, name="form_add"),

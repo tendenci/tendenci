@@ -1,0 +1,51 @@
+{% extends "forms/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load forms_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Memories' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/forms-builder.css' %}">
+{% endblock %}
+
+{% block content %}
+{% has_perm user forms.change_formentry as can_edit %}
+{% has_perm user forms.delete_formentry as can_delete %}
+
+<div id="form-memories">
+  <div class="page-header">
+    <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %} {% trans 'Memories' %}</h1>
+    <h2>{{ form.title }}</h2>
+    <p>{{ memories | length }} memories in total.</p>
+  </div>
+  
+{% autopaginate memories 10 %}
+  
+ {% for memory in memories %}
+	  <div class="panel panel-default">  
+	    <div class="panel-body">
+	      <ul class="list-inline">
+	        
+	        <li class="pull-left">
+	{#        Consider linking to the last form entry detail that matches  #}
+	{#          <a href="{{ entry.get_absolute_url }}">#}
+	          	{% for field, value in memory.items %}
+	            	<b>{{ field }}</b>: {{ value }}<br>
+	          	{% endfor %}
+	{#          </a>#}
+	        </li>
+	      </ul>
+	    </div>
+	  </div>
+  {% endfor %}
+</div>
+
+{% paginate %}
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{% endblock %}
