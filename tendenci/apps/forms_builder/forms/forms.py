@@ -257,7 +257,10 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             field_entry.save()
 
             if field.remember and self.session:
-                self.session[gfield_key] = value
+                if not isinstance(value, str):
+                    self.session[gfield_key] = value.__str__()
+                else:
+                    self.session[gfield_key] = value
 
         for field in self.auto_fields:
             value = field.choices
