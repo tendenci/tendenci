@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from builtins import str
-from django.utils.translation import ugettext_lazy
-from django.utils.encoding import force_text
+from django.utils.translation import gettext_lazy
+from django.utils.encoding import force_str
 
 
 true = 'true'
@@ -13,7 +13,7 @@ outside = 'outside'
 
 
 def _(s):
-    return force_text(ugettext_lazy(s))
+    return force_str(gettext_lazy(s))
 
 
 class CollectionObject(object):
@@ -48,7 +48,7 @@ class DictObject:
         data = {}
         for k, v in self.__dict__.items():
             if v != 'null':
-                if isinstance(v, (type(ugettext_lazy(' ')))):
+                if isinstance(v, (type(gettext_lazy(' ')))):
                     v = _(v)
                 if isinstance(v, (bool)):
                     v = str(v).lower()

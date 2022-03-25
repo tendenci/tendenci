@@ -20,6 +20,8 @@ from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.jobs.module_meta import JobMeta
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.files.models import File
+from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
 class Category(models.Model):
@@ -49,6 +51,7 @@ class BaseJob(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=250)
     slug = SlugField(_('URL Path'), unique=True)
+    header_image = models.ForeignKey(File, null=True, on_delete=models.SET_NULL)
     description = tinymce_models.HTMLField()
     list_type = models.CharField(max_length=50)  # premium or regular
 

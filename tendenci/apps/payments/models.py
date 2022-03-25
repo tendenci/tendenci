@@ -166,6 +166,7 @@ class Payment(models.Model):
             # hard coded here - same as in T4
             self.method = 'cc'
             self.status = True
+            self.check_number = ''
 
             # default description
             self.description = 'Tendenci Invoice %d Payment (%d).' % (

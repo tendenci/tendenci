@@ -22,9 +22,11 @@ urlpatterns = [
     re_path(r'^%s/actions/step3/(?P<pk>\d+)/$' % urlpath, login_required(views.MarketingActionStepThreeView.as_view()), name='newsletter.action.step3'),
     re_path(r'^%s/actions/step4/(?P<pk>\d+)/$' % urlpath, login_required(views.MarketingActionStepFourView.as_view()), name='newsletter.action.step4'),
     re_path(r'^%s/actions/step5/(?P<pk>\d+)/$' % urlpath, login_required(views.MarketingActionStepFiveView.as_view()), name='newsletter.action.step5'),
+    re_path(r'^%s/actions/edit-schedule/(?P<pk>\d+)/$' % urlpath, login_required(views.MarketingActionEditScheduleView.as_view()), name='newsletter.action.edit_schedule'),
 
     re_path(r'^%s/view/details/(?P<pk>\d+)/$' % urlpath, login_required(views.NewsletterDetailView.as_view()), name='newsletter.detail.view'),
     re_path(r'^%s/clone/(?P<pk>\d+)/$' % urlpath, login_required(views.NewsletterCloneView.as_view()), name='newsletter.clone'),
     re_path(r'^%s/resend/(?P<pk>\d+)/$' % urlpath, login_required(views.NewsletterResendView.as_view()), name='newsletter.resend.view'),
     re_path(r'^%s/delete/(?P<pk>\d+)/$' % urlpath, login_required(views.NewsletterDeleteView.as_view()), name='newsletter.delete'),
+    re_path(r'^%s/cancel-schedule/(?P<newsletter_id>\d+)/$' % urlpath, views.cancel_schedule, name='newsletter.cancel_schedule'),
 ]

@@ -119,6 +119,72 @@
           </p>
         </div>
         {% endblocktrans %}
+
+	{% if schedule_enabled and object.schedule %}
+		<div class="step-content-item">
+		{% if object.schedule_type == "O" %}
+		<strong>
+		{% trans 'Scheduled to Run On: ' %}{{ object.schedule_send_dt|date }}
+		</strong>
+		{% else %}
+		<h3>{% trans 'Schedule Details:' %}</h3>
+		<div class="pull-right"><a href="{% url 'newsletter.action.edit_schedule' object.id %}"><span class="glyphicon glyphicon-edit"></span> {% trans 'Edit' %}</a></div>
+		<table class="table table-striped">
+			<tr>
+				<th>{% trans 'Initial Start Date/Time' %}</th>
+				<th>{% trans 'Frequency' %}</th>
+				<th>{% trans 'Repeats' %}</th>
+			</tr>
+			<tr>
+				<td>{{ object.schedule_send_dt }}</td>
+				<td>{{ object.schedule_type_verbose }}</td>
+				<td>{% if object.repeats == -1 %}{% trans 'Forever' %}{% else %}{{ object.repeats }}{% endif %}</td>
+			</tr>
+		</table>
+		
+		{% with object.recurring_data.all as recurring_items %}
+		{% if recurring_items %}
+		<h3>{% trans 'Process Results:' %}</h3>
+		<table class="table table-striped">
+			<tr>
+				<th>{% trans 'Start Date/Time' %}</th>
+				<th>{% trans 'Finish Date/Time' %}</th>
+				<th>{% trans 'Email Count' %}</th>
+				<th>{% trans 'Status' %}</th>
+			</tr>
+			{% for item in recurring_items %}
+			<tr>
+				<td>{{ item.start_dt }}</td>
+				<td>{{ item.finish_dt }}</td>
+				<td>{{ item.email_sent_count }}</td>
+				<td><span class="capitalize text-warning">{{ item.send_status }}</span></td>
+			</tr>
+			{% endfor %}
+		</table>
+		{% endif %}
+		{% endwith %}
+		
+		<div>
+			<strong>{% trans 'Total remaining runs:' %}</strong> 
+				{% if  object.total_runs_left == -1 %}
+				{% trans 'unlimited' %}
+				{% else %}
+				{{ object.total_runs_left }}
+				{% endif %}
+			{% if  object.total_runs_left != 0 %}
+			&nbsp;&nbsp;&nbsp;<a id="cancel-schedule" href="javascript:void(0);">{% trans 'Cancel' %}</a>
+			<form name="cancel-schedule-form" method="POST" action="{% url "newsletter.cancel_schedule" object.pk %}">{% csrf_token %}
+		    </form>
+			{% endif %}
+		</div>
+		
+		{% endif %}
+
+		</div>
+	{% endif %}
+
+
+	{% if not object.schedule or object.schedule_type == "O" %}
         <div class="step-content-item">
           <p>
             <label>{% trans 'Status of email' %}:</label>&nbsp;&nbsp;
@@ -128,46 +194,83 @@
             {% endif %}
           </p>
         </div>
+
         {% if object.send_status == 'sent' or object.send_status == 'resent' %}
         <div class="step-content-item">
-          <p>{% trans 'Total E-mail Sent' %}: {{ object.email_sent_count }}</p>
-          <p>{% trans 'E-mails completed sending at' %}: {{ object.date_email_sent }}</p>
-          {% if object.date_last_resent %}
-          <p>{% trans 'Date of last resent' %}: {{ object.date_last_resent }}</p>
-          <p>{% trans 'Resent Count' %}: {{ object.resend_count }}
-            {% endif %}
-            <p>
-              <span>{% trans 'Date Created' %}: {{ object.date_created }}</span>&nbsp;&nbsp;
-              <span>{% trans 'Date Submitted' %}: {{ object.date_submitted }}
-              </p>
-              </div>
-                {% endif %}
-                {% if object.send_status == 'resending' or object.send_status == 'sending' or object.send_status == 'queued' %}
-                <div class="step-content-item">
-                  <p>{% trans "Kindly refresh this page or wait for the confirmation email to check the status of your newsletter." %}</p>
-                </div>
-                {% endif %}
-                <div class="step-content-item">
-                  <a class="btn btn-primary btn-lg" href="javascript:void(0);" id="resend-email" >{% trans 'Resend Email' %}</a>
-                </div>
-                <br />
-              </div>
-              </div>
-              </div>
-              </div>
-                {% endblock %}
+			
+	      		<p>{% trans 'Total E-mail Sent' %}: {{ object.email_sent_count }}</p>
+	      		<p>{% trans 'E-mails completed sending at' %}: {{ object.date_email_sent }}</p>
+	      		{% if object.date_last_resent %}
+	      		<p>{% trans 'Date of last resent' %}: {{ object.date_last_resent }}</p>
+	      		<p>{% trans 'Resent Count' %}: {{ object.resend_count }}
+	        	{% endif %}
+			
+        	<p>
+         	 	<span>{% trans 'Date Created' %}: {{ object.date_created }}</span>&nbsp;&nbsp;
+          		<span>{% trans 'Date Submitted' %}: {{ object.date_submitted }}
+          	</p>
+       </div>
+       {% endif %}
+	{% endif %}
+	
+	    <div class="step-content-item">
+        	<p>
+         	 	<span>{% trans 'Date Created' %}: {{ object.date_created }}</span>&nbsp;&nbsp;
+          		<span>{% trans 'Date Submitted' %}: {{ object.date_submitted }}
+          	</p>
+       </div>
+	
+	
+       {% if object.send_status == 'resending' or object.send_status == 'sending' or object.send_status == 'queued' %}
+            <div class="step-content-item">
+              <p>{% trans "Kindly refresh this page or wait for the confirmation email to check the status of your newsletter." %}</p>
+            </div>
+       {% endif %}
 
-                {% block extra_body %}
-                {{ block.super }}
-                <script type="text/javascript">
-                  jQuery(document).ready(function(j) {
-                  j("#resend-email").on("click", function() {
-                  var x = confirm("Resend this newsletter?");
-                  if (x == true)
-                  window.location.href = "{% url 'newsletter.resend.view' object.pk %}"
-                  else
-                  return false;
-                  });
-                  });
-                </script>
-                {% endblock %}
+		{% if not object.schedule or object.schedule_type == "O" %}
+        <div class="step-content-item">
+          <a class="btn btn-primary btn-lg" href="javascript:void(0);" id="resend-email" >{% trans 'Resend Email' %}</a>
+        </div>
+		{% endif %}
+        <br />
+     </div>
+    </div>
+ </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+
+{% if not object.schedule or object.schedule_type == "O" %}
+<script type="text/javascript">
+  jQuery(document).ready(function(j) {
+  j("#resend-email").on("click", function() {
+  var x = confirm("Resend this newsletter?");
+  if (x == true)
+  window.location.href = "{% url 'newsletter.resend.view' object.pk %}"
+  else
+  return false;
+  });
+  });
+</script>
+{% endif %}
+
+{% if  object.total_runs_left != 0 %}
+<script type="text/javascript">
+    $(document).ready(function(j){
+        // cancel confirmation
+        j('#cancel-schedule').on("click", function(){
+            var cancel_confirm = confirm('{% trans "Are you sure you want to cancel the runs left?" %}');  // confirm
+            if(cancel_confirm) 
+			{
+				j('form[name="cancel-schedule-form"]').submit();
+			} else {
+				return false;
+			}
+        });
+    });
+</script>
+{% endif %}
+
+{% endblock %}

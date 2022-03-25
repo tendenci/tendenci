@@ -10,7 +10,9 @@ from django.utils.translation import gettext_lazy as _
 # from captcha.fields import CaptchaField, CaptchaTextInput
 from captcha.fields import CaptchaField
 
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.libs.recaptcha.fields import ReCaptchaField
+from tendenci.libs.recaptcha.widgets import ReCaptchaV3
 SIMPLE_ANSWER = 22
 SIMPLE_QUESTION = _('What is 9 + 13? (security question -just so we know you\'re not a bot)')
 
@@ -126,6 +128,19 @@ class PasswordForm(forms.Form):
 
 def CustomCatpchaField(**kwargs):
     if settings.RECAPTCHA_PUBLIC_KEY and settings.RECAPTCHA_PRIVATE_KEY:
+        if settings.USE_RECAPTCHA_V3:
+            score_threshold = get_setting('site', 'global', 'recaptchascorelimit')
+            try:
+                score_threshold = float(score_threshold)
+            except ValueError:
+                score_threshold = 0.5
+            if score_threshold > 1 or score_threshold < 0:
+                score_threshold = 0.5
+
+            recaptcha_field = ReCaptchaField(label='', widget=ReCaptchaV3)
+            # set required_score
+            recaptcha_field.widget.attrs.update({'required_score': score_threshold})
+            return recaptcha_field
         return ReCaptchaField(label='')
 
     return CaptchaField(**kwargs)

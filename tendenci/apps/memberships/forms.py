@@ -348,6 +348,35 @@ class MembershipTypeForm(TendenciBaseForm):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
 
 
+class EmailMembersForm(FormControlWidgetMixin, forms.ModelForm):
+    subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
+    body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label': Email._meta.app_label,
+        'storme_model': Email._meta.model_name.lower()}),
+        label=_('Email Content'),
+        help_text=_("""Available tokens:
+                    <ul><li>{{ first_name }}</li>
+                    <li>{{ last_name }}</li>
+                    <li>{{ view_url }}</li>
+                    <li>{{ edit_url }}</li>
+                    <li>{{ site_url }}</li>
+                    <li>{{ site_display_name }}</li></ul>"""))
+
+    class Meta:
+        model = Email
+        fields = ('subject',
+                  'body',
+                  'sender_display',
+                  'reply_to',)
+
+    def __init__(self, *args, **kwargs):
+        super(EmailMembersForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+
+
 class MessageForm(FormControlWidgetMixin, forms.ModelForm):
     recipient_type = forms.ChoiceField(
         label=_("Recipients"),
@@ -748,15 +777,23 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             Username and password did not match
             This username exists. If it's yours,
                 please provide a password.
+            If username field is blank or not presented:
+                 if email address is in the system
+                     if user is not logged in
+                        if the user record with this email address is active
+                            prompts them to log in
+                        else
+                            let them activate the account before applying for membership
+
         """
         # super(UserForm, self).clean()
 
         data = self.cleaned_data
 
-        un = data.get('username', u'').strip()
-        pw = data.get('password', u'').strip()
-        pw_confirm = data.get('confirm_password', u'').strip()
-        email = data.get('email', u'').strip()
+        un = data.get('username', '').strip()
+        pw = data.get('password', '').strip()
+        pw_confirm = data.get('confirm_password', '').strip()
+        email = data.get('email', '').strip()
         u = None
         login_link = _('click <a href="/accounts/login/?next=%s">HERE</a> to log in before completing your application.') % self.request.get_full_path()
         username_validate_err_msg = mark_safe(_('This Username already exists in the system. If this is your Username, %s Else, select a new Username to continue.') % login_link)
@@ -808,21 +845,23 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
 
             if not u and not self.is_renewal:
                 # we didn't find user, check if email address is already in use
-                if un and email:
+                if email:
                     if User.objects.filter(email=email).exists():
                         if self.request.user.is_authenticated:
                             # user is logged in
-                            raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
+                            if 'username' in data:
+                                # username is presented on form
+                                raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
+                        else:
+                            # user is not logged in. prompt them to log in if the user record with this email address is active
+                            u = User.objects.filter(email=email).order_by('-is_active')[0]
+                            [profile] = Profile.objects.filter(user=u)[:1] or [None]
+                            if (profile and profile.is_active) or u.is_active:
+                                raise forms.ValidationError(email_validate_err_msg)
 
-                        # user is not logged in. prompt them to log in if the user record with this email address is active
-                        u = User.objects.filter(email=email).order_by('-is_active')[0]
-                        [profile] = Profile.objects.filter(user=u)[:1] or [None]
-                        if (profile and profile.is_active) or u.is_active:
-                            raise forms.ValidationError(email_validate_err_msg)
-
-                        # at this point, user is not logged in and user record with this email is inactive
-                        # let them activate the account before applying for membership
-                        raise forms.ValidationError(inactive_user_err_msg)
+                            # at this point, user is not logged in and user record with this email is inactive
+                            # let them activate the account before applying for membership
+                            raise forms.ValidationError(inactive_user_err_msg)
 
         return data
 

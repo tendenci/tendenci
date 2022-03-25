@@ -69,6 +69,8 @@ class ObjectPermBackend(ModelBackend):
         return user_obj._perm_cache
 
     def get_group_object_permissions(self, user_obj, obj):
+        if not obj.pk:
+            return []
         app_label = obj._meta.app_label
         user_obj_attr = '_%s_%d_group_object_perm_cache' % (
             app_label,
@@ -86,6 +88,8 @@ class ObjectPermBackend(ModelBackend):
         return user_obj._group_object_perm_cache
 
     def get_all_object_permissions(self, user_obj, obj):
+        if not obj.pk:
+            return []
         app_label = obj._meta.app_label
         user_obj_attr = '_%s_%d_object_perm_cache' % (
             app_label,

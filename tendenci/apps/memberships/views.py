@@ -67,14 +67,17 @@ from tendenci.apps.memberships.forms import (
     MembershipDefault2Form,
     AutoRenewSetupForm,
     MessageForm,
-    MemberSearchForm)
+    MemberSearchForm,
+    EmailMembersForm)
 from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats, iter_memberships,
     get_membership_stats, ImportMembDefault,
     get_membership_app, get_membership_summary_data,
-    email_pending_members)
+    email_pending_members,
+    email_membership_members)
 from tendenci.apps.base.forms import CaptchaForm
 from tendenci.apps.perms.decorators import is_enabled
+from tendenci.apps.theme.utils import get_template_content_raw
 
 
 @login_required
@@ -96,7 +99,10 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
                                 'region',
                                 'password',
                                 ''])
-    form = MemberSearchForm(request.GET, app_fields=app_fields, user=request.user)
+    if 'email_members' in request.POST or 'email_members_selected' in request.POST:
+        form = MemberSearchForm(request.POST, app_fields=app_fields, user=request.user)
+    else:
+        form = MemberSearchForm(request.GET, app_fields=app_fields, user=request.user)
     if form.is_valid():
         user_fieldnames = [field.name for field in User._meta.fields if \
                            field.get_internal_type() in ['CharField', 'TextField']]
@@ -132,17 +138,58 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
                     elif field_name in demographic_fieldnames:
                         memberships = memberships.filter(Q(**{f'user__demographics__{field_name}__icontains': field_value}))
 
-    memberships = memberships.order_by('user__last_name', 'user__first_name')
+        memberships = memberships.order_by('user__last_name', 'user__first_name')
+    
+        if 'export' in request.GET:
+            EventLog.objects.log(description="memberships export from memberships search")
+    
+            response = StreamingHttpResponse(
+            streaming_content=(iter_memberships(memberships, app_fields)),
+            content_type='text/csv',)
+            response['Content-Disposition'] = f'attachment;filename=memberships_export_{ttime.time()}.csv'
+            return response
 
-    if 'export' in request.GET:
-        EventLog.objects.log(description="memberships export from memberships search")
+        # set up email form with default values
+        default_sender_display = get_setting('site', 'global', 'sitedisplayname')
+        default_subject = request.session.get('email_subject', '') or 'Your Membership Application Needs Attention'
+        default_body = request.session.get('email_body', '')
+        if not default_body:
+            default_body = get_template_content_raw('memberships/message/email-members-body.txt')
+        email_form = EmailMembersForm(request.POST or None,
+                            initial={'subject': default_subject,
+                                     'body': default_body,
+                                    'sender_display': default_sender_display,
+                                    'reply_to': request.user.email})
 
-        response = StreamingHttpResponse(
-        streaming_content=(iter_memberships(memberships, app_fields)),
-        content_type='text/csv',)
-        response['Content-Disposition'] = f'attachment;filename=memberships_export_{ttime.time()}.csv'
-        return response
+        if ('email_members' in request.POST or 'email_members_selected' in request.POST) \
+                and email_form.is_valid():
+            if 'email_members_selected' in request.POST:
+                selected_members = request.POST.getlist('selected_members')
+                if selected_members:
+                    selected_members = [int(m) for m in selected_members]
+                    memberships = memberships.filter(id__in=selected_members)
 
+            email = email_form.save()
+            if not email.sender_display:
+                email.sender_display = request.user.get_full_name()
+            if not email.reply_to:
+                email.reply_to = request.user.email
+            email.content_type = "html"
+            email.allow_anonymous_view = False
+            email.allow_user_view = False
+            email.allow_member_view = False
+            email.save(request.user)
+            retn_content = email_membership_members(email,
+                                    memberships,
+                                    request=request)
+    
+            EventLog.objects.log(instance=email)
+            return StreamingHttpResponse(streaming_content=retn_content)
+
+    else:
+        # search_form is invalid
+        memberships = memberships.none()
+        email_form = None
 
     EventLog.objects.log()
 
@@ -150,6 +197,8 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
         context={
             'memberships': memberships,
             'search_form': form,
+            'email_form': email_form,
+            'total_members': memberships.count(),
             'app': app,
             'app_fields': app_fields})
 
@@ -635,7 +684,7 @@ def membership_default_import_preview(request, mimport_id,
             users_list.append(user_display)
             if not fieldnames:
                 fieldnames = list(idata.row_data.keys())
-                
+
         # DateTime fields are sensitive to parse failures
         # They are not parsed in the preview yet, in fact all 
         # data travens as strings to be cleaned and parsd just 
@@ -665,14 +714,17 @@ def membership_default_import_preview(request, mimport_id,
         # before committing the import.
         # TODO: This could generalize to all ID type imports supported
         if 'membership_type' in fieldnames:
-            mts = {mt.pk:mt.name for mt in MembershipType.objects.all()}
+            mts = {mt.pk: mt.name for mt in MembershipType.objects.all()}
 
             for u in users_list:
-                try:
-                    mt = int(str(u['membership_type']))
-                except ValueError:
-                    mt = 'Value Error'
-                    
+                if 'membership_type' in u:
+                    try:
+                        mt = int(str(u['membership_type']))
+                    except ValueError:
+                        mt = 'Value Error'
+                else:
+                    mt = None
+
                 u['membership_type'] = mts.get(mt, 'None')
 
         return render_to_resp(request=request, template_name=template_name, context={

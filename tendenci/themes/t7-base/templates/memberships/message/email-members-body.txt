@@ -1,0 +1,12 @@
+
+<p>Dear {{ first_name }},</p>
+
+<p>Your membership with {{ site_display_name }} needs attention {{ view_url }}.</p>
+
+<p>Please review and update your application at {{ edit_url }}.</p>
+
+<p>Thank you for being a part of our organization!</p>
+<br />
+<br />
+
+{{ site_display_name }}
