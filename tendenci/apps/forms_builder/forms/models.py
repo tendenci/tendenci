@@ -1,12 +1,14 @@
 from os import path
 from django.db import models
 from django.urls import reverse
+from django.core import validators
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import truncatewords
+
 from django_countries import countries as COUNTRIES
 
 from localflavor.us.us_states import STATE_CHOICES, US_STATES
@@ -23,8 +25,8 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.apps.invoices.models import Invoice
 
-#STATUS_DRAFT = 1
-#STATUS_PUBLISHED = 2
+# STATUS_DRAFT = 1
+# STATUS_PUBLISHED = 2
 STATUS_CHOICES = (
     ('draft', _("Draft")),
     ('published', _("Published")),
@@ -182,12 +184,14 @@ class Form(TendenciBaseModel):
     def admin_link_view(self):
         url = self.get_absolute_url()
         return "<a href='%s'>%s</a>" % (url, ugettext("View on site"))
+
     admin_link_view.short_description = ""
 
     @mark_safe
     def admin_link_export(self):
         url = reverse("admin:forms_form_export", args=(self.id,))
         return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
+
     admin_link_export.short_description = ""
 
     def has_files(self):
@@ -201,12 +205,14 @@ class FieldManager(models.Manager):
     """
     Only show visible fields when displaying actual form..
     """
+
     def visible(self):
         return self.filter(visible=True)
 
     """
     Get all Auto-fields. (As of writing, this is only GroupSubscriptionAuto)
     """
+
     def auto_fields(self):
         return self.filter(visible=False, field_function="GroupSubscriptionAuto")
 
@@ -237,14 +243,15 @@ class Field(OrderingBaseModel):
     default = models.CharField(_("Default"), max_length=1000, blank=True,
         help_text=_("Default value of the field"))
     summary_position = models.CharField(_("Summary Position"), max_length=6, blank=True,
-        help_text=_("Position in the onle line form entry summary. Row, Position or just Position."))
+        help_text=_("Position in the one line form entry summary. Row, Position or just Position.\nSome examples:\n2,1   for row 1, position 1\n2      for row 1, positon 2."),
+        validators=[validators.validate_comma_separated_integer_list])
 
     objects = FieldManager()
 
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
-        #order_with_respect_to = "form"
+        # order_with_respect_to = "form"
         app_label = 'forms'
 
     def __str__(self):
@@ -267,21 +274,21 @@ class Field(OrderingBaseModel):
     def get_choices(self):
         if self.field_type == 'CountryField':
             exclude_list = ['GB', 'US', 'CA']
-            countries = ((name,name) for key,name in COUNTRIES if key not in exclude_list)
+            countries = ((name, name) for key, name in COUNTRIES if key not in exclude_list)
             initial_choices = ((_('United States'), _('United States')),
                                (_('Canada'), _('Canada')),
                                (_('United Kingdom'), _('United Kingdom')),
-                               ('','-----------'))
+                               ('', '-----------'))
             choices = initial_choices + tuple(countries)
         elif self.field_type == 'StateProvinceField':
             if get_setting('site', 'global', 'usstatesonly'):
                 choices = (('', '-----------'),) + tuple((state, state_f.title()) for state, state_f in US_STATES)
             else:
-                choices = (('','-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
-                                    + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
+                choices = (('', '-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
+                                    +tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
                 choices = sorted(choices)
         elif self.field_function == 'Recipients':
-            choices = [(label+':'+val, label) for label, val in (i.split(":") for i in self.choices.split(","))]
+            choices = [(label + ':' + val, label) for label, val in (i.split(":") for i in self.choices.split(","))]
         else:
             choices = [(val, val) for val in self.choices.split(",")]
         return choices
@@ -315,7 +322,7 @@ class FormEntry(models.Model):
     payment_method = models.ForeignKey('payments.PaymentMethod', null=True, on_delete=models.SET_NULL)
     pricing = models.ForeignKey('Pricing', null=True, on_delete=models.SET_NULL)
     custom_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    creator = models.ForeignKey(User, related_name="formentry_creator",  null=True, on_delete=models.SET_NULL)
+    creator = models.ForeignKey(User, related_name="formentry_creator", null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
@@ -333,24 +340,24 @@ class FormEntry(models.Model):
         for entry_field in self.entry_fields():
             form_field = self.form.fields.get(id=entry_field.field_id)
             vals = [p.strip() for p in form_field.summary_position.split(',')]
-            
+
             if not vals[-1].isnumeric() or len(vals) > 2:
                 fmt = vals.pop()
             else:
                 fmt = ""
-            
+
             if len(vals) == 1:
                 row = 1
-                col = int(vals[0]) if vals[0].isnumeric() else 0 
+                col = int(vals[0]) if vals[0].isnumeric() else 0
             elif vals:
                 row = int(vals[0]) if vals[0].isnumeric() else 0
                 col = int(vals[1]) if vals[1].isnumeric() else 0
             else:
-                row = col = 0 # Don't display this value
-                
+                row = col = 0  # Don't display this value
+
             if row and not (row in field_map):
                 field_map[row] = {}
-                
+
             if row and col:
                 if fmt.startswith("$"):
                     try:
@@ -358,17 +365,17 @@ class FormEntry(models.Model):
                     except:
                         value = entry_field.value.strip()
                 elif fmt.startswith("B"):
-                    value = path.basename(entry_field.value) 
+                    value = path.basename(entry_field.value)
                 elif fmt.startswith("b"):
                     pfx = "NOT " if not entry_field.value else ""
-                    value = f"{pfx}{entry_field.field.label}" 
+                    value = f"{pfx}{entry_field.field.label}"
                 elif fmt.startswith("w"):
                     if fmt[1:].isnumeric():
                         words = int(fmt[1:])
-                        value = truncatewords(entry_field.value.strip(), words) 
+                        value = truncatewords(entry_field.value.strip(), words)
                 else:
                     value = entry_field.value.strip()
-                    
+
                 field_map[row][col] = value
 
         # If no field map is provided apply legacy format
@@ -377,12 +384,12 @@ class FormEntry(models.Model):
             field_map[1] = {}
             field_map[1][1] = self.entry_time.strftime("%c")
             for i, entry_field in enumerate(self.entry_fields()[:3]):
-                if entry_field.field.field_type ==  'FileField':
-                    field_map[1][i+2] = path.basename(entry_field.value) 
+                if entry_field.field.field_type == 'FileField':
+                    field_map[1][i + 2] = path.basename(entry_field.value)
                 else:
-                    field_map[1][i+2] = truncatewords(entry_field.value.strip(), 2)
+                    field_map[1][i + 2] = truncatewords(entry_field.value.strip(), 2)
 
-        # If row 1, col 1 is empty, put the entry_time there. 
+        # If row 1, col 1 is empty, put the entry_time there.
         elif not field_map.get(1, {}).get(1, None):
             if not 1 in field_map:
                 field_map[1] = {}
@@ -394,9 +401,8 @@ class FormEntry(models.Model):
             for col in sorted(field_map[row].keys()):
                 cols.append(field_map[row][col])
             rows.append(" - ".join(cols))
-        
-        return rows
 
+        return rows
 
     def get_absolute_url(self):
         return reverse('form_entry_detail', kwargs={"id": self.pk})
@@ -404,7 +410,7 @@ class FormEntry(models.Model):
     @property
     def owner(self):
         return self.creator
-    
+
     @property
     def group(self):
         return self.form.group
@@ -505,7 +511,7 @@ class FormEntry(models.Model):
 
     def get_position_title(self):
         return self.get_value_of("position_title")
- 
+
     def get_referral_source(self):
         return self.get_value_of("referral_source")
 
@@ -554,7 +560,7 @@ class FormEntry(models.Model):
 
     def check_and_create_user(self):
         """
-        Check and create a new user if needed (only if payment is involved or 
+        Check and create a new user if needed (only if payment is involved or
             "Subscribe to Group" functionality is selected).
         Return the user created or None.
         """
@@ -567,7 +573,7 @@ class FormEntry(models.Model):
             if user_list:
                 anonymous_creator = user_list[0]
             else:
-                # Create a new user only if payment is involved or 
+                # Create a new user only if payment is involved or
                 # "Subscribe to Group" functionality selected
                 if get_setting('module', 'forms', 'form_submission_create_user') or \
                          self.form.custom_payment or self.form.recurring_payment or \
@@ -588,7 +594,7 @@ class FormEntry(models.Model):
                     anonymous_creator.set_unusable_password()
                     anonymous_creator.is_active = False
                     anonymous_creator.save()
-                    
+
                     anonymous_profile = Profile(user=anonymous_creator,
                                                 owner=anonymous_creator,
                                                 creator=anonymous_creator,
@@ -681,4 +687,4 @@ class Pricing(models.Model):
         currency_symbol = get_setting("site", "global", "currencysymbol")
         if not currency_symbol:
             currency_symbol = '$'
-        return "%s - %s%s" % (self.label, currency_symbol, self.price, )
+        return "%s - %s%s" % (self.label, currency_symbol, self.price,)
