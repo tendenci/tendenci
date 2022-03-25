@@ -21,7 +21,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.utils import checklist_update
+from tendenci.apps.base.utils import checklist_update, tcurrency
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.apps.invoices.models import Invoice
@@ -363,7 +363,7 @@ class FormEntry(models.Model):
             if row and col:
                 if fmt.startswith("$"):
                     try:
-                        value = f"${float(entry_field.value.strip()):.2f}"
+                        value = tcurrency(entry_field.value.strip())
                     except:
                         value = entry_field.value.strip()
                 elif fmt.startswith("B"):
