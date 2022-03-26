@@ -4,6 +4,7 @@
 import datetime
 import time
 import csv
+import re
 
 from django.conf import settings
 from django.urls import reverse
@@ -14,6 +15,7 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.core.files.storage import default_storage
+from django.contrib.sessions.models import Session
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 # from djcelery.models import TaskMeta
@@ -243,6 +245,37 @@ def entries(request, id, template_name="forms/entries.html"):
     return render_to_resp(request=request, template_name=template_name,
         context={'form':form,'entries': entries})
 
+@is_enabled('forms')
+@login_required
+def memories(request, id, template_name="forms/memories.html"):
+    form = get_object_or_404(Form, pk=id)
+
+    if not has_perm(request.user,'forms.view_formentry',form):
+        raise Http403
+    
+    key_pattern = re.compile(f"{form.slug}.field_(?P<field_id>\d+)")
+
+    # Not sure how well this scales and if perhaps a server side query (filter) is better 
+    s_mem = [s for s in Session.objects.all() 
+                if any([key for key in s.get_decoded() if re.match(key_pattern, key)])]
+    
+    memories = []
+    for s in s_mem:
+        memory = {"Expires": s.expire_date}
+        for key, val in s.get_decoded().items():
+            if key_match := re.match(key_pattern, key):
+                field_id = key_match["field_id"]
+                try:
+                    field = form.fields.get(id=field_id)
+                    memory[field.label] = val
+                except Field.DoesNotExist:
+                    pass
+                
+        memories.append(memory) 
+    
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form,'memories': memories})
+
 
 @is_enabled('forms')
 @login_required
@@ -403,7 +436,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     else:
         billing_form = None
 
-    form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
+    form_for_form = FormForForm(form, request.user, request.session, request.POST or None, request.FILES or None)
+    
     if get_setting('site', 'global', 'captcha'): # add captcha
         if billing_form:
             # append the captcha to the end of the billing form

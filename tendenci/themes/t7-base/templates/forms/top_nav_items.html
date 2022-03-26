@@ -109,6 +109,11 @@
                                     </span>
                                 </li>
                               {% endif %}
+                                 <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'form_memories' app_object.pk %}">{% trans "Memories" %}</a>
+                                    </span>
+                                </li>
                             {% endif %}
 
                             {% if can_add_form %}

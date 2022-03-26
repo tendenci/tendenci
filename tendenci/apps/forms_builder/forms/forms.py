@@ -46,7 +46,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         model = FormEntry
         exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", 'custom_price',  "creator")
 
-    def __init__(self, form, user, *args, **kwargs):
+    def __init__(self, form, user, session=None, *args, **kwargs):
         """
         Dynamically add each of the form fields for the given form model
         instance and its related field model instances.
@@ -55,11 +55,14 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         self.form = form
         self.form_fields = form.fields.visible().order_by('position')
         self.auto_fields = form.fields.auto_fields().order_by('position')
+        self.session = {} if session is None else session
         super(FormForForm, self).__init__(*args, **kwargs)
 
         def add_fields(form, form_fields):
             for field in form_fields:
                 field_key = self.field_key(field)
+                gfield_key = form.form.slug + "." + field_key
+
                 if "/" in field.field_type:
                     field_class, field_widget = field.field_type.split("/")
                 else:
@@ -98,7 +101,13 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     else:
                         default = False
                     field.default = default
-                field_args["initial"] = field.default
+                
+                if field.remember and gfield_key in self.session:
+                    field_args["initial"] = session[gfield_key]
+                    field.remembered = True
+                else:                
+                    field_args["initial"] = field.default
+                    field.remembered = False
 
                 if field_widget is not None:
                     module, widget = field_widget.rsplit(".", 1)
@@ -183,7 +192,12 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             add_fields(self, self.form_fields)
             add_pricing_fields(self, self.form)
 
-        if get_setting('site', 'global', 'captcha') and not user.is_authenticated: # add captcha if not logged in
+        # Disable captcha logged in or if any fields are flagged for remembering
+        # and remembered data is available. Logged in users are trusted, as are 
+        # users who have remembered form data  (i.e. already submitted once with a captcha) 
+        if (get_setting('site', 'global', 'captcha') 
+                and not user.is_authenticated
+                and not any([f.remembered for f in self.form_fields])): 
             self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
 
         self.add_form_control_class()
@@ -225,6 +239,8 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         entry.save()
         for field in self.form_fields:
             field_key = self.field_key(field)
+            gfield_key = self.form.slug + "." + field_key
+
             value = self.cleaned_data[field_key]
             if value and self.fields[field_key].widget.needs_multipart_form:
                 value = default_storage.save(join("forms", str(uuid4()), value.name), value)
@@ -239,6 +255,12 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 value = re.subn(p, r'\1 : // \2 . \3 ', value)[0][:FIELD_MAX_LENGTH]
             field_entry = FieldEntry(field_id = field.id, entry=entry, value = value)
             field_entry.save()
+
+            if field.remember and self.session:
+                if not isinstance(value, str):
+                    self.session[gfield_key] = value.__str__()
+                else:
+                    self.session[gfield_key] = value
 
         for field in self.auto_fields:
             value = field.choices
