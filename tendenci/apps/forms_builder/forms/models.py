@@ -186,12 +186,14 @@ class Form(TendenciBaseModel):
     def admin_link_view(self):
         url = self.get_absolute_url()
         return "<a href='%s'>%s</a>" % (url, gettext("View on site"))
+
     admin_link_view.short_description = ""
 
     @mark_safe
     def admin_link_export(self):
         url = reverse("admin:forms_form_export", args=(self.id,))
         return "<a href='%s'>%s</a>" % (url, gettext("Export entries"))
+
     admin_link_export.short_description = ""
 
     def has_files(self):
@@ -238,7 +240,7 @@ class Field(OrderingBaseModel):
         choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
-    remember = models.BooleanField(_("Remember"), default=False, 
+    remember = models.BooleanField(_("Remember"), default=False,
         help_text=_("Remember the value entered between visits and initialise the form with that value."))
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text=_("Comma separated options where applicable"))
@@ -246,8 +248,8 @@ class Field(OrderingBaseModel):
         help_text=_("Default value of the field"))
     summary_position = models.CharField(_("Summary Position"), max_length=6, blank=True,
         help_text=_("Position in the one line form entry summary. Row, Position or just Position.\nSome examples:\n2,1   for row 2, position 1\n2      for row 1, positon 2."),
-        validators=[validators.RegexValidator(r"^\s*\d+(\s*,\s*\d+)?(\s*,\s*(b|B|\$|w\d+))?$",
-                                              "Summary position must have 1 to 3 comma separated values:\nrow,column,format\nrow is optional and assumed to be 1 if missing, supported formats are: $ for numbers, b for boolean, B for file and wn for first n words.",
+        validators=[validators.RegexValidator(r"^\s*\d+(\s*,\s*\d+)?(\s*,\s*(b|f|\$|w\d+))?$",
+                                              "Summary position must have 1 to 3 comma separated values:\nrow,column,format\nrow is optional and assumed to be 1 if missing, supported formats are: $ for numbers, b for boolean, f for filename and wn for first n words.",
                                               flags=RegexFlag.IGNORECASE)])
 
     objects = FieldManager()
@@ -368,7 +370,7 @@ class FormEntry(models.Model):
                         value = tcurrency(entry_field.value.strip())
                     except:
                         value = entry_field.value.strip()
-                elif fmt.startswith("B"):
+                elif fmt.startswith("f"):
                     value = path.basename(entry_field.value)
                 elif fmt.startswith("b"):
                     pfx = "NOT " if not entry_field.value else ""
