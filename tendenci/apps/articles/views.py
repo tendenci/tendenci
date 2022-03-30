@@ -157,11 +157,18 @@ def search(request, template_name="articles/search.html"):
         base_template = 'articles/base.html'
         num_per_page = 10
 
+    file_id = get_setting('module', 'articles', 'headerimage')
+    if file_id:
+        header_image_url = reverse('file', args=(file_id, ))
+    else:
+        header_image_url = ''
+
     return render_to_resp(request=request, template_name=template_name,
         context={'articles': articles,
                  'form' : form,
                  'base_template': base_template,
-                 'num_per_page': num_per_page})
+                 'num_per_page': num_per_page,
+                 'header_image_url': header_image_url})
 
 
 def search_redirect(request):

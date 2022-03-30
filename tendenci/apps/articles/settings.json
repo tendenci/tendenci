@@ -134,5 +134,21 @@
         "scope_category": "articles",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "",
+        "description": "Header image on the articles search.",
+        "data_type": "string",
+        "update_dt": "2022-03-28 9:19:00",
+        "input_type": "file",
+        "client_editable": true,
+        "name": "headerimage",
+        "value": "",
+        "label": "Header Image",
+        "input_value": "",
+        "scope": "module",
+        "scope_category": "articles",
+        "store": true,
+        "updated_by": ""
     }
 ]

@@ -24,9 +24,16 @@
 
 {% block content %}
 
+{% if header_image_url %}
+<div class="page-header" style="position: relative; color: white;">
+  <img src="{{ header_image_url }}" alt="{% firstof trans MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}" style="width:100%;">
+  <h1 style="position: absolute; top: 40%; left: 20%; transform: translate(-50%, -50%);">{% firstof trans MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}</h1>
+</div>
+{% else %}
 <div class="page-header">
   <h1>{% firstof trans MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}</h1>
 </div>
+{% endif %}
 
     {% autopaginate articles num_per_page %}
     {% article_search %}
