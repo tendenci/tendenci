@@ -256,7 +256,7 @@ def migrate_categories_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('jobs', '0002_auto_20170910_1701'),
+        ('jobs', '0007_job_header_image'),
     ]
 
     operations = [
