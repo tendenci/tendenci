@@ -133,7 +133,7 @@ class Command(BaseCommand):
                         status_detail='archive').order_by('-create_dt')[:1] or [None]
                 if membership:
                     # do find and replace
-                    urls_dict = membership.get_common_urls()
+                    urls_dict = membership.get_common_urls(site_url=self.site_url)
                     for key in urls_dict.keys():
                         body = body.replace('[%s]' % key, urls_dict[key])
 
