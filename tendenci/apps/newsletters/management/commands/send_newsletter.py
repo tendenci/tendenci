@@ -171,7 +171,7 @@ class Command(BaseCommand):
         newsletter.email_sent_count = counter
 
         newsletter.save()
-        if newsletter.nr_data:
+        if newsletter.schedule and newsletter.nr_data:
             # save the finish_dt and email_sent_count for the recurring
             newsletter.nr_data.finish_dt = datetime.datetime.now()
             newsletter.nr_data.email_sent_count = newsletter.email_sent_count
