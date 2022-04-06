@@ -2,13 +2,13 @@ from builtins import str
 import os
 from django.db.models import Max, Count
 from django.http import HttpResponse
-from celery.task import Task
+import celery
 from tendenci.apps.events.ics.utils import create_ics
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.events.models import Event
 from tendenci.apps.base.utils import escape_csv
 
-class EventsExportTask(Task):
+class EventsExportTask(celery.Task):
     """Export Task for Celery
     This exports all events data and registration configuration.
     This export needs to be able to handle additional columns for each
@@ -196,7 +196,7 @@ class EventsExportTask(Task):
             fields = fields + ["pricing %s %s" % (i, f) for f in pricing_fields]
         return render_csv(file_name, fields, data_row_list)
 
-class EventsICSTask(Task):
+class EventsICSTask(celery.Task):
     """ICS precreation task for Celery
     This creates ics file for a specific user.
     """

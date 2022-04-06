@@ -4,10 +4,10 @@ from datetime import datetime
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
-from celery.task import Task
+import celery
 from tendenci.apps.exports.utils import render_csv
 
-class InvoiceExportTask(Task):
+class InvoiceExportTask(celery.Task):
     """Export Task for Celery
     This exports the entire queryset of a given TendenciBaseModel.
     """
