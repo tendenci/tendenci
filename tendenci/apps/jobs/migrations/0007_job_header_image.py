@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('files', '0007_auto_20200902_1545'),
-        ('jobs', '0002_auto_20170910_1701'),
+        ('jobs', '0006_auto_20200902_1545'),
     ]
 
     operations = [
