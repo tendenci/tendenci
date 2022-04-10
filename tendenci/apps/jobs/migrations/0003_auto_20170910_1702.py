@@ -217,10 +217,10 @@ def migrate_customized_jobs_templates():
 
 
 def migrate_categories_data(apps, schema_editor):
-    from tendenci.apps.jobs.models import Job
     from tendenci.apps.jobs.models import Category as JobCategory
     #Job = apps.get_model("jobs", "Job")
     #JobCategory = apps.get_model("jobs", "Category")
+    Job = apps.get_model("jobs", "Job")
     for job in Job.objects.all():
         job_cat, job_sub_cat = None, None
         cat_items = job.categories.all().order_by('category')
