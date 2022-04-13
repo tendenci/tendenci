@@ -105,6 +105,43 @@ def public_photos(parser, token, use_pool=False):
 def public_pool_photos(parser, token):
     return public_photos(parser, token, use_pool=True)
 
+class AlbumPhotosNode(Node):
+    def __init__(self, context_var, album_var=None):
+        self.context_var = context_var
+        if album_var is not None:
+            self.album_var = Variable(album_var)
+        else:
+            self.album_var = None
+        
+
+    def render(self, context):
+        
+        queryset = Image.objects.all().order_by("position")
+
+        if self.album_var is not None:
+            album_id = self.album_var.resolve(context)
+            queryset = queryset.filter(photoset=album_id)
+
+        context[self.context_var] = queryset
+        return ""
+
+@register.tag
+def album_photos(parser, token, use_pool=False):
+    """
+    Example: {% album_photos album_id as photos %}
+    """
+
+    bits = token.split_contents()
+
+    if len(bits) != 4 :
+        message = "'%s' tag requires four arguments" % bits[0]
+        raise TemplateSyntaxError(_(message))
+    else:
+        if bits[2] != 'as':
+            message = "'%s' third argument must be 'as'" % bits[0]
+            raise TemplateSyntaxError(_(message))
+
+        return AlbumPhotosNode(bits[3], bits[1])
 
 @register.inclusion_tag("photos/options.html", takes_context=True)
 def photo_options(context, user, photo):
