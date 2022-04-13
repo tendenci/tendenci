@@ -8,7 +8,7 @@ from django.contrib.admin.utils import unquote
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.urls import reverse
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect, StreamingHttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
@@ -19,7 +19,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
 from tendenci.apps.forms_builder.forms.models import Form, Field, FieldEntry, Pricing, FormEntry
 from tendenci.apps.forms_builder.forms.forms import FormAdminForm, FormForField, PricingForm
-from tendenci.apps.forms_builder.forms.utils import form_entries_to_csv_writer
+from tendenci.apps.forms_builder.forms.utils import form_entries_to_csv_writer, iter_form_entries
 
 import os
 import mimetypes
@@ -156,15 +156,11 @@ class FormAdmin(TendenciBaseModelAdmin):
         Output a CSV file to the browser containing the entries for the form.
         """
         form = get_object_or_404(Form, id=form_id)
-        response = HttpResponse(content_type='text/csv')
+        response = StreamingHttpResponse(
+            streaming_content=(iter_form_entries(form)),
+            content_type='text/csv',)
         csvname = '%s-%s.csv' % (form.slug, slugify(datetime.now().ctime()))
         response['Content-Disposition'] = 'attachment; filename="%s"' % csvname
-        csv_writer = writer(response)
-        # Write out the column names and store the index of each field
-        # against its ID for building each entry row. Also store the IDs of
-        # fields with a type of FileField for converting their field values
-        
-        form_entries_to_csv_writer(csv_writer, form)
         
         return response
 
