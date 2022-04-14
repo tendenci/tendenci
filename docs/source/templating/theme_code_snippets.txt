@@ -491,7 +491,7 @@ Drag and drop photo albums to change the order of display on /photos/. To displa
 `{% list_photos as photos_list limit=2 order='photoset__position' %}`
 
 
-To pull photos from one or more photo sets, tag your photo set(s) and use `list_photo_sets` template tag:
+To pull photos from one or more photo sets, use `list_photo_sets` template tag. You can either tag your photo set(s):
 
 .. code-block:: django
 
@@ -503,6 +503,22 @@ To pull photos from one or more photo sets, tag your photo set(s) and use `list_
      {% endfor %}
      {% endfor %}
    </ul>
+   
+   
+Or specify the photo set id as below. (The `filters` can accept multiple photo sets. For example, `filters="id=1|id=2"`.)
+
+.. code-block:: django
+
+   {% list_photo_sets as photo_sets_list filters="id=1" %}
+   <ul>
+     {% for photo_set in photo_sets_list %}
+     {% for photo in photo_set.get_images %}
+     <li><a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=72x66 crop=True %}" /></a></li>
+     {% endfor %}
+     {% endfor %}
+   </ul>
+
+
 
 
 Videos Feed
