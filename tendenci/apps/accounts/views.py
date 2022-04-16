@@ -214,6 +214,7 @@ def register(request, success_url=None,
 
 def password_reset(request):
     from_registration = request.GET.get('registration', False)
+    EventLog.objects.log()
     extra_context = {
         'from_registration': from_registration,
     }
