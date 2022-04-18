@@ -46,7 +46,7 @@ class FieldAdminForm(FormForField):
     class Meta:
         model = Field
         # django 1.8 requires either 'fields' or 'exclude' for ModelForm
-        exclude = ()
+        exclude = ('remember', )
 
 
 class FieldAdmin(admin.TabularInline):
