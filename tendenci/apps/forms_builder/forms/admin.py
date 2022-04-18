@@ -1,8 +1,6 @@
-from builtins import str
-from csv import writer
 from datetime import datetime
 
-from django.urls import path, re_path
+from django.urls import re_path
 from django.contrib import admin
 from django.contrib.admin.utils import unquote
 from django.core.files.base import ContentFile
@@ -20,6 +18,7 @@ from tendenci.apps.theme.templatetags.static import static
 from tendenci.apps.forms_builder.forms.models import Form, Field, FieldEntry, Pricing, FormEntry
 from tendenci.apps.forms_builder.forms.forms import FormAdminForm, FormForField, PricingForm
 from tendenci.apps.forms_builder.forms.utils import form_entries_to_csv_writer, iter_form_entries
+from tendenci.apps.event_logs.models import EventLog
 
 import os
 import mimetypes
@@ -156,6 +155,7 @@ class FormAdmin(TendenciBaseModelAdmin):
         Output a CSV file to the browser containing the entries for the form.
         """
         form = get_object_or_404(Form, id=form_id)
+        EventLog.objects.log()
         response = StreamingHttpResponse(
             streaming_content=(iter_form_entries(form)),
             content_type='text/csv',)
