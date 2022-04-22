@@ -11,13 +11,13 @@ By default, each entry on the form entries list displays entry_time followed by 
 The syntax for the Summary Position field is as follows:
 
 1. It's a comma separated string
-2. Format is either:
+2. Format is either
         * row, col
         * col
         * row, col, fmt
         * col, fmt
 
- where:
+ where
     1.  row is a number specifying the row starting from 1. Missing rows are collapsed, meaning if you position items on rows 1 and 3, they will appear on rows 1 and 2. 
     2. col is the column (in the summary, columns are separated with " - " ).
     3. if no row is specified 1 is assumed.
@@ -33,6 +33,7 @@ The syntax for the Summary Position field is as follows:
 See the Summary Position field below for an example:
 
 .. image:: img/form_sp.png
+
 
 
 *This feature is contributed by Bernd Wechner (@bernd-wechner). Thanks!*
