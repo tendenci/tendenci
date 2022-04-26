@@ -6,7 +6,7 @@
 * Form entry lists have a configurable summary (Thanks @bernd-wechner).
 * Allow users with News permissions to see the corresponding edit and delete links (Thanks @bernd-wechner).
 * Added the option to have a header image on articles search. The header image can be specified with the setting /settings/module/articles/#id_headerimage.
-* Added a template tag "get_categoris_for_model".
+* Added a template tag "get_categories_for_model".
 * Made some performance improvement for newsletters when being sent to members.
 * Refactored form entries export to avoid timeout.
 * Added an example code for the list_photo_sets template tag.

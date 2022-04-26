@@ -37,7 +37,7 @@ def get_category_for_object(parser, token):
     return GetCategoryForObjectNode(object, context)
 
 
-class GetCategoiesyForModelNode(Node):
+class GetCategoriesForModelNode(Node):
     def __init__(self, name, context):
         self.name = name
         self.context = context
@@ -62,9 +62,9 @@ class GetCategoiesyForModelNode(Node):
 
 
 @register.tag
-def get_categoris_for_model(parser, token):
+def get_categories_for_model(parser, token):
     """
-        {% get_categoris_for_model "articles.Article" as articles_categories %}
+        {% get_categories_for_model "articles.Article" as articles_categories %}
     """
     bits  = token.split_contents()
 
@@ -82,7 +82,7 @@ def get_categoris_for_model(parser, token):
         raise template.TemplateSyntaxError(
             "%r tag's argument should be in quotes" % bits[0])
 
-    return GetCategoiesyForModelNode(name[1:-1], context)
+    return GetCategoriesForModelNode(name[1:-1], context)
 
 
 class GetSubCategoryForObjectNode(Node):
