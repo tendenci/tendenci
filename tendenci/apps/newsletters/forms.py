@@ -248,6 +248,8 @@ class MarketingStepFiveForm(FormControlWidgetMixin, forms.ModelForm):
         if 'schedule_send' in data and data['schedule_send']:
             if not 'schedule_send_dt' in data or not data['schedule_send_dt']:
                 raise forms.ValidationError(_("You've checked Schedule to Send, please also pick a date and time to send."))
+            if not 'schedule_type' in data or not data['schedule_type']:
+                raise forms.ValidationError(_("Please select Frequency."))
 
         return data
 
