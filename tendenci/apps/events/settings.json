@@ -1290,5 +1290,22 @@
         "scope_category": "events",
         "store": false,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If turned on, a third party payment link can be specified on events add/edit pages for event registration to be redirected to.",
+        "data_type": "boolean",
+        "update_dt": "2022-05-02 15:00:00",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "usethirdpartypayment",
+        "value": "false",
+        "label": "Events Can Use Third Party Payment",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]

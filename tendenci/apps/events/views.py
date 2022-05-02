@@ -2092,6 +2092,9 @@ def register(request, event_id=0,
 
                             email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
 
+                            if reg_conf.external_payment_link:
+                                return HttpResponseRedirect(reg_conf.external_payment_link)
+
                             return HttpResponseRedirect(reverse(
                                 'payment.pay_online',
                                 args=[reg8n.invoice.id, reg8n.invoice.guid]

@@ -1342,6 +1342,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'limit',
             'payment_method',
             'payment_required',
+            'external_payment_link',
             'require_guests_info',
             'discount_eligible',
             'gratuity_enabled',
@@ -1362,6 +1363,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     'limit',
                     'payment_method',
                     'payment_required',
+                    'external_payment_link',
                     'require_guests_info',
                     'discount_eligible',
                     'gratuity_enabled',
@@ -1450,6 +1452,8 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             del self.fields['gratuity_enabled']
             del self.fields['gratuity_options']
             del self.fields['gratuity_custom_option']
+        if not get_setting('module', 'events', 'usethirdpartypayment'):
+            del self.fields['external_payment_link']
         self.add_form_control_class()
 
     def clean_use_custom_reg(self):
