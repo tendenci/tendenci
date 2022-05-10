@@ -1,5 +1,5 @@
 The setup process is broken into three sections - **Basic Setup**, **Development Setup** and **Live Site Setup**.  The Basic Setup covers required setup needed in
-all cases.  The second section, Development Setu, covers additional setup for development purposes.  The third section, Live Site Setup, covers recommended but optional setup to prepare for running a live site.
+all cases.  The second section, Development Setup, covers additional setup for development purposes.  The third section, Live Site Setup, covers recommended but optional setup to prepare for running a live site.
 Steps required for testing are documented separately.
 
 
@@ -284,7 +284,7 @@ For live sites, add a list of domain names that this Tendenci site can serve to 
 Update the DATABASES settings using the user name, password, and database name you configured in
 the "Database Preparation" section above.
 
-Set ``TIME_ZONE`` to the local time zone configured on the system running Tendenci.
+Set ``TIME_ZONE`` to the local time zone configured on the system running Tendenci. Default: 'US/Central'. A list of time zone names can be found at: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
 
 
 Setting up the Site
@@ -696,14 +696,10 @@ To install multiple sites on a single server:
 * A unique venv may optionally be created for each site, but is not required.  If using
   multiple virtualenvs, be sure to source the correct venv before running any ``python`` or
   ``pip`` commands.
-* You can skip the ``pip install "Django"`` command, but otherwise follow the
-  "Tendenci Installation", "Tendenci Configuration", and "Tendenci Preparation" steps above.
-  Change the last parameter of the ``tendenci startproject ...`` command to create a
-  different ``/var/www/<project>/`` directory for each site, then change ``/var/www/mysite/`` in
-  all of the commands in the instructions to work with the appropriate site.
-* Configure an additional Systemd Unit file and NGINX configuration file for each site, and
-  configure additional cron jobs for each site.  Each site will need to run on a different port
+* You can follow the installation steps above but skip the "System Preparation" part, replace "mysite" with the site name you choose.
+* Configure an additional Systemd Unit file and NGINX configuration file for each site, as well as
+  additional cron jobs for each site.  Each site will need to run on a different port
   internally, so change ``8000`` in the example Systemd and NGINX configurations to a unique port
-  number for each site.  Also change the names of any log files in the configuration.
+  number for each site.  Also change the names of any log files in the conf/settings.py.
 * A separate memcached instance for each Tendenci site may optionally be used, but is not required.
 
