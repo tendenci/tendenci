@@ -194,7 +194,7 @@ def index(request, username='', template_name="profiles/index.html"):
     city_state = ', '.join([s for s in (profile.city, profile.state) if s])
     city_state_zip = ', '.join([s for s in (profile.city, state_zip, profile.country) if s])
 
-    can_edit = has_perm(request.user, 'profiles.change_profile', user_this)
+    can_edit = profile.allow_edit_by(request.user)
 
     if not can_edit:
         can_edit = request.user == user_this

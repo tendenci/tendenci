@@ -317,6 +317,11 @@ class Profile(Person):
         if has_perm(user2_compare, 'profiles.view_profile'):
             return True
 
+        # chapter leaders can view
+        chapter_membership = self.chapter_membership
+        if chapter_membership and chapter_membership.chapter.is_chapter_leader(user2_compare):
+            return True
+
         # False for everythin else
         return False
 
@@ -336,6 +341,11 @@ class Profile(Person):
                 return True
 
         if user2_compare.has_perm('profiles.change_profile', self):
+            return True
+
+        # chapter leaders can edit
+        chapter_membership = self.chapter_membership
+        if chapter_membership and chapter_membership.chapter.is_chapter_leader(user2_compare):
             return True
 
         return False
@@ -391,6 +401,12 @@ class Profile(Person):
         [membership] = self.user.membershipdefault_set.exclude(
                     status_detail='archive').order_by('-create_dt')[:1] or [None]
         return membership
+
+    @property
+    def chapter_membership(self):
+        [chapter_membership] = self.user.chaptermembership_set.exclude(
+                    status_detail='archive').order_by('-create_dt')[:1] or [None]
+        return chapter_membership
 
     def refresh_member_number(self):
         """
