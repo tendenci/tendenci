@@ -192,6 +192,7 @@ class FormEntryAdmin(admin.ModelAdmin):
     list_display = ['entry_time', 'form', 'first_name', 'last_name', 'email']
     list_filter = ['form']
     ordering = ("-entry_time",)
+    search_fields = ('form__title',)
 
     def first_name(self, instance):
         return instance.get_first_name()
@@ -210,6 +211,16 @@ class FormEntryAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(
                     reverse('form_entry_detail', args=[object_id])
                 )
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, may_have_duplicates = super(FormEntryAdmin, self).get_search_results(request, queryset, search_term)
+        if search_term:
+            qs = self.get_queryset(request)
+            # search the value field in FieldEntry
+            queryset = queryset | qs.filter(id__in=(FieldEntry.objects.filter(value__icontains=search_term).values_list('entry_id', flat=True)))
+            return queryset, False
+
+        return queryset, may_have_duplicates
 
 
 admin.site.register(Form, FormAdmin)
