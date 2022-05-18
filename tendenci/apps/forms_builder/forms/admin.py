@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from django.db import models
+from django.utils.text import unescape_string_literal
 from django.urls import re_path
 from django.contrib import admin
 from django.contrib.admin.utils import unquote
@@ -192,6 +194,8 @@ class FormEntryAdmin(admin.ModelAdmin):
     list_display = ['entry_time', 'form', 'first_name', 'last_name', 'email']
     list_filter = ['form']
     ordering = ("-entry_time",)
+    # This search_fields is just a placeholder as the search will check the value field
+    # in the form entry fields, but we can not specify the value field in here.
     search_fields = ('form__title',)
 
     def first_name(self, instance):
@@ -213,14 +217,16 @@ class FormEntryAdmin(admin.ModelAdmin):
                 )
 
     def get_search_results(self, request, queryset, search_term):
-        queryset, may_have_duplicates = super(FormEntryAdmin, self).get_search_results(request, queryset, search_term)
+        may_have_duplicates = False
         if search_term:
-            qs = self.get_queryset(request)
-            # search the value field in FieldEntry
-            queryset = queryset | qs.filter(id__in=(FieldEntry.objects.filter(value__icontains=search_term).values_list('entry_id', flat=True)))
-            return queryset, False
+            if search_term.startswith(('"', "'")) and search_term[0] == search_term[-1]:
+                search_term = unescape_string_literal(search_term)
+            queryset = queryset.filter(models.Q(id__in=(FieldEntry.objects.filter(value__icontains=search_term).values_list('entry_id', flat=True))) |
+                                       models.Q(form__title__icontains=search_term))
+            
+            return queryset, may_have_duplicates
 
-        return queryset, may_have_duplicates
+        return super(FormEntryAdmin, self).get_search_results(request, queryset, search_term)
 
 
 admin.site.register(Form, FormAdmin)
