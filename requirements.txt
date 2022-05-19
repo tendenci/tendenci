@@ -69,4 +69,4 @@ django-admin-rangefilter==0.8.1
 # for forums tests
 lxml==4.6.5
 django-q==1.3.9
-squareup==15.0.0.20211020
+squareup==19.0.0.20220512
