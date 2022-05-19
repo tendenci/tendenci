@@ -30,11 +30,6 @@
 
  </style>
 
-<script type="text/javascript" src="{% static 'js/jquery.form.min.js' %}"></script>
-<!-- this should live somewhere else to use live vs sandbox -->
-<script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
-
-
 {% endblock %}
 
 {% block content %}
@@ -335,6 +330,11 @@
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script type="text/javascript" src="{% static 'tablesorter/jquery.tablesorter.min.js' %}"></script>
 
+{% if site_merchant == 'square' %}
+<script type="text/javascript" src="{% static 'js/jquery.form.js' %}"></script>
+<!-- this should live somewhere else to use live vs sandbox -->
+<script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+{% endif %}
 
 {% if is_active %}
 {% if rp.platform == 'authorizenet' %}
@@ -464,6 +464,7 @@ $(document).ready(function(){
         return false;    // cancel
     });
 
+	{% if site_merchant == 'square' %}
     //square payment processor modal
     $('#crewModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget); // Button that triggered the modal
@@ -483,6 +484,8 @@ $(document).ready(function(){
     $.ajaxSetup({
         data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
     });
+    {% endif %}
+    
 </script>
 
 {% endblock %}
