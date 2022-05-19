@@ -1,6 +1,5 @@
 #import os
 import math
-import json
 import uuid
 #from datetime import datetime
 
@@ -15,15 +14,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.db import transaction
-from django.shortcuts import render
-from django.views.generic import TemplateView
-from django.views.generic import View
-from django.shortcuts import Http404
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
-from django.middleware.csrf import _compare_salted_tokens
-import requests
 from square.client import Client
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
