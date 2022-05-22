@@ -86,28 +86,28 @@ def search(request, template_name="articles/search.html"):
     if not request.user.is_anonymous:
         articles = articles.select_related()
 
-    query = request.GET.get('q', None)
-    if query:
-        # Handle legacy tag links
-        if "tag:" in query:
-            return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('articles'), query.replace('tag:', '')))
-
-        # Handle legacy category links
-        if "category:" in query or "sub_category:" in query:
-            key, name = query.split(':', 1)
-            category = Category.objects.filter(name__iexact=name)
-            if category.exists():
-                return HttpResponseRedirect("%s?%s=%s" %(reverse('articles'), key, name))
-            else:
-                return HttpResponseRedirect(reverse('articles'))
-
     tag = request.GET.get('tag', None)
-    form = ArticleSearchForm(request.GET, is_superuser=request.user.is_superuser)
 
     if tag:
         articles = articles.filter(tags__icontains=tag)
 
+    form = ArticleSearchForm(request.GET, is_superuser=request.user.is_superuser)
     if form.is_valid():
+        query = form.cleaned_data.get('q', None)
+        if query:
+            # Handle legacy tag links
+            if "tag:" in query:
+                return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('articles'), query.replace('tag:', '')))
+    
+            # Handle legacy category links
+            if "category:" in query or "sub_category:" in query:
+                key, name = query.split(':', 1)
+                category = Category.objects.filter(name__iexact=name)
+                if category.exists():
+                    return HttpResponseRedirect("%s?%s=%s" %(reverse('articles'), key, name))
+                else:
+                    return HttpResponseRedirect(reverse('articles'))
+
         cat = form.cleaned_data['search_category']
         category = form.cleaned_data['category']
         sub_category = form.cleaned_data['sub_category']

@@ -136,4 +136,4 @@ class ExportProfilesTask(celery.Task):
 
         return render_excel(filename, field_list, data_rows, '.csv')
 
-TaskRegistry.register(ExportProfilesTask)
+TaskRegistry().register(ExportProfilesTask)

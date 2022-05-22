@@ -1038,13 +1038,12 @@ def user_role_edit(request, username, membership_id, form_class=GroupMembershipE
 
 @login_required
 def user_membership_add(request, username, form_class=UserMembershipForm, template_name="profiles/add_membership.html"):
+    user = get_object_or_404(User, username=username)
     redirect_url = reverse('membership_default.add')
-    redirect_url = '%s?username=%s' % (redirect_url, username)
+    redirect_url = '%s?username=%s' % (redirect_url, user.username)
     # this view is redundant and not handling membership add well.
     # redirect to membership add
     return redirect(redirect_url)
-
-    user = get_object_or_404(User, username=username)
 
     try:
         Profile.objects.get(user=user)

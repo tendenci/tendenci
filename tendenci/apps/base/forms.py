@@ -3,6 +3,7 @@ import zipfile
 
 from django import forms
 from django.conf import settings
+from django.core import validators
 
 from django.core.validators import RegexValidator
 from django.forms.fields import CharField
@@ -18,6 +19,12 @@ SIMPLE_QUESTION = _('What is 9 + 13? (security question -just so we know you\'re
 
 slug_re = compile(r'^[-\w\/]+$')
 validate_slug = RegexValidator(slug_re, _(u"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."), 'invalid')
+
+
+class NextURLForm(forms.Form):
+    next = forms.CharField(validators=[
+                            validators.RegexValidator(
+                            regex=r'^/\S+$',)],)
 
 
 class ProhibitNullCharactersValidatorMixin(object):
