@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 import math
 import stripe
+from square.client import Client
+
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -49,7 +51,8 @@ DUE_SORE_CHOICES = (
 
 class RecurringPayment(models.Model):
     PLATFORM_CHOICES = (('authorizenet', 'authorizenet'),
-                        ('stripe', 'stripe'))
+                        ('stripe', 'stripe'),
+                        ('square', 'square'))
     guid = models.CharField(max_length=50)
     platform = models.CharField(max_length=50, blank=True, default='authorizenet')
     # gateway assigned ID associated with the customer profile
@@ -184,6 +187,17 @@ class RecurringPayment(models.Model):
                                     break
                 if card:
                     return {'last4': card['last4'], 'exp_year': card['exp_year'], 'exp_month': card['exp_month']}
+        elif self.platform == 'square':
+            if self.customer_profile_id:
+                api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
+                client = Client(
+                    access_token=api_key,
+                    environment= settings.SQUARE_ENVIRONMENT,
+                )
+                card = client.cards.retrieve_card(self.customer_profile_id)
+                
+                if card.is_success() and 'card' in card.body:
+                    return {'card_brand': card.body['card']['card_brand'], 'last4': card.body['card']['last_4'], 'exp_year': card.body['card']['exp_year'], 'exp_month': card.body['card']['exp_month']}
         return None
 
     def create_customer_profile_from_trans_id(self, trans_id):
@@ -703,7 +717,54 @@ class RecurringPaymentInvoice(models.Model):
             for key in response_d:
                 if hasattr(payment, key):
                     setattr(payment, key, response_d[key])
+        elif self.recurring_payment.platform == "square":
+            success = False
+            response_d = {
+                          'status_detail': 'not approved',
+                          'response_code': '0',
+                          'response_reason_code': '0',
+                          'result_code': 'Error',  # Error, Ok
+                          'message_code': '',    # I00001, E00027
+                          }
+            
+            api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
+            client = Client(
+                access_token=api_key,
+                environment= settings.SQUARE_ENVIRONMENT,
+            )
+            
+            card = client.cards.retrieve_card(self.recurring_payment.customer_profile_id) # for square it's the card id
+            if card.is_success():                
+                charge_response = client.payments.create_payment(body={
+                       "source_id": card.body["card"]['id'],
+                        "idempotency_key": str(uuid.uuid4()),
+                        "amount_money": {
+                            "amount": math.trunc(amount * 100), # amount in cents, again
+                            "currency": get_setting('site', 'global', 'currency'),
+                        },
+                       'note': description,
+                       'customer_id': card.body["card"]['customer_id']
+                      })
+                if charge_response.is_error():
+                    response_d['message_code'] = charge_response.errors[0]['code']                    
+                    response_d['message_text'] = '{cat} error={message}, code={code}'.format(
+                            message=charge_response.errors[0]['detail'], cat=charge_response.errors[0]['category'], code=charge_response.errors[0]['code'])
 
+                if charge_response.is_success():
+                    success = True
+                    response_d['status_detail'] = 'approved'
+                    response_d['response_code'] = '1'
+                    response_d['response_subcode'] = '1'
+                    response_d['response_reason_code'] = '1'
+                    response_d['response_reason_text'] = 'This transaction has been approved. (Created# %s)' % charge_response.body['payment']['created_at']
+                    response_d['trans_id'] = charge_response.body['payment']['id']
+                    response_d['result_code'] = 'Ok'
+                    response_d['message_text'] = 'Successful.'
+                    
+                # update payment
+                for key in response_d:
+                    if hasattr(payment, key):
+                        setattr(payment, key, response_d[key])
         else:
             # make a transaction using CIM
             d = {'amount': amount,

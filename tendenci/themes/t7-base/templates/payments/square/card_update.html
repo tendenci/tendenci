@@ -1,0 +1,133 @@
+{% load styled_forms %}
+<script type="text/javascript" src="{{ payment_form_url}}"></script>
+
+<script type="application/javascript">
+    window.squareInfo = {
+      applicationId: '{{ SQUARE_APPLICATION_ID }}',
+      locationId: '{{ SQUARE_LOCATION_ID }}'
+    };
+</script>
+
+<!-- /update cc - designed to be shown inside a modal on the profile -->
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title" id="crewMemberModal">Update Credit Card on file</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form novalidate id="update_cc" method='post' class="form" role="form" action='{% url 'square.update_card' rp.id %}'>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="card-element" class="control-label">
+                      Credit or debit card:
+                    </label>
+                    <div id="card-element" class="">
+                      <!-- a Square Element will be inserted here. -->
+                    </div>
+                    <br />
+                    <div id="card-errors"  class="col-sm-12" role="alert"></div>
+                </div>
+               
+                <input id='card-submit' type="submit" class="btn btn-primary" value="Save Card" style="margin-bottom: 5px;" />
+
+                <div class="col-sm-offset-3 col-sm-9" id="submit-loader" style="font-style:italic; font-size:0.9em; margin-top: 1em; display:none;">
+                  <img src="{% static 'images/ajax-loader.gif' %}" alt="{% trans 'loading' %}" title="{% trans 'loading' %}"/> {% trans 'loading...' %}
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">                
+        </div>
+        <script>
+          var form_options = {
+                target: '#crewModal',
+                success: function() { }
+            };
+
+          function squarePaymentByForm(token) {
+              // Insert the token ID into the form so it gets submitted to the server
+              var form = document.getElementById('update_cc');
+              var hiddenInput = document.createElement('input');
+              hiddenInput.setAttribute('type', 'hidden');
+              hiddenInput.setAttribute('name', 'square_token');
+              hiddenInput.setAttribute('value', token);
+              form.appendChild(hiddenInput);
+          
+              // Submit the form by ajax
+              $(form).ajaxSubmit(form_options); 
+          }
+
+          async function CardPay(fieldEl, buttonEl) {
+            // Create a card payment object and attach to page
+            const card = await window.payments.card({
+              style: {
+                '.input-container.is-focus': {
+                  borderColor: '#006AFF'
+                },
+                '.message-text.is-error': {
+                  color: '#BF0020'
+                }
+              }
+            });
+            await card.attach(fieldEl);
+
+            async function eventHandler(event) {
+              event.preventDefault();
+              // Clear any existing messages
+              window.paymentFlowMessageEl.innerText = '';
+
+              try {
+                buttonEl.disabled = true;
+                $('#submit-loader').show();
+                const result = await card.tokenize();
+                if (result.status === 'OK') {
+                  // appends to form and submits
+                  //CC always does the full amount
+                  squarePaymentByForm(result.token);
+                }
+              } catch (e) {
+                buttonEl.disabled = false;
+                $('#submit-loader').hide();
+                
+                if (e.message) {
+                  window.showError(`Error: ${e.message}`);
+                } else {
+                  window.showError('Something went wrong');
+                }
+              }
+            }
+
+            buttonEl.addEventListener('click', eventHandler);
+          }
+
+          async function SquarePaymentFlow() {
+            window.payments = Square.payments(squareInfo.applicationId, squareInfo.locationId);
+
+            window.paymentFlowMessageEl = document.getElementById('card-errors');
+
+            window.showSuccess = function(message) {
+              window.paymentFlowMessageEl.classList.add('success');
+              window.paymentFlowMessageEl.classList.remove('error');
+              window.paymentFlowMessageEl.innerText = message;
+            }
+
+            window.showError = function(message) {
+              window.paymentFlowMessageEl.classList.add('error');
+              window.paymentFlowMessageEl.classList.remove('success');
+              window.paymentFlowMessageEl.innerText = message;
+            }
+
+            // Create card payment object and attach to page
+            CardPay(document.getElementById('card-element'), document.getElementById('card-submit'));
+          }
+
+          $.ajaxSetup({
+              data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+          });
+            
+            $('#update_cc').ajaxForm(form_options);
+
+            SquarePaymentFlow();
+        </script>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

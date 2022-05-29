@@ -42,6 +42,7 @@ def view_account(request, recurring_payment_id, guid=None,
             or request.user.id == rp.user.id) or rp.guid == guid):
         raise Http403
 
+    site_merchant = (get_setting("site", "global", "merchantaccount")).lower()
     paid_payment_transactions = PaymentTransaction.objects.filter(
                                                 recurring_payment=rp,
                                                 status=True
@@ -114,7 +115,8 @@ def view_account(request, recurring_payment_id, guid=None,
                                               'is_owner': is_owner,
                                               'num_accounts': num_accounts,
                                               'memberships': rp.memberships,
-                                              'STRIPE_PUBLISHABLE_KEY': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')
+                                              'STRIPE_PUBLISHABLE_KEY': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', ''),
+                                              'site_merchant': site_merchant
                                               })
 
 @ssl_required

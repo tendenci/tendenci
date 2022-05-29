@@ -209,6 +209,9 @@ class Payment(models.Model):
             elif merchant_account == "stripe":
                 self.response_page = reverse('stripe.thank_you',
                                              args=[self.id, self.guid])
+            elif merchant_account == "square":
+                self.response_page = reverse('square.thank_you',
+                                             args=[self.id, self.guid])
             else:
                 self.response_page = "/payments/thankyou/%d" % (self.id)
 

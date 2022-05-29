@@ -1,0 +1,352 @@
+#import os
+import math
+import uuid
+#from datetime import datetime
+
+from django.shortcuts import get_object_or_404
+#from django.http import HttpResponse
+from django.conf import settings
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.template.loader import render_to_string
+from django.urls import reverse
+# from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.utils.translation import ugettext_lazy as _
+from django.db import transaction
+from square.client import Client
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+from tendenci.apps.payments.utils import payment_processing_object_updates
+from tendenci.apps.payments.utils import log_payment, send_payment_notice
+from tendenci.apps.payments.models import Payment
+from .forms import SquareCardForm, BillingInfoForm
+from .utils import payment_update_square
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.recurring_payments.models import RecurringPayment
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm
+
+def pay_online(request, payment_id, guid='', template_name='payments/square/payonline.html'):
+    if not getattr(settings, 'SQUARE_ACCESS_TOKEN', ''):
+        url_setup_guide = 'https://www.tendenci.com/help-files/setting-up-online-payment-processor-and-merchant-provider-on-a-tendenci-site/'
+        url_setup_guide = '<a href="{0}">{0}</a>'.format(url_setup_guide)
+        merchant_provider = get_setting("site", "global", "merchantaccount")
+        msg_string = str(_('ERROR: Online payment has not yet be set up or configured correctly. '))
+        if request.user.is_superuser:
+            msg_string += str(_('Please follow the guide {0} to complete the setup process for {1}, then try again.').format(url_setup_guide, merchant_provider))
+        else:
+            msg_string += str(_('Please contact the site administrator to complete the setup process.'))
+            
+        messages.add_message(request, messages.ERROR, _(msg_string))
+        
+        payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
+    
+        return HttpResponseRedirect(reverse('invoice.view', args=[payment.invoice.id]))
+
+    if settings.SQUARE_ENVIRONMENT == 'sandbox':
+        payment_form_url = "https://sandbox.web.squarecdn.com/v1/square.js"
+    else:
+        payment_form_url = "https://web.squarecdn.com/v1/square.js"
+            
+    with transaction.atomic():
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id, guid=guid)
+        form = SquareCardForm(request.POST or None)
+        billing_info_form = BillingInfoForm(request.POST or None, instance=payment)
+        currency = get_setting('site', 'global', 'currency')
+        if not currency:
+            currency = 'usd'
+        if request.method == "POST" and form.is_valid():
+            # get square token and make a payment immediately
+            api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
+            token = request.POST.get('square_token')
+            client = Client(
+                access_token=api_key,
+                environment= settings.SQUARE_ENVIRONMENT,
+            )
+
+            if billing_info_form.is_valid():
+                payment = billing_info_form.save()
+
+            # determine if we need to create a square customer (for membership auto renew)
+            customer = False
+            obj_user = None
+            membership = None
+            obj = payment.invoice.get_object()
+            if obj and hasattr(obj, 'memberships'):
+                if obj.memberships:
+                    membership = obj.memberships()[0]
+                    if membership.auto_renew and not membership.has_rp(platform='square'):
+                        obj_user = membership.user
+                    else:
+                        membership = None
+
+            if obj_user:
+                try:
+                    # Create a Customer:
+                    customer = client.customers.create_customer(
+                         body={                           
+                            "idempotency_key": str(uuid.uuid4()),
+                            "email_address": obj_user.email,
+                            "note": "For membership auto renew",                            
+                        }                                
+                    )
+                except:
+                    customer = None
+
+            # https://github.com/square/square-python-sdk/blob/master/doc/models/create-customer-response.md
+
+            # create the charge on Square's servers - this will charge the user's card
+            params = {
+                       "source_id": token,
+                        "idempotency_key": str(uuid.uuid4()),
+                        "amount_money": {
+                            "amount": math.trunc(payment.amount * 100), # amount in cents, again
+                            "currency": currency,
+                        },
+                       'note': payment.description
+                      }
+            if customer:
+                params.update({'customer_id': customer.body["customer"]['id']})
+
+            
+            charge_response = client.payments.create_payment(body=params)
+                # an example of response: https://github.com/square/square-python-sdk/blob/master/doc/models/create-payment-response.md
+            if charge_response.is_error():
+                # it's a decline
+                charge_response = '{cat} error={message}, code={code}'.format(
+                            message=charge_response.errors[0]['detail'], cat=charge_response.errors[0]['category'], code=charge_response.errors[0]['code'])
+
+            # add a rp entry now
+            elif 'status' in charge_response.body['payment'] and charge_response.body['payment']['status'] == "COMPLETED":
+                if customer and membership:
+                    new_card = client.cards.create_card(
+                        body={
+                        "idempotency_key": str(uuid.uuid4()),
+                        "source_id": token,
+                        "card": {
+                            "customer_id": customer.body["customer"]['id'],
+                        }
+                        }
+                    )
+                    
+                    if new_card.is_success():
+                        # for square it's actually the card id
+                        kwargs = {'platform': 'square',
+                                'customer_profile_id': new_card.body["card"]['id']
+                                }
+                        membership.get_or_create_rp(request.user, **kwargs)
+
+                # update payment status and object
+                if not payment.is_approved:  # if not already processed
+                    payment_update_square(request, charge_response.body['payment'], payment)
+                    payment_processing_object_updates(request, payment)
+
+                    # log an event
+                    log_payment(request, payment)
+
+                    # send payment recipients notification
+                    send_payment_notice(request, payment)
+
+            # redirect to thankyou
+            return HttpResponseRedirect(reverse('square.thank_you', args=[payment.id, payment.guid]))
+
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'form': form,
+                                              'billing_info_form': billing_info_form,
+                                              'payment_form_url': payment_form_url,
+                                              'SQUARE_APPLICATION_ID': settings.SQUARE_APPLICATION_ID,
+                                              'SQUARE_LOCATION_ID': settings.SQUARE_LOCATION_ID,
+                                              'payment': payment})
+
+
+@login_required
+def update_card(request, rp_id, template_name='payments/square/card_update.html'):
+    # square simply needs to keep the stored Card ID which gives all other data
+    rp = get_object_or_404(RecurringPayment, pk=rp_id)
+    if not has_perm(request.user, 'recurring_payments.change_recurringpayment', rp) \
+        and not (rp.user and rp.user.id == request.user.id):
+        raise Http403
+
+    form = SquareCardForm(request.POST or None)
+    if settings.SQUARE_ENVIRONMENT == 'sandbox':
+        payment_form_url = "https://sandbox.web.squarecdn.com/v1/square.js"
+    else:
+        payment_form_url = "https://web.squarecdn.com/v1/square.js"
+        
+    if request.method == "POST" and form.is_valid():
+        api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
+        token = request.POST.get('square_token')
+        client = Client(
+            access_token=api_key,
+            environment= settings.SQUARE_ENVIRONMENT,
+        )
+
+        # the older method was stripe that can still be used
+        # this keeps all the other data but updates the method to square
+        if not rp.customer_profile_id or rp.platform != 'square':
+            customer = client.customers.create_customer(
+                    body={                           
+                    "idempotency_key": str(uuid.uuid4()),
+                    "email_address": rp.user.email,
+                    "note": rp.description,                    
+                }                             
+            )
+            
+            if customer.is_success():
+                new_card = client.cards.create_card(
+                    body={
+                    "idempotency_key": str(uuid.uuid4()),
+                    "source_id": token,
+                    "card": {
+                        "customer_id": customer.body["customer"]['id'],
+                    }
+                    }
+                )
+                        
+                if new_card.is_success():
+                    rp.customer_profile_id = new_card.body["card"]['id']
+                    rp.platform = 'square'
+                    rp.save()
+                    return HttpResponse(render_to_string('payments/square/success.html'))
+        else:
+            # the card includes the customer ID so we can use that to add the new card and save it
+            old_card = client.cards.retrieve_card(rp.customer_profile_id) # for square it's the card id
+
+            # square has a many to one relationship with CC cards to customer
+            # we can save just one to keep things simple for now
+
+            # add the new card
+
+            if old_card.is_success():
+                new_card = client.cards.create_card(
+                    body={
+                    "idempotency_key": str(uuid.uuid4()),
+                    "source_id": token,
+                    "card": {
+                        "customer_id": old_card.body["card"]['customer_id'],
+                    }
+                    }
+                )
+                        
+                if new_card.is_success():
+                    rp.customer_profile_id = new_card.body["card"]['id']
+                    rp.platform = 'square'
+                    rp.save()
+                    return HttpResponse(render_to_string('payments/square/success.html'))
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form,
+                 'rp': rp,
+                'payment_form_url': payment_form_url,
+                'SQUARE_APPLICATION_ID': settings.SQUARE_APPLICATION_ID,
+                'SQUARE_LOCATION_ID': settings.SQUARE_LOCATION_ID,
+                }
+        )
+
+
+def thank_you(request, payment_id, guid='', template_name='payments/receipt.html'):
+    #payment, processed = square_thankyou_processing(request, dict(request.POST.items()))
+    payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
+
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'payment':payment})
+
+def ajax_giftcard_balance(request):
+    api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
+    token = request.POST.get('gc_token')   
+
+    client = Client(
+        access_token=api_key,
+        environment= settings.SQUARE_ENVIRONMENT,
+    )
+
+    if settings.SQUARE_ENVIRONMENT == 'sandbox':
+        # the sandbox makes testing gift card info more difficult
+        gift_card = client.gift_cards.retrieve_gift_card_from_gan(
+        body={                           
+                "gan": '7783320009963521',                            
+            }
+    )
+    else: 
+        gift_card = client.gift_cards.retrieve_gift_card_from_nonce(
+            body={                           
+                    "nonce": token,                            
+                }
+        )
+
+    # {
+    #     "gift_card": {
+    #         "balance_money": {
+    #         "amount": 5000,
+    #         "currency": "USD"
+    #         },
+    #         "created_at": "2021-05-20T22:26:54.000Z",
+    #         "gan": "7783320001001635",
+    #         "gan_source": "SQUARE",
+    #         "id": "gftc:6944163553804e439d89adb47caf806a",
+    #         "state": "ACTIVE",
+    #         "type": "DIGITAL"
+    #     }
+    # }
+
+    if gift_card.is_success():
+        #if state = Active and balance currency = USD
+        return JsonResponse(gift_card.body['gift_card']['balance_money'], status=gift_card.status_code)
+    elif gift_card.is_error():
+        return JsonResponse(gift_card.errors, safe=False, status=gift_card.status_code)
+
+def ajax_charge_card(request):
+    #this is meant for gift cards but could be used for all card transactions
+
+    with transaction.atomic():        
+        currency = get_setting('site', 'global', 'currency')
+        if not currency:
+            currency = 'USD'
+        if request.method == "POST":
+            # get square token and make a payment immediately
+            api_key = getattr(settings, 'SQUARE_ACCESS_TOKEN', '')
+            token = request.POST.get('square_token')
+            amount = request.POST.get('amount_money') #this should be an int, the amount in cents
+            payment_id = request.POST.get('payment_id')
+            guid = request.POST.get('guid')
+
+            payment = Payment.objects.get(pk=payment_id)
+
+            client = Client(
+                access_token=api_key,
+                environment= settings.SQUARE_ENVIRONMENT,
+            )
+
+            # create the charge on Square's servers - this will charge the user's card
+            params = {
+                       "source_id": token,
+                        "idempotency_key": str(uuid.uuid4()),
+                        "amount_money": {
+                            "amount": int(amount), # amount in cents, again
+                            "currency": currency,
+                        },
+                       'note': payment.description
+                      }
+            
+            charge_response = client.payments.create_payment(body=params)
+                # an example of response: https://github.com/square/square-python-sdk/blob/master/doc/models/create-payment-response.md
+            if charge_response.is_error():
+                return JsonResponse(charge_response.errors, safe=False, status=charge_response.status_code)
+
+            if charge_response.is_success():
+                # update payment status and object
+                if not payment.is_approved:  # if not already processed
+                    payment_update_square(request, charge_response.body['payment'], payment)
+                    payment_processing_object_updates(request, payment)
+
+                    # log an event
+                    log_payment(request, payment)
+
+                    # send payment recipients notification
+                    send_payment_notice(request, payment)
+            
+                messages.add_message(request, messages.SUCCESS, "Card Charge Successful")
+                return JsonResponse(charge_response.body['payment'], safe=False, status=charge_response.status_code)
+        return JsonResponse("This needs to be a POST")
+        

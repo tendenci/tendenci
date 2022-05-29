@@ -1,0 +1,331 @@
+{% extends "payments/base.html" %}
+{% load payments_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block extra_head %}
+{{ block.super }}
+<script type="text/javascript" src="{{ payment_form_url}}"></script>
+
+<script type="application/javascript">
+    window.squareInfo = {
+      applicationId: '{{ SQUARE_APPLICATION_ID }}',
+      locationId: '{{ SQUARE_LOCATION_ID }}',
+      payment_id: '{{ payment.pk }}',
+      guid: '{{ payment.guid }}',
+      amount: ({{ payment.amount }} * 100), //square uses ints for comparison
+      gc_balance: 0
+    };
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="well basic-info">
+  <div>{% trans 'Invoice #' %}: {{ payment.invoice.id }}</div>
+  <div>{% trans 'Description' %}: {{ payment.description }}</div>
+  <div id="total-amount">{% trans 'Total' %}: {{ payment.amount|format_currency }}</div>
+</div>
+
+<div class="forms">
+
+{% if billing_info_form.errors.values %}
+    <div class="errors">
+        <ul>
+            {{ billing_info_form.non_field_errors }}
+            {% for field in billing_info_form %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                    <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+
+        </ul>
+    </div>
+{% endif %}
+
+
+<p>{% trans 'Please fill out the fields below' %}</p>
+
+
+
+
+<form action="" method="POST" id="payment-form" class="form-horizontal">{% csrf_token %}
+  <h3>{% trans 'Payment Information' %}</h3>
+    <div class="form-group">
+        <label for="gift-card-container" class="col-sm-3 control-label">
+          Gift card:
+        </label>
+        <div id="gift-card-container">
+          <!-- a Square Element will be inserted here. -->
+        </div>
+        <br />
+        <div id="gift-card-info"  class="col-sm-offset-3 col-sm-9" ></div>
+        <div class="col-sm-offset-3 col-sm-9" >
+          <button id="gift-card-balance-button" class="btn btn-primary" type="button">Check Gift Card Balance</button>
+          <button id="gift-card-button" class="btn btn-primary" type="button">Pay with Gift Card</button>
+        </div>
+        <div class="col-sm-offset-3 col-sm-9" id="gc-loader" style="font-style:italic; font-size:0.9em; margin-top: 1em; display:none;">
+          <img src="{% static 'images/ajax-loader.gif' %}" alt="{% trans 'loading' %}" title="{% trans 'loading' %}"/> {% trans 'loading...' %}
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="card-element" class="col-sm-3 control-label">
+          Credit or debit card:
+        </label>
+        <div id="card-element" class="col-sm-9">
+          <!-- a Square Element will be inserted here. -->
+        </div>
+        <br />
+        <div id="card-errors"  class="col-sm-offset-3 col-sm-9" role="alert"></div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="id_card_name" class="required col-sm-3  control-label">{% trans 'Name on Card' %}:</label>
+        <div class="col-sm-9">
+        <input class="card-name form-control" id="id_card_name" maxlength="100" type="text">
+        <span class="error text-danger">{{ form.card_name.errors }}</span>
+        </div>
+    </div>
+
+
+    <h3>Billing Information</h3>
+    {% for field in billing_info_form %}
+     <div class="form-group">
+        <label for="id_{{ field.name }}" class="{% if field.field.required %}required {% endif %}col-sm-3 control-label">{{ field.label }}:</label>
+        <div class="col-sm-{% if field.field.width %}{{ field.field.width }}{% else %}9{% endif %}">
+          {{ field }}
+          <span class="error text-danger">{{ field.errors }}</span>
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+    <div class="col-sm-offset-3 col-sm-9">
+    <button id='card-submit' type="submit" class="submit-button btn btn-primary">{% trans 'Submit Payment' %}</button>
+     </div>
+
+    <div class="col-sm-offset-3 col-sm-9" id="submit-loader" style="font-style:italic; font-size:0.9em; margin-top: 1em; display:none;">
+      <img src="{% static 'images/ajax-loader.gif' %}" alt="{% trans 'loading' %}" title="{% trans 'loading' %}"/> {% trans 'loading...' %}
+    </div>
+</form>
+</div>
+
+<p>&nbsp;</p>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+<script type="text/javascript">
+  function squarePaymentByForm(token) {
+		  // Insert the token ID into the form so it gets submitted to the server
+		  var form = document.getElementById('payment-form');
+		  var hiddenInput = document.createElement('input');
+		  hiddenInput.setAttribute('type', 'hidden');
+		  hiddenInput.setAttribute('name', 'square_token');
+		  hiddenInput.setAttribute('value', token);
+		  form.appendChild(hiddenInput);
+	
+		  // Submit the form
+		  form.submit();
+	}
+
+  function squarePaymentAsync(token, amount) {
+
+   $.post( '/payments/square/card/charge/', {
+      payment_id: squareInfo.payment_id,
+      guid: squareInfo.guid,
+      square_token: token,
+      amount_money: amount //amount should be sent in cents, $10.00 is 1000
+   } )
+    .done( function( data ) {
+        window.showSuccess('Card successfully charged.');
+        window.location = location.origin + '/payments/payonline/{{ payment.invoice.id }}/';
+    } )
+    .fail( function( data ) {
+      buttonEl.disabled = false;
+      $('#submit-loader').hide();
+      window.showError(`Error: ${data.responseJSON[0]['detail']}`);
+    } );
+ }
+
+ function squareBalanceAsync(token, balanceEl, payEl) {
+
+   $.post( '/payments/square/giftcard/balance/', {
+        gc_token: token
+   } )
+    .done( function( data ) {
+        balanceEl.disabled = false;
+        payEl.disabled = false;
+        $('#gc-loader').hide();
+        document.getElementById('gift-card-info').innerText = `Available Balance: ${(data['amount'] / 100)} ${data['currency']}`
+
+        squareInfo.gc_balance = data['amount'];
+    } )
+    .fail( function( data ) {
+      balanceEl.disabled = false;
+      payEl.disabled = false;
+      $('#gc-loader').hide();
+      console.log(data);
+      document.getElementById('gift-card-info').innerText = `Error: ${data.responseJSON[0]['detail']}`;
+
+      squareInfo.gc_balance = 0;
+    } );
+ }
+
+  async function GiftCardPay(fieldEl, balanceEl, payEl) {
+    var token = '';
+    const giftCard = await window.payments.giftCard();
+    await giftCard.attach(fieldEl);
+
+    async function balanceHandler(event) {
+      event.preventDefault();
+      // Clear any existing messages
+      document.getElementById('gift-card-info').innerText = '';
+
+      try {
+        balanceEl.disabled = true;
+        payEl.disabled = true;
+        $('#gc-loader').show();
+
+        if(!token){
+          const result = await giftCard.tokenize();
+          if (result.status === 'OK') {
+            token = result.token;
+          }
+        }
+        squareBalanceAsync(token, balanceEl, payEl);
+      } catch (e) {
+        balanceEl.disabled = false;
+        payEl.disabled = false;
+        $('#gc-loader').hide();
+        token = '';
+        if (e.message) {
+          document.getElementById('gift-card-info').innerText = `Error: ${e.message}`;
+        } else {
+          document.getElementById('gift-card-info').innerText = 'Something went wrong';
+        }
+      }
+    }
+
+    async function chargeHandler(event) {
+      event.preventDefault();
+      // Clear any existing messages
+      window.paymentFlowMessageEl.innerText = '';
+      //clear for actual payment
+      token = '';
+
+      try {
+        balanceEl.disabled = true;
+        payEl.disabled = true;
+        $('#gc-loader').show();
+
+        if(!token){
+          const result = await giftCard.tokenize();
+          if (result.status === 'OK') {
+            token = result.token;
+            squareBalanceAsync(token, balanceEl, payEl);
+          }
+        }
+
+        if (squareInfo.amount >= squareInfo.gc_balance) {
+          //charge the whole GC balance then return to the amount left
+          squarePaymentAsync(token, squareInfo.gc_balance);
+        } else {
+          // appends to form and submits
+          squarePaymentByForm(token);
+        }
+      } catch (e) {
+        balanceEl.disabled = false;
+        payEl.disabled = false;
+        $('#gc-loader').hide();
+        
+        if (e.message) {
+          document.getElementById('gift-card-info').innerText = `Error: ${e.message}`;
+        } else {
+          document.getElementById('gift-card-info').innerText = 'Something went wrong';
+        }
+      }
+    }
+
+    balanceEl.addEventListener('click', balanceHandler);
+    payEl.addEventListener('click', chargeHandler);  
+  }
+
+  async function CardPay(fieldEl, buttonEl) {
+    // Create a card payment object and attach to page
+    const card = await window.payments.card({
+      style: {
+        '.input-container.is-focus': {
+          borderColor: '#006AFF'
+        },
+        '.message-text.is-error': {
+          color: '#BF0020'
+        }
+      }
+    });
+    await card.attach(fieldEl);
+
+    async function eventHandler(event) {
+      event.preventDefault();
+      // Clear any existing messages
+      window.paymentFlowMessageEl.innerText = '';
+
+      try {
+        buttonEl.disabled = true;
+        $('#submit-loader').show();
+        const result = await card.tokenize();
+        if (result.status === 'OK') {
+          // appends to form and submits
+          //CC always does the full amount
+          squarePaymentByForm(result.token);
+        }
+      } catch (e) {
+        buttonEl.disabled = false;
+        $('#submit-loader').hide();
+        
+        if (e.message) {
+          window.showError(`Error: ${e.message}`);
+        } else {
+          window.showError('Something went wrong');
+        }
+      }
+    }
+
+    buttonEl.addEventListener('click', eventHandler);
+  }
+
+  async function SquarePaymentFlow() {
+    // Create card payment object and attach to page
+    CardPay(document.getElementById('card-element'), document.getElementById('card-submit'));
+    GiftCardPay(document.getElementById('gift-card-container'), document.getElementById('gift-card-balance-button'), document.getElementById('gift-card-button'));
+  }
+
+  window.payments = Square.payments(squareInfo.applicationId, squareInfo.locationId);
+
+  window.paymentFlowMessageEl = document.getElementById('card-errors');
+
+  window.showSuccess = function(message) {
+    window.paymentFlowMessageEl.classList.add('success');
+    window.paymentFlowMessageEl.classList.remove('error');
+    window.paymentFlowMessageEl.innerText = message;
+  }
+
+  window.showError = function(message) {
+    window.paymentFlowMessageEl.classList.add('error');
+    window.paymentFlowMessageEl.classList.remove('success');
+    window.paymentFlowMessageEl.innerText = message;
+  }
+
+  $.ajaxSetup({
+      data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+  });
+
+  SquarePaymentFlow();
+</script>
+{% endblock %}
