@@ -160,10 +160,13 @@ if settings.USE_S3_STORAGE:
                  {'file_type': 'static'},
                     name='redirect_to_s3'),
         # this is basically for those images with relative urls in the theme .css files.
-        re_path(r'^themes/(?P<path>.*)$',
-                files_views.redirect_to_s3,
-                {'file_type': 'themes'},
-                    name='redirect_to_s3'),
+        # re_path(r'^themes/(?P<path>.*)$',
+        #         files_views.redirect_to_s3,
+        #         {'file_type': 'themes'},
+        #             name='redirect_to_s3'),
+        re_path(r'^themes/(?P<path>.*)$', static.serve, {
+            'document_root': settings.THEMES_DIR,
+        }),
     ] + urlpatterns
 
 # Favicon url to prevent 404 from some browsers.

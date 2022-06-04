@@ -376,10 +376,14 @@ class FileTinymceCreateView(CreateView):
         # truncate name to 20 chars length
         if len(name) > 20:
             name = name[:17] + '...'
+        if settings.USE_S3_STORAGE:
+            mime_type = mimetypes.guess_type(f.url)
+        else:
+            mime_type = mimetypes.guess_type(f.path)[0] or 'image/png'
         data = {'files': [{
             'url': self.object.get_absolute_url(),
             'name': name,
-            'type': mimetypes.guess_type(f.path)[0] or 'image/png',
+            'type': mime_type,
             'thumbnailUrl': thumbnail_url,
             'size': self.object.get_size(),
             'deleteUrl': reverse('file.delete', args=[self.object.pk]),

@@ -292,9 +292,9 @@ def create_new_template(request, form_class=AddTemplateForm):
                 default_content = ''
             with open(template_full_path, 'w') as f:
                 f.write(default_content)
-            if settings.USE_S3_STORAGE:
-                s3_path = os.path.join(settings.THEME_S3_PATH, selected_theme, 'templates', template_full_name)
-                save_file_to_s3(template_full_path, dest_path=s3_path, public=False)
+            # if settings.USE_S3_STORAGE:
+            #     s3_path = os.path.join(settings.THEME_S3_PATH, selected_theme, 'templates', template_full_name)
+            #     save_file_to_s3(template_full_path, dest_path=s3_path, public=False)
             ret_dict['created'] = True
             ret_dict['template_name'] = template_full_name
         else:
