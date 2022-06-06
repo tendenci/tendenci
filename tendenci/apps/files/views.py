@@ -64,11 +64,12 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         constrain=constrain)
 
     cached_image = cache.get(cache_key)
-
     if cached_image:
         if file.type() != 'image':
             # log an event
             EventLog.objects.log(instance=file)
+        if settings.USE_S3_STORAGE:
+            return redirect(cached_image)
         return redirect('%s%s' % (get_setting('site', 'global', 'siteurl'), cached_image))
 
     # basic permissions
