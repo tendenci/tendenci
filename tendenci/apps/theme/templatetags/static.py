@@ -66,11 +66,11 @@ class ThemeStaticNode(StaticNode):
                         if not os.path.isdir(static_path):
                             continue
                         local_static_url = static_url = '/themes/'+cur_theme+'/'+static_dir+'/'
-                        if settings.USE_S3_STORAGE:
-                            static_url = '%s/%s/%s/themes/%s/%s/'%(
-                                settings.S3_ROOT_URL, settings.AWS_STORAGE_BUCKET_NAME,
-                                settings.AWS_LOCATION, cur_theme, static_dir
-                            )
+                        # if settings.USE_S3_STORAGE:
+                        #     static_url = '%s/%s/%s/themes/%s/%s/'%(
+                        #         settings.S3_ROOT_URL, settings.AWS_STORAGE_BUCKET_NAME,
+                        #         settings.AWS_LOCATION, cur_theme, static_dir
+                        #     )
                         theme_search_info.append((static_path, local_static_url, static_url))
             if theme == active_theme:
                 _cached_theme_search_info = (theme, theme_search_info)

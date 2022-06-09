@@ -61,7 +61,7 @@
             </div>
             
             <div class="col-sm-10">
-              {% if request.user.is_staff or request.user.id == user_this.id  %}
+              {% if can_edit or request.user.id == user_this.id  %}
               <div class="pull-right">
               <a class="btn btn-default" href="{% url "profile.edit" user_this.id %}">{% trans "Edit Profile" %}</a>
               {% if user_this == request.user %}
@@ -204,7 +204,7 @@
         </div>
         {% endif %}
         
-        {% if request.user == user_this or request.user.profile.is_superuser %}
+        {% if request.user == user_this or can_edit %}
         
         <!-- GROUPS -->
         <h3>{% trans 'Groups' %}
@@ -241,7 +241,7 @@
       </div>
       
       <div class="col-md-8">
-        {% if request.user == user_this or request.user.profile.is_superuser %}
+        {% if request.user == user_this or can_edit %}
         <div>
           
                     

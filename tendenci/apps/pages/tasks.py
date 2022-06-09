@@ -1,12 +1,12 @@
 from builtins import str
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
-from celery.task import Task
+import celery
 from tendenci.apps.exports.utils import render_csv
 from tendenci.apps.pages.models import Page
 from tendenci.apps.base.utils import escape_csv
 
-class PagesExportTask(Task):
+class PagesExportTask(celery.Task):
     """Export Task for Celery
     This exports all active pages
     """

@@ -358,10 +358,16 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     if redirect:
         return HttpResponseRedirect(reverse('events'))
 
-    query = request.GET.get('q', None)
+    start_dt = datetime.now()
+    end_dt = None
+    form = EventSearchForm(request.GET or {'start_dt':start_dt.strftime('%Y-%m-%d')},
+                           user=request.user)
+
     # Handle legacy tag links
-    if query and "tag:" in query:
-        return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('event.search'), query.replace('tag:', '')))
+    if form.is_valid():
+        query = form.cleaned_data.get('q', None)
+        if query and "tag:" in query:
+            return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('event.search'), query.replace('tag:', '')))
 
     filters = get_query_filters(request.user, 'events.view_event')
     events = Event.objects.filter(filters).distinct()
@@ -369,15 +375,12 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     if request.user.is_authenticated:
         events = events.select_related()
 
-    start_dt = datetime.now()
-    end_dt = None
     event_type = ''
     event_place_type = None
     national_only = None
     state = None
     with_registration = None
-    form = EventSearchForm(request.GET or {'start_dt':start_dt.strftime('%Y-%m-%d')},
-                           user=request.user)
+    
     if form.is_valid():
         with_registration = form.cleaned_data.get('registration', None)
         event_type = form.cleaned_data.get('event_type', None)
@@ -1995,7 +1998,7 @@ def register(request, event_id=0,
 
     if (request.method == 'POST') and management_forms_tampered(formsets=[registrant, addon_formset]):
         # our forms has been tampered, maliciously likely
-        return HttpResponseRedirect(request.get_full_path())
+        return HttpResponseRedirect(reverse('event.register', args=[event.pk]))
     
 
     # REGISTRATION form
@@ -2091,6 +2094,9 @@ def register(request, event_id=0,
                             # email the admins as well
 
                             email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+
+                            if reg_conf.external_payment_link:
+                                return HttpResponseRedirect(reg_conf.external_payment_link)
 
                             return HttpResponseRedirect(reverse(
                                 'payment.pay_online',

@@ -344,7 +344,7 @@ def subscribe_staff_member_to_ticket(ticket, user):
 
 def update_ticket(request, ticket_id, public=False):
     if not (public or (request.user.is_authenticated and request.user.is_active and (request.user.is_staff or helpdesk_settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE))):
-        return HttpResponseRedirect('%s?next=%s' % (reverse('login'), request.path))
+        return HttpResponseRedirect('%s?next=%s' % (reverse('login'), reverse('helpdesk_update', args=[ticket_id])))
 
     ticket = get_object_or_404(Ticket, id=ticket_id)
 

@@ -210,7 +210,7 @@ class MarketingStepFourForm(forms.ModelForm):
 class MarketingStepFiveForm(FormControlWidgetMixin, forms.ModelForm):
     create_article = forms.BooleanField(label=_('Create an Article from this Newsletter?'), required=False)
     schedule_send = forms.BooleanField(label=_('Schedule to Send?'), required=False)
-    schedule_send_dt = forms.SplitDateTimeField(label=_('Starts On'),
+    schedule_send_dt = forms.SplitDateTimeField(label=_('Starts On'), required=False,
                                   input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
                                   input_time_formats=['%I:%M %p', '%H:%M:%S'])
     class Meta:
@@ -232,8 +232,6 @@ class MarketingStepFiveForm(FormControlWidgetMixin, forms.ModelForm):
         else:
             self.fields['schedule_send_dt'].initial = datetime.datetime.now() + datetime.timedelta(days=1)
 
-            
-
     def clean_schedule_send_dt(self):
         schedule_send_dt = self.cleaned_data['schedule_send_dt']
         if schedule_send_dt and schedule_send_dt < datetime.datetime.now() + datetime.timedelta(minutes=1):
@@ -247,6 +245,11 @@ class MarketingStepFiveForm(FormControlWidgetMixin, forms.ModelForm):
         if not is_newsletter_relay_set():
             raise forms.ValidationError(_('Email relay is not configured properly.'
                                             ' Newsletter cannot be sent.'))
+        if 'schedule_send' in data and data['schedule_send']:
+            if not 'schedule_send_dt' in data or not data['schedule_send_dt']:
+                raise forms.ValidationError(_("You've checked Schedule to Send, please also pick a date and time to send."))
+            if not 'schedule_type' in data or not data['schedule_type']:
+                raise forms.ValidationError(_("Please select Frequency."))
 
         return data
 

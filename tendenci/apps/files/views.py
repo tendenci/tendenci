@@ -64,11 +64,12 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         constrain=constrain)
 
     cached_image = cache.get(cache_key)
-
     if cached_image:
         if file.type() != 'image':
             # log an event
             EventLog.objects.log(instance=file)
+        if settings.USE_S3_STORAGE:
+            return redirect(cached_image)
         return redirect('%s%s' % (get_setting('site', 'global', 'siteurl'), cached_image))
 
     # basic permissions
@@ -376,10 +377,14 @@ class FileTinymceCreateView(CreateView):
         # truncate name to 20 chars length
         if len(name) > 20:
             name = name[:17] + '...'
+        if settings.USE_S3_STORAGE:
+            mime_type = mimetypes.guess_type(f.url)
+        else:
+            mime_type = mimetypes.guess_type(f.path)[0] or 'image/png'
         data = {'files': [{
             'url': self.object.get_absolute_url(),
             'name': name,
-            'type': mimetypes.guess_type(f.path)[0] or 'image/png',
+            'type': mime_type,
             'thumbnailUrl': thumbnail_url,
             'size': self.object.get_size(),
             'deleteUrl': reverse('file.delete', args=[self.object.pk]),

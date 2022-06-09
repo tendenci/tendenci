@@ -1,14 +1,14 @@
-from builtins import str
-from csv import writer
 from datetime import datetime
 
-from django.urls import path, re_path
+from django.db import models
+from django.utils.text import unescape_string_literal
+from django.urls import re_path
 from django.contrib import admin
 from django.contrib.admin.utils import unquote
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.urls import reverse
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect, StreamingHttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
@@ -19,7 +19,8 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
 from tendenci.apps.forms_builder.forms.models import Form, Field, FieldEntry, Pricing, FormEntry
 from tendenci.apps.forms_builder.forms.forms import FormAdminForm, FormForField, PricingForm
-from tendenci.apps.forms_builder.forms.utils import form_entries_to_csv_writer
+from tendenci.apps.forms_builder.forms.utils import form_entries_to_csv_writer, iter_form_entries
+from tendenci.apps.event_logs.models import EventLog
 
 import os
 import mimetypes
@@ -46,7 +47,7 @@ class FieldAdminForm(FormForField):
     class Meta:
         model = Field
         # django 1.8 requires either 'fields' or 'exclude' for ModelForm
-        exclude = ()
+        exclude = ('remember', )
 
 
 class FieldAdmin(admin.TabularInline):
@@ -156,15 +157,12 @@ class FormAdmin(TendenciBaseModelAdmin):
         Output a CSV file to the browser containing the entries for the form.
         """
         form = get_object_or_404(Form, id=form_id)
-        response = HttpResponse(content_type='text/csv')
+        EventLog.objects.log()
+        response = StreamingHttpResponse(
+            streaming_content=(iter_form_entries(form)),
+            content_type='text/csv',)
         csvname = '%s-%s.csv' % (form.slug, slugify(datetime.now().ctime()))
         response['Content-Disposition'] = 'attachment; filename="%s"' % csvname
-        csv_writer = writer(response)
-        # Write out the column names and store the index of each field
-        # against its ID for building each entry row. Also store the IDs of
-        # fields with a type of FileField for converting their field values
-        
-        form_entries_to_csv_writer(csv_writer, form)
         
         return response
 
@@ -196,6 +194,9 @@ class FormEntryAdmin(admin.ModelAdmin):
     list_display = ['entry_time', 'form', 'first_name', 'last_name', 'email']
     list_filter = ['form']
     ordering = ("-entry_time",)
+    # This search_fields is just a placeholder as the search will check the value field
+    # in the form entry fields, but we can not specify the value field in here.
+    search_fields = ('form__title',)
 
     def first_name(self, instance):
         return instance.get_first_name()
@@ -214,6 +215,18 @@ class FormEntryAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(
                     reverse('form_entry_detail', args=[object_id])
                 )
+
+    def get_search_results(self, request, queryset, search_term):
+        may_have_duplicates = False
+        if search_term:
+            if search_term.startswith(('"', "'")) and search_term[0] == search_term[-1]:
+                search_term = unescape_string_literal(search_term)
+            queryset = queryset.filter(models.Q(id__in=(FieldEntry.objects.filter(value__icontains=search_term).values_list('entry_id', flat=True))) |
+                                       models.Q(form__title__icontains=search_term))
+            
+            return queryset, may_have_duplicates
+
+        return super(FormEntryAdmin, self).get_search_results(request, queryset, search_term)
 
 
 admin.site.register(Form, FormAdmin)

@@ -1,11 +1,11 @@
-from celery.task import Task
-from celery.registry import tasks
+import celery
+from celery.app.registry import TaskRegistry
 from tendenci.apps.imports.utils import render_excel
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.base.utils import escape_csv
 
 
-class ExportProfilesTask(Task):
+class ExportProfilesTask(celery.Task):
 
     def run(self, **kwargs):
         """
@@ -136,4 +136,4 @@ class ExportProfilesTask(Task):
 
         return render_excel(filename, field_list, data_rows, '.csv')
 
-tasks.register(ExportProfilesTask)
+TaskRegistry().register(ExportProfilesTask)

@@ -12,7 +12,7 @@
     href="{{ photo_set.get_absolute_url }}">
       
       {% if photo_set.get_cover_photo %}
-      <img class="img-responsive" style="width:100%;" src="{{ photo_set.get_cover_photo.get_small_url }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" />
+      <img class="img-responsive" style="width:100%;" src="{{ photo_set.get_cover_photo.get_medium_500_url }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" />
       {% else %}
       <img class="img-responsive" style="width:100%;" src="{{ photo_set.get_default_cover_photo }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" />
       {% endif %}

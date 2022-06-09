@@ -1,23 +1,21 @@
-The setup process is broken into three sections.  The first section covers required setup needed in
-all cases.  The second section covers optional additional setup for development purposes.  The third
-section covers recommended but optional setup to prepare for running a live site.
+The setup process is broken into three sections - **Basic Setup**, **Development Setup** and **Live Site Setup**.  The Basic Setup covers required setup needed in
+all cases.  The second section, Development Setup, covers additional setup for development purposes.  The third section, Live Site Setup, covers recommended but optional setup to prepare for running a live site.
 Steps required for testing are documented separately.
 
 
-Basic Setup
-===========
+Section 1. Basic Setup
+======================
 
 If you are new to Tendenci, we recommend you setup a copy on your local system before attempting to
 install on public hosting.  This will allow you to experiment with the setup process, with Tendenci
 itself, with your site design/layout, and with themes before building a real site.  We strongly
-recommend installing Tendenci within a virtual environment, which will enable you to install/run Ubuntu within your existing OS,
-and will also make it easy to setup/test/discard multiple copies/configurations of Tendenci.
+recommend installing Tendenci within a virtual environment, which will enable you to install/run Ubuntu within your existing OS, and will also make it easy to setup/test/discard multiple copies/configurations of Tendenci.
 
 
 System Requirements
 -------------------
 
-These instructions cover the installation of Tendenci on a system running Ubuntu 20.04 LTS and Ubuntu 18.04 LTS. 
+These instructions cover the installation of Tendenci on a system running Ubuntu 20.04 LTS and Ubuntu 18.04 LTS. Unless specified, all commands apply for both Ubuntu versions. 
 
 It should technically be possible to install Tendenci on nearly any Linux, Mac, or Windows system,
 and some partial instructions for installing on macOS are included below.  However, we generally
@@ -27,8 +25,8 @@ documented on Ubuntu.
 For testing purposes, we recommend using a virtual machine with at least:
 
 * 2 CPU cores
-* 3GB of RAM
-* 6GB of storage
+* 4GB of RAM
+* 10GB of storage
 
 If necessary, you may be able to run Tendenci on a VM with as little as 1 CPU core, 2GB of RAM, and
 3GB of storage, but you will likely find that to be too slow/constrained even for testing purposes.
@@ -53,8 +51,7 @@ Also ensure that Ubuntu is configured to automatically install security updates:
     sudo dpkg-reconfigure -plow unattended-upgrades
 
 
-Ubuntu 20.04 LTS
-""""""""""""""""
+**Ubuntu 20.04 LTS Only**
 
 Install the required system dependencies (Ubuntu 20.04 LTS comes with Python 3.8, so no need to install Python 3):
 ::
@@ -63,8 +60,7 @@ Install the required system dependencies (Ubuntu 20.04 LTS comes with Python 3.8
       libpq-dev python3-dev
 
 
-Ubuntu 18.04 LTS
-""""""""""""""""
+**Ubuntu 18.04 LTS Only**
 
 Install the required system dependencies:
 ::
@@ -122,6 +118,7 @@ to install the Command Line tools it comes with. To install these, open Xcode, c
 menu item in the top left of the screen near the Apple logo, then click "Preferences", then click
 "Downloads". Then click install on the line next to Command Line Tools.
 
+
 Database Preparation
 --------------------
 
@@ -141,6 +138,7 @@ Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB
 ::
 
     # switch to the "postgres" user assuming installation above went correctly
+    sudo -i -u postgres
     DB_USER=mysite
     echo "DB_USER="$DB_USER
     DB_PASS=mysite
@@ -151,24 +149,22 @@ Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB
 Verify what you typed is what you intended. Next create your database *still* as the 'postgres' user:
 ::
 
-    sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
-    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
-    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
-    sudo -u postgres psql -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
-    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
+    psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
+    psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
+    psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
+    psql -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
+    psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
+    psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
+    psql -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
+    psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
+    psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
     
     # confirm your database was created correctly
-    sudo -u postgres psql -l
+    psql -l
+    
+    # exit postgres user
+    exit
 
-    # verify path statement reads as your admin Ubuntu user which is by default "root"
-    whoami
-    # this should return something like:
-    root@tendenci:/home/ed# whoami
-    root
 
 Database Preparation on macOS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -179,116 +175,101 @@ If you would like a database GUI, we recommend `PGAdmin <http://www.pgadmin.org/
 
 The commands shown above for creating the database and user on Ubuntu should also work on macOS.
 
-If you are still in "sudo postgres" mode, meaning your command prompt reads "postgres@localhost", you need to exit from the "sudo postgres" by typing "exit" which should return you to "root" or the admin account.
 
-Virtualenv Preparation
-----------------------
+Virtual Environment (venv) Preparation
+---------------------------------------
 
-Virtualenv enables a complete Python environment to be stored within a single directory, which helps
-keep the system clean, and makes it easy to run multiple versions of Python, Python libraries, or
-Tendenci within a single VM or server.  While not strictly required, we recommend using virtualenv
-with Tendenci.
+Virtual environments enables a complete Python environment to be stored within a single directory, which helps keep the system clean, and makes it easy to run multiple versions of Python, Python libraries, or Tendenci within a single VM or server. 
 
-Please make sure, that you only use root permissions where advised! (Please do NOT sudo or install as root as that defeats the purpose of a virtualenv). Otherwise, the installation will fail!
+Please make sure, that you only use root permissions where advised! (Please do NOT sudo or install as root as that defeats the purpose of a venv). Otherwise, the installation will fail!
 
-Prepare a virtualenv for Tendenci:
+Create a virtual environment:
 ::
 
     # whoami - make sure you are NOT "root". If so, type "exit" to back up one level.
-    sudo apt install virtualenv
     sudo mkdir -p /srv
     sudo chown "$(id -u -n)" /srv/
     cd /srv/
-    # For Ubuntu 20.04 LTS
-    virtualenv mysite
-    # For Ubuntu 18.04 LTS
-    python3.8 -m virtualenv -p python3.8 mysite
-    sudo chown root /srv/
+    python3 -m venv venv_mysite
+    
+    
+Note that you can use whatever name for your virtual environment. Just don't forget to replace "venv_mysite" with the name you selected when activating the virtual environment.
 
-To use the virtualenv, you must "activate" it:
+
+Activate your virtual environment:
 ::
 
-    source /srv/mysite/bin/activate
+    source /srv/venv_mysite/bin/activate
     # verify you are in the venv environment you created
     which python
-    /srv/mysite/bin/python
+    /srv/venv_mysite/bin/python
 
-You can "deactivate" the virtualenv using:
+You can "deactivate" the venv using:
 ::
 
     deactivate
 
-Activating the virtualenv adjusts your ``$PATH`` so that running ``python``, ``pip``, or other
-commands will run the versions in the virtualenv instead of the versions installed in the base
-system.
+Activating the virtual environment adjusts your ``$PATH`` so that running ``python``, ``pip``, or other commands will run the versions in the virtual environment instead of the versions installed in the base system.
 
-The ``pip`` in the virtualenv automatically installs Python libraries into the virtualenv without
-modifying the base system.  The ``python`` in the virtualenv automatically uses the Python libraries
-within the virtualenv instead of any system-level libraries.
+Note that you must "activate" the virtual environment every time you open a new terminal or SSH session.  If your command prompt does not begin with ``(venv_mysite)``, then you have not activated the venv, and any ``python`` or ``pip`` commands you run will use the system versions of those
+commands instead of the venv versions, which may have unexpected results.
 
-Note that you must "activate" the virtualenv every time you open a new terminal or SSH session.  If
-your command prompt does not begin with ``(mysite)``, then you have not activated the
-virtualenv, and any ``python`` or ``pip`` commands you run will use the system versions of those
-commands instead of the virtualenv versions, which may have unexpected results.
 
-Maybe also consider virtualenvwrapper in your VM for convenience.
 
-Virtualenv on macOS
-~~~~~~~~~~~~~~~~~~
+Virtual Environment on macOS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To prepare a virtualenv for Tendenci:
+The command used to create a virtual environment on macOS is the same:
 ::
 
-    virtualenv -p venv
+    python3 -m venv venv_mysite
 
-If you have anaconda installed on your machine, you must specify the path to the version of Python
-that you would like to use:
+The commands shown above for activating/deactivating the virtual environment on Ubuntu should also work on macOS.
+
+
+Creating a New Tendenci Project
+-------------------------------
+
+If you have not already activated your venv, make sure you do so before continuing:
 ::
 
-    virtualenv -p /Library/Frameworks/Python.framework/Versions/3.8/bin/python3 venv
+    source /srv/venv_mysite/bin/activate
 
-The commands shown above for activating/deactivating the virtualenv on Ubuntu should also work on
-macOS.
-
-
-Tendenci Installation
----------------------
-
-If you have not already activated your virtualenv, make sure you do so before continuing:
+First of all, upgrade `pip`, `setuptools` and `wheel`
 ::
 
-    source /srv/mysite/bin/activate
+    pip install --upgrade pip setuptools wheel
 
-Install Django:
+Install Tendenci package:
 ::
 
     pip install tendenci
 
-Create a new Django project based on the Tendenci template:
+Create a new Tendenci project:
 ::
 
-    sudo mkdir /var/www/
+    sudo mkdir /var/www/ && cd /var/www/
     sudo chown "$(id -u -n)" /var/www/
-    cd /var/www/
-    tendenci startproject mysite mysite
-    sudo chown root /var/www/
+    tendenci startproject mysite
+    
 
-Set up some directories appropriately:
+Create a directory for the log files that specified in the `conf/settings.py` for  `set_app_log_filename` and `set_debug_log_filename`:
 ::
 
-    chmod -R -x+X /var/www/mysite/media/
     sudo mkdir /var/log/mysite
+
+
+Set up some permissions:
+::
+
+    sudo chown root /var/www/
+    sudo chmod -R -x+X /var/www/mysite/media/
     sudo chown "$(id -u -n)": /var/log/mysite/
 
-Install Tendenci and its dependencies:
-::
+    
 
-    cd /var/www/mysite/
-    pip install -r requirements/dev.txt --upgrade
-
-
-Tendenci Configuration
-----------------------
+Configuring the Site
+--------------------
 
 Edit ``/var/www/mysite/conf/settings.py``
 
@@ -298,50 +279,48 @@ Set ``SECRET_KEY`` and ``SITE_SETTINGS_KEY`` to two different random strings, ea
 characters in length.  Random strings are conveniently available at
 <https://www.miniwebtool.com/django-secret-key-generator/>
 
-For live sites, set ``ALLOWED_HOSTS`` appropriately.  For testing, the default should be
-sufficient.
+For live sites, add a list of domain names that this Tendenci site can serve to the ``ALLOWED_HOSTS`` setting.  For testing, the default should be sufficient.
 
-Configure the database settings using the user name, password, and database name you configured in
+Update the DATABASES settings using the user name, password, and database name you configured in
 the "Database Preparation" section above.
 
-Set ``TIME_ZONE`` to the local time zone configured on the system running Tendenci.
+Set ``TIME_ZONE`` to the local time zone configured on the system running Tendenci. Default: 'US/Central'. A list of time zone names can be found at: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
 
 
-Tendenci Preparation
---------------------
+Setting up the Site
+-------------------
 
-Copy "tendenci2020" theme to the themes directory (adjust your path if your virtualenv path is different or you're running a different python version rather than python 3.7):
+Copy "tendenci2020" theme to the themes directory (adjust your path if your venv path is different or you're running a different python version rather than python 3.8):
 ::
 
     mkdir /var/www/mysite/themes/tendenci2020
-    cp -r /srv/mysite/lib/python3.8/site-packages/tendenci/themes/t7-tendenci2020/* /var/www/mysite/themes/tendenci2020/
+    cp -r /srv/venv_mysite/lib/python3.8/site-packages/tendenci/themes/t7-tendenci2020/* /var/www/mysite/themes/tendenci2020/
 
 
-Initialize the database and static files:
+Initialize the database and load some default data:
 ::
 
     cd /var/www/mysite/
     python manage.py initial_migrate
     python manage.py deploy
-    chmod -R -x+X /var/www/mysite/media/
+    
     python manage.py load_tendenci_defaults
     python manage.py update_dashboard_stats
     python manage.py rebuild_index --noinput
     
 
 
-
-Set the "Site URL" setting appropriately:
+Set the "Site URL" setting appropriately. Or you can update it later in web interface https://<your-domain-name>/settings/site/global/#id_siteurl:
 ::
 
     python manage.py set_setting site global siteurl 'https://www.example.com'
 
-Create an administrator login in Tendenci:
+Create an administrator login:
 ::
 
     python manage.py createsuperuser
 
-To change the theme (optional):
+To change the theme (optional if you have your own theme):
 ::
 
     python manage.py set_theme <theme name>
@@ -353,7 +332,7 @@ Testing
 Start Tendenci:
 ::
 
-    source /srv/mysite/bin/activate
+    source /srv/venv_mysite/bin/activate
     cd /var/www/mysite/
     python manage.py runserver
 
@@ -366,8 +345,9 @@ stop here.  If you intend to do development or run a live site, continue with on
 sections.
 
 
-Development Setup
-=================
+
+Section 2. Development Setup
+============================
 
 This section covers additional recommended setup if you plan to do development work on Tendenci
 itself.
@@ -397,7 +377,7 @@ Edit ``/var/www/mysite/requirements/common.txt`` and add:
 Run ``pip install`` again:
 ::
 
-    source /srv/mysite/bin/activate
+    source /srv/venv_mysite/bin/activate
     cd /var/www/mysite/
     pip install -r requirements/dev.txt --upgrade
 
@@ -413,42 +393,10 @@ changes from GitHub.  ``python manage.py runserver`` should immediately pick up 
 can view them simply by reloading the page in your browser.
 
 
-Live Site Setup
-===============
+Section 3. Live Site Setup
+==========================
 
 This section covers additional recommended setup to prepare for running a live site.
-
-You may want to check the
-`Django documentation <https://docs.djangoproject.com/en/dev/ref/databases/#postgresql-notes>`_
-and
-`PostgreSQL documentation <https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server>`_
-for database configuration/tuning suggestions.
-
-
-Additional Configuration
-------------------------
-
-Review the comments and examples in ``/var/www/mysite/conf/settings.py`` to determine if any
-additional settings should be configured for your live site.
-
-
-How far will it scale?
-----------------------
-
-But first, how far will Tendenci scale?
-
-Scalability is one of Tendenci's strengths, with memory as your limit. t2
-instances at AWS scale, Linode (or similar) offer the best economics for
-clients with fewer than 10k active users.
-
-There are Tendenci installations with significantly over 100k active users.
-Those usually self host (for example regulatory reasons) but you should have no
-problem whatsoever with fewer than 100k users on a large VM with a lot of RAM.
-
-Once you cross 100k people, deployments will almost certainly need a
-combination of multiple front end servers, central authentication, and a
-cluster database.
-
 
 Additional Installation
 -----------------------
@@ -461,9 +409,16 @@ Install additional system dependencies:
 Install additional Python dependencies:
 ::
 
-    source /srv/mysite/bin/activate
+    source /srv/venv_mysite/bin/activate
     cd /var/www/mysite/
     pip install -r requirements/prod.txt --upgrade
+
+
+Additional Configuration
+------------------------
+
+Review the comments and examples in ``/var/www/mysite/conf/settings.py`` to determine if any
+additional settings should be configured for your live site.
 
 
 Permissions
@@ -473,27 +428,27 @@ When using the Systemd configuration below, Tendenci will run as the ``www-data`
 that Tendenci has appropriate permissions when running as ``www-data``:
 ::
 
-    chmod -R o+rX /srv/mysite/
+    sudo chmod -R o+rX /srv/venv_mysite/
     sudo chgrp -Rh www-data /var/www/mysite/
-    chmod -R g+rwX /var/www/mysite/media/ /var/www/mysite/themes/
-    chmod -R g+rwX /var/www/mysite/whoosh_index/
+    sudo chmod -R g+rwX /var/www/mysite/media/ /var/www/mysite/themes/
+    sudo chmod -R g+rwX /var/www/mysite/whoosh_index/
     sudo chown -Rh www-data /var/log/mysite/
-    chmod -R g+rwX /var/log/mysite/
+    sudo chmod -R g+rwX /var/log/mysite/
 
 For security, you should also ensure that there are no unnecessary permissions:
 ::
 
-    # Owner/group on /srv/mysite/ should already be your normal user account
+    # Owner/group on /srv/venv_mysite/ should already be your normal user account
     # Tendenci needs read/search/execute but not write
-    chmod -R o+rX-w /srv/mysite/
+    sudo chmod -R o+rX-w /srv/venv_mysite/
     # Owner on /var/www/mysite/ should already be your normal user account,
     # group should be www-data
     # Tendenci needs read/search but not execute, write is only needed on media, themes, and
     # whoosh_index, other users do not need any access
     sudo chgrp -Rh www-data /var/www/mysite/
-    chmod -R -x+X,g-w,o-rwx /var/www/mysite/
-    chmod -R ug-x+rwX,o-rwx /var/www/mysite/media/ /var/www/mysite/themes/
-    chmod -R ug-x+rwX,o-rwx /var/www/mysite/whoosh_index/
+    sudo chmod -R -x+X,g-w,o-rwx /var/www/mysite/
+    sudo chmod -R ug-x+rwX,o-rwx /var/www/mysite/media/ /var/www/mysite/themes/
+    sudo chmod -R ug-x+rwX,o-rwx /var/www/mysite/whoosh_index/
     # Owner on /var/log/mysite/ should be www-data,
     # group should be some group that includes your normal user account but not other inappropriate
     # users (Ubuntu creates a dedicated group for each user by default, so this command uses that)
@@ -528,7 +483,7 @@ look like this:
     Type=forking
     KillMode=process
     Restart=on-failure
-    ExecStart=/srv/mysite/bin/gunicorn                    \
+    ExecStart=/srv/venv_mysite/bin/gunicorn                    \
               --user www-data                               \
               --group www-data                              \
               --workers 4                                   \
@@ -682,7 +637,7 @@ prompts. Otherwise, leave the defaults in place.
 Configuration of mail servers is difficult. Be careful. Check the docs on Postfix for proper configuration.
 
 
-memcached Setup
+Memcached Setup
 ---------------
 
 memcached is a service that can be used to speed up access to web pages by caching them in the
@@ -708,8 +663,28 @@ periodic cleanup.
 Run ``sudo -u www-data crontab -e`` and add the following lines:
 ::
 
-    30   2 * * * /srv/mysite/bin/python /var/www/mysite/manage.py run_nightly_commands
-    10 */6 * * * /srv/mysite/bin/python /var/www/mysite/manage.py process_unindexed
+    30   2 * * * /srv/venv_mysite/bin/python /var/www/mysite/manage.py run_nightly_commands
+    10 */6 * * * /srv/venv_mysite/bin/python /var/www/mysite/manage.py process_unindexed
+
+
+
+You may also want to check out the `Post Installation Checklist <https://tendenci.readthedocs.io/en/latest/testing/post-install-checklist.html>`_.
+ 
+
+How far will it scale?
+----------------------
+
+Scalability is one of Tendenci's strengths, with memory as your limit. t2
+instances at AWS scale, Linode (or similar) offer the best economics for
+clients with fewer than 10k active users.
+
+There are Tendenci installations with significantly over 100k active users.
+Those usually self host (for example regulatory reasons) but you should have no
+problem whatsoever with fewer than 100k users on a large VM with a lot of RAM.
+
+Once you cross 100k people, deployments will almost certainly need a
+combination of multiple front end servers, central authentication, and a
+cluster database.
 
 
 Multiple Sites
@@ -718,17 +693,13 @@ Multiple Sites
 To install multiple sites on a single server:
 
 * Create a unique user and database in PostgreSQL for each site.
-* A unique virtualenv may optionally be created for each site, but is not required.  If using
-  multiple virtualenvs, be sure to source the correct virtualenv before running any ``python`` or
+* A unique venv may optionally be created for each site, but is not required.  If using
+  multiple virtualenvs, be sure to source the correct venv before running any ``python`` or
   ``pip`` commands.
-* You can skip the ``pip install "Django"`` command, but otherwise follow the
-  "Tendenci Installation", "Tendenci Configuration", and "Tendenci Preparation" steps above.
-  Change the last parameter of the ``django-admin.py startproject ...`` command to create a
-  different ``/var/www/<project>/`` directory for each site, then change ``/var/www/mysite/`` in
-  all of the commands in the instructions to work with the appropriate site.
-* Configure an additional Systemd Unit file and NGINX configuration file for each site, and
-  configure additional cron jobs for each site.  Each site will need to run on a different port
+* You can follow the installation steps above but skip the "System Preparation" part, replace "mysite" with the site name you choose.
+* Configure an additional Systemd Unit file and NGINX configuration file for each site, as well as
+  additional cron jobs for each site.  Each site will need to run on a different port
   internally, so change ``8000`` in the example Systemd and NGINX configurations to a unique port
-  number for each site.  Also change the names of any log files in the configuration.
+  number for each site.  Also change the names of any log files in the conf/settings.py.
 * A separate memcached instance for each Tendenci site may optionally be used, but is not required.
 

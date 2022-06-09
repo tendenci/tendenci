@@ -170,6 +170,9 @@ class RegistrationConfiguration(models.Model):
     payment_method = models.ManyToManyField(GlobalPaymentMethod)
     payment_required = models.BooleanField(
         help_text=_('A payment required before registration is accepted.'), default=True)
+    external_payment_link = models.URLField(_('External payment link'),
+                blank=True, default='',
+                help_text=_('A third party payment link. If specified, online payment will be redirected to it.'))
 
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'), default=False)

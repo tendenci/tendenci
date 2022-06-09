@@ -13,6 +13,7 @@ AWS_STORAGE_BUCKET_NAME = ''
 USE_S3_STORAGE = False
 THEME_S3_PATH = 'themes'
 USE_S3_THEME = False
+S3_ROOT_URL = 'https://s3.amazonaws.com'
 
 TENDENCI_ROOT = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.environ['TENDENCI_PROJECT_ROOT']

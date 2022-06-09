@@ -1,0 +1,39 @@
+Forms
+=====
+
+This is where you can build a variety of custom forms for your Tendenci sites.
+
+Configure Form Entries List
+---------------------------
+
+By default, each entry on the form entries list displays entry_time followed by the first 3 fields (ordered by position). Now you can specify which fields to show with the "Summary Position" field when building your forms. 
+
+The syntax for the Summary Position field is as follows:
+
+1. It's a comma separated string
+2. Format is either
+        * row, col
+        * col
+        * row, col, fmt
+        * col, fmt
+
+ where
+    1.  row is a number specifying the row starting from 1. Missing rows are collapsed, meaning if you position items on rows 1 and 3, they will appear on rows 1 and 2. 
+    2. col is the column (in the summary, columns are separated with " - " ).
+    3. if no row is specified 1 is assumed.
+    4. if 1,1 is empty then the submission date time is formatted there.
+    5. if row 1 is empty, it will produce the legacy single line.
+    6. fmt is an optional format string that currently accepts:
+        i. `$`, which formats it as a currency (with the currency symbol in the site setting).
+        ii. `w<n>`, where n is an int, which prints the first n words (a legacy support format being w2)
+        iii. `b`, where the field is boolean, it will not write `True`/`False` but `FieldName`/`NOT Fieldname` (intended for my use as Paid, NOT Paid).  
+        iv. `f`, where the field is a file field.
+
+
+See the Summary Position field below for an example:
+
+.. image:: img/form_sp.png
+
+
+
+*This feature is contributed by Bernd Wechner (@bernd-wechner). Thanks!*
