@@ -88,4 +88,6 @@ urlpatterns = [
     re_path(r'^%s/(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<constrain>[constrain]*)/$' % urlpath, views.photo_size, name="photo.size"),
     re_path(r'^%s/(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>[crop]*)/(?P<quality>\d+)/$' % urlpath, views.photo_size, name="photo.size"),
     re_path(r'^%s/(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<constrain>[constrain]*)/(?P<quality>\d+)/$' % urlpath, views.photo_size, name="photo.size"),
+
+    re_path(r'^%s/get_sub_categories/$' % urlpath, views.get_sub_categories, name="photos.get_sub_categories"),
 ]

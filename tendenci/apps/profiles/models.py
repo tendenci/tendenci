@@ -598,21 +598,23 @@ class Profile(Person):
 
         head, tail = os.path.split(self.photo.name)
         size_path = head + '/sizes/' + str(size) + '/' + tail
-        if default_storage.exists(size_path):
-            return settings.MEDIA_URL + size_path
 
-        im = Image.open(self.photo.path)
+        if default_storage.exists(size_path):
+            return default_storage.url(size_path)
+
+        im = Image.open(default_storage.open(self.photo.name))
         im.thumbnail((size, size))
-        
+
         #im.save(size_path)
         thumb_io = BytesIO()
         im.save(thumb_io, im.format)
         default_storage.save(size_path, File(thumb_io))
-        return settings.MEDIA_URL + size_path
+
+        return default_storage.url(size_path)
 
     def get_original_photo_url(self):
         if self.photo:
-            return settings.MEDIA_URL + self.photo.name
+            return default_storage.url(self.photo.name)
 
 
 def get_import_file_path(instance, filename):

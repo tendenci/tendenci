@@ -1,20 +1,81 @@
 {% load perm_tags %}
 {% load base_filters %}
 
-{% if SITE_GLOBAL_SEARCHINDEX %}
-<form class="form-inline" action="{% url "photoset_latest" %}" method="get" role="search">
+<form id="t-photosets-search-form" class="form-inline" action="{% url "photoset_latest" %}" method="get" role="search">
+ {% if not form.cat %}
   <div class="form-group">
-    
     <div class="input-group add-on">      
-      <input class="form-control" type="text" name="q" value="{{ request.GET.q|striptags }}" placeholder="Search" />
+      {{ form.q }}
       <div class="input-group-btn">
         <button class="btn btn-default" type="submit">
           <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i>
         </button>
       </div>
     </div>
+  </div>
+ {% else %}
+    	{% if form.q.errors %}
+    	<div class="form-group{% if form.q.errors %} has-error{% endif %}">
+           <p class="help-block">
+               <ul class="list-unstyled">
+                   {% for error in form.q.errors %}
+                       <li>{{ error }}</li>
+                   {% endfor %}
+               </ul>
+           </p>
+        </div>
+        {% endif %}
+
+		<div class="form-group{% if form.q.errors %} has-error{% endif %}">
+            {{ form.q }}
+
+            {% if form.q.errors %}
+            <p class="help-block">
+                <ul class="list-unstyled">
+                    {% for error in form.q.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </p>
+            {% endif %}
+        </div>
     
- </div>
+    	<div class="form-group{% if form.cat.errors %} has-error{% endif %}">
+            {{ form.cat }}
+
+            {% if form.cat.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.cat.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="form-group{% if form.sub_cat.errors %} has-error{% endif %}">
+            {{ form.sub_cat }}
+
+            {% if form.sub_cat.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.sub_cat.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+        </div>
+		<div class="form-group">
+			<button class="btn btn-success" type="submit">
+		        <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i> {% trans 'Search' %}
+		      </button>
+		</div>
+    
+ {% endif %}
+    
+
   
 {% has_perm user photos.add_photoset as can_add_photoset %}
   
@@ -29,4 +90,3 @@
   
 </form>
 <br />
-{% endif %}

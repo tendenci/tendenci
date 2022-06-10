@@ -231,6 +231,22 @@ class ListPhotoSetsNode(ListNode):
     model = PhotoSet
     perms = 'photos.view_photoset'
 
+    def custom_model_filter(self, items, user):
+        """
+        If specified, filter by the `cat_id` and/or `sub_cat_name` passed in
+        """
+        cat_id = self.kwargs.get('cat_id', None)
+        if cat_id:
+            try:
+                cat_id = int(cat_id)
+                items = items.filter(cat__id=cat_id)
+            except ValueError:
+                raise
+        sub_cat_name = self.kwargs.get('sub_cat_name', '').strip('"\' ')
+        if sub_cat_name:
+            items = items.filter(sub_cat__name__iexact=sub_cat_name)
+        return items
+
 
 @register.tag
 def list_photo_sets(parser, token):
