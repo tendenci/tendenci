@@ -244,8 +244,6 @@ class JobForm(TendenciBaseForm):
             kwargs.update({'user': self.user})
         super(JobForm, self).__init__(*args, **kwargs)
         if self.instance.header_image:
-            print('A' * 30)
-            print(self.instance.header_image)
             self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> %s: <a target="_blank" href="/files/%s/">%s</a>' % (_('Remove current image'), self.instance.header_image.id, basename(self.instance.header_image.file.name))
         else:
             self.fields.pop('remove_photo')

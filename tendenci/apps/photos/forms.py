@@ -1,12 +1,52 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 from tendenci.apps.user_groups.models import Group
-from tendenci.apps.photos.models import Image, PhotoSet, License
+from tendenci.apps.photos.models import Image, PhotoSet, License, PhotoCategory
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.perms.utils import get_query_filters, get_groups_query_filters
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.forms import FormControlWidgetMixin
+
+
+class PhotoSetSearchForm(FormControlWidgetMixin, forms.Form):
+    q = forms.CharField(label=_("Search"), required=False, max_length=200,)
+    cat = forms.ModelChoiceField(label=_("Category"),
+                                      queryset=PhotoCategory.objects.filter(parent=None),
+                                      empty_label="-----------",
+                                      required=False)
+    sub_cat = forms.ModelChoiceField(label=_("Subcategory"),
+                                          queryset=PhotoCategory.objects.none(),
+                                          empty_label=_("Subcategories"),
+                                          required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(PhotoSetSearchForm, self).__init__(*args, **kwargs)
+        self.fields['q'].widget.attrs.update({'placeholder': _('Enter name / keywords')})
+
+        # setup categories
+        cats = PhotoCategory.objects.filter(parent__isnull=True)
+        cats_count = cats.count()
+        if cats_count:
+            self.fields['cat'].queryset = cats
+            self.fields['cat'].empty_label = _('Categories (%(c)s)' % {'c' : cats_count})
+            data = args[0]
+            if data:
+                try:
+                    cat = int(data.get('cat', 0))
+                except ValueError:
+                    cat = 0
+                if cat:
+                    sub_cats = PhotoCategory.objects.filter(parent__id=cat)
+                    sub_cats_count = sub_cats.count()
+                    self.fields['sub_cat'].empty_label = _('Subcategories (%(c)s)' % {'c' : sub_cats_count})
+                    self.fields['sub_cat'].queryset = sub_cats
+        else:
+            del self.fields['cat']
+            self.fields['sub_cat']
+
 
 class LicenseField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -159,8 +199,8 @@ class PhotoEditForm(TendenciBaseForm):
         self.fields['group'].empty_label = None
 
 
-class PhotoSetAddForm(TendenciBaseForm):
-    """ Photo-Set Add-Form """
+class PhotoSetForm(TendenciBaseForm):
+    """ Photo-Set Add/Edit-Form """
 
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
@@ -176,6 +216,8 @@ class PhotoSetAddForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
+            'cat',
+            'sub_cat',
             'status_detail',
         )
 
@@ -195,13 +237,19 @@ class PhotoSetAddForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
+                      (_('Category'), {
+                        'fields': ['cat',
+                                   'sub_cat'
+                                   ],
+                        'classes': ['boxy-grey'],
+                      }),
                      (_('Administrator Only'), {
                       'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(PhotoSetAddForm, self).__init__(*args, **kwargs)
+        super(PhotoSetForm, self).__init__(*args, **kwargs)
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         if self.user and not self.user.profile.is_superuser:
@@ -217,66 +265,27 @@ class PhotoSetAddForm(TendenciBaseForm):
         self.fields['group'].queryset = default_groups
         self.fields['group'].empty_label = None
 
-#        if self.user.profile.is_superuser:
-#            self.fields['status_detail'] = forms.ChoiceField(
-#                choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
-
-
-class PhotoSetEditForm(TendenciBaseForm):
-    """ Photo-Set Edit-Form """
-
-    status_detail = forms.ChoiceField(
-        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
-
-    class Meta:
-        model = PhotoSet
-        fields = (
-            'name',
-            'description',
-            'group',
-            'tags',
-            'allow_anonymous_view',
-            'user_perms',
-            'member_perms',
-            'group_perms',
-            'status_detail',
-        )
-
-        fieldsets = [(_('Photo Set Information'), {
-                      'fields': ['name',
-                                 'description',
-                                 'group',
-                                 'tags',
-                                 ],
-                      'legend': ''
-                      }),
-                      (_('Permissions'), {
-                      'fields': ['allow_anonymous_view',
-                                 'user_perms',
-                                 'member_perms',
-                                 'group_perms',
-                                 ],
-                      'classes': ['permissions'],
-                      }),
-                     (_('Administrator Only'), {
-                      'fields': ['status_detail'],
-                      'classes': ['admin-only'],
-                    })]
-
-    def __init__(self, *args, **kwargs):
-        super(PhotoSetEditForm, self).__init__(*args, **kwargs)
-        default_groups = Group.objects.filter(status=True, status_detail="active")
-
-        if not self.user.profile.is_superuser:
-            if 'status_detail' in self.fields:
-                self.fields.pop('status_detail')
-
-            if get_setting('module', 'user_groups', 'permrequiredingd') == 'change':
-                filters = get_groups_query_filters(self.user,)
-            else:
-                filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-            default_groups = default_groups.filter(filters).distinct()
-
-        self.fields['group'].queryset = default_groups
-        self.fields['group'].empty_label = None
+        # cat and sub_cat
+        self.fields['cat'].required = False
+        self.fields['sub_cat'].required = False
+        self.fields['cat'].queryset = PhotoCategory.objects.filter(parent__isnull=True)
+        self.fields['sub_cat'].queryset = PhotoCategory.objects.none()
+        if self.instance and self.instance.pk and self.instance.cat:
+            self.fields['sub_cat'].queryset = PhotoCategory.objects.filter(
+                                                        parent=self.instance.cat)
+        if args:
+            post_data = args[0]
+        else:
+            post_data = None
+        if post_data:
+            try:
+                cat = int(post_data.get('cat', '0'))
+            except ValueError:
+                cat = None
+            if cat:
+                self.fields['sub_cat'].queryset = PhotoCategory.objects.filter(parent_id=cat)
+        if self.user and self.user.profile.is_superuser:
+            self.fields['sub_cat'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
+                        reverse('admin:photos_photocategory_changelist'),
+                            _('Manage Categories'),))
 

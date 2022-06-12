@@ -553,6 +553,19 @@ class PhotoSizeCache(object):
         self.sizes = {}
 
 
+class PhotoCategory(models.Model):
+    name = models.CharField(max_length=255)
+    parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = _("Photo Categories")
+        ordering = ('name',)
+        app_label = 'photos'
+
+    def __str__(self):
+        return self.name
+
+
 class PhotoSet(OrderingBaseModel, TendenciBaseModel):
     """
     A set of photos
@@ -568,6 +581,13 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
     group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
     tags = TagField(blank=True, help_text=_("Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3"))
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
+    cat = models.ForeignKey(PhotoCategory, verbose_name=_("Category"),
+                                 related_name="cat_photo_sets", null=True,
+                                 on_delete=models.SET_NULL)
+    sub_cat = models.ForeignKey(PhotoCategory, verbose_name=_("Sub Category"),
+                                related_name="sub_cat_photo_sets", null=True,
+                                on_delete=models.SET_NULL)
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",

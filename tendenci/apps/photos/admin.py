@@ -1,7 +1,9 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from tendenci.apps.photos.forms import PhotoSet, PhotoSetAddForm
+from tendenci.apps.photos.forms import PhotoSet, PhotoSetForm
+from tendenci.apps.photos.models import PhotoCategory
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import update_perms_and_save
@@ -25,11 +27,14 @@ class PhotoAdmin(admin.ModelAdmin):
             'member_perms',
             'group_perms',
             )}),
+        (_('Category'), {'fields': ('cat', 'sub_cat'),
+                        'classes': ['boxy-grey', 'collapse'],
+            }),
         (_('Photo Set Status'), {'fields': (
             'status_detail',
         )}),
     )
-    form = PhotoSetAddForm
+    form = PhotoSetForm
     ordering = ['position']
 
     class Media:
@@ -101,4 +106,28 @@ class PhotoAdmin(admin.ModelAdmin):
 
         return instance
 
+
+class SubCategoryAdminInline(admin.TabularInline):
+    fieldsets = ((None, {'fields': ('name',)}),)
+    model = PhotoCategory
+    extra = 0
+    verbose_name = _("Sub-Category")
+    verbose_name_plural = _("Sub-Categories")
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'sub_categories',)
+    list_display_links = ('name',)
+    fieldsets = ((None, {'fields': ('name',)}),)
+    inlines = (SubCategoryAdminInline,)
+
+    @mark_safe
+    def sub_categories(self, instance):
+        return ', '.join(PhotoCategory.objects.filter(parent=instance).values_list('name', flat=True))
+
+    def get_queryset(self, request):
+        qs = super(CategoryAdmin, self).get_queryset(request)
+        return qs.filter(parent__isnull=True)
+
+admin.site.register(PhotoCategory, CategoryAdmin)
 admin.site.register(PhotoSet, PhotoAdmin) #Image,

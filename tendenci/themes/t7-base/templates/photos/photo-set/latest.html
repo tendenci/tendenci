@@ -53,7 +53,11 @@
   </div>
   {% endif %}
   <!-- end: photo-sets masonry -->
+{% endblock %}
 
+{% block extra_body %}
+    {{ block.super }}
+    
 <script type="text/javascript">
   // photo: delete confirmation
   $('.photo-set .info .actions .delete-set').on("click", function(){
@@ -67,6 +71,10 @@
   columnWidth: '.grid-sizer',
   percentPosition: true
   }); */
+</script>
+
+<script type="text/javascript">
+{% include 'photos/photo-set/include/sub_categories.js' %}
 </script>
 
 {% endblock %}

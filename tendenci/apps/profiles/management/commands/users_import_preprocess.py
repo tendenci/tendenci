@@ -40,7 +40,7 @@ class Command(BaseCommand):
                 # encode to utf8 and write to path2
                 path2 = '%s_utf8%s' % (os.path.splitext(
                                         uimport.upload_file.name))
-                default_storage.save(path2, ContentFile(''))
+                default_storage.save(path2, ContentFile(b''))
                 f = default_storage.open(uimport.upload_file.name)
                 f2 = default_storage.open(path2, 'wb+')
                 encoding = chardet.detect(f.read())['encoding']

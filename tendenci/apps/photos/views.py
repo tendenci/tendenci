@@ -23,6 +23,7 @@ from django.forms.models import modelformset_factory
 from django.core.files.base import ContentFile
 from django.db.models import Q
 from django.middleware.csrf import get_token as csrf_get_token
+from django.views.decorators.csrf import csrf_exempt
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
@@ -38,8 +39,8 @@ from tendenci.apps.user_groups.models import Group
 
 from tendenci.apps.photos.cache import PHOTO_PRE_KEY
 #from tendenci.apps.photos.search_indexes import PhotoSetIndex
-from tendenci.apps.photos.models import Image, PhotoSet, AlbumCover, License
-from tendenci.apps.photos.forms import PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm, PhotoBatchEditForm
+from tendenci.apps.photos.models import Image, PhotoSet, AlbumCover, License, PhotoCategory
+from tendenci.apps.photos.forms import PhotoEditForm, PhotoSetForm, PhotoBatchEditForm, PhotoSetSearchForm
 from tendenci.apps.photos.utils import get_privacy_settings
 from tendenci.apps.photos.tasks import ZipPhotoSetTask
 from tendenci.apps.base.utils import apply_orientation
@@ -404,7 +405,7 @@ def delete(request, id, set_id=0):
 
 @is_enabled('photos')
 @login_required
-def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/photo-set/add.html"):
+def photoset_add(request, form_class=PhotoSetForm, template_name="photos/photo-set/add.html"):
     """ Add a photo set """
     # if no permission; permission exception
     if not has_perm(request.user,'photos.add_photoset'):
@@ -435,7 +436,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
 
 @is_enabled('photos')
 @login_required
-def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photos/photo-set/edit.html"):
+def photoset_edit(request, id, form_class=PhotoSetForm, template_name="photos/photo-set/edit.html"):
     from tendenci.apps.perms.object_perms import ObjectPermission
     photo_set = get_object_or_404(PhotoSet, id=id)
 
@@ -504,23 +505,35 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
 @is_enabled('photos')
 def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     """ View latest photo set """
-    query = request.GET.get('q', None)
-    filters = get_query_filters(request.user, 'photos.view_photoset')
-    photo_sets = PhotoSet.objects.filter(filters).distinct()
-    if not request.user.is_anonymous:
-        photo_sets = photo_sets.select_related()
+    form = PhotoSetSearchForm(request.GET)
+    if form.is_valid():
+        filters = get_query_filters(request.user, 'photos.view_photoset')
+        photo_sets = PhotoSet.objects.filter(filters).distinct()
+        query = form.cleaned_data.get('q')
+        cat = form.cleaned_data.get('cat', '')
+        sub_cat = form.cleaned_data.get('sub_cat', '')
+        if cat:
+            photo_sets = photo_sets.filter(cat=cat)
+        if sub_cat:
+            photo_sets = photo_sets.filter(sub_cat=sub_cat)
+        if query:
+            photo_sets = photo_sets.filter(Q(name__icontains=query)|
+                                           Q(description__icontains=query)|
+                                           Q(tags__icontains=query))
 
-    if query:
-        photo_sets = photo_sets.filter(Q(name__icontains=query)|
-                                       Q(description__icontains=query)|
-                                       Q(tags__icontains=query))
+        if not request.user.is_anonymous:
+            photo_sets = photo_sets.select_related()
 
-    photo_sets = photo_sets.order_by('position', '-create_dt')
+        photo_sets = photo_sets.order_by('position', '-create_dt')
+    else:
+        # invalid form
+        photo_sets = PhotoSet.objects.none()
 
     EventLog.objects.log()
 
     return render_to_resp(request=request, template_name=template_name,
-        context={"photo_sets": photo_sets})
+        context={"photo_sets": photo_sets,
+                 'form': form})
 
 
 @is_enabled('photos')
@@ -531,6 +544,24 @@ def photoset_view_yours(request, template_name="photos/photo-set/yours.html"):
     return render_to_resp(request=request, template_name=template_name, context={
         "photo_sets": photo_sets,
     })
+
+
+@csrf_exempt
+def get_sub_categories(request):
+    if request.is_ajax() and request.method == "POST":
+        cat = request.POST.get('cat', None)
+        if cat:
+            sub_cats = PhotoCategory.objects.filter(parent=cat)
+            count = sub_cats.count()
+            sub_cats = list(sub_cats.values_list('pk','name'))
+            data = json.dumps({"error": False,
+                               "sub_cats": sub_cats,
+                               "count": count})
+        else:
+            data = json.dumps({"error": True})
+
+        return HttpResponse(data, content_type="text/plain")
+    raise Http404
 
 
 def handle_uploaded_photo(request, photoset_id, file_path):
