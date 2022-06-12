@@ -78,6 +78,7 @@ from tendenci.apps.memberships.utils import (prepare_chart_data,
 from tendenci.apps.base.forms import CaptchaForm
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.theme.utils import get_template_content_raw
+from tendenci.apps.base.utils import get_next_url
 
 
 @login_required
@@ -429,7 +430,7 @@ def referer_url(request):
     Save the membership-referer-url
     in sessions.  Then redirect to the 'next_url' URL
     """
-    next_url = request.GET.get('next')
+    next_url = get_next_url(request)
     site_url = get_setting('site', 'global', 'siteurl')
 
     if not next_url:
@@ -1135,10 +1136,12 @@ def membership_default_add_legacy(request):
     if not app:
         raise Http404
 
-    username = request.GET.get('username', u'')
     redirect_url = reverse('membership_default.add', args=[app.slug])
+    username = request.GET.get('username', '')
     if username:
-        redirect_url = '%s?username=%s' % (redirect_url, username)
+        [u] = User.objects.filter(username=username)[:1] or [None]
+        if u:
+            redirect_url = '%s?username=%s' % (redirect_url, u.username)
     return redirect(redirect_url)
 
 
@@ -1153,14 +1156,24 @@ def membership_default_add(request, slug='', membership_id=None,
     user = None
     membership = None
     renewed_corp = None
-    username = request.GET.get('username', u'')
+    username = request.GET.get('username', '')
+    # user passed in via username from url
+    [u] = User.objects.filter(username=username)[:1] or [None]
     is_renewal = False
+    join_under_corporate = kwargs.get('join_under_corporate', False)
+    cm_id = kwargs.get('cm_id', None)
 
     if membership_id:
         # it's renewal - make sure they are logged in
+        redirect_url = reverse('auth_login') + '?next='
         if not request.user.is_authenticated:
-            return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'),
-                                request.get_full_path()))
+            if join_under_corporate and cm_id:
+                redirect_url += reverse('membership_default.renew_under_corp',
+                                        kwargs={'cm_id': cm_id, 'membership_id': membership_id})
+            else:
+                redirect_url += reverse('membership_default.renew',
+                                        kwargs={'slug': slug, 'membership_id': membership_id})
+            return HttpResponseRedirect(redirect_url)
         membership = get_object_or_404(MembershipDefault, id=membership_id)
         if not (request.user.is_superuser or request.user == membership.user):
             raise Http403
@@ -1171,8 +1184,7 @@ def membership_default_add(request, slug='', membership_id=None,
         membership_type_id = int(membership_type_id)
     else:
         membership_type_id = 0
-
-    join_under_corporate = kwargs.get('join_under_corporate', False)
+    
     corp_membership = None
     is_corp_rep = False
 
@@ -1186,14 +1198,13 @@ def membership_default_add(request, slug='', membership_id=None,
         if not has_perm(request.user, 'memberships.view_app', app):
             raise Http403
 
-        cm_id = kwargs.get('cm_id')
         if not cm_id:
             # redirect them to the corp_pre page
             redirect_url = reverse('membership_default.corp_pre_add')
 
             if username:
                 return HttpResponseRedirect(
-                    '%s?username=%s' % (redirect_url, username))
+                    '%s?username=%s' % (redirect_url, u.username))
             return redirect(redirect_url)
 
         # check if they have verified their email or entered the secret code
@@ -1293,7 +1304,7 @@ def membership_default_add(request, slug='', membership_id=None,
 
             if username:
                 return HttpResponseRedirect(
-                    '%s?username=%s' % (redirect_url, username))
+                    '%s?username=%s' % (redirect_url, u.username))
             return redirect(redirect_url)
 
     if not (request.user.is_superuser or (join_under_corporate and is_corp_rep)):
@@ -1310,7 +1321,7 @@ def membership_default_add(request, slug='', membership_id=None,
         user = membership.user
     else:
         if any(allowed_users) and username:
-            [user] = User.objects.filter(username=username)[:1] or [None]
+            user = u
 
     if not app:
         raise Http404
@@ -1975,11 +1986,12 @@ def membership_default_corp_pre_add(request, cm_id=None,
                                                 corporate_membership_id,
                                                 secret_hash]))
 
-            passed_username = request.POST.get('username', u'')
+            passed_username = request.POST.get('username', '')
+            [u] = User.objects.filter(username=passed_username)[:1] or [None]
             redirect_url = reverse('membership_default.add_under_corp', args=[corporate_membership_id])
 
-            if passed_username:
-                return HttpResponseRedirect('%s?username=%s' % (redirect_url, passed_username))
+            if u:
+                return HttpResponseRedirect('%s?username=%s' % (redirect_url, u.username))
             return redirect(redirect_url)
 
     c = {'app': app, "form": form}
@@ -2035,7 +2047,7 @@ def delete(request, id, template_name="memberships/applications/delete.html"):
         membership.delete(log=True)
         messages.add_message(request, messages.SUCCESS, _(msg_deleted))
 
-        next_page = request.GET.get('next', '')
+        next_page = get_next_url(request)
         if next_page:
             return HttpResponseRedirect(next_page)
 
@@ -2069,7 +2081,7 @@ def expire(request, id, template_name="memberships/applications/expire.html"):
         # log an event
         EventLog.objects.log(instance=membership, description=msg_expired)
 
-        next_page = request.GET.get('next', '')
+        next_page = get_next_url(request)
         if next_page:
             return HttpResponseRedirect(next_page)
 

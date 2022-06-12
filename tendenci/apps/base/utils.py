@@ -51,6 +51,7 @@ from simple_salesforce import Salesforce
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.utils import get_theme_root
+from .forms import NextURLForm
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -72,6 +73,18 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 
 
 ORIENTATION_EXIF_TAG_KEY = 274
+
+
+def get_next_url(request):
+    """
+    Returns a valid "next" url. The purpose of this function
+    is to validate the "next" url, a user-provided value
+    to avoid phishing scams.
+    """
+    form = NextURLForm(request.GET)
+    if form.is_valid():
+        return form.cleaned_data.get('next', None)
+    return None
 
 
 def custom_json_dumper(obj):

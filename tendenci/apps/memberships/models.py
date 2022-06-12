@@ -2097,13 +2097,14 @@ class MembershipDefault(TendenciBaseModel):
                 self.directory = Directory.objects.create(**params)
                 self.save()
 
-    def get_common_urls(self):
+    def get_common_urls(self, site_url=None):
         """
         Get common urls related with this membership, such as
          directory_url, directory_edit_url, membership_link,
          invoice_link, membership_type
         """
-        site_url = get_setting('site', 'global', 'siteurl')
+        if not site_url:
+            site_url = get_setting('site', 'global', 'siteurl')
         if self.directory:
             directory_url = '{0}{1}'.format(site_url, reverse('directory',
                                                  args=[self.directory.slug]))

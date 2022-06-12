@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='field',
             name='summary_position',
-            field=models.CharField(blank=True, help_text='Position in the one line form entry summary. Row, Position or just Position.\nSome examples:\n2,1   for row 2, position 1\n2      for row 1, positon 2.', max_length=6, validators=[django.core.validators.RegexValidator('^\\s*\\d+(\\s*,\\s*\\d+)?(\\s*,\\s*(b|B|\\$|w\\d+))?$', 'Summary position must have 1 to 3 comma separated values:\nrow,column,format\nrow is optional and assumed to be 1 if missing, supported formats are: $ for numbers, b for boolean, B for file and wn for first n words.', flags=re.RegexFlag['IGNORECASE'])], verbose_name='Summary Position'),
+            field=models.CharField(blank=True, help_text='Position in the one line form entry summary. Row, Position or just Position.\nSome examples:\n2,1   for row 2, position 1\n2      for row 1, positon 2.', max_length=6, validators=[django.core.validators.RegexValidator('^\\s*\\d+(\\s*,\\s*\\d+)?(\\s*,\\s*(b|f|\\$|w\\d+))?$', 'Summary position must have 1 to 3 comma separated values:\nrow,column,format\nrow is optional and assumed to be 1 if missing, supported formats are: $ for numbers, b for boolean, f for filename and wn for first n words.', flags=re.RegexFlag['IGNORECASE'])], verbose_name='Summary Position'),
         ),
     ]

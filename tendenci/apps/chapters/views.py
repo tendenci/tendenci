@@ -491,7 +491,8 @@ def chapter_memberships_search(request, chapter_id=0,
             EventLog.objects.log(description="chapter memberships export")
             import csv
             def iter_chapter_memberships(chapter_memberships, app_fields):
-                field_labels = [field.label for field in app_fields]
+                field_labels = [_('First Name'), _('Last Name'), _('Email'), _('Username')]
+                field_labels += [field.label for field in app_fields]
                 field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
                                 _('Expire Date'), _('Status Detail')]
                 field_labels.insert(0, _('Chapter'))
@@ -501,7 +502,11 @@ def chapter_memberships_search(request, chapter_id=0,
                 yield writer.writerow(dict(zip(field_labels, field_labels)))
             
                 for chapter_membership in chapter_memberships:
-                    values_list = get_chapter_membership_field_values(chapter_membership, app_fields)
+                    values_list = [chapter_membership.user.first_name,
+                                   chapter_membership.user.last_name,
+                                   chapter_membership.user.email,
+                                   chapter_membership.user.username,]
+                    values_list += get_chapter_membership_field_values(chapter_membership, app_fields)
                     if chapter_membership.create_dt:
                         values_list.append(chapter_membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
                     else:

@@ -133,7 +133,7 @@ class Command(BaseCommand):
                         status_detail='archive').order_by('-create_dt')[:1] or [None]
                 if membership:
                     # do find and replace
-                    urls_dict = membership.get_common_urls()
+                    urls_dict = membership.get_common_urls(site_url=self.site_url)
                     for key in urls_dict.keys():
                         body = body.replace('[%s]' % key, urls_dict[key])
 
@@ -171,7 +171,7 @@ class Command(BaseCommand):
         newsletter.email_sent_count = counter
 
         newsletter.save()
-        if newsletter.nr_data:
+        if newsletter.schedule and newsletter.nr_data:
             # save the finish_dt and email_sent_count for the recurring
             newsletter.nr_data.finish_dt = datetime.datetime.now()
             newsletter.nr_data.email_sent_count = newsletter.email_sent_count

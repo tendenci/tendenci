@@ -1,3 +1,19 @@
+### 14.1 [2022-04-18]
+
+* New feature: Newsletters scheduling https://tendenci.readthedocs.io/en/latest/topic-guides/newsletters.html#newsletters-scheduling.
+* Bumped Pillow from 9.0.0 to 9.1.0.
+* Added an option to disable gravatar. The setting is at /settings/module/users/#id_disablegravatar.
+* Form entry lists have a configurable summary (Thanks @bernd-wechner).
+* Allow users with News permissions to see the corresponding edit and delete links (Thanks @bernd-wechner).
+* Added the option to have a header image on articles search. The header image can be specified with the setting /settings/module/articles/#id_headerimage.
+* Added a template tag "get_categories_for_model".
+* Made some performance improvement for newsletters when being sent to members.
+* Refactored form entries export to avoid timeout.
+* Added an example code for the list_photo_sets template tag.
+* Added captcha on password reset form.
+* Some bugfixes.
+
+
 ### 14.0.4 [2022-02-04]
 
 * Added the option to use Google reCaptcha v3. This help file includes the info on how to set up reCaptcha v3 for your site https://www.tendenci.com/help-files/how-use-google-recaptcha-tendenci-site/.

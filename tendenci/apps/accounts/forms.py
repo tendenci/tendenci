@@ -226,6 +226,7 @@ class LoginForm(ProhibitNullCharactersValidatorMixin, forms.Form):
 
 class PasswordResetForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"), max_length=254, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    captcha = CustomCatpchaField(label=_('Type the letters you see in the box'), widget=CaptchaTextInput(attrs={'class': 'form-control'}))
 
     def clean_email(self):
         """

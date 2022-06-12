@@ -292,9 +292,9 @@ def create_new_template(request, form_class=AddTemplateForm):
                 default_content = ''
             with open(template_full_path, 'w') as f:
                 f.write(default_content)
-            if settings.USE_S3_STORAGE:
-                s3_path = os.path.join(settings.THEME_S3_PATH, selected_theme, 'templates', template_full_name)
-                save_file_to_s3(template_full_path, dest_path=s3_path, public=False)
+            # if settings.USE_S3_STORAGE:
+            #     s3_path = os.path.join(settings.THEME_S3_PATH, selected_theme, 'templates', template_full_name)
+            #     save_file_to_s3(template_full_path, dest_path=s3_path, public=False)
             ret_dict['created'] = True
             ret_dict['template_name'] = template_full_name
         else:
@@ -311,12 +311,14 @@ def get_version(request, id):
 @permission_required('theme_editor.change_themefileversion')
 def app_list(request, template_name="theme_editor/app_list.html"):
 
-    selected_theme = request.GET.get("theme_edit", get_theme())
-    if not is_valid_theme(selected_theme):
-        raise Http404(_('Specified theme does not exist'))
-    if is_theme_read_only(selected_theme):
-        raise Http403
-
+    selected_theme = request.GET.get("theme_edit", None)
+    if selected_theme:
+        if not is_valid_theme(selected_theme):
+            raise Http404(_('Specified theme does not exist'))
+        if is_theme_read_only(selected_theme):
+            raise Http403
+    else:
+        selected_theme = get_theme()
     theme_list = get_theme_search_order(selected_theme)[1:]
     app_list = app_templates.keys()
     return render_to_resp(request=request, template_name=template_name, context={

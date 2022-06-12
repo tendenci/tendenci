@@ -1087,7 +1087,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
         self.request = kwargs.pop('request', None)
         self.membership = kwargs.pop('membership', None)
         super(DemographicsForm, self).__init__(*args, **kwargs)
-        assign_fields(self, app_field_objs)
+        
         self.field_names = [name for name in self.fields]
         self.file_upload_fields = {}
         # change the default widget to TextInput instead of TextArea
@@ -1098,6 +1098,11 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                 self.file_upload_fields.update({key:field})
             if field.widget.__class__.__name__.lower() == 'selectdatewidget':
                 field.widget.years = list(range(1920, THIS_YEAR + 10))
+
+        # Assign fields (including widget) based on how user specified.
+        # Moved down here otherwise the widget would be overridden by
+        # the above code which sets the default widget to TextInput
+        assign_fields(self, app_field_objs)
 
         self.app = None
         self.demographics = None

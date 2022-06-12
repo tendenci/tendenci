@@ -29,12 +29,12 @@ def theme(request):
         def warn_theme_url(value=theme_url):  # noqa: E306
             return warn_theme_urls(value)
         context['THEME_URL'] = warn_theme_url
-    elif settings.USE_S3_STORAGE:
-        theme_url = '%s/%s/%s/themes/%s/'%(
-            settings.S3_ROOT_URL, settings.AWS_STORAGE_BUCKET_NAME, settings.AWS_LOCATION, theme)
-        def warn_theme_url(value=theme_url):  # noqa: E306
-            return warn_theme_urls(value)
-        context['THEME_URL'] = warn_theme_url
+    # elif settings.USE_S3_STORAGE:
+    #     theme_url = '%s/%s/%s/themes/%s/'%(
+    #         settings.S3_ROOT_URL, settings.AWS_STORAGE_BUCKET_NAME, settings.AWS_LOCATION, theme)
+    #     def warn_theme_url(value=theme_url):  # noqa: E306
+    #         return warn_theme_urls(value)
+    #     context['THEME_URL'] = warn_theme_url
     else:
         theme_url = '/themes/'+theme+'/'
         def warn_theme_url(value=theme_url):  # noqa: E306

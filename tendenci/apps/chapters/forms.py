@@ -1026,7 +1026,7 @@ class ChapterMembershipUploadForm(FormControlWidgetMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.chapter = kwargs.pop('chapter')
         super(ChapterMembershipUploadForm, self).__init__(*args, **kwargs)
-        self.fields['upload_file'].validators = [FileValidator(allowed_extensions=['.csv'], allowed_mimetypes=['text/csv', 'text/plain'])]
+        self.fields['upload_file'].validators = [FileValidator(allowed_extensions=['.csv'], allowed_mimetypes=['text/csv', 'text/plain', 'application/csv'])]
         if self.chapter:
             self.fields['key'].choices = (('username,membership_type_id', _('username and membership_type_id')),)
 

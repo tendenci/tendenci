@@ -22,7 +22,7 @@ def status(request, export_id, template_name='exports/export_status.html'):
 
     return render_to_resp(request=request, template_name=template_name, context={
         'export': export,
-        'datetime': datetime,
+        'now': datetime.now(),
     })
 
 

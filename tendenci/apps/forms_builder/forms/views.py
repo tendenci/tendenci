@@ -263,7 +263,8 @@ def memories(request, id, template_name="forms/memories.html"):
     for s in s_mem:
         memory = {"Expires": s.expire_date}
         for key, val in s.get_decoded().items():
-            if key_match := re.match(key_pattern, key):
+            key_match = re.match(key_pattern, key)
+            if key_match:
                 field_id = key_match["field_id"]
                 try:
                     field = form.fields.get(id=field_id)

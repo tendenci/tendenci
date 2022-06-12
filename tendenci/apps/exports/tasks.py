@@ -9,12 +9,12 @@ from django.http import HttpResponse
 from django.db.models.fields import DateTimeField, DateField, TimeField
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
-from celery.task import Task
+import celery
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.exports.utils import render_csv
 from tendenci.apps.base.utils import escape_csv
 
-class TendenciExportTask(Task):
+class TendenciExportTask(celery.Task):
     """Export Task for Celery
     This exports the entire queryset of a given TendenciBaseModel.
     """

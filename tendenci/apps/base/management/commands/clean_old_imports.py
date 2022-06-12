@@ -9,8 +9,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """
-        Remove the import files that are older than 7 days
+        Remove the import files that are older than 1 day
         """
         from tendenci.apps.base.utils import directory_cleanup
 
-        directory_cleanup('imports', 7)
+        directory_cleanup('imports', 1)

@@ -69,8 +69,9 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         quality = 90
 
     if settings.USE_S3_STORAGE:
-        content = read_media_file_from_s3(file)
-        image = Image.open(BytesIO(content))
+        if not default_storage.exists(file.name):
+            raise Http404
+        image = Image.open(default_storage.open(file.name))
     else:
         if hasattr(file, 'path') and exists(file.path):
             try:

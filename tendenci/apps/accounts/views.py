@@ -14,12 +14,13 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.decorators import ssl_required
 from tendenci.apps.accounts.forms import PasswordResetForm
+from tendenci.apps.base.utils import get_next_url
 
 
 @ssl_required
 def login(request, form_class=LoginForm, template_name="account/login.html"):
 
-    redirect_to = request.GET.get('next', u'')
+    redirect_to = get_next_url(request)
 
     if request.method == "POST":
         default_redirect_to = getattr(settings, "LOGIN_REDIRECT_URLNAME", None)
@@ -214,6 +215,7 @@ def register(request, success_url=None,
 
 def password_reset(request):
     from_registration = request.GET.get('registration', False)
+    EventLog.objects.log()
     extra_context = {
         'from_registration': from_registration,
     }

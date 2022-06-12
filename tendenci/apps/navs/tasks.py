@@ -1,12 +1,12 @@
 from builtins import str
 import os
 from django.db.models import Max, Count
-from celery.task import Task
+import celery
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.navs.models import Nav
 from tendenci.apps.base.utils import escape_csv
 
-class NavsExportTask(Task):
+class NavsExportTask(celery.Task):
     """Export Task for Celery
     This exports all navs data and nav items.
     """

@@ -37,7 +37,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.base.fields import DictField
-from tendenci.apps.base.utils import apply_orientation
+from tendenci.apps.base.utils import apply_orientation, correct_filename
 from tendenci.apps.photos.managers import PhotoManager, PhotoSetManager
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.photos.module_meta import PhotoMeta
@@ -62,6 +62,7 @@ ImageFile.MAXBLOCK = getattr(settings, 'PHOTOS_MAXBLOCK', 256 * 2 ** 10)
 
 
 def get_storage_path(instance, filename):
+    filename = correct_filename(filename)
     # AWS S3 max key length: 260 characters
     return os.path.join('photos', uuid.uuid4().hex[:8], filename)
 
@@ -188,6 +189,8 @@ class ImageModel(models.Model):
             self.create_size(photosize)
         if photosize.increment_count:
             self.increment_count()
+        if settings.USE_S3_STORAGE:
+            return default_storage.url(self._get_SIZE_filename(size))
         return '/'.join([self.cache_url(), self._get_filename_for_size(photosize.name)])
 
     def _get_SIZE_filename(self, size):
@@ -606,7 +609,6 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
     def get_cover_photo(self, *args, **kwargs):
         """ get latest thumbnail url """
         cover_photo = None
-
         if hasattr(self, 'cover_photo'):
             return self.cover_photo
 
@@ -759,7 +761,8 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         #caching.instance_cache_add(self, self.pk)
 
         if not self.is_public_photo() or not self.is_public_photoset():
-            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE and hasattr(self.image, 'file'):
+            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE \
+                and self.image and default_storage.exists(self.image.name):
                 set_s3_file_permission(self.image.file, public=False)
             cache_set = cache.get("photos_cache_set.%s" % self.pk)
             if cache_set is not None:
