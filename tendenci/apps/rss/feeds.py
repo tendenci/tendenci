@@ -77,7 +77,9 @@ class RSSFeed(Feed):
                     break
 
     def items(self):
-        if (not self.app and not self.all_items) or (self.app and not self.app in self.app_items):
+        if ( (not self.app and not self.all_items)
+          or (self.app and not self.app in self.app_items)
+          or getattr(settings, 'DISABLE_RSS_CACHE', False)):
             # This method is moved from '__init__' to here to avoid querying db thus
             # avoid the error "column doesn't exist" on system checks when making new
             # migrations with the 'makemigrations' command and also applying the migrations
