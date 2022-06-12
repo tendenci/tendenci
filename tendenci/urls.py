@@ -58,7 +58,7 @@ urlpatterns += [
     re_path(r'^rp/', include('tendenci.apps.recurring_payments.urls')),
     re_path(r'^accountings/', include('tendenci.apps.accountings.urls')),
     re_path(r'^emails/', include('tendenci.apps.emails.urls')),
-    re_path(r'^rss/', include('tendenci.apps.rss.urls')),
+    re_path(r'^((?P<app>\w+)/)?rss/$', include('tendenci.apps.rss.urls')),
     re_path(r'^imports/', include('tendenci.apps.imports.urls')),
     #re_path(r'^donations/', include('donations.urls')),
     re_path(r'^settings/', include('tendenci.apps.site_settings.urls')),

@@ -18,21 +18,48 @@ max_items = settings.MAX_RSS_ITEMS
 if not max_items: max_items = 100
 
 
-class GlobalFeed(Feed):
-    title =  _('%(dname)s RSS Feed' % {'dname':site_display_name})
-    link = '%s/rss' % (site_url)
+class RSSFeed(Feed):
     description = site_description
 
     def __init__(self):
-        super(GlobalFeed, self).__init__()
+        super().__init__()
         self.__qualname__ = self.__class__.__name__  # https://code.djangoproject.com/ticket/29296
         self.all_items = []     # all items for this rss feed
+        self.app_items = {}     # app items for this rss feed
         self.feed_for_item = {}   # item -> feed cache
+
+    def get_feed(self, obj, request):
+        """
+        Django Syndication does not pass URL parameters into get_feed.
+        Feed.__call__ receives them in kwargs but does not pass them to
+        get_feed alas. Fixes for this include:
+            1. Fixing Django to pass args and kwargs into get_feed (long lead time)
+            2. Overriding __call__ here to fix that (not appealing as __call__ does a few things)
+            3. Overriding get_feed and sucking them out of DJango's request.
+
+        This implements 3, judged to be the fastest, simplest solution for now. A Django fix is ideal too.
+        """
+        self.app = request.resolver_match.kwargs.get('app', None)
+
+        if self.app:
+            self.title =  _(f'{site_display_name}s {self.app.title()} RSS Feed')
+            self.link = f'{site_url}/{self.app}/rss'
+        else:
+            self.title =  _(f'{site_display_name}s RSS Feed')
+            self.link = f'{site_url}/rss'
+
+        return super().get_feed(obj, request)
 
     def load_feeds_items(self):
         """ Load all feeds items """
         #print("creating new feeds_items")
-        feeds = feedsmanager.get_all_feeds()
+        if self.app:
+            feeds = [feedsmanager.get_app_feed(self.app)]
+            if not self.app in self.app_items:
+                self.app_items[self.app] = []
+        else:
+            feeds = feedsmanager.get_all_feeds()
+
         for feed in feeds:
             feed_instance = feed()
             #print("Feed found: %s" % feed_instance.title)
@@ -40,19 +67,24 @@ class GlobalFeed(Feed):
             for item in feed_instance.items():
                 #print("Item: %s" % feed_instance.item_title(item))
                 self.feed_for_item[item] = feed_instance
+
                 self.all_items.append(item)
+                if self.app:
+                    self.app_items[self.app].append(item)
+
                 item_per_feed_cnt += 1
                 if item_per_feed_cnt >= settings.MAX_FEED_ITEMS_PER_APP:
                     break
 
     def items(self):
-        if not self.all_items:
+        if (not self.app and not self.all_items) or (self.app and not self.app in self.app_items):
             # This method is moved from '__init__' to here to avoid querying db thus
             # avoid the error "column doesn't exist" on system checks when making new
             # migrations with the 'makemigrations' command and also applying the migrations
             # with  the 'migrate' commands.
             self.load_feeds_items() # load items
-        return self.all_items[:max_items]
+
+        return self.app_items[self.app][:max_items] if self.app else self.all_items[:max_items]
 
     @strip_control_chars
     def item_title(self, item):
