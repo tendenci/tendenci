@@ -115,7 +115,7 @@ class Email(TendenciBaseModel):
                 recipient_bcc_list.remove(e)
 
         if recipient_list or recipient_bcc_list:
-            msg = EmailMessage(self.subject,
+            msg = EmailMessage(self.clean_subject(self.subject),
                                add_tendenci_footer(self.body, content_type=self.content_type),
                                self.sender,
                                recipient_list,
@@ -128,6 +128,9 @@ class Email(TendenciBaseModel):
                 for name, value in attachments:
                     msg.attach(name, value)
             msg.send(fail_silently=fail_silently)
+
+    def clean_subject(self, subject):
+        return subject.replace('\r', ' ').replace('\n', ' ').strip()
 
     def save(self, user=None, *args, **kwargs):
         if not self.id:
