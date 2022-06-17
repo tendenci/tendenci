@@ -506,6 +506,7 @@ class CorpProfile(TendenciBaseModel):
                                     allow_anonymous_view=False)
                 params = {'entity': directory_entity,
                           'headline':  self.name,
+                          'logo_file': self.logo,
                           'slug': self.get_directory_slug(),
                           'guid': str(uuid.uuid4()),
                           'address': self.address,
