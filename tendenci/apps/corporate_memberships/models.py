@@ -531,6 +531,16 @@ class CorpProfile(TendenciBaseModel):
                 self.directory = Directory.objects.create(**params)
                 self.save()
 
+    def get_active_indiv_memberships(self):
+        """
+        Get a list of active individual memberships.
+        """
+        return MembershipDefault.objects.filter(
+                                corp_profile_id=self.id,
+                                status_detail='active').order_by(
+                                               'user__last_name',
+                                               'user__first_name')
+
 
 class CorpMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)

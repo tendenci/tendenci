@@ -57,12 +57,21 @@ def details(request, slug=None, template_name="directories/view.html"):
             affiliates_list = None
             parents_list = None
             affiliate_requests = None
-            
+
+        memberships = None
+        if get_setting('module', 'corporate_memberships', 'showmembers'):
+            if get_setting('module', 'corporate_memberships', 'membersearchcorporatemembers'):
+                corp_profile = directory.get_corp_profile()
+                if corp_profile:
+                    # individual memberships - only the first 50
+                    memberships = corp_profile.get_active_indiv_memberships()[:50]
+        
         return render_to_resp(request=request, template_name=template_name,
             context={'directory': directory,
                      'affiliates_list': affiliates_list,
                      'parents_list': parents_list,
-                     'affiliate_requests': affiliate_requests})
+                     'affiliate_requests': affiliate_requests,
+                     'memberships': memberships})
 
     raise Http403
 

@@ -351,7 +351,7 @@ class CorpProfileBaseForm(FormControlWidgetMixin, forms.ModelForm):
     logo_file = forms.FileField(
       required=False,
       validators=[FileValidator(allowed_extensions=('.jpg', '.jpeg', '.gif', '.png',))],
-      help_text=_('Company logo. Only jpg, gif, or png images.'))
+      help_text=_('Only jpg, gif, or png images.'))
 
     def save_logo(self, corp_profile, request_user):
         content_type = ContentType.objects.get_for_model(CorpProfile)
@@ -399,8 +399,8 @@ class CorpProfileAdminForm(CorpProfileBaseForm):
     def __init__(self, *args, **kwargs):
         super(CorpProfileAdminForm, self).__init__(*args, **kwargs)
 
-        #if self.instance.logo:
-        self.initial['logo_file'] = self.instance.logo.file
+        if self.instance.logo:
+            self.initial['logo_file'] = self.instance.logo.file
 
         # assign the selected parent_entities to the drop down
         f = self.fields.get('parent_entity', None)
@@ -421,7 +421,7 @@ class CorpProfileAdminForm(CorpProfileBaseForm):
         corp_profile = super(CorpProfileAdminForm, self).save(*args, **kwargs)
 
         if not settings.USE_S3_STORAGE:
-            # TODO: need to make it work for S3 at admin backend
+            # TODO: need to make corp profile upload work for S3 at admin backend
             self.save_logo(corp_profile, corp_profile.owner)
 
         return corp_profile
@@ -443,8 +443,6 @@ class CorpProfileForm(CorpProfileBaseForm):
         if app_field_objs.filter(field_name='logo_file').exists():
             if self.instance.logo:
                 self.initial['logo_file'] = self.instance.logo.file
-        else:
-            del self.fields['logo_file']
         
         self.add_form_control_class()
 

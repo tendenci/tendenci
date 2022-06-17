@@ -48,6 +48,25 @@
 		{% if directory.has_social_media %}
 		{% include "directories/include/social_media_links.html" %}
 		{% endif %}
+		
+		{% if memberships %}
+		<div class="t-directory-members clearfix">
+         <h3>{% trans "Members to View" %}</h3>
+	         <table class="table table-bordered">
+	         {% for membership in memberships %}
+	             {% with membership.user as m_user %}
+	             <tr>
+	                 <td><a href="{{ m_user.profile.get_absolute_url }}">
+	                     {% if m_user.first_name or m_user.last_name %} {{ m_user.first_name }} {{ m_user.last_name }}{% else %}{{ m_user.username }}{% endif %}
+	                        </a>
+	                  </td>
+	                  <td>{{ membership.membership_type.name }}</td>
+	             </tr>
+	             {% endwith %}
+	         {% endfor %}
+	         </table>
+     	</div>
+		{% endif %}
 
         {% include "directories/meta.html" with show_source=True show_contact=True %}
     </article>
