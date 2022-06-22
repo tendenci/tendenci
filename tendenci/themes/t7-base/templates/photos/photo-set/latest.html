@@ -34,22 +34,42 @@
   <!-- photo-sets masonry -->
   {% if photo_sets %}
   
-  <div class="container-fluid">  
-    <div class="grid">
-      
-      <div class="grid-sizer col-xs-12"></div>
-      
-      {% for photo_set in photo_sets %}
-   
-      <div class="grid-item col-md-4 col-sm-4 col-xs-4">
-        {% search_result photo_set %}
-      </div>
-      
-      {% endfor %}
-      
-    </div>
-    
-    {% paginate %}
+  <div class="container-fluid">
+    <div class="row">
+    	<div class="{% if photo_cats %}col-md-9{% else %}col-md-12{% endif %}">
+		    <div class="grid">
+		      
+		      <div class="grid-sizer col-xs-12"></div>
+		      
+		      {% for photo_set in photo_sets %}
+		   
+		      <div class="grid-item col-md-4 col-sm-4 col-xs-4">
+		        {% search_result photo_set %}
+		      </div>
+		      
+		      {% endfor %}
+		      
+		    </div>
+		    
+		    {% paginate %}
+	    </div>
+	    {% if photo_cats %}
+	    <div class="col-md-3">
+	    	<h3>{% trans 'Browse Photos' %}</h3>
+	    	<ul style="list-style-type: none;">
+	    	{% for cat in photo_cats %}
+	    		{% if cat.slug %}
+	    	   <li>
+	    	       <a href="{% url "photos_in_category" cat.slug %}">{{ cat.name }}</a>
+	    	   </li>
+	    	    {% endif %}
+	    	{% endfor %}
+	    	<li>&nbsp;</li>
+	    	<li><a href="{% url "photoset_latest" %}">{% trans 'All Photos' %}</a></li>
+	        </ul>
+	    </div>
+	    {% endif %}
+	</div>
   </div>
   {% endif %}
   <!-- end: photo-sets masonry -->
@@ -71,10 +91,6 @@
   columnWidth: '.grid-sizer',
   percentPosition: true
   }); */
-</script>
-
-<script type="text/javascript">
-{% include 'photos/photo-set/include/sub_categories.js' %}
 </script>
 
 {% endblock %}

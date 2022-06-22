@@ -40,7 +40,9 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.photos.cache import PHOTO_PRE_KEY
 #from tendenci.apps.photos.search_indexes import PhotoSetIndex
 from tendenci.apps.photos.models import Image, PhotoSet, AlbumCover, License, PhotoCategory
-from tendenci.apps.photos.forms import PhotoEditForm, PhotoSetForm, PhotoBatchEditForm, PhotoSetSearchForm
+from tendenci.apps.photos.forms import (
+    PhotoEditForm, PhotoSetForm, PhotoBatchEditForm,
+    PhotoForm, PhotoBaseFormSet,PhotoSetSearchForm)
 from tendenci.apps.photos.utils import get_privacy_settings
 from tendenci.apps.photos.tasks import ZipPhotoSetTask
 from tendenci.apps.base.utils import apply_orientation
@@ -67,6 +69,23 @@ def search(request, template_name="photos/search.html"):
 
     return render_to_resp(request=request, template_name=template_name,
         context={"photos": photos})
+
+
+@is_enabled('photos')
+def category_photos(request, slug, template_name="photos/category_photos.html"):
+    cat = get_object_or_404(PhotoCategory, slug=slug)
+    filters = get_query_filters(request.user, 'photos.view_image')
+    photos = Image.objects.filter(cat=cat).filter(filters).distinct()
+    if not request.user.is_anonymous:
+        photos = photos.select_related()
+
+    photos = photos.order_by('-create_dt')
+
+    EventLog.objects.log()
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={"photos": photos,
+                 'cat': cat})
 
 
 @is_enabled('photos')
@@ -528,12 +547,19 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     else:
         # invalid form
         photo_sets = PhotoSet.objects.none()
+        cat = None
+
+    if cat:
+        photo_cats = PhotoCategory.objects.filter(parent=cat)
+    else:
+        photo_cats = None
 
     EventLog.objects.log()
 
     return render_to_resp(request=request, template_name=template_name,
         context={"photo_sets": photo_sets,
-                 'form': form})
+                 'form': form,
+                 'photo_cats': photo_cats})
 
 
 @is_enabled('photos')
@@ -692,6 +718,8 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
     PhotoFormSet = modelformset_factory(
         Image,
+        form=PhotoForm,
+        formset=PhotoBaseFormSet,
         exclude=(
             'title_slug',
             'creator_username',
@@ -748,7 +776,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
         # i would like to use the search index here; but it appears that
         # the formset class only accepts a queryset; not a searchqueryset or list
         photo_qs = Image.objects.filter(photoset=photo_set).order_by("position")
-        photo_formset = PhotoFormSet(queryset=photo_qs)
+        photo_formset = PhotoFormSet(photo_set=photo_set, queryset=photo_qs)
 
     cc_licenses = License.objects.all()
 

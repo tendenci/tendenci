@@ -555,10 +555,12 @@ class PhotoSizeCache(object):
 
 class PhotoCategory(models.Model):
     name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, blank=True, null=True)
     parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name_plural = _("Photo Categories")
+        verbose_name = _("Photo Set Category")
+        verbose_name_plural = _("Photo Set Categories")
         ordering = ('name',)
         app_label = 'photos'
 
@@ -740,6 +742,9 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     photographer = models.CharField(_('Photographer'),
                                     blank=True, null=True,
                                     max_length=100)
+    cat = models.ForeignKey(PhotoCategory, verbose_name=_("Category"),
+                                 related_name="cat_photos", null=True,
+                                 on_delete=models.SET_NULL)
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True, on_delete=models.SET_NULL)

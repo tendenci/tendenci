@@ -1,0 +1,81 @@
+{% extends "photos/base-wide.html" %}
+
+{% load humanize %}
+{% load bootstrap_pagination_tags %}
+{% load tagging_tags %}
+{% load photo_tags %}
+{% load base_tags %}
+
+{% block title %}{{ block.super }}{{ cat.name }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos-photo-set.css' %}">
+
+<meta property="og:title" content="{{ cat.name }}" />
+<meta property="og:type" content="image/jpeg" />
+
+{% endblock %}
+
+{% block content %}
+
+<div class="col-md-12">
+  
+  <ol class="breadcrumb">
+	  <li><a href="{% url "photoset_latest" %}">{% trans "Albums" %}</a></li>
+	  {% if cat.parent %}
+	  <li><a href="{% url "photoset_latest" %}?cat={{ cat.parent.id }}">{{ cat.parent.name }}</a></li>
+	  {% endif %}
+	  <li class="active">{{ cat.name }}</li>
+ </ol> 
+
+  <div class="page-header">
+    <h1 class="set-name">{{ cat.name }}</h1>
+  </div>
+      
+    <div id="photos-wrap">
+      {% if photos %}
+      {% autopaginate photos 48 %}
+      <div class="thumb-row clearfix">
+          <div class="grid">
+            
+            {% for photo in photos %}
+            <div class="grid-item col-md-4 col-sm-4 col-xs-4">
+              <div class="thumbnail">
+                <a href="{% url "photo_original" photo.pk %}">
+                  <img class="img-responsive" src="{% url "photo_original" photo.pk %}" alt="{{ photo.title|truncatechars:123 }}" title="{{ photo.title|truncatechars:123 }}"/>
+                </a>
+              </div>
+            </div>
+            
+            {% endfor %}
+          </div>
+        
+      </div>
+      <div style="clear:both; height:10px;"></div>
+      {% paginate %}
+      {% else %}
+      <p>{% trans "No photos were found." %}</p>
+      {% endif %}
+    </div>
+
+    {% if cat.parent %}
+    <nav>  
+     <ul class="pager">
+       <li class="previous"><a href="{% url "photoset_latest" %}?cat={{ cat.parent.id }}"><span aria-hidden="true">&larr;</span> {% trans "Back to " %} {{ cat.parent.name }}</a></li>
+     </ul>
+   </nav> 
+   {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+  $(document).ready(function(){
+  
+  });
+</script>
+{% endblock %}

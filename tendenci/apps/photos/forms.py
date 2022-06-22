@@ -2,6 +2,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.forms.models import BaseModelFormSet
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.photos.models import Image, PhotoSet, License, PhotoCategory
@@ -11,16 +12,47 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.forms import FormControlWidgetMixin
 
 
+class PhotoBaseFormSet(BaseModelFormSet):
+    def __init__(self,  *args, **kwargs): 
+        self.photo_set = kwargs.pop("photo_set", None)
+        super(PhotoBaseFormSet, self).__init__(*args, **kwargs)
+
+    def _construct_form(self, i, **kwargs):
+        if hasattr(self, 'photo_set'):
+            kwargs['photo_set'] = self.photo_set
+        return super(PhotoBaseFormSet, self)._construct_form(i, **kwargs)
+
+
+class PhotoForm(forms.ModelForm):
+
+    class Meta:
+        model = Image
+        exclude=(
+            'title_slug',
+            'creator_username',
+            'owner_username',
+            'photoset',
+            'is_public',
+            'owner',
+            'safetylevel',
+            'exif_data',
+            'allow_anonymous_view',
+            'status',
+            'status_detail',
+        ),
+
+    def __init__(self, photo_set, *args, **kwargs):
+        super(PhotoForm, self).__init__(*args, **kwargs)
+        if photo_set.cat:
+            self.fields['cat'].queryset = PhotoCategory.objects.filter(parent_id=photo_set.cat.id)
+
+
 class PhotoSetSearchForm(FormControlWidgetMixin, forms.Form):
     q = forms.CharField(label=_("Search"), required=False, max_length=200,)
     cat = forms.ModelChoiceField(label=_("Category"),
                                       queryset=PhotoCategory.objects.filter(parent=None),
                                       empty_label="-----------",
                                       required=False)
-    sub_cat = forms.ModelChoiceField(label=_("Subcategory"),
-                                          queryset=PhotoCategory.objects.none(),
-                                          empty_label=_("Subcategories"),
-                                          required=False)
 
     def __init__(self, *args, **kwargs):
         super(PhotoSetSearchForm, self).__init__(*args, **kwargs)
@@ -38,14 +70,8 @@ class PhotoSetSearchForm(FormControlWidgetMixin, forms.Form):
                     cat = int(data.get('cat', 0))
                 except ValueError:
                     cat = 0
-                if cat:
-                    sub_cats = PhotoCategory.objects.filter(parent__id=cat)
-                    sub_cats_count = sub_cats.count()
-                    self.fields['sub_cat'].empty_label = _('Subcategories (%(c)s)' % {'c' : sub_cats_count})
-                    self.fields['sub_cat'].queryset = sub_cats
         else:
             del self.fields['cat']
-            self.fields['sub_cat']
 
 
 class LicenseField(forms.ModelChoiceField):
@@ -148,6 +174,7 @@ class PhotoEditForm(TendenciBaseForm):
             'license',
             'tags',
             'group',
+            'cat',
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
@@ -162,6 +189,7 @@ class PhotoEditForm(TendenciBaseForm):
                           'photographer',
                           'tags',
                           'group',
+                          'cat',
                           'license',
                       ], 'legend': '',
                   }),
@@ -198,6 +226,14 @@ class PhotoEditForm(TendenciBaseForm):
         self.fields['group'].queryset = default_groups
         self.fields['group'].empty_label = None
 
+        # photo cat
+        [photo_set] = self.instance.photoset.all()[:1] or [None]
+        if photo_set and photo_set.cat:
+            self.fields['cat'].queryset = PhotoCategory.objects.filter(parent_id=photo_set.cat.id)
+            self.fields['cat'].required = False
+        else:
+            del self.fields['cat']
+
 
 class PhotoSetForm(TendenciBaseForm):
     """ Photo-Set Add/Edit-Form """
@@ -217,7 +253,6 @@ class PhotoSetForm(TendenciBaseForm):
             'member_perms',
             'group_perms',
             'cat',
-            'sub_cat',
             'status_detail',
         )
 
@@ -239,7 +274,6 @@ class PhotoSetForm(TendenciBaseForm):
                       }),
                       (_('Category'), {
                         'fields': ['cat',
-                                   'sub_cat'
                                    ],
                         'classes': ['boxy-grey'],
                       }),
@@ -267,12 +301,8 @@ class PhotoSetForm(TendenciBaseForm):
 
         # cat and sub_cat
         self.fields['cat'].required = False
-        self.fields['sub_cat'].required = False
         self.fields['cat'].queryset = PhotoCategory.objects.filter(parent__isnull=True)
-        self.fields['sub_cat'].queryset = PhotoCategory.objects.none()
-        if self.instance and self.instance.pk and self.instance.cat:
-            self.fields['sub_cat'].queryset = PhotoCategory.objects.filter(
-                                                        parent=self.instance.cat)
+
         if args:
             post_data = args[0]
         else:
@@ -282,10 +312,9 @@ class PhotoSetForm(TendenciBaseForm):
                 cat = int(post_data.get('cat', '0'))
             except ValueError:
                 cat = None
-            if cat:
-                self.fields['sub_cat'].queryset = PhotoCategory.objects.filter(parent_id=cat)
+
         if self.user and self.user.profile.is_superuser:
-            self.fields['sub_cat'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
+            self.fields['cat'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
                         reverse('admin:photos_photocategory_changelist'),
                             _('Manage Categories'),))
 
