@@ -567,6 +567,9 @@ class PhotoCategory(models.Model):
     def __str__(self):
         return self.name
 
+    def photo_count(self):
+        return Image.objects.filter(cat=self).count()
+
 
 class PhotoSet(OrderingBaseModel, TendenciBaseModel):
     """

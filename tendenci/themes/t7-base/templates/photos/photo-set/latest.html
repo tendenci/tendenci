@@ -60,7 +60,7 @@
 	    	{% for cat in photo_cats %}
 	    		{% if cat.slug %}
 	    	   <li>
-	    	       <a href="{% url "photos_in_category" cat.slug %}">{{ cat.name }}</a>
+	    	       <a href="{% url "photos_in_category" cat.slug %}">{{ cat.name }} ({{ cat.photo_count }})</a>
 	    	   </li>
 	    	    {% endif %}
 	    	{% endfor %}
