@@ -103,15 +103,22 @@ def search(request, template_name="articles/search.html"):
             # Handle legacy category links
             if "category:" in query or "sub_category:" in query:
                 key, name = query.split(':', 1)
-                category = Category.objects.filter(name__iexact=name)
-                if category.exists():
-                    return HttpResponseRedirect("%s?%s=%s" %(reverse('articles'), key, name))
+                categories = Category.objects.filter(name__iexact=name)
+                if categories.exists():
+                    category = categories[0]
+                    return HttpResponseRedirect("%s?%s=%s" %(reverse('articles'), key, category.id))
                 else:
                     return HttpResponseRedirect(reverse('articles'))
 
         cat = form.cleaned_data['search_category']
-        category = form.cleaned_data['category']
-        sub_category = form.cleaned_data['sub_category']
+        try:
+            category = int(form.cleaned_data['category'])
+        except ValueError:
+            category = None
+        try:
+            sub_category = int(form.cleaned_data['sub_category'])
+        except ValueError:
+            sub_category = None
         filter_date = form.cleaned_data['filter_date']
         date = form.cleaned_data['date']
         try:
@@ -138,9 +145,9 @@ def search(request, template_name="articles/search.html"):
 
     # Query list of category and subcategory for dropdown filters
     if category:
-        articles = articles.filter(categories__category__name=category)
+        articles = articles.filter(categories__category__id=category)
     if sub_category:
-        articles = articles.filter(categories__parent__name=sub_category)
+        articles = articles.filter(categories__parent__id=sub_category)
 
     # don't use order_by with "whoosh"
     default_engine = settings.HAYSTACK_CONNECTIONS.get('default', {}).get('ENGINE', '')
