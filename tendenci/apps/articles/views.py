@@ -82,6 +82,7 @@ def search(request, template_name="articles/search.html"):
     cat = None
     category = None
     sub_category = None
+    query = None
 
     if not request.user.is_anonymous:
         articles = articles.select_related()
