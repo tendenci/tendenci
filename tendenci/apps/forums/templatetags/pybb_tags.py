@@ -233,15 +233,23 @@ def pybb_get_latest_topics(context, cnt=5, user=None):
     if not user:
         user = context['user']
     qs = perms.filter_topics(user, qs)
+    
     return qs[:cnt]
 
 
 @register.simple_tag(takes_context=True)
-def pybb_get_latest_posts(context, cnt=5, user=None):
+def pybb_get_latest_posts(context, forum=None, cnt=5, user=None):
     qs = Post.objects.all().order_by('-created', '-id')
     if not user:
         user = context['user']
     qs = perms.filter_posts(user, qs)
+    if forum:
+        try:
+            forum = int(forum)
+        except ValueError:
+            forum = None
+        if forum:
+            qs = qs.filter(topic__forum=forum)
     return qs[:cnt]
 
 
