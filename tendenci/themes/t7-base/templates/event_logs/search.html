@@ -177,9 +177,12 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-  $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
-  $('.timepicker').timepicker({'step': 15});
+	  $('#id_start_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
+	  $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
+	  $('#id_end_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
+	  $('#id_end_dt_1').timepicker({'timeFormat': 'h:i A'});
   });
+  
 
   var adv_opt_legend = $('fieldset legend');
   var adv_opt = adv_opt_legend.parent();
