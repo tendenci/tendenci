@@ -555,7 +555,7 @@ def group_members_export(request, group_slug, export_target='all'):
                                              group.id,
                                              export_target,
                                             identifier)
-    default_storage.save(temp_export_path, ContentFile(''))
+    default_storage.save(temp_export_path, ContentFile(b''))
     # start the process
     subprocess.Popen([python_executable(), "manage.py",
                   "group_members_export",

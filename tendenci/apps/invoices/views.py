@@ -712,7 +712,7 @@ def export(request, template_name="invoices/export.html"):
 
         identifier = int(ttime.time())
         temp_file_path = 'export/invoices/%s_temp.csv' % identifier
-        default_storage.save(temp_file_path, ContentFile(''))
+        default_storage.save(temp_file_path, ContentFile(b''))
 
         # start the process
         subprocess.Popen([python_executable(), "manage.py",

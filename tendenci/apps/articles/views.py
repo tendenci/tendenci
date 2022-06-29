@@ -423,7 +423,7 @@ def export(request, template_name="articles/export.html"):
     if request.method == "POST" and "download" in request.POST:
         identifier = int(time.time())
         temp_file_path = 'export/articles/%s_temp.csv' % identifier
-        default_storage.save(temp_file_path, ContentFile(''))
+        default_storage.save(temp_file_path, ContentFile(b''))
 
         # start the process
         subprocess.Popen([python_executable(), "manage.py",

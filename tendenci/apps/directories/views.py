@@ -667,7 +667,7 @@ def directory_export(request, template_name="directories/export.html"):
         export_status_detail = form.cleaned_data['export_status_detail']
         identifier = int(time.time())
         temp_file_path = 'export/directories/%s_temp.csv' % identifier
-        default_storage.save(temp_file_path, ContentFile(''))
+        default_storage.save(temp_file_path, ContentFile(b''))
 
         # start the process
         subprocess.Popen([python_executable(), "manage.py",

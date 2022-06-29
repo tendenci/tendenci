@@ -4716,7 +4716,7 @@ def export(request, template_name="events/export.html"):
         by_type = form.cleaned_data['by_type']
         identifier = int(time.time())
         temp_file_path = 'export/events/%s_temp.csv' % identifier
-        default_storage.save(temp_file_path, ContentFile(''))
+        default_storage.save(temp_file_path, ContentFile(b''))
 
         process_options = [python_executable(), "manage.py", "event_export_process",
                            "--identifier=%s" % identifier,
@@ -4796,7 +4796,7 @@ def reports_financial(request, template_name="events/financial_reports.html"):
             sort_by = form.cleaned_data['sort_by']
             sort_direction = form.cleaned_data['sort_direction']
             temp_file_path = 'export/events/%s_temp.csv' % identifier
-            default_storage.save(temp_file_path, ContentFile(''))
+            default_storage.save(temp_file_path, ContentFile(b''))
             # start the process
             subprocess.Popen([python_executable(), "manage.py",
                               "events_financial_export_process",
