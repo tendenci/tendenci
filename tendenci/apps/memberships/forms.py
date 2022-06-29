@@ -802,16 +802,16 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                                                     activate_link=reverse('profile.activate_email'),
                                                     username=requests.utils.quote(un), email=requests.utils.quote(email),
                                                     next_path=self.request.get_full_path())
-        inactive_user_err_msg =  mark_safe(_('''This email "{email}" is associated with previous site activity.
+        inactive_user_err_msg =  mark_safe(_('''The email you entered is associated with previous site activity.
                     Please click {activation_link} and we'll send you an email to activate your account and then you
-                    will be returned to this application.''').format(email=email, activation_link=activation_link))
+                    will be returned to this application.''').format(activation_link=activation_link))
 
         if self.request.user.is_authenticated and self.request.user.username == un:
             # they are logged in and join or renewal for themselves
             if email and email !=  self.request.user.email:
                 # email is changed
                 if User.objects.filter(email=email).exists():
-                    raise forms.ValidationError(_('''This Email address "%s" already exists in the system.
+                    raise forms.ValidationError(_('''This Email address you entered "%s" already exists in the system.
                                     Please select a different one to continue.''') % email)
 
         else:
@@ -856,7 +856,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                             # user is not logged in. prompt them to log in if the user record with this email address is active
                             u = User.objects.filter(email=email).order_by('-is_active')[0]
                             [profile] = Profile.objects.filter(user=u)[:1] or [None]
-                            if (profile and profile.is_active) or u.is_active:
+                            if (profile and profile.is_active) and u.is_active:
                                 raise forms.ValidationError(email_validate_err_msg)
 
                             # at this point, user is not logged in and user record with this email is inactive
