@@ -26,7 +26,7 @@ from tendenci.apps.base.utils import day_validate, is_blank, tcurrency
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.utils import get_notice_recipients
-from tendenci.apps.base.fields import DictField, CountrySelectField
+from tendenci.apps.base.fields import DictField, CountrySelectField, StateSelectField
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.emails.models import Email
@@ -2658,6 +2658,7 @@ class MembershipAppField(OrderingBaseModel):
                     ("ChoiceField/django.forms.RadioSelect", _("Select One (Radio Buttons)")),
                     ("MultipleChoiceField", _("Multi select (Drop Down)")),
                     ("MultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi select (Checkboxes)")),
+                    ("StateProvinceField", _("States/Provinces")),
                     ("CountrySelectField", _("Countries Drop Down")),
                     ("EmailField", _("Email")),
                     ("FileField", _("File upload")),
@@ -2732,6 +2733,11 @@ class MembershipAppField(OrderingBaseModel):
                 field_class, field_widget = self.field_type, None
             if field_class == 'CountrySelectField':
                 field_class = CountrySelectField
+            elif field_class == 'StateProvinceField':
+                field_class = StateSelectField
+            elif self.field_name in ['state', 'state_2'] and \
+                    get_setting('site', 'global', 'stateusesdropdown'):
+                field_class = StateSelectField
             else:
                 field_class = getattr(forms, field_class)
             field_args = {"label": self.label,

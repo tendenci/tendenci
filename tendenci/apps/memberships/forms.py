@@ -16,7 +16,7 @@ from django.conf import settings
 from haystack.query import SearchQuerySet
 from tendenci.libs.tinymce.widgets import TinyMCE
 
-from tendenci.apps.base.fields import EmailVerificationField, PriceField, CountrySelectField
+from tendenci.apps.base.fields import EmailVerificationField, PriceField, CountrySelectField, StateSelectField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.careers.models import Career
 from tendenci.apps.corporate_memberships.models import (CorpMembership, CorpMembershipAuthDomain, CorporateMembershipType)
@@ -586,6 +586,10 @@ class MembershipAppFieldAdminForm(forms.ModelForm):
                 self.fields['field_type'].choices = MembershipAppField.FIELD_TYPE_CHOICES2
             else:
                 self.fields['field_type'].choices = MembershipAppField.FIELD_TYPE_CHOICES1
+            if self.instance.field_name == 'state':
+                self.fields['field_type'].choices = (("", _("Set to Default")),
+                                                ("CharField", _("Text")),
+                                                ("StateProvinceField", _("States/Provinces")),)
 
     def save(self, *args, **kwargs):
         self.instance = super(MembershipAppFieldAdminForm, self).save(*args, **kwargs)
@@ -672,6 +676,9 @@ def assign_fields(form, app_field_objs):
                     field.initial = obj.default_value
                 form.fields[obj.field_name] = field
             else:
+                if obj.field_name in ['state', 'state_2']:
+                    if get_setting('site', 'global', 'stateusesdropdown'):
+                        form.fields[obj.field_name] = StateSelectField()
                 field = form.fields[obj.field_name]
                 field.label = obj.label
                 field.required = obj.required
@@ -1865,6 +1872,13 @@ class MembershipDefaultForm(TendenciBaseForm):
                     mt_choices.append((pk, '%s $%s' % (name, price)))
 
         self.fields['membership_type'].choices = mt_choices
+
+        # state
+        if get_setting('site', 'global', 'stateusesdropdown'):
+            self.fields['state'] = StateSelectField(label=self.fields['state'].label,
+                                                    required=self.fields['state'].required)
+            self.fields['state_2'] = StateSelectField(label=self.fields['state_2'].label,
+                                                    required=self.fields['state_2'].required)
         # -----------------------------------------------------
 
         # change form -----------------------------------------

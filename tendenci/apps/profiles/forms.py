@@ -10,7 +10,7 @@ from django.forms.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
 from django.db.models import Q
 
-from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField
+from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, StateSelectField
 from tendenci.apps.base.utils import normalize_field_names
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.site_settings.utils import get_setting
@@ -338,6 +338,15 @@ class ProfileForm(TendenciBaseForm):
                 else:
                     self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
             self.fields['password1'].help_text = self.password_help_text
+        # state
+        if get_setting('site', 'global', 'stateusesdropdown'):
+            self.fields['state'] = StateSelectField(label=self.fields['state'].label,
+                                                    required=self.fields['state'].required)
+            self.fields['state_2'] = StateSelectField(label=self.fields['state_2'].label,
+                                                    required=self.fields['state_2'].required)
+            self.fields['state'].widget.attrs.update({'class': 'form-control'})
+            self.fields['state_2'].widget.attrs.update({'class': 'form-control'})
+            
 
     def clean_username(self):
         """
