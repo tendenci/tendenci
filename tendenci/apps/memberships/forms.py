@@ -115,6 +115,9 @@ def assign_search_fields(form, app_field_objs):
             elif obj.field_name == 'country':
                 form.fields[obj.field_name] = CountrySelectField(label=obj.label,
                                                     required=False)
+            elif obj.field_name == 'state' and get_setting('site', 'global', 'stateusesdropdown'):
+                form.fields[obj.field_name] = StateSelectField(label=obj.label,
+                                                    required=False)
             elif obj.field_name == 'language':
                 form.fields[obj.field_name] = forms.ChoiceField(label=obj.label,
                                                     required=False,
