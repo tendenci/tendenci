@@ -145,7 +145,7 @@ class CIMBase(object):
         for sub_e in element:
             # remove the namespace in the tag
             # e.g.{AnetApi/xml/v1/schema/AnetApiSchema.xsd}resultCode
-            name = re.sub(r'(\{.*?\})*(\w+)', r'\2', sub_e.tag)
+            name = re.sub(r'\{.*?\}', '', sub_e.tag)
 
             # convert camelCase to underscore
             name = re.sub(r'([A-Z])', lambda match: "_" + match.group(1).lower(), name)
