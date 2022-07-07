@@ -140,6 +140,8 @@ class StateSelectField(fields.ChoiceField):
             choices = (('',empty_label),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
                 + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
         choices = sorted(choices)
+        # add non-us
+        choices = choices + [('Non-US', _('Non-US')),]
         self.choices = choices
         self.initial = ''
 
