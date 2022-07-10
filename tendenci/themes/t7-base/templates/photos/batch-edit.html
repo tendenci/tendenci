@@ -120,6 +120,10 @@
                             <div class="label">{{ photo_form.group.label_tag }}</div>
                             <div class="field">{{ photo_form.group }}</div>
                         </div>
+                        <div class="group-wrap">
+                            <div class="label">{{ photo_form.cat.label_tag }}</div>
+                            <div class="field">{{ photo_form.cat }}</div>
+                        </div>
                         <div class="cover-wrap">
                             <div class="field">
                                 <input type="radio" name="album_cover" value="{{ photo_form.initial.id }}" {% if photo_form.initial.id == photo_set.albumcover.photo.id %}selected{% endif %}>

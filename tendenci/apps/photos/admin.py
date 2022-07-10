@@ -108,21 +108,23 @@ class PhotoAdmin(admin.ModelAdmin):
 
 
 class SubCategoryAdminInline(admin.TabularInline):
-    fieldsets = ((None, {'fields': ('name',)}),)
+    fieldsets = ((None, {'fields': ('name', 'slug')}),)
+    prepopulated_fields = {'slug': ['name']}
     model = PhotoCategory
     extra = 0
-    verbose_name = _("Sub-Category")
-    verbose_name_plural = _("Sub-Categories")
+    verbose_name = _("Photo Category")
+    verbose_name_plural = _("Photo Categories")
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'sub_categories',)
+    list_display = ('id', 'name', 'slug', 'photo_categories',)
     list_display_links = ('name',)
-    fieldsets = ((None, {'fields': ('name',)}),)
+    fieldsets = ((None, {'fields': ('name', 'slug')}),)
+    prepopulated_fields = {'slug': ['name']}
     inlines = (SubCategoryAdminInline,)
 
     @mark_safe
-    def sub_categories(self, instance):
+    def photo_categories(self, instance):
         return ', '.join(PhotoCategory.objects.filter(parent=instance).values_list('name', flat=True))
 
     def get_queryset(self, request):

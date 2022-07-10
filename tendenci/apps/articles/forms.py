@@ -91,10 +91,10 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
 
         categories, sub_categories = Article.objects.get_categories()
 
-        categories = [(cat.name, cat) for cat in categories]
-        categories.insert(0, ('', _('All Categories (%d)' % len(categories))))
-        sub_categories = [(cat.name, cat) for cat in sub_categories]
-        sub_categories.insert(0, ('', _('All Subcategories (%d)' % len(sub_categories))))
+        categories = [(cat.id, cat) for cat in categories]
+        categories.insert(0, ('0', _('All Categories (%d)' % len(categories))))
+        sub_categories = [(cat.id, cat) for cat in sub_categories]
+        sub_categories.insert(0, ('0', _('All Subcategories (%d)' % len(sub_categories))))
 
         self.fields['category'].choices = categories
         self.fields['sub_category'].choices = sub_categories

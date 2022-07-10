@@ -63,7 +63,7 @@ class NavItem(OrderingBaseModel):
         return '%s - %s' % (self.nav.title, self.label)
 
     def get_url(self):
-        if self.page:
+        if self.page and self.page.status:
             return self.page.get_absolute_url()
         else:
             return self.url

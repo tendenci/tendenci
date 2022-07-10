@@ -29,10 +29,6 @@
     {% if photo_set.cat %}
      <ul class="list-inline">
          <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'photoset_latest' %}?cat={{ photo_set.cat.pk }}">{{ photo_set.cat.name }}</a></li>
-         {% if photo_set.sub_cat %}
-             <li>|</li>
-             <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'photoset_latest' %}?cat={{ photo_set.pk }}&sub_cat={{ photo_set.sub_cat.pk }}">{{ photo_set.sub_cat.name }}</a></li>
-         {% endif %}
      </ul>
     {% endif %}
     

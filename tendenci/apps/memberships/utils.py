@@ -274,7 +274,7 @@ def run_membership_export(request,
     if not identifier:
         identifier = int(ttime.time())
     temp_file_path = 'export/memberships/{0}_{1}_temp.csv'.format(identifier, cp_id)
-    default_storage.save(temp_file_path, ContentFile(''))
+    default_storage.save(temp_file_path, ContentFile(b''))
     
     # start the process
     subprocess.Popen([python_executable(), "manage.py",

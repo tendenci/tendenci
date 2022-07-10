@@ -290,7 +290,12 @@ class CustomPermissionHandler(DefaultPermissionHandler):
         else:
             # anonymous user may not see posts which are on moderation
             qs = qs.filter(on_moderation=False)
-        return qs
+        # check permission on category
+        cat_qs = Category.objects.all()
+        cat_qs = self.filter_categories(user, cat_qs)
+        if cat_qs.count() > 0:
+            return qs.filter(topic__forum__category__in=cat_qs)
+        return qs.none()
 
 
 perms = util.resolve_class(defaults.PYBB_PERMISSION_HANDLER)

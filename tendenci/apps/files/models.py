@@ -412,8 +412,8 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
     when corresponding `File` object is deleted.
     """
     if instance.file:
-        if os.path.isfile(instance.file.path):
-            os.remove(instance.file.path)
+        if default_storage.exists(instance.file.name):
+            default_storage.delete(instance.file.name)
 
 
 class FilesCategory(models.Model):

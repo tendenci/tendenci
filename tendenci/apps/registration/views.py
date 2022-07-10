@@ -12,6 +12,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.registration.models import RegistrationProfile
 from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.base.utils import get_next_url
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -65,8 +66,11 @@ def activate(request, activation_key,
     registration/activate.html or ``template_name`` keyword argument.
 
     """
+    next_url = get_next_url(request)
+    from_memberships = next_url and next_url.startswith('/memberships/')
     activation_key = activation_key.lower() # Normalize before trying anything with it.
-    account = RegistrationProfile.objects.activate_user(activation_key)
+    account = RegistrationProfile.objects.activate_user(activation_key,
+                                                        from_memberships=from_memberships)
     if account:
         account.auto_login = True
         credentials = {
@@ -87,7 +91,6 @@ def activate(request, activation_key,
                 }
                 notification.send_emails(recipients,'user_added', extra_context)
 
-    next_url = request.GET.get('next', '')
     if account and next_url:
         return HttpResponseRedirect(next_url)
 

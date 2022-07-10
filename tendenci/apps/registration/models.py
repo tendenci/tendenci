@@ -23,7 +23,7 @@ class RegistrationManager(models.Manager):
     keys), and for cleaning out expired inactive accounts.
 
     """
-    def activate_user(self, activation_key):
+    def activate_user(self, activation_key, from_memberships=False):
         """
         Validate an activation key and activate the corresponding
         ``User`` if valid.
@@ -50,7 +50,7 @@ class RegistrationManager(models.Manager):
                 profile = self.get(activation_key=activation_key)
             except self.model.DoesNotExist:
                 return False
-            if not profile.activation_key_expired():
+            if not profile.activation_key_expired(from_memberships=from_memberships):
                 user = profile.user
                 user.is_active = True
                 user.save()
@@ -222,7 +222,7 @@ class RegistrationProfile(models.Model):
     def __str__(self):
         return "Registration information for %s" % self.user
 
-    def activation_key_expired(self):
+    def activation_key_expired(self, from_memberships=False):
         """
         Determine whether this ``RegistrationProfile``'s activation
         key has expired, returning a boolean -- ``True`` if the key
@@ -246,5 +246,6 @@ class RegistrationProfile(models.Model):
         """
         expiration_date = datetime.timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)
         return self.activation_key == self.ACTIVATED or \
-               (self.user.date_joined + expiration_date <= datetime.datetime.now())
+               (not from_memberships and \
+                (self.user.date_joined + expiration_date <= datetime.datetime.now()))
     activation_key_expired.boolean = True

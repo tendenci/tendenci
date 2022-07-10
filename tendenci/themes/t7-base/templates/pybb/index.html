@@ -39,8 +39,10 @@
 
 
 {% else %}
+{% if user.is_authenticated and user.is_superuser %} 
 <h2>{% trans "Forum categories are not created" %}</h2>
 <a href="{% url 'admin:forums_category_add' %}">{% trans "Add a category now" %}</a>
+{% endif %}
 {% endif %}
 
 {% endblock content %}

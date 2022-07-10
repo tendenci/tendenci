@@ -3,11 +3,10 @@ from django.utils.translation import gettext_lazy as _
 from django import forms
 
 from tendenci.libs.form_utils.forms import BetterForm
+from tendenci.apps.base.forms import FormControlWidgetMixin
 
 from .utils import get_app_list_choices
 
-INITIAL_START_DT = datetime.now() - timedelta(weeks=4)
-INITIAL_END_DT = datetime.now()
 REQUEST_CHOICES = [('all', _('ALL'),), ('post', _('POST'),), ('get', _('GET'),)]
 APP_CHOICES = get_app_list_choices()
 
@@ -34,13 +33,15 @@ class EventsFilterForm(forms.Form):
 class EventLogSearchForm(BetterForm):
     start_dt = forms.SplitDateTimeField(
         label=_('Start Date/Time'),
-        initial=INITIAL_START_DT,
-        required=False
+        required=False,
+        input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
+        input_time_formats=['%I:%M %p', '%H:%M:%S']
     )
     end_dt = forms.SplitDateTimeField(
         label=_('End Date/Time'),
-        initial=INITIAL_END_DT,
-        required=False
+        required=False,
+        input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
+        input_time_formats=['%I:%M %p', '%H:%M:%S']
     )
     request_method = forms.ChoiceField(
         required=False,
@@ -103,3 +104,8 @@ class EventLogSearchForm(BetterForm):
               'legend': 'Advanced Options'
               }),
         ]
+
+    def __init__(self, *args, **kwargs):
+        super(EventLogSearchForm, self).__init__(*args, **kwargs)
+        self.fields['start_dt'].initial = datetime.now() - timedelta(weeks=4)
+        self.fields['end_dt'].initial = datetime.now()

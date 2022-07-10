@@ -1365,7 +1365,7 @@ def profile_export(request, template_name="profiles/export.html"):
         export_fields = form.cleaned_data['export_fields']
         identifier = int(time.time())
         temp_file_path = 'export/profiles/%s_temp.csv' % identifier
-        default_storage.save(temp_file_path, ContentFile(''))
+        default_storage.save(temp_file_path, ContentFile(b''))
 
         # start the process
         subprocess.Popen([python_executable(), "manage.py",

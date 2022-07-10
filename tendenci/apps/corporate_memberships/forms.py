@@ -1,7 +1,5 @@
-import imghdr
 import decimal
 import chardet
-from os.path import splitext
 import operator
 from uuid import uuid4
 from os.path import join
@@ -15,8 +13,8 @@ from django.forms.fields import ChoiceField
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.core.files.storage import default_storage
-from django.template.defaultfilters import filesizeformat
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 
 # from captcha.fields import CaptchaField
 #from tendenci.apps.base.forms import SimpleMathField
@@ -47,8 +45,9 @@ from tendenci.apps.corporate_memberships.utils import (
 from tendenci.apps.corporate_memberships.settings import UPLOAD_ROOT
 from tendenci.apps.base.fields import PriceField
 from tendenci.apps.base.forms import FormControlWidgetMixin
-from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.base.forms import CustomCatpchaField
+from tendenci.apps.files.validators import FileValidator
+from tendenci.apps.files.models import File
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -311,6 +310,7 @@ def assign_fields(form, app_field_objs, instance=None):
                                     'status_detail',
                                     'parent_entity',
                                     'industry',
+                                    'logo_file',
                                     'region']:
                 # create form field with customized behavior
                 field = obj.get_field_class(
@@ -350,42 +350,34 @@ def assign_fields(form, app_field_objs, instance=None):
 class CorpProfileBaseForm(FormControlWidgetMixin, forms.ModelForm):
     logo_file = forms.FileField(
       required=False,
-      help_text=_('Company logo. Only jpg, gif, or png images.'))
+      validators=[FileValidator(allowed_extensions=('.jpg', '.jpeg', '.gif', '.png',))],
+      help_text=_('Only jpg, gif, or png images.'))
 
-    def clean_logo_file(self):
-        ALLOWED_LOGO_EXT = (
-            '.jpg',
-            '.jpeg',
-            '.gif',
-            '.png'
-        )
-
-        logo_file = self.cleaned_data['logo_file']
+    def save_logo(self, corp_profile, request_user):
+        content_type = ContentType.objects.get_for_model(CorpProfile)
+        logo_file = self.cleaned_data.get('logo_file', None)
         if logo_file:
-            try:
-                extension = splitext(logo_file.name)[1]
-
-                # check the extension
-                if extension.lower() not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(_('The logo must be of jpg, gif, or png image type.'))
-
-                # check the image header
-                image_type = '.%s' % imghdr.what('', logo_file.read())
-                if image_type not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(_('The logo is an invalid image. Try uploading another logo.'))
-
-                max_upload_size = get_max_file_upload_size()
-                if logo_file.size > max_upload_size:
-                    raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(logo_size)s') % {
-                                                    'max_upload_size': filesizeformat(max_upload_size),
-                                                    'logo_size': filesizeformat(logo_file.size)})
-            except IOError:
-                logo_file = None
-
-        return logo_file
+            file_object, created = File.objects.get_or_create(
+                file=logo_file,
+                defaults={
+                    'name': logo_file.name,
+                    'content_type': content_type,
+                    'object_id': corp_profile.pk,
+                    'is_public': True,
+                    'creator': request_user,
+                    'owner': request_user,
+                })
+            corp_profile.logo = file_object
+            corp_profile.save(log=False)
+        else:
+            corp_profile.logo = None
+            corp_profile.save(log=False)
+            File.objects.filter(content_type=content_type,
+                                object_id=corp_profile.pk).delete()
 
 
 class CorpProfileAdminForm(CorpProfileBaseForm):
+
     class Meta:
         model = CorpProfile
         fields = ('logo_file',
@@ -426,34 +418,17 @@ class CorpProfileAdminForm(CorpProfileBaseForm):
         return number_employees
 
     def save(self, *args, **kwargs):
-        super(CorpProfileAdminForm, self).save(*args, **kwargs)
-        from tendenci.apps.files.models import File
-        content_type = ContentType.objects.get(
-            app_label=self.instance._meta.app_label,
-            model=self.instance._meta.model_name)
-        logo_file = self.cleaned_data.get('logo_file', None)
-        if logo_file:
-            file_object, created = File.objects.get_or_create(
-                file=logo_file,
-                defaults={
-                    'name': logo_file.name,
-                    'content_type': content_type,
-                    'object_id': self.instance.pk,
-                    'is_public': True,
-                })
-            self.instance.logo = file_object
-            self.instance.save(log=False)
-        else:
-            self.instance.logo = None
-            self.instance.save(log=False)
-            File.objects.filter(
-                        content_type=content_type,
-                        object_id=self.instance.pk).delete()
+        corp_profile = super(CorpProfileAdminForm, self).save(*args, **kwargs)
 
-        return self.instance
+        if not settings.USE_S3_STORAGE:
+            # TODO: need to make corp profile upload work for S3 at admin backend
+            self.save_logo(corp_profile, corp_profile.owner)
+
+        return corp_profile
 
 
 class CorpProfileForm(CorpProfileBaseForm):
+
     class Meta:
         model = CorpProfile
         fields = "__all__"
@@ -463,13 +438,12 @@ class CorpProfileForm(CorpProfileBaseForm):
         self.corpmembership_app = kwargs.pop('corpmembership_app')
         super(CorpProfileForm, self).__init__(*args, **kwargs)
 
-        if not app_field_objs.filter(field_name='logo_file').exists():
-            del self.fields['logo_file']
-        else:
+        assign_fields(self, app_field_objs)
+
+        if app_field_objs.filter(field_name='logo_file').exists():
             if self.instance.logo:
                 self.initial['logo_file'] = self.instance.logo.file
-
-        assign_fields(self, app_field_objs)
+        
         self.add_form_control_class()
 
         if self.corpmembership_app.authentication_method == 'email':
@@ -547,44 +521,26 @@ class CorpProfileForm(CorpProfileBaseForm):
             self.instance.owner_username = self.request_user.username
         for field_key in self.fields:
             if self.fields[field_key].widget.needs_multipart_form:
-                value = self.cleaned_data[field_key]
-                if value and hasattr(value, 'name'):
-                    value = default_storage.save(join("corporate_memberships",
-                                                      str(uuid4()),
-                                                      value.name),
-                                                 value)
-                    setattr(self.instance, field_key, value)
+                # exclude logo_file, we're going to handle it later
+                if field_key != 'logo_file':
+                    value = self.cleaned_data[field_key]
+                    if value and hasattr(value, 'name'):
+                        value = default_storage.save(join("corporate_memberships",
+                                                          str(uuid4()),
+                                                          value.name),
+                                                     value)
+                        setattr(self.instance, field_key, value)
 
-        super(CorpProfileForm, self).save(*args, **kwargs)
+        corp_profile = super(CorpProfileForm, self).save(*args, **kwargs)
 
         # update authorized domain if needed
         if self.corpmembership_app.authentication_method == 'email':
-            update_authorized_domains(self.instance,
+            update_authorized_domains(corp_profile,
                             self.cleaned_data['authorized_domain'])
 
-        content_type = ContentType.objects.get(
-            app_label=self.instance._meta.app_label,
-            model=self.instance._meta.model_name)
-        logo_file = self.cleaned_data.get('logo_file', None)
-        if logo_file:
-            file_object, created = File.objects.get_or_create(
-                file=logo_file,
-                defaults={
-                    'name': logo_file.name,
-                    'content_type': content_type,
-                    'object_id': self.instance.pk,
-                    'is_public': True,
-                })
-            self.instance.logo = file_object
-            self.instance.save(log=False)
-        else:
-            self.instance.logo = None
-            self.instance.save(log=False)
-            File.objects.filter(
-                        content_type=content_type,
-                        object_id=self.instance.pk).delete()
+        self.save_logo(corp_profile, self.request_user)
 
-        return self.instance
+        return corp_profile
 
 
 class CorpMembershipUpgradeForm(forms.ModelForm):

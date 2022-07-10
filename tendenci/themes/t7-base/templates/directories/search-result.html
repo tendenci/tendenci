@@ -6,9 +6,9 @@
 {% has_perm user directories.delete_directory directory as can_delete_directory %}
 
 {% if forloop.first %}<div class="row">{% endif %}
-<div class="col-sm-3">
+<div class="col-md-3 col-sm-6">
   <article class="panel panel-default t-directories-search-result t-search-result">
-    <div class="panel-heading t-search-result-heading directories-heading">
+    <div class="panel-heading">
       
       {% if directory.logo %}
       <p class="t-directories-directory-image-container text-center">

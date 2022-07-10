@@ -57,12 +57,21 @@ def details(request, slug=None, template_name="directories/view.html"):
             affiliates_list = None
             parents_list = None
             affiliate_requests = None
-            
+
+        memberships = None
+        if get_setting('module', 'corporate_memberships', 'showmembers'):
+            if get_setting('module', 'corporate_memberships', 'membersearchcorporatemembers'):
+                corp_profile = directory.get_corp_profile()
+                if corp_profile:
+                    # individual memberships - only the first 50
+                    memberships = corp_profile.get_active_indiv_memberships()[:50]
+        
         return render_to_resp(request=request, template_name=template_name,
             context={'directory': directory,
                      'affiliates_list': affiliates_list,
                      'parents_list': parents_list,
-                     'affiliate_requests': affiliate_requests})
+                     'affiliate_requests': affiliate_requests,
+                     'memberships': memberships})
 
     raise Http403
 
@@ -658,7 +667,7 @@ def directory_export(request, template_name="directories/export.html"):
         export_status_detail = form.cleaned_data['export_status_detail']
         identifier = int(time.time())
         temp_file_path = 'export/directories/%s_temp.csv' % identifier
-        default_storage.save(temp_file_path, ContentFile(''))
+        default_storage.save(temp_file_path, ContentFile(b''))
 
         # start the process
         subprocess.Popen([python_executable(), "manage.py",
