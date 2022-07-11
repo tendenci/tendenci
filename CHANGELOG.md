@@ -1,3 +1,7 @@
+### 14.2 [2022-07-11]
+
+* **Backward Incompatible**: Due to some issues in the pylibmc, we've switched the memcached client from pylibmc https://pypi.org/project/pylibmc/ to pymemcache https://pypi.org/project/pymemcache/. This change will NOT affect your production sites. However, if you don't have memcached installed in your local environment, please specify the cache backend to `CACHES['default']['BACKEND'] = 'django.core.cache.backends.dummy.DummyCach'` or to something you have set up.
+
 ### 14.1.1 [2022-07-07]
 
 * Updated the installation guide
