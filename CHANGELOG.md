@@ -1,3 +1,21 @@
+### 14.1.1 [2022-07-07]
+
+* Updated the installation guide
+* Chapter leaders can now view/edit their member profiles.
+* Added some basic user info to chapter memberships export.
+* Added search feature to the admin form entries list.
+* Included application/csv to the whitelist mime types.
+* Added the template tag list_memberships.
+* Resolved the blurry images issue on Photo albums list.
+* Added category to photos albums and individual photos
+* Added the option to display members on the associated directory.
+* Added the option to use state dropdown for the state field on membership and profile forms.
+* Appended the non-us choice to the state dropdown.
+* Fixed articles category links not working. 
+* Fixed the issue about the “paragraph" filed type not showing TextArea field on membership forms
+* More bugfixes.
+
+
 ### 14.1 [2022-04-18]
 
 * New feature: Newsletters scheduling https://tendenci.readthedocs.io/en/latest/topic-guides/newsletters.html#newsletters-scheduling.
