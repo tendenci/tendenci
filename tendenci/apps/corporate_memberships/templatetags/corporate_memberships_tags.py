@@ -149,13 +149,15 @@ class AllowEditCorpNode(Node):
         corp_memb = self.resolve(self.corp_memb, context)
         user = self.resolve(self.user, context)
 
-        boo = corp_memb.allow_edit_by(user)
-
-        if self.var_name:
-            context[self.var_name] = boo
-            return ""
-        else:
+        if corp_memb and user:
+            boo = corp_memb.allow_edit_by(user)
+    
+            if self.var_name:
+                context[self.var_name] = boo
+                return ""
             return boo
+
+        return False
 
 
 @register.tag
