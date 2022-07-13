@@ -20,3 +20,17 @@ def invoice_count(user):
     inv_count = Invoice.objects.filter(Q(creator=user) | Q(owner=user) | Q(bill_to_email=user.email)).count()
 
     return inv_count
+
+
+@register.filter
+def get_ud_field(profile, ud):
+    """
+    Get the value for the ud field
+    """
+    from tendenci.apps.profiles.models import Profile
+    if isinstance(profile, Profile):
+        if hasattr(profile, 'user'):
+            demographics = profile.user.demographics
+            if demographics:
+                return getattr(demographics, ud, '')
+    return ''
