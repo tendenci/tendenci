@@ -36,11 +36,14 @@
 	.errorlist{
 		color: #d44950;
 	}
+	table.mb-3 th, table.mb-3 td{
+        border-color: #fff !important;;
+    }
   </style>
   {% endblock %}
 
 {% block content_wrapper %}
-    <div class="container">
+    <div class="container mfa-wrapper">
       {% block content %}{% endblock %}
     </div>
 {% endblock %}
