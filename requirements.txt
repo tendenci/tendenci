@@ -71,5 +71,7 @@ lxml==4.9.1
 django-q==1.3.9
 # memcached client
 pymemcache>=3.5.2
-django-two-factor-auth==1.14.0
+# two factor
+django-two-factor-auth>=1.14.0
+phonenumbers>=8.12.51
 
