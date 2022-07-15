@@ -30,6 +30,12 @@
 	ul#id_method-method {
 		list-style: none;
 	}
+	ul#id_method-method label {
+		float: none !important;
+	}
+	.errorlist{
+		color: #d44950;
+	}
   </style>
   {% endblock %}
 
@@ -47,6 +53,7 @@
    		$("#id_auth-password").addClass("form-control");
    		$("#id_token-otp_token").addClass("form-control");
    		$("#id_validation-token").addClass("form-control");
+   		$("#id_generator-token").addClass("form-control");
    		$("table.mb-3").addClass("table");
    		
    });
