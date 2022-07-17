@@ -413,6 +413,11 @@ Install additional Python dependencies:
     cd /var/www/mysite/
     pip install -r requirements/prod.txt --upgrade
 
+Once ``memcached`` has been installed, comment out or remove the `DummyCache` in your ``conf/settings.py``.
+::
+
+    CACHES['default']['BACKEND'] = 'django.core.cache.backends.dummy.DummyCache'
+
 
 Additional Configuration
 ------------------------
