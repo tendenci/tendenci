@@ -616,6 +616,19 @@ class Profile(Person):
         if self.photo:
             return default_storage.url(self.photo.name)
 
+    def two_factor_on(self):
+        """
+        Check if two-factor is on.
+        """
+        from two_factor.utils import default_device
+        return default_device(self.user)
+
+    def use_two_factor_auth(self):
+        """
+        Check if site uses two-factor authentication.
+        """
+        return settings.USE_TWO_FACTOR_AUTH
+
 
 def get_import_file_path(instance, filename):
     return "imports/profiles/{uuid}/{filename}".format(

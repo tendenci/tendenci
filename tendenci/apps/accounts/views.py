@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 #from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetView
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.registration.forms import RegistrationForm
@@ -20,7 +21,14 @@ from tendenci.apps.base.utils import get_next_url
 @ssl_required
 def login(request, form_class=LoginForm, template_name="account/login.html"):
 
-    redirect_to = get_next_url(request)
+    next_url = get_next_url(request)
+    if settings.USE_TWO_FACTOR_AUTH:
+        if not request.user.is_authenticated:
+            # redirect to two factor login
+            two_factor_login_url = reverse('two_factor:login')
+            if next_url:
+                two_factor_login_url = f'{two_factor_login_url}?next={next_url}'
+            return HttpResponseRedirect(two_factor_login_url)
 
     if request.method == "POST":
         default_redirect_to = getattr(settings, "LOGIN_REDIRECT_URLNAME", None)
@@ -30,6 +38,7 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
             default_redirect_to = settings.LOGIN_REDIRECT_URL
 
         # light security check -- make sure redirect_to isn't garabage.
+        redirect_to = next_url
         if not redirect_to or "://" in redirect_to or " " in redirect_to:
             redirect_to = default_redirect_to
 
@@ -49,8 +58,8 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
     else:
         form = form_class(request=request)
 
-        if request.user.is_authenticated and redirect_to:
-                return HttpResponseRedirect(redirect_to)
+        if request.user.is_authenticated and next_url:
+                return HttpResponseRedirect(next_url)
 
     return render_to_resp(request=request, template_name=template_name, context={
         "form": form

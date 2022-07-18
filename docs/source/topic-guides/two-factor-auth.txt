@@ -1,0 +1,32 @@
+Two-Factor Authentication
+=========================
+
+With two-factor authentication, it adds an extra layer of protection to your user accounts. The two-factor authentication in Tendenci is based on `Django Two-Factor Authentication <https://django-two-factor-auth.readthedocs.io/>`_
+.
+
+To enable the two-factor authentication, set `USE_TWO_FACTOR_AUTH = True` in your `conf/settings.py`.
+
+There are 3 options available - 1) Token based (which can be used with Google authenticator or other authenticator OTP). 2) Email. 3) SMS. The first two options are enabled by default. 
+
+If you want to have the SMS capability, you'll need to sign up `Twilio's SMS service <https://www.twilio.com/sms/pricing/us>`_.
+
+Once you have your Twilio's credentials, follow these two steps below.
+
+1) Add these settings to your `conf/settings.py:
+
+::
+
+    INSTALLED_APPS += ('two_factor.plugins.phonenumber', )
+    TWO_FACTOR_SMS_GATEWAY = 'two_factor.gateways.twilio.gateway.Twilio'
+    PHONENUMBER_DEFAULT_REGION = 'US'
+    TWILIO_ACCOUNT_SID = 'your-TWILIO-ACCOUNT-SID'
+    TWILIO_AUTH_TOKEN = 'your-TWILIO-AUTH-TOKEN'
+    TWILIO_CALLER_ID = 'your-TWILIO-caller-ID'
+
+
+2) AT the top of your `conf/urls.py`, add `from two_factor.gateways.twilio.urls import urlpatterns as tf_twilio_urls`, and include `path('', include(tf_twilio_urls)),` to the `urlpatterns`.
+
+Once the two-factor authentication is enabled on your site, users will be able to set it up from their accounts.
+
+
+.. image:: img/two_factor_link.png
