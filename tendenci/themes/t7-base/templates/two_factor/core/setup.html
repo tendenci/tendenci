@@ -54,3 +54,14 @@
     {% include "two_factor/_wizard_actions.html" %}
   </form>
 {% endblock %}
+
+{% block extra_body %}
+  {{ block.super }}
+    <script type="text/javascript">
+   $(document).ready(function () {
+   		$("#id_generator-token").removeAttr("required");
+    	$("#id_validation-token").removeAttr("required");
+   		
+   });
+   </script>
+{% endblock %}
