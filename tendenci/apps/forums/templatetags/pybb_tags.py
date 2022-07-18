@@ -76,16 +76,17 @@ class PybbTimeNode(template.Node):
                     msg = _('minutes ago')
                 return '%d %s' % (minutes, msg)
         if context['user'].is_authenticated:
-            if time.daylight:
-                tz1 = time.altzone
-            else:
-                tz1 = time.timezone
+            # commenting it out because DST is already accounted
+            # if time.daylight:
+            #     tz1 = time.altzone
+            # else:
+            tz1 = time.timezone
             tz = tz1 + util.get_pybb_profile(context['user']).time_zone * 60 * 60
             context_time = context_time + timedelta(seconds=tz)
         if today < context_time < tomorrow:
-            return _('today, %s') % context_time.strftime('%H:%M')
+            return _('today, %s') % context_time.strftime('%I:%M %p')
         elif yesterday < context_time < today:
-            return _('yesterday, %s') % context_time.strftime('%H:%M')
+            return _('yesterday, %s') % context_time.strftime('%I:%M %p')
         else:
             return dateformat.format(context_time, date_format)
 
