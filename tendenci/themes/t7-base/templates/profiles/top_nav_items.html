@@ -160,7 +160,7 @@
                             <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'two_factor:profile' %}">{% trans "2-Step Verification" %} -
-                                        {% if user_this.profile.two_factor_on %}<span class="text-success">{% trans "On" %}</span>{% else %}<span class="text-muted">{% trans "Off" %}</span>{% endif %}
+                                        {% if user_this.profile.two_factor_on %}<strong class="text-success">{% trans "On" %}</strong>{% else %}<strong class="text-muted">{% trans "Off" %}</strong>{% endif %}
                                         </a>
                                     </span>
                                 </li>
