@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.core.cache import cache
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from django.core.files.storage import default_storage
 
 from tendenci.apps.base.template_tags import parse_tag_kwargs
 from tendenci.apps.base.utils import url_exists, google_cmap_sign_url
@@ -645,6 +646,8 @@ class PhotoImageURL(Node):
         cache_key = generate_image_cache_key(file=str(photo.pk), size=self.size, pre_key="photo", crop=self.crop, unique_key=str(photo.pk), quality=self.quality, constrain=self.constrain)
         cached_image_url = cache.get(cache_key)
         if cached_image_url:
+            if settings.USE_S3_STORAGE:
+                return default_storage.url(cached_image_url)
             return cached_image_url
 
         args = [photo.pk, self.size]
@@ -708,6 +711,8 @@ class ImageURL(Node):
             cache_key = generate_image_cache_key(file=str(file.id), size=self.size, pre_key=FILE_IMAGE_PRE_KEY, crop=self.crop, unique_key=str(file.id), quality=self.quality, constrain=self.constrain)
             cached_image_url = cache.get(cache_key)
             if cached_image_url:
+                if settings.USE_S3_STORAGE:
+                    return default_storage.url(cached_image_url)
                 return cached_image_url
 
             args = [file.pk]

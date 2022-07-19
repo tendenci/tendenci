@@ -232,6 +232,8 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     cache_key = generate_image_cache_key(file=id, size=size, pre_key=PHOTO_PRE_KEY, crop=crop, unique_key=id, quality=quality, constrain=constrain)
     cached_image = cache.get(cache_key)
     if cached_image:
+        if settings.USE_S3_STORAGE:
+            return redirect(default_storage.url(cached_image))
         return redirect('{0}{1}'.format(get_setting('site', 'global', 'siteurl'), cached_image))
 
     photo = get_object_or_404(Image, id=id)
@@ -271,8 +273,11 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     if photo.is_public_photo() and photo.is_public_photoset():
         if not default_storage.exists(file_path):
             default_storage.save(file_path, ContentFile(response.content))
-        full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
-        cache.set(cache_key, full_file_path)
+        if settings.USE_S3_STORAGE:
+            cache.set(cache_key, file_path)
+        else:
+            full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
+            cache.set(cache_key, full_file_path)
         cache_group_key = "photos_cache_set.%s" % photo.pk
         cache_group_list = cache.get(cache_group_key)
 
