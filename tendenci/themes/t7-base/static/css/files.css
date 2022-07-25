@@ -32,7 +32,7 @@
 
 .t .files-wrap .file-wrap.grid-wrap {
 	width: 215px;
-	height: 330px;
+	/*height: 330px;*/
   	float: left;
 	margin: 0 7px 12px;
   	position: relative;
