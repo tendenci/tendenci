@@ -41,7 +41,7 @@ from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.emails.models import Email
 from tendenci.apps.files.utils import get_max_file_upload_size
-from tendenci.apps.perms.utils import get_query_filters, get_groups_query_filters
+from tendenci.apps.perms.utils import get_query_filters, get_groups_query_filters, has_perm
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
@@ -828,8 +828,13 @@ class EventForm(TendenciBaseForm):
             if get_setting('module', 'user_groups', 'permrequiredingd') == 'change':
                 filters = get_groups_query_filters(self.user,)
             else:
-                filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-            default_groups = default_groups.filter(filters).distinct()
+                if not has_perm(self.user, 'user_groups.view_group'):
+                    filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+                else:
+                    # this user has the 'user_groups.view_group' perm
+                    filters = None
+            if filters:
+                default_groups = default_groups.filter(filters).distinct()
 
         #groups_list = [(0, '---------')] + list(groups_list)
         #self.fields['groups'].choices = groups_list
