@@ -35,7 +35,7 @@
     },
     {
         "default_value": "false",
-        "description": "Event minimal add form is enabled or not. If enabled, regular users will be able to add events for the site.",
+        "description": "Event minimal add form is enabled or not. If enabled, authenticated users will be able to submit events for admin approval on the site.",
         "data_type": "boolean",
         "update_dt": "2010-08-12 17:19:11",
         "input_type": "select",
