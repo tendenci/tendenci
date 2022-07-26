@@ -238,9 +238,9 @@ class PasswordResetForm(forms.Form):
         self.users_cache = User.objects.filter(email__iexact=email, is_active=True)
         if len(self.users_cache) == 0:
             if self_reg:
-                raise forms.ValidationError(mark_safe(_('That e-mail address doesn\'t have an associated user account. Are you sure you\'ve <a href="/accounts/register" >registered</a>?')))
+                raise forms.ValidationError(mark_safe(_('That e-mail address doesn\'t have an active user account. Are you sure you\'ve <a href="/accounts/register" >registered</a>?')))
             else:
-                raise forms.ValidationError(_("That e-mail address doesn't have an associated user account."))
+                raise forms.ValidationError(_("That e-mail address doesn't have an active user account."))
         return email
 
     def save(self, email_template_name='registration/password_reset_email_user_list.html', **kwargs):
