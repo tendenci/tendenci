@@ -233,10 +233,10 @@ def copy(request, id):
 @is_enabled('forms')
 @login_required
 def entries(request, id, template_name="forms/entries.html"):
-    form = get_object_or_404(Form, pk=id)
-
-    if not has_perm(request.user,'forms.view_formentry',form):
+    if not has_perm(request.user,'forms.view_formentry'):
         raise Http403
+
+    form = get_object_or_404(Form, pk=id)
 
     entries = form.entries.order_by('-entry_time')
 
@@ -284,7 +284,7 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
-    if not has_perm(request.user,'forms.delete_formentry',entry.form):
+    if not has_perm(request.user,'forms.delete_formentry',entry):
         raise Http403
 
     if request.method == "POST":
@@ -303,7 +303,7 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
-    if not has_perm(request.user,'forms.view_formentry',entry.form):
+    if not has_perm(request.user,'forms.view_formentry',entry):
         raise Http403
 
     form_template = entry.form.template
@@ -320,7 +320,7 @@ def entries_export(request, id, include_files=False):
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
-    if not has_perm(request.user,'forms.view_formentry',form_instance):
+    if not has_perm(request.user,'forms.view_formentry'):
         raise Http403
 
     EventLog.objects.log(instance=form_instance)
@@ -406,9 +406,9 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
     Display a built form and handle submission.
     """
     entry = FormEntry.objects.get(id=id) if id else None
-    
+
     published = Form.objects.published(for_user=request.user)
-    
+
     edit_mode = False
     if entry:
         form = get_object_or_404(published, entries=entry)
@@ -418,9 +418,9 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
     else:
         raise Http404
 
-    # Permission only needed to edit. To submit the form no permission needed.    
+    # Permission only needed to edit. To submit the form no permission needed.
     if edit_mode:
-        if not has_view_perm(request.user,'forms.change_formentry',form):
+        if not has_view_perm(request.user,'forms.change_formentry',entry):
             raise Http403
 
     # If form has a recurring payment, make sure the user is logged in
@@ -448,7 +448,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
         billing_form = None
 
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None, instance=entry)
-        
+
     if get_setting('site', 'global', 'captcha'): # add captcha
         if billing_form:
             # append the captcha to the end of the billing form
@@ -456,7 +456,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
             if 'captcha' in form_for_form.fields:
                 form_for_form.fields.pop('captcha')
             billing_form.fields['captcha'] = captcha_field
-    
+
     for field in form_for_form.fields:
         field_default = request.GET.get(field, None)
         if field_default:
@@ -479,7 +479,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                 email_headers = {}  # content type specified below
                 if form.email_from:
                     email_headers.update({'Reply-To':form.email_from})
-    
+
                 # Email to submitter
                 # fields aren't included in submitter body to prevent spam
                 submitter_body = generate_submitter_email_body(entry, form_for_form)
@@ -490,15 +490,15 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                     # log the spam
                     description = "Email \"{0}\" blocked because it is listed in email_blocks.".format(email_to)
                     EventLog.objects.log(instance=form, description=description)
-    
+
                     if form.completion_url:
                         return HttpResponseRedirect(form.completion_url)
                     return redirect("form_sent", form.slug)
-    
+
                 email = Email()
                 email.subject = subject
                 email.reply_to = form.email_from
-    
+
                 if email_to and form.send_email and form.email_text:
                     # Send message to the person who submitted the form.
                     email.recipient = email_to
@@ -506,26 +506,26 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                     email.send(fail_silently=getattr(settings, 'EMAIL_FAIL_SILENTLY', True))
                     # log an event
                     EventLog.objects.log(instance=form, description='Confirmation email sent to {}'.format(email_to))
-    
+
                 # Email copies to admin
                 admin_body = generate_admin_email_body(entry, form_for_form, user=request.user)
                 email_from = email_to or email_from # Send from the email entered.
                 email_headers = {}  # Reset the email_headers
                 email_headers.update({'Reply-To':email_from})
                 email_copies = [e.strip() for e in form.email_copies.split(',') if e.strip()]
-    
+
                 subject = subject.encode(errors='ignore')
                 email_recipients = entry.get_function_email_recipients()
                 # reply_to of admin emails goes to submitter
                 email.reply_to = email_to
-    
+
                 if email_copies or email_recipients:
                     # prepare attachments
                     attachments = []
                     # Commenting out the attachment block to not add attachments to the email for the reason below:
-                    # According to SES message quotas https://docs.aws.amazon.com/ses/latest/DeveloperGuide/quotas.html, 
-                    # the maximum message size (including attachments) is 10 MB per message (after base64 encoding) 
-                    # which means the actual size should be less than 7.5 MB or so because text after encoded with the BASE64 
+                    # According to SES message quotas https://docs.aws.amazon.com/ses/latest/DeveloperGuide/quotas.html,
+                    # the maximum message size (including attachments) is 10 MB per message (after base64 encoding)
+                    # which means the actual size should be less than 7.5 MB or so because text after encoded with the BASE64
                     # algorithm increases its size by 1/3. But the allowed upload size is much larger than 7.5 MB.
                     #
                     # try:
@@ -543,7 +543,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                     #             else:
                     #                 f.seek(0)
                     #                 attachments.append((f.name.split('/')[-1], f.read()))
-    
+
                     fail_silently = getattr(settings, 'EMAIL_FAIL_SILENTLY', True)
                     # Send message to the email addresses listed in the copies
                     if email_copies:
@@ -552,7 +552,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                         # if request.user.is_anonymous or not request.user.is_active:
                         #     email.content_type = 'text'
                         email.send(fail_silently=fail_silently, attachments=attachments)
-    
+
                     # Email copies to recipient list indicated in the form
                     if email_recipients:
                         email.body = admin_body
@@ -626,7 +626,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                 if form.completion_url:
                     completion_url = form.completion_url.strip().replace('[entry_id]', str(entry.id))
                     return HttpResponseRedirect(completion_url)
-                
+
                 return redirect("form_sent", form.slug)
 
     # set form's template to forms/base.html if no template or template doesn't exist
