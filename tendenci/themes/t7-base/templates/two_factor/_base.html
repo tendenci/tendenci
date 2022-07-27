@@ -1,0 +1,64 @@
+{% extends "site_base.html" %}
+
+{% block extra_head %}
+    {{ block.super }}
+    
+  <style>
+    .d-none {
+	  display: none !important;
+	}
+	.mb-3, .my-3 {
+	  margin-bottom: 3rem !important;
+	}
+	.mb-3 label{
+		padding: 5px 0;
+		float: right !important;
+	}
+	.mb-3 input{
+		max-width: 200px;
+	}
+	.btn-secondary {
+	  color: #fff;
+	  background-color: #6c757d;
+	  border-color: #6c757d;
+	}
+	.btn-secondary:hover {
+	  color: #fff;
+	  background-color: #5a6268;
+	  border-color: #545b62;
+	}
+	ul#id_method-method {
+		list-style: none;
+	}
+	ul#id_method-method label {
+		float: none !important;
+	}
+	.errorlist{
+		color: #d44950;
+	}
+	table.mb-3 th, table.mb-3 td{
+        border-color: #fff !important;;
+    }
+  </style>
+  {% endblock %}
+
+{% block content_wrapper %}
+    <div class="container mfa-wrapper">
+      {% block content %}{% endblock %}
+    </div>
+{% endblock %}
+  
+{% block extra_body %}
+  {{ block.super }}
+    <script type="text/javascript">
+   $(document).ready(function () {
+   		$("#id_auth-username").addClass("form-control");
+   		$("#id_auth-password").addClass("form-control");
+   		$("#id_token-otp_token").addClass("form-control");
+   		$("#id_validation-token").addClass("form-control");
+   		$("#id_generator-token").addClass("form-control");
+   		$("table.mb-3").addClass("table");
+   		
+   });
+   </script>
+{% endblock %}

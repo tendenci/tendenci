@@ -45,6 +45,8 @@ class PhotoForm(forms.ModelForm):
         super(PhotoForm, self).__init__(*args, **kwargs)
         if photo_set.cat:
             self.fields['cat'].queryset = PhotoCategory.objects.filter(parent_id=photo_set.cat.id)
+        else:
+            self.fields['cat'].queryset = PhotoCategory.objects.none()
 
 
 class PhotoSetSearchForm(FormControlWidgetMixin, forms.Form):

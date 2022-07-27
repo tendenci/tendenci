@@ -746,7 +746,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                                     blank=True, null=True,
                                     max_length=100)
     cat = models.ForeignKey(PhotoCategory, verbose_name=_("Category"),
-                                 related_name="cat_photos", null=True,
+                                 related_name="cat_photos", blank=True, null=True,
                                  on_delete=models.SET_NULL)
 
     # html-meta tags

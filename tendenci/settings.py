@@ -83,6 +83,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.common.CommonMiddleware',
     'dj_pagination.middleware.PaginationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'tendenci.apps.profiles.middleware.ForceLogoutProfileMiddleware',
     'tendenci.apps.profiles.middleware.ProfileMiddleware',
     'tendenci.apps.base.middleware.Http403Middleware',
@@ -182,6 +183,13 @@ INSTALLED_APPS = [
     'gunicorn',
     'rangefilter',
     'django_q',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'django_otp.plugins.otp_hotp',
+    'django_otp.plugins.otp_email',
+    'django_otp.plugins.otp_static',
+    'two_factor',
+    'two_factor.plugins.email', 
 
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',
@@ -277,6 +285,11 @@ INSTALLED_APPS = [
 #     'djcelery',
 ]
 
+# two-factor authentication
+#LOGIN_URL = 'two_factor:login'
+# set it to True in your conf/settings.py to enable two factor authentication.
+USE_TWO_FACTOR_AUTH = False
+
 LOGIN_REDIRECT_URL = '/dashboard'
 AUTHENTICATION_BACKENDS = [
     'tendenci.apps.perms.backend.ObjectPermBackend',
@@ -315,13 +328,13 @@ for theme in os.listdir(BUILTIN_THEMES_DIR):
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
         'LOCATION': '127.0.0.1:11211',
         'TIMEOUT': 60*60*24*30,  # 30 days
     }
 }
 try:
-    import pylibmc
+    import pymemcache
 except ImportError:
     CACHES['default']['BACKEND'] = 'django.core.cache.backends.dummy.DummyCache'
 

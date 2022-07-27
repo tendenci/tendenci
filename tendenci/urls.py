@@ -5,6 +5,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views import static
 from django.views.generic import TemplateView, RedirectView
 from django.contrib import admin
+from two_factor.urls import urlpatterns as tf_urls
 from tendenci.libs.model_report import report
 from tendenci.apps.registry.register import autodiscover as registry_autodiscover
 from tendenci.apps.registry.utils import get_url_patterns
@@ -94,6 +95,7 @@ urlpatterns += [
 
     # legacy redirects
     re_path(r'^login/$', RedirectView.as_view(url='/accounts/login/', permanent=True)),
+    path('', include(tf_urls)),
 
     re_path(r'^', include('tendenci.apps.articles.urls')),
     re_path(r'^', include('tendenci.apps.corporate_memberships.urls')),

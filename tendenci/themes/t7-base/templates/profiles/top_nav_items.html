@@ -155,6 +155,17 @@
                                     </span>
                                 </li>
                             {% endif %}
+                            
+                            {% if request.user == user_this and user_this.profile.use_two_factor_auth %}
+                            <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'two_factor:profile' %}">{% trans "2-Step Verification" %} -
+                                        {% if user_this.profile.two_factor_on %}<strong class="text-success">{% trans "On" %}</strong>{% else %}<strong class="text-muted">{% trans "Off" %}</strong>{% endif %}
+                                        </a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                            
 
                             {% if can_delete_profile %}
                                 {% if request.user != user_this %}

@@ -69,7 +69,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             # log an event
             EventLog.objects.log(instance=file)
         if settings.USE_S3_STORAGE:
-            return redirect(cached_image)
+            return redirect(default_storage.url(cached_image))
         return redirect('%s%s' % (get_setting('site', 'global', 'siteurl'), cached_image))
 
     # basic permissions
@@ -143,12 +143,15 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             return response
 
         if file.is_public_file():
-            file_name = "%s%s" % (file.get_name(), ".jpg")
+            file_name = file.get_name()
             file_path = 'cached%s%s' % (request.path, file_name)
             if not default_storage.exists(file_path):
                 default_storage.save(file_path, ContentFile(response.content))
-            full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
-            cache.set(cache_key, full_file_path)
+            if settings.USE_S3_STORAGE:
+                cache.set(cache_key, file_path)
+            else:
+                full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
+                cache.set(cache_key, full_file_path)
             cache_group_key = "files_cache_set.%s" % file.pk
             cache_group_list = cache.get(cache_group_key)
 
