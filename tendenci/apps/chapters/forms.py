@@ -16,7 +16,8 @@ from tendenci.apps.chapters.models import (Chapter, Officer,
                         CustomizedAppField,
                         ChapterMembership,
                         ChapterMembershipFile,
-                        CustomizedType)
+                        CustomizedType,
+                        CoordinatingAgency)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -87,12 +88,15 @@ class ChapterMemberSearchForm(FormControlWidgetMixin, forms.Form):
     def __init__(self, *args, **kwargs):
         app_fields = kwargs.pop('app_fields')
         user = kwargs.pop('user')
-        self.chapter = kwargs.pop('chapter')
+        self.chapters = kwargs.pop('chapters')
         super(ChapterMemberSearchForm, self).__init__(*args, **kwargs)
-        if not self.chapter:
+        if not self.chapters or len(self.chapters) > 1:
             # chapter field
             chapter_choices = [(0, _('All'))]
-            chapter_choices += [(c.id, c.title) for c in Chapter.objects.all().order_by('title')]
+            if self.chapters:
+                chapter_choices += [(c.id, c.title) for c in self.chapters]
+            else:
+                chapter_choices += [(c.id, c.title) for c in Chapter.objects.all().order_by('title')]
             self.fields['chapter'] = forms.IntegerField(
                                     required=False,
                                     label=_('Chapter'),
@@ -1066,4 +1070,14 @@ class ChapterMembershipUploadForm(FormControlWidgetMixin, forms.ModelForm):
                         """ % {'fields' : ', '.join(missing_columns)}))
 
         return cleaned_data
+
+
+class CoordinatingAgencyAdminForm(forms.ModelForm):
+    state = StateSelectField(required=True)
+    class Meta:
+        model = CoordinatingAgency
+        fields = (
+                'state',
+                'entity',
+                'coordinators',)
 

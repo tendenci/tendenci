@@ -17,14 +17,14 @@
         "updated_by": ""
     },
     {
-        "default_value": "true",
+        "default_value": "false",
         "description": "Whether or not a person can register on your site.",
         "data_type": "boolean",
         "update_dt": "2010-12-02 10:57:26",
         "input_type": "select",
         "client_editable": true,
         "name": "selfregistration",
-        "value": "true",
+        "value": "false",
         "label": "Self Registration",
         "input_value": "true,false",
         "parent_id": 0,

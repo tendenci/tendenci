@@ -5,9 +5,11 @@ from functools import reduce
 from django.db.models import Manager
 from django.db.models import Q
 from django.contrib.auth.models import User, AnonymousUser
+from django.template.defaultfilters import slugify
 
 from tendenci.apps.perms.managers import TendenciBaseManager
 from tendenci.apps.site_settings.utils import get_global_setting
+from tendenci.apps.entities.models import Entity
 
 
 class GroupManager(TendenciBaseManager):
@@ -22,7 +24,6 @@ class GroupManager(TendenciBaseManager):
         return group
 
     def get_or_create_default(self, user=AnonymousUser()):
-        from tendenci.apps.entities.models import Entity
         from tendenci.apps.site_settings.utils import get_global_setting
         group = self.first()
         if not group:
@@ -63,6 +64,41 @@ class GroupManager(TendenciBaseManager):
             group_id = group.id
 
         return group_id
+
+    def create_group(self, name, **kwargs):
+        name = name[:200]
+        slug = slugify(name)
+        # ensure uniqueness of name and slug
+        if self.filter(slug=slug).exists():
+            tmp_groups = self.filter(slug__istartswith=slug)
+            if tmp_groups:
+                t_list = [g.slug[len(slug):] for g in tmp_groups]
+                num = 1
+                while str(num) in t_list:
+                    num += 1
+                slug = f'{slug}{str(num)}'
+                # group name is also a unique field
+                name = f'{name}{str(num)}'
+        return self.create(name=name,
+            slug=slug,
+            label=name,
+            type=kwargs.get('type', 'distribution'),
+            email_recipient=kwargs.get('email_recipient', ''),
+            show_as_option=kwargs.get('show_as_option', False),
+            allow_self_add=kwargs.get('allow_self_add', False),
+            allow_self_remove=kwargs.get('allow_self_remove', False),
+            show_for_memberships=kwargs.get('show_for_memberships', False),
+            description=kwargs.get('description', ''),
+            notes=kwargs.get('notes', ''),
+            allow_anonymous_view=kwargs.get('allow_anonymous_view', False),
+            allow_user_view=kwargs.get('allow_user_view', False),
+            allow_member_view=kwargs.get('allow_member_view', False),
+            creator=kwargs.get('creator', None),
+            creator_username=kwargs.get('creator_username', ''),
+            owner=kwargs.get('owner', None),
+            owner_username=kwargs.get('owner_username', ''),
+            entity=kwargs.get('entity', Entity.objects.first()),
+        )      
 
 
 class OldGroupManager(Manager):

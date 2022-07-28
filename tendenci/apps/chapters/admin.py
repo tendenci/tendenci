@@ -18,6 +18,7 @@ from tendenci.apps.chapters.models import (Chapter, Position, Officer,
                             ChapterMembershipAppField,
                             ChapterMembershipApp,
                             ChapterMembership,
+                            CoordinatingAgency,
                             Notice,
                             NoticeLog,
                             NoticeDefaultLogRecord)
@@ -27,7 +28,8 @@ from tendenci.apps.chapters.forms import (ChapterAdminForm,
                         ChapterMembershipTypeForm,
                         ChapterMembershipAppForm,
                         ChapterMembershipAppFieldAdminForm,
-                        NoticeForm)
+                        NoticeForm,
+                        CoordinatingAgencyAdminForm)
 from tendenci.apps.theme.templatetags.static import static
 from tendenci.apps.base.utils import tcurrency
 
@@ -671,6 +673,58 @@ class ChapterAdmin(TendenciBaseModelAdmin):
     view_on_site.short_description = 'view'
 
 
+class CoordinatingAgencyAdmin(admin.ModelAdmin):
+    list_display = ('id', 'edit_link', 'state', 'coordinators_list', 'group_link',)
+    list_display_links = ('edit_link',)
+    autocomplete_fields = ('coordinators',)
+    fieldsets = (
+        (None, {'fields': (('state', 'entity'), 'coordinators')}),
+        )
+    form = CoordinatingAgencyAdminForm
+
+    class Media:
+        css = {
+            "all": (static("css/autocomplete_ext.css"),)
+        }
+
+    def save_related(self, request, form, formsets, change):
+        super(CoordinatingAgencyAdmin, self).save_related(request, form, formsets, change)
+        # update group perms to coordinators
+        form.instance.update_group_perms()
+        
+
+    def edit_link(self, obj):
+        return "Edit"
+    edit_link.short_description = _('edit')
+
+    @mark_safe
+    def coordinators_list(self, instance):
+        coordinators = instance.coordinators.all().order_by('first_name', 'last_name')
+        display = ''
+        if coordinators:
+            
+            for i, user in enumerate(coordinators):
+                profile_url = reverse('profile',
+                          args=[user.username])
+                name = user.get_full_name()
+                if i > 0:
+                    display += "<br />"
+                display += f'<a href="{profile_url}">{name} - {user.email}</a>'
+ 
+        return display
+    coordinators_list.short_description = _('Coordinators')
+    coordinators_list.allow_tags = True
+
+    @mark_safe
+    def group_link(self, instance):
+        group_url = reverse('group.detail',args=[instance.group.slug])
+        group_name = instance.group.name
+                            
+        return f'<a href="{group_url}" title="{group_name}">{group_name}</a>'
+    group_link.short_description = _('group')
+    group_link.admin_order_field = 'group'
+
+
 admin.site.register(Chapter, ChapterAdmin)
 admin.site.register(Position)
 admin.site.register(ChapterMembershipType, ChapterMembershipTypeAdmin)
@@ -680,4 +734,4 @@ admin.site.register(ChapterMembership, ChapterMembershipAdmin)
 admin.site.register(Notice, NoticeAdmin)
 admin.site.register(NoticeLog, NoticeLogAdmin)
 admin.site.register(NoticeDefaultLogRecord, NoticeDefaultLogRecordAdmin)
-
+admin.site.register(CoordinatingAgency, CoordinatingAgencyAdmin)

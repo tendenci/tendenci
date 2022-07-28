@@ -44,6 +44,9 @@ urlpatterns = [
         name="chapters.memberships_search"),
     re_path(r"^chapters/memberships/files/(?P<cm_id>\d+)/$", views.file_display,
             name="chapters.cm_file_display"),
+    re_path(r"^chapters/coordinating/groups/$",
+        views.coordinating_group_list,
+        name="chapters.coordinating_group_list"),
 
     # chapter memberships import
     re_path(r"^chapters/memberships/import/$",

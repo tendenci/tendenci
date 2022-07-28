@@ -176,6 +176,10 @@ class Profile(Person):
         return all([self._can_login(), self.user.is_superuser])
 
     @property
+    def is_chapter_coordinator(self):
+        return self.user.chapter_coordinators.exists()
+
+    @property
     def lang(self):
         if self.language not in [l[0] for l in settings.LANGUAGES]:
             self.language = 'en'

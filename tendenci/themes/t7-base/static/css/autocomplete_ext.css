@@ -1,0 +1,13 @@
+:root {
+  --border-color: #ccc;
+  --darkened-bg: #e4e4e4;
+}
+.select2-container--admin-autocomplete .select2-selection--multiple .select2-selection__choice
+{
+    font-size: 1.2em;
+    /*padding: 5px ! important;*/
+    border: 1px solid #aaa;
+}
+.select2-container--admin-autocomplete{
+	border: 1px solid #ccc;
+}

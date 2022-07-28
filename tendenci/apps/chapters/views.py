@@ -423,24 +423,57 @@ def delete(request, id, template_name="chapters/delete.html"):
 
 @is_enabled('chapters')
 @login_required
+def coordinating_group_list(request, template_name="chapters/coordinating_group_list.html"):
+    coordinating_agencies = request.user.chapter_coordinators.all()
+    if not coordinating_agencies:
+        raise Http404 
+    if coordinating_agencies.count() == 1:
+        return HttpResponseRedirect(reverse('group.detail', args=[coordinating_agencies[0].group.slug]))
+    
+    return render_to_resp(request=request,
+                          template_name=template_name,
+        context={'coordinating_agencies': coordinating_agencies})
+
+@is_enabled('chapters')
+@login_required
 def chapter_memberships_search(request, chapter_id=0,
                                template_name="chapters/memberships/search.html"):
     if chapter_id:
         chapter = get_object_or_404(Chapter, pk=chapter_id)
     else:
         chapter = None
+    is_chapter_coordinator = False
+    coordinator_chapters = None
+    coordinator_states = None
 
     app = ChapterMembershipApp.objects.current_app()
     if not app:
         raise Http404
 
+    # perms check - 1) whoever can change chapter memberships, or
+    #  2) chapter leaders, or 3) chapter coordinators
     if not (has_perm(request.user, 'chapters.change_chaptermembership') or \
             (chapter and chapter.is_chapter_leader(request.user))):
-        raise Http403
+        is_chapter_coordinator = request.user.chapter_coordinators.exists()
+        if is_chapter_coordinator:
+            coordinator_states = request.user.chapter_coordinators.all().values_list('state', flat=True)
+            # chapter coordinators can only view the chapters in their state
+            coordinator_chapters = Chapter.objects.filter(state__in=coordinator_states)
+            if chapter and not coordinator_chapters.filter(id=chapter.id).exists():
+                raise Http403 # this chapter does not belong to the coordinator
+        else: # not chapter_coordinator:
+            raise Http403
     chapter_memberships = ChapterMembership.objects.filter(app_id=app.id
                                     ).exclude(status_detail__in=['archive', 'inactive', 'admin_hold'])
     if chapter:
-        chapter_memberships = chapter_memberships.filter(chapter=chapter)
+        chapters = [chapter]
+    elif coordinator_chapters:
+        chapters = coordinator_chapters
+    else:
+        chapters = None
+    if chapters:
+        chapter_memberships = chapter_memberships.filter(chapter__in=chapters)
+
     field_names_to_exclude = ['payment_method',
                             'membership_type',
                             'groups',
@@ -454,10 +487,10 @@ def chapter_memberships_search(request, chapter_id=0,
                 field_name__in=field_names_to_exclude)
     if 'email_members' in request.POST or 'email_members_selected' in request.POST:
         form = ChapterMemberSearchForm(request.POST, app_fields=app_fields,
-                                   user=request.user, chapter=chapter)
+                                   user=request.user, chapters=chapters)
     else:
         form = ChapterMemberSearchForm(request.GET, app_fields=app_fields,
-                                       user=request.user, chapter=chapter)
+                                       user=request.user, chapters=chapters)
 
     if form.is_valid():
         membership_fieldnames = [field.name for field in ChapterMembership._meta.fields if \
@@ -589,6 +622,7 @@ def chapter_memberships_search(request, chapter_id=0,
             'total_members': chapter_memberships.count(),
             'app': app,
             'chapter': chapter,
+            'coordinator_states': coordinator_states,
             'app_fields': app_fields})
 
 
