@@ -552,6 +552,7 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
         self.request_user = kwargs.pop('request_user')
         self.is_renewal = kwargs.pop('is_renewal', False)
         self.renew_from_id = kwargs.pop('renew_from_id', None)
+        self.old_chapter_membership = kwargs.pop('old_chapter_membership', None)
         self.edit_mode = kwargs.pop('edit_mode', False)
         self.app = kwargs.pop('app')
         self.chapter = chapter
@@ -657,8 +658,12 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
 
         if not self.edit_mode:
             chapter_membership.entity = self.chapter.entity
-            chapter_membership.user = self.request_user
+            if self.is_renewal:
+                chapter_membership.user = self.old_chapter_membership.user
+            else:
+                chapter_membership.user = self.request_user
             chapter_membership.renewal = self.is_renewal
+            
             if self.renew_from_id:
                 chapter_membership.renew_from_id = self.renew_from_id
             chapter_membership.app = self.app
