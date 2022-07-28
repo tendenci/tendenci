@@ -411,7 +411,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
 
     edit_mode = False
     if entry:
-        form = get_object_or_404(published, entries=entry)
+        form = entry.form
         edit_mode = True
     elif slug:
         form = get_object_or_404(published, slug=slug)
@@ -420,7 +420,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
 
     # Permission only needed to edit. To submit the form no permission needed.
     if edit_mode:
-        if not has_view_perm(request.user,'forms.change_formentry',entry):
+        if not has_perm(request.user,'forms.change_formentry',entry):
             raise Http403
 
     # If form has a recurring payment, make sure the user is logged in
