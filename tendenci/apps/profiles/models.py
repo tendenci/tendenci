@@ -404,9 +404,12 @@ class Profile(Person):
 
     @property
     def chapter_membership(self):
-        [chapter_membership] = self.user.chaptermembership_set.exclude(
-                    status_detail='archive').order_by('-create_dt')[:1] or [None]
+        chapter_membership = self.chapter_memberships[:1] or [None]
         return chapter_membership
+    
+    def chapter_memberships(self):
+        return self.user.chaptermembership_set.exclude(
+               status_detail='archive').order_by('chapter', '-create_dt')
 
     def refresh_member_number(self):
         """
