@@ -1444,6 +1444,10 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             )
             membership.corp_profile_id = corp_membership.corp_profile.id
             membership.entity = corp_membership.corp_profile.entity
+        else:
+            # detach if no corporate_membership
+            if membership.corp_profile_id:
+                membership.corp_profile_id = 0
 
         # set owner & creator
         if request_user:
