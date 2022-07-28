@@ -648,7 +648,7 @@ class ChapterMembership(TendenciBaseModel):
         is_superuser = user.is_superuser
         is_chapter_leader = self.chapter.is_chapter_leader(user)
  
-        renew_link = ''
+        renew_link = reverse('chapters.membership_renew', args=[self.pk])
  
         details_link = reverse('chapters.membership_details', args=[self.pk])
         approve_link = f'{details_link}?approve'
