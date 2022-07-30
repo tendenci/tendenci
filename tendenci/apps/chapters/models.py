@@ -618,6 +618,9 @@ class ChapterMembership(TendenciBaseModel):
 
         returns boolean
         """
+        if self.status_detail == 'expired':
+            return True
+
         renewal_period = self.get_renewal_period_dt()
 
         # renewal not allowed; or no renewal period
@@ -648,7 +651,7 @@ class ChapterMembership(TendenciBaseModel):
         is_superuser = user.is_superuser
         is_chapter_leader = self.chapter.is_chapter_leader(user)
  
-        renew_link = ''
+        renew_link = reverse('chapters.membership_renew', args=[self.pk])
  
         details_link = reverse('chapters.membership_details', args=[self.pk])
         approve_link = f'{details_link}?approve'
@@ -658,7 +661,8 @@ class ChapterMembership(TendenciBaseModel):
         if self.can_renew() and renew_link:
             actions.append((renew_link, _('Renew')))
         elif (is_superuser or is_chapter_leader) and renew_link:
-            actions.append((renew_link, _('Admin: Renew')))
+            if self.is_active() or self.is_expired():
+                actions.append((renew_link, _('Admin: Renew')))
  
         if is_superuser or is_chapter_leader:
             if status == 'active':
