@@ -16,7 +16,6 @@ from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.contrib.sessions.models import Session
-from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 # from djcelery.models import TaskMeta
 
