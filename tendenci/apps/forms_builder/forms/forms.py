@@ -53,10 +53,13 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         Dynamically add each of the form fields for the given form model
         instance and its related field model instances.
         """
-        self.instance = kwargs.get("instance", None)
+        self.edit_mode = isinstance(kwargs.get("instance", None), FormEntry)
+        if self.edit_mode:
+            self.instance = kwargs["instance"]
+
         self.user = user
         self.form = form
-        self.form_fields = (form.fields.all() if self.instance else form.fields.visible()).order_by('position')
+        self.form_fields = (form.fields.all() if self.edit_mode else form.fields.visible()).order_by('position')
         self.auto_fields = form.fields.auto_fields().order_by('position')
         self.session = {} if session is None else session
         super(FormForForm, self).__init__(*args, **kwargs)
@@ -272,22 +275,17 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         """
         entry = super(FormForForm, self).save(commit=False)
         entry.form = self.form
-        
+
         # Entry time recorded only when the form is originally submitted.
         # Subsequent edits to the form entry do not alter the entry_time
         if not edit_mode:
             entry.entry_time = datetime.now()
-            
+
         entry.save()
         for field in self.form_fields:
-<<<<<<< master
             field_key = self.field_key(field)
             gfield_key = self.form.slug + "." + field_key
 
-=======
-            field_key = "field_%s" % field.id
-
->>>>>>> Initial cut at form entry editing capabilities.
             value = self.cleaned_data[field_key]
             entry_id = self.cleaned_data.get(field_key + "-id", None)
 

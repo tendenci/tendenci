@@ -252,13 +252,13 @@ def memories(request, id, template_name="forms/memories.html"):
 
     if not has_perm(request.user,'forms.view_formentry',form):
         raise Http403
-    
+
     key_pattern = re.compile(f"{form.slug}.field_(?P<field_id>\d+)")
 
-    # Not sure how well this scales and if perhaps a server side query (filter) is better 
-    s_mem = [s for s in Session.objects.all() 
+    # Not sure how well this scales and if perhaps a server side query (filter) is better
+    s_mem = [s for s in Session.objects.all()
                 if any([key for key in s.get_decoded() if re.match(key_pattern, key)])]
-    
+
     memories = []
     for s in s_mem:
         memory = {"Expires": s.expire_date}
@@ -271,9 +271,9 @@ def memories(request, id, template_name="forms/memories.html"):
                     memory[field.label] = val
                 except Field.DoesNotExist:
                     pass
-                
-        memories.append(memory) 
-    
+
+        memories.append(memory)
+
     return render_to_resp(request=request, template_name=template_name,
         context={'form':form,'memories': memories})
 
@@ -447,7 +447,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
     else:
         billing_form = None
 
-    form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None, instance=entry)
+    form_for_form = FormForForm(form, request.user, request.session, request.POST or None, request.FILES or None, instance=entry)
 
     if get_setting('site', 'global', 'captcha'): # add captcha
         if billing_form:
