@@ -5,6 +5,7 @@ import datetime
 import time
 import csv
 import re
+import operator
 
 from django.conf import settings
 from django.urls import reverse
@@ -32,7 +33,7 @@ from tendenci.apps.recurring_payments.models import RecurringPayment
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.forms_builder.forms.forms import (
-    FormForForm, FormForm, FormForField, PricingForm, BillingForm
+    FormForForm, FormForm, FormForField, PricingForm, BillingForm, FieldMemory
 )
 from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, Pricing
 from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
@@ -80,7 +81,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
 
 
 @is_enabled('forms')
-def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
+def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):  # @ReservedAssignment
     form_instance = get_object_or_404(Form, pk=id)
 
     if not has_perm(request.user,'forms.change_form',form_instance):
@@ -115,7 +116,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
 
 @is_enabled('forms')
 @login_required
-def update_fields(request, id, template_name="forms/update_fields.html"):
+def update_fields(request, id, template_name="forms/update_fields.html"):  # @ReservedAssignment
     form_instance = get_object_or_404(Form, id=id)
 
     if not has_perm(request.user,'forms.add_form',form_instance):
@@ -140,7 +141,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
 
 @is_enabled('forms')
 @login_required
-def delete(request, id, template_name="forms/delete.html"):
+def delete(request, id, template_name="forms/delete.html"):  # @ReservedAssignment
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -159,7 +160,7 @@ def delete(request, id, template_name="forms/delete.html"):
 
 @is_enabled('forms')
 @login_required
-def copy(request, id):
+def copy(request, id):  # @ReservedAssignment
     """
     Copies a form_instance and all the fields related to it.
     """
@@ -232,7 +233,7 @@ def copy(request, id):
 
 @is_enabled('forms')
 @login_required
-def entries(request, id, template_name="forms/entries.html"):
+def entries(request, id, template_name="forms/entries.html"):  # @ReservedAssignment
     form = get_object_or_404(Form, pk=id)
 
     if not has_perm(request.user,'forms.change_form',form):
@@ -247,40 +248,59 @@ def entries(request, id, template_name="forms/entries.html"):
 
 @is_enabled('forms')
 @login_required
-def memories(request, id, template_name="forms/memories.html"):
+def memories(request, id, template_name="forms/memories.html"):  # @ReservedAssignment
     form = get_object_or_404(Form, pk=id)
 
     if not has_perm(request.user,'forms.view_formentry',form):
         raise Http403
-    
-    key_pattern = re.compile(f"{form.slug}.field_(?P<field_id>\d+)")
 
-    # Not sure how well this scales and if perhaps a server side query (filter) is better 
-    s_mem = [s for s in Session.objects.all() 
-                if any([key for key in s.get_decoded() if re.match(key_pattern, key)])]
-    
-    memories = []
-    for s in s_mem:
-        memory = {"Expires": s.expire_date}
-        for key, val in s.get_decoded().items():
-            key_match = re.match(key_pattern, key)
-            if key_match:
-                field_id = key_match["field_id"]
-                try:
-                    field = form.fields.get(id=field_id)
-                    memory[field.label] = val
-                except Field.DoesNotExist:
-                    pass
-                
-        memories.append(memory) 
-    
+    # Very important to order on 'user', 'session' as that is th eunique key that groups feild memories
+    # which grouping is premised in the form_memory reconstruction.
+    field_memories = FieldMemory.objects.filter(field__form=form).order_by('user', 'session', 'field__position')
+
+    # form_memory is not saved explicitly in a model, instead we have saved individual field_memories.
+    #
+    # We provide a reconstructed form_memory to the memories view for convenience (to group the field_memories
+    # by the (user, session) they pertain to. As the field memories are sorted on (user, session) we can group
+    # them by this key into dicts for the form to render and the list (of field_memories has all of those for
+    # a given (user, session) are neighbouring in the list.
+    form_memories = []
+
+    previous_key = None
+    for memory in field_memories:
+        key = (memory.user, memory.session)
+        if key != previous_key:
+            form_memories.append({})
+            previous_key = key
+
+            if "form_memory__user" in form_memories[-1]:
+                assert form_memories[-1]["form_memory__user"] == memory.user, "This is impossible"
+
+            if "form_memory__session" in form_memories[-1]:
+                assert form_memories[-1]["form_memory__session"] == memory.session, "This is impossible"
+
+            form_memories[-1]["form_memory__user"] = memory.user
+            form_memories[-1]["form_memory__session"] = memory.session
+
+            # The form save_dt is the latest of the field save_dts
+            if not "form_memory__save_dt" in form_memories[-1]:
+                form_memories[-1]["form_memory__save_dt"] = datetime.datetime.min
+
+            form_memories[-1]["form_memory__save_dt"] = max(form_memories[-1]["form_memory__save_dt"], memory.save_dt)
+            form_memories[-1]["form_memory__age"] = datetime.datetime.now() - form_memories[-1]["form_memory__save_dt"]
+
+        form_memories[-1][memory.field.label] = memory.value
+
+    # Now order the form memories. It's useful to see the most recent ones first.
+    form_memories.sort(key=lambda m: m.get("form_memory__age", datetime.timedelta.max))
+
     return render_to_resp(request=request, template_name=template_name,
-        context={'form':form,'memories': memories})
+        context={'form':form,'memories': form_memories, 'age_limit': datetime.timedelta(seconds=settings.SESSION_COOKIE_AGE)})
 
 
 @is_enabled('forms')
 @login_required
-def entry_delete(request, id, template_name="forms/entry_delete.html"):
+def entry_delete(request, id, template_name="forms/entry_delete.html"):  # @ReservedAssignment
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
@@ -300,7 +320,7 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
 
 @is_enabled('forms')
 @login_required
-def entry_detail(request, id, template_name="forms/entry_detail.html"):
+def entry_detail(request, id, template_name="forms/entry_detail.html"):  # @ReservedAssignment
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
@@ -318,7 +338,7 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
 
 
 @is_enabled('forms')
-def entries_export(request, id, include_files=False):
+def entries_export(request, id, include_files=False):  # @ReservedAssignment
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -438,7 +458,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         billing_form = None
 
     form_for_form = FormForForm(form, request.user, request.session, request.POST or None, request.FILES or None)
-    
+
     if get_setting('site', 'global', 'captcha'): # add captcha
         if billing_form:
             # append the captcha to the end of the billing form
@@ -446,7 +466,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             if 'captcha' in form_for_form.fields:
                 form_for_form.fields.pop('captcha')
             billing_form.fields['captcha'] = captcha_field
-    
+
     for field in form_for_form.fields:
         field_default = request.GET.get(field, None)
         if field_default:
@@ -512,9 +532,9 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 # prepare attachments
                 attachments = []
                 # Commenting out the attachment block to not add attachments to the email for the reason below:
-                # According to SES message quotas https://docs.aws.amazon.com/ses/latest/DeveloperGuide/quotas.html, 
-                # the maximum message size (including attachments) is 10 MB per message (after base64 encoding) 
-                # which means the actual size should be less than 7.5 MB or so because text after encoded with the BASE64 
+                # According to SES message quotas https://docs.aws.amazon.com/ses/latest/DeveloperGuide/quotas.html,
+                # the maximum message size (including attachments) is 10 MB per message (after base64 encoding)
+                # which means the actual size should be less than 7.5 MB or so because text after encoded with the BASE64
                 # algorithm increases its size by 1/3. But the allowed upload size is much larger than 7.5 MB.
 #                 try:
 #                     for f in form_for_form.files.values():
@@ -698,7 +718,7 @@ def export(request, template_name="forms/export.html"):
 
 @is_enabled('forms')
 @login_required
-def files(request, id):
+def files(request, id):  # @ReservedAssignment
     """
     Returns file.  Allows us to handle privacy.
 

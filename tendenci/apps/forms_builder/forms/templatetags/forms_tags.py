@@ -142,3 +142,10 @@ def media_url(field):
 
     # internal url; we handle privacy
     return reverse('form_files', args=[field.pk])
+
+
+@register.filter('startswith')
+def startswith(text, starts):
+    if isinstance(text, str):
+        return text.startswith(starts)
+    return False
