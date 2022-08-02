@@ -305,7 +305,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             if entry_id:
                 field_entry = FieldEntry.objects.get(id=entry_id)
                 if value != field_entry.value:
-                    field.value = value
+                    field_entry.value = value
                     field_entry.save()
             else:
                 field_entry = FieldEntry(field_id = field.id, entry=entry, value = value)
