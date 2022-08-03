@@ -404,7 +404,7 @@ class Profile(Person):
 
     @property
     def chapter_membership(self):
-        chapter_membership = self.chapter_memberships[:1] or [None]
+        [chapter_membership] = self.chapter_memberships[:1] or [None]
         return chapter_membership
     
     def chapter_memberships(self):
