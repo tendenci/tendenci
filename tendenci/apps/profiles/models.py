@@ -318,7 +318,7 @@ class Profile(Person):
             return True
 
         # chapter leaders can view
-        for chapter_membership in self.chapter_memberships:
+        for chapter_membership in self.chapter_memberships():
             if chapter_membership.chapter.is_chapter_leader(user2_compare):
                 return True
 
@@ -344,7 +344,7 @@ class Profile(Person):
             return True
 
         # chapter leaders can edit
-        for chapter_membership in self.chapter_memberships:
+        for chapter_membership in self.chapter_memberships():
             if chapter_membership.chapter.is_chapter_leader(user2_compare):
                 return True
 
