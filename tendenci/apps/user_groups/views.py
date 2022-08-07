@@ -97,8 +97,7 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
 
     EventLog.objects.log(instance=group)
 
-    if (request.user.profile.is_staff and \
-        has_perm(request.user,'user_groups.change_group')) or \
+    if has_perm(request.user,'user_groups.change_group', group) or \
             membership_view_perms != 'private':
         groupmemberships = GroupMembership.objects.filter(
             group=group,
@@ -112,7 +111,7 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
         context=locals())
 
 
-@staff_with_perm('user_groups.change_group')
+@login_required
 def message(request, group_slug, template_name='user_groups/message.html'):
     """
     Send a message to the group
@@ -120,6 +119,9 @@ def message(request, group_slug, template_name='user_groups/message.html'):
     from tendenci.apps.emails.models import Email
 
     group = get_object_or_404(Group, slug=group_slug)
+    if not has_perm(request.user,'user_groups.change_group',group):
+        raise Http403
+
     if group.membership_types.all().exists():
         membership_type = group.membership_types.all()[0]
     else:
@@ -202,6 +204,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         'form': form})
 
 
+@login_required
 def group_add_edit(request, group_slug=None,
                    form_class=GroupForm,
                    template_name="user_groups/add_edit.html"):
@@ -264,6 +267,10 @@ def group_add_edit(request, group_slug=None,
 def group_edit_perms(request, id, form_class=GroupPermissionForm, template_name="user_groups/edit_perms.html"):
     group_edit = get_object_or_404(Group, pk=id)
 
+    if not (request.user.is_staff and \
+            has_perm(request.user,'user_groups.change_group', group_edit)):
+        raise Http403
+
     if request.method == "POST":
         form = form_class(request.POST, request.user, instance=group_edit)
     else:
@@ -277,6 +284,8 @@ def group_edit_perms(request, id, form_class=GroupPermissionForm, template_name=
     return render_to_resp(request=request, template_name=template_name,
         context={'group':group_edit, 'form':form})
 
+
+@login_required
 def group_delete(request, id, template_name="user_groups/delete.html"):
     group = get_object_or_404(Group, pk=id)
 
@@ -317,6 +326,8 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
              "opts": group._meta,
              })
 
+
+@login_required
 def group_membership_self_add(request, slug, user_id):
     group = get_object_or_404(Group, slug=slug)
     user = get_object_or_404(User, pk=user_id)
@@ -349,6 +360,8 @@ def group_membership_self_add(request, slug, user_id):
 
     return HttpResponseRedirect(reverse('group.search'))
 
+
+@login_required
 def group_membership_self_remove(request, slug, user_id):
     group = get_object_or_404(Group, slug=slug)
 
@@ -429,6 +442,7 @@ def groupmembership_bulk_add(request, group_slug,
 
     return render_to_resp(request=request, template_name=template_name, context=locals())
 
+@login_required
 def groupmembership_add_edit(request, group_slug, user_id=None,
                              form_class=GroupMembershipForm,
                              template_name="user_groups/member_add_edit.html"):
@@ -642,6 +656,7 @@ def group_members_export_download(request, group_slug, export_target, identifier
     return response
 
 
+@login_required
 def group_member_export(request, group_slug):
     """
     Export all group members for a specific group
