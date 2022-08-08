@@ -595,7 +595,7 @@ class FormEntry(models.Model):
                             first_name = name_list[0]
                             last_name = name_list[1] if len(name_list) > 1 else ""
 
-                    anonymous_creator = User(username=emailfield[:30], email=emailfield,
+                    anonymous_creator = User(username=emailfield[:150], email=emailfield,
                                              first_name=first_name, last_name=last_name)
                     anonymous_creator.set_unusable_password()
                     anonymous_creator.is_active = False
