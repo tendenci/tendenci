@@ -257,7 +257,7 @@ class CoordinatingAgency(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE,
                 null=True, blank=True,
                 help_text=_('All chapter members in this state will be added to this group.'))
-    coordinators = models.ManyToManyField(User, related_name="chapter_coordinators",)
+    coordinators = models.ManyToManyField(User, through='CoordinatorUser', related_name="chapter_coordinators",)
     entity = models.ForeignKey(Entity, blank=True, null=True, default=None,
         on_delete=models.SET_NULL,)
     create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
@@ -322,6 +322,17 @@ class CoordinatingAgency(models.Model):
         if coordinator_users:
             ObjectPermission.objects.assign(coordinator_users,
                                         self.group, perms=perms)
+
+
+class CoordinatorUser(models.Model):
+    coordinating_agency = models.ForeignKey(CoordinatingAgency, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f'{self.user.first_name} {self.user.last_name}' 
+    
+    def get_absolute_url(self):
+        return reverse('profile', args=[self.user.username])
 
             
 class ChapterMembershipType(OrderingBaseModel, TendenciBaseModel):

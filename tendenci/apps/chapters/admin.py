@@ -19,6 +19,7 @@ from tendenci.apps.chapters.models import (Chapter, Position, Officer,
                             ChapterMembershipApp,
                             ChapterMembership,
                             CoordinatingAgency,
+                            CoordinatorUser,
                             Notice,
                             NoticeLog,
                             NoticeDefaultLogRecord)
@@ -674,7 +675,7 @@ class ChapterAdmin(TendenciBaseModelAdmin):
 
 
 class CoordinatorInline(admin.TabularInline):
-    model = CoordinatingAgency.coordinators.through
+    model = CoordinatorUser
     autocomplete_fields = ('user',)
     extra = 0
     verbose_name = 'coordinator'
