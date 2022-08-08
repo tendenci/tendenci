@@ -1010,6 +1010,7 @@ def chapter_membership_renew(request, chapter_membership_id=0,
         'renew_from_id': renew_from_id,
         'is_renewal': True,
         'app': app,
+        'old_chapter_membership': chapter_membership,
     }
     chapter_membership_form = ChapterMembershipForm(app_fields, chapter,
                 request.POST or None, request.FILES or None,

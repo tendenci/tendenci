@@ -25,6 +25,7 @@ urlpatterns = [
     re_path(r"^%s/delete/(?P<id>\d+)$" % urlpath, views.delete, name="form_delete"),
     re_path(r"^%s/copy/(?P<id>\d+)$" % urlpath, views.copy, name="form_copy"),
     re_path(r"^%s/entry/(?P<id>\d+)$" % urlpath, views.entry_detail, name="form_entry_detail"),
+    re_path(r"^%s/entry/edit/(?P<id>\d+)$" % urlpath, views.form_detail, name="form_entry_edit"),
     re_path(r"^%s/entries/(?P<id>\d+)$" % urlpath, views.entries, name="form_entries"),
     re_path(r"^%s/payment/(?P<invoice_id>\d+)/(?P<invoice_guid>[\d\w-]+)?/$" % urlpath, views.form_entry_payment, name="form_entry_payment"),
 

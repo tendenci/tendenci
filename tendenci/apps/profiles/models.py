@@ -322,9 +322,9 @@ class Profile(Person):
             return True
 
         # chapter leaders can view
-        chapter_membership = self.chapter_membership
-        if chapter_membership and chapter_membership.chapter.is_chapter_leader(user2_compare):
-            return True
+        for chapter_membership in self.chapter_memberships():
+            if chapter_membership.chapter.is_chapter_leader(user2_compare):
+                return True
 
         # False for everythin else
         return False
@@ -348,9 +348,9 @@ class Profile(Person):
             return True
 
         # chapter leaders can edit
-        chapter_membership = self.chapter_membership
-        if chapter_membership and chapter_membership.chapter.is_chapter_leader(user2_compare):
-            return True
+        for chapter_membership in self.chapter_memberships():
+            if chapter_membership.chapter.is_chapter_leader(user2_compare):
+                return True
 
         return False
 
@@ -408,9 +408,12 @@ class Profile(Person):
 
     @property
     def chapter_membership(self):
-        [chapter_membership] = self.user.chaptermembership_set.exclude(
-                    status_detail='archive').order_by('-create_dt')[:1] or [None]
+        [chapter_membership] = self.chapter_memberships[:1] or [None]
         return chapter_membership
+    
+    def chapter_memberships(self):
+        return self.user.chaptermembership_set.exclude(
+               status_detail='archive').order_by('chapter', '-create_dt')
 
     def refresh_member_number(self):
         """

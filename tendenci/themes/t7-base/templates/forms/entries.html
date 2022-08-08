@@ -2,6 +2,7 @@
 {% load bootstrap_pagination_tags %}
 {% load forms_tags %}
 {% load base_filters %}
+{% load perm_tags %}
 
 {% block title %}{{ block.super }}{% trans 'Entries' %}{% endblock %}
 
@@ -11,6 +12,9 @@
 {% endblock %}
 
 {% block content %}
+{% has_perm user forms.change_formentry as can_edit %}
+{% has_perm user forms.delete_formentry as can_delete %}
+
 <div id="form-entries">
   <div class="page-header">
     <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %} {% trans 'Entries' %}</h1>
@@ -42,14 +46,23 @@
           </a>
         </li>
         
-        <!-- delete form -->
-        <li class="pull-right">
-          <div class="form-group">
-            <a class="btn btn-danger" method="POST" title="{% trans 'Link to delete confirmation page' %}" href="{% url 'form_entry_delete' entry.pk %}">
-              {% trans "Delete" %}
-            </a>
-          </div>
-        </li>
+        <!-- edit/delete form -->
+	    {% if can_edit or can_delete %}
+	        <li class="pull-right">
+	          <div class="form-group">
+			    {% if can_edit %}
+		            <a class="btn btn-warning" method="POST" title="{% trans 'Edit this form entry' %}" href="{% url 'form_entry_edit' entry.pk %}">
+		              {% trans "Edit" %}
+		            </a>
+	    		{% endif %}
+			    {% if can_delete %}
+		            <a class="btn btn-danger" method="POST" title="{% trans 'Link to delete confirmation page' %}" href="{% url 'form_entry_delete' entry.pk %}">
+		              {% trans "Delete" %}
+		            </a>
+			    {% endif %}
+	          </div>
+	        </li>
+		{% endif %}
         
       </ul>
     </div>
