@@ -673,19 +673,30 @@ class ChapterAdmin(TendenciBaseModelAdmin):
     view_on_site.short_description = 'view'
 
 
-class CoordinatingAgencyAdmin(admin.ModelAdmin):
-    list_display = ('id', 'edit_link', 'state', 'coordinators_list', 'group_link',)
-    list_display_links = ('edit_link',)
-    autocomplete_fields = ('coordinators',)
-    fieldsets = (
-        (None, {'fields': (('state', 'entity'), 'coordinators')}),
-        )
-    form = CoordinatingAgencyAdminForm
+class CoordinatorInline(admin.TabularInline):
+    model = CoordinatingAgency.coordinators.through
+    autocomplete_fields = ('user',)
+    extra = 0
+    verbose_name = 'coordinator'
+    verbose_name_plural = 'coordinators'
 
     class Media:
         css = {
             "all": (static("css/autocomplete_ext.css"),)
         }
+
+class CoordinatingAgencyAdmin(admin.ModelAdmin):
+    list_display = ('id', 'edit_link', 'state', 'coordinators_list', 'group_link',)
+    list_display_links = ('edit_link',)
+    #autocomplete_fields = ('coordinators',)
+    fieldsets = (
+        (None, {'fields': (('state', 'entity'),)}),
+        )
+    form = CoordinatingAgencyAdminForm
+    inlines = [
+        CoordinatorInline,
+    ]
+    exclude = ('coordinators',) 
 
     def save_related(self, request, form, formsets, change):
         super(CoordinatingAgencyAdmin, self).save_related(request, form, formsets, change)
