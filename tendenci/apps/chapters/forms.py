@@ -1,6 +1,7 @@
 from os.path import splitext, basename, join
 import codecs
 from csv import reader
+import chardet
 
 from django import forms
 from django.contrib.auth.models import User
@@ -1043,7 +1044,12 @@ class ChapterMembershipUploadForm(FormControlWidgetMixin, forms.ModelForm):
             return cleaned_data
 
         upload_file = cleaned_data['upload_file']
-        csv_reader = reader(codecs.iterdecode(upload_file, 'utf-8'))
+        upload_file.seek(0)
+        encoding = chardet.detect(upload_file.read(10000))["encoding"]
+        if not encoding:
+            encoding = 'utf-8'
+        upload_file.seek(0)
+        csv_reader = reader(codecs.iterdecode(upload_file, encoding))
         header_row = next(csv_reader)
         if not header_row:
             raise forms.ValidationError(_('There is no data in the spreadsheet.'))
