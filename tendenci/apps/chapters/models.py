@@ -277,6 +277,8 @@ class CoordinatingAgency(models.Model):
         return self.state + " " + _("Coordinating Agency")
 
     def save(self, *args, **kwargs):
+        if not self.entity:
+            self.entity = Entity.objects.first()
         super(CoordinatingAgency, self).save(*args, **kwargs)
         if not self.group:
             self._auto_generate_group()

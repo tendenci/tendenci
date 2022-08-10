@@ -691,7 +691,7 @@ class CoordinatingAgencyAdmin(admin.ModelAdmin):
     list_display_links = ('edit_link',)
     #autocomplete_fields = ('coordinators',)
     fieldsets = (
-        (None, {'fields': (('state', 'entity'),)}),
+        (None, {'fields': ('state',)}),
         )
     form = CoordinatingAgencyAdminForm
     inlines = [
