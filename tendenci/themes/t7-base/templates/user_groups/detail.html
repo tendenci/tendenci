@@ -23,6 +23,12 @@
 
 <div class="t">
   <div class="group-view">
+    {% with group.back_to_link as back_to_link %}
+    {% if back_to_link %}
+    <div class="pull-right"><a class="btn btn-info" href="{{ back_to_link.0 }}">{{ back_to_link.1 }}</a></div>
+    {% endif %}
+    {% endwith %}
+    
     <div class="page-header">
       <h1>{{ group.name }}</h1>
     </div>

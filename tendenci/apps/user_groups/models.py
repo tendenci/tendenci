@@ -153,6 +153,14 @@ class Group(TendenciBaseModel):
         if self.is_member(user):
             GroupMembership.objects.get(group=self, member=user).delete()
 
+    def back_to_link(self):
+        if self.coordinatingagency_set.exists():
+            link = reverse('chapters.search')
+            link_text = _('Back to Chapters')
+            return link, link_text
+        return ''
+
+
 class GroupMembership(models.Model):
 
     STATUS_ACTIVE = 'active'
