@@ -12,6 +12,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.template import loader
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.urls.base import reverse
+import requests
 
 from captcha.fields import CaptchaTextInput
 from tendenci.apps.registration.forms import RegistrationForm
@@ -238,6 +240,18 @@ class PasswordResetForm(forms.Form):
         self.users_cache = User.objects.filter(email__iexact=email, is_active=True)
         if len(self.users_cache) == 0:
             if self_reg:
+                # check if there is a non-interactive account, if so, give an option to activate
+                # because self registration is allowed on this site.
+                non_inter_user_exists =  User.objects.filter(email__iexact=email, is_active=False).exists()
+                if non_inter_user_exists:
+                    activation_link = _('<a href="{activate_link}?email={email}">HERE</a>').format(
+                                                    activate_link=reverse('profile.activate_email'),
+                                                    email=requests.utils.quote(email))
+                    err_msg =  mark_safe(_('''That e-mail address doesn\'t have an active user account.
+                    Would you like to activate your account? If so, please click {activation_link} and 
+                    we'll send you an email to activate your account.''').format(activation_link=activation_link))
+                    raise forms.ValidationError(err_msg)
+                    
                 raise forms.ValidationError(mark_safe(_('That e-mail address doesn\'t have an active user account. Are you sure you\'ve <a href="/accounts/register" >registered</a>?')))
             else:
                 raise forms.ValidationError(_("That e-mail address doesn't have an active user account."))

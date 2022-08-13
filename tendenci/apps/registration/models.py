@@ -212,6 +212,7 @@ class RegistrationProfile(models.Model):
 
     user = models.OneToOneField(User, verbose_name=_('user'), on_delete=models.CASCADE)
     activation_key = models.CharField(_('activation key'), max_length=40)
+    create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
 
     objects = RegistrationManager()
 
@@ -247,5 +248,5 @@ class RegistrationProfile(models.Model):
         expiration_date = datetime.timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)
         return self.activation_key == self.ACTIVATED or \
                (not from_memberships and \
-                (self.user.date_joined + expiration_date <= datetime.datetime.now()))
+                (self.create_dt + expiration_date <= datetime.datetime.now()))
     activation_key_expired.boolean = True
