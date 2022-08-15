@@ -197,7 +197,7 @@
                 <h3>{% trans "Update Theme" %}</h3>
 
                 <ul>
-                    <li><a href="{% url 'theme_editor.editor' %}?file=media/css/bootstrap-theme.css">{% trans "Update Styles" %}</a></li>
+                    <li><a href="{% url 'theme_editor.editor' %}">{% trans "Update Styles" %}</a></li>
                     <li><a href="{% url 'theme_editor.editor' %}?file=templates/homepage.html">{% trans "Update Template" %} </a></li>
                     <li><a href="{% url 'theme_editor.editor' %}?file=templates/header.html">{% trans "Update Header" %}</a></li>
                     <li><a href="{% url 'admin:navs_nav_changelist' %}">{% trans "Update Navigation" %}</a></li>
@@ -210,7 +210,7 @@
 
     <div id="t-dashboard-blog" class="panel panel-default t-dashboard-sidebar-panel">
         <div class="panel-body">
-			{% cache 86400 tendenci_help_rss %}
+			{% cache 86400 tendenci_blog_rss %}
             <h3>{% trans "Tendenci Blog" %}</h3>
 			{% get_rss "https://blog.tendenci.com/feed/" as blog_rss %}
             <ul class="list-group">
@@ -237,7 +237,7 @@
             <h3>{% trans "Tendenci Help" %}</h3>
         </div>
 
-        {% cache 86400 tendenci_help_rss %}
+        {% cache 86400 tendenci_helpfiles_rss %}
             {% get_rss "https://www.tendenci.com/help-files/feed/" as rss %}
             <ul class="list-group">
                 {% for entry in rss.entries|slice:":3" %}
