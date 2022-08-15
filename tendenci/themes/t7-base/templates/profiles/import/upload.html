@@ -133,6 +133,10 @@
 
           <div class="field-label">{% trans "Make Users" %}</div>
           <div>{{ form.interactive }}</div>
+          
+          <div class="import-field">{{form.exclude_is_active}}
+            <label for="id_exclude_is_active">{{ form.exclude_is_active.label }}</label>
+          </div>
 
           {% if form.override.errors %}
           <div class="error">

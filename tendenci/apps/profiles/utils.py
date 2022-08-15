@@ -648,10 +648,17 @@ class ImportUsers(object):
             user.set_password(user.password)
 
         # is_active; interactive or non-interactive
-        if self.uimport.interactive:
-            user.is_active = True
-        else:
-            user.is_active = False
+        if action_info['action'] == 'insert':
+            if self.uimport.interactive:
+                user.is_active = True
+            else:
+                user.is_active = False
+        else: # update for existing user only if they're not excluded
+            if not self.uimport.exclude_is_active:
+                if self.uimport.interactive:
+                    user.is_active = True
+                else:
+                    user.is_active = False
 
         user.save()
 

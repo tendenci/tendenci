@@ -868,6 +868,7 @@ class UserUploadForm(forms.ModelForm):
                 'key',
                 'override',
                 'interactive',
+                'exclude_is_active',
                 'group_id',
                 'clear_group_membership',
                 'upload_file',
@@ -875,6 +876,7 @@ class UserUploadForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(UserUploadForm, self).__init__(*args, **kwargs)
+        self.fields['upload_file'].validators = [FileValidator(allowed_extensions=['.csv'], allowed_mimetypes=['text/csv', 'text/plain', 'application/csv'])]
         self.fields['key'].initial = 'email'
         # move the choices down here to fix the error
         #  django.db.utils.ProgrammingError: relation "user_groups_group" does not exist
@@ -889,6 +891,7 @@ class UserUploadForm(forms.ModelForm):
         if not key:
             raise forms.ValidationError(_('Please specify the key to identify duplicates'))
 
+        upload_file.seek(0)
         file_content = upload_file.read()
         # decode from bytes to string
         encoding = chardet.detect(file_content)["encoding"]

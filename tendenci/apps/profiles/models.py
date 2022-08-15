@@ -654,6 +654,8 @@ class UserImport(BaseImport):
                                    null=True)
 
     interactive = models.BooleanField(choices=INTERACTIVE_CHOICES, default=False)
+    exclude_is_active = models.BooleanField(_('Apply the above the Interactive/Non-interactive to new users ONLY.'),
+                                            default=False)
     group_id = models.IntegerField(default=0)
 
     clear_group_membership = models.BooleanField(default=False)
