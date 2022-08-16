@@ -1126,13 +1126,19 @@ def subscribe_to_newsletter_noninteractive(request, group_slug):
 
 def unsubscribe_to_newsletter_noninteractive(request, group_slug, newsletter_key):
     group = get_object_or_404(Group, slug=group_slug)
+    unsubscribed = False
 
     groupmembership = get_object_or_404(GroupMembership,
                         group=group,
                         status=True,
                         status_detail='active',
                         newsletter_key=newsletter_key)
-    if not groupmembership.unsubscribe_to_newsletter():
-        raise Http404
+    if request.method == "POST":
+        if not groupmembership.unsubscribe_to_newsletter():
+            raise Http404
+        unsubscribed = True
 
-    return render_to_resp(request=request, template_name='user_groups/newsletter_unsubscribe.html')
+    return render_to_resp(request=request,
+                          context={'group': group,
+                                   'unsubscribed': unsubscribed},
+                          template_name='user_groups/newsletter_unsubscribe.html')
