@@ -42,6 +42,7 @@ from tendenci.apps.base.decorators import password_required
 from tendenci.apps.user_groups.importer.utils import user_groups_import_process
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.utils import get_deleted_objects
+from tendenci.apps.base.utils import get_next_url
 
 
 def search(request, template_name="user_groups/search.html"):
@@ -1100,6 +1101,11 @@ def subscribe_to_newsletter_interactive(request, group_slug):
 
     if groupmembership.subscribe_to_newsletter():
         messages.success(request, _('Successfully subscribed to Newsletters.'))
+
+    next_url = get_next_url(request)
+    if next_url:
+        return redirect(next_url)
+        
 
     return redirect(reverse('group.detail', kwargs={'group_slug': group_slug}))
 
