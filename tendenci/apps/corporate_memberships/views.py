@@ -1332,7 +1332,9 @@ def roster_search(request,
 
     # only admins and corp reps can view roster
     if not any([request.user.profile.is_superuser, is_rep, has_perm(request.user,
-                    'corporate_memberships.change_corpmembership')]):
+                    'corporate_memberships.change_corpmembership'),
+                    (get_setting('module', 'corporate_memberships', 'memberviewcorproster'
+                                 ) and request.user.profile.is_member)]):
         raise Http403
 
     memberships = MembershipDefault.objects.filter(

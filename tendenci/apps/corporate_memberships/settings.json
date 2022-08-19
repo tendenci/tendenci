@@ -68,6 +68,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "false",
+        "description": "If true, members can view corporate membership Roster (default: false).",
+        "data_type": "boolean",
+        "update_dt": "2022-08-19 10:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "memberviewcorproster",
+        "value": "false",
+        "label": "Member Can View Corporate Membership Roster",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "corporate_memberships",
+        "store": true,
+        "updated_by": ""
+    },
+    {
         "default_value": "Corporate Membership",
         "description": "The singular name of the corporate membership module.",
         "data_type": "string",
