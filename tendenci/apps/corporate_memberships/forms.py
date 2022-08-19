@@ -763,6 +763,10 @@ class RosterSearchAdvancedForm(forms.Form):
         super(RosterSearchAdvancedForm, self).__init__(*args, **kwargs)
         choices = CorpMembership.get_my_corporate_profiles_choices(request_user)
         self.fields['cm_id'].choices = choices
+        
+        for field in self.fields:
+            if field not in ['search_criteria', 'search_text', 'search_method', 'active_only']:
+                self.fields[field].widget.attrs.update({'class': 'form-control'})
 
 
 class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):

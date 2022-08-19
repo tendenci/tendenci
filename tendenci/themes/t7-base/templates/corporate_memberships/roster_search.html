@@ -18,18 +18,6 @@
     .member-details{
         margin-left: 5px;
     }
-    #id_first_name, #id_last_name, #id_email{
-        width: 200px;
-    }
-    #id_search_criteria, #id_search_text{
-        width: 150px;
-    }
-    #id_search_method{
-        width: 100px;
-    }
-    .float-left{
-        float: left;
-    }
     .roster-search-form .form-field{
         margin: 3px 0;
     }
@@ -39,6 +27,17 @@
     .roster-search-wrap .editor-bar, .roster-search-wrap .options-list{
         background-color: #EFFBFB;
     }
+    #id_search_criteria, #id_search_text, #id_search_method{
+	height: 40px;
+	padding: 10px 15px;
+	font-size: 15px;
+	line-height: 1.4;
+	color: #2c3e50;
+	background-color: #ffffff;
+	background-image: none;
+	border: 1px solid #dce4ec;
+	border-radius: 4px;
+}
 
 </style>
 {% endblock %}
@@ -90,31 +89,69 @@
 </div>
 {% endif %}
 <br />
-<form name="roster-search" class="roster-search-form" method="get">
-<div class="form-field">{{ form.cm_id.label }}: {{ form.cm_id }}</div>
-<div class="float-left">
-    <div class="form-field">
-        {{ form.first_name.label }}: {{ form.first_name }}
-    </div>
-    <div class="form-field">
-        {{ form.last_name.label }}:  {{ form.last_name }}
-    </div>
-</div>
-<div class="float-left">
-      <div class="form-field" style="margin-left: 3em;">
-        {{ form.email.label }}: {{ form.email }}
-    </div>
-     <div class="form-field" style="margin-left: 3em;">
-    {{ form.active_only }} <label for="id_active_only" style="display: inline;">{{ form.active_only.label }}</label>
-    </div>
+<form name="roster-search" class="roster-search-form form-horizontal" method="get">
 
-</div>
-<div class="clear-left"></div>
-<div class="form-field">
-    {{ form.search_criteria }} {{ form.search_text }} {{ form.search_method }}
-    <input type="submit" name="search" value="Search" />
+<div id="roster-search-fields" class="collapse in">
+
+<div class="row">
+    <div class="col-sm-8 form-group">
+    <label for="id_cm_id" class="col-sm-4 control-label">{{ form.cm_id.label }}</label>
+    	<div class="col-sm-8">
+         {{ form.cm_id }}
+         </div>
+    </div>
 </div>
 
+<div class="row">
+    <div class="col-sm-6 form-group">
+    <label for="id_first_name" class="col-sm-4 control-label">{{ form.first_name.label }}</label>
+    	<div class="col-sm-8">
+         {{ form.first_name }}
+         </div>
+    </div>
+    <div class="col-sm-6 form-group">
+    <label for="id_last_name" class="col-sm-4 control-label">{{ form.last_name.label }}</label>
+    	<div class="col-sm-8">
+        {{ form.last_name }}
+        </div>
+    </div>
+</div>
+<div class="row">
+     <div class="col-sm-6 form-group">
+     <label for="id_email" class="col-sm-4 control-label">{{ form.email.label }}</label>
+     	<div class="col-sm-8">
+       {{ form.email }}
+       </div>
+    </div>
+    <div class="col-sm-6 form-group">
+    	<div class="col-sm-offset-4 col-sm-8">
+	         <div class="checkbox">
+	        <label>
+	          {{ form.active_only }} {{ form.active_only.label }}
+	        </label>
+	     </div>
+      </div>
+    </div>  
+</div>
+  
+<div class="row">
+	<div class="col-md-12 form-group">
+	<label class="col-sm-2 control-label">{% trans 'Search By'%}</label>
+	<div class="col-sm-10">
+   	 		{{ form.search_criteria }} &nbsp;
+   	 		{{ form.search_text }}
+   	 		<button class="btn btn-success" type="submit">
+	        <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i> {% trans 'Search' %}
+             </button>
+
+  	</div>
+</div>
+</div>
+
+</div>
+<div class="pull-right">
+<a href="#roster-search-fields" data-toggle="collapse">Hide/Show Search Form</a>
+</div>
 </form>
 
 {% autopaginate memberships 10 %}

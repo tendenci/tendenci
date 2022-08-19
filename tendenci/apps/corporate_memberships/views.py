@@ -1377,11 +1377,12 @@ def roster_search(request,
         filter_and.update({'user__email__iexact': email})
     if active_only:
         filter_and.update({'status_detail': 'active'})
-    search_type = '__iexact'
-    if search_method == 'starts_with':
-        search_type = '__istartswith'
-    elif search_method == 'contains':
-        search_type = '__icontains'
+    search_type = '__icontains'
+    # search_type = '__iexact'
+    # if search_method == 'starts_with':
+    #     search_type = '__istartswith'
+    # elif search_method == 'contains':
+    #     search_type = '__icontains'
 
     # check search criteria
     if search_criteria and search_text:
