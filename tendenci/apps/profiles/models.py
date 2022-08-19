@@ -411,6 +411,17 @@ class Profile(Person):
         return self.user.chaptermembership_set.exclude(
                status_detail='archive').order_by('chapter', '-create_dt')
 
+    def get_chapters(self):
+        """
+        Get a list of chapters that this user is a member of.
+        """
+        chapters = set()
+        chapter_memberships = self.user.chaptermembership_set.exclude(
+               status_detail='archive')
+        for cm in chapter_memberships:
+            chapters.add(cm.chapter)
+        return sorted(list(chapters), key=lambda c: c.title)
+
     def refresh_member_number(self):
         """
         Adds or removes member number from profile.

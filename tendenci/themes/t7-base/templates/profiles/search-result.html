@@ -82,6 +82,17 @@
                     </div>
 
                     <div class="col-md-4 col-xs-12">
+                    	{% if MODULE_CHAPTERS_ENABLED %}
+	                    	{% with profile.get_chapters as chapters %}
+	     					{% if chapters %}
+	     					<b>{% trans "Chapter" %}{{ chapters|pluralize }}:</b> 
+	     					{% for chapter in chapters %}{% if forloop.counter0 > 0 %}, {% endif %}<a href="{{ chapter.get_absolute_url }}">{{ chapter.title }}</a>
+							{% endfor %}
+							<br />
+	     					{% endif %}
+	              			{% endwith %}
+              			{% endif %}
+     					
                         {% if not profile.hide_phone or can_edit_profile %}
 	                        {% if profile.phone %}
                                 <b>{% trans "Phone:" %}</b> {{ profile.phone|phonenumber }}<br />
