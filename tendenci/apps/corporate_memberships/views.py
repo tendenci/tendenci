@@ -1347,7 +1347,9 @@ def roster_search(request,
                     corp_profile_id=corp_membership.corp_profile.id)
 
     if request.user.profile.is_superuser or \
-        (corp_membership and corp_membership.allow_edit_by(request.user)):
+        (corp_membership and corp_membership.allow_edit_by(request.user)) or \
+        (get_setting('module', 'corporate_memberships', 'memberviewcorproster'
+                                 ) and request.user.profile.is_member):
         pass
     else:
         # the function get_membership_search_filter checks for permissions
