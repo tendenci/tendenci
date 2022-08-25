@@ -501,7 +501,7 @@ def display_header_image(request, id):
     page = get_object_or_404(Page, pk=id)
 
     if not has_view_perm(request.user,
-                        '[pages.view_page',
+                        'pages.view_page',
                         page):
         raise Http403
 
