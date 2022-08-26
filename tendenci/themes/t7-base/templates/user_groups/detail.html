@@ -16,11 +16,19 @@
 {% block content %}
 {% has_perm user user_groups.change_group group as can_edit %}
 {% has_perm user user_groups.delete_group group as can_delete %}
+{% has_perm user user_groups.add_groupmembership as can_add_group_member %}
+{% has_perm user profiles.view_profile as can_view_profile %}
 
 <!-- you are here: templates/user_groups/detail.html -->
 
 <div class="t">
   <div class="group-view">
+    {% with group.back_to_link as back_to_link %}
+    {% if back_to_link %}
+    <div class="pull-right"><a class="btn btn-info" href="{{ back_to_link.0 }}">{{ back_to_link.1 }}</a></div>
+    {% endif %}
+    {% endwith %}
+    
     <div class="page-header">
       <h1>{{ group.name }}</h1>
     </div>
@@ -33,17 +41,20 @@
     <div id="group-options">
       
       <ul>
-        {% if request.user.profile.is_staff and count_members > 0 %}
+        {% if count_members > 0 %}
         <li><p><a href="{% url "group.members_export" group.slug "members" %}">{% blocktrans %}Export all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></p></li>
-        
-        <li><a href="{% url "group.message" group.slug %}">{% blocktrans %}Email all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
         {% endif %}
+        <li><a href="{% url "group.message" group.slug %}">{% blocktrans %}Email all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
         
+        {% if can_add_group_member %}
         <li><a href="{% url "group.adduser" group.slug %}">
           {% trans "Add/Remove Group Members" %}</a></li>
+        {% endif %}
 
+		{% if request.user.is_staff %}
         <li><a href="{% url "group.edit_perms" group.pk %}">
           {% trans "Change Group Member Permissions" %}</a></li>
+        {% endif %}
         
         {% if group.email_recipient %}
         <li><a href="{% url "group.edit" group.slug %}">{% blocktrans %}Emails regarding group activity will be sent to{% endblocktrans %} <strong>{{ group.email_recipient }}</strong></a></li>
@@ -91,7 +102,11 @@
       {% for gm in groupmemberships %}
       <div class="group-member {% cycle 'gray' '' %}">
         
+        {% if can_view_profile %}
         <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) {% if gm.role %}- {{ gm.role }}{% endif %}</a>
+        {% else %}
+        {{ gm.member.get_full_name }} {% if gm.role %}- {{ gm.role }}{% endif %}
+        {% endif %}
         
         {% if can_delete %}
         &nbsp;<span class="delete-member"><a href="{% url "group.deleteuser" group.slug gm.member.id %}">{% trans "Remove" %}</a></span>

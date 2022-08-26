@@ -60,6 +60,21 @@
                         </li>
                     {% endif %}
 
+					{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+					{% if request.user.profile.is_chapter_coordinator %}
+					<li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'chapters.coordinating_group_list' %}">{% trans "My State Members" %}</a>
+                            </span>
+                     </li>
+					<li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'chapters.memberships_search' %}">{% trans "Chapter Members in my State" %}</a>
+                            </span>
+                     </li>
+					{% endif %}
+					{% endif %}
+
 					{% if request.user.is_superuser %}
 					{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
 					<li class="content-item">

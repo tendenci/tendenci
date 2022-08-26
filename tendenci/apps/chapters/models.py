@@ -7,6 +7,7 @@ import traceback
 import logging
 from csv import reader
 import hashlib
+import subprocess
 
 from django.db.models import Q
 from django.db import models
@@ -47,8 +48,9 @@ from tendenci.apps.base.utils import validate_email
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.models import BaseImport, BaseImportData
 from tendenci.apps.base.utils import UnicodeWriter
-from tendenci.apps.base.utils import correct_filename
+from tendenci.apps.base.utils import correct_filename, get_us_state_name
 from tendenci.apps.event_logs.models import EventLog
+from tendenci.libs.utils import python_executable
 
 logger = logging.getLogger(__name__)
 
@@ -214,6 +216,15 @@ class Chapter(BasePage):
 
         return False
 
+    def get_coordinating_agency(self):
+        [coord_agency] = CoordinatingAgency.objects.filter(state=self.state)[:1] or [None]
+        return coord_agency
+
+    def get_coordinating_agency_group(self):
+        coord_agency = self.get_coordinating_agency()
+        if coord_agency:
+            return coord_agency.group
+
 
 class Position(models.Model):
     title = models.CharField(_(u'title'), max_length=200)
@@ -240,7 +251,92 @@ class Officer(models.Model):
     def __str__(self):
         return "%s" % self.pk
 
+ 
+class CoordinatingAgency(models.Model):
+    state = models.CharField(_('state'), max_length=50, unique=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE,
+                null=True, blank=True,
+                help_text=_('All chapter members in this state will be added to this group.'))
+    coordinators = models.ManyToManyField(User, through='CoordinatorUser', related_name="chapter_coordinators",)
+    entity = models.ForeignKey(Entity, blank=True, null=True, default=None,
+        on_delete=models.SET_NULL,)
+    create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
+    update_dt = models.DateTimeField(_("Last Updated"), auto_now=True)
+    creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="created_coord_agencies", editable=False)
+    creator_username = models.CharField(max_length=150)
+    owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="updated_coord_agencies")
+    owner_username = models.CharField(max_length=150)
 
+    class Meta:
+        verbose_name_plural = _("Coordinating Agencies")
+        app_label = 'chapters'
+
+    def __str__(self):
+        return self.state + " " + _("Coordinating Agency")
+
+    def save(self, *args, **kwargs):
+        if not self.entity:
+            self.entity = Entity.objects.first()
+        super(CoordinatingAgency, self).save(*args, **kwargs)
+        if not self.group:
+            self._auto_generate_group()
+        self._populate_group()
+        
+    def _auto_generate_group(self):
+        if not self.group:
+            if self.state:
+                state_name = get_us_state_name(self.state)
+                name = f'State {state_name}'
+                kwargs = {
+                 'description': "Auto-generated with the chapter coordinating agency.", 
+                 'notes': "Auto-generated with the chapter coordinating agency. Used for chapter coordinators only",  
+                 'creator': self.creator,
+                 'creator_username': self.creator_username,
+                 'owner': self.creator,
+                 'owner_username': self.owner_username,
+                 'entity': self.entity}
+
+                self.group = Group.objects.create_group(name, **kwargs)
+                self.save()
+
+    def _populate_group(self):
+        if self.group and self.group.members.count() == 0:
+            subprocess.Popen([python_executable(), "manage.py",
+                          "sync_chapter_coord_groups",
+                          "--coord_agency_id",
+                          str(self.pk)])
+                
+    def update_group_perms(self, **kwargs):
+        """
+        Update the associated group perms for the coordinators of this agency. 
+        Grant coordinators the view and change permissions for their own group.
+        """
+        if not self.group:
+            return
+ 
+        ObjectPermission.objects.remove_all(self.group)
+    
+        perms = ['view', 'change']
+
+        coordinator_users = [coordinator for coordinator in self.coordinators.all()]
+        if coordinator_users:
+            ObjectPermission.objects.assign(coordinator_users,
+                                        self.group, perms=perms)
+
+
+class CoordinatorUser(models.Model):
+    coordinating_agency = models.ForeignKey(CoordinatingAgency, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f'{self.user.first_name} {self.user.last_name}' 
+    
+    def get_absolute_url(self):
+        return reverse('profile', args=[self.user.username])
+
+            
 class ChapterMembershipType(OrderingBaseModel, TendenciBaseModel):
     PRICE_FORMAT = '%s - %s'
     ADMIN_FEE_FORMAT = ' (+%s admin fee)'
@@ -535,6 +631,17 @@ class ChapterMembership(TendenciBaseModel):
 
     def __str__(self):
         return f"Chapter Membership {self.pk} for {self.user.get_full_name()} in chapter {self.chapter}"
+
+    def save(self, *args, **kwargs):
+        super(ChapterMembership, self).save(*args, **kwargs)
+        # add this chapter member to the coordinating group
+        coord_group = self.chapter.get_coordinating_agency_group()
+        if coord_group and not coord_group.is_member(self.user):
+            coord_group.add_user(self.user,
+                                 creator_id=self.creator_id,
+                                 creator_username=self.creator_username,
+                                 owner_id=self.owner_id,
+                                 owner_username=self.owner_username)
 
     def get_absolute_url(self):
         """

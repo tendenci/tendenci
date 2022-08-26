@@ -83,6 +83,8 @@ h3{
 			<div class="col-sm-9">
 				{% if chapter %}
 				<h3>{% trans "Chapter:" %} <a href="{{ chapter.get_absolute_url }}">{{ chapter.title }}</a></h3>
+				{% elif coordinator_states %}
+				<h3>{% trans "Chapter Members in my State" %}{{coordinator_states|pluralize}}: {% for state in coordinator_states %}{% if not forloop.first %}, {% endif %}{{ state }}{% endfor %} </h3>
 				{% else %}
 				<h3>{% trans "All Chapters" %}</h3>
 				{% endif %}

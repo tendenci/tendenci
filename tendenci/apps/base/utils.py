@@ -24,6 +24,7 @@ from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from PIL import Image as pil
 from PIL import ImageFile
+from localflavor.us.us_states import US_STATES
 
 from django.conf import settings
 from django.utils import translation
@@ -74,6 +75,13 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 
 ORIENTATION_EXIF_TAG_KEY = 274
 
+
+def get_us_state_name(state_abbr):
+    """
+    Given a state abbreiation, 
+    returns a state name
+    """
+    return dict(US_STATES).get(state_abbr, state_abbr)
 
 def get_next_url(request):
     """
