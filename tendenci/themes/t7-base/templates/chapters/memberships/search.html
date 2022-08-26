@@ -226,6 +226,9 @@ h3{
 				$('#hide-w').toggleClass('hide');
 
             });
+            {% if email_form.errors.values %}
+        	$('#toggle-cm-email-form').click();
+        	{% endif %}
 
 			$('#select_members_all').change(function() {
 			  	var checkboxes = $(this).closest('#members-wrap').find(':checkbox');

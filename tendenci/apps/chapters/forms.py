@@ -2,6 +2,7 @@ from os.path import splitext, basename, join
 import codecs
 from csv import reader
 import chardet
+import traceback
 
 from django import forms
 from django.contrib.auth.models import User
@@ -9,6 +10,8 @@ from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
 from django.forms.models import BaseModelFormSet
 from django.urls import reverse
+from django.template.base import Template
+from django.template.exceptions import TemplateSyntaxError
 
 from tendenci.apps.chapters.models import (Chapter, Officer,
                         ChapterMembershipType,
@@ -126,19 +129,18 @@ class ChapterMemberSearchForm(FormControlWidgetMixin, forms.Form):
 
 
 class EmailChapterMemberForm(FormControlWidgetMixin, forms.ModelForm):
+    VALID_TOKENS = ('first_name',
+                        'last_name',
+                        'chapter_name',
+                        'view_url',
+                        'edit_url',
+                        'site_url',
+                        'site_display_name',)
     subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label': Email._meta.app_label,
         'storme_model': Email._meta.model_name.lower()}),
-        label=_('Email Content'),
-        help_text=_("""Available tokens:
-                    <ul><li>{{ first_name }}</li>
-                    <li>{{ last_name }}</li>
-                    <li>{{ chapter_name }}</li>
-                    <li>{{ view_url }}</li>
-                    <li>{{ edit_url }}</li>
-                    <li>{{ site_url }}</li>
-                    <li>{{ site_display_name }}</li></ul>"""))
+        label=_('Email Content'))
 
     class Meta:
         model = Email
@@ -153,6 +155,30 @@ class EmailChapterMemberForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+        self.fields['body'].help_text = self.get_help_text()
+
+    def get_help_text(self):
+        help_text = _("Available tokens:")
+        help_text += "<ul>"
+        for token in self.VALID_TOKENS:
+            help_text += f'<li>{{{{ {token} }}}}</li>'
+        help_text += "</ul>"
+        
+    def clean_body(self):
+        body = self.cleaned_data['body']
+        err_msg = ''
+
+        try:
+            # check if it is a valid template
+            template = Template(body)
+        except TemplateSyntaxError as e:
+            err_msg = traceback.format_exception_only(type(e), e)[0]
+
+        template = None
+        if err_msg:
+            err_msg = err_msg.replace('django.template.exceptions.', '')
+            raise forms.ValidationError(_(f'{err_msg} - Invalid token.'))
+        return body
 
 
 class ChapterMembershipTypeForm(TendenciBaseForm):
