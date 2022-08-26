@@ -1,0 +1,7 @@
+<h3>{% trans "Forgot your password?" %}</h3>
+<p><a href="{% url 'auth_password_reset' %}">{% trans "Click here to reset your password." %}</a></p>
+
+{% if MODULE_USERS_SELFREGISTRATION %}
+    <h3>{% trans "Don't have an account?" %}</h3>
+    <p><a href="{% url 'registration_register' %}">{% trans "Register Now" %}</a></p>
+{% endif %}
