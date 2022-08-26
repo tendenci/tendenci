@@ -55,3 +55,17 @@ Notices to Chapter Memberships
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Chapter memberships notices for join, renewal and renewal reminders can be set up at admin backend https://www.example.com/admin/chapters/notice/.
+
+
+Chapter State Coordinators
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Chapter state coordinators can be added and managed via coordinating agencies at admin backend /admin/chapters/coordinatingagency/.
+
+Make sure the setting "State Field Uses State Dropdown" /settings/site/global/#id_stateusesdropdown is turned on, and the state field in user profiles uses two-letter state abbreviations, such as TX. 
+
+Each Chapter Coordinating Agency includes: 
+
+1. A designated State.
+2. A designated Group (all members in the state will be added to this group).
+3. One or more coordinators. Coordinators are given the permissions to view the chapter members in their state.
