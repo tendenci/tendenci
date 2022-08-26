@@ -1,3 +1,22 @@
+### 14.3 [2022-08-26]
+
+**New Features and Improvements**
+* Integrated Django Two-Factor Authentication. To enable the two-factor authentication, please see https://tendenci.readthedocs.io/en/latest/topic-guides/two-factor-auth.html.
+* Added form entry editing capabilities (Thanks @bernd-wechner).
+* Added chapter state coordinating agencies.
+* Listed the chapter memberships (if exists) on user profile.
+* Added the option to allow non-interactive user to activate their accounts if self registration is enabled.
+* Added the option to NOT override interactive/non-interactive status for existing users on users import.
+* Added the confirmation step for newsletters unsubscription. 
+* Updated the groups section on user profiles to indicate if newsletter is unsubscribed, and if so, link to re-subscribe.
+* Added the setting "Member Can View Corporate Membership Roster" (default to False).
+* Changed the default value from True to False for the setting "Minimal Event Add Enabled". 
+
+**Fixes**
+* Fixed an issue in Forums about time at front end not matching with the admin back end. 
+* More bugfixes.
+
+
 ### 14.2 [2022-07-11]
 
 * **Backward Incompatible**: Due to some issues in the pylibmc, we've switched the memcached client from pylibmc https://pypi.org/project/pylibmc/ to pymemcache https://pypi.org/project/pymemcache/. This change will NOT affect your production sites. However, if you don't have memcached installed in your local environment, please specify the cache backend to `CACHES['default']['BACKEND'] = 'django.core.cache.backends.dummy.DummyCach'` or to something you have set up.
