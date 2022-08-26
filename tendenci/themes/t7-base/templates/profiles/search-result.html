@@ -92,7 +92,10 @@
 	     					{% endif %}
 	              			{% endwith %}
               			{% endif %}
-     					
+              			
+     					{% if membership.chapter %}
+                            <b>{% trans "Chapter:" %}</b> {{ membership.chapter }}<br />
+                        {% endif %}
                         {% if not profile.hide_phone or can_edit_profile %}
 	                        {% if profile.phone %}
                                 <b>{% trans "Phone:" %}</b> {{ profile.phone|phonenumber }}<br />
