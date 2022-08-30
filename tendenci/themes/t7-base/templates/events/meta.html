@@ -10,8 +10,8 @@
 {% has_perm user events.add_event as can_add %}
 {% tags_for_object event as tags %}
 
-{% if user.is_authenticated %} 
-    <ul class="list-unstyled t-meta-data">
+ 
+ <ul class="list-unstyled t-meta-data">
 
 	{% if event.status_detail != 'template' %}
       <li class="pull-right">
@@ -48,8 +48,9 @@
       {% endif %}
       
       <div style="clear:both;"></div>
-    </ul>
+ </ul>
     
+  {% if user.is_authenticated %}  
   {% if can_edit %}
   <nav class="navbar navbar-default t-meta-editor-bar">
         <div class="container-fluid">
