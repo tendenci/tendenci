@@ -571,6 +571,11 @@ NEWSLETTER_EMAIL_BACKEND = 'tendenci.apps.emails.backends.NewsletterEmailBackend
 
 NEWSLETTER_SCHEDULE_ENABLED = False
 
+# Allow members to send emails to corporate membership reps (default to False).
+# Why this setting is here not in site settings? Because extra caution is needed
+# to turn on this feature.
+BROADCAST_EMAIL_ENABLED = False
+
 # Mobile App
 MOBILE_COOKIE_NAME = "tendenci_mobile"
 

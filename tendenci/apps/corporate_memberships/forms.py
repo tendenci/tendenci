@@ -48,8 +48,36 @@ from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.files.models import File
+from tendenci.apps.emails.models import Email
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
+
+
+class TermsForm(FormControlWidgetMixin, forms.Form):
+    terms_conditions = forms.BooleanField(label=_('I agree to the terms and conditions'),
+                                          required=True)
+
+
+class BroadcastForm(FormControlWidgetMixin, forms.ModelForm):
+    subject = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Subject'}),
+                              required=True)
+    body = forms.CharField(label=_('Message'),
+                           widget=forms.Textarea(attrs={'placeholder': 'Message'}),
+                           required=True)
+    corp_members = forms.ModelMultipleChoiceField(required=True, queryset=None,
+                            widget=forms.CheckboxSelectMultiple,)
+    
+
+    class Meta:
+        model = Email
+        fields = ('subject',
+                  'body',)
+    
+    def __init__(self, *args, **kwargs):
+        super(BroadcastForm, self).__init__(*args, **kwargs)
+        self.fields['corp_members'].queryset = CorpMembership.objects.select_related(
+            'corp_profile').filter(status_detail='active').order_by('corp_profile__name')
+        
 
 
 class CorporateMembershipTypeForm(forms.ModelForm):

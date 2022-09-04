@@ -1,0 +1,62 @@
+{% extends "corporate_memberships/base.html" %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block extra_head %}
+{{ block.super }}
+
+<style>
+.form-group{
+	margin-left: 0px !important;
+	}
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="t-broadcase">
+    <h1>{% trans "Broadcast E-mail" %}</h1>
+    
+    <div class="well well-sm">
+	  	<p>The broadcast e-mail function and Partners' Page site is provided by {{ SITE_GLOBAL_SITEDISPLAYNAME }} as a courtesy to its members. The intent of both options is to provide users with a resource for communicating and networking with members throughout the community. Users are encouraged to exchange best practices, questions, suggestions and general information that will benefit other personnel. Please keep in mind, both options are only to be utilized as a professional environment for the exchange of constructive ideas.</p>
+		<p>The use of offensive, abusive, threatening or obscene language will not be tolerated. Violators of this policy may be restricted from further use of these services, and legal action or criminal prosecution could result as a consequence of such violations. <b>{{ SITE_GLOBAL_SITEDISPLAYNAME }} reserves the right to remove any content it deems inappropriate or offensive, and also reserves the right to deny access to this service for violations of these user policies.</b></p>
+		<p>If at any time you experience problems with this site, of have any questions or comments, please do not hesitate to contact {{ SITE_GLOBAL_SITEDISPLAYNAME }} at {{ SITE_GLOBAL_SITEPHONENUMBER }}</p>
+    </div>
+	
+    <form id="t-broadcase-form" class="form-horizontal" action="." method="post">{% csrf_token %}
+    	<fieldset>
+	    <div class="form-group">
+		     <div class="checkbox">
+		        <label class="required control-label">
+		          {{ form.terms_conditions }} {{ form.terms_conditions.label }}
+		        </label>
+		     </div>
+	    </div> 
+
+        </fieldset>
+        
+		<div class="form-group">
+            <div>
+                <input type="submit" name="continue" value="Continue" class="btn btn-primary text-uppercase">
+            </div>
+        </div>
+	
+		
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<script type="text/javascript">  
+    (function($) {
+
+     })(jQuery);
+ </script>
+
+{% endblock %}

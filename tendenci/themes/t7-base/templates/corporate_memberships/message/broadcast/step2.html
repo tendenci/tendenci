@@ -1,0 +1,82 @@
+{% extends "corporate_memberships/base.html" %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block extra_head %}
+{{ block.super }}
+
+<style>
+.form-group{
+	margin-left: 0px !important;
+	}
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="t-broadcase">
+    <h1>{% trans "Broadcast E-mail" %}</h1>
+	
+    <form id="t-broadcase-form" class="form-horizontal" action="." method="post">{% csrf_token %}
+    	<fieldset>
+       	<div class="form-group">
+	    <label for="id_subject" class="col-sm-2 required control-label">{{ form.subject.label }}</label>
+	    	<div class="col-sm-10">
+	         {{ form.subject }}
+	         </div>
+	    </div>
+        
+       	<div class="form-group">
+	    <label for="id_body" class="col-sm-2 required control-label">{{ form.body.label }}</label>
+	    	<div class="col-sm-10">
+	         {{ form.body }}
+	         </div>
+	    </div>
+        
+       	<div class="form-group">
+       		{% for corp_type in corp_types %}
+       		<div class="col-sm-6">
+			  <label class="control-label h4">{{ corp_type.name }}</label>
+              <br><a onclick="$(this).parent().find(':checkbox').prop('checked', true);">Select All</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">Unselect All</a>
+              <div class="well well-sm" style="height: 300px; overflow: auto;">
+              	  {% for cm in corp_type.corp_members %}
+              	  {% if corp_type == cm.corporate_membership_type %}
+                  <div class="checkbox">
+                  	<label>
+                   	 	<input type="checkbox" name="corp_members" value="{{ cm.id }}">{{ cm.corp_profile }}
+                  	</label>
+                 </div>
+                 {% endif %}
+                 {% endfor %}
+              </div>
+	    	</div>
+	    	{% endfor %}
+	    	
+	    </div>
+        
+        </fieldset>
+        
+		<div class="form-group">
+            <div>
+                <input type="submit" name="send" value="Send" class="btn btn-primary text-uppercase">
+            </div>
+        </div>
+	
+		
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<script type="text/javascript">  
+    (function($) {
+
+     })(jQuery);
+ </script>
+
+{% endblock %}
