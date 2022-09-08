@@ -225,6 +225,9 @@ def get_embed_ready_url(url):
     if not match:
         p = re.compile(r'youtu\.be/([^\&\?\/]+)')
         match = p.search(url)
+        if not match:
+            p = re.compile(r'youtube\.com/shorts/([^\&\?\/]+)')
+            match = p.search(url)
     if match:
         return 'https://www.youtube.com/embed/{}'.format(match.group(1))
 
