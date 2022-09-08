@@ -30,7 +30,8 @@ def get_ud_field(profile, ud):
     from tendenci.apps.profiles.models import Profile
     if isinstance(profile, Profile):
         if hasattr(profile, 'user'):
-            demographics = profile.user.demographics
-            if demographics:
-                return getattr(demographics, ud, '')
+            if hasattr(profile.user, 'demographics'):
+                demographics = profile.user.demographics
+                if demographics:
+                    return getattr(demographics, ud, '')
     return ''
