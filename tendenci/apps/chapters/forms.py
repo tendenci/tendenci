@@ -86,6 +86,10 @@ def assign_search_fields(form, app_field_objs):
                                                         choices=list(zip(choices, choices)))
             else:
                 form.fields[obj.field_name] = forms.CharField(label=obj.label, required=False)
+        else:
+            form.fields[obj.field_name] = forms.ChoiceField(label=obj.label, required=False,
+                                                            widget=forms.RadioSelect,
+                                                            choices=(('', _('All')), (True, _('Yes')), (False, _('No'))))
 
 
 class ChapterMemberSearchForm(FormControlWidgetMixin, forms.Form):

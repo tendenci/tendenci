@@ -494,7 +494,7 @@ def chapter_memberships_search(request, chapter_id=0,
 
     if form.is_valid():
         membership_fieldnames = [field.name for field in ChapterMembership._meta.fields if \
-                           field.get_internal_type() in ['CharField', 'TextField']]
+                           field.get_internal_type() in ['CharField', 'TextField', 'BooleanField']]
         chapter_selected = form.cleaned_data.get('chapter', None)
         membership_type = form.cleaned_data.get('membership_type')
         payment_status = form.cleaned_data.get('payment_status')
@@ -510,14 +510,16 @@ def chapter_memberships_search(request, chapter_id=0,
         if status_detail:
             chapter_memberships = chapter_memberships.filter(status_detail__iexact=status_detail)
         for field_name, field_value in form.cleaned_data.items():
-            if field_value:
+            if field_value and field_name in membership_fieldnames:
                 if isinstance(field_value, list):
-                    if field_name in membership_fieldnames:
-                        chapter_memberships = chapter_memberships.filter(reduce(operator.or_, 
-                            [Q(**{f'{field_name}__icontains': value}) for value in field_value]))
+                    chapter_memberships = chapter_memberships.filter(reduce(operator.or_, 
+                        [Q(**{f'{field_name}__icontains': value}) for value in field_value]))
                 elif isinstance(field_value, str):
-                    if field_name in membership_fieldnames:
-                        chapter_memberships = chapter_memberships.filter(Q(**{f'{field_name}__icontains': field_value}))
+                    chapter_memberships = chapter_memberships.filter(Q(**{f'{field_name}__icontains': field_value}))
+                elif isinstance(field_value, bool):
+                    chapter_memberships = chapter_memberships.filter(Q(**{f'{field_name}': field_value}))
+                    
+                    
         chapter_memberships = chapter_memberships.order_by('user__last_name', 'user__first_name')
     
         if 'export' in request.GET:
