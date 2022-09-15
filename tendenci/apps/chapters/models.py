@@ -200,6 +200,26 @@ class Chapter(BasePage):
             ObjectPermission.objects.assign(officer_users,
                                         self.group, perms=perms)
 
+        self.update_newsletter_group_perms()
+
+    def update_newsletter_group_perms(self, **kwargs):
+        """
+        Update the associated newsletter_group perms for the officers of this chapter. 
+        Grant officers the view and change permissions for their own group.
+        """
+        if not self.newsletter_group:
+            return
+ 
+        ObjectPermission.objects.remove_all(self.newsletter_group)
+    
+        perms = ['view', 'change']
+
+        officer_users = [officer.user for officer in self.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        if officer_users:
+            ObjectPermission.objects.assign(officer_users,
+                                        self.newsletter_group, perms=perms)
+
     def is_chapter_leader(self, user):
         """
         Check if this user is one of the chapter leaders.
