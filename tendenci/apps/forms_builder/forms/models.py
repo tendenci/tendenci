@@ -9,6 +9,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import truncatewords
+from django.db.models import Q
 
 from django_countries import countries as COUNTRIES
 
@@ -25,6 +26,7 @@ from tendenci.apps.base.utils import checklist_update, tcurrency
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.base.utils import validate_email
 
 # STATUS_DRAFT = 1
 # STATUS_PUBLISHED = 2
@@ -574,8 +576,8 @@ class FormEntry(models.Model):
         emailfield = self.get_email_address()
         anonymous_creator = None
 
-        if emailfield:
-            user_list = User.objects.filter(email__iexact=emailfield).order_by('-last_login')
+        if emailfield and validate_email(emailfield):
+            user_list = User.objects.filter(Q(email__iexact=emailfield) | Q(username__iexact=emailfield)).order_by('-last_login')
             if user_list:
                 anonymous_creator = user_list[0]
             else:
