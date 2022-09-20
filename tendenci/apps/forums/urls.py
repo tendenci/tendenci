@@ -57,6 +57,9 @@ urlpatterns += [
                             views.delete_subscription, name='delete_subscription'),
                         re_path(r'^subscription/topic/(\d+)/add/$',
                             views.add_subscription, name='add_subscription'),
+                        re_path(r'^subscription/forum/(?P<pk>\d+)/$',
+                            views.ForumSubscriptionView.as_view(), name='forum_subscription'),
+
 
                         # API
                         re_path(r'^api/post_ajax_preview/$', views.post_ajax_preview, name='post_ajax_preview'),

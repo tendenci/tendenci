@@ -127,6 +127,56 @@ class Forum(models.Model):
         return parents
 
 
+class ForumSubscription(models.Model):
+    TYPE_NOTIFY = 1
+    TYPE_SUBSCRIBE = 2
+    TYPE_CHOICES = (
+        (TYPE_NOTIFY, _('be notified only when a new topic is added')),
+        (TYPE_SUBSCRIBE, _('be auto-subscribed to topics')),
+    )
+
+    user = models.ForeignKey(get_user_model_path(), 
+                            related_name='forum_subscriptions+',
+                            verbose_name=_('Subscriber'),
+                            on_delete=models.CASCADE)
+    forum = models.ForeignKey(Forum, 
+                              related_name='subscriptions+',
+                              verbose_name=_('Forum'),
+                              on_delete=models.CASCADE)
+    type = models.PositiveSmallIntegerField(
+        _('Subscription type'), choices=TYPE_CHOICES,
+        help_text=_((
+            'The auto-subscription works like you manually subscribed to watch each topic :\n'
+            'you will be notified when a topic will receive an answer. \n'
+            'If you choose to be notified only when a new topic is added. It means'
+            'you will be notified only once when the topic is created : '
+            'you won\'t be notified for the answers.'
+        )), )
+
+    class Meta(object):
+        verbose_name = _('Subscription to forum')
+        verbose_name_plural = _('Subscriptions to forums')
+        unique_together = ('user', 'forum',)
+
+    def __str__(self):
+        return '%(user)s\'s subscription to "%(forum)s"' % {'user': self.user, 
+                                                            'forum': self.forum}
+
+    def save(self, all_topics=False):
+        if all_topics and self.type == self.TYPE_SUBSCRIBE:
+            old = None if not self.pk else ForumSubscription.objects.get(pk=self.pk)
+            if not old or old.type != self.type :
+                topics = Topic.objects.filter(forum=self.forum).exclude(subscribers=self.user)
+                self.user.subscriptions.add(*topics)
+        super(ForumSubscription, self).save()
+
+    def delete(self, all_topics=False):
+        if all_topics:
+            topics = Topic.objects.filter(forum=self.forum, subscribers=self.user)
+            self.user.subscriptions.remove(*topics)
+        super(ForumSubscription, self).delete()
+
+
 class Topic(models.Model):
     POLL_TYPE_NONE = 0
     POLL_TYPE_SINGLE = 1

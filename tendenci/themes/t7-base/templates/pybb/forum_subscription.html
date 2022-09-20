@@ -1,0 +1,28 @@
+{% extends 'pybb/base.html' %}
+{% load pybb_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ forum.name }} - {% trans 'Subscription' %}{% endblock title %}
+
+{% block breadcrumb %}
+    {% with forum as object %}
+        {% include "pybb/breadcrumb.html" %}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+    <div class="forum_subscription">
+        <h1>{{ forum.name }} - {% trans 'Subscription' %}</h1>
+        <form class="forum_subscription form-horizontal" action="" method="POST">{% csrf_token %}
+        {{ form|styled_form }}
+        
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-8">
+            	<a class="btn btn-secondary" href="{{ forum.get_absolute_url }}">{% trans 'Cancel' %}</a>
+                <button type="submit" class="btn btn-primary text-capitalize">{% trans 'Submit' %}</button>
+            </div>
+        </div>
+            
+        </form>
+    </div>
+{% endblock content %}

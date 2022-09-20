@@ -1,6 +1,5 @@
 {% load pybb_tags %}
 {% pybb_get_profile user=post.user as profile %}
-
 {% if is_new_topic %}
 {% trans "User" %} {{ profile.get_display_name }} {% trans "added a new topic" %} ({{ post.topic.name|safe }}) {% trans "to the forum" %} {{site_url}}{{ forum_url }}
 
