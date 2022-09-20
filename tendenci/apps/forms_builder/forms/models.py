@@ -171,6 +171,11 @@ class Form(TendenciBaseModel):
             checklist_update('update-contact')
         if not self.group:
             self.group_id = get_default_group()
+        # change relative to absolute urls
+        if self.email_text:
+            site_url = get_setting('site', 'global', 'siteurl')
+            self.email_text = self.email_text.replace("src=\"/", f"src=\"{site_url}/")
+            self.email_text = self.email_text.replace("href=\"/", f"href=\"{site_url}/")
         super(Form, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
