@@ -102,11 +102,7 @@
       {% for gm in groupmemberships %}
       <div class="group-member {% cycle 'gray' '' %}">
         
-        {% if can_view_profile %}
         <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) {% if gm.role %}- {{ gm.role }}{% endif %}</a>
-        {% else %}
-        {{ gm.member.get_full_name }} {% if gm.role %}- {{ gm.role }}{% endif %}
-        {% endif %}
         
         {% if can_delete %}
         &nbsp;<span class="delete-member"><a href="{% url "group.deleteuser" group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
