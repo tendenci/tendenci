@@ -234,6 +234,7 @@ def ticket_from_message(message, queue, quiet):
                 body_html = body_html.replace("<table>", "\n<table>")
                 body_html = body_html.replace("</table>", "</table>\n")
                 body_html = body_html.replace("<br />", "<br />\n")
+                body_html = body_html.replace("<br>", "<br>\n")
 
                 try:
                     # strip html tags
