@@ -13,7 +13,7 @@ from tendenci.apps.theme.templatetags.static import static
 
 
 class StoryAdmin(TendenciBaseModelAdmin):
-    list_display = ('image_preview', 'title', 'tags', 'video_embed_url', 'status', 'position')
+    list_display = ('image_preview', 'title', 'tags', 'video_embed_url', 'status_detail', 'position')
     search_fields = ('title', 'content')
     list_editable = ['title', 'tags', 'position']
     actions = ['clone_story']
