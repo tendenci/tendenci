@@ -10,22 +10,16 @@
 <html lang="en-US">
     <head>
     {% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
-	{% with SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID|split:"," as gtags %}
-    {% if gtags %}
         <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{ gtags.0 }}"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}"></script>
         <script>
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
 
-		  {% for gtag in gtags %}
-          gtag('config', '{{ gtag }}');
-          {% endfor %}
+          gtag('config', '{{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}');
         </script>
      <!-- End Google Analytics -->
-     {% endif %}
-     {% endwith %}
      {% endif %}
 
         {% block full_title %}<title>{% block title %}{{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblock %}</title>{% endblock %}
