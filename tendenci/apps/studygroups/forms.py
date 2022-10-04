@@ -31,6 +31,10 @@ class StudyGroupForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':StudyGroup._meta.app_label,
         'storme_model':StudyGroup._meta.model_name.lower()}))
+    sponsors = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':StudyGroup._meta.app_label,
+        'storme_model':StudyGroup._meta.model_name.lower()}))
 
     class Meta:
         model = StudyGroup
