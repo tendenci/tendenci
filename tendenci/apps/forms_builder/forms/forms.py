@@ -32,6 +32,7 @@ from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.base.fields import CountrySelectField
 from tendenci.apps.base.forms import CustomCatpchaField
+from tendenci.apps.base.utils import correct_filename
 
 
 #fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -268,6 +269,14 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         self.cleaned_data['custom_price'] = custom_price
         return pricing_option
 
+    def get_file_path(self, filename):
+        filename = correct_filename(filename)
+
+        return f'forms/{str(uuid4())}/{filename}'
+    
+    def handle_uploaded_file(self, f):
+        return default_storage.save(self.get_file_path(f.name), f)
+
     def save(self, edit_mode=False, **kwargs):
         """
         Create a FormEntry instance and related FieldEntry instances for each
@@ -289,8 +298,8 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             value = self.cleaned_data[field_key]
             entry_id = self.cleaned_data.get(field_key + "-id", None)
 
-            if value and isinstance(value,  InMemoryUploadedFile):
-                value = default_storage.save(join("forms", str(uuid4()), value.name), value)
+            if value and field.field_type == 'FileField':
+                value = self.handle_uploaded_file(value)
 
             # if the value is a list convert is to a comma delimited string
             if isinstance(value,list):
