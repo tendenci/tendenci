@@ -856,7 +856,16 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             if not u and not self.is_renewal:
                 # we didn't find user, check if email address is already in use
                 if email:
-                    if User.objects.filter(email=email).exists():
+                    # Fixing an issue here - when an email address in the db has a trailing space,
+                    # a match cannot be found with the same email address. As an result, 
+                    # an IntegrityError could occur when a new user record is being created.
+                    if User.objects.filter(username=email).exists():
+                        u = User.objects.get(username=email)
+                        if u.email.strip().replace(' ', '') != u.email:
+                            u.email = u.email.strip().replace(' ', '')
+                            u.save()
+  
+                    if User.objects.filter(email__iexact=email).exists():
                         if self.request.user.is_authenticated:
                             # user is logged in
                             if 'username' in data:
@@ -864,7 +873,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                                 raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
                         else:
                             # user is not logged in. prompt them to log in if the user record with this email address is active
-                            u = User.objects.filter(email=email).order_by('-is_active')[0]
+                            u = User.objects.filter(email__iexact=email).order_by('-is_active')[0]
                             [profile] = Profile.objects.filter(user=u)[:1] or [None]
                             if (profile and profile.is_active) and u.is_active:
                                 raise forms.ValidationError(email_validate_err_msg)
