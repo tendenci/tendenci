@@ -167,7 +167,8 @@ class FormEntriesExportTask(celery.Task):
                             pass
                     else:
                         file_path = join(settings.MEDIA_ROOT,field.value)
-                        zip.write(file_path, archive_name, zipfile.ZIP_DEFLATED)
+                        if default_storage.exists(file_path):
+                            zip.write(file_path, archive_name, zipfile.ZIP_DEFLATED)
 
 
         # add the csv file to the zip, close it, and set the response
