@@ -357,16 +357,19 @@ class CorpProfileBaseForm(FormControlWidgetMixin, forms.ModelForm):
         content_type = ContentType.objects.get_for_model(CorpProfile)
         logo_file = self.cleaned_data.get('logo_file', None)
         if logo_file:
-            file_object, created = File.objects.get_or_create(
-                file=logo_file,
-                defaults={
+            defaults={
                     'name': logo_file.name,
                     'content_type': content_type,
                     'object_id': corp_profile.pk,
-                    'is_public': True,
-                    'creator': request_user,
-                    'owner': request_user,
-                })
+                    'is_public': True,}
+            if not request_user.is_anonymous:
+                defaults.update({'creator': request_user,
+                                 'owner': request_user,})
+                
+            file_object, created = File.objects.get_or_create(
+                file=logo_file,
+                defaults=defaults)
+                
             corp_profile.logo = file_object
             corp_profile.save(log=False)
         else:
