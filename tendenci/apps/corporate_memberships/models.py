@@ -541,6 +541,10 @@ class CorpProfile(TendenciBaseModel):
                                                'user__last_name',
                                                'user__first_name')
 
+    def get_address_str(self):
+        csz = ' '.join([a for a in [self.city, self.state, self.zip] if a.strip()])
+        return ', '.join([a for a in [self.address, self.address2, csz, self.country] if a.strip()])
+
 
 class CorpMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
