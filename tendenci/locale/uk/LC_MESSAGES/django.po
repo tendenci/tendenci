@@ -147,7 +147,7 @@ msgstr "Дозволи"
 #: apps/pages/admin.py:34 apps/photos/admin.py:23 apps/regions/admin.py:23
 #: apps/resumes/admin.py:28 apps/stories/admin.py:35
 msgid "Advanced Permissions"
-msgstr ""
+msgstr "Додаткові дозволи"
 
 #: apps/announcements/models.py:12 apps/forms_builder/forms/models.py:90
 #: apps/projects/models.py:171
