@@ -106,7 +106,7 @@ msgstr "Скидання пароля на %s"
 #: apps/accounts/views.py:196
 #, python-format
 msgid "An account already exists for the email %(email)s."
-msgstr ""
+msgstr "Обліковий запис вже існує для електронної пошти %(email)."
 
 #: apps/announcements/admin.py:16 apps/articles/admin.py:46
 #: apps/articles/forms.py:197 apps/boxes/admin.py:19 apps/careers/admin.py:33
