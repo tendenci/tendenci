@@ -96,7 +96,7 @@ msgstr ""
 
 #: apps/accounts/forms.py:207
 msgid "That e-mail address doesn't have an associated user account."
-msgstr "Ця адреса електронної пошти не мати пов\\'язаний обліковий запис."
+msgstr "Ця адреса електронної пошти не має пов\\'язаного облікового записа."
 
 #: apps/accounts/forms.py:246
 #, python-format
