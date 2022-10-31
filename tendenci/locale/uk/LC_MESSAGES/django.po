@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-08-28 12:53-0500\n"
 "PO-Revision-Date: 2018-08-28 17:14+0000\n"
-"Last-Translator: Jenny Qian <jqian@tendenci.com>\n"
+"Last-Translator: Andriy Tymchenko <silpol@gmail.com>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/tendenci/tendenci/"
 "language/uk/)\n"
 "Language: uk\n"
@@ -81,7 +81,7 @@ msgstr "Ім\\'я користувача та пароль, указані не 
 #: apps/accounts/forms.py:180
 #, python-format
 msgid "Hello %(first_name)s %(last_name)s, you've successfully logged in."
-msgstr ""
+msgstr "Привіт, %(first_name) %(last_name), ви зайшли у систему."
 
 #: apps/accounts/forms.py:193
 #: themes/t7-base/templates/memberships/applications/detail_default.html:86
