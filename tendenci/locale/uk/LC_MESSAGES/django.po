@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-08-28 12:53-0500\n"
 "PO-Revision-Date: 2018-08-28 17:14+0000\n"
-"Last-Translator: Jenny Qian <jqian@tendenci.com>\n"
+"Last-Translator: Andriy Tymchenko <silpol@gmail.com>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/tendenci/tendenci/"
 "language/uk/)\n"
 "Language: uk\n"
@@ -81,7 +81,7 @@ msgstr "Ім\\'я користувача та пароль, указані не 
 #: apps/accounts/forms.py:180
 #, python-format
 msgid "Hello %(first_name)s %(last_name)s, you've successfully logged in."
-msgstr ""
+msgstr "Привіт, %(first_name) %(last_name), ви зайшли у систему."
 
 #: apps/accounts/forms.py:193
 #: themes/t7-base/templates/memberships/applications/detail_default.html:86
@@ -96,7 +96,7 @@ msgstr ""
 
 #: apps/accounts/forms.py:207
 msgid "That e-mail address doesn't have an associated user account."
-msgstr "Ця адреса електронної пошти не мати пов\\'язаний обліковий запис."
+msgstr "Ця адреса електронної пошти не має пов\\'язаного облікового записа."
 
 #: apps/accounts/forms.py:246
 #, python-format
@@ -106,7 +106,7 @@ msgstr "Скидання пароля на %s"
 #: apps/accounts/views.py:196
 #, python-format
 msgid "An account already exists for the email %(email)s."
-msgstr ""
+msgstr "Обліковий запис вже існує для електронної пошти %(email)."
 
 #: apps/announcements/admin.py:16 apps/articles/admin.py:46
 #: apps/articles/forms.py:197 apps/boxes/admin.py:19 apps/careers/admin.py:33
@@ -147,7 +147,7 @@ msgstr "Дозволи"
 #: apps/pages/admin.py:34 apps/photos/admin.py:23 apps/regions/admin.py:23
 #: apps/resumes/admin.py:28 apps/stories/admin.py:35
 msgid "Advanced Permissions"
-msgstr ""
+msgstr "Додаткові дозволи"
 
 #: apps/announcements/models.py:12 apps/forms_builder/forms/models.py:90
 #: apps/projects/models.py:171
