@@ -4,7 +4,7 @@
 * Made Youtube shorts URLs work for videos.
 * Granted chapter officers the view and change permissions for their own newsletter group. 
 * Renamed the setting "Google Analytics UA Number" to "Google Analytics Tracking (Measurement) ID".
-* Refactored file upload process for forms to resolve the possible issue about file not being saved, also sanitize file name.
+* Refactored file upload process for forms to resolve the possible issue about file not being saved, also sanitized file name.
 * Resolved recaptcha v3 timeout issue.
 * Fixed an error on logo saving when non-logged in users applying for corporate memberships.
 * Some update on Ukrainian translations (Thanks @silpol).
