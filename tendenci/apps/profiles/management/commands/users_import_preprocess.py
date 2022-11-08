@@ -1,6 +1,7 @@
 
 import os
-import chardet
+#import chardet
+import cchardet as chardet
 
 from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
@@ -43,10 +44,14 @@ class Command(BaseCommand):
                 default_storage.save(path2, ContentFile(b''))
                 f = default_storage.open(uimport.upload_file.name)
                 f2 = default_storage.open(path2, 'wb+')
-                encoding = chardet.detect(f.read())['encoding']
+                char_det = chardet.detect(f.read())
+                encoding = char_det["encoding"]
+                confidence = char_det["confidence"]
+                if confidence < 0.7:
+                    encoding = 'utf-8'
                 if encoding == 'ISO-8859-1' or encoding == 'ISO-8859-2':
                     encoding = 'latin-1'
-                if encoding not in ('ascii', 'utf-8', 'utf8'):
+                if encoding.lower() not in ('ascii', 'utf-8', 'utf8'):
                     for chunk in f.chunks():
                         chunk = chunk.decode(encoding)
                         chunk = chunk.encode('utf8')
