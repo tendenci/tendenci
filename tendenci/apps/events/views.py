@@ -2593,6 +2593,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
 
 @is_enabled('events')
 def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/reg8n_edit.html"):
+    from tendenci.apps.trainings.models import Certification
     reg8n = get_object_or_404(Registration, pk=reg8n_id)
 
     perms = (
@@ -2638,7 +2639,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                   'event': reg8n.event}
         if request.method != 'POST':
             # build initial
-            params.update({'initial': get_custom_registrants_initials(entries),})
+            check_cert = True if reg8n.event.course else False
+            params.update({'initial': get_custom_registrants_initials(entries, check_cert=check_cert),})
         formset = RegistrantFormSet(request.POST or None, **params)
     else:
         fields=('salutation', 'first_name', 'last_name', 'mail_name', 'email',
@@ -2647,6 +2649,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         fields = [field_name for field_name in fields 
                      if ((get_setting('module', 'events', 'regform_%s_visible' % field_name) and field_name != 'zip')\
                         or (field_name == 'zip' and get_setting('module', 'events', 'regform_zip_code_visible')))]
+        if reg8n.event.course:
+            fields.append('certification_track')
         # use modelformset_factory for regular registration form
         RegistrantFormSet = modelformset_factory(
             Registrant, extra=0,
@@ -2663,6 +2667,10 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             else:
                 if key in ['phone', 'company_name']:
                     form.fields[key].required = False
+        # certification_track
+        if 'certification_track' in form.fields:
+            form.fields['certification_track'].choices = reg8n.event.get_certification_choices()
+            form.fields['certification_track'].required = False
 
     if request.method == 'POST':
         if formset.is_valid():
@@ -2671,6 +2679,17 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                 for form in formset.forms:
                     entry = form.save(reg8n.event)
                     for reg in entry.registrants.all():
+                        if reg8n.event and reg8n.event.course:
+                            # certification_track
+                            try:
+                                certification_id = int(form.cleaned_data.get('certification_track', 0) or 0)
+                            except ValueError:
+                                certification_id = 0
+                            if certification_id:
+                                [reg.certification_track] = Certification.objects.filter(id=certification_id)[:1] or [None]
+                            else:
+                                reg.certification_track = None
+            
                         reg.initialize_fields()
                 updated = True
             else:
