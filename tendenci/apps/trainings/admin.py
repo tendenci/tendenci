@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import SchoolCategory, Certification, CertCat, Course
+from .models import SchoolCategory, Certification, CertCat, Course, Exam, Transcript
 from .forms import CourseForm
 
 
@@ -60,6 +60,49 @@ class CourseAdmin(admin.ModelAdmin):
     form = CourseForm
 
 
+class ExamAdmin(admin.ModelAdmin):
+    model = Exam
+    list_display = ['id', 'user',
+                    'course',
+                    'grade',
+                    'update_dt'
+                    ]
+    fieldsets = (
+        (None, {
+            'fields': (
+            'user',
+            'course',
+            'grade',
+        )},),
+    )
+
+
+class TranscriptAdmin(admin.ModelAdmin):
+    model = Transcript
+    list_display = ['id', 'user',
+                    'exam',
+                    'school_category',
+                    'location_type',
+                    'credits',
+                    'applied', 
+                    'external_id'
+                    ]
+    fieldsets = (
+        (None, {
+            'fields': (
+            'user',
+            'exam',
+            'school_category',
+            'location_type',
+            'credits',
+            'applied',
+            'external_id'
+        )},),
+    )
+
 admin.site.register(SchoolCategory, SchoolCategoryAdmin)
 admin.site.register(Certification, CertificationAdmin)
 admin.site.register(Course, CourseAdmin)
+admin.site.register(Exam, ExamAdmin)
+admin.site.register(Transcript, TranscriptAdmin)
+
