@@ -694,16 +694,19 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
         })
 
 
-def display_less(request, path):
-    """
-    Display the .less files
-    """
-    content = ''
-    if path:
-        full_path = '%s/%s.less' % (settings.S3_SITE_ROOT_URL, path)
-        url_obj = urlopen(full_path)
-        content = url_obj.read()
-    return HttpResponse(content, content_type="text/css")
+# Commenting it out as this view doesn't seem to be used
+# and it causes Code scanning to raise a critical security alert: 
+# "Partial server-side request forgery"
+# def display_less(request, path):
+#     """
+#     Display the .less files
+#     """
+#     content = ''
+#     if path:
+#         full_path = '%s/%s.less' % (settings.S3_SITE_ROOT_URL, path)
+#         url_obj = urlopen(full_path)
+#         content = url_obj.read()
+#     return HttpResponse(content, content_type="text/css")
 
 
 def redirect_to_s3(request, path, file_type='themes'):
