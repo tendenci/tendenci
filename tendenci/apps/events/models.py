@@ -503,6 +503,23 @@ class Registration(models.Model):
     reg_conf_price = models.ForeignKey(RegConfPricing, null=True, on_delete=models.SET_NULL)
 
     reminder = models.BooleanField(default=False)
+    
+    key_contact_name = models.CharField(_('Key Contact'),
+                                        max_length=150,
+                                        blank=True,
+                                        default='')
+    key_contact_phone = models.CharField(_('Key Contact Phone'),
+                                        max_length=50,
+                                        blank=True,
+                                        default='')
+    key_contact_fax = models.CharField(_('Key Contact Fax'),
+                                        max_length=50,
+                                        blank=True,
+                                        default='')
+    need_reservation = models.BooleanField(default=False)
+    nights = models.PositiveSmallIntegerField(default=0, blank=True,)
+    begin_dt = models.DateField(_("Beginning on"), blank=True, null=True)
+    
 
     # TODO: Payment-Method must be soft-deleted
     # so that it may always be referenced
@@ -1567,6 +1584,16 @@ class Event(TendenciBaseModel):
                 for certcat in school_category.certcat_set.all():
                     choices.append((certcat.certification.id, certcat.certification.name))
         return choices
+
+    def reg_end_dt(self):
+        """
+        Registration end date.
+        """
+        [pricing] = RegConfPricing.objects.filter(
+                    reg_conf=self.registration_configuration,
+                    status=True).order_by('-end_dt')[:1] or [None]
+        if pricing:
+            return pricing.end_dt
 
 
 class StandardRegForm(models.Model):
