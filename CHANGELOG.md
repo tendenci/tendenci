@@ -1,3 +1,13 @@
+### 14.3.2 [2022-11-19]
+
+* Bumped gevent to 22.10.2 to resolve an installation error for tendenci on Ubuntu 22.04 LTS.
+* Bumped pillow from 9.2.0 to 9.3.0.
+* Added help_text for tax info (if available) on membership application forms.
+* Fixed the tax display on invoices to reduce the number of digits after the decimal point from 4 to 2.
+* Made thumbnail not required for youtu.be videos.
+* More bugfixes.
+
+
 ### 14.3.1 [2022-11-01]
 
 * Forums update: added an option to subscribe a forum for users. 
