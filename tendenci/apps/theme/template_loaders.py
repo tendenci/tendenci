@@ -83,7 +83,7 @@ class ThemeLoader(DjangoLoader):
     def get_contents(self, origin):
         if not origin.use_s3_theme:
             try:
-                with open(origin.name) as fp:
+                with open(origin.name, encoding='utf-8') as fp:
                     return fp.read()
             # Python 3 only
             #except FileNotFoundError:

@@ -242,7 +242,7 @@ def get_file_content(root_dir, theme, filename):
     if not content:
         current_file = os.path.join(root_dir, filename)
         if os.path.isfile(current_file):
-            fd = open(current_file, 'r')
+            fd = open(current_file, 'r', encoding='utf-8')
             content = fd.read()
             fd.close()
     return content
