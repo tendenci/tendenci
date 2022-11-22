@@ -275,6 +275,7 @@ INSTALLED_APPS = [
     'tendenci.apps.videos',
     'tendenci.apps.testimonials',
     'tendenci.apps.social_services',
+    #'tendenci.apps.products',
 
     # Django SQL Explorer
     'tendenci.apps.explorer_extensions',
