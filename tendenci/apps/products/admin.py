@@ -17,8 +17,23 @@ class ProductFileAdmin(admin.StackedInline):
     )
     extra = 1
 
+
+class ProductAdminInline(admin.TabularInline):
+    fieldsets = (
+        (None, {
+            'fields': (
+            'name',
+            'slug',
+        )},),
+    )
+    prepopulated_fields = {'slug': ['name']}
+    extra = 0
+    model = Product
+
+
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['id', "name"]
+    inlines = (ProductAdminInline,)
 
 
 class ProductAdmin(TendenciBaseModelAdmin):
