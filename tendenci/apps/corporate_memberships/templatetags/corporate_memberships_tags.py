@@ -9,6 +9,7 @@ from tendenci.apps.corporate_memberships.models import CorpMembership
 from tendenci.apps.base.template_tags import parse_tag_kwargs
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.perms.utils import has_perm
 
 
 register = Library()
@@ -266,7 +267,8 @@ class ListCorpMembershipNode(Node):
         if not allow_anonymous_search:
             if user.is_authenticated:
                 if not user.profile.is_superuser:
-                    if user.profile.is_member and allow_member_search:
+                    if (user.profile.is_member and allow_member_search) or \
+                        has_perm(user, 'corporate_memberships.view_corpmembership'):
                         items = items.distinct()
                     else:
                         items = items.none()
