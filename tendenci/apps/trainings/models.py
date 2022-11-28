@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.libs.tinymce import models as tinymce_models
 
+
 class SchoolCategory(models.Model):
     STATUS_CHOICES = (
                 ('enabled', _('Enabled')),
@@ -30,6 +31,18 @@ class Certification(models.Model):
     name = models.CharField(max_length=150, db_index=True, unique=True)
     period = models.PositiveSmallIntegerField()
     categories = models.ManyToManyField(SchoolCategory, through='CertCat')
+    enable_diamond = models.BooleanField(default=False,
+                                help_text=_("Enable diamond to be added"))
+    diamond_name = models.CharField(max_length=50, blank=True, default='Diamond')
+    diamond_required_credits = models.DecimalField(_("Required Credits"),
+                                                   blank=True,
+                                    max_digits=5, decimal_places=2, default=0)
+    diamond_required_online_credits = models.DecimalField(_("Required Online Credits"),
+                                                          blank=True, 
+                                    max_digits=5, decimal_places=2, default=0)
+    diamond_period = models.PositiveSmallIntegerField(_("Period"), blank=True, default=12)
+    diamond_required_activity = models.PositiveSmallIntegerField(_("Required Teaching Activity"),
+                                                                blank=True, default=1)
 
     def __str__(self):
         return self.name
@@ -117,12 +130,17 @@ class Transcript(models.Model):
                 ('outside', _('Outside')),
                 ('onsite', _('Onsite')),
                 )
-    APPLIED_CHOICES = (
-                ('D', _('Designated')),
-                ('C', _('Cancelled')),
+    # APPLIED_CHOICES = (
+    #             ('D', _('Designated')),
+    #             ('C', _('Cancelled')),
+    #             )
+    STATUS_CHOICES = (
+                ('pending', _('Pending')),
+                ('approved', _('Approved')),
+                ('cancelled', _('Cancelled')),
                 )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    # exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
     school_category = models.ForeignKey(SchoolCategory,
                                         null=True, on_delete=models.SET_NULL)
     location_type = models.CharField(_('Type'),
@@ -130,8 +148,13 @@ class Transcript(models.Model):
                              default='online',
                              choices=LOCATION_TYPE_CHOICES)
     credits = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    applied = models.CharField(max_length=1, default='D',
-                             choices=APPLIED_CHOICES)
+    # applied = models.CharField(max_length=1, default='D',
+    #                          choices=APPLIED_CHOICES)
+    status = models.CharField(max_length=10, default='pending',
+                             choices=STATUS_CHOICES)
+    certification_track = models.ForeignKey(Certification,
+                                   null=True, on_delete=models.SET_NULL)
+    registrant_id = models.IntegerField(blank=True, default=0)
     external_id = models.CharField(max_length=50, default='')
     create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
     update_dt = models.DateTimeField(_("Last Updated"), auto_now=True)

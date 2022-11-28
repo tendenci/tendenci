@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.urls import reverse
 
-from .models import SchoolCategory, Certification, CertCat, Course, Exam, Transcript
+from .models import SchoolCategory, Certification, CertCat, Course, Transcript
 from .forms import CourseForm
 
 
@@ -26,8 +28,24 @@ class CategoryAdminInline(admin.TabularInline):
 class CertificationAdmin(admin.ModelAdmin):
     model = SchoolCategory
     list_display = ['id', 'name',
-                    'period',]
+                    'period', 'enable_diamond']
     inlines = (CategoryAdminInline,)
+    fieldsets = (
+        (_(''), {
+            'fields': ('name',
+                       'period',
+                       'enable_diamond',)
+        }),
+        (_('Diamond Requirements'), {'description':
+                                     'Set requirements for each diamond',
+                                     'classes': ('collapse',),
+                                     'fields': (
+            'diamond_name',
+            'diamond_required_credits',
+            'diamond_required_online_credits',
+            'diamond_period',
+            'diamond_required_activity'
+        )}),)
 
 
 class CourseAdmin(admin.ModelAdmin):
@@ -60,49 +78,77 @@ class CourseAdmin(admin.ModelAdmin):
     form = CourseForm
 
 
-class ExamAdmin(admin.ModelAdmin):
-    model = Exam
-    list_display = ['id', 'user',
-                    'course',
-                    'grade',
-                    'update_dt'
-                    ]
-    fieldsets = (
-        (None, {
-            'fields': (
-            'user',
-            'course',
-            'grade',
-        )},),
-    )
+# class ExamAdmin(admin.ModelAdmin):
+#     model = Exam
+#     list_display = ['id', 'user',
+#                     'course',
+#                     'grade',
+#                     'update_dt'
+#                     ]
+#     fieldsets = (
+#         (None, {
+#             'fields': (
+#             'user',
+#             'course',
+#             'grade',
+#         )},),
+#     )
 
 
 class TranscriptAdmin(admin.ModelAdmin):
     model = Transcript
-    list_display = ['id', 'user',
-                    'exam',
+    list_display = ['id', 'show_user', 'show_school',
                     'school_category',
                     'location_type',
                     'credits',
-                    'applied', 
-                    'external_id'
+                    'external_id',
+                    'status', 
                     ]
     fieldsets = (
         (None, {
             'fields': (
             'user',
-            'exam',
             'school_category',
             'location_type',
             'credits',
-            'applied',
             'external_id'
+            'status',
         )},),
     )
+    list_editable = ('status', )
+
+    @mark_safe
+    def show_school(self, instance):
+        if instance.registrant_id:
+            from tendenci.apps.events.models import Registrant
+            [registrant] = Registrant.objects.filter(id=instance.registrant_id)[:1] or [None]
+            if registrant:
+                event = registrant.registration.event
+                return '<a href="{0}" title="{1}">{1}</a>'.format(
+                        reverse('event', args=[event.id]),
+                        event.title,
+                    )
+        return ""
+    show_school.short_description = 'School'
+    
+    @mark_safe
+    def show_user(self, instance):
+        if instance.user:
+            name = instance.user.get_full_name()
+            if not name:
+                name = instance.user.username
+            return '<a href="{0}" title="{1}">{1}</a>'.format(
+                    reverse('profile', args=[instance.user.username]),
+                    name
+                )
+        return ""
+    show_user.short_description = 'User'
+    show_user.admin_order_field = 'user__first_name'
+
 
 admin.site.register(SchoolCategory, SchoolCategoryAdmin)
 admin.site.register(Certification, CertificationAdmin)
 admin.site.register(Course, CourseAdmin)
-admin.site.register(Exam, ExamAdmin)
+# admin.site.register(Exam, ExamAdmin)
 admin.site.register(Transcript, TranscriptAdmin)
 
