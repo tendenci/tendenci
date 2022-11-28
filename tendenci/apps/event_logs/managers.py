@@ -249,7 +249,9 @@ class EventLogManager(Manager):
                 event_log.url = request.path or ''
 
         # If we have an IP address, save the event_log
-        if "." in event_log.user_ip_address:
+        # IPv6 address are represented in 8 groups of 16 bits each,
+        # and the groups are separated by colons :
+        if "." in event_log.user_ip_address or ":" in event_log.user_ip_address:
             event_log.save()
             return event_log
         else:
