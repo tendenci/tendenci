@@ -8,8 +8,8 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 #from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
-from .models import TeachingActivity
-from .forms import TeachingActivityForm
+from .models import TeachingActivity, OutsideSchool
+from .forms import TeachingActivityForm, OutsideSchoolForm
 
 
 class TeachingActivityCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -56,3 +56,50 @@ class TeachingActivityListView(LoginRequiredMixin, ListView):
         else:
             context['next_order'] = 'desc'
         return context
+
+
+class OutsideSchoolCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    template_name = 'trainings/outside_schools/add.html'
+    form_class = OutsideSchoolForm
+    model = OutsideSchool
+    #success_url = reverse('trainings.teaching_activities')
+    success_message = _('Outside School was added successfully')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('trainings.outside_schools')
+
+
+class OutsideSchoolListView(LoginRequiredMixin, ListView):
+    template_name = 'trainings/outside_schools/list.html'
+
+    def get_queryset(self):
+        sort_by = ''
+        # sort by field
+        sort = self.request.GET.get('s', '')
+        # desc or asc
+        if self.request.GET.get('o', '') == 'desc':
+            order = '-'
+        else:
+            order = ''
+        if sort in ['school_name', 'date', 'credits', 'status_detail']:
+            sort_by = order + sort
+        if sort_by:
+            return OutsideSchool.objects.filter(
+                user=self.request.user).order_by(sort_by)
+        return OutsideSchool.objects.filter(
+                user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(OutsideSchoolListView, self).get_context_data(**kwargs)
+        context['o'] = self.request.GET.get('o', '')
+        context['s'] = self.request.GET.get('s', '')
+        if context['o'] == 'desc':
+            context['next_order'] = 'asc'
+        else:
+            context['next_order'] = 'desc'
+        return context
+

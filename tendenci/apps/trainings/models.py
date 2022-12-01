@@ -37,6 +37,40 @@ class TeachingActivity(models.Model):
         app_label = 'trainings'
 
 
+class OutsideSchool(models.Model):
+    STATUS_CHOICES = (
+                ('pending', _('Pending')),
+                ('approved', _('Approved')),
+                ('disapproved', _('Disapproved')),
+                )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    school_name = models.CharField(max_length=150,
+                            db_index=True)
+    school_category = models.ForeignKey('SchoolCategory',
+                                null=True, on_delete=models.SET_NULL)
+    date = models.DateField()
+    credits = models.DecimalField(max_digits=8, decimal_places=3, default=0)
+    description = models.TextField(blank=True, default='')
+    create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
+    update_dt = models.DateTimeField(_("Date"), auto_now=True)
+    creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="outside_schools_created", editable=False)
+    owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="outside_schools_updated")
+    status_detail = models.CharField(_('Status'),
+                             max_length=15,
+                             default='pending',
+                             choices=STATUS_CHOICES)
+    
+    def __str__(self):
+        return self.school_name
+
+    class Meta:
+        verbose_name = _("Outside School")
+        verbose_name_plural = _("Outside Schools")
+        app_label = 'trainings'
+
+
 class SchoolCategory(models.Model):
     STATUS_CHOICES = (
                 ('enabled', _('Enabled')),

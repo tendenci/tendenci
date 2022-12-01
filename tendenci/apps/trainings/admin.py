@@ -5,7 +5,8 @@ from django.urls import reverse
 
 from .models import (SchoolCategory, Certification,
                      CertCat, Course, Transcript,
-                     TeachingActivity)
+                     TeachingActivity,
+                     OutsideSchool)
 from .forms import CourseForm
 
 
@@ -29,6 +30,42 @@ class TeachingActivityAdmin(admin.ModelAdmin):
             'activity_name',
             'status_detail',
             'date',
+            'description',
+            
+        )},),
+    )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj: # editing
+            return self.readonly_fields + ('user',)
+        return self.readonly_fields
+
+
+class OutsideSchoolAdmin(admin.ModelAdmin):
+    model = OutsideSchool
+    list_display = ['id',
+                    'user',
+                    'school_name',
+                    'school_category',
+                    'credits',
+                    'date',
+                    'status_detail',]
+    list_editable = ('school_category', 'credits', 'status_detail', )
+    search_fields = ['activity_name',
+                     'user__first_name',
+                     'user__last_name',
+                     'user__email']
+    list_filter = ['status_detail',]
+    #form = OutsideSchoolAdminForm
+    fieldsets = (
+        (None, {
+            'fields': (
+            'user',
+            'school_name',
+            'school_category',
+            'date',
+            'credits',
+            'status_detail',
             'description',
             
         )},),
@@ -197,5 +234,4 @@ admin.site.register(Course, CourseAdmin)
 # admin.site.register(Exam, ExamAdmin)
 admin.site.register(Transcript, TranscriptAdmin)
 admin.site.register(TeachingActivity, TeachingActivityAdmin)
-
-
+admin.site.register(OutsideSchool, OutsideSchoolAdmin)
