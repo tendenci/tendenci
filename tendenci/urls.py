@@ -129,6 +129,7 @@ urlpatterns += [
     re_path(r'^', include('tendenci.apps.videos.urls')),
     re_path(r'^', include('tendenci.apps.testimonials.urls')),
     re_path(r'^', include('tendenci.apps.social_services.urls')),
+    re_path(r'^', include('tendenci.apps.trainings.urls')),
 
     re_path(r'^explorer/', include('explorer.urls')),
     re_path(r'^explorer/', include('tendenci.apps.explorer_extensions.urls')),

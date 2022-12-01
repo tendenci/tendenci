@@ -6,6 +6,37 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.libs.tinymce import models as tinymce_models
 
 
+class TeachingActivity(models.Model):
+    STATUS_CHOICES = (
+                ('pending', _('Pending')),
+                ('approved', _('Approved')),
+                ('disapproved', _('Disapproved')),
+                )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    activity_name = models.CharField(max_length=150,
+                            db_index=True)
+    date = models.DateField()
+    description = models.TextField(blank=True, default='')
+    create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
+    update_dt = models.DateTimeField(_("Date"), auto_now=True)
+    creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="teaching_activities_created", editable=False)
+    owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="teaching_activities_updated")
+    status_detail = models.CharField(_('Status'),
+                             max_length=15,
+                             default='pending',
+                             choices=STATUS_CHOICES)
+    
+    def __str__(self):
+        return self.activity_name
+
+    class Meta:
+        verbose_name = _("Teaching Activity")
+        verbose_name_plural = _("Teaching Activities")
+        app_label = 'trainings'
+
+
 class SchoolCategory(models.Model):
     STATUS_CHOICES = (
                 ('enabled', _('Enabled')),
@@ -141,6 +172,7 @@ class Transcript(models.Model):
                 )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     # exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, null=True, on_delete=models.SET_NULL)
     school_category = models.ForeignKey(SchoolCategory,
                                         null=True, on_delete=models.SET_NULL)
     location_type = models.CharField(_('Type'),
@@ -170,18 +202,3 @@ class Transcript(models.Model):
         verbose_name = _("Transcript")
         verbose_name_plural = _("Transcripts")
         app_label = 'trainings'
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-

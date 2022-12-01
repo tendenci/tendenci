@@ -3,8 +3,41 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 
-from .models import SchoolCategory, Certification, CertCat, Course, Transcript
+from .models import (SchoolCategory, Certification,
+                     CertCat, Course, Transcript,
+                     TeachingActivity)
 from .forms import CourseForm
+
+
+class TeachingActivityAdmin(admin.ModelAdmin):
+    model = TeachingActivity
+    list_display = ['id',
+                    'user',
+                    'activity_name',
+                    'date',
+                    'status_detail',]
+    list_editable = ('status_detail', )
+    search_fields = ['activity_name',
+                     'user__first_name',
+                     'user__last_name',
+                     'user__email']
+    list_filter = ['status_detail',]
+    fieldsets = (
+        (None, {
+            'fields': (
+            'user',
+            'activity_name',
+            'status_detail',
+            'date',
+            'description',
+            
+        )},),
+    )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj: # editing
+            return self.readonly_fields + ('user',)
+        return self.readonly_fields
 
 
 class SchoolCategoryAdmin(admin.ModelAdmin):
@@ -97,11 +130,10 @@ class CourseAdmin(admin.ModelAdmin):
 
 class TranscriptAdmin(admin.ModelAdmin):
     model = Transcript
-    list_display = ['id', 'show_user', 'show_school',
+    list_display = ['id', 'show_user', 'course', 'show_school',
                     'school_category',
                     'location_type',
                     'credits',
-                    'external_id',
                     'status', 
                     ]
     fieldsets = (
@@ -111,11 +143,13 @@ class TranscriptAdmin(admin.ModelAdmin):
             'school_category',
             'location_type',
             'credits',
-            'external_id'
             'status',
         )},),
     )
     list_editable = ('status', )
+
+    def has_add_permission(self, request):
+        return False
 
     @mark_safe
     def show_school(self, instance):
@@ -130,6 +164,17 @@ class TranscriptAdmin(admin.ModelAdmin):
                     )
         return ""
     show_school.short_description = 'School'
+
+    # def show_course(self, instance):
+    #     if instance.registrant_id:
+    #         from tendenci.apps.events.models import Registrant
+    #         [registrant] = Registrant.objects.filter(id=instance.registrant_id)[:1] or [None]
+    #         if registrant:
+    #             event = registrant.registration.event
+    #             course = event.course
+    #             return course.name
+    #     return ""
+    # show_course.short_description = 'Course'
     
     @mark_safe
     def show_user(self, instance):
@@ -151,4 +196,6 @@ admin.site.register(Certification, CertificationAdmin)
 admin.site.register(Course, CourseAdmin)
 # admin.site.register(Exam, ExamAdmin)
 admin.site.register(Transcript, TranscriptAdmin)
+admin.site.register(TeachingActivity, TeachingActivityAdmin)
+
 

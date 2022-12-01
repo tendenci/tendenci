@@ -14,6 +14,7 @@ def save_transcript(sender, **kwargs):
                                     registrant_id=registrant.id,
                                     creator=registrant.registration.creator)
         transcript.school_category = event.course.school_category
+        transcript.course = event.course
         transcript.certification_track = registrant.certification_track
         transcript.location_type = event.course.location_type
         transcript.credits = event.course.credits

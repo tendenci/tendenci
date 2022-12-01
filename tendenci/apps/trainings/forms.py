@@ -1,7 +1,9 @@
 from django.utils.translation import gettext_lazy as _
+from django import forms
 
 from tendenci.apps.perms.forms import TendenciBaseForm
-from .models import Course
+from tendenci.apps.base.forms import FormControlWidgetMixin
+from .models import Course, TeachingActivity
 
 
 class CourseForm(TendenciBaseForm):
@@ -21,3 +23,11 @@ class CourseForm(TendenciBaseForm):
            'member_perms',
            'group_perms',
            )
+
+
+class TeachingActivityForm(FormControlWidgetMixin, forms.ModelForm):
+    class Meta:
+        model = TeachingActivity
+        fields = ['activity_name',
+                  'date',
+                  'description']
