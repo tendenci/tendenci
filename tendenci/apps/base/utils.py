@@ -285,6 +285,11 @@ def tcurrency(mymoney):
         currency_symbol = "$"
 
     if not isinstance(mymoney, str):
+        if isinstance(mymoney, Decimal):
+            # tax usually has 4 number of digits after the decimal point,
+            # make it 2
+            mymoney = Decimal(f'{mymoney:.2f}')
+        
         if mymoney >= 0:
             fmt = '%s%s'
         else:

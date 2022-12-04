@@ -318,7 +318,7 @@ if cm_api_key and cm_client_id:
                     list_map.save()
 
                 if add_subscriber:
-                    subscriber_obj.add(list_id, email, name, custom_data, True)  # Returns email_address
+                    subscriber_obj.add(list_id, email, name, custom_data, True, 'yes')  # Returns email_address
             except BadRequest:
                 pass
 

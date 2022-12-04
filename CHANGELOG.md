@@ -1,3 +1,26 @@
+### 14.3.2 [2022-11-19]
+
+* Bumped gevent to 22.10.2 to resolve an installation error for tendenci on Ubuntu 22.04 LTS.
+* Bumped pillow from 9.2.0 to 9.3.0.
+* Added help_text for tax info (if available) on membership application forms.
+* Fixed the tax display on invoices to reduce the number of digits after the decimal point from 4 to 2.
+* Made thumbnail not required for youtu.be videos.
+* More bugfixes.
+
+
+### 14.3.1 [2022-11-01]
+
+* Forums update: added an option to subscribe a forum for users. 
+* Made Youtube shorts URLs work for videos.
+* Granted chapter officers the view and change permissions for their own newsletter group. 
+* Renamed the setting "Google Analytics UA Number" to "Google Analytics Tracking (Measurement) ID".
+* Refactored file upload process for forms to resolve the possible issue about file not being saved, also sanitize file name.
+* Resolved recaptcha v3 timeout issue.
+* Fixed an error on logo saving when non-logged in users applying for corporate memberships.
+* Some update on Ukrainian translations (Thanks @silpol).
+* More bugfixes.
+
+
 ### 14.3 [2022-08-26]
 
 **New Features and Improvements**

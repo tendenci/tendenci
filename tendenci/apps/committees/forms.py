@@ -1,11 +1,14 @@
+from os.path import basename
 from django import forms
 from django.contrib.auth.models import User
 from django.forms import BaseInlineFormSet
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.committees.models import Committee, Officer
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
+from tendenci.apps.files.validators import FileValidator
 
 class CommitteeForm(TendenciBaseForm):
     mission = forms.CharField(required=False,
@@ -24,6 +27,10 @@ class CommitteeForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Committee._meta.app_label,
         'storme_model':Committee._meta.model_name.lower()}))
+    photo_upload = forms.FileField(label=_('Header Image'),
+                                   required=False,
+                                   validators=[FileValidator(
+                                    allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],)
 
     class Meta:
         model = Committee
@@ -35,6 +42,7 @@ class CommitteeForm(TendenciBaseForm):
         'content',
         'notes',
         'sponsors',
+        'photo_upload',
         'contact_name',
         'contact_email',
         'join_link',
@@ -51,6 +59,7 @@ class CommitteeForm(TendenciBaseForm):
                                  'content',
                                  'notes',
                                  'sponsors',
+                                 'photo_upload',
                                  'contact_name',
                                  'contact_email',
                                  'join_link',
@@ -76,6 +85,8 @@ class CommitteeForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(CommitteeForm, self).__init__(*args, **kwargs)
+        if self.instance.featured_image:
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
         if self.instance.pk:
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -84,6 +95,15 @@ class CommitteeForm(TendenciBaseForm):
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
+
+    def save(self, *args, **kwargs):
+        committee = super(CommitteeForm, self).save(*args, **kwargs)
+        # save photo
+        if 'photo_upload' in self.cleaned_data:
+            photo = self.cleaned_data['photo_upload']
+            if photo:
+                committee.save(photo=photo)
+        return committee
 
 
 class CommitteeAdminForm(TendenciBaseForm):
@@ -99,6 +119,11 @@ class CommitteeAdminForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Committee._meta.app_label,
         'storme_model':Committee._meta.model_name.lower()}))
+    photo_upload = forms.FileField(label=_('Header Image'),
+                                   required=False,
+                                   validators=[FileValidator(
+                                    allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],)
+
 
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active").order_by('name'))
 
@@ -115,6 +140,7 @@ class CommitteeAdminForm(TendenciBaseForm):
         'mission',
         'content',
         'notes',
+        'photo_upload',
         'contact_name',
         'contact_email',
         'join_link',
@@ -134,6 +160,9 @@ class CommitteeAdminForm(TendenciBaseForm):
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
+        if self.instance.featured_image:
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
+            self.fields['photo_upload'].required = False
 
 
 class CommitteeAdminChangelistForm(TendenciBaseForm):

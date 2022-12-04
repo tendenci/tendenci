@@ -1607,6 +1607,10 @@ def delete(request, id, template_name="events/delete.html"):
         if request.method == "POST":
 
             eventlog = EventLog.objects.log(instance=event)
+            if eventlog:
+                eventlog_url = reverse('event_log', args=[eventlog.pk])
+            else:
+                eventlog_url = ''
             # send email to admins
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
@@ -1616,7 +1620,7 @@ def delete(request, id, template_name="events/delete.html"):
                     'user': request.user,
                     'registrants_paid': event.registrants(with_balance=False),
                     'registrants_pending': event.registrants(with_balance=True),
-                    'eventlog_url': reverse('event_log', args=[eventlog.pk]),
+                    'eventlog_url': eventlog_url,
                     'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
                     'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                 })

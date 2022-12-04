@@ -15,7 +15,7 @@ recommend installing Tendenci within a virtual environment, which will enable yo
 System Requirements
 -------------------
 
-These instructions cover the installation of Tendenci on a system running Ubuntu 20.04 LTS and Ubuntu 18.04 LTS. Unless specified, all commands apply for both Ubuntu versions. 
+These instructions cover the installation of Tendenci on a system running Ubuntu 22.04 LTS, Ubuntu 20.04 LTS and Ubuntu 18.04 LTS. Unless specified, all commands apply for these Ubuntu versions. 
 
 It should technically be possible to install Tendenci on nearly any Linux, Mac, or Windows system,
 and some partial instructions for installing on macOS are included below.  However, we generally
@@ -51,9 +51,9 @@ Also ensure that Ubuntu is configured to automatically install security updates:
     sudo dpkg-reconfigure -plow unattended-upgrades
 
 
-**Ubuntu 20.04 LTS Only**
+**Ubuntu 22.04 LTS and 20.04 LTS**
 
-Install the required system dependencies (Ubuntu 20.04 LTS comes with Python 3.8, so no need to install Python 3):
+Install the required system dependencies (Ubuntu 20.04 LTS comes with Python 3.8. Ubuntu 22.04 LTS comes with Python 3.10. So there is no need to install Python 3):
 ::
 
     sudo apt install build-essential \
@@ -243,7 +243,7 @@ First of all, upgrade `pip`, `setuptools` and `wheel`
 Install Tendenci package:
 ::
 
-    pip install tendenci
+    pip install tendenci --upgrade
 
 Create a new Tendenci project:
 ::
@@ -295,6 +295,8 @@ Copy "tendenci2020" theme to the themes directory (adjust your path if your venv
 
     mkdir /var/www/mysite/themes/tendenci2020
     cp -r /srv/venv_mysite/lib/python3.8/site-packages/tendenci/themes/t7-tendenci2020/* /var/www/mysite/themes/tendenci2020/
+    # for ubuntu 22.04 LTS
+    cp -r /srv/venv_mysite/lib/python3.10/site-packages/tendenci/themes/t7-tendenci2020/* /var/www/mysite/themes/tendenci2020/
 
 
 Initialize the database and load some default data:

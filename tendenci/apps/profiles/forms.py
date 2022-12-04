@@ -1,6 +1,7 @@
 import datetime
 import re
-import chardet
+#import chardet
+import cchardet as chardet
 
 from django import forms
 from django.contrib import auth
@@ -894,7 +895,11 @@ class UserUploadForm(forms.ModelForm):
         upload_file.seek(0)
         file_content = upload_file.read()
         # decode from bytes to string
-        encoding = chardet.detect(file_content)["encoding"]
+        char_det = chardet.detect(file_content)
+        encoding = char_det["encoding"]
+        confidence = char_det["confidence"]
+        if confidence < 0.7:
+            encoding = 'utf-8'
         if encoding:
             file_content = file_content.decode(encoding)
         upload_file.seek(0)

@@ -878,15 +878,20 @@ def chapter_membership_add(request, chapter_id=0,
             
             # TODO: email notification to admin
             # Who should be notified? site admin or chapter leaders?
-            send_email_notification(
-                    'chapter_membership_joined_to_admin',
-                    get_notice_recipients(
-                        'module', 'chapters',
-                        'chapterrecipients'),
-                    {'chapter_membership': chapter_membership,
-                        'app': app,
-                        'request': request
-                    })
+            if chapter.contact_email:
+                recipients = [chapter.contact_email]
+            else:
+                recipients = get_notice_recipients(
+                                'module', 'chapters',
+                                'chapterrecipients')
+            if recipients:
+                send_email_notification(
+                        'chapter_membership_joined_to_admin',
+                        recipients,
+                        {'chapter_membership': chapter_membership,
+                            'app': app,
+                            'request': request
+                        })
 
             # handle online payment
             if chapter_membership.payment_method.is_online and \

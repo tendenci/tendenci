@@ -1,0 +1,17 @@
+{% load tagging_tags %}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+    tag:{{ tag }} 
+{% endfor %}
+
+{{ object.pk }}
+{{ object.name }}
+{{ object.slug }}
+{{ object.brand }}
+{{ object.url }}
+{{ object.item_number }}
+{{ object.summary }}
+{{ object.description }}
+
+category:{{ object.category }}

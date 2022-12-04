@@ -305,6 +305,8 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
 
         EventLog.objects.log(instance=group)
 
+        # this is soft-delete, free up the group name
+        group.name = group.name[:247] + '-deleted'
         group.delete()
         return HttpResponseRedirect(reverse('group.search'))
 
