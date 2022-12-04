@@ -6,8 +6,11 @@ from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+#from django.db.models import Q
 
-#from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+#from tendenci.apps.base.http import Http403
 from .models import TeachingActivity, OutsideSchool
 from .forms import TeachingActivityForm, OutsideSchoolForm
 
@@ -21,6 +24,8 @@ class TeachingActivityCreateView(LoginRequiredMixin, SuccessMessageMixin, Create
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        form.instance.creator = self.request.user
+        form.instance.owner = self.request.user
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -65,18 +70,24 @@ class OutsideSchoolCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateVie
     #success_url = reverse('trainings.teaching_activities')
     success_message = _('Outside School was added successfully')
 
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+    # def form_valid(self, form):
+    #     form.instance.user = self.request.user
+    #     return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('trainings.outside_schools')
+
+    def get_form_kwargs(self):
+        kwargs = super(OutsideSchoolCreateView, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
 
 class OutsideSchoolListView(LoginRequiredMixin, ListView):
     template_name = 'trainings/outside_schools/list.html'
 
     def get_queryset(self):
+        queryset = OutsideSchool.objects.filter(user=self.request.user)
         sort_by = ''
         # sort by field
         sort = self.request.GET.get('s', '')
@@ -88,10 +99,8 @@ class OutsideSchoolListView(LoginRequiredMixin, ListView):
         if sort in ['school_name', 'date', 'credits', 'status_detail']:
             sort_by = order + sort
         if sort_by:
-            return OutsideSchool.objects.filter(
-                user=self.request.user).order_by(sort_by)
-        return OutsideSchool.objects.filter(
-                user=self.request.user)
+            return queryset.order_by(sort_by)
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super(OutsideSchoolListView, self).get_context_data(**kwargs)
