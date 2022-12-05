@@ -1,0 +1,9 @@
+{% extends "top_menu/admin_top-new.html" %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/award_star_gold_3.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_TRAININGS_LABEL_PLURAL trans "Trainings" %}{% endblock %}
+
+{% block current_app %}
+   {% include 'trainings/top_nav_items.html' %}
+{% endblock %}
