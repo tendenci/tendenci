@@ -48,10 +48,11 @@ class OutsideSchoolAdmin(admin.ModelAdmin):
                     'school_name',
                     'school_category',
                     'credits',
+                    'certification_track',
                     'date',
                     'status_detail',]
-    list_editable = ('school_category', 'credits', 'status_detail', )
-    search_fields = ['activity_name',
+    list_editable = ('school_category', 'credits', 'certification_track', 'status_detail', )
+    search_fields = ['school_name',
                      'user__first_name',
                      'user__last_name',
                      'user__email']
@@ -65,6 +66,7 @@ class OutsideSchoolAdmin(admin.ModelAdmin):
             'school_category',
             'date',
             'credits',
+            'certification_track',
             'status_detail',
             'description',
             
@@ -171,6 +173,7 @@ class TranscriptAdmin(admin.ModelAdmin):
                     'school_category',
                     'location_type',
                     'credits',
+                    'certification_track',
                     'status', 
                     ]
     fieldsets = (
@@ -180,6 +183,7 @@ class TranscriptAdmin(admin.ModelAdmin):
             'school_category',
             'location_type',
             'credits',
+            'certification_track',
             'status',
         )},),
     )

@@ -5,17 +5,20 @@ from django.db.models import Q
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.forms import FormControlWidgetMixin
-from .models import Course, TeachingActivity, OutsideSchool
+from .models import Course, TeachingActivity, OutsideSchool, Transcript
 
 
-def get_participants_choices(user, corp_profile):
+def get_participants_choices(user, corp_profile, include_user=True):
     query_set = User.objects.filter(id=user.id)
     if corp_profile:
         memberships = corp_profile.get_active_indiv_memberships()
         if memberships:
             user_ids = memberships.values_list('user_id', flat=True)
-            query_set = User.objects.filter(Q(id=user.id) | Q(id__in=user_ids))
-    query_set = query_set.order_by('first_name', 'last_name')
+            if include_user:
+                query_set = User.objects.filter(Q(id=user.id) | Q(id__in=user_ids))
+            else:
+                query_set = User.objects.filter(id__in=user_ids)
+            query_set = query_set.order_by('first_name', 'last_name')
     return [(u.id, f'{u.first_name} {u.last_name}') for u in query_set]
 
 
@@ -55,6 +58,7 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
         model = OutsideSchool
         fields = ['school_name',
                   'date',
+                  'certification_track',
                   'description']
 
     def __init__(self, *args, **kwargs):
@@ -81,6 +85,7 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
 
         kwargs = {'school_name': outside_school.school_name,
                   'date': outside_school.date,
+                  'certification_track': outside_school.certification_track,
                   'description': outside_school.description,
                   'creator': self.request.user,
                   'owner': self.request.user}
@@ -88,6 +93,67 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
             outside_school_new = OutsideSchool(**kwargs,
                                                user=user)
             outside_school_new.save()
+
+
+class ParticipantsForm(FormControlWidgetMixin, forms.Form):
+    participants = forms.MultipleChoiceField(required=False,
+                                              choices=(),
+                            widget=forms.CheckboxSelectMultiple,)
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        self.corp_profile = kwargs.pop('corp_profile')
+        self.hidden = kwargs.pop('hidden', False)
+        super(ParticipantsForm, self).__init__(*args, **kwargs)
+
+        if self.hidden:
+            self.fields['participants'].widget = forms.MultipleHiddenInput()
+        if self.corp_profile:
+            participants_choices = get_participants_choices(self.request.user,
+                                                            self.corp_profile,
+                                                            include_user=False)
+            self.fields['participants'].choices = participants_choices
+        else:
+            del self.fields['participants']
+
+
+class CoursesInfoForm(FormControlWidgetMixin, forms.Form):
+    online_courses = forms.ModelMultipleChoiceField(required=False,
+                                              queryset=None,
+                            widget=forms.CheckboxSelectMultiple,)
+    onsite_courses = forms.ModelMultipleChoiceField(required=False,
+                                              queryset=None,
+                            widget=forms.CheckboxSelectMultiple,)
+    include_outside_schools = forms.BooleanField(
+                                     widget=forms.CheckboxInput(),
+                                     initial=True, required=False)
+    include_teaching_activities = forms.BooleanField(
+                                     widget=forms.CheckboxInput(),
+                                     initial=True, required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        self.participants = kwargs.pop('participants')
+        super(CoursesInfoForm, self).__init__(*args, **kwargs)
+
+        online_qs = Course.objects.filter(
+                            location_type='online',
+                            id__in=Transcript.objects.filter(
+                                user__in=self.participants
+                                ).values_list('course__id', flat=True))
+        self.fields['online_courses'].queryset = online_qs
+
+        onsite_qs = Course.objects.filter(
+                            location_type='onsite',
+                            id__in=Transcript.objects.filter(
+                                user__in=self.participants
+                                ).values_list('course__id', flat=True))
+        self.fields['onsite_courses'].queryset = onsite_qs
+
+
+
+
+
 
 
 # class OutsideSchoolAdminForm(forms.ModelForm):

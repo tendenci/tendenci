@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
+from django.db.models import Sum
 
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.libs.tinymce import models as tinymce_models
@@ -48,6 +49,8 @@ class OutsideSchool(models.Model):
                             db_index=True)
     school_category = models.ForeignKey('SchoolCategory',
                                 null=True, on_delete=models.SET_NULL)
+    certification_track = models.ForeignKey('Certification',
+                                   null=True, on_delete=models.SET_NULL)
     date = models.DateField()
     credits = models.DecimalField(max_digits=8, decimal_places=3, default=0)
     description = models.TextField(blank=True, default='')
@@ -108,14 +111,59 @@ class Certification(models.Model):
     diamond_period = models.PositiveSmallIntegerField(_("Period"), blank=True, default=12)
     diamond_required_activity = models.PositiveSmallIntegerField(_("Required Teaching Activity"),
                                                                 blank=True, default=1)
-
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = _("Certification")
         verbose_name_plural = _("Certifications")
         app_label = 'trainings'
+
+    def __str__(self):
+        return self.name
+
+    def diamonds_earned(self, user):
+        """
+        Check how many diamonds this user qualifies
+        
+        return num_diamonds, extra_credits_earned (for diamonds)
+        """
+        if not self.enable_diamond:
+            return 0, 0
+
+        required_credits, earned_credits = 0, 0
+
+        cats = self.categories.all()
+        for cat in cats:
+            [certcat] = CertCat.objects.filter(certification=self, category=cat)[:1] or [None]
+            if certcat:
+                required_credits += certcat.required_credits
+                earned_credits += certcat.get_earned_credits(user)
+
+        if earned_credits >= required_credits:
+            # user has earned more credits than required
+            # now we can calculate the number of diamonds this user qualify
+            extra_credits_earned = earned_credits - required_credits
+            # ignore diamond_required_online_credits for now
+            count_online_credits = Transcript.objects.filter(user=user,
+                                     certification_track=self,
+                                     location_type='online',
+                                     status='approved'
+                                 ).aggregate(Sum('credits'))['credits__sum'] or 0
+            count_teaching_activities = TeachingActivity.objects.filter(user=user).count()
+            rc, roc, ra = 9, 9, 9 # why 9? because the maxmium diamonds one can get is 9
+            if self.diamond_required_credits:
+                # number of potential diamonds if required_credits meets 
+                rc = extra_credits_earned // self.diamond_required_credits
+            if self.diamond_required_online_credits:
+                # number of potential diamonds if required_online_credits meets
+                roc = count_online_credits // self.diamond_required_online_credits
+            if self.diamond_required_activity:
+                # number of potential diamonds if required_activity meets
+                ra = count_teaching_activities // self.diamond_required_activity
+                
+            num_diamonds = min(rc, roc, ra)
+
+            return num_diamonds, extra_credits_earned
+        
+        return 0, 0   
 
 
 class CertCat(models.Model):
@@ -132,6 +180,25 @@ class CertCat(models.Model):
         verbose_name_plural = _("Certification Categories")
         app_label = 'trainings'
 
+    def get_earned_credits(self, user):
+        """
+        Calculate the user earned credits for this certification category.
+        """
+        #TODO: include the credits from outside schools
+        # after certification_track to outside schools 
+        return (Transcript.objects.filter(user=user,
+                             certification_track=self.certification,
+                             school_category=self.category,
+                             status='approved'
+                             ).aggregate(Sum('credits'))['credits__sum'] or 0) + \
+                (OutsideSchool.objects.filter(user=user,
+                             certification_track=self.certification,
+                             school_category=self.category,
+                             status_detail='approved'
+                             ).aggregate(Sum('credits'))['credits__sum'] or 0)
+        
+        
+        
 
 class Course(TendenciBaseModel):
     LOCATION_TYPE_CHOICES = (
@@ -192,7 +259,6 @@ class Exam(models.Model):
 class Transcript(models.Model):
     LOCATION_TYPE_CHOICES = (
                 ('online', _('Online')),
-                ('outside', _('Outside')),
                 ('onsite', _('Onsite')),
                 )
     # APPLIED_CHOICES = (
@@ -206,7 +272,7 @@ class Transcript(models.Model):
                 )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     # exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, null=True, on_delete=models.SET_NULL)
+    course = models.ForeignKey(Course, null=True, on_delete=models.CASCADE)
     school_category = models.ForeignKey(SchoolCategory,
                                         null=True, on_delete=models.SET_NULL)
     location_type = models.CharField(_('Type'),

@@ -1,0 +1,262 @@
+{% extends "trainings/base.html" %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load training_tags %}
+{% load training_filters %}
+{% load styled_forms %}
+
+{% block title %}{% trans "Transcripts" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <style>
+    #customers .panel-primary > .panel-heading {
+        background-color: #337ab7;
+    }
+    #customers .panel-primary {
+        border-color: #337ab7;
+    }
+    .panel-heading .accordion-toggle:after {
+		/* symbol for "opening" panels */
+		font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
+		content: "\e114"; /* taken from bootstrap.css */
+		float: right; 
+		color: white;
+	}
+	.panel-heading .accordion-toggle.collapsed:after {
+		/* symbol for "collapsed" panels */
+		content: "\e080"; /* taken from bootstrap.css */
+	}
+	#block_transcript_nav .nav-tabs {
+	    margin-bottom: 15px;
+	}
+    </style>
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+
+
+<h1>{% trans 'Transcripts' %}</h1>
+
+<div id="block_transcript_nav">
+	<ul class="nav nav-tabs nav-justified cm-wizard" role="tablist">
+		{% if participants_form %}
+		<li class="{% if step == 'step1' %}active{% endif %}"><a href="#block_step_first" aria-controls="block_step_first" role="tab" data-toggle="tab" aria-expanded="false">1. Participants</a></li>
+		{% endif %}
+		<li class="{% if step == 'step2' %}active{% elif step == 'step1' %}disabled{% endif %}"><a href="#block_step_second" aria-controls="block_step_second" role="tab" {% if step != 'step1' %}data-toggle="tab"{% endif %}>2. Information</a></li>
+		<li class="{% if step == 'step3' %}active{% elif step == 'step1' or step == 'step2' %}disabled{% endif %}"><a href="#block_step_finish" aria-controls="block_step_finish" role="tab" {% if step != 'step1' and step != 'step2'  %}data-toggle="tab"{% endif %}>3.  Summation</a></li>
+	</ul>
+</div>
+
+<div class="tab-content">
+
+{% if participants_form %}
+<div id="block_step_first" role="tabpanel" class="tab-pane{% if step == 'step1' %} active{% endif %}">
+ <form id="participants-form" class="" action="" method="get">	
+	{% include "trainings/includes/participants_form.html" %}
+	<div class="col-sm-6">
+	<div class="pull-left">
+		<input type="submit" value="Continue" class="btn btn-primary text-uppercase">
+	</div>
+	</div>
+</form>
+</div>
+{% endif %}
+
+
+<div id="block_step_second" role="tabpanel" class="tab-pane{% if step == 'step2' %} active{% endif %}">
+<form id="courses-info-form" class="" action="" method="get">
+	{% if hidden_participants_form %}
+	{{ hidden_participants_form|styled_form }}
+	{% endif %}
+	{% include "trainings/includes/courses_info_form.html" %}
+	<br />
+	<div class="col-sm-12">
+	<div class="pull-left clearfix">
+		<input type="submit" value="Continue" name="step2" class="btn btn-primary text-uppercase">
+	</div>
+	<div class="pull-right">
+	<a class="btn btn-default text-uppercase btnPrevious">{% trans "Back" %}</a>
+	</div>
+	</div>
+</form>
+</div>
+
+
+<div id="block_step_finish" role="tabpanel" class="tab-pane{% if step == 'step3' %} active{% endif %}">
+{% if step == 'step3' %}
+{% autopaginate users 20 %}
+<div class="panel-group" id="customers" role="tablist" aria-multiselectable="true">
+{% for customer in users %}
+    <div class="panel panel-primary">
+	  <div class="panel-heading" role="tab" id="customer_header_{{ customer.id }}">
+		<h4 class="panel-title">
+		<a class="accordion-toggle" data-toggle="collapse" data-parent="#customers" href="#customer_panel_{{ customer.id }}" 
+		          aria-controls="customer_panel_{{ customer.id }}" aria-expanded="true">{{ customer.get_full_name }}</a>
+		</h4>
+	  </div>
+	  <div id="customer_panel_{{ customer.id }}" class="panel-collapse collapse {% if forloop.first %} in{% endif %}" role="tabpanel" aria-labelledby="customer_header_{{ customer.id }}" 
+	                style="overflow-x: auto;" aria-expanded="true">
+	  
+		{% get_transcripts customer online_courses=online_courses location_type='online' as online_courses_ts %}
+		{% if online_courses_ts %}
+		<h3 class="col-xs-12">{% trans "OnLine Courses" %}</h3>
+		<div class="table-dynamic">
+			<table class="table table-bordered table-hover">
+			<thead>
+				<tr>
+					<td class="col-sm-4">{% trans "Course" %}</td>
+					<td class="col-sm-4">{% trans "Type" %}</td>
+					<td class="col-sm-1">{% trans "Credits" %}</td>
+					<td class="col-sm-1">{% trans "Date" %}</td>
+					<td class="col-sm-1">{% trans "Result" %}</td>
+					<td class="col-sm-1">{% trans "status" %}</td>
+				</tr>
+			</thead>
+			<tbody>
+				{% for transcript in online_courses_ts %}
+				<tr>
+					<td>{{ transcript.course.name }}</td>
+					<td>{{ transcript.school_category }}</td>
+					<td>{{ transcript.credits }}</td>
+					<td>{{ transcript.create_dt|date:'m/d/Y' }}</td>
+					<td></td>
+					<td>{{ transcript.status|capfirst }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+			</table>
+		</div>
+		{% endif %}
+		
+		{% get_transcripts customer onsite_courses=onsite_courses location_type='onsite' as onsite_courses_ts %}
+		{% if onsite_courses_ts %}				
+		<h3 class="col-xs-12">{% trans "OnSite Courses" %}</h3>
+		<div class="table-dynamic">
+			<table class="table table-bordered table-hover">
+			<thead>
+				<tr>
+					<td class="col-sm-4">{% trans "Course" %}</td>
+					<td class="col-sm-4">{% trans "Type" %}</td>
+					<td class="col-sm-1">{% trans "Credits" %}</td>
+					<td class="col-sm-1">{% trans "Date" %}</td>
+					<td class="col-sm-1">{% trans "Result" %}</td>
+					<td class="col-sm-1">{% trans "status" %}</td>
+				</tr>
+			</thead>
+			<tbody>
+				{% for transcript in onsite_courses_ts %}
+			    <tr>
+					<td>{{ transcript.course.name }}</td>
+					<td>{{ transcript.school_category }}</td>
+					<td>{{ transcript.credits }}</td>
+					<td>{{ transcript.create_dt|date:'m/d/Y' }}</td>
+					<td></td>
+					<td>{{ transcript.status|capfirst }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+			</table>
+		</div>
+		{% endif %}
+		
+		{% if include_outside_schools %}
+		{% get_outside_schools customer as outside_schools %}
+		{% if outside_schools %}				
+		<h3 class="col-xs-12">{% trans "Outside Schools" %}</h3>
+		<div class="table-dynamic">
+			<table class="table table-bordered table-hover">
+			<thead>
+				<tr>
+					<td class="col-sm-4">{% trans "Course" %}</td>
+					<td class="col-sm-4">{% trans "Type" %}</td>
+					<td class="col-sm-1">{% trans "Credits" %}</td>
+					<td class="col-sm-1">{% trans "Date" %}</td>
+					<td class="col-sm-1">{% trans "Result" %}</td>
+					<td class="col-sm-1">{% trans "Status" %}</td>
+				</tr>
+			</thead>
+			<tbody>
+				{% for outside in outside_schools %}
+				<tr>
+					<td>{{ outside.school_name }}</td>
+					<td>{{ outside.school_category }}</td>
+					<td>{{ outside.credits }}</td>
+					<td>{{ outside.date|date:'m/d/Y' }}</td>
+					<td></td>
+					<td>{{ outside.status_detail|capfirst }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+			</table>
+		</div>
+		{% endif %}
+		{% endif %}
+		
+		{% if include_teaching_activities %}
+		{% get_teaching_activities customer as teaching_activities %}
+		{% if teaching_activities %}			
+		<h3 class="col-xs-12">{% trans "Teaching Activities" %}</h3>
+		<div class="table-dynamic">
+			<table class="table table-bordered table-hover">
+			<thead>
+				<tr>
+					<td class="col-sm-6">{% trans "Teaching Activity" %}</td>
+					<td class="col-sm-6">{% trans "Date" %}</td>
+				</tr>
+			</thead>
+			<tbody>
+				{% for teaching_activity in teaching_activities %}
+				<tr>
+					<td>{{ teaching_activity.activity_name }}</td>
+					<td>{{ teaching_activity.date|date:'m/d/Y' }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+			</table>
+		</div>
+		{% endif %}
+		{% endif %}
+		
+		<div class="clearfix">
+		{% for cert in certs %}
+		{% show_certification cert customer%}
+		{% endfor %}
+
+        </div>
+        
+    </div>
+  </div>
+  
+  {% endfor %}
+  
+  {% paginate %}
+</div>
+<div class="pull-right">
+   <a class="btn btn-default text-uppercase btnPrevious">{% trans "Back" %}</a>
+</div>
+{% endif %} {# end of step3 #}
+
+</div>
+</div>
+
+<div class="clearfix"></div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+	(function($) {
+		$(document).ready(function(){
+			$('.btnPrevious').click(function(){
+			 $('.nav-tabs > .active').prev('li').find('a').trigger('click');
+			});
+		});
+	}(jQuery));
+</script>
+
+{% endblock %}

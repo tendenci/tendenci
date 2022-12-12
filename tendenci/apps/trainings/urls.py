@@ -13,4 +13,10 @@ urlpatterns = [
          name="trainings.add_outside_schools"),
     path(f'{urlpath}/outside-schools/', views.OutsideSchoolListView.as_view(),
          name="trainings.outside_schools"),
+    path(f'{urlpath}/transcripts/', views.transcripts,
+         name="trainings.transcripts"),
+    re_path(fr'^{urlpath}/transcripts/c/(?P<corp_profile_id>\d+)/$', views.transcripts,
+         name="trainings.transcripts_corp"),
+    re_path(fr'^{urlpath}/transcripts/u/(?P<user_id>\d+)/$', views.transcripts,
+         name="trainings.transcripts_user"),
 ]

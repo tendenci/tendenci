@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
             name='Transcript',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('location_type', models.CharField(choices=[('online', 'Online'), ('outside', 'Outside'), ('onsite', 'Onsite')], default='online', max_length=10, verbose_name='Type')),
+                ('location_type', models.CharField(choices=[('online', 'Online'), ('onsite', 'Onsite')], default='online', max_length=10, verbose_name='Type')),
                 ('credits', models.DecimalField(decimal_places=2, default=0, max_digits=5)),
                 ('status', models.CharField(choices=[('pending', 'Pending'), ('approved', 'Approved'), ('cancelled', 'Cancelled')], default='pending', max_length=10)),
                 ('registrant_id', models.IntegerField(blank=True, default=0)),
@@ -76,7 +76,7 @@ class Migration(migrations.Migration):
                 ('create_dt', models.DateTimeField(auto_now_add=True, verbose_name='Created On')),
                 ('update_dt', models.DateTimeField(auto_now=True, verbose_name='Last Updated')),
                 ('certification_track', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='trainings.certification')),
-                ('course', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='trainings.course')),
+                ('course', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='trainings.course')),
                 ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='trainings_transcripts_created', to=settings.AUTH_USER_MODEL)),
                 ('owner', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='trainings_transcripts_updated', to=settings.AUTH_USER_MODEL)),
                 ('school_category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='trainings.schoolcategory')),
