@@ -879,7 +879,8 @@ def chapter_membership_add(request, chapter_id=0,
             # TODO: email notification to admin
             # Who should be notified? site admin or chapter leaders?
             if chapter.contact_email:
-                recipients = [chapter.contact_email]
+                recipients = chapter.contact_email.split(',')
+                recipients = [email.strip() for email in recipients if email]
             else:
                 recipients = get_notice_recipients(
                                 'module', 'chapters',
