@@ -881,7 +881,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             dms_lng = gps_info[4]
             lngref = gps_info[3]
             lng = self.convert_dms_to_dd_coordinates(dms_lng, lngref)
-        except KeyError:
+        except (KeyError, ZeroDivisionError) as e:
             return None, None
 
         return lat, lng
