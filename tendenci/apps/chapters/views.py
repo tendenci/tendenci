@@ -527,6 +527,7 @@ def chapter_memberships_search(request, chapter_id=0,
             import csv
             def iter_chapter_memberships(chapter_memberships, app_fields):
                 field_labels = [_('First Name'), _('Last Name'), _('Email'), _('Username')]
+                field_labels += [_('Phone'), _('Address'), _('County'), _('State'), _('Zip Code'),]
                 field_labels += [field.label for field in app_fields]
                 field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
                                 _('Expire Date'), _('Status Detail')]
@@ -541,6 +542,11 @@ def chapter_memberships_search(request, chapter_id=0,
                                    chapter_membership.user.last_name,
                                    chapter_membership.user.email,
                                    chapter_membership.user.username,]
+                    profile = chapter_membership.user.profile if hasattr(chapter_membership.user, 'profile') else None
+                    if profile:
+                        values_list += [profile.phone, profile.address, profile.county, profile.state, profile.zipcode,]
+                    else:
+                        values_list += ['', '', '', '', '']
                     values_list += get_chapter_membership_field_values(chapter_membership, app_fields)
                     if chapter_membership.create_dt:
                         values_list.append(chapter_membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
