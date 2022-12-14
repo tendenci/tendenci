@@ -60,8 +60,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
         self.user = user
         self.form = form
-        self.form_fields = (form.fields.all() if self.edit_mode else form.fields.visible()).order_by('position')
+        self.form_fields = form.fields.visible().order_by('position')
         self.auto_fields = form.fields.auto_fields().order_by('position')
+        if self.edit_mode:
+            self.auto_fields = self.auto_fields.none()
+        
         self.session = {} if session is None else session
         super(FormForForm, self).__init__(*args, **kwargs)
 
@@ -116,10 +119,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
                 # If editing an existing object, that object defines the initial
                 if self.edit_mode:
-                    try:
-                        instance_field = self.instance.fields.get(field_id=field.id)
-                    except ObjectDoesNotExist:
-                        instance_field = None
+                    [instance_field] = self.instance.fields.filter(field_id=field.id)[:1] or [None]
 
                     if instance_field:
                         instance_fields[field_key] = instance_field
@@ -299,6 +299,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             entry_id = self.cleaned_data.get(field_key + "-id", None)
 
             if value and field.field_type == 'FileField':
+                if edit_mode:
+                    if isinstance(value, str):
+                        # we're editing the entry but new file is not uploaded.
+                        # The value contains the path of the file from previous submission.
+                        continue
                 value = self.handle_uploaded_file(value)
 
             # if the value is a list convert is to a comma delimited string
