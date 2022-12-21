@@ -1,3 +1,13 @@
+### 14.3.3 [2022-12-21]
+
+* Added an option for corporate members to show their products on their corp profiles.
+* Activities logged in eventlogs previously only work for IPv4, it now supports IPv6 as well.
+* Made the notifitions go to chapter contacts (specified in the contact email field) when a new member joins a chapter.
+* Avoided a redundant admin notification from being sent for auto-approved membership types. 
+* Included more basic user info to chapter memberships exports. 
+* Bugfixes: Resolved an AttributeError at event delete. Fixed a photo upload issue. Resolved some issues for form entry edit. 
+
+
 ### 14.3.2 [2022-11-19]
 
 * Bumped gevent to 22.10.2 to resolve an installation error for tendenci on Ubuntu 22.04 LTS.
