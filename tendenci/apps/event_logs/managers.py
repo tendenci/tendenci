@@ -226,8 +226,8 @@ class EventLogManager(Manager):
                 event_log.user_ip_address = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', ''))
                 if "," in event_log.user_ip_address:
                     event_log.user_ip_address = event_log.user_ip_address.split(",")[-1].replace(" ", "")
-
-                event_log.user_ip_address = event_log.user_ip_address[-15:]
+                if len(event_log.user_ip_address) > 39: # max length for IPv6 address is 39
+                    event_log.user_ip_address = '' # set it to '' as truncating an IP would yield an invalid IP address
                 event_log.http_referrer = smart_bytes(request.META.get('HTTP_REFERER', ''), errors='replace').decode()
                 event_log.http_user_agent = smart_bytes(request.META.get('HTTP_USER_AGENT', ''), errors='replace').decode()
                 event_log.request_method = request.META.get('REQUEST_METHOD', '')
@@ -249,7 +249,9 @@ class EventLogManager(Manager):
                 event_log.url = request.path or ''
 
         # If we have an IP address, save the event_log
-        if "." in event_log.user_ip_address:
+        # IPv6 address are represented in 8 groups of 16 bits each,
+        # and the groups are separated by colons :
+        if "." in event_log.user_ip_address or ":" in event_log.user_ip_address:
             event_log.save()
             return event_log
         else:

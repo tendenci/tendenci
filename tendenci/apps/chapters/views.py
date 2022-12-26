@@ -527,6 +527,7 @@ def chapter_memberships_search(request, chapter_id=0,
             import csv
             def iter_chapter_memberships(chapter_memberships, app_fields):
                 field_labels = [_('First Name'), _('Last Name'), _('Email'), _('Username')]
+                field_labels += [_('Phone'), _('Address'), _('County'), _('State'), _('Zip Code'),]
                 field_labels += [field.label for field in app_fields]
                 field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
                                 _('Expire Date'), _('Status Detail')]
@@ -541,6 +542,11 @@ def chapter_memberships_search(request, chapter_id=0,
                                    chapter_membership.user.last_name,
                                    chapter_membership.user.email,
                                    chapter_membership.user.username,]
+                    profile = chapter_membership.user.profile if hasattr(chapter_membership.user, 'profile') else None
+                    if profile:
+                        values_list += [profile.phone, profile.address, profile.county, profile.state, profile.zipcode,]
+                    else:
+                        values_list += ['', '', '', '', '']
                     values_list += get_chapter_membership_field_values(chapter_membership, app_fields)
                     if chapter_membership.create_dt:
                         values_list.append(chapter_membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
@@ -878,15 +884,21 @@ def chapter_membership_add(request, chapter_id=0,
             
             # TODO: email notification to admin
             # Who should be notified? site admin or chapter leaders?
-            send_email_notification(
-                    'chapter_membership_joined_to_admin',
-                    get_notice_recipients(
-                        'module', 'chapters',
-                        'chapterrecipients'),
-                    {'chapter_membership': chapter_membership,
-                        'app': app,
-                        'request': request
-                    })
+            if chapter.contact_email:
+                recipients = chapter.contact_email.split(',')
+                recipients = [email.strip() for email in recipients if email]
+            else:
+                recipients = get_notice_recipients(
+                                'module', 'chapters',
+                                'chapterrecipients')
+            if recipients:
+                send_email_notification(
+                        'chapter_membership_joined_to_admin',
+                        recipients,
+                        {'chapter_membership': chapter_membership,
+                            'app': app,
+                            'request': request
+                        })
 
             # handle online payment
             if chapter_membership.payment_method.is_online and \

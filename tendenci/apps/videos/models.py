@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlparse
 from django.db import models
 from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericRelation
@@ -124,7 +125,8 @@ class Video(OrderingBaseModel, TendenciBaseModel):
         return get_oembed_thumbnail(self.video_url, 600, 400)
 
     def is_youtube_video(self):
-        return 'www.youtube.com' in self.video_url
+        domain = urlparse(self.video_url).netloc
+        return domain in ['www.youtube.com', 'youtu.be']
 
     def youtube_video_id(self):
         if self.is_youtube_video():

@@ -25,6 +25,9 @@ class AuthenticationBackend(ObjectPermBackend):
     
     def get_user_by_user_info(self, user_info, create=True):
         if user_info:
+            if 'Profile' in user_info and user_info['Profile']:
+                #group_list = user_info.get('GroupRoleList', None)
+                user_info = user_info['Profile']
             username = user_info.get(settings.OAUTH2_USER_ATTR_MAPPING.get('username', ''), None)
             username = self.clean_username(username)
             if username:

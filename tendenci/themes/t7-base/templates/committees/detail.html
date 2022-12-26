@@ -8,6 +8,12 @@
       <h1>{{ committee.title }}</h1>
     </div>
     
+    {% if committee.featured_image %}
+    <div class="committee-featured-image">
+        <img src="{% url 'file' committee.featured_image.id %}" alt="{{ committee.title }}" title="{{ committee.title  }}">
+    </div>
+	{% endif %}
+    
     <div class="committee-mission">
       {{ committee.mission|safe }}
     </div>

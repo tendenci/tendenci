@@ -67,7 +67,7 @@ PollAnswerFormSet = inlineformset_factory(Topic, PollAnswer, extra=2, max_num=de
 
 
 class PostForm(forms.ModelForm):
-    name = forms.CharField(label=_('Subject'))
+    name = forms.CharField(label=_('Subject'), max_length=255)
     poll_type = forms.TypedChoiceField(label=_('Poll type'), choices=Topic.POLL_TYPE_CHOICES, coerce=int)
     poll_question = forms.CharField(
         label=_('Poll question'),

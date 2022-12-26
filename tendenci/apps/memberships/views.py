@@ -1587,7 +1587,7 @@ def membership_default_add(request, slug='', membership_id=None,
                 else:
                     is_renewal = membership.is_renewal()
                     membership.approve(request_user=customer)
-                    membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
+                    notice_sent = membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
 
                 # application complete
                 membership.application_complete_dt = datetime.now()

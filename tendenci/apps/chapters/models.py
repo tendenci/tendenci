@@ -70,7 +70,8 @@ class Chapter(BasePage):
                               help_text=_('Only jpg, gif, or png images.'),
                               on_delete=models.SET_NULL)
     contact_name = models.CharField(max_length=200, null=True, blank=True)
-    contact_email = models.CharField(max_length=200, null=True, blank=True)
+    contact_email = models.CharField(max_length=200, null=True, blank=True,
+                                    help_text=_('Comma separated'))
     join_link = models.CharField(max_length=200, null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     newsletter_group = models.ForeignKey(Group, null=True, blank=True,

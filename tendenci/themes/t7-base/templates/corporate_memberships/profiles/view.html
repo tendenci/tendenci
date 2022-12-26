@@ -166,6 +166,30 @@
     {% else %}
     <div><em>{% trans "No members joined yet" %}</em></div>
     {% endif %}
+    
+    {% if MODULE_CORPORATE_MEMBERSHIPS_USEPRODUCTS %}
+    <h3>{% trans 'Products' %}</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>{% trans "Name" %}</th>
+                <th>{% trans "Category" %}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        	{% with corp_profile.products.all as products %}
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.category }}</td>
+                </tr>
+            {% endfor %}
+            {% endwith %}
+        </tbody>
+    </table>
+  {% endif %}
+    
 
     <h3>{% trans 'Representatives' %}</h3>
     {% if reps %}

@@ -1298,6 +1298,9 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             mt_choices = mt_choices.exclude(renewal=True)
 
         self.fields['membership_type'].queryset = mt_choices
+        if self.membership_app.include_tax and self.membership_app.tax_rate:
+            tax_rate = self.membership_app.tax_rate * 100
+            self.fields['membership_type'].help_text = f'{tax_rate:3.2f}% tax will be applied'
 
         if multiple_membership:
             self.fields['membership_type'].widget = forms.widgets.CheckboxSelectMultiple(

@@ -700,9 +700,9 @@ def display_less(request, path):
     """
     content = ''
     if path:
-        full_path = '%s/%s.less' % (settings.S3_SITE_ROOT_URL, path)
-        url_obj = urlopen(full_path)
-        content = url_obj.read()
+        file_path = f'{path}.less'
+        if default_storage.exists(file_path):
+            content = default_storage.read(file_path)
     return HttpResponse(content, content_type="text/css")
 
 
