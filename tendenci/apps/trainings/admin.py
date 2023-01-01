@@ -6,7 +6,8 @@ from django.urls import reverse
 from .models import (SchoolCategory, Certification,
                      CertCat, Course, Transcript,
                      TeachingActivity,
-                     OutsideSchool)
+                     OutsideSchool,
+                     UserCertData)
 from .forms import CourseForm
 
 
@@ -125,6 +126,7 @@ class CourseAdmin(admin.ModelAdmin):
     list_display = ['id', 'name',
                     'location_type',
                     'school_category',
+                    'credits',
                     'status_detail'
                     ]
     search_fields = ['name', 'location_type']
@@ -169,13 +171,19 @@ class CourseAdmin(admin.ModelAdmin):
 
 class TranscriptAdmin(admin.ModelAdmin):
     model = Transcript
-    list_display = ['id', 'show_user', 'course', 'show_school',
+    list_display = ['id', 'edit_link', 'show_user', 'course', 'show_school',
                     'school_category',
                     'location_type',
                     'credits',
                     'certification_track',
+                    'apply_to',
                     'status', 
                     ]
+    list_display_links = ('edit_link',)
+    search_fields = ['user__first_name',
+                     'user__last_name',
+                     'user__email']
+    list_filter = ['certification_track', 'school_category', 'status',]
     fieldsets = (
         (None, {
             'fields': (
@@ -184,10 +192,15 @@ class TranscriptAdmin(admin.ModelAdmin):
             'location_type',
             'credits',
             'certification_track',
+            'apply_to',
             'status',
         )},),
     )
-    list_editable = ('status', )
+    list_editable = ('certification_track', 'apply_to', 'status',)
+
+    def edit_link(self, obj):
+        return "Edit"
+    edit_link.short_description = _('edit')
 
     def has_add_permission(self, request):
         return False
@@ -232,6 +245,37 @@ class TranscriptAdmin(admin.ModelAdmin):
     show_user.admin_order_field = 'user__first_name'
 
 
+class UserCertDataAdmin(admin.ModelAdmin):
+    model = UserCertData
+    list_display = ['id',
+                    'user',
+                    'certification',
+                    'certification_dt',
+                    'diamond_1_dt',]
+    #list_editable = ('certification_dt', 'diamond_1_dt')
+    search_fields = ['user__first_name',
+                     'user__last_name',
+                     'user__email']
+    list_filter = ['certification',]
+    fieldsets = (
+        (None, {
+            'fields': (
+            'user',
+            'certification',
+            'certification_dt',
+            'diamond_1_dt',
+            'diamond_2_dt',
+            'diamond_3_dt',
+            'diamond_4_dt',
+            'diamond_5_dt',
+            'diamond_6_dt',
+            'diamond_7_dt',
+            'diamond_8_dt',
+            'diamond_9_dt',
+        )},),
+    )
+
+
 admin.site.register(SchoolCategory, SchoolCategoryAdmin)
 admin.site.register(Certification, CertificationAdmin)
 admin.site.register(Course, CourseAdmin)
@@ -239,3 +283,4 @@ admin.site.register(Course, CourseAdmin)
 admin.site.register(Transcript, TranscriptAdmin)
 admin.site.register(TeachingActivity, TeachingActivityAdmin)
 admin.site.register(OutsideSchool, OutsideSchoolAdmin)
+admin.site.register(UserCertData, UserCertDataAdmin)

@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='registrant',
             name='certification_track',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='trainings.certification'),
+            field=models.ForeignKey(null=True, blank=True, on_delete=django.db.models.deletion.SET_NULL, to='trainings.certification'),
         ),
     ]

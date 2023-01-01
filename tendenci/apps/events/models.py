@@ -898,7 +898,8 @@ class Registrant(models.Model):
         default=0
     )
     certification_track = models.ForeignKey(Certification,
-                                   null=True, on_delete=models.SET_NULL)
+                                   null=True, blank=True,
+                                   on_delete=models.SET_NULL)
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
     memberid = models.CharField(_('Member ID'), max_length=50, blank=True, null=True)

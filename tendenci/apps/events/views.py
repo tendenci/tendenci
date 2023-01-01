@@ -1802,9 +1802,10 @@ def register(request, event_id=0,
     """
     event = get_object_or_404(Event, pk=event_id)
 
-    if hasattr(settings, 'EVENTS_CUSTOM_REG8N_URL_NAME') and settings.EVENTS_CUSTOM_REG8N_URL_NAME:
-        return HttpResponseRedirect(reverse(
-            settings.EVENTS_CUSTOM_REG8N_URL_NAME, args=[event.id]))
+    if event.course:
+        if hasattr(settings, 'EVENTS_CUSTOM_REG8N_URL_NAME') and settings.EVENTS_CUSTOM_REG8N_URL_NAME:
+            return HttpResponseRedirect(reverse(
+                settings.EVENTS_CUSTOM_REG8N_URL_NAME, args=[event.id]))
         
     # open,validated or strict
     anony_setting = get_setting('module', 'events', 'anonymousregistration')
