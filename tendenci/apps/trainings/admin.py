@@ -275,6 +275,11 @@ class UserCertDataAdmin(admin.ModelAdmin):
         )},),
     )
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj: # editing
+            return self.readonly_fields + ('user',)
+        return self.readonly_fields
+
 
 admin.site.register(SchoolCategory, SchoolCategoryAdmin)
 admin.site.register(Certification, CertificationAdmin)
