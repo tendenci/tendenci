@@ -1,4 +1,4 @@
-
+from urllib.parse import urlparse
 #from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic.edit import CreateView
@@ -19,6 +19,7 @@ from .forms import (TeachingActivityForm,
                     OutsideSchoolForm,
                     ParticipantsForm,
                     CoursesInfoForm)
+from .utils import generate_transcripts_pdf
 
 
 class TeachingActivityCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -120,7 +121,9 @@ class OutsideSchoolListView(LoginRequiredMixin, ListView):
 
 
 @login_required
-def transcripts(request, user_id=None, corp_profile_id=None, template_name="trainings/transcripts.html"):
+def transcripts(request, user_id=None, corp_profile_id=None,
+                generate_pdf=False,
+                template_name="trainings/transcripts.html"):
     """
     Display transcripts
     """
@@ -192,16 +195,23 @@ def transcripts(request, user_id=None, corp_profile_id=None, template_name="trai
             if certcat:
                 cert.certcats.append(certcat)
 
+    params={'certs': certs,
+         'users': users,
+         'corp_profile': corp_profile,
+         'participants_form': participants_form,
+         'hidden_participants_form': hidden_participants_form,
+         'courses_info_form': courses_info_form,
+         'online_courses': online_courses,
+         'onsite_courses': onsite_courses,
+         'include_outside_schools': include_outside_schools,
+         'include_teaching_activities': include_teaching_activities,
+         'step': step}
+
+    if generate_pdf:
+        params['customer'] = get_object_or_404(User, pk=user_id)
+        return generate_transcripts_pdf(request, **params)
+    
+    params['qs'] = urlparse(request.get_full_path()).query   
     return render_to_resp(request=request,
                           template_name=template_name,
-            context={'certs': certs,
-                     'users': users,
-                     'corp_profile': corp_profile,
-                     'participants_form': participants_form,
-                     'hidden_participants_form': hidden_participants_form,
-                     'courses_info_form': courses_info_form,
-                     'online_courses': online_courses,
-                     'onsite_courses': onsite_courses,
-                     'include_outside_schools': include_outside_schools,
-                     'include_teaching_activities': include_teaching_activities,
-                     'step': step})
+            context=params)

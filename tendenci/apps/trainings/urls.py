@@ -19,4 +19,7 @@ urlpatterns = [
          name="trainings.transcripts_corp"),
     re_path(fr'^{urlpath}/transcripts/u/(?P<user_id>\d+)/$', views.transcripts,
          name="trainings.transcripts_user"),
+    re_path(fr'^{urlpath}/transcripts/u/(?P<user_id>\d+)/pdf/$', views.transcripts,
+            {'generate_pdf': True},
+         name="trainings.transcripts_user_pdf"),
 ]
