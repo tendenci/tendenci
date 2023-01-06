@@ -120,7 +120,7 @@ class Certification(models.Model):
     def __str__(self):
         return self.name
 
-    def get_earned_credits(self, user, diamond_number=0, category=None, online_only=False):
+    def get_earned_credits(self, user, diamond_number=None, category=None, online_only=False):
         """
         Calculate the user earned credits.
         """
@@ -129,6 +129,9 @@ class Certification(models.Model):
                             certification_track=self,
                              apply_to=diamond_number,
                              status='approved')
+        if diamond_number is not None:
+            transcripts = transcripts.filter(apply_to=diamond_number,)
+
         if category:
             transcripts = transcripts.filter(school_category=category)
     
@@ -143,41 +146,52 @@ class Certification(models.Model):
         Check if the requirements is met to earn the certification
         or certain diamond (with diamond_number).
         """
-        if diamond_number == 0:
+        if not self.enable_diamond:
             # check required credits for each category
             cats = self.categories.all()
             for cat in cats:
                 [certcat] = CertCat.objects.filter(certification=self, category=cat)[:1] or [None]
                 if certcat:
                     required_credits = certcat.required_credits
-                    earned_credits = self.get_earned_credits(user,
-                                                             diamond_number=diamond_number,
-                                                             category=cat)
+                    earned_credits = self.get_earned_credits(user, category=cat)
                     if earned_credits < required_credits:
                         return False
-        else: # handle diamond
-            # check required credits for diamond
-            required_credits = self.diamond_required_credits
-            earned_credits = self.get_earned_credits(user,
-                                     diamond_number=diamond_number)
-            if earned_credits < required_credits:
-                return False
-
-            # check required online credits for diamond
-            required_online_credits = self.diamond_required_online_credits
-            earned_online_credits = self.get_earned_credits(user,
-                                     diamond_number=diamond_number,
-                                     online_only=True)
-            if earned_online_credits < required_online_credits:
-                return False
-
-            # check teaching activity is enough
-            if self.diamond_required_activity:
-                count_teaching_activities = TeachingActivity.objects.filter(user=user).count()
-
-                if count_teaching_activities < self.diamond_required_activity * diamond_number:
-                    # not enough teaching activities
+        else:
+            if diamond_number == 0:
+                # check required credits for each category
+                cats = self.categories.all()
+                for cat in cats:
+                    [certcat] = CertCat.objects.filter(certification=self, category=cat)[:1] or [None]
+                    if certcat:
+                        required_credits = certcat.required_credits
+                        earned_credits = self.get_earned_credits(user,
+                                                                 diamond_number=diamond_number,
+                                                                 category=cat)
+                        if earned_credits < required_credits:
+                            return False
+            else: # handle diamond
+                # check required credits for diamond
+                required_credits = self.diamond_required_credits
+                earned_credits = self.get_earned_credits(user,
+                                         diamond_number=diamond_number)
+                if earned_credits < required_credits:
                     return False
+    
+                # check required online credits for diamond
+                required_online_credits = self.diamond_required_online_credits
+                earned_online_credits = self.get_earned_credits(user,
+                                         diamond_number=diamond_number,
+                                         online_only=True)
+                if earned_online_credits < required_online_credits:
+                    return False
+    
+                # check teaching activity is enough
+                if self.diamond_required_activity:
+                    count_teaching_activities = TeachingActivity.objects.filter(user=user).count()
+    
+                    if count_teaching_activities < self.diamond_required_activity * diamond_number:
+                        # not enough teaching activities
+                        return False
 
         return True
 
@@ -302,7 +316,7 @@ class CertCat(models.Model):
         verbose_name_plural = _("Certification Categories")
         app_label = 'trainings'
 
-    def get_earned_credits(self, user, d_num=0, for_diamond_number=False):
+    def get_earned_credits(self, user, d_num=None, for_diamond_number=False):
         """
         Get the user earned credits for this certification category.
         """
@@ -445,6 +459,8 @@ class Transcript(models.Model):
         Calculate the user earned credits.
          If category is provided, for the certification category.
         Exclude the current entry.
+        
+        Called by caculate_apply_to below
         """
         #TODO: may need to include the credits from outside schools
         transcripts = Transcript.objects.filter(user=self.user,

@@ -157,7 +157,10 @@ def transcripts(request, user_id=None, corp_profile_id=None,
             user_this = request.user
 
         if not (request.user.is_superuser or user_this == request.user):
-            raise Http403
+            # TODO: check if request.user is a corp rep
+            profile_this = user_this.profile
+            if not profile_this.allow_edit_by(request.user):
+                raise Http403
 
         participants = [user_this.id]
 
