@@ -898,7 +898,7 @@ class UserUploadForm(forms.ModelForm):
         char_det = chardet.detect(file_content)
         encoding = char_det["encoding"]
         confidence = char_det["confidence"]
-        if confidence < 0.7:
+        if confidence < 0.6:
             encoding = 'utf-8'
         if encoding:
             file_content = file_content.decode(encoding)

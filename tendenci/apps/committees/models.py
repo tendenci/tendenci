@@ -1,4 +1,4 @@
-from builtins import str
+from datetime import date
 
 from django.db import models
 from django.urls import reverse
@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.pages.models import BasePage
@@ -78,6 +79,24 @@ class Committee(BasePage):
 
             self.featured_image = image
             self.save()
+
+    def update_group_perms(self, **kwargs):
+        """
+        Update the associated group perms for the officers of this chapter. 
+        Grant officers the view and change permissions for their own group.
+        """
+        if not self.group:
+            return
+ 
+        ObjectPermission.objects.remove_all(self.group)
+    
+        perms = ['view', 'change']
+
+        officer_users = [officer.user for officer in self.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        if officer_users:
+            ObjectPermission.objects.assign(officer_users,
+                                        self.group, perms=perms)
 
 
 class Position(models.Model):

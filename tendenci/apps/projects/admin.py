@@ -3,6 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.html import strip_tags
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.theme.templatetags.static import static
@@ -107,7 +108,7 @@ class DocumentsAdmin(admin.StackedInline):
     form = DocumentsForm
 
 class ProjectAdmin(TendenciBaseModelAdmin):
-    list_display = [u'project_name', 'view_on_site', 'edit_link', 'tags']
+    list_display = ['edit_link', 'view_on_site', 'project_name', 'group_link',  'tags']
     list_filter = []
     search_fields = []
     actions = []
@@ -139,6 +140,7 @@ class ProjectAdmin(TendenciBaseModelAdmin):
                 'client',
                 'website_url',
                 'website_title',
+                'group',
                 'tags'
             )}
         ),
@@ -190,6 +192,15 @@ class ProjectAdmin(TendenciBaseModelAdmin):
         )
         return link
     view_on_site.short_description = 'view'
+
+    @mark_safe
+    def group_link(self, instance):
+        group_url = reverse('group.detail',args=[instance.group.slug])
+        group_name = instance.group.name
+                            
+        return f'<a href="{group_url}" title="{group_name}">{group_name}</a>'
+    group_link.short_description = _('group')
+    group_link.admin_order_field = 'group'
 
     # def log_deletion(self, request, object, object_repr):
     #     super(ProjectAdmin, self).log_deletion(request, object, object_repr)
