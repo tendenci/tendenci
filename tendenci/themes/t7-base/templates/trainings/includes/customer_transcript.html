@@ -70,7 +70,7 @@
 		<table class="table table-bordered table-hover">
 		<thead>
 			<tr>
-				<td class="col-sm-4">{% trans "Course" %}</td>
+				<td class="col-sm-4">{% trans "School Name" %}</td>
 				<td class="col-sm-4">{% trans "Type" %}</td>
 				<td class="col-sm-1">{% trans "Credits" %}</td>
 				<td class="col-sm-1">{% trans "Date" %}</td>
@@ -79,14 +79,14 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for outside in outside_schools %}
+			{% for transcript in outside_schools %}
 			<tr>
-				<td>{{ outside.school_name }}</td>
-				<td>{{ outside.school_category }}</td>
-				<td>{{ outside.credits }}</td>
-				<td>{{ outside.date|date:'m/d/Y' }}</td>
+				<td>{{ transcript.get_school_name }}</td>
+				<td>{{ transcript.school_category }}</td>
+				<td>{{ transcript.credits }}</td>
+				<td>{{ transcript.create_dt|date:'m/d/Y' }}</td>
 				<td></td>
-				<td>{{ outside.status_detail|capfirst }}</td>
+				<td>{{ transcript.status|capfirst }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>

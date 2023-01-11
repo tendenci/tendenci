@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
+from tendenci.apps.event_logs.models import EventLog
 from .models import (TeachingActivity, OutsideSchool, Transcript,
              CertCat, Certification)        
 from .forms import (TeachingActivityForm,
@@ -33,6 +34,10 @@ class TeachingActivityCreateView(LoginRequiredMixin, SuccessMessageMixin, Create
         form.instance.user = self.request.user
         form.instance.creator = self.request.user
         form.instance.owner = self.request.user
+
+        # log an event
+        EventLog.objects.log(action='teaching_activity_add')
+        
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -77,9 +82,9 @@ class OutsideSchoolCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateVie
     #success_url = reverse('trainings.teaching_activities')
     success_message = _('Outside School was added successfully')
 
-    # def form_valid(self, form):
-    #     form.instance.user = self.request.user
-    #     return super().form_valid(form)
+    def form_valid(self, form):
+        EventLog.objects.log(action='outside_school_add')
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('trainings.outside_schools')
@@ -159,7 +164,7 @@ def transcripts(request, user_id=None, corp_profile_id=None,
         if not (request.user.is_superuser or user_this == request.user):
             # TODO: check if request.user is a corp rep
             profile_this = user_this.profile
-            if not profile_this.allow_edit_by(request.user):
+            if not profile_this.allow_view_transcript(request.user):
                 raise Http403
 
         participants = [user_this.id]

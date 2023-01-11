@@ -7,5 +7,5 @@ class TrainingsConfig(AppConfig):
 
     def ready(self):
         super(TrainingsConfig, self).ready()
-        from .signals import save_transcript, init_signals
+        from .signals import init_signals
         init_signals()

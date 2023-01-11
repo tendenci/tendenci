@@ -216,6 +216,10 @@ class TranscriptAdmin(admin.ModelAdmin):
                         reverse('event', args=[event.id]),
                         event.title,
                     )
+        elif instance.parent_id and instance.location_type == 'outside':
+            school_name = instance.get_school_name()
+            outside_school_url = reverse('admin:trainings_outsideschool_change', args=[instance.parent_id])
+            return f'<a href="{outside_school_url}" title="Outside school: {school_name}">{school_name}</a>'
         return ""
     show_school.short_description = 'School'
 

@@ -127,8 +127,8 @@ class Certification(models.Model):
         #TODO: might need to include the credits from outside schools
         transcripts = user.transcript_set.filter(
                             certification_track=self,
-                             apply_to=diamond_number,
                              status='approved')
+        
         if diamond_number is not None:
             transcripts = transcripts.filter(apply_to=diamond_number,)
 
@@ -385,6 +385,7 @@ class Transcript(models.Model):
     LOCATION_TYPE_CHOICES = (
                 ('online', _('Online')),
                 ('onsite', _('Onsite')),
+                ('outside', _('Outside')),
                 )
     # APPLIED_CHOICES = (
     #             ('D', _('Designated')),
@@ -396,6 +397,7 @@ class Transcript(models.Model):
                 ('cancelled', _('Cancelled')),
                 )
     DIAMOND_CHOICES = ((x, x) for x in range(0, 10))
+    parent_id = models.PositiveIntegerField(blank=True, default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     # exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, null=True, on_delete=models.CASCADE)
@@ -432,6 +434,13 @@ class Transcript(models.Model):
         verbose_name_plural = _("Transcripts")
         app_label = 'trainings'
 
+    def get_school_name(self):
+        if self.parent_id and self.location_type == 'outside':
+            [school_name] = OutsideSchool.objects.filter(id=self.parent_id,
+                                         user=self.user
+                                         ).values_list('school_name', flat=True)[:1] or ['']
+            return school_name
+        return ''
 
     def get_required_credits(self):
         [certcat] = CertCat.objects.filter(certification=self.certification_track,

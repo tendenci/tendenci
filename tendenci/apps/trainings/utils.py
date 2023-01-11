@@ -22,6 +22,10 @@ def user_transcripts(user, location_type='online',
                 transcripts = transcripts.filter(course_id__in=onsite_courses)
 
             return transcripts
+        if location_type in ['outside']:
+            return Transcript.objects.filter(
+                    location_type=location_type,
+                    user=user)
     return None
 
 

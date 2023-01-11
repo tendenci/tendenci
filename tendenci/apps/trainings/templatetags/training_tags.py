@@ -30,8 +30,9 @@ def get_transcripts(user, location_type='online',
 
         
 @register.simple_tag
-def get_outside_schools(user):       
-    return user_outside_schools(user)
+def get_outside_schools(user):
+    return user_transcripts(user, location_type='outside')      
+    #return user_outside_schools(user)
 
 
 @register.simple_tag
