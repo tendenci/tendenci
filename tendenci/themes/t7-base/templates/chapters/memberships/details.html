@@ -100,12 +100,14 @@
                             {% if chapter_membership.user == request.user %}
                             {% if chapter_membership.can_renew %}
                                     {% if chapter_membership.app %}
-                                    <a href="{# url "chapters.membership_renew" chapter_membership.app.slug chapter_membership.id #}">{% trans 'Renew' %}</a>
+                                    <div style="margin: 1em;">
+                                     <a class="btn btn-info btn-sm" href="{% url "chapters.membership_renew" chapter_membership.id %}">{% trans 'Renew' %}</a>
+                                    </div>
                                     {% endif %}
                             {% else %}
                                 {% if chapter_membership.app %}
                                     {% if chapter_membership.is_expired %}
-                                    <a href="{# url "chapters.membership_add" membership.app.slug #}">{% trans "This chapter membership is expired, sign up for new membership." %}</a>
+                                    <a href="{% url "chapters.membership_add" chapter_membership.chapter.id %}">{% trans "This chapter membership is expired, sign up for new membership." %}</a>
                                     {% else %}
                                         <div>{% trans 'No pending actions required, good job!' %}</div>
                                     {% endif %}
