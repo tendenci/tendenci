@@ -339,6 +339,7 @@ class ListEventsNode(ListNode):
         event_type = ''
         group = u''
         start_dt = u''
+        registered_only = False
 
         randomize = False
 
@@ -417,6 +418,12 @@ class ListEventsNode(ListNode):
                 group = int(group)
             except:
                 group = None
+        if 'registered_only' in self.kwargs:
+            try:
+                registered_only = Variable(self.kwargs['registered_only'])
+                registered_only = registered_only.resolve(context)
+            except:
+                registered_only = self.kwargs['registered_only']
 
         filters = get_query_filters(user, 'events.view_event')
         items = Event.objects.filter(filters)
@@ -481,6 +488,9 @@ class ListEventsNode(ListNode):
                 items = items.order_by("-start_dt", '-priority')
             else:
                 items = items.order_by(order)
+
+        if user and user.is_authenticated and registered_only:
+            items = [item for item in items if item.is_registrant_user(user)]
 
         if randomize:
             items = list(items)
