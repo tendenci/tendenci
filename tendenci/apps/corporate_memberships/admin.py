@@ -29,6 +29,7 @@ from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.perms.utils import update_perms_and_save
 
 
 class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
@@ -613,6 +614,16 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+    def save_model(self, request, object, form, change):
+        """
+        Update the permissions backend and log the event
+        """
+        instance = form.save(commit=False)
+        update_perms_and_save(request, form, instance)
+        
+        form.save_logo(instance, request.user)
+        return instance
 
 
 class CorpMembershipRepAdmin(admin.ModelAdmin):

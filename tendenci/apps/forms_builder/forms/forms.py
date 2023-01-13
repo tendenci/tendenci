@@ -561,7 +561,7 @@ class FormForm(TendenciBaseForm):
             i += 1
         return slug
 
-class FormForField(forms.ModelForm):
+class FormForField(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = Field
         exclude = ["position"]

@@ -389,7 +389,8 @@ class CorpProfileBaseForm(FormControlWidgetMixin, forms.ModelForm):
                     'name': logo_file.name,
                     'content_type': content_type,
                     'object_id': corp_profile.pk,
-                    'is_public': True,}
+                    'is_public': True,
+                    'allow_anonymous_view': True}
             if not request_user.is_anonymous:
                 defaults.update({'creator': request_user,
                                  'owner': request_user,})
@@ -447,15 +448,6 @@ class CorpProfileAdminForm(CorpProfileBaseForm):
             number_employees = 0
 
         return number_employees
-
-    def save(self, *args, **kwargs):
-        corp_profile = super(CorpProfileAdminForm, self).save(*args, **kwargs)
-
-        if not settings.USE_S3_STORAGE:
-            # TODO: need to make corp profile upload work for S3 at admin backend
-            self.save_logo(corp_profile, corp_profile.owner)
-
-        return corp_profile
 
 
 class CorpProfileForm(CorpProfileBaseForm):
