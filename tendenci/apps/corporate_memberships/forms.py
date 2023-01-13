@@ -449,15 +449,6 @@ class CorpProfileAdminForm(CorpProfileBaseForm):
 
         return number_employees
 
-    def save(self, *args, **kwargs):
-        corp_profile = super(CorpProfileAdminForm, self).save(*args, **kwargs)
-
-        if not settings.USE_S3_STORAGE:
-            # TODO: need to make corp profile upload work for S3 at admin backend
-            self.save_logo(corp_profile, corp_profile.owner)
-
-        return corp_profile
-
 
 class CorpProfileForm(CorpProfileBaseForm):
 
