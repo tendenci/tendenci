@@ -226,6 +226,9 @@ def copy(request, id):
 
     EventLog.objects.log(instance=form_instance)
     messages.add_message(request, messages.SUCCESS, _('Successfully added %(n)s' % {'n': new_form}))
+    if not (request.user.is_superuser or request.user.is_staff):
+        return redirect('form_edit', new_form.pk)
+
     return redirect('admin:forms_form_change', new_form.pk)
 
 

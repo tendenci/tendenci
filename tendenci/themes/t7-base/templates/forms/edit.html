@@ -18,12 +18,13 @@
                 {{ formset.management_form }}
                 {{ formset|styled_form_set }}
             </fieldset>
-            <input type="submit" value="{% trans 'Apply Change(s)' %}" />
+            <input class="btn btn-primary" type="submit" value="{% trans 'Apply Change(s)' %}" />
         </div>
         </form>
     </div>
 
 </div>
+<br/>
 {% endblock %}
 
 {% block extra_body %}
