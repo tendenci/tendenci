@@ -393,7 +393,9 @@ class CorpProfileBaseForm(FormControlWidgetMixin, forms.ModelForm):
                     'allow_anonymous_view': True}
             if not request_user.is_anonymous:
                 defaults.update({'creator': request_user,
-                                 'owner': request_user,})
+                                 'owner': request_user,
+                                 'creator_username': request_user.username,
+                                 'owner_username': request_user.username})
                 
             file_object, created = File.objects.get_or_create(
                 file=logo_file,
