@@ -5,6 +5,9 @@ from django.http import HttpResponse
 from xhtml2pdf import pisa
 
 from tendenci.apps.trainings.models import Transcript, OutsideSchool, TeachingActivity
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.files.models import File
+
 
 def user_transcripts(user, location_type='online',
                      online_courses=None,
@@ -52,6 +55,12 @@ def generate_transcripts_pdf(request, **kwargs):
     template_name = 'trainings/transcript_pdf.html'
     template = get_template(template_name)
     kwargs['for_pdf'] = True
+    kwargs['logo_base64_src'] = ''
+    logo_file_id = get_setting('module', 'trainings', 'transcriptlogo')
+    if logo_file_id:
+        [file] = File.objects.filter(id=logo_file_id)[:1] or [None]
+        if file:
+            kwargs['logo_base64_src'] = f"data:{file.mime_type()};base64,{file.get_binary(size=(180, 100))}"
 
     html  = template.render(context=kwargs, request=request)
 

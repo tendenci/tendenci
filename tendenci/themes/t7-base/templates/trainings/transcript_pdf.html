@@ -65,8 +65,8 @@ td.title{
     </h1>
     </td>
     <td>
-    {% if MODULE_PLANNING4PROFITS_REPORTCARDLOGO %}
-    <div style="text-align: right;"><img width="180" height="100" src="http://127.0.0.1:8000/media/files/site_settings-setting/9f765c01/emg-logo-tx-clear-background180x100.png" /></div>
+    {% if logo_base64_src %}
+    <div style="text-align: right;"><img width="180" height="100" src="{{ logo_base64_src }}" /></div>
 	{% endif %}
 	</td>
 	</tr>
