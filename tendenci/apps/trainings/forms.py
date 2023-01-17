@@ -65,6 +65,7 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
         self.request = kwargs.pop('request')
         super(OutsideSchoolForm, self).__init__(*args, **kwargs)
 
+        self.fields['certification_track'].required = False
         if hasattr(self.request.user, 'corp_profile'):
             corp_profile = self.request.user.corp_profile
             if corp_profile:
