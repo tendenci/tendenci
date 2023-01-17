@@ -18,17 +18,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='registration',
             name='key_contact_fax',
-            field=models.CharField(blank=True, default='', max_length=50, verbose_name='Key Contact Fax'),
+            field=models.CharField(blank=True, default='', max_length=50, verbose_name='Training Contact Fax'),
         ),
         migrations.AddField(
             model_name='registration',
             name='key_contact_name',
-            field=models.CharField(blank=True, default='', max_length=150, verbose_name='Key Contact'),
+            field=models.CharField(blank=True, default='', max_length=150, verbose_name='Training Contact'),
         ),
         migrations.AddField(
             model_name='registration',
             name='key_contact_phone',
-            field=models.CharField(blank=True, default='', max_length=50, verbose_name='Key Contact Phone'),
+            field=models.CharField(blank=True, default='', max_length=50, verbose_name='Training Contact Phone'),
         ),
         migrations.AddField(
             model_name='registration',

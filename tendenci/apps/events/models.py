@@ -504,15 +504,15 @@ class Registration(models.Model):
 
     reminder = models.BooleanField(default=False)
     
-    key_contact_name = models.CharField(_('Key Contact'),
+    key_contact_name = models.CharField(_('Training Contact'),
                                         max_length=150,
                                         blank=True,
                                         default='')
-    key_contact_phone = models.CharField(_('Key Contact Phone'),
+    key_contact_phone = models.CharField(_('Training Contact Phone'),
                                         max_length=50,
                                         blank=True,
                                         default='')
-    key_contact_fax = models.CharField(_('Key Contact Fax'),
+    key_contact_fax = models.CharField(_('Training Contact Fax'),
                                         max_length=50,
                                         blank=True,
                                         default='')
