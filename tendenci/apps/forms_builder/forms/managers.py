@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from tendenci.apps.perms.managers import TendenciBaseManager
+from tendenci.apps.perms.utils import has_perm
 
 from haystack.query import SearchQuerySet
 
@@ -9,7 +10,7 @@ class FormManager(TendenciBaseManager):
     Only show published forms for non-staff users.
     """
     def published(self, for_user=None):
-        if for_user is not None and for_user.is_staff:
+        if for_user is not None and (for_user.is_staff or has_perm(for_user,'forms.change_form')):
             return self.all()
         return self.filter(status_detail='published')
 

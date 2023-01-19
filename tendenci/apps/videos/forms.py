@@ -1,3 +1,4 @@
+from urllib.parse import urlparse
 from datetime import datetime
 from django import forms
 from django.contrib.admin import widgets
@@ -98,7 +99,8 @@ class VideoForm(TendenciBaseForm):
                 raise forms.ValidationError('This url is not supported by embed.ly')
             else:
                 # if youbube video, we can get the thumbnail from youtube API
-                if 'www.youtube.com' not in video_url:
+                domain = urlparse(video_url).netloc
+                if domain not in ['www.youtube.com', 'youtu.be']:
                     self.embedly_403 = True
         return video_url
 

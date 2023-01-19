@@ -233,6 +233,9 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
             committee.save()
             formset.save()
 
+            # update group perms to officers
+            committee.update_group_perms()
+
             EventLog.objects.log(instance=committee)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % committee)

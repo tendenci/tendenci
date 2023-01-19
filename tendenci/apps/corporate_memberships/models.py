@@ -64,6 +64,7 @@ from tendenci.apps.files.models import File
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.user_groups.models import Group
 from tendenci.libs.utils import python_executable
+from tendenci.apps.products.models import Product
 
 
 FIELD_CHOICES = (
@@ -247,7 +248,8 @@ class CorpProfile(TendenciBaseModel):
                            default='')
     secret_code = models.CharField(max_length=50, blank=True,
                                    default='')
-
+    products = models.ManyToManyField(Product, verbose_name=_('corporate / product'),
+                                     through='CorpProduct', related_name="corpprofile_list")
     parent_entity = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.SET_NULL)
     industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.SET_NULL)
     region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
@@ -544,6 +546,19 @@ class CorpProfile(TendenciBaseModel):
     def get_address_str(self):
         csz = ' '.join([a for a in [self.city, self.state, self.zip] if a.strip()])
         return ', '.join([a for a in [self.address, self.address2, csz, self.country] if a.strip()])
+
+class CorpProduct(models.Model):
+    corp_profile = models.ForeignKey(CorpProfile, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('corp_profile', 'product',)
+
+    def __str__(self):
+        return self.product.name
+
+    def get_absolute_url(self):
+        return reverse('admin:products_product_change', args=[self.product.id])
 
 
 class CorpMembership(TendenciBaseModel):

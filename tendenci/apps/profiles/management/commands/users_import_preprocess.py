@@ -47,7 +47,7 @@ class Command(BaseCommand):
                 char_det = chardet.detect(f.read())
                 encoding = char_det["encoding"]
                 confidence = char_det["confidence"]
-                if confidence < 0.7:
+                if confidence < 0.6:
                     encoding = 'utf-8'
                 if encoding == 'ISO-8859-1' or encoding == 'ISO-8859-2':
                     encoding = 'latin-1'

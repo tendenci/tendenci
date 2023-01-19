@@ -10,6 +10,8 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.projects.managers import ProjectManager as NewProjectManager
 from tendenci.apps.files.models import File
 from tendenci.apps.files.managers import FileManager
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
 
 
 class DocumentType(models.Model):
@@ -92,6 +94,7 @@ class Project(TendenciBaseModel):
             (STATUS_CLOSED, 'Closed')
         )
 
+    group = models.ForeignKey(Group, null=True, blank=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(help_text='Tag 1, Tag 2, ...', blank=True)
     slug = models.SlugField(_(u'URL Path'), unique=True, max_length=200)
     project_name = models.CharField(

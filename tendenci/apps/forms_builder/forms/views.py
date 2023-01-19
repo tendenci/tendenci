@@ -226,6 +226,9 @@ def copy(request, id):
 
     EventLog.objects.log(instance=form_instance)
     messages.add_message(request, messages.SUCCESS, _('Successfully added %(n)s' % {'n': new_form}))
+    if not (request.user.is_superuser or request.user.is_staff):
+        return redirect('form_edit', new_form.pk)
+
     return redirect('admin:forms_form_change', new_form.pk)
 
 
@@ -465,12 +468,15 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
         if form_for_form.is_valid() and (not billing_form or billing_form.is_valid()):
             entry = form_for_form.save(edit_mode)
             entry.entry_path = request.POST.get("entry_path", "")
-            if request.user.is_anonymous:
-                entry.creator = entry.check_and_create_user()
-            else:
-                entry.creator = request.user
+            if not edit_mode:
+                if request.user.is_anonymous:
+                    entry.creator = entry.check_and_create_user()
+                else:
+                    entry.creator = request.user
             entry.save()
-            entry.set_group_subscribers()
+
+            if not edit_mode:
+                entry.set_group_subscribers()
 
             # Email - only one original submission. Subsequent edits of the entry we don't notify about
             if not edit_mode:

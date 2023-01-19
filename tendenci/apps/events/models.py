@@ -1280,6 +1280,12 @@ class Event(TendenciBaseModel):
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
 
+    def is_registrant_user(self, user):
+        if hasattr(user, 'registrant_set'):
+            return user.registrant_set.filter(
+                registration__event=self).exists()
+        return False
+
     def get_absolute_url(self):
         return reverse('event', args=[self.pk])
 

@@ -809,11 +809,20 @@ def normalize_newline(file_path):
 
     ```file_path``` is a relative path.
     """
-    data = default_storage.open(file_path).read().decode('utf-8')
-    data = data.replace('\r\n', '\n').replace('\r', '\n')
-    f = default_storage.open(file_path, 'w')
-    f.write(data)
-    f.close()
+    import cchardet as chardet
+    with default_storage.open(file_path, 'rb') as f:
+        data = f.read()
+        char_det = chardet.detect(data)
+        encoding = char_det["encoding"]
+        confidence = char_det["confidence"]
+        if confidence < 0.6:
+            encoding = 'utf-8'
+        if encoding:
+            data = data.decode(encoding)
+        data = data.replace('\r\n', '\n').replace('\r', '\n')
+
+    with default_storage.open(file_path, 'w') as f:
+        f.write(data)
 
 
 def get_pagination_page_range(num_pages, max_num_in_group=10,

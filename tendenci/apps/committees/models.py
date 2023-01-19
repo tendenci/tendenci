@@ -1,10 +1,12 @@
-from builtins import str
+from datetime import date
 
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.pages.models import BasePage
@@ -13,6 +15,7 @@ from tendenci.apps.committees.managers import CommitteeManager
 from tendenci.apps.committees.module_meta import CommitteeMeta
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.fields import SlugField
+from tendenci.apps.files.models import File
 
 
 class Committee(BasePage):
@@ -23,6 +26,10 @@ class Committee(BasePage):
     mission = tinymce_models.HTMLField(null=True, blank=True)
     notes = tinymce_models.HTMLField(null=True, blank=True)
     sponsors =tinymce_models.HTMLField(blank=True, default='')
+    featured_image = models.ForeignKey(File, null=True, default=None,
+                              related_name='committees',
+                              help_text=_('Only jpg, gif, or png images.'),
+                              on_delete=models.SET_NULL)
     contact_name = models.CharField(max_length=200, null=True, blank=True)
     contact_email = models.CharField(max_length=200, null=True, blank=True)
     join_link = models.CharField(max_length=200, null=True, blank=True)
@@ -54,6 +61,42 @@ class Committee(BasePage):
 
     def officers(self):
         return Officer.objects.filter(committee=self).order_by('pk')
+
+    def save(self, *args, **kwargs):
+        photo_upload = kwargs.pop('photo', None)
+
+        super(Committee, self).save(*args, **kwargs)
+        if photo_upload and self.pk:
+            image = File(content_type=ContentType.objects.get_for_model(self.__class__),
+                         object_id=self.pk,
+                         creator=self.creator,
+                         creator_username=self.creator_username,
+                         owner=self.owner,
+                         owner_username=self.owner_username)
+            photo_upload.file.seek(0)
+            image.file.save(photo_upload.name, photo_upload)
+            image.save()
+
+            self.featured_image = image
+            self.save()
+
+    def update_group_perms(self, **kwargs):
+        """
+        Update the associated group perms for the officers of this chapter. 
+        Grant officers the view and change permissions for their own group.
+        """
+        if not self.group:
+            return
+ 
+        ObjectPermission.objects.remove_all(self.group)
+    
+        perms = ['view', 'change']
+
+        officer_users = [officer.user for officer in self.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        if officer_users:
+            ObjectPermission.objects.assign(officer_users,
+                                        self.group, perms=perms)
 
 
 class Position(models.Model):

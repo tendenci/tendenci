@@ -28,7 +28,7 @@ from tendenci.apps.corporate_memberships.widgets import NoticeTimeTypeWidget
 from tendenci.apps.corporate_memberships.models import (
     CorporateMembershipType,
     CorpMembership,
-    CorpProfile,
+    CorpProfile, CorpProduct,
     CorpMembershipApp,
     CorpMembershipAppField,
     CorpMembershipRep,
@@ -48,8 +48,36 @@ from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.files.models import File
+from tendenci.apps.products.models import Product, Category as ProductCategory
+
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
+
+
+def _get_product_choices(user=None, empty_label=''):
+    categories = ProductCategory.objects.all()
+    choices = [('', empty_label),]
+    for cat in categories:
+        my_choices = []
+        products = Product.objects.filter(category=cat)
+        products = products.order_by('name')
+        for product in products:
+            my_choices.append((product.id, product.name))
+        if my_choices:
+            choices.append((cat.name, my_choices))
+    return choices
+
+
+class CorpProductForm(forms.ModelForm):
+    product = forms.ModelChoiceField(queryset=Product.objects.all())
+                               
+    class Meta:
+        model = CorpProduct
+        fields = ('product', )
+        
+    def __init__(self, *args, **kwargs):
+        super(CorpProductForm, self).__init__(*args, **kwargs)
+        self.fields['product'].choices = _get_product_choices()
 
 
 class CorporateMembershipTypeForm(forms.ModelForm):
@@ -361,10 +389,13 @@ class CorpProfileBaseForm(FormControlWidgetMixin, forms.ModelForm):
                     'name': logo_file.name,
                     'content_type': content_type,
                     'object_id': corp_profile.pk,
-                    'is_public': True,}
+                    'is_public': True,
+                    'allow_anonymous_view': True}
             if not request_user.is_anonymous:
                 defaults.update({'creator': request_user,
-                                 'owner': request_user,})
+                                 'owner': request_user,
+                                 'creator_username': request_user.username,
+                                 'owner_username': request_user.username})
                 
             file_object, created = File.objects.get_or_create(
                 file=logo_file,
@@ -419,15 +450,6 @@ class CorpProfileAdminForm(CorpProfileBaseForm):
             number_employees = 0
 
         return number_employees
-
-    def save(self, *args, **kwargs):
-        corp_profile = super(CorpProfileAdminForm, self).save(*args, **kwargs)
-
-        if not settings.USE_S3_STORAGE:
-            # TODO: need to make corp profile upload work for S3 at admin backend
-            self.save_logo(corp_profile, corp_profile.owner)
-
-        return corp_profile
 
 
 class CorpProfileForm(CorpProfileBaseForm):

@@ -136,6 +136,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "false",
+        "description": "It defines whether or not products can be assigned to corporate profiles.",
+        "data_type": "boolean",
+        "update_dt": "2022-11-23 12:50:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "useproducts",
+        "value": "false",
+        "label": "Use Products",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "corporate_memberships",
+        "store": true,
+        "updated_by": ""
+    },
+    {
         "default_value": "corporatememberships",
         "description": "The root url for the corporate membership module. Use letters and dashes only.",
         "data_type": "string",

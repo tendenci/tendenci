@@ -13,14 +13,15 @@ from tendenci.apps.corporate_memberships.models import (
     CorpMembershipAppField,
     CorpMembership,
     CorpMembershipRep,
-    CorpProfile,
+    CorpProfile, CorpProduct,
     Notice)
 from tendenci.apps.corporate_memberships.forms import (
     CorporateMembershipTypeForm,
     CorpMembershipAppForm,
     NoticeForm,
     CorpMembershipAppFieldAdminForm,
-    CorpProfileAdminForm)
+    CorpProfileAdminForm,
+    CorpProductForm)
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 
 from tendenci.apps.base.utils import tcurrency
@@ -28,6 +29,7 @@ from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.perms.utils import update_perms_and_save
 
 
 class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
@@ -569,11 +571,21 @@ class CorpMembershipInlineAdmin(admin.TabularInline):
         return False
 
 
+class ProductInline(admin.TabularInline):
+    model = CorpProduct
+    form = CorpProductForm
+    extra = 1
+    verbose_name = 'Product'
+    verbose_name_plural = 'Products'
+
+
 class CorpProfileAdmin(TendenciBaseModelAdmin):
     model = CorpProfile
     list_display = ['name',]
     search_fields = ('name',)
     inlines = (CorpMembershipRepInlineAdmin, CorpMembershipInlineAdmin)
+    if get_setting('module', 'corporate_memberships', 'useproducts'):
+        inlines = (ProductInline,) + inlines
     fieldsets = [(_('Company Details'), {
                       'fields': ('name',
                                  'logo_file',
@@ -602,6 +614,17 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+    def save_model(self, request, object, form, change):
+        """
+        Update the permissions backend and log the event
+        """
+        instance = form.save(commit=False)
+        instance.owner = request.user
+        update_perms_and_save(request, form, instance)
+        
+        form.save_logo(instance, request.user)
+        return instance
 
 
 class CorpMembershipRepAdmin(admin.ModelAdmin):

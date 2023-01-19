@@ -350,7 +350,8 @@ class Invoice(models.Model):
 
         if user2_compare.is_authenticated:
             if user2_compare in [self.creator, self.owner] or \
-                    user2_compare.email == self.bill_to_email:
+                    (user2_compare.email and self.bill_to_email \
+                     and user2_compare.email.lower() == self.bill_to_email.lower()):
                 return self.status
 
         return False

@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404
 #from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetView
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.registration.forms import RegistrationForm
@@ -16,6 +15,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.decorators import ssl_required
 from tendenci.apps.accounts.forms import PasswordResetForm
 from tendenci.apps.base.utils import get_next_url
+from tendenci.apps.base.http import Http403
 
 
 @ssl_required
@@ -59,7 +59,9 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
         form = form_class(request=request)
 
         if request.user.is_authenticated and next_url:
-                return HttpResponseRedirect(next_url)
+            if not request.user.is_staff and next_url.startswith('/admin/'):
+                raise Http403
+            return HttpResponseRedirect(next_url)
 
     return render_to_resp(request=request, template_name=template_name, context={
         "form": form
