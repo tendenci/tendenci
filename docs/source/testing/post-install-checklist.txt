@@ -209,7 +209,7 @@ Accessibility
 
 1. Check for Accessibility
 
-  - Web Accessibility Measurement Tool http://wave.webaim.org/
+  - Web Accessibility Measurement Tool https://wave.webaim.org
   - Note: The community's goal is to make Tendenci 100% Accessible.
 
 2. Submit issues if you see something in core that is broken
