@@ -1,11 +1,15 @@
 from datetime import date
+import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.urls import reverse
 
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.libs.tinymce import models as tinymce_models
+from tendenci.apps.base.fields import DictField
+from tendenci.apps.site_settings.utils import get_setting
 
 
 class TeachingActivity(models.Model):
@@ -620,3 +624,37 @@ class UserCertData(models.Model):
         else:
             return next_d_number - 1
         
+
+def get_transcript_zip_file_path(instance, filename):
+    return "export/trainings/{filename}".format(
+                            filename=filename)
+
+
+class CorpTranscriptsZipFile(models.Model):
+    STATUS_CHOICES = (
+        ("pending", _("Pending")),
+        ("completed", _("Completed")),
+        ("failed", _("Failed")),
+    )
+    # corp profile field
+    corp_profile_id = models.IntegerField()
+    params_dict = DictField(_('Parameters Dict'))
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    start_dt = models.DateTimeField(auto_now_add=True)
+    finish_dt = models.DateTimeField(null=True, blank=True)
+    zip_file = models.FileField(upload_to=get_transcript_zip_file_path)
+    status = models.CharField(max_length=50,
+                default="pending", choices=STATUS_CHOICES)
+
+    @property
+    def get_download_url(self):
+        site_url = get_setting('site', 'global', 'siteurl')
+        download_url = reverse('trainings.transcripts_corp_pdf_download', args=[self.pk])
+        return f"{site_url}{download_url}"
+    
+    def get_corp_profile(self):
+        from tendenci.apps.corporate_memberships.models import CorpProfile
+        if CorpProfile.objects.filter(id=self.corp_profile_id).exists():
+            return CorpProfile.objects.get(id=self.corp_profile_id)
+        return None
+

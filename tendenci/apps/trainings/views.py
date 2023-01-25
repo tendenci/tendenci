@@ -1,4 +1,6 @@
 from urllib.parse import urlparse
+from wsgiref.util import FileWrapper
+import subprocess
 #from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic.edit import CreateView
@@ -8,19 +10,22 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponse, Http404
 #from django.db.models import Q
+from django.contrib import messages
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from .models import (TeachingActivity, OutsideSchool, Transcript,
-             CertCat, Certification)        
+             CertCat, Certification, CorpTranscriptsZipFile)        
 from .forms import (TeachingActivityForm,
                     OutsideSchoolForm,
                     ParticipantsForm,
                     CoursesInfoForm)
-from .utils import generate_transcripts_pdf
+from .utils import generate_transcript_pdf
 
 
 class TeachingActivityCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -216,10 +221,70 @@ def transcripts(request, user_id=None, corp_profile_id=None,
          'step': step}
 
     if generate_pdf:
-        params['customer'] = get_object_or_404(User, pk=user_id)
-        return generate_transcripts_pdf(request, **params)
+        if corp_profile_id:
+            ctzf = CorpTranscriptsZipFile(
+                corp_profile_id=corp_profile_id,
+                params_dict={'certs': ','.join(str(cert.id) for cert in certs),
+                             'users': ','.join(str(u.id) for u in users),
+                             'corp_profile': corp_profile.id,
+                             'online_courses': ','.join(str(c.id) for c in online_courses),
+                             'onsite_courses': ','.join(str(c.id) for c in onsite_courses),
+                             'include_outside_schools': include_outside_schools,
+                             'include_teaching_activities': include_teaching_activities,},
+                creator=request.user,)
+            ctzf.save()
+            # start a subprocess to generate a zip file
+            subprocess.Popen([python_executable(), "manage.py",
+                              "generate_transcript_pdfs",
+                              str(ctzf.pk) ])
+            
+            # redirect to the status page
+            messages.add_message(request, messages.INFO, _("The system is now generating all transcript PDFs and zip to a file. Please reload in a few seconds to check if it's ready."))
+            return redirect('trainings.corp_pdf_download_list')
+        elif user_id:  
+            params['customer'] = get_object_or_404(User, pk=user_id)
+            file_name = f"transcript_{params['customer'].username}.pdf"
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename={ file_name }'
+            return generate_transcript_pdf(response, **params)
     
     params['qs'] = urlparse(request.get_full_path()).query   
     return render_to_resp(request=request,
                           template_name=template_name,
             context=params)
+
+
+@login_required
+def transcripts_corp_pdf_download(request, tz_id=None,):
+    tz = get_object_or_404(CorpTranscriptsZipFile, pk=tz_id)
+    if request.user != tz.creator and not request.user.is_superuser:
+        raise Http403
+    if not tz.zip_file:
+        raise Http404
+    file_name = tz.zip_file.name.rsplit('/', 1)[-1]
+    wrapper = FileWrapper(tz.zip_file)
+    response = HttpResponse(wrapper, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+    return response
+
+
+@login_required
+def corp_pdf_download_list(request, tz_id=None,):
+    tzs = CorpTranscriptsZipFile.objects.all()
+    if not request.user.is_superuser:
+        tzs = tzs.filter(creator=request.user)
+        if not tzs.exists():
+            raise Http404
+    tzs = tzs.order_by('-start_dt')
+
+    template_name="trainings/transcripts_pdf_download_list.html"
+    return render_to_resp(request=request, template_name=template_name,
+                          context={'tzs': tzs})
+
+def delete_downloadable(request, tz_id):
+    tz = get_object_or_404(CorpTranscriptsZipFile, pk=tz_id)
+    if request.user != tz.creator and not request.user.is_superuser:
+        raise Http403
+    tz.delete()
+    messages.add_message(request, messages.INFO, "Success! An entry has been deleted.")
+    return redirect('trainings.corp_pdf_download_list')

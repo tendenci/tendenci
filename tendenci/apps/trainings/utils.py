@@ -46,12 +46,11 @@ def user_teaching_activities(user):
     return None
 
 
-def generate_transcripts_pdf(request, **kwargs):
+def generate_transcript_pdf(f, **kwargs):
     """
     Generate transcripts PDF for this customer.
     """
-    customer = kwargs.get('customer')
-    
+    #customer = kwargs.get('customer')
     template_name = 'trainings/transcript_pdf.html'
     template = get_template(template_name)
     kwargs['for_pdf'] = True
@@ -62,11 +61,7 @@ def generate_transcripts_pdf(request, **kwargs):
         if file:
             kwargs['logo_base64_src'] = f"data:{file.mime_type()};base64,{file.get_binary(size=(180, 100))}"
 
-    html  = template.render(context=kwargs, request=request)
+    html = template.render(context=kwargs)
 
-    file_name = f"transcript_{customer.username}.pdf"
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename={ file_name }'
-
-    pisa.CreatePDF(html, dest=response)
-    return response
+    pisa.CreatePDF(html, dest=f)
+    return f

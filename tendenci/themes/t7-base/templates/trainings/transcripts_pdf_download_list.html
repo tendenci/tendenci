@@ -1,0 +1,32 @@
+{% extends "trainings/base-wide.html" %}
+{% load base_filters %}
+
+{% block content %}
+<h1>{% trans 'Download PDF Transcripts' %}</h1>
+<div class="row">
+   <table class="table table-striped">
+       <thead>
+           <tr> 
+               <th>{% trans 'Request date' %}</th>
+               <th>{% trans 'Requested by' %}</th>
+               <th>{% trans 'Corp Profile' %}</th>
+               <th>{% trans 'Status' %}</th>
+               <th>{% trans 'Download' %}</th>
+               <th>{% trans 'Delete' %}</th>
+           </tr>
+       </thead>
+   {% for tz in tzs %}
+       <tr>
+           <td>{{ tz.start_dt|date_long }}</td>
+           <td>{{ tz.creator.get_full_name }}</td>
+           {% with tz.get_corp_profile as corp_profile %}
+           <td><a href="{% url 'corpmembership.view_profile' corp_profile.id %}">{{ corp_profile.name }}</a></td>
+           {% endwith %}
+           <td>{{ tz.status|capfirst }}</td>
+           <td>{% if tz.status == 'completed' %} <a href="{% url 'trainings.transcripts_corp_pdf_download' tz.pk %}">Click to Download</a> {% endif %}</td>
+           <td>{% if tz.status != 'pending' %}<a href="{% url 'trainings.delete_downloadable' tz.pk %}">Delete</a>{% endif %}</td>
+       </tr>
+   {% endfor %}
+   </table>
+</div>
+{% endblock %}

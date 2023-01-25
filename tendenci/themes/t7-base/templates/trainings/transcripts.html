@@ -38,7 +38,6 @@
 
 {% block content %}
 
-
 <h1>{% trans 'Transcripts' %}</h1>
 
 <div id="block_transcript_nav">
@@ -88,6 +87,13 @@
 
 <div id="block_step_finish" role="tabpanel" class="tab-pane{% if step == 'step3' %} active{% endif %}">
 {% if step == 'step3' %}
+{% if users|length > 1 %}
+<div class="pull-right" style="padding-bottom: 3px;">
+<a class="btn btn-success btn-sm" href="{% url 'trainings.transcripts_corp_pdf' corp_profile.id %}?{{ qs }}">Download All PDFs</a>
+</div>
+<div class="clearfix"></div>
+{% endif %}
+
 {% autopaginate users 20 %}
 <div class="panel-group" id="customers" role="tablist" aria-multiselectable="true">
 {% for customer in users %}
