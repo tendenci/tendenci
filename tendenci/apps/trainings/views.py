@@ -237,7 +237,6 @@ def transcripts(request, user_id=None, corp_profile_id=None,
             subprocess.Popen([python_executable(), "manage.py",
                               "generate_transcript_pdfs",
                               str(ctzf.pk) ])
-            
             # redirect to the status page
             messages.add_message(request, messages.INFO, _("The system is now generating all transcript PDFs and zip to a file. Please reload in a few seconds to check if it's ready."))
             return redirect('trainings.corp_pdf_download_list')
@@ -265,6 +264,8 @@ def transcripts_corp_pdf_download(request, tz_id=None,):
     wrapper = FileWrapper(tz.zip_file)
     response = HttpResponse(wrapper, content_type='application/octet-stream')
     response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+    EventLog.objects.log(headline='Training transcript PDFs downloaded',
+                                 description=f'{request.user.username} downloaded transcript PDFs for corp profile with id:{tz.corp_profile_id}')
     return response
 
 
