@@ -841,6 +841,16 @@ def corpmembership_search(request, my_corps_only=False,
         if industry:
             corp_members = corp_members.filter(corp_profile__industry_id=industry)
 
+    # membership_type
+    if 'membership_type' in search_form.fields:
+        try:
+            membership_type = int(request.GET.get('membership_type'))
+        except:
+            membership_type = 0
+
+        if membership_type:
+            corp_members = corp_members.filter(corporate_membership_type_id=membership_type)
+
     # corporate membership type
     if not my_corps_only and is_superuser:
         # add cm_type_id for the links in the summary report

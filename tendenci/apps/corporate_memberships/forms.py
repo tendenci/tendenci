@@ -802,6 +802,9 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
                              )
     cp_id = forms.ChoiceField(label=_('Company Name'),
                                   required=False)
+    membership_type = forms.ModelChoiceField(required=False,
+                                             empty_label=_('Select One'),
+                                             queryset=None)
     search_criteria = forms.ChoiceField(required=False)
     search_text = forms.CharField(max_length=100, required=False)
     search_method = forms.ChoiceField(
@@ -853,6 +856,7 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
         if user and user.is_superuser:
             search_choices.append(('status_detail', 'Status Detail'))
         self.fields['search_criteria'].choices = search_choices
+        self.fields['membership_type'].queryset = CorporateMembershipType.objects.all()
 
 
 class ReportByTypeForm(FormControlWidgetMixin, forms.Form):
