@@ -3,7 +3,7 @@
 {% load perm_tags %}
 {% load styled_forms %}
 
-{% block title %}{% firstof MODULE_COMMITTEES_LABEL 'Chapter' %} Add{% endblock %}
+{% block title %}{% firstof MODULE_CHAPTERS_LABEL 'Chapter' %} Add{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -13,7 +13,7 @@
 {% block content %}
 
 <div class="page-header">
-  <h1>{% firstof MODULE_COMMITTEES_LABEL trans 'Chapter' %} {% trans "Add" %}</h1>
+  <h1>{% firstof MODULE_CHAPTERS_LABEL trans 'Chapter' %} {% trans "Add" %}</h1>
 </div>
 
   <div class="clearfix">
@@ -33,7 +33,7 @@
                </div>
            </fieldset>
 
-         <input class="btn btn-default" type="submit" value="Add {% firstof MODULE_COMMITTEE_LABEL 'Chapter' %}" />
+         <input class="btn btn-default" type="submit" value="Add {% firstof MODULE_CHAPTERS_LABEL 'Chapter' %}" />
        
        </form>
     <br />
