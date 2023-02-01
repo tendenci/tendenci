@@ -140,72 +140,72 @@ def custom_error(request, template_name="500.html"):
     return render_to_resp(request=request, template_name=template_name, status=500)
 
 
-def plugin_static_serve(request, plugin, path, show_indexes=False):
-    """
-    Serve static files below a given point in the directory structure.
-
-    To use, put a URL pattern such as::
-
-        (r'^(?P<path>.*)$', 'django.views.static.serve', {'document_root' : '/path/to/my/files/'})
-
-    in your URLconf. You must provide the ``document_root`` param. You may
-    also set ``show_indexes`` to ``True`` if you'd like to serve a basic index
-    of the directory.  This index view will use the template hardcoded below,
-    but if you'd like to override it, you can create a template called
-    ``static/directory_index.html``.
-    """
-
-    import mimetypes
-    import os
-    import posixpath
-    import stat
-    from urllib.request import unquote
-
-    from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotModified
-    from django.utils.http import http_date
-    from django.views.static import was_modified_since, directory_index
-
-    from django.conf import settings
-
-    document_root = os.path.join(settings.PROJECT_ROOT, 'plugins', plugin, 'media')
-
-    # Clean up given path to only allow serving files below document_root.
-    path = posixpath.normpath(unquote(path))
-    path = path.lstrip('/')
-    newpath = ''
-    for part in path.split('/'):
-        if not part:
-            # Strip empty path components.
-            continue
-        drive, part = os.path.splitdrive(part)
-        head, part = os.path.split(part)
-        if part in (os.curdir, os.pardir):
-            # Strip '.' and '..' in path.
-            continue
-        newpath = os.path.join(newpath, part).replace('\\', '/')
-
-    if newpath and path != newpath:
-        return HttpResponseRedirect(newpath)
-    fullpath = os.path.join(document_root, newpath)
-
-    if os.path.isdir(fullpath):
-        if show_indexes:
-            return directory_index(newpath, fullpath)
-        raise Http404(_("Directory indexes are not allowed here."))
-    if not os.path.exists(fullpath):
-        raise Http404('"%s" does not exist' % fullpath)
-
-    # Respect the If-Modified-Since header.
-    statobj = os.stat(fullpath)
-    mimetype = mimetypes.guess_type(fullpath)[0] or 'application/octet-stream'
-    if not was_modified_since(request.META.get('HTTP_IF_MODIFIED_SINCE'),
-                              statobj[stat.ST_MTIME], statobj[stat.ST_SIZE]):
-        return HttpResponseNotModified(content_type=mimetype)
-    contents = open(fullpath, 'rb').read()
-    response = HttpResponse(contents, content_type=mimetype)
-    response["Last-Modified"] = http_date(statobj[stat.ST_MTIME])
-    response["Content-Length"] = len(contents)
-    return response
+# def plugin_static_serve(request, plugin, path, show_indexes=False):
+#     """
+#     Serve static files below a given point in the directory structure.
+#
+#     To use, put a URL pattern such as::
+#
+#         (r'^(?P<path>.*)$', 'django.views.static.serve', {'document_root' : '/path/to/my/files/'})
+#
+#     in your URLconf. You must provide the ``document_root`` param. You may
+#     also set ``show_indexes`` to ``True`` if you'd like to serve a basic index
+#     of the directory.  This index view will use the template hardcoded below,
+#     but if you'd like to override it, you can create a template called
+#     ``static/directory_index.html``.
+#     """
+#
+#     import mimetypes
+#     import os
+#     import posixpath
+#     import stat
+#     from urllib.request import unquote
+#
+#     from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotModified
+#     from django.utils.http import http_date
+#     from django.views.static import was_modified_since, directory_index
+#
+#     from django.conf import settings
+#
+#     document_root = os.path.join(settings.PROJECT_ROOT, 'plugins', plugin, 'media')
+#
+#     # Clean up given path to only allow serving files below document_root.
+#     path = posixpath.normpath(unquote(path))
+#     path = path.lstrip('/')
+#     newpath = ''
+#     for part in path.split('/'):
+#         if not part:
+#             # Strip empty path components.
+#             continue
+#         drive, part = os.path.splitdrive(part)
+#         head, part = os.path.split(part)
+#         if part in (os.curdir, os.pardir):
+#             # Strip '.' and '..' in path.
+#             continue
+#         newpath = os.path.join(newpath, part).replace('\\', '/')
+#
+#     if newpath and path != newpath:
+#         return HttpResponseRedirect(newpath)
+#     fullpath = os.path.join(document_root, newpath)
+#
+#     if os.path.isdir(fullpath):
+#         if show_indexes:
+#             return directory_index(newpath, fullpath)
+#         raise Http404(_("Directory indexes are not allowed here."))
+#     if not os.path.exists(fullpath):
+#         raise Http404('"%s" does not exist' % fullpath)
+#
+#     # Respect the If-Modified-Since header.
+#     statobj = os.stat(fullpath)
+#     mimetype = mimetypes.guess_type(fullpath)[0] or 'application/octet-stream'
+#     if not was_modified_since(request.META.get('HTTP_IF_MODIFIED_SINCE'),
+#                               statobj[stat.ST_MTIME], statobj[stat.ST_SIZE]):
+#         return HttpResponseNotModified(content_type=mimetype)
+#     contents = open(fullpath, 'rb').read()
+#     response = HttpResponse(contents, content_type=mimetype)
+#     response["Last-Modified"] = http_date(statobj[stat.ST_MTIME])
+#     response["Content-Length"] = len(contents)
+#     return response
 
 
 def clear_cache(request):
