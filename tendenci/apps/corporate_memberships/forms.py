@@ -49,6 +49,7 @@ from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.files.models import File
 from tendenci.apps.products.models import Product, Category as ProductCategory
+from tendenci.apps.emails.models import Email
 
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -78,6 +79,32 @@ class CorpProductForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CorpProductForm, self).__init__(*args, **kwargs)
         self.fields['product'].choices = _get_product_choices()
+
+
+class TermsForm(FormControlWidgetMixin, forms.Form):
+    terms_conditions = forms.BooleanField(label=_('I agree to the terms and conditions'),
+                                          required=True)
+
+
+class BroadcastForm(FormControlWidgetMixin, forms.ModelForm):
+    subject = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Subject'}),
+                              required=True)
+    body = forms.CharField(label=_('Message'),
+                           widget=forms.Textarea(attrs={'placeholder': 'Message'}),
+                           required=True)
+    corp_members = forms.ModelMultipleChoiceField(required=True, queryset=None,
+                            widget=forms.CheckboxSelectMultiple,)
+    
+
+    class Meta:
+        model = Email
+        fields = ('subject',
+                  'body',)
+    
+    def __init__(self, *args, **kwargs):
+        super(BroadcastForm, self).__init__(*args, **kwargs)
+        self.fields['corp_members'].queryset = CorpMembership.objects.select_related(
+            'corp_profile').filter(status_detail='active').order_by('corp_profile__name')
 
 
 class CorporateMembershipTypeForm(forms.ModelForm):
@@ -802,6 +829,9 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
                              )
     cp_id = forms.ChoiceField(label=_('Company Name'),
                                   required=False)
+    membership_type = forms.ModelChoiceField(required=False,
+                                             empty_label=_('Select One'),
+                                             queryset=None)
     search_criteria = forms.ChoiceField(required=False)
     search_text = forms.CharField(max_length=100, required=False)
     search_method = forms.ChoiceField(
@@ -853,6 +883,7 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
         if user and user.is_superuser:
             search_choices.append(('status_detail', 'Status Detail'))
         self.fields['search_criteria'].choices = search_choices
+        self.fields['membership_type'].queryset = CorporateMembershipType.objects.all()
 
 
 class ReportByTypeForm(FormControlWidgetMixin, forms.Form):

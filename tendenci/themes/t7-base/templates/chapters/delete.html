@@ -1,7 +1,7 @@
 {% extends "chapters/base.html" %}
 {% load chapter_tags %}
 
-{% block title %}{% trans "Delete Chapter" %} - {{ chapter.get_title }}{% endblock %}
+{% block title %}{% trans "Delete" %} {% firstof MODULE_CHAPTERS_LABEL trans 'Chapter' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -11,7 +11,7 @@
 {% block content %}
 <div class="t">
     <div class="chapter-wrap">
-        <h1>{% trans "Delete a Chapter" %}</h1>
+        <h1>{% trans "Delete" %} {% firstof MODULE_CHAPTERS_LABEL trans 'Chapter' %}</h1>
         <h2>{{ chapter.title }} - <a href="{{ chapter.get_absolute_url }}">{{ chapter.get_absolute_url }}</a></h2>
         <div class="content">{{ chapter.content|safe|truncatewords_html:"60" }}</div>
         <div class="delete-prompt">
@@ -24,7 +24,7 @@
             </form>
         </div>
         <div class="back-item"><a href="{{ chapter.get_absolute_url }}">&laquo; {% trans "Back to chapter" %} {{ chapter.title }}</a></div>
-        <div class="back-search"><a href="{% url "chapters.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_COMMITTEES_LABEL 'chapters' %} </a></div>
+        <div class="back-search"><a href="{% url "chapters.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_CHAPTERS_LABEL 'chapters' %} </a></div>
     </div>
 </div>
 {% endblock %}

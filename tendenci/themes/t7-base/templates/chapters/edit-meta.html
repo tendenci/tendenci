@@ -2,7 +2,7 @@
 {% load chapter_tags %}
 {% load styled_forms %}
 
-{% block title %}{% firstof MODULE_COMMITTEE_LABEL 'Chapter' %} Edit Meta Information{% endblock %}
+{% block title %}{% firstof MODULE_CHAPTERS_LABEL 'Chapter' %} Edit Meta Information{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -11,7 +11,7 @@
 
 {% block content %}
 <div class="t">
-    <h1>{% firstof MODULE_COMMITTEES_LABEL 'COMMITTEE' %} {% trans "Meta Information for" %}<br />
+    <h1>{% firstof MODULE_CHAPTERS_LABEL 'Chapter' %} {% trans "Meta Information for" %}<br />
     {{ chapter.title }}</h1>
 
     <div class="chapter-wrap">

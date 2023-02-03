@@ -408,6 +408,7 @@ def process_export(
             'city',
             'state',
             'zipcode',
+            'county',
             'country',
             'address_2',
             'address2_2',

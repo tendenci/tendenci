@@ -20,6 +20,7 @@ class Command(BaseCommand):
                     'clean_memberships',
                     'refresh_membership_groups',
                     'send_corp_membership_notices',
+                    'clean_chapter_memberships',
                     'clean_old_exports',
                     'clean_old_imports',
                     #'delete_soft_deleted_items',

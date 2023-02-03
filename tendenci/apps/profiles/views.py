@@ -1703,10 +1703,10 @@ def activate_email(request):
         username = form.cleaned_data['username']
         u = None
         if email and username:
-            [u] = User.objects.filter(is_active=False, email=email, username=username)[:1] or [None]
+            [u] = User.objects.filter(is_active=False, email__iexact=email, username=username)[:1] or [None]
 
         if email and not u:
-            [u] = User.objects.filter(is_active=False, email=email).order_by('-is_active')[:1] or [None]
+            [u] = User.objects.filter(is_active=False, email__iexact=email).order_by('-is_active')[:1] or [None]
 
         if u:
             [rprofile] = RegistrationProfile.objects.filter(user=u)[:1] or [None]

@@ -146,11 +146,11 @@ if not settings.USE_S3_STORAGE:
             'document_root': settings.THEMES_DIR,
         }),
     ] + urlpatterns
-    if settings.DEBUG:
-        urlpatterns = [
-            re_path(r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
-                base_views.plugin_static_serve),
-        ] + urlpatterns
+    # if settings.DEBUG:
+    #     urlpatterns = [
+    #         re_path(r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
+    #             base_views.plugin_static_serve),
+    #     ] + urlpatterns
 
 if settings.USE_S3_STORAGE:
     urlpatterns = [

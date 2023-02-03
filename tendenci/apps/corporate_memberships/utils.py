@@ -18,6 +18,64 @@ from tendenci.apps.memberships.models import MembershipDefault
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.base.utils import normalize_newline, tcurrency
+from tendenci.apps.newsletters.utils import get_newsletter_connection
+
+
+def broadcast_emails_to_corp(email, **kwargs):
+    """
+    Broadcast email to corporate members.
+    """
+    from django.template.loader import get_template
+    from tendenci.apps.theme.shortcuts import _strip_content_above_doctype
+    
+    request = kwargs.get('request')
+    corp_members = kwargs['corp_members']
+    total_sent = 0
+    subject = email.subject
+    connection = get_newsletter_connection()
+
+    msg = '<div class="hide" id="m-streaming-content" style="margin: 2em 5em;text-align: left; line-height: 1.3em;">'
+    msg += '<h1>Processing ...</h1>'
+    
+    for corp_member in corp_members:
+        corp_profile = corp_member.corp_profile
+        reps = corp_member.corp_profile.reps.all()
+        corp_profile.num_reps = len(reps)
+        for rep in reps:
+            first_name = rep.user.first_name
+            last_name = rep.user.last_name
+            email.recipient = rep.user.email
+            if email.recipient:
+                email.send(connection=connection)
+                total_sent += 1
+                msg += f'{total_sent}. Email sent to {first_name} {last_name} at {corp_profile.name}<br />'
+
+                if total_sent % 10 == 0:
+                    yield msg
+                    msg = ''
+
+    opts = {}
+    opts['summary'] = f'Total emails sent to {total_sent}\n\n'
+    opts['summary'] += 'Email Sent Appears Below in Raw Format:\n'
+    opts['summary'] += email.body
+
+    # send summary
+    email.subject = f'SUMMARY: {email.subject}'
+    email.body = opts['summary']
+    email.recipient = request.user.email
+    email.send()
+
+    msg += f'DONE!<br /><br />Successfully sent email "{subject}" to <strong>{total_sent}</strong> organization members.'
+    msg += '</div>'
+    yield msg
+    
+    template_name='corporate_memberships/message/broadcast/email-conf.html'
+    template = get_template(template_name)
+    context={'total_sent': total_sent,
+           'corp_members': corp_members}
+    rendered = template.render(context=context, request=request)
+    rendered = _strip_content_above_doctype(rendered)
+    yield rendered
 
 
 def get_user_corp_membership(member_number='', email=''):
