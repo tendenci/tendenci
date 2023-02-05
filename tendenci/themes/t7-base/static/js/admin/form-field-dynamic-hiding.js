@@ -61,6 +61,8 @@ jQuery(function($) {
                 $select_dd.find('option[value="company"]').attr('disabled','disabled');
                 $select_dd.find('option[value="address"]').attr('disabled','disabled');
                 $select_dd.find('option[value="city"]').attr('disabled','disabled');
+                $select_dd.find('option[value="county"]').attr('disabled','disabled');
+                $select_dd.find('option[value="country"]').attr('disabled','disabled');
                 $select_dd.find('option[value="region"]').attr('disabled','disabled');
                 $select_dd.find('option[value="state"]').attr('disabled','disabled');
                 $select_dd.find('option[value="zipcode"]').attr('disabled','disabled');
@@ -78,6 +80,8 @@ jQuery(function($) {
                 $select_dd.find('option[value="company"]').attr('disabled','disabled');
                 $select_dd.find('option[value="address"]').attr('disabled','disabled');
                 $select_dd.find('option[value="city"]').attr('disabled','disabled');
+                $select_dd.find('option[value="county"]').attr('disabled','disabled');
+                $select_dd.find('option[value="country"]').attr('disabled','disabled');
                 $select_dd.find('option[value="region"]').attr('disabled','disabled');
                 $select_dd.find('option[value="state"]').attr('disabled','disabled');
                 $select_dd.find('option[value="zipcode"]').attr('disabled','disabled');
@@ -92,6 +96,8 @@ jQuery(function($) {
                 $select_dd.find('option[value="company"]').attr('disabled','disabled');
                 $select_dd.find('option[value="address"]').attr('disabled','disabled');
                 $select_dd.find('option[value="city"]').attr('disabled','disabled');
+                $select_dd.find('option[value="county"]').attr('disabled','disabled');
+                $select_dd.find('option[value="country"]').attr('disabled','disabled');
                 //$select_dd.find('option[value="region"]').attr('disabled','disabled');
                 
                 if (selected_value == 'StateProvinceField'){

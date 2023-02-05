@@ -13,6 +13,9 @@
   <meta itemprop="availability" content="{% trans "Event is full" %}">
   <div class="registration-orange">
     {% trans "Event is full" %}
+    {% if request.user.is_superuser and not event.is_over %}
+    <div><a class="text-danger" href="{% url "event.register" event.pk %}">{% trans "Admin: Register" %}</a></div>
+    {% endif %}
   </div>
   {% else %}
   {% if reg_ended and not event.is_over %}

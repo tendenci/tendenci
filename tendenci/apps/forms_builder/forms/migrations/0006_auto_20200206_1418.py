@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='field',
             name='field_function',
-            field=models.CharField(blank=True, choices=[('GroupSubscription', 'Subscribe to Group'), ('GroupSubscriptionAuto', 'Subscribe to Group (Auto)'), ('EmailFirstName', 'First Name'), ('EmailLastName', 'Last Name'), ('EmailFullName', 'Full Name'), ('EmailPhoneNumber', 'Phone Number'), ('Recipients', 'Email to Recipients'), ('company', 'Company'), ('address', 'Address'), ('city', 'City'), ('region', 'Region'), ('state', 'State'), ('zipcode', 'Zip'), ('position_title', 'Position Title'), ('referral_source', 'Referral Source'), ('notes', 'Notes')], max_length=64, null=True, verbose_name='Special Functionality'),
+            field=models.CharField(blank=True, choices=[('GroupSubscription', 'Subscribe to Group'), ('GroupSubscriptionAuto', 'Subscribe to Group (Auto)'), ('EmailFirstName', 'First Name'), ('EmailLastName', 'Last Name'), ('EmailFullName', 'Full Name'), ('EmailPhoneNumber', 'Phone Number'), ('Recipients', 'Email to Recipients'), ('company', 'Company'), ('address', 'Address'), ('city', 'City'), ('county', 'County'), ('country', 'Country'), ('region', 'Region'), ('state', 'State'), ('zipcode', 'Zip'), ('position_title', 'Position Title'), ('referral_source', 'Referral Source'), ('notes', 'Notes')], max_length=64, null=True, verbose_name='Special Functionality'),
         ),
     ]

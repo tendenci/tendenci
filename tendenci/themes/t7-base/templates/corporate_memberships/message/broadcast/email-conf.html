@@ -1,0 +1,30 @@
+{% extends "corporate_memberships/base.html" %}
+
+{% block content %}
+
+<div class="t-message-pending">
+  <h1>{% trans "Broadcast E-mail Confirmation" %}</h1>
+	<div>{% trans "Total emails sent:" %} {{ total_sent }}</div>
+	<div>&nbsp;</div>
+	
+	<ol>
+    {% for corp_member in corp_members %}
+	<li>
+	{{ corp_member.corp_profile.name }} ({{ corp_member.corp_profile.num_reps }})
+	</li>
+	{% endfor %}
+	</ol>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    
+<script type="text/javascript">  
+    (function($) {
+        $('#m-streaming-content').remove();
+     })(jQuery);
+ </script>
+
+{% endblock %}
+

@@ -620,6 +620,7 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
         Update the permissions backend and log the event
         """
         instance = form.save(commit=False)
+        instance.owner = request.user
         update_perms_and_save(request, form, instance)
         
         form.save_logo(instance, request.user)

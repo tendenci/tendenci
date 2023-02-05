@@ -10,7 +10,7 @@
 	{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
 	{% if not is_chapter_member %}
   	<div class="text-right">
-		<a href="{% url 'chapters.membership_add' chapter.id %}" class="btn btn-sm btn-info">{% trans 'Join Chapter' %}</a>
+		<a href="{% url 'chapters.membership_add' chapter.id %}" class="btn btn-sm btn-info">{% trans 'Join' %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
 	</div>
 	{% endif %}
 	{% endif %}

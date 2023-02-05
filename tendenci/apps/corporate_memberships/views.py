@@ -28,6 +28,8 @@ from django.db.models import ForeignKey, OneToOneField
 from django.db.models.fields import AutoField
 from django.utils.translation import gettext_lazy as _
 from django.db.models.functions import Lower
+from django.http.response import StreamingHttpResponse
+from django.conf import settings
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
@@ -69,7 +71,9 @@ from tendenci.apps.corporate_memberships.forms import (
                                          CreatorForm,
                                          CorpApproveForm,
                                          ReportByTypeForm,
-                                         ReportByStatusForm
+                                         ReportByStatusForm,
+                                         BroadcastForm,
+                                         TermsForm,
                                          )
 from tendenci.apps.corporate_memberships.utils import (
                                          get_indiv_memberships_choices,
@@ -80,6 +84,7 @@ from tendenci.apps.corporate_memberships.utils import (
                                          dues_rep_emails_list,
                                          get_over_time_stats,
                                          get_summary,
+                                         broadcast_emails_to_corp
                                          )
 from tendenci.apps.corporate_memberships.import_processor import CorpMembershipImportProcessor
 #from tendenci.apps.memberships.models import MembershipType
@@ -91,6 +96,80 @@ from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import escape_csv
+
+
+@login_required
+def broadcast_email(request):
+    from tendenci.apps.newsletters.utils import is_newsletter_relay_set
+    if not request.user.is_superuser:
+        if not (request.user.profile.member_number and \
+                 settings.BROADCAST_EMAIL_ENABLED):
+            raise Http403
+
+    if not is_newsletter_relay_set():
+        messages.error(request, _('Email relay is not configured properly.'
+                ' Broadcase emails cannot be sent.'))
+        raise Http403
+
+    corp_types = None
+    step2 = False
+
+    if request.method == "GET" or 'continue' in request.POST:
+        form = TermsForm(request.POST or None)
+    else:
+        form = BroadcastForm(request.POST or None, initial={})
+        step2 = True
+        
+    if request.method == "POST":
+        if form.is_valid():
+            if 'continue' in request.POST:
+                form = BroadcastForm(initial={})
+                step2 = True
+
+            if 'send' in request.POST:
+                email = form.save()
+                if not email.sender_display:
+                    email.sender_display = request.user.get_full_name()
+                if not email.reply_to:
+                    email.reply_to = request.user.email
+                email.recipient = request.user.email
+                email.content_type = "text"
+                email.allow_anonymous_view = False
+                email.allow_user_view = False
+                email.allow_member_view = False
+                email.save(request.user, log=False)
+                corp_members = form.cleaned_data['corp_members']
+                #TODO: Put it into a queue instead of sending immediately
+                retn_content = broadcast_emails_to_corp(email,
+                                                       corp_members=corp_members, 
+                                                        request=request)
+                corp_names = ', '.join([corp_member.corp_profile.name for corp_member in corp_members[:5]])
+                if len(corp_members) > 5:
+                    corp_names += " ..."
+                EventLog.objects.log(instance=email,
+                                     description=f'Broadcase email (id: {email.id}) sent to {len(corp_members)} corp member(s) - {corp_names}.')
+                return StreamingHttpResponse(streaming_content=retn_content)
+            
+     
+    if step2:
+        # get a list of corp types that are associated with corp memberships
+        corp_types = CorporateMembershipType.objects.filter(status_detail='active').order_by('name')
+        excluded = []
+        for corp_type in corp_types:
+            if not corp_type.corpmembership_set.filter(status_detail='active').exists():
+                excluded.append(corp_type.id)
+        if excluded:
+            corp_types = corp_types.exclude(id__in=excluded)
+        for corp_type in corp_types:
+            corp_type.corp_members = form.fields['corp_members'].queryset.filter(
+                corporate_membership_type=corp_type.id)
+        template_name='corporate_memberships/message/broadcast/step2.html'
+    else:
+        template_name='corporate_memberships/message/broadcast/step1.html'  
+
+    return render_to_resp(request=request, template_name=template_name,
+                          context={'form': form,
+                                   'corp_types': corp_types})
 
 
 @is_enabled('corporate_memberships')
@@ -840,6 +919,16 @@ def corpmembership_search(request, my_corps_only=False,
 
         if industry:
             corp_members = corp_members.filter(corp_profile__industry_id=industry)
+
+    # membership_type
+    if 'membership_type' in search_form.fields:
+        try:
+            membership_type = int(request.GET.get('membership_type'))
+        except:
+            membership_type = 0
+
+        if membership_type:
+            corp_members = corp_members.filter(corporate_membership_type_id=membership_type)
 
     # corporate membership type
     if not my_corps_only and is_superuser:

@@ -3,7 +3,7 @@
 
 {% block nav_icon_url %}{% static 'famfamfam/icons/chart_organisation.png' %}{% endblock %}
 
-{% block nav_label %}{% trans 'Chapters' %}{% endblock %}
+{% block nav_label %}{% firstof MODULE_CHAPTERS_LABEL_PLURAL trans "Chapters" %}{% endblock %}
 
 {% block current_app %}
     {% if chapter %}

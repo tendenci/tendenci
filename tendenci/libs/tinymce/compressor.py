@@ -45,10 +45,15 @@ def split_commas(str):
         return []
     return str.split(",")
 
+
+def is_valid_filename(file_name):
+    safe_filename_re = re.compile(r'^[a-zA-Z][a-zA-Z0-9_-]*$')
+    return safe_filename_re.match(file_name)
+
 def gzip_compressor(request):
-    plugins = split_commas(request.GET.get("plugins", ""))
-    languages = split_commas(request.GET.get("languages", ""))
-    themes = split_commas(request.GET.get("themes", ""))
+    plugins = filter(is_valid_filename, split_commas(request.GET.get("plugins", "")))
+    languages = filter(is_valid_filename, split_commas(request.GET.get("languages", "")))
+    themes = filter(is_valid_filename, split_commas(request.GET.get("themes", "")))
     isJS = request.GET.get("js", "") == "true"
     compress = request.GET.get("compress", "true") == "true"
     suffix = request.GET.get("suffix", "") == "_src" and "_src" or ""
