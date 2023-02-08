@@ -199,7 +199,34 @@
         </tbody>
     </table>
   {% endif %}
-    
+  
+  {% with corp_profile.branches.all as branches %}
+  {% if branches %}
+  <h3>{% trans 'Branches' %}</h3>
+  <div>
+	  {% for branch in branches %}
+	  {% if forloop.counter0|divisibleby:"2"%}
+	  	{% if not forloop.first %}
+	  	</div>
+	  	{% endif %}
+	  	<div class="row">
+	  {% endif %} 
+	  	<div class="col-xs-6">
+		  	<div><strong>{{ branch.name }}</strong></div>
+		  	<div>{{ branch.address }}</div>
+		  	<div>{{ branch.city_state_zip }} {{ branch.country }}</div>
+		  	{% if branch.phone %}
+		  	<div><strong>{% trans 'Phone:' %}</strong> {{ branch.phone }}</div>
+		  	{% endif %}
+		  	{% if branch.fax %} 
+		  	<div><strong>{% trans 'Fax:' %}</strong> {{ branch.fax }}</div>
+		  	{% endif %}
+	  	</div>
+	  {% endfor %}
+	  </div>
+  </div>
+  {% endif %} 
+  {% endwith %} 
 
     <h3>{% trans 'Representatives' %}</h3>
     {% if reps %}
