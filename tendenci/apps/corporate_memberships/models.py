@@ -561,6 +561,35 @@ class CorpProduct(models.Model):
         return reverse('admin:products_product_change', args=[self.product.id])
 
 
+class Branch(models.Model):
+    """
+    Branch office (or location)
+    """
+    corp_profile = models.ForeignKey("CorpProfile",
+                                     related_name="branches",
+                                     on_delete=models.CASCADE)
+    name = models.CharField(max_length=150, blank=True)
+    address = models.CharField(max_length=150, blank=True)
+    city = models.CharField(max_length=150, blank=True)
+    state = models.CharField(max_length=150, blank=True)
+    zip = models.CharField(max_length=150, blank=True)
+    country = models.CharField(max_length=150, blank=True)
+    phone = models.CharField(_('Phone'), max_length=50,
+                             blank=True, default='')
+    fax = models.CharField(_('Fax'), max_length=50,
+                             blank=True, default='')
+
+    class Meta:
+        app_label = 'corporate_memberships'
+
+    def __str__(self):
+        return self.name
+
+    def city_state_zip(self):
+        state_zip = ' '.join([s for s in (self.state, self.zip) if s])
+        return ', '.join([s for s in (self.city, state_zip) if s])
+
+
 class CorpMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     corp_profile = models.ForeignKey("CorpProfile",
