@@ -339,7 +339,7 @@ class Course(TendenciBaseModel):
                 ('disabled', _('Disabled')),
                 )
     name = models.CharField(_("Course Name"), max_length=150,
-                            db_index=True, unique=True)
+                            db_index=True)
     location_type = models.CharField(_('Type'),
                              max_length=6,
                              default='online',
