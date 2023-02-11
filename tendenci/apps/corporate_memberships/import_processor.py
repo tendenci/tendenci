@@ -165,7 +165,7 @@ class CorpMembershipImportProcessor(object):
         if 'id' not in self.cmemb_data:
             if 'id' in self.corp_membership_fields:
                 del self.corp_membership_fields['id']
-        self.cmemb_data['name'] = self.cmemb_data['company_name']
+        self.cmemb_data['name'] = (self.cmemb_data['company_name']).strip()
         del self.cmemb_data['company_name']
         self.field_names = cmemb_data  # csv field names
         corp_memb_display = {}
@@ -192,7 +192,7 @@ class CorpMembershipImportProcessor(object):
         else:
             #if self.key == 'name':
             [corp_profile] = CorpProfile.objects.filter(
-                    name=self.cmemb_data['name'])[:1] or [None]
+                    name__iexact=self.cmemb_data['name'])[:1] or [None]
             if corp_profile:
                 corp_membs = CorpMembership.objects.filter(
                             corp_profile=corp_profile,

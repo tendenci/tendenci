@@ -13,7 +13,7 @@ from tendenci.apps.corporate_memberships.models import (
     CorpMembershipAppField,
     CorpMembership,
     CorpMembershipRep,
-    CorpProfile, CorpProduct,
+    CorpProfile, CorpProduct, Branch,
     Notice)
 from tendenci.apps.corporate_memberships.forms import (
     CorporateMembershipTypeForm,
@@ -21,7 +21,7 @@ from tendenci.apps.corporate_memberships.forms import (
     NoticeForm,
     CorpMembershipAppFieldAdminForm,
     CorpProfileAdminForm,
-    CorpProductForm)
+    CorpProductForm, BranchAdminForm)
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 
 from tendenci.apps.base.utils import tcurrency
@@ -579,11 +579,23 @@ class ProductInline(admin.TabularInline):
     verbose_name_plural = 'Products'
 
 
+class BranchInlineAdmin(admin.StackedInline):
+    model = Branch
+    fields = ('name', 'address', 'city', 'state', 'zip',
+              'country', 'phone', 'fax')
+    extra = 1
+    verbose_name = _('Branch')
+    verbose_name_plural = _('Branches')
+    ordering = ("name",)
+    form = BranchAdminForm
+
+
 class CorpProfileAdmin(TendenciBaseModelAdmin):
     model = CorpProfile
     list_display = ['name',]
     search_fields = ('name',)
-    inlines = (CorpMembershipRepInlineAdmin, CorpMembershipInlineAdmin)
+    inlines = (CorpMembershipRepInlineAdmin, BranchInlineAdmin,
+               CorpMembershipInlineAdmin)
     if get_setting('module', 'corporate_memberships', 'useproducts'):
         inlines = (ProductInline,) + inlines
     fieldsets = [(_('Company Details'), {

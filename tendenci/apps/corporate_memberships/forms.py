@@ -28,7 +28,7 @@ from tendenci.apps.corporate_memberships.widgets import NoticeTimeTypeWidget
 from tendenci.apps.corporate_memberships.models import (
     CorporateMembershipType,
     CorpMembership,
-    CorpProfile, CorpProduct,
+    CorpProfile, CorpProduct, Branch,
     CorpMembershipApp,
     CorpMembershipAppField,
     CorpMembershipRep,
@@ -43,13 +43,14 @@ from tendenci.apps.corporate_memberships.utils import (
     get_notice_token_help_text,
     csv_to_dict)
 from tendenci.apps.corporate_memberships.settings import UPLOAD_ROOT
-from tendenci.apps.base.fields import PriceField
+from tendenci.apps.base.fields import PriceField, CountrySelectField, StateSelectField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.files.models import File
 from tendenci.apps.products.models import Product, Category as ProductCategory
 from tendenci.apps.emails.models import Email
+from tendenci.apps.site_settings.utils import get_setting
 
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -79,6 +80,22 @@ class CorpProductForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CorpProductForm, self).__init__(*args, **kwargs)
         self.fields['product'].choices = _get_product_choices()
+
+
+class BranchAdminForm(forms.ModelForm):
+    country = CountrySelectField(label=_("Country"), required=False)
+                               
+    class Meta:
+        model = Branch
+        fields = ('name', 'address', 'city', 'state', 'zip',
+              'country', 'phone', 'fax')
+        
+    def __init__(self, *args, **kwargs):
+        super(BranchAdminForm, self).__init__(*args, **kwargs)
+        # state
+        if get_setting('site', 'global', 'stateusesdropdown'):
+            self.fields['state'] = StateSelectField(label=self.fields['state'].label,
+                                                    required=self.fields['state'].required)
 
 
 class TermsForm(FormControlWidgetMixin, forms.Form):

@@ -7,6 +7,7 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from functools import reduce
 from operator import or_
+import posixpath
 
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
@@ -710,6 +711,7 @@ def redirect_to_s3(request, path, file_type='themes'):
     """
     Redirect to S3
     """
+    path = posixpath.normpath(path).lstrip('/')
     if path:
         if file_type == 'static':
             # static files such as tinymce and webfonts need to be served internally.
