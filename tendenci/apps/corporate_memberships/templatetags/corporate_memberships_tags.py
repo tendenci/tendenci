@@ -263,7 +263,7 @@ class ListCorpMembershipNode(Node):
             exclude_expired = bool(self.kwargs['exclude_expired'])
             
 
-        items = CorpMembership.objects.exclude(status_detail='archive')
+        items = CorpMembership.objects.exclude(status_detail__in=['archive', 'inactive'])
         if not allow_anonymous_search:
             if user.is_authenticated:
                 if not user.profile.is_superuser:
