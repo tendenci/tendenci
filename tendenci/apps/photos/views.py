@@ -613,7 +613,8 @@ def handle_uploaded_photo(request, photoset_id, file_path):
     # truncate; make unique; append extension
     filename = filename[:70] + '-' + str(uuid.uuid4())[:5] + extension
 
-    photo.image.save(filename, File(open(file_path, 'rb')))
+    with open(file_path, 'rb') as f:
+        photo.image.save(filename, File(f))
 
     position_max = Image.objects.filter(
         photoset=photoset_id).aggregate(Max('position'))['position__max'] or 0
