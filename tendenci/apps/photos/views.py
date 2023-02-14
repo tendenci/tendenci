@@ -307,20 +307,20 @@ def photo_original(request, id):
         raise Http404
     except IndexError:
         ext = "png"
-
+    #ext = 'png'
     if ext in ["jpg", 'JPG']:
         ext = "jpeg"
     
-    with default_storage.open(str(photo.image.file), 'rb') as f:
-        if photo.exif_data and photo.exif_data.get('Orientation', 1) in (3, 6, 8):
-            img = PILImage.open(f)
-            # rotate image if needed
-            img = apply_orientation(img)
-            output = io.BytesIO()
+    if photo.exif_data and photo.exif_data.get('Orientation', 1) in (3, 6, 8):
+        img = PILImage.open(photo.image)
+        # rotate image if needed
+        img = apply_orientation(img)
+        with io.BytesIO() as output:
             img.save(output, format=ext.upper())
+            img.close()
             return HttpResponse(output.getvalue(), content_type="image/{}".format(ext))
 
-        return HttpResponse(f, content_type="image/{}".format(ext))
+    return HttpResponse(photo.image, content_type="image/{}".format(ext))
 
 
 @login_required

@@ -271,8 +271,9 @@ class ImageModel(models.Model):
             return
 
         try:
-            content = default_storage.open(str(self.image)).read()
-            im = PILImage.open(BytesIO(content))
+            with default_storage.open(str(self.image)) as f:
+                content = f.read()
+                im = PILImage.open(BytesIO(content))
         except IOError as e:
             print(e)
             return
@@ -302,6 +303,7 @@ class ImageModel(models.Model):
                 im.save(buffer, im_format, optimize=True)
             else:
                 im.save(buffer, im_format, quality=int(photosize.quality), optimize=True)
+            im.close()
             default_storage.save(im_filename, ContentFile(buffer.getvalue()))
         except IOError as e:
             print(e)
