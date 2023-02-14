@@ -664,7 +664,7 @@ def image_rescale(img, size, force=True):
     max_width, max_height = size
 
     if not force:
-        img.thumbnail((max_width, max_height), pil.ANTIALIAS)
+        img.thumbnail((max_width, max_height), pil.LANCZOS)
     else:
         src_width, src_height = img.size
         src_ratio = float(src_width) / float(src_height)
@@ -682,7 +682,7 @@ def image_rescale(img, size, force=True):
             x_offset = 0
             y_offset = float(src_height - crop_height) / 3
         img = img.crop((int(x_offset), int(y_offset), int(x_offset)+int(crop_width), int(y_offset)+int(crop_height)))
-        img = img.resize((dst_width, dst_height), pil.ANTIALIAS)
+        img = img.resize((dst_width, dst_height), pil.LANCZOS)
 
     img.format = format  # add format back
     return img
