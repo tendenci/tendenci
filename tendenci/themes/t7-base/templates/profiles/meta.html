@@ -35,7 +35,7 @@
     <div class="edit-links">
     <ul>
         {% if request.user.is_staff %}
-        <li><a class="eventlog-link" href="{% url "event_log.search" %}?user_id={{ profile.user.pk }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="eventlog-link" href="{% url "event_log.search" %}?user_id={{ profile.user.pk }}&start_dt_0={{ profile.user.date_joined|date:'Y-m-d' }}&start_dt_1=12%3A00+AM&end_dt_0={% now "Y-m-d" %}&end_dt_1=11%3A30+PM">{% trans "Eventlogs" %}</a></li>
         {% endif %}
         <li><a class="edit-link" href="{% url "profile.edit" profile.user_id %}">{% trans "Edit" %}</a></li>
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
