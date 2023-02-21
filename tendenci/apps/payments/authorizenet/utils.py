@@ -1,14 +1,104 @@
 import time
 import hmac
+import requests
 import hashlib
 from django.conf import settings
 from django.http import Http404
 from django.db import transaction
+from django.urls import reverse
+
 from .forms import SIMPaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from tendenci.apps.site_settings.utils import get_setting
+
+
+class AuthNetAPI:
+    def __init__(self):
+        self.login = settings.MERCHANT_LOGIN
+        self.txn_key = settings.MERCHANT_TXN_KEY
+        self.headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
+        self.api_endpoint = settings.AUTHNET_API_ENDPOINT
+
+    def create_txn_request(self, payment, opaque_value, opaque_descriptor):
+        request_dict = {
+            "createTransactionRequest": {
+                "merchantAuthentication": {
+                    "name": self.login,
+                    "transactionKey": self.txn_key
+                },
+                "refId": str(payment.id),
+                "transactionRequest": {
+                    "transactionType": "authCaptureTransaction",
+                    "amount": payment.amount,
+                    "payment": {
+                        "opaqueData": {
+                            "dataDescriptor": opaque_descriptor,
+                            "dataValue": opaque_value
+                        }
+                    },
+                   "order": {
+                    "invoiceNumber": payment.invoice.id,
+                    "description": payment.description
+                    }
+                }
+            }
+        }
+        return requests.post(self.api_endpoint, headers=self.headers, json=request_dict)
+    
+    def process_txn_response(self, request, res_dict, payment):
+        """
+        1. Update payment (equivalent to the old payment_update_authorizenet)
+        2. Update object - call payment_processing_object_updates(request, payment)
+        """
+        ref_id = res_dict.get('refId', '')
+        if str(payment.id) == ref_id:
+            if res_dict['messages']['resultCode'] == 'Ok':
+                payment.response_code = res_dict['transactionResponse']['responseCode']
+                payment.response_reason_code = payment.response_code
+                # payment.response_reason_text = 
+                # payment.trans_id = res_dict['transactionResponse']['transId']
+                # payment.card_type = 
+                # payment.account_number = 
+                # payment.auth_code = 
+                # payment.avs_code = 
+                # payment.amount = 
+                # payment.first_name = 
+                # payment.last_name = 
+                # payment.company = 
+                # payment.address = 
+                # payment.city = 
+                # payment.state = 
+                # payment.country = 
+                # payment.phone = 
+                # payment.fax = 
+                # payment.email = 
+                
+                if payment.response_code == '1': # Approved
+                    payment.mark_as_paid()
+                    payment.save()
+                    payment.invoice.make_payment(request.user, payment.amount)
+                elif payment.response_code == '2': # Declined:
+                    payment.status_detail = 'declined'
+                    payment.save()
+                elif payment.response_code == '3': # Error:
+                    payment.status_detail = 'error'
+                    payment.save()
+                elif payment.response_code == '4': # Held for Review:
+                    payment.status_detail = 'held_for_review'
+                    payment.save()
+            else:
+                # Error
+                if payment.status_detail == '':
+                    payment.status_detail = 'not approved'
+                payment.save()
+                
+                
+            
+            
+            
+
 
 def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
     msg = '^'.join([settings.MERCHANT_LOGIN,
@@ -18,6 +108,77 @@ def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
            ])+'^'
 
     return hmac.new(settings.MERCHANT_TXN_KEY.encode(), msg.encode(), digestmod=hashlib.md5).hexdigest()
+
+
+def get_form_token(request, payment):
+    request_dict = {
+          "getHostedPaymentPageRequest": {
+            "merchantAuthentication": {
+              "name": settings.MERCHANT_LOGIN,
+              "transactionKey": settings.MERCHANT_TXN_KEY
+            },
+            "transactionRequest": {
+              "transactionType": "authCaptureTransaction",
+              "amount": "%.2f" % payment.amount,
+              "customer": {
+                "email": payment.email
+              },
+              "billTo": {
+                "firstName": payment.first_name,
+                "lastName": payment.last_name,
+                "company": payment.company,
+                "address": payment.address,
+                "city": payment.city,
+                "state": payment.state,
+                "zip": payment.zip,
+                "country": payment.country
+              }
+            },
+            "hostedPaymentSettings": {
+              "setting": [{
+                "settingName": "hostedPaymentReturnOptions",
+                "settingValue": "{\"showReceipt\": false}"
+              }, {
+                "settingName": "hostedPaymentButtonOptions",
+                "settingValue": "{\"text\": \"Pay\"}"
+              }, {
+                "settingName": "hostedPaymentStyleOptions",
+                "settingValue": "{\"bgColor\": \"blue\"}"
+              }, {
+                "settingName": "hostedPaymentPaymentOptions",
+                "settingValue": "{\"cardCodeRequired\": true, \"showCreditCard\": true, \"showBankAccount\": false}"
+              }, {
+                "settingName": "hostedPaymentSecurityOptions",
+                "settingValue": "{\"captcha\": false}"
+              }, {
+                "settingName": "hostedPaymentShippingAddressOptions",
+                "settingValue": "{\"show\": false, \"required\": false}"
+              }, {
+                "settingName": "hostedPaymentBillingAddressOptions",
+                "settingValue": "{\"show\": true, \"required\": false}"
+              }, {
+                "settingName": "hostedPaymentCustomerOptions",
+                "settingValue": "{\"showEmail\": false, \"requiredEmail\": false, \"addPaymentProfile\": false}"
+              }, {
+                "settingName": "hostedPaymentOrderOptions",
+                "settingValue": "{\"show\": true, \"merchantName\": \"" + get_setting('site', 'global', 'sitedisplayname') + "\"}"
+              }, {
+                "settingName": "hostedPaymentIFrameCommunicatorUrl",
+                "settingValue": "{\"url\": \"" + get_setting('site', 'global', 'siteurl') + reverse('authorizenet.iframe_communicator') + "\"}"
+              }]
+            }
+          }
+        }
+    headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
+    api_endpoint = settings.AUTHNET_API_ENDPOINT
+    r = requests.post(api_endpoint, headers=headers, json=request_dict)
+    #return r
+    if r.ok:
+        res_dict = r.json()
+        if res_dict['messages']['resultCode'] == 'Ok':
+            return res_dict['token']
+    return None
+
 
 def prepare_authorizenet_sim_form(request, payment):
     x_fp_timestamp = str(int(time.time()))

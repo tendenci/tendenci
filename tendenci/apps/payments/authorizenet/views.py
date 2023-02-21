@@ -1,9 +1,98 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from django.contrib import messages
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
-from tendenci.apps.payments.authorizenet.utils import authorizenet_thankyou_processing
+from tendenci.apps.payments.authorizenet.utils import AuthNetAPI, authorizenet_thankyou_processing
 from tendenci.apps.payments.utils import log_silent_post
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.payments.models import Payment
+from tendenci.apps.payments.authorizenet.utils import get_form_token
+from .forms import AcceptJSPaymentForm
+
+
+def pay_online(request, payment_id, guid='', template_name='payments/authorizenet/payonline.html'):
+    payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
+
+    if not getattr(settings, 'MERCHANT_LOGIN', ''):
+        url_setup_guide = 'https://www.tendenci.com/help-files/setting-up-online-payment-processor-and-merchant-provider-on-a-tendenci-site/'
+        url_setup_guide = '<a href="{0}">{0}</a>'.format(url_setup_guide)
+        merchant_provider = get_setting("site", "global", "merchantaccount")
+        msg_string = str(_('ERROR: Online payment has not yet be set up or configured correctly. '))
+        if request.user.is_superuser:
+            msg_string += str(_('Please follow the guide {0} to complete the setup process for {1}, then try again.').format(url_setup_guide, merchant_provider))
+        else:
+            msg_string += str(_('Please contact the site administrator to complete the setup process.'))
+            
+        messages.add_message(request, messages.ERROR, _(msg_string))
+        
+        payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
+    
+        return HttpResponseRedirect(reverse('invoice.view', args=[payment.invoice.id]))
+
+    if 'apitest' in settings.AUTHNET_API_ENDPOINT:
+        accept_js_url = 'https://jstest.authorize.net/v3/AcceptUI.js'
+    else:
+        accept_js_url = 'https://js.authorize.net/v3/AcceptUI.js'
+
+    payment_form = AcceptJSPaymentForm(request.POST or None)
+
+    if request.method == "POST" and payment_form.is_valid():
+        # handle payment
+        anet_api = AuthNetAPI()
+        opaque_value = payment_form.cleaned_data['dataValue']
+        opaque_descriptor = payment_form.cleaned_data['dataDescriptor']
+        r = anet_api.create_txn_request(payment, opaque_value, opaque_descriptor)
+        if r.ok:
+            res_dict = r.json()
+            print(res_dict)
+            #TODO
+            anet_api.process_txn_response(request, res_dict, payment)
+            
+            template_name = 'payments/receipt.html'
+            return render_to_resp(request=request, template_name=template_name,
+                              context={'payment':payment})
+        
+    return render_to_resp(request=request, template_name=template_name,
+                              context={
+                                  'payment': payment,
+                                  'payment_form': payment_form,
+                                  'accept_js_url': accept_js_url,
+                                  'api_login': settings.MERCHANT_LOGIN,
+                                  'public_client_key': settings.AUTHNET_PUBLIC_CLIENT_KEY})
+
+
+def pay_online_direct(request, payment_id, guid='', template_name='payments/authorizenet/payonline_direct.html'):
+    if not getattr(settings, 'MERCHANT_LOGIN', ''):
+        url_setup_guide = 'https://www.tendenci.com/help-files/setting-up-online-payment-processor-and-merchant-provider-on-a-tendenci-site/'
+        url_setup_guide = '<a href="{0}">{0}</a>'.format(url_setup_guide)
+        merchant_provider = get_setting("site", "global", "merchantaccount")
+        msg_string = str(_('ERROR: Online payment has not yet be set up or configured correctly. '))
+        if request.user.is_superuser:
+            msg_string += str(_('Please follow the guide {0} to complete the setup process for {1}, then try again.').format(url_setup_guide, merchant_provider))
+        else:
+            msg_string += str(_('Please contact the site administrator to complete the setup process.'))
+            
+        messages.add_message(request, messages.ERROR, _(msg_string))
+        
+        payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
+    
+        return HttpResponseRedirect(reverse('invoice.view', args=[payment.invoice.id]))
+
+    payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
+    token =  get_form_token(request, payment)
+    post_url = settings.AUTHNET_POST_URL
+    print('token=', token)
+    return render_to_resp(request=request, template_name=template_name,
+                              context={
+                                  'payment': payment,
+                                  'token': token,
+                                  'post_url': post_url})
+
 
 
 @csrf_exempt
