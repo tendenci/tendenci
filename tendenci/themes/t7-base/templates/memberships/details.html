@@ -172,6 +172,12 @@
             <div class="fieldset-label">{% trans 'More Details' %}</div>
             <div style="clear:both;"></div>
 
+            {% if membership.user.profile.account_id %}
+            <div class="field">
+                <div class="label label-info">{% trans 'Account ID' %}</div>
+                <div class="value">{{ membership.user.profile.account_id }}</div>
+            </div>
+            {% endif %}
             {% if profile_form.display_name.value %}
             <div class="field">
                 <div class="label label-info">{{ profile_form.display_name.label }}</div>
