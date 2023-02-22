@@ -401,6 +401,7 @@ def process_export(
 
         profile_field_list = [
             'member_number',
+            'account_id',
             'company',
             'phone',
             'address',

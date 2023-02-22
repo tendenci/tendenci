@@ -256,6 +256,7 @@ def process_export(export_fields='all_fields', identifier=u'', user_id=0):
             'email']
 
         profile_field_list = [
+            'account_id',
             'salutation',
             'initials',
             'display_name',
