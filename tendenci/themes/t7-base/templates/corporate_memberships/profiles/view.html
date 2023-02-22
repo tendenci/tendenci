@@ -30,6 +30,9 @@
 .corp-expired{
 	color: red;
 }
+#corp-branches .row{
+	margin-bottom: 15px;
+}
 </style>
 
 {% endblock %}
@@ -203,7 +206,7 @@
   {% with corp_profile.branches.all as branches %}
   {% if branches %}
   <h3>{% trans 'Branches' %}</h3>
-  <div>
+  <div id="corp-branches">
 	  {% for branch in branches %}
 	  {% if forloop.counter0|divisibleby:"2"%}
 	  	{% if not forloop.first %}

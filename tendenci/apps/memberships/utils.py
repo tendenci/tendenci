@@ -1530,7 +1530,7 @@ class ImportMembDefault(object):
             'username': self.memb_data.get('username', u''),
             'member_number': self.memb_data.get('member_number', u''),
             'phone': self.memb_data.get('phone', u''),
-            'company': self.memb_data.get('company', u''),
+            'company': self.memb_data.get('company', u'').strip(),
         })
 
         return user_display
@@ -1832,6 +1832,8 @@ class ImportMembDefault(object):
             if len(value) > field.max_length:
                 # truncate the value to ensure its length <= max_length
                 value = value[:field.max_length]
+            if field_type == 'CharField':
+                value = value.strip()
             if field.name == 'time_zone':
                 if value not in pytz.all_timezones:
                     if value in self.t4_timezone_map:

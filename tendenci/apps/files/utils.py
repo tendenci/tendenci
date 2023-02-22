@@ -103,7 +103,7 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         image = image_rescale(image, size)  # thumbnail image
     else:
         format = image.format
-        image = image.resize(size, Image.ANTIALIAS)  # resize image
+        image = image.resize(size, Image.LANCZOS)  # resize image
         image.format = format
 
     binary = get_image_binary(image, **image_options)

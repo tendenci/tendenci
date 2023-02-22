@@ -583,7 +583,7 @@ class BranchInlineAdmin(admin.StackedInline):
     model = Branch
     fields = ('name', 'address', 'city', 'state', 'zip',
               'country', 'phone', 'fax')
-    extra = 0
+    extra = 1
     verbose_name = _('Branch')
     verbose_name_plural = _('Branches')
     ordering = ("name",)
