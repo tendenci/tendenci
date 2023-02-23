@@ -313,6 +313,7 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['admin_notes']
                 del self.fields['security_level']
                 del self.fields['status_detail']
+                del self.fields['account_id']
 
             if self.user_current.profile.is_superuser and self.user_current == self.user_this:
                 self.fields['security_level'].choices = (('superuser',_('Superuser')),)
