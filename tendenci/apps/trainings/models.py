@@ -366,7 +366,6 @@ class Course(TendenciBaseModel):
 
 class Exam(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # instead of course, maybe need to tie to exam (when available)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     grade = models.PositiveSmallIntegerField(default=0)
     create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
@@ -403,7 +402,7 @@ class Transcript(models.Model):
     DIAMOND_CHOICES = ((x, x) for x in range(0, 10))
     parent_id = models.PositiveIntegerField(blank=True, default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    exam = models.ForeignKey(Exam, null=True, on_delete=models.SET_NULL)
     course = models.ForeignKey(Course, null=True, on_delete=models.CASCADE)
     school_category = models.ForeignKey(SchoolCategory,
                                         null=True, on_delete=models.SET_NULL)
