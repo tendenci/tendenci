@@ -495,6 +495,12 @@ class ImportUsers(object):
                             for field in Profile._meta.fields
                             if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user', 'guid']])
+        # Track account_ids in file to handle duplicate account_ids within the same file.
+        self.account_ids_in_file = list()
+        # Allow specific fields to be null, even when clean_data would normally provide a
+        # default for the field type.
+        self.allow_null_fields = ['account_id']
+
         self.private_settings = self.set_default_private_settings()
         self.t4_timezone_map = {'AST': 'Canada/Atlantic',
                              'EST': 'US/Eastern',
@@ -583,6 +589,8 @@ class ImportUsers(object):
             elif self.key == 'username':
                 users = User.objects.filter(username__iexact=self.user_data['username'])
 
+            self.set_unique_account_id(users)
+
             if users:
                 user_display['action'] = 'update'
                 user_display['user'] = users[0]
@@ -606,6 +614,7 @@ class ImportUsers(object):
         user_display.update({
             'first_name': self.user_data.get('first_name', u''),
             'last_name': self.user_data.get('last_name', u''),
+            'account_id': self.user_data.get('account_id', u''),
             'email': self.user_data.get('email', u''),
             'username': self.user_data.get('username', u''),
             'phone': self.user_data.get('phone', u''),
@@ -613,6 +622,37 @@ class ImportUsers(object):
         })
 
         return user_display
+
+    def set_unique_account_id(self, users):
+        """
+        Make sure account_id is unique. If duplicate is found, append '1'
+        """
+        # No need to make sure account_id is unique if none was imported.
+        # Also, don't update account_id for existing profile if it hasn't
+        # been changed.
+        account_id = self.user_data.get('account_id')
+        user = users.first() if users else None
+        existing_account_id = str(user.profile.account_id) if user else None
+        if not account_id or (user and account_id == existing_account_id):
+            return None
+
+        # Append '1' as long as duplicate account_id is found.
+        has_duplicates = (
+            Profile.objects.filter(account_id=account_id) or
+            account_id in self.account_ids_in_file
+        )
+        while has_duplicates:
+            account_id = f'{account_id}1'
+            has_duplicates = (
+                account_id != existing_account_id and
+                (
+                    Profile.objects.filter(account_id=account_id) or
+                    account_id in self.account_ids_in_file
+                )
+            )
+
+        self.account_ids_in_file.append(account_id)
+        self.user_data['account_id'] = account_id
 
     def do_import_user(self, user, user_data, action_info):
         """
@@ -772,6 +812,11 @@ class ImportUsers(object):
         """
         Clean the data based on the field type.
         """
+        # Some fields should be left null even if the field type normaly
+        # is given a default value.
+        if not value and field.null and field.name in self.allow_null_fields:
+            return None
+
         field_type = field.get_internal_type()
         if field_type in ['CharField', 'EmailField',
                           'URLField', 'SlugField']:
