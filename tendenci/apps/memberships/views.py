@@ -886,7 +886,7 @@ def download_default_template(request):
         title_list.remove('sig_user_group_ids')
     # replace user field with fields in auth_user and profile
     title_list.remove('user')
-    title_list = ['first_name', 'last_name', 'username', 'email', 'email2',
+    title_list = ['first_name', 'last_name', 'username', 'account_id', 'email', 'email2',
                   'phone', 'salutation', 'company',
                   'position_title', 'sex',  'address',
                   'address2', 'city', 'state',
