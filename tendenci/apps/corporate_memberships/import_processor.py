@@ -43,6 +43,11 @@ class CorpMembershipImportProcessor(object):
                             if field.get_internal_type() != 'AutoField' and \
                             field.name not in ['user', 'guid',
                                                'corp_profile']])
+        # Track account_ids in file to handle duplicate account_ids within the same file.
+        self.account_ids_in_file = list()
+        # Allow specific fields to be null, even when clean_data would normally provide a
+        # default for the field type.
+        self.allow_null_fields = ['account_id']
         self.all_corporate_membership_type_ids = CorporateMembershipType.objects.values_list(
                                                     'id', flat=True)
         self.private_settings = self.set_default_private_settings()
@@ -209,6 +214,8 @@ class CorpMembershipImportProcessor(object):
             else:
                 corp_memb = None
 
+            self.set_unique_account_id(corp_profile)
+
             if corp_profile:
                 if corp_memb:
                     corp_memb_display['action'] = 'update'
@@ -249,6 +256,7 @@ class CorpMembershipImportProcessor(object):
 
         corp_memb_display.update({
                     'company_name': self.cmemb_data.get('name', ''),
+                    'account_id': self.cmemb_data.get('account_id', ''),
                     'email': self.cmemb_data.get('email', ''),
                     'address': self.cmemb_data.get('address', ''),
                     'address2': self.cmemb_data.get('address2', ''),
@@ -258,6 +266,36 @@ class CorpMembershipImportProcessor(object):
                     'status_detail': self.cmemb_data.get('status_detail', ''),
                              })
         return corp_memb_display
+
+    def set_unique_account_id(self, corp_profile):
+        """
+        Make sure account_id is unique. If duplicate is found, append '1'
+        """
+        # No need to make sure account_id is unique if none was imported.
+        # Also, don't update account_id for existing corp_profile if it hasn't
+        # been changed.
+        account_id = self.cmemb_data.get('account_id')
+        existing_account_id = str(corp_profile.account_id) if corp_profile else None
+        if not account_id or (corp_profile and account_id == existing_account_id):
+            return None
+
+        # Append '1' as long as duplicate account_id is found.
+        has_duplicates = (
+            CorpProfile.objects.filter(account_id=account_id) or
+            account_id in self.account_ids_in_file
+        )
+        while has_duplicates:
+            account_id = f'{account_id}1'
+            has_duplicates = (
+                account_id != existing_account_id and
+                (
+                    CorpProfile.objects.filter(account_id=account_id) or
+                    account_id in self.account_ids_in_file
+                )
+            )
+
+        self.account_ids_in_file.append(account_id)
+        self.cmemb_data['account_id'] = account_id
 
     def update_dues_reps(self, corp_profile, dues_reps):
         """
@@ -480,6 +518,11 @@ class CorpMembershipImportProcessor(object):
         """
         Clean the data based on the field type.
         """
+        # Some fields should be left null even if the field type normaly
+        # is given a default value.
+        if not value and field.null and field.name in self.allow_null_fields:
+            return None
+
         field_type = field.get_internal_type()
         if field_type in ['CharField', 'EmailField',
                           'URLField', 'SlugField']:

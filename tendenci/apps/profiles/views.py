@@ -1673,7 +1673,7 @@ def download_user_template(request):
 
     filename = "users_import_template.csv"
 
-    title_list = ['salutation', 'first_name', 'last_name',
+    title_list = ['account_id', 'salutation', 'first_name', 'last_name',
                          'initials', 'display_name', 'email',
                           'email2', 'address', 'address2',
                           'city', 'state', 'zipcode', 'country',

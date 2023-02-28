@@ -52,6 +52,9 @@
                 {% if 'first_name' in fieldnames or 'last_name' in fieldnames %}
                 <th>{% trans 'Name' %}</th>
                 {% endif %}
+                {% if 'account_id' in fieldnames %}
+                <th>{% trans 'Account ID' %}</th>
+                {% endif %}
                 {% if 'email' in fieldnames %}
                 <th>{% trans 'Email' %}</th>
                 {% endif %}
@@ -85,6 +88,9 @@
                     {{ u.first_name }} {{ u.last_name }}
                     {% endif %}
                 </td>
+                {% endif %}
+                {% if 'account_id' in fieldnames %}
+                <td>{{ u.account_id }}</td>
                 {% endif %}
                 {% if 'email' in fieldnames %}
                 <td>{{ u.email }}</td>

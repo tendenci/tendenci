@@ -217,7 +217,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             ('address', 'address2'), ('address_type', 'industry'),
             ('city', 'state'), ('zipcode', 'country'),
             ('phone', 'phone2'),
-            ('work_phone', 'home_phone'), ('mobile_phone',),
+            ('work_phone', 'home_phone'), ('mobile_phone', 'account_id'),
             ('fax'),
             ('url', 'url2'),
             ('dob', 'sex'), ('spouse',),
@@ -311,7 +311,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         'user__last_name',
         'user__email',
         'member_number',
-        'user__username'
+        'user__username',
+        'user__profile__account_id',
     ]
 
     list_display = [
@@ -319,6 +320,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         'edit_link',
         'view_on_site',
         'user_profile',
+        'profile_account_id',
         'email',
         'member_number',
         'membership_type_link',
@@ -402,6 +404,11 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
               instance.user.get_full_name() or instance.user.username,)
     user_profile.short_description = _('User Profile')
     user_profile.admin_order_field = 'user__last_name'
+
+    def profile_account_id(self, instance):
+        return instance.user.profile.account_id
+    profile_account_id.short_description = _('Account ID')
+    profile_account_id.admin_order_field = 'user__profile__account_id'
 
     def email(self, instance):
         return instance.user.email
