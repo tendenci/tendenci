@@ -1,13 +1,17 @@
+import subprocess
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.conf import settings
 
+from tendenci.libs.utils import python_executable
 from .models import (SchoolCategory, Certification,
                      CertCat, Course, Transcript,
                      TeachingActivity,
                      OutsideSchool,
-                     UserCertData)
+                     UserCertData,
+                     BluevoltExamImport)
 from .forms import CourseForm
 
 
@@ -123,13 +127,13 @@ class CertificationAdmin(admin.ModelAdmin):
 
 class CourseAdmin(admin.ModelAdmin):
     model = Course
-    list_display = ['id', 'name',
+    list_display = ['id', 'name', 'course_code',
                     'location_type',
                     'school_category',
                     'credits',
                     'status_detail'
                     ]
-    search_fields = ['name', 'location_type']
+    search_fields = ['name', 'location_type', 'course_code']
     list_filter = ['status_detail', 'location_type', 'school_category']
     fieldsets = (
         (_('General'), {
@@ -285,6 +289,67 @@ class UserCertDataAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
 
+class BluevoltExamImportAdmin(admin.ModelAdmin):
+    model = BluevoltExamImport
+    list_display = ['id',
+                    'date_from',
+                    'date_to',
+                    'num_inserted',
+                    'status_detail',
+                    'run_start_date',
+                    'run_finish_date',
+                    'run_by',]
+    list_filter = ['status_detail',]
+    # fieldsets = (
+    #     (None, {
+    #         'fields': (
+    #         'date_from',
+    #         'date_to',
+    #         'status_detail',
+    #         'result_detail'
+    #
+    #     )},),
+    # )
+    def save_model(self, request, obj, form, change):
+        super(BluevoltExamImportAdmin, self).save_model(request, obj, form, change)
+        if not change:
+            obj.run_by = request.user
+            obj.save()
+            
+            subprocess.Popen([python_executable(), "manage.py",
+                              "pull_bluevolt_exams",
+                              "--import_id",
+                              str(obj.id)])  
+    
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_save_and_add_another'] = False
+        extra_context['show_save_and_continue'] = False
+        if object_id:
+            extra_context['show_save'] = False
+        return super().changeform_view(request, object_id, form_url, extra_context)
+    
+    def get_form(self, request, obj=None, **kwargs):
+        if not obj: # add
+            kwargs['fields'] = ['date_from', 'date_to']
+        else: # change
+            kwargs['fields'] = ['date_from', 'date_to', 'status_detail', 'result_detail']
+        return super(BluevoltExamImportAdmin, self).get_form(request, obj, **kwargs)
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj: # editing
+            return self.readonly_fields + ('date_from', 'date_to', 'status_detail', 'result_detail',)
+        return self.readonly_fields
+
+    # def has_change_permission(self, request, obj=None):
+    #     return False
+
+    def show_result_detail(self, obj):
+        return mark_safe(obj.result_detail)
+    show_result_detail.short_description = 'Result detail'
+
+
+
 admin.site.register(SchoolCategory, SchoolCategoryAdmin)
 admin.site.register(Certification, CertificationAdmin)
 admin.site.register(Course, CourseAdmin)
@@ -293,3 +358,5 @@ admin.site.register(Transcript, TranscriptAdmin)
 admin.site.register(TeachingActivity, TeachingActivityAdmin)
 admin.site.register(OutsideSchool, OutsideSchoolAdmin)
 admin.site.register(UserCertData, UserCertDataAdmin)
+if hasattr(settings, 'BLUEVOLT_API_KEY') and settings.BLUEVOLT_API_KEY:
+    admin.site.register(BluevoltExamImport, BluevoltExamImportAdmin)

@@ -12,6 +12,39 @@ from tendenci.apps.base.fields import DictField
 from tendenci.apps.site_settings.utils import get_setting
 
 
+class BluevoltExamImport(models.Model):
+    date_from = models.DateField()
+    date_to = models.DateField()
+    
+    num_inserted = models.PositiveIntegerField(blank=True, null=True,)
+    status_detail = models.CharField(_('Status'),
+                             max_length=10,
+                             default='Pending')
+    result_detail = models.TextField(blank=True, default='')
+    run_by = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        editable=False)
+    run_start_date = models.DateTimeField(blank=True, null=True,)
+    run_finish_date = models.DateTimeField(blank=True, null=True,)
+    
+    class Meta:
+        verbose_name = _("Bluevolt Exam Import")
+        verbose_name_plural = _("Bluevolt Exam Imports")
+        app_label = 'trainings'
+
+    def __str__(self):
+        return f'Bluevolt import from {self.date_from} to {self.date_to}'
+
+
+# class BluevoltCourseMap(models.Model):
+#     bv_course_id = models.IntegerField(db_index=True)
+#     course_id = models.IntegerField()
+#
+#
+# class BluevoltUserMap(models.Model):
+#     bv_user_id = models.IntegerField(db_index=True)
+#     user_id = models.IntegerField()
+
+
 class TeachingActivity(models.Model):
     STATUS_CHOICES = (
                 ('pending', _('Pending')),
