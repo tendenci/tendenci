@@ -52,7 +52,7 @@ class TeachingActivity(models.Model):
                 ('disapproved', _('Disapproved')),
                 )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    activity_name = models.CharField(max_length=150,
+    activity_name = models.CharField(max_length=255,
                             db_index=True)
     date = models.DateField()
     description = models.TextField(blank=True, default='')
@@ -443,7 +443,7 @@ class Transcript(models.Model):
                              max_length=10,
                              default='online',
                              choices=LOCATION_TYPE_CHOICES)
-    credits = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    credits = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     # applied = models.CharField(max_length=1, default='D',
     #                          choices=APPLIED_CHOICES)
     status = models.CharField(max_length=10, default='pending',
