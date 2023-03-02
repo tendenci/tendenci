@@ -1,4 +1,5 @@
 from builtins import str
+from decimal import Decimal
 import re
 #from south.modelsinspector import add_introspection_rules
 
@@ -14,7 +15,7 @@ from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from tendenci.apps.base import forms
 from tendenci.apps.base.utils import custom_json_dumper
-from tendenci.apps.base.widgets import EmailVerificationWidget, PriceWidget
+from tendenci.apps.base.widgets import EmailVerificationWidget, PercentWidget, PriceWidget
 from tendenci.apps.site_settings.utils import get_setting
 
 
@@ -145,6 +146,7 @@ class StateSelectField(fields.ChoiceField):
         self.choices = choices
         self.initial = ''
 
+
 class PriceField(fields.DecimalField):
 
     def __init__(self, max_value=None, min_value=None, max_digits=None, decimal_places=None, *args, **kwargs):
@@ -161,3 +163,84 @@ class PriceField(fields.DecimalField):
                 raise ValidationError(self.error_messages['invalid'])
 
         return super(PriceField, self).clean(value)
+
+
+class PercentField(fields.DecimalField):
+    """
+    Accepts value between 0 and 1 and displays it between 0 and 100
+    """
+    widget = PercentWidget()
+    default_error_messages = {
+        'out_of_range': _('Must be between 0 and 100'),
+        'whole_number': _('Must be a whole number'),
+        'decimal_places': _('Only {decimal_places} decimal place(s) allowed')
+    }
+
+    def __init__(self, allowed_decimal_places = None, *args, **kwargs):
+        # Optionally specify how many decimal places are allowed.
+        self.allowed_decimal_places = allowed_decimal_places
+        # Track if errors occurred (Used to display values correctly on error)
+        self.error_occurred = False
+        # Track raw input from user (Used to display values correctonly on error)
+        self.raw_input = None
+
+        super(PercentField, self).__init__(*args, **kwargs)
+
+    @property
+    def decimal_validation_error(self):
+        """Error message to display if decimal validation fails"""
+        if not self.allowed_decimal_places:
+            return self.error_messages['whole_number']
+
+        return self.error_messages['decimal_places'].format(
+            decimal_places=self.allowed_decimal_places)
+
+    def to_python(self, value):
+        """Save percent as decimal number"""
+        value = super(PercentField, self).to_python(value)
+        return Decimal("%.2f" % (float(value) / 100.0))
+
+    def prepare_value(self, value):
+        """Display as whole number"""
+        value = super(PercentField, self).prepare_value(value)
+
+        # Display invalid values in a way expected by user.
+        if self.error_occurred:
+            return self.raw_input
+
+        return str(int(value * 100))
+
+    def raise_validation_error(self, error_message):
+        """Track error occurred and raise ValidationError"""
+        self.error_occurred = True
+        raise ValidationError(error_message)
+
+    def validate_decimal_places(self):
+        """Validate input conforms to allowed decimal places"""
+        if self.allowed_decimal_places is None:
+            return
+
+        value = Decimal(self.raw_input)
+        decimal_places = abs(value.as_tuple().exponent)
+
+        if decimal_places > self.allowed_decimal_places:
+            self.raise_validation_error(self.decimal_validation_error)
+
+    def clean(self, value):
+        """
+        Validate value is between 0 and 1 and that value
+        follows rules for allowed decimal places.
+        """
+        # Track raw input in order to display value correctly in case of error.
+        self.raw_input = value
+
+        value = super(PercentField, self).clean(value)
+        if value is None:
+            return 0
+
+        self.validate_decimal_places()
+
+        if (value < 0 or value > 1):
+            self.raise_validation_error(self.error_messages['out_of_range'])
+
+        return value

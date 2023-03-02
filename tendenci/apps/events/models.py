@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.fields import AutoField
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Q
@@ -226,6 +227,18 @@ class RegistrationConfiguration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+    cancel_by_dt = models.DateTimeField(_('Cancel by'),
+                                        blank=True,
+                                        null=True)
+    cancellation_fee = models.DecimalField(_('Cancellation Fee'),
+                                           max_digits=21,
+                                           decimal_places=2,
+                                           default=0)
+    cancellation_percent = models.DecimalField(_('Cancellation Percent'),
+                                               default=0,
+                                               max_digits=2,
+                                               decimal_places=2,
+                                               validators=[MinValueValidator(0), MaxValueValidator(1)])
     class Meta:
         app_label = 'events'
 
