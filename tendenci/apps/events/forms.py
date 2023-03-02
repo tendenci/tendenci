@@ -857,6 +857,10 @@ class EventForm(TendenciBaseForm):
         # check if course field is needed
         if not get_setting('module', 'events', 'usewithtrainings'):
             del self.fields['course']
+        else:
+            self.fields['course'].queryset = self.fields['course'].queryset.filter(
+                location_type='onsite',
+                status_detail='enabled').order_by('name') # onsite courses only
         
 
     def clean_photo_upload(self):
