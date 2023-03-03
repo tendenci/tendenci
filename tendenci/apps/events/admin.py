@@ -13,7 +13,7 @@ from django.utils.safestring import mark_safe
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
-    CustomRegFormEntry, CustomRegFieldEntry, Event)
+    CustomRegFormEntry, CustomRegFieldEntry, Event, CEUCategory)
 from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import delete_settings_cache
@@ -290,5 +290,27 @@ class StandardRegFormAdmin(admin.ModelAdmin):
         return False
 
 
+class CEUCategoryAdminInline(admin.TabularInline):
+    fieldsets = ((None, {'fields': ('name',)}),)
+    model = CEUCategory
+    extra = 0
+    verbose_name = _("Continuing Education Unit Sub-Category")
+    verbose_name_plural = _("Continuing Education Unit Sub-Categories")
+
+
+class CEUCategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+    list_display_links = ('name',)
+    fieldsets = ((None, {'fields': ('name',)}),)
+    inlines = (CEUCategoryAdminInline,)
+    verbose_name = _("Continuing Education Unit Category")
+    verbose_name_plural = _("Continuing Education Unit Categories")
+
+    def get_queryset(self, request):
+        qs = super(CEUCategoryAdmin, self).get_queryset(request)
+        return qs.filter(parent__isnull=True)
+
+
+admin.site.register(CEUCategory, CEUCategoryAdmin)
 admin.site.register(StandardRegForm, StandardRegFormAdmin)
 admin.site.register(Event, EventAdmin)

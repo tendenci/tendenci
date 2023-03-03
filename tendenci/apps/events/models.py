@@ -155,6 +155,24 @@ class Place(models.Model):
         return [s for s in (self.city, self.state) if s]
 
 
+class CEUCategory(models.Model):
+    """
+    Continuing Education Units
+    Can optionally be included in Events
+    """
+    name = models.CharField(max_length=255)
+    parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = _("Continuing Education Unit Category")
+        verbose_name_plural = _("Continuing Education Unit Categories")
+        ordering = ('name',)
+        app_label = 'events'
+
+    def __str__(self):
+        return self.name
+
+
 class RegistrationConfiguration(models.Model):
     """
     Event registration
