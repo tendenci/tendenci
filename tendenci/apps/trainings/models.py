@@ -83,7 +83,7 @@ class OutsideSchool(models.Model):
                 ('disapproved', _('Disapproved')),
                 )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    school_name = models.CharField(max_length=150,
+    school_name = models.CharField(max_length=255,
                             db_index=True)
     school_category = models.ForeignKey('SchoolCategory',
                                 null=True, on_delete=models.SET_NULL)
