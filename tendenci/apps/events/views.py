@@ -3675,7 +3675,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
         # permission denied; if not given explicit permission or not registrant
         if not any((is_permitted, is_registrant)):
-            raise Http403
+            if not (request.user.is_authenticated and registration.allow_adjust_invoice_by(request.user)):
+                raise Http403
 
         registrant = registration.registrant
 
