@@ -863,8 +863,23 @@
 	{% if request.user.is_superuser  %}
 	<div style="border: 2px solid #ccc; padding: 5px; margin: 5px;">
 	<fieldset>
-    	<legend>J) {% trans 'Administrator Information'%}</legend>
-    	
+    <legend>J) {% trans 'Administrator Information'%}</legend>
+
+	   <div class="form-group">
+		    <label for="id_account_id" class="col-sm-3 control-label">{{ form.account_id.label }}{%if from.account_id.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-4">
+		      {% if form.account_id.errors %}
+		         <div class="text-danger">{{ form.account_id.errors }}</div>
+		      {% endif %}
+
+		      {{ form.account_id }}
+
+		      {% if form.account_id.help_text %}
+		      <div class="help-block">{{ form.account_id.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+
     	 <div class="form-group">
 		    <label for="id_admin_notes" class="col-sm-3 control-label">{{ form.admin_notes.label }}{%if from.admin_notes.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-6">

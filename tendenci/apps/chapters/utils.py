@@ -409,7 +409,7 @@ class ImportChapterMembership(object):
 
             if not chapter_memb:
                 user_display['memb_action'] = 'insert'
-                user_display['action'] = 'inseart'
+                user_display['action'] = 'insert'
             else:
                 user_display['memb_action'] = 'update'
                 user_display['action'] = 'update'

@@ -118,7 +118,14 @@
               <td>{% trans 'Username' %}</td>
               <td>{{ profile.user.username }}</td>
             </tr>
-            
+
+            {% if profile.account_id %}
+            <tr>
+              <td>{% trans 'Account ID' %}</td>
+              <td>{{ profile.account_id }}</td>
+            </tr>
+            {% endif %}
+
             {% if can_edit or not profile.hide_email %}
             <tr>
               <td>{% trans 'Email' %}</td>

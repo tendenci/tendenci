@@ -13,8 +13,8 @@ from tendenci.apps.profiles.forms import ProfileAdminForm
 
 
 class ProfileAdmin(TendenciBaseModelAdmin):
-    list_display = ('username', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser')
-    search_fields = ('display_name', 'user__first_name', 'user__last_name', 'user__username', 'user__email')
+    list_display = ('username', 'account_id', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser')
+    search_fields = ('account_id', 'display_name', 'user__first_name', 'user__last_name', 'user__username', 'user__email')
 
     fieldsets = (
         (_('Name Information'), {'fields': ('salutation',
@@ -62,7 +62,8 @@ class ProfileAdmin(TendenciBaseModelAdmin):
                                                 'spouse',
                                                 'dob',
                                                 'sex',)}),
-        (_('Administrator Information'), {'fields': ('admin_notes',
+        (_('Administrator Information'), {'fields': ('account_id',
+                                                     'admin_notes',
                                                      'security_level',)}),)
     form = ProfileAdminForm
 

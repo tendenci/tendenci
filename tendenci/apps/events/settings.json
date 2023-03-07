@@ -1324,5 +1324,22 @@
         "scope_category": "events",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If turned on, it allows chapter or committee leaders to adjust the registration invoices for the events that are associated with their chapter or committee group.",
+        "data_type": "boolean",
+        "update_dt": "2023-03-06 21:00:00",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "leadercanadjust",
+        "value": "false",
+        "label": "Chapter or Committee Leaders Can Adjust Registration Invoices for Their Events",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]

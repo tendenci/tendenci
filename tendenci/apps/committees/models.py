@@ -98,6 +98,16 @@ class Committee(BasePage):
             ObjectPermission.objects.assign(officer_users,
                                         self.group, perms=perms)
 
+    def is_committee_leader(self, user):
+        """
+        Check if this user is one of the chapter leaders.
+        """
+        if not user.is_anonymous:
+            return self.officers().filter(Q(expire_dt__isnull=True) | Q(
+                expire_dt__gte=date.today())).filter(user=user).exists()
+
+        return False
+
 
 class Position(models.Model):
     title = models.CharField(_(u'title'), max_length=200)

@@ -1659,6 +1659,7 @@ class MembershipDefaultForm(TendenciBaseForm):
     salutation = forms.CharField(required=False)
     first_name = forms.CharField(initial=u'')
     last_name = forms.CharField(initial=u'')
+    account_id = forms.IntegerField(required=False)
     email = forms.CharField(initial=u'')
     email2 = forms.CharField(initial=u'', required=False)
     display_name = forms.CharField(initial=u'', required=False)
@@ -1910,6 +1911,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             ]
 
             profile_attrs = [
+                'account_id',
                 'email2',
                 'industry',
                 'company',
@@ -2262,6 +2264,7 @@ class MembershipDefaultForm(TendenciBaseForm):
         # profile.display_name = self.cleaned_data.get('display_name', u'')
         profile_attrs = [
             'display_name',
+            'account_id',
             'industry',
             'company',
             'position_title',

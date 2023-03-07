@@ -132,6 +132,7 @@ class ProfileForm(TendenciBaseForm):
 
     initials = forms.CharField(label=_("Initial"), max_length=50, required=False,
                                widget=forms.TextInput(attrs={'size':'10'}))
+    account_id = forms.IntegerField(label=_("Account ID"), required=False)
     display_name = forms.CharField(label=_("Display name"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'30'}))
 
@@ -207,6 +208,7 @@ class ProfileForm(TendenciBaseForm):
         fields = ('salutation',
                   'first_name',
                   'last_name',
+                  'account_id',
                   'username',
                   'password1',
                   'password2',
@@ -311,6 +313,7 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['admin_notes']
                 del self.fields['security_level']
                 del self.fields['status_detail']
+                del self.fields['account_id']
 
             if self.user_current.profile.is_superuser and self.user_current == self.user_this:
                 self.fields['security_level'].choices = (('superuser',_('Superuser')),)

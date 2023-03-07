@@ -65,6 +65,7 @@ class VideoForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(VideoForm, self).__init__(*args, **kwargs)
         self.embedly_403 = False
+        self.fields['image'].help_text = _('Note: This is a required field if "Video url" is a non Youtube video.')
         self.fields['group'].queryset = Group.objects.filter(status=True,
                                     status_detail="active").order_by('name')
         if self.instance.pk:

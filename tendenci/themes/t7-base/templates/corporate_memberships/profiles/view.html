@@ -58,6 +58,16 @@
             {{ corp_profile.parent_entity }}
             </div>
         </div>
+        {% if corp_profile.account_id %}
+            <div class="row">
+                <div class="col-xs-4">
+                    {% trans 'Account ID' %}
+                </div>
+                <div class="col-xs-6">
+                {{ corp_profile.account_id }}
+                </div>
+            </div>
+        {% endif %}
         <div class="row">
             <div class="col-xs-4">
                 {% trans 'Company Name' %}
