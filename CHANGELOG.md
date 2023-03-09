@@ -1,3 +1,20 @@
+### 14.3.4 [2023-03-09]
+
+* Committee officers can access their associated groups.
+* Admin can register events after an event is full.
+* Corporate memberships search can filter by membership types.
+* Corp profiles can specify their branches.
+* Added an option for members to send broadcast emails to corp reps.
+* Included county field on memberships and group members exports.
+* Added the command "send_chapter_membership_notices" to the nightly run commands list.
+* Added account_id field to corp profiles and user profiles.
+* Added an option to allow chapter or committee leaders to adjust invoices for their events by the site setting "Chapter or Committee Leaders Can Adjust Registration Invoices for Their Events".
+* Resolved some issues for front-end form edit.
+* Fixed the issue about uploading logos for a corp profile resulting in duplicate logos.
+* Resolved the issue about missing permission checks on form submissions.
+* More bug fixes.
+
+
 ### 14.3.3 [2022-12-21]
 
 * Added an option for corporate members to show their products on their corp profiles.
