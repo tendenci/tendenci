@@ -16,7 +16,7 @@
                     	{% with registrant.cleaned_data.pricing as pricing %}
                         <li>{% trans 'Price:' %}  {{ currency_symbol }}{{ registrant.cleaned_data.pricing.price }}
                         {% if pricing.include_tax %}
-                        ({% trans 'tax:' %} {{ currency_symbol }}{{ pricing.tax_amount }})
+                        ({% trans '+tax:' %} {{ currency_symbol }}{{ pricing.tax_amount }})
                         {% endif %}
                         </li>
                         {% endwith %}
