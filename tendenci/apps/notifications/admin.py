@@ -32,6 +32,7 @@ class NoticeAdmin(admin.ModelAdmin):
 class NoticeEmailAdmin(admin.ModelAdmin):
     list_display = ('preview_email', 'date_sent')
     actions = ['resend']
+    list_filter = ('notice_type__label',)
 
     def has_add_permission(self, request):
         return False
