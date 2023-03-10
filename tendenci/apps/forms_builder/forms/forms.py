@@ -564,7 +564,7 @@ class FormForm(TendenciBaseForm):
 class FormForField(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = Field
-        exclude = ["position"]
+        exclude = ["position", 'remember']
 
     def clean(self):
         cleaned_data = self.cleaned_data

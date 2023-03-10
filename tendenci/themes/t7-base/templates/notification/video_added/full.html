@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 <body bgcolor="#ffffff" text="#000000">
-<p>{% blocktrans with request.user.get_full_name as author %}The following vidoe was
+<p>{% blocktrans with request.user.get_full_name as author %}The following video was
   added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Videos module by {{ author }}{% endblocktrans %}.
   {% if request.user.is_superuser %}(superuser){% else %} {% trans "It needs to be activated" %}{% endif %}:</p>
 

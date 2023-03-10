@@ -22,12 +22,13 @@ class DonationAdminForm(forms.ModelForm):
     email_receipt = forms.BooleanField(initial=True)
     comments = forms.CharField(max_length=1000, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
-    allocation = forms.ChoiceField()
+    #allocation = forms.ChoiceField()
 
     class Meta:
         model = Donation
         fields = ('donation_amount',
                   'payment_method',
+                  'user',
                   'first_name',
                   'last_name',
                   'company',
@@ -40,17 +41,25 @@ class DonationAdminForm(forms.ModelForm):
                   'phone',
                   'email',
                   'email_receipt',
-                  'allocation',
+                  'donate_to_entity',
                   'referral_source',
                   'comments',
                   )
 
     def __init__(self, *args, **kwargs):
-        if 'user' in kwargs:
-            self.user = kwargs.pop('user', None)
-        else:
-            self.user = None
+        # if 'user' in kwargs:
+        #     self.user = kwargs.pop('user', None)
+        # else:
+        #     self.user = None
         super(DonationAdminForm, self).__init__(*args, **kwargs)
+        self.fields['user'].required = False
+
+        # donate_to_entity or allocation
+        entity_qs = Entity.objects.filter(show_for_donation=True)
+        self.fields['donate_to_entity'].queryset = entity_qs
+        self.fields['donate_to_entity'].empty_label = _("Select One")
+        self.fields['donate_to_entity'].label = _('Donate to')
+        self.fields['donate_to_entity'].required = False
 
         preset_amount_str = (get_setting('module', 'donations', 'donationspresetamounts')).strip('')
         if preset_amount_str:
