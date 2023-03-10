@@ -11,6 +11,7 @@ class DonationAdmin(admin.ModelAdmin):
     list_filter = (('donate_to_entity', admin.RelatedOnlyFieldListFilter),
                   ('user', admin.RelatedOnlyFieldListFilter),
                    )
+    autocomplete_fields = ('user',)
     form = DonationAdminForm
     
     @mark_safe
