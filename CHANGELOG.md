@@ -1,3 +1,9 @@
+### 14.3.5 [2023-03-10]
+
+* Added an option for admins to associate a donation to a user, if not already.
+* Fixed a NoneType error for event registration (when admin override is checked but override price is not specified).
+
+
 ### 14.3.4 [2023-03-09]
 
 * Committee officers can access their associated groups.
