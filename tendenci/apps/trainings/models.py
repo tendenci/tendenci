@@ -401,6 +401,7 @@ class Exam(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     grade = models.PositiveSmallIntegerField(default=0)
+    date = models.DateField(null=True,)
     create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
     update_dt = models.DateTimeField(_("Date"), auto_now=True)
     creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
