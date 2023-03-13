@@ -11,6 +11,7 @@ from .models import (SchoolCategory, Certification,
                      TeachingActivity,
                      OutsideSchool,
                      UserCertData,
+                     Exam,
                      BluevoltExamImport)
 from .forms import CourseForm
 
@@ -156,21 +157,55 @@ class CourseAdmin(admin.ModelAdmin):
     form = CourseForm
 
 
-# class ExamAdmin(admin.ModelAdmin):
-#     model = Exam
-#     list_display = ['id', 'user',
-#                     'course',
-#                     'grade',
-#                     'update_dt'
-#                     ]
-#     fieldsets = (
-#         (None, {
-#             'fields': (
-#             'user',
-#             'course',
-#             'grade',
-#         )},),
-#     )
+class ExamAdmin(admin.ModelAdmin):
+    model = Exam
+    list_display = ['id', 'show_user',
+                    'show_course',
+                    'date',
+                    'grade',
+                    ]
+    fieldsets = (
+        (None, {
+            'fields': (
+            'user',
+            'course',
+            'date',
+            'grade',
+        )},),
+    )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj: # editing
+            return self.readonly_fields + ('user', 'course', 'date')
+        return self.readonly_fields
+
+    def has_add_permission(self, request):
+        return False
+    
+    @mark_safe
+    def show_user(self, instance):
+        if instance.user:
+            name = instance.user.get_full_name()
+            if not name:
+                name = instance.user.username
+            return '<a href="{0}" title="{1}">{1}</a>'.format(
+                    reverse('profile', args=[instance.user.username]),
+                    name
+                )
+        return ""
+    show_user.short_description = 'User'
+    show_user.admin_order_field = 'user__first_name'
+
+    @mark_safe
+    def show_course(self, instance):
+        if instance.course:
+            return '<a href="{0}" title="{1}">{1}</a>'.format(
+                    reverse('admin:trainings_course_change', args=[instance.course.id]),
+                    instance.course.name
+                )
+        return ""
+    show_course.short_description = 'Course'
+    show_course.admin_order_field = 'course__name'
 
 
 class TranscriptAdmin(admin.ModelAdmin):
@@ -353,7 +388,7 @@ class BluevoltExamImportAdmin(admin.ModelAdmin):
 admin.site.register(SchoolCategory, SchoolCategoryAdmin)
 admin.site.register(Certification, CertificationAdmin)
 admin.site.register(Course, CourseAdmin)
-# admin.site.register(Exam, ExamAdmin)
+admin.site.register(Exam, ExamAdmin)
 admin.site.register(Transcript, TranscriptAdmin)
 admin.site.register(TeachingActivity, TeachingActivityAdmin)
 admin.site.register(OutsideSchool, OutsideSchoolAdmin)
