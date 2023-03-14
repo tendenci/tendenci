@@ -1096,7 +1096,7 @@ def get_user_by_username(username):
     if not username:
         return None
 
-    return User.objects.filter(username=username)
+    return User.objects.filter(username__iexact=username)
 
 
 def get_user_by_member_number(member_number):
