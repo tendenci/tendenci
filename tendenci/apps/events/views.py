@@ -2742,6 +2742,12 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
     cancelled_registrants = registration.registrant_set.filter(cancel_dt__isnull=False)
 
     if request.method == "POST":
+        # If cancellation is no longer allowed, force a refresh so that
+        # "cancellation not allowed message is displayed"
+        if not event.can_cancel:
+            return HttpResponseRedirect(reverse(
+                'event.cancel_registration', args=[event.pk, registration.pk]))
+
         # check if already canceled. if so, do nothing
         if not registration.canceled:
             for registrant in registrants:
@@ -2845,6 +2851,12 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
         raise Http404
 
     if request.method == "POST":
+        # If cancellation is no longer allowed, force a refresh so that
+        # "cancellation not allowed message is displayed"
+        if not event.can_cancel:
+            return HttpResponseRedirect(reverse(
+                'event.cancel_registrant', args=[event.pk, registrant.pk]))
+
         # check if already canceled. if so, do nothing
         if not registrant.cancel_dt:
             user_is_registrant = False

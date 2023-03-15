@@ -1354,6 +1354,14 @@ class Event(TendenciBaseModel):
         return format_datetime_range(self.start_dt, self.end_dt, format_date, format_time)
 
     @property
+    def can_cancel(self):
+        """
+        Indicate whether cancelleation is allowed.
+        """
+        cancel_by_dt = self.registration_configuration.cancel_by_dt
+        return not cancel_by_dt or cancel_by_dt + timedelta(days=1) >= datetime.now()
+
+    @property
     def is_over(self):
         return self.end_dt <= datetime.now()
 

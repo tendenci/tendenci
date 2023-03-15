@@ -52,6 +52,7 @@
         </div>
         <div style="clear:both;"></div>
     </div>
+    {% if event.can_cancel %}
     <div class="form-wrap">
         {% if hash %}
             <form action="{% url "event.cancel_registrant" event.pk registrant.hash %}" method="post">{% csrf_token %}
@@ -63,5 +64,10 @@
             </div>
         </form>
     </div>
+    {% else %}
+    <div>
+        <b>{% trans "Cancellation not allowed past" %} {{ event.registration_configuration.cancel_by_dt | date:"F j, Y" }}</b>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
