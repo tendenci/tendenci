@@ -445,6 +445,8 @@ class Transcript(models.Model):
                              default='online',
                              choices=LOCATION_TYPE_CHOICES)
     credits = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    # date added
+    date = models.DateField(null=True)
     # applied = models.CharField(max_length=1, default='D',
     #                          choices=APPLIED_CHOICES)
     status = models.CharField(max_length=10, default='pending',
@@ -599,6 +601,10 @@ class Transcript(models.Model):
         return 0
 
     def save(self, *args, **kwargs):
+        if not self.id:
+            if not self.date:
+                self.date = date.today()
+
         assign_diamond_number = kwargs.pop('assign_diamond_number', True)
         if assign_diamond_number and not self.apply_to:
             self.apply_to = self.caculate_apply_to()

@@ -230,6 +230,7 @@ class TranscriptAdmin(admin.ModelAdmin):
             'school_category',
             'location_type',
             'credits',
+            'date',
             'certification_track',
             'apply_to',
             'status',

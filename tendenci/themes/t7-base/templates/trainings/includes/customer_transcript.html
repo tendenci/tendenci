@@ -20,7 +20,7 @@
 				<td>{{ transcript.course.name }}</td>
 				<td>{{ transcript.school_category }}</td>
 				<td>{{ transcript.credits }}</td>
-				<td>{{ transcript.create_dt|date:'m/d/Y' }}</td>
+				<td>{{ transcript.date|date:'m/d/Y' }}</td>
 				<td>{{ transcript.status|capfirst }}</td>
 			</tr>
 			{% endfor %}
@@ -49,7 +49,7 @@
 				<td>{{ transcript.course.name }}</td>
 				<td>{{ transcript.school_category }}</td>
 				<td>{{ transcript.credits }}</td>
-				<td>{{ transcript.create_dt|date:'m/d/Y' }}</td>
+				<td>{{ transcript.date|date:'m/d/Y' }}</td>
 				<td>{{ transcript.status|capfirst }}</td>
 			</tr>
 			{% endfor %}
@@ -79,7 +79,7 @@
 				<td>{{ transcript.get_school_name }}</td>
 				<td>{{ transcript.school_category }}</td>
 				<td>{{ transcript.credits }}</td>
-				<td>{{ transcript.create_dt|date:'m/d/Y' }}</td>
+				<td>{{ transcript.date|date:'m/d/Y' }}</td>
 				<td>{{ transcript.status|capfirst }}</td>
 			</tr>
 			{% endfor %}
