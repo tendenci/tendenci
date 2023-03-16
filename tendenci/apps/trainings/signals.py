@@ -18,6 +18,8 @@ def reg_save_transcript(sender, **kwargs):
                 return
 
             transcript = Transcript(user=registrant.user,
+                                    parent_id=registrant.id,
+                                    location_type='onsite',
                                     registrant_id=registrant.id,
                                     creator=registrant.registration.creator)
         transcript.school_category = event.course.school_category

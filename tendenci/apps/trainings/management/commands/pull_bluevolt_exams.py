@@ -129,6 +129,8 @@ class Command(BaseCommand):
                                         grade=score)
                             exam.save()
                             transcript.exam = exam
+                            transcript.parent_id = exam.id
+                            transcript.location_type = 'online'
                             transcript.save(assign_diamond_number=False)
 
             end_dt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

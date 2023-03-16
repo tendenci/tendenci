@@ -419,6 +419,9 @@ class Exam(models.Model):
 
 
 class Transcript(models.Model):
+    # ex: online - BV courses
+    #     onsite - events
+    #     outside - outside schools
     LOCATION_TYPE_CHOICES = (
                 ('online', _('Online')),
                 ('onsite', _('Onsite')),
