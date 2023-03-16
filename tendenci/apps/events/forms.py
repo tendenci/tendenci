@@ -1344,13 +1344,21 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
         max_digits=21,
         decimal_places=2,
         initial=0.00,
-        help_text=_('Fee registrant pays when cancelling.')
+        help_text=_('Fee registrant pays when cancelling. ' \
+                    'Leave as 0 if there is no cancellation fee. ' \
+                    'If cancellation percent is set, that will be used instead.'
+                    )
     )
 
     cancellation_percent = PercentField(
         label=_('Cancellation Percent'),
         allowed_decimal_places=0,
-        help_text=_('Percent registrant pays when cancelling.')
+        help_text=_(
+            'Percent of total price registrant pays when cancelling. ' \
+            'If percent is set, this is used to calculate cancellation fee, ' \
+            'overriding other configuration for cancellation fee. ' \
+            'Leave as 0% to set cancellation fee directly instead.'
+        )
     )
 
     cancel_by_dt = forms.DateField(

@@ -254,6 +254,15 @@ class RegistrationConfiguration(models.Model):
 
         return all([has_method, has_account, has_api])
 
+    def get_cancellation_fee(self, amount):
+        """Get cancellation fee"""
+        cancellation_fee = self.cancellation_fee
+
+        if self.cancellation_percent:
+            cancellation_fee = amount * self.cancellation_percent
+
+        return cancellation_fee
+
     def get_available_pricings(self, user, is_strict=False, spots_available=-1):
         """
         Get the available pricings for this user.
@@ -939,10 +948,29 @@ class Registrant(models.Model):
         else:
             return '%s, %s' % (self.last_name, self.first_name)
 
+    @property
+    def event(self):
+        return self.registration.event
+
+    @property
+    def registration_configuration(self):
+        return self.event.registration_configuration
+
     def register_pricing(self):
         # The pricing is a field recently added. The previous registrations
         # store the pricing in registration.
         return self.pricing or self.registration.reg_conf_price
+
+    def process_cancellation_fee(self, user=None):
+        """Add cancellation fee to invoice"""
+        cancellation_fee = self.registration_configuration.get_cancellation_fee(self.amount)
+
+        if cancellation_fee:
+            self.registration.invoice.add_line_item(
+                cancellation_fee,
+                Invoice.LineDescriptions.CANCELLATION_FEE,
+                user,
+            )
 
     @property
     def lastname_firstname(self):

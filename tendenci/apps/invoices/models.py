@@ -22,7 +22,11 @@ STATUS_DETAIL_CHOICES = (
     ('estimate', _('Estimate')),
     ('tendered', _('Tendered')))
 
+
 class Invoice(models.Model):
+    class LineDescriptions:
+        CANCELLATION_FEE = 'Cancellation fee'
+
     guid = models.CharField(max_length=50)
 
     object_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.CASCADE)
@@ -438,7 +442,19 @@ class Invoice(models.Model):
             # reverse accounting entries
             if self.subtotal > 0:
                 make_acct_entries_initial_reversing(user, self, self.subtotal)
-        
+
+    def add_line_item(self, amount, description, user=None):
+        """Add extra line item to this invoice"""
+        InvoiceLineItem.objects.create(
+            total=amount,
+            description=description,
+            invoice=self,
+        )
+
+        self.total += amount
+        self.subtotal += amount
+        self.balance += amount
+        self.save(user)
 
 #     def unvoid(self):
 #         """
@@ -472,6 +488,15 @@ class Invoice(models.Model):
                             ).values_list('stripe_user_id',
                                           flat=True)[:1] or [None]
         return stripe_account
+
+class InvoiceLineItem(models.Model):
+    """
+    Extra line items on an invoice.
+    For example, a cancellation fee.
+    """
+    total = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
+    description = models.CharField(max_length=200, blank=True, null=True)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
 
 
 # add signals

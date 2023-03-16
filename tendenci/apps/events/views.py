@@ -2773,6 +2773,9 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                         invoice.balance -= registrant.amount
                         invoice.save(request.user)
 
+                    # Update invoice with cancellation fee if one set.
+                    registrant.process_cancellation_fee(request.user)
+
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                 if recipients and notification:
                     notification.send_emails(recipients, 'event_registration_cancelled', {
@@ -2880,6 +2883,9 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                     invoice.subtotal -= registrant.amount
                     invoice.balance -= registrant.amount
                     invoice.save(request.user)
+
+                # Update invoice with cancellation fee if one set.
+                registrant.process_cancellation_fee(request.user)
 
             # check if all registrants in this registration are canceled.
             # if so, update the canceled field.
