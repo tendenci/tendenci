@@ -101,10 +101,16 @@ def registration_pricing_and_button(context, event, user):
         spots_taken, spots_available = (-1, -1)
 
     is_registrant = False
+    registrant = None
     # check if user has already registered
     if hasattr(user, 'registrant_set'):
-        is_registrant = user.registrant_set.filter(
-            registration__event=event).exists()
+        registrants = user.registrant_set.filter(
+            registration__event=event)
+        registrant_count = registrants.count()
+
+        is_registrant = registrant_count > 0
+        if registrant_count == 1:
+            registrant = registrants.first()
 
     context.update({
         'now': datetime.now(),
@@ -119,6 +125,7 @@ def registration_pricing_and_button(context, event, user):
         'pricing': pricing,
         'user': user,
         'is_registrant': is_registrant,
+        'registrant': registrant,
     })
 
     return context
@@ -273,6 +280,44 @@ def event_list(parser, token):
     return EventListNode(day, type_slug, ordering, group, search_text, context_var)
 
 
+class UserRegistrationNode(Node):
+
+    def __init__(self, user, event, context_var):
+        self.user = Variable(user)
+        self.event = Variable(event)
+        self.context_var = context_var
+
+    def render(self, context):
+
+        user = self.user.resolve(context)
+        event = self.event.resolve(context)
+
+        registration = None
+        if not isinstance(user, AnonymousUser):
+            registrants = user.registrant_set.filter(registration__event=event, cancel_dt=None)
+            if registrants.count() == 1:
+                registration = registrants.first().registration
+
+        context[self.context_var] = registration
+        return ''
+
+@register.tag
+def user_registration(parser, token):
+    """
+    Example: {% user_registration user event as registration %}
+    """
+    bits = token.split_contents()
+
+    if len(bits) != 5:
+        message = '%s tag requires 5 arguments' % bits[0]
+        raise TemplateSyntaxError(_(message))
+
+    user = bits[1]
+    event = bits[2]
+    context_var = bits[4]
+
+    return UserRegistrationNode(user, event, context_var)
+
 class IsRegisteredUserNode(Node):
 
     def __init__(self, user, event, context_var):
@@ -296,7 +341,6 @@ class IsRegisteredUserNode(Node):
 
         context[self.context_var] = exists
         return ''
-
 
 @register.tag
 def is_registered_user(parser, token):

@@ -76,7 +76,19 @@
     
     {% if is_registrant %}
     <div id="is-registrant"><a href="{% url "event.registrant.search" event.pk %}?q={{ user.email }}">
-      {% trans "You have already registered" %}</a></div>
+        {% trans "You have already registered" %}</a>
+    </div>
+    {% if event.can_cancel%}
+        {% if registrant %}
+            <div>
+              <a href="{% url 'event.cancel_registrant' event.pk registrant.pk %}">
+                Cancel
+              </a>
+            </div>
+        {% else %}
+            <div> <a href="{% url 'profile' user.username %}">Cancel</a></div>
+        {% endif %}
+    {% endif %}
     {% endif %}
     
   </div>
