@@ -52,22 +52,19 @@
         </div>
         <div style="clear:both;"></div>
     </div>
+
     {% if event.can_cancel %}
-    <div class="form-wrap">
-        {% if hash %}
-            <form action="{% url "event.cancel_registrant" event.pk registrant.hash %}" method="post">{% csrf_token %}
-        {% else %}
-            <form action="{% url "event.cancel_registrant" event.pk registrant.pk  %}" method="post">{% csrf_token %}
-        {%  endif %}
-            <div class="forms">
-                <input type="submit" value="{% trans "Cancel Event Registration" %}" />
+        <div>
+            <button type="button" data-toggle="modal" data-target="#cancelModal">{% trans "Cancel Event Registration" %}</button>
+            <!-- Cancellation Modal  -->
+            <div id="cancelModal" class="modal fade" role="dialog">
+                {% event_cancel_modal event hash registrant %}
             </div>
-        </form>
-    </div>
+        </div>
     {% else %}
-    <div>
-        <b>{% trans "Cancellation not allowed past" %} {{ event.registration_configuration.cancel_by_dt | date:"F j, Y" }}</b>
-    </div>
+        <div>
+            <b>{% trans "Cancellation not allowed past" %} {{ event.registration_configuration.cancel_by_dt | date:"F j, Y" }}</b>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

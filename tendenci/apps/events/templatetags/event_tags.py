@@ -59,6 +59,27 @@ def event_current_app(context, user, event=None):
     return context
 
 
+@register.inclusion_tag("events/reg8n/cancel_modal.html", takes_context=True)
+def event_cancel_modal(
+        context, event, hash=None, registrant=None, registrants=[], registration=None):
+    if not registrant and not registrants:
+        raise Exception("Must include at least one registrant or a list of registrants")
+
+    reg = registrant if registrant else registrants[0]
+    cancellation_fee = event.registration_configuration.get_cancellation_fee(reg.amount)
+
+    if len(registrants) > 1:
+        cancellation_fee *= len(registrants)
+
+    context.update({
+        "event": event,
+        "registrant": registrant,
+        "registration": registration,
+        "cancellation_fee": cancellation_fee,
+    })
+    return context
+
+
 @register.inclusion_tag("events/registrants/options.html", takes_context=True)
 def registrant_options(context, user, registrant):
     context.update({
