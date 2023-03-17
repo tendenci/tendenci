@@ -1003,7 +1003,7 @@ def chapter_membership_renew(request, chapter_membership_id=0,
         raise Http403
 
     if not chapter_membership.can_renew():
-        if not (chapter_membership.chapter.is_chapter_leader(request.user) or request.user.is_superuser):
+        if not request.user.is_superuser:
             return HttpResponseRedirect(reverse('chapters.membership_details',
                         args=[chapter_membership.id]))
 
