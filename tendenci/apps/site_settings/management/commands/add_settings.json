@@ -1919,5 +1919,22 @@
         "scope_category": "service",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "No",
+        "description": "Indicate if refunds are allowed. If 'Auto' cancelling will result in an automatic refund. If 'Yes', refunds are manual only.'",
+        "data_type": "string",
+        "update_dt": "2023-03-17 18:59:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "allow_refunds",
+        "value": "No",
+        "label": "Allow refunds",
+        "input_value": "No,Yes,Auto",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": true,
+        "updated_by": ""
     }
 ]
