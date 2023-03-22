@@ -17,6 +17,7 @@ from tendenci.apps.events.utils import (registration_earliest_time,
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.events.forms import EventSimpleSearchForm
+from tendenci.apps.site_settings.utils import get_setting
 
 
 register = Library()
@@ -71,11 +72,15 @@ def event_cancel_modal(
     if len(registrants) > 1:
         cancellation_fee *= len(registrants)
 
+    allow_refunds_setting = get_setting("site", "global", "allow_refunds")
+    allow_refunds = allow_refunds_setting and allow_refunds_setting != "No"
+
     context.update({
         "event": event,
         "registrant": registrant,
         "registration": registration,
         "cancellation_fee": cancellation_fee,
+        "allow_refunds": allow_refunds,
     })
     return context
 

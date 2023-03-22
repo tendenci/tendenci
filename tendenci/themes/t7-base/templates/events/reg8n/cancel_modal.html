@@ -7,7 +7,7 @@
         </div>
 
         <div class="modal-body">
-            Are you sure you want to cancel your registration to {{ event.title }} on {{ event.start_dt }}? {% if cancellation_fee %}<br> A cancellation fee of ${{ cancellation_fee  }} will be applied to your invoice.{% endif %}
+            Are you sure you want to cancel your registration to {{ event.title }} on {{ event.start_dt }}? {% if cancellation_fee %}<br> A cancellation fee of ${{ cancellation_fee  }} will be applied to your invoice {% if allow_refunds %} prior to refunding your registration fee{% endif %}.{% endif %}
         </div>
 
         <div class="modal-footer">
