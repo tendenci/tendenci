@@ -2157,3 +2157,32 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             subject=subject,
             body=body)
         email.send()
+
+
+def get_cancellation_confirmation_message(event, registrants):
+    """
+    Get cancellation confirmation message for registrants.
+    Message will vary based on allow_refunds setting.
+    """
+    allow_refunds = get_setting("site", "global", "allow_refunds")
+
+    message = None
+    event_date = event.start_dt.strftime("%m/%d/%Y")
+
+    if allow_refunds == "Yes":
+        message = f"You have canceled your registration to { event.title } on { event_date }. " \
+                  f"You will receive an email confirmation with a link to your updated invoice " \
+                  f"once event administrators have processed your refund."
+    elif allow_refunds == "Auto":
+        registration = registrants[0].registration
+        invoice = registration.invoice
+        amount = 0
+        for registrant in registrants:
+            amount += registrant.amount
+
+        invoice_url = reverse('invoice.view', args=[invoice.pk, invoice.guid])
+        message = f"Your registration fee in the amt of ${amount} for {event.title} on " \
+                  f"{event_date} has been canceled, and your cancellation fee processed. You " \
+                  f"may access your final registration invoice <a class='alert-link' href={invoice_url}> here</a>."
+
+    return message

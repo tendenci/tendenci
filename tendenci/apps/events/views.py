@@ -135,6 +135,7 @@ from tendenci.apps.events.utils import (
     registration_earliest_time,
     get_pricing,
     clean_price,
+    get_cancellation_confirmation_message,
     get_event_spots_taken,
     get_ievent,
     get_vevents,
@@ -2795,6 +2796,9 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
             registration.canceled = True
             registration.save()
 
+        message = get_cancellation_confirmation_message(event, registrants)
+        if message:
+            messages.success(request, message)
         return HttpResponseRedirect(
             reverse('event.registration_confirmation',
             args=[event.pk, registration.registrant.hash])
@@ -2914,8 +2918,12 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                 })
 
         # back to invoice
+        message = get_cancellation_confirmation_message(event, [registrant])
+        if message:
+            messages.success(request, message)
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', args=[event.pk, registrant.hash]))
+
 
     if registrant.custom_reg_form_entry:
         registrant.assign_mapped_fields()
