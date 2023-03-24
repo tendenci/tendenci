@@ -1682,13 +1682,6 @@ class Notice(models.Model):
         context['chapter_membership'] = chapter_membership
         context.update(global_context)
 
-        if chapter_membership and chapter_membership.expire_dt:
-            context.update({
-                'expire_dt': time.strftime(
-                "%d-%b-%y %I:%M %p",
-                chapter_membership.expire_dt.timetuple()),
-            })
-
         if chapter_membership and chapter_membership.payment_method:
             payment_method_name = chapter_membership.payment_method.human_name
         else:
@@ -1706,8 +1699,8 @@ class Notice(models.Model):
         else:
             invoice_link = ""
             total_amount = ""
-        if chapter_membership.expire_dt:
-            expire_dt = time.strftime("%d-%b-%y %I:%M %p",
+        if chapter_membership and chapter_membership.expire_dt:
+            expire_dt = time.strftime("%d-%b-%y",
                                       chapter_membership.expire_dt.timetuple())
         else:
             expire_dt = ''
