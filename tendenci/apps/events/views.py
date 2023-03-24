@@ -2778,6 +2778,7 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                     registrant.process_cancellation_fee(request.user)
 
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+                allow_refunds = get_setting('site', 'global', 'allow_refunds')
                 if recipients and notification:
                     notification.send_emails(recipients, 'event_registration_cancelled', {
                         'event':event,
@@ -2788,6 +2789,7 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                         'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                         'registrant':registrant,
                         'user_is_registrant': user_is_registrant,
+                        'allow_refunds': allow_refunds,
                     })
 
                 # Log an event for each registrant in the loop
@@ -2905,6 +2907,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
             EventLog.objects.log(instance=registrant)
 
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+            allow_refunds = get_setting('site', 'global', 'allow_refunds')
             if recipients and notification:
                 notification.send_emails(recipients, 'event_registration_cancelled', {
                     'event':event,
@@ -2915,6 +2918,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                     'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                     'registrant':registrant,
                     'user_is_registrant': user_is_registrant,
+                    'allow_refunds': allow_refunds,
                 })
 
         # back to invoice
