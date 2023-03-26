@@ -236,7 +236,7 @@ class RegistrationConfiguration(models.Model):
         Return boolean.
         """
         has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
-        has_account = get_setting('site', 'global', 'merchantaccount') is not ''
+        has_account = get_setting('site', 'global', 'merchantaccount') != ''
         has_api = any([settings.MERCHANT_LOGIN, settings.PAYPAL_MERCHANT_LOGIN])
 
         return all([has_method, has_account, has_api])
