@@ -1108,7 +1108,6 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
         super(DemographicsForm, self).__init__(*args, **kwargs)
         
         self.field_names = [name for name in self.fields]
-        self.file_upload_fields = {}
         # change the default widget to TextInput instead of TextArea
         for key, field in self.fields.items():
             if field.widget.__class__.__name__.lower() == 'textarea':
@@ -1122,6 +1121,11 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
         # Moved down here otherwise the widget would be overridden by
         # the above code which sets the default widget to TextInput
         assign_fields(self, app_field_objs)
+
+        self.file_upload_fields = {}
+        for key, field in self.fields.items():
+            if 'fileinput' in field.widget.__class__.__name__.lower():
+                self.file_upload_fields.update({key:field})
 
         self.app = None
         self.demographics = None

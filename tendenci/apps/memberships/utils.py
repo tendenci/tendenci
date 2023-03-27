@@ -9,6 +9,7 @@ import pytz
 import time as ttime
 import subprocess
 from dateutil.relativedelta import relativedelta
+from ast import literal_eval
 
 from django.http import HttpResponseServerError
 from django.conf import settings
@@ -246,8 +247,8 @@ def get_ud_file_instance(demographics, field_name):
         return None
 
     try:
-        pk = eval(data).get('pk')
-    except Exception:
+        pk = literal_eval(data).get('pk')
+    except ValueError:
         pk = 0
 
     file_id = 0
