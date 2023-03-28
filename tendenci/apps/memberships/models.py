@@ -6,6 +6,7 @@ import time
 from functools import partial
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from ast import literal_eval
 
 from django.db import models
 from django.urls import reverse
@@ -677,12 +678,12 @@ class MembershipDefault(TendenciBaseModel):
                 if hasattr(demographic, field_name):  # catches broken db relationships
                     data = getattr(demographic, field_name)
                     try:
-                        is_file = eval(data).get('type') == u'file'
+                        is_file = literal_eval(data).get('type') == 'file'
                     except Exception:
                         is_file = False
 
                     if is_file:
-                        field_list.append((field_label, eval(data).get('html')))
+                        field_list.append((field_label, literal_eval(data).get('html')))
                     else:
                         field_list.append((field_label, data))
 

@@ -9,6 +9,7 @@ import pytz
 import time as ttime
 import subprocess
 from dateutil.relativedelta import relativedelta
+from ast import literal_eval
 
 from django.http import HttpResponseServerError
 from django.conf import settings
@@ -75,6 +76,14 @@ def get_membership_field_values(membership, app_fields):
             value = getattr(membership, field_name)
         elif hasattr(ud, field_name):
             value = getattr(ud, field_name)
+            if value and '{' in value:
+                try:
+                    is_file = literal_eval(value).get('type') == 'file'
+                except ValueError:
+                    is_file = False
+                if is_file:
+                    value = literal_eval(value).get('html')
+                
         data.append(value)
     return data
 
@@ -246,8 +255,8 @@ def get_ud_file_instance(demographics, field_name):
         return None
 
     try:
-        pk = eval(data).get('pk')
-    except Exception:
+        pk = literal_eval(data).get('pk')
+    except ValueError:
         pk = 0
 
     file_id = 0
