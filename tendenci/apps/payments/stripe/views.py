@@ -173,6 +173,8 @@ class FetchAccessToken(View):
             account = stripe.Account.retrieve(stripe_user_id)
             sa.account_name = account.get('display_name', '')
             sa.email = account.get('email', '')
+            if sa.email is None:
+                sa.email = ''
             sa.default_currency = account.get('default_currency', '')
             sa.country = account.get('country', '')
             sa.save()
