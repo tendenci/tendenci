@@ -1,3 +1,12 @@
+### 14.3.6 [2023-03-28]
+
+* Chapter leaders are now not allowed to renew their chapter memberships that are not in renewal period.
+* Included membership_type field to chapter memberships export. 
+* Updated memberships search to display links for files uploaded via ud fields.
+* Fixed a bug that causes files uploaded via ud fields not being saved. 
+* More bug fixes.
+
+
 ### 14.3.5 [2023-03-10]
 
 * Added an option for admins to associate a donation to a user, if not already.
