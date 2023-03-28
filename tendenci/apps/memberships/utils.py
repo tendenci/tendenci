@@ -76,6 +76,14 @@ def get_membership_field_values(membership, app_fields):
             value = getattr(membership, field_name)
         elif hasattr(ud, field_name):
             value = getattr(ud, field_name)
+            if value and '{' in value:
+                try:
+                    is_file = literal_eval(value).get('type') == 'file'
+                except ValueError:
+                    is_file = False
+                if is_file:
+                    value = literal_eval(value).get('html')
+                
         data.append(value)
     return data
 
