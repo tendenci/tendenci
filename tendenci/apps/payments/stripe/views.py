@@ -172,6 +172,10 @@ class FetchAccessToken(View):
             stripe_set_app_info(stripe)
             account = stripe.Account.retrieve(stripe_user_id)
             sa.account_name = account.get('display_name', '')
+            if not sa.account_name:
+                business_profile = account.get('business_profile')
+                if business_profile:
+                    sa.account_name = business_profile.get('name') or '' 
             sa.email = account.get('email', '')
             if sa.email is None:
                 sa.email = ''
@@ -249,8 +253,15 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
             params = {
                        'amount': math.trunc(payment.amount * 100), # amount in cents, again
                        'currency': currency,
-                       'description': payment.description
+                       'description': payment.description,
                       }
+
+            # Check if this transaction should be made to a connected account
+            connected_account = payment.invoice.stripe_connected_account()
+            if connected_account:
+                stripe.client_id = get_setting('module', 'payments', 'stripe_connect_client_id')
+                params.update({'stripe_account': connected_account})
+
             if customer:
                 params.update({'customer': customer.id})
             else:

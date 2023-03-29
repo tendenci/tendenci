@@ -16,6 +16,7 @@ from tendenci.apps.accountings.utils import (make_acct_entries, make_acct_entrie
                                              make_acct_entries_initial_reversing)
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.payments.stripe.models import StripeAccount
 
 STATUS_DETAIL_CHOICES = (
     ('estimate', _('Estimate')),
@@ -453,6 +454,24 @@ class Invoice(models.Model):
         """
         [payment] = self.payment_set.filter(status_detail='approved')[:1] or [None]
         return payment
+
+    def stripe_connected_account(self):
+        """
+        Get the stripe connected account for this invoice.
+        """
+        if not self.entity:
+            return None
+
+        if not get_setting('module', 'payments', 'stripe_connect_client_id'):
+            return None
+        
+        [stripe_account] = StripeAccount.objects.filter(
+                            entity=self.entity,
+                            status_detail='active'
+                            ).values_list('stripe_user_id',
+                                          flat=True)[:1] or [None]
+        return stripe_account
+
 
 # add signals
 post_save.connect(update_profiles_total_spend, sender=Invoice,
