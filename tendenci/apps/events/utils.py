@@ -2177,12 +2177,16 @@ def get_cancellation_confirmation_message(event, registrants):
         registration = registrants[0].registration
         invoice = registration.invoice
         amount = 0
+        fee = 0
+
         for registrant in registrants:
             amount += registrant.amount
+            fee += registrant.cancellation_fee
 
         invoice_url = reverse('invoice.view', args=[invoice.pk, invoice.guid])
-        message = f"Your registration fee in the amt of ${amount} for {event.title} on " \
-                  f"{event_date} has been canceled, and your cancellation fee processed. You " \
-                  f"may access your final registration invoice <a class='alert-link' href={invoice_url}> here</a>."
+        message = f"Your registration fee in the amountt of ${amount} for {event.title} on " \
+                  f"{event_date} has been canceled, and your cancellation fee of ${fee} processed. " \
+                  f"You may access your final registration invoice " \
+                  f"<a class='alert-link' href={invoice_url}> here</a>."
 
     return message

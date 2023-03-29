@@ -1922,7 +1922,7 @@
     },
     {
         "default_value": "No",
-        "description": "Indicate if refunds are allowed. If 'Auto' cancelling will result in an automatic refund. If 'Yes', refunds are manual only.'",
+        "description": "Indicate if refunds are allowed with Stripe integration. If 'Auto' cancelling will result in an automatic refund. If 'Yes', refunds are manual only.",
         "data_type": "string",
         "update_dt": "2023-03-17 18:59:00",
         "input_type": "select",

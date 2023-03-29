@@ -961,9 +961,14 @@ class Registrant(models.Model):
         # store the pricing in registration.
         return self.pricing or self.registration.reg_conf_price
 
+    @property
+    def cancellation_fee(self):
+        """Cancellation fee for registrant"""
+        return self.registration_configuration.get_cancellation_fee(self.amount)
+
     def process_cancellation_fee(self, user=None):
         """Add cancellation fee to invoice"""
-        cancellation_fee = self.registration_configuration.get_cancellation_fee(self.amount)
+        cancellation_fee = self.cancellation_fee
 
         if cancellation_fee:
             self.registration.invoice.add_line_item(
