@@ -157,7 +157,7 @@ def transcripts(request, user_id=None, corp_profile_id=None,
                                          request=request,
                                          corp_profile=corp_profile)
             if participants_form.is_valid():
-                participants = participants_form.cleaned_data['participants']
+                participants = participants_form.cleaned_data['p']
         else:
             raise Http403
     else:
@@ -180,8 +180,8 @@ def transcripts(request, user_id=None, corp_profile_id=None,
                                             participants=participants)
 
         if courses_info_form.is_valid():
-            online_courses = courses_info_form.cleaned_data['online_courses']
-            onsite_courses = courses_info_form.cleaned_data['onsite_courses']
+            online_courses = courses_info_form.cleaned_data['l']
+            onsite_courses = courses_info_form.cleaned_data['s']
             include_outside_schools = courses_info_form.cleaned_data['include_outside_schools']
             include_teaching_activities = courses_info_form.cleaned_data['include_teaching_activities']
 

@@ -4,8 +4,8 @@
 	  <label class="control-label h4">{% trans "Online Courses" %}</label><br>
 	  <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">{% trans "Select All" %}</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">{% trans "Unselect All" %}</a>
 	  <div class="well well-sm" style="height: 300px; overflow: auto; border: 1px solid #e3e3e3">
-	   {% with courses_info_form.online_courses as field %}
-	   {% for choice in courses_info_form.online_courses.field.choices %}
+	   {% with courses_info_form.l as field %}
+	   {% for choice in courses_info_form.l.field.choices %}
           <div class="checkbox">
               <label>
                   <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0 }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1 }}
@@ -19,8 +19,8 @@
 	  <label class="control-label h4">{% trans "Onsite Courses" %}</label><br>
 	  <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">{% trans "Select All" %}</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">{% trans "Unselect All" %}</a>
 	  <div class="well well-sm" style="height: 300px; overflow: auto; border: 1px solid #e3e3e3">
-		{% with courses_info_form.onsite_courses as field %}
-	   {% for choice in courses_info_form.onsite_courses.field.choices %}
+		{% with courses_info_form.s as field %}
+	   {% for choice in courses_info_form.s.field.choices %}
           <div class="checkbox">
               <label>
                   <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0 }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1 }}

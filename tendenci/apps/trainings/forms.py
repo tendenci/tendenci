@@ -97,7 +97,7 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
 
 
 class ParticipantsForm(FormControlWidgetMixin, forms.Form):
-    participants = forms.MultipleChoiceField(required=False,
+    p = forms.MultipleChoiceField(label=_('Participants'), required=False,
                                               choices=(),
                             widget=forms.CheckboxSelectMultiple,)
 
@@ -108,21 +108,24 @@ class ParticipantsForm(FormControlWidgetMixin, forms.Form):
         super(ParticipantsForm, self).__init__(*args, **kwargs)
 
         if self.hidden:
-            self.fields['participants'].widget = forms.MultipleHiddenInput()
+            self.fields['p'].widget = forms.MultipleHiddenInput()
         if self.corp_profile:
             participants_choices = get_participants_choices(self.request.user,
                                                             self.corp_profile,
                                                             include_user=False)
-            self.fields['participants'].choices = participants_choices
+            self.fields['p'].choices = participants_choices
         else:
-            del self.fields['participants']
+            del self.fields['p']
 
 
 class CoursesInfoForm(FormControlWidgetMixin, forms.Form):
-    online_courses = forms.ModelMultipleChoiceField(required=False,
+    l = forms.ModelMultipleChoiceField(
+                                              label=_('Online Courses'),
+                                              required=False,
                                               queryset=None,
                             widget=forms.CheckboxSelectMultiple,)
-    onsite_courses = forms.ModelMultipleChoiceField(required=False,
+    s = forms.ModelMultipleChoiceField(required=False,
+                                              label=_('Onsite Courses'),
                                               queryset=None,
                             widget=forms.CheckboxSelectMultiple,)
     include_outside_schools = forms.BooleanField(
@@ -142,14 +145,14 @@ class CoursesInfoForm(FormControlWidgetMixin, forms.Form):
                             id__in=Transcript.objects.filter(
                                 user__in=self.participants
                                 ).values_list('course__id', flat=True))
-        self.fields['online_courses'].queryset = online_qs
+        self.fields['l'].queryset = online_qs
 
         onsite_qs = Course.objects.filter(
                             location_type='onsite',
                             id__in=Transcript.objects.filter(
                                 user__in=self.participants
                                 ).values_list('course__id', flat=True))
-        self.fields['onsite_courses'].queryset = onsite_qs
+        self.fields['s'].queryset = onsite_qs
 
 
 
