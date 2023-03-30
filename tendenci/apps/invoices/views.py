@@ -150,6 +150,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     return render_to_resp(request=request, template_name=template_name,
         context={
         'invoice': invoice,
+        'allow_refunds': get_setting('site', 'global', 'allow_refunds') != "No",
         'obj': obj,
         'obj_name': obj_name,
         'guid': guid,

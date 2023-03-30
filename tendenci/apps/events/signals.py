@@ -40,6 +40,12 @@ def create_notice_types(sender, **kwargs):
         verbosity=verbosity)
 
     notification.create_notice_type(
+        'refund_confirmation',
+        _('Event Registration Refunded'),
+        _('Notify registrants their refund for the event has processed.'),
+        verbosity=verbosity)
+
+    notification.create_notice_type(
         'event_registration_end_recap',
         _('Recap of end of event registration'),
         _('Notify administrators that registration for the event has ended.'),

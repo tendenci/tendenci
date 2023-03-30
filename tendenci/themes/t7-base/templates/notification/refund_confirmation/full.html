@@ -1,0 +1,26 @@
+{% load perm_tags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"https://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Refund Confirmation" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<div style="margin-bottom:20px;">
+
+    <p style="margin:2px">
+        {{ confirmation_message }}
+    </p>
+    <p>
+        {% if invoice %}
+                <a href="{% url 'invoice.view' invoice.pk invoice.guid %}">
+                    You may access your final invoice here
+                </a>
+        {% endif %}
+    </p>
+
+</body>
+</html>

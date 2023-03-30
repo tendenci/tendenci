@@ -136,6 +136,7 @@ from tendenci.apps.events.utils import (
     get_pricing,
     clean_price,
     get_cancellation_confirmation_message,
+    get_refund_confirmation_message,
     get_event_spots_taken,
     get_ievent,
     get_vevents,
@@ -2751,6 +2752,9 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
 
         # check if already canceled. if so, do nothing
         if not registration.canceled:
+            refund_amount = 0
+            allow_refunds = get_setting('site', 'global', 'allow_refunds')
+
             for registrant in registrants:
                 user_is_registrant = False
                 if not request.user.is_anonymous and registrant.user:
@@ -2776,9 +2780,9 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
 
                     # Update invoice with cancellation fee if one set.
                     registrant.process_cancellation_fee(request.user)
+                    refund_amount += registrant.amount
 
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-                allow_refunds = get_setting('site', 'global', 'allow_refunds')
                 if recipients and notification:
                     notification.send_emails(recipients, 'event_registration_cancelled', {
                         'event':event,
@@ -2792,8 +2796,19 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                         'allow_refunds': allow_refunds,
                     })
 
+
                 # Log an event for each registrant in the loop
                 EventLog.objects.log(instance=registrant)
+
+            # Refund if automatic refunds turned on
+            if allow_refunds == 'Auto' and refund_amount:
+                confirmation_message = get_refund_confirmation_message(event, registrants)
+                registration.invoice.refund(
+                    refund_amount,
+                    registrants.count(),
+                    request.user,
+                    confirmation_message,
+                )
 
             registration.canceled = True
             registration.save()
@@ -2907,7 +2922,13 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
             EventLog.objects.log(instance=registrant)
 
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+
+            # Refund if automatic refunds turned on
             allow_refunds = get_setting('site', 'global', 'allow_refunds')
+            if allow_refunds == 'Auto' and registrant.amount:
+                confirmation_message = get_refund_confirmation_message(event, [registrant])
+                invoice.refund(registrant.amount, 1, request.user, confirmation_message)
+
             if recipients and notification:
                 notification.send_emails(recipients, 'event_registration_cancelled', {
                     'event':event,

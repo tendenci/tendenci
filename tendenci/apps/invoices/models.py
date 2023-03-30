@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -9,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models.signals import post_save
 
+from tendenci.apps.notifications import models as notification
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
 from tendenci.apps.invoices.listeners import update_profiles_total_spend
@@ -26,6 +28,7 @@ STATUS_DETAIL_CHOICES = (
 class Invoice(models.Model):
     class LineDescriptions:
         CANCELLATION_FEE = 'Cancellation fee'
+        REFUND = 'Refund'
 
     guid = models.CharField(max_length=50)
 
@@ -443,6 +446,109 @@ class Invoice(models.Model):
             if self.subtotal > 0:
                 make_acct_entries_initial_reversing(user, self, self.subtotal)
 
+    def get_total_cancellation_fees(self, line_item_count):
+        """Sum of all cancellation fees for specified line items"""
+        data = self.invoicelineitem_set.filter(
+            description=self.LineDescriptions.CANCELLATION_FEE
+        )[:line_item_count].aggregate(models.Sum('total'))
+        return data.get('total__sum') or 0
+
+    @property
+    def total_refunded(self):
+        """Sum of refunds"""
+        data = self.invoicelineitem_set.filter(
+            description=self.LineDescriptions.REFUND
+        ).aggregate(models.Sum('total'))
+        return data.get('total__sum') or 0
+
+    @property
+    def total_cancellation_fees(self):
+        """Sum of all cancellation fees"""
+        return self.get_total_cancellation_fees(self.invoicelineitem_set.count())
+
+    @property
+    def refundable_amount(self):
+        """Invoice total minus cancellation fees"""
+        return self.total - self.total_cancellation_fees
+
+    def refund(self, amount, refund_item_count, user=None, confirmation_message=None):
+        """
+        Refund specified amount. Cancellation fees are not refundable and will be
+        deducted from refund. Max refund is the total invoice.
+        Only allowed if allow_refunds site setting is on.
+        """
+        if not amount:
+            raise Warning("No amount was passed, no refund was processed.")
+
+        allow_refunds = get_setting('site', 'global', 'allow_refunds')
+        if allow_refunds == 'No':
+            raise ValidationError("Refunds not allowed. Refunds can be enabled by an administrator.")
+
+        if amount > self.refundable_amount:
+            raise ValidationError(
+                f"Can only refund total amount on invoice: " \
+                f"{self.refundable_amount}"
+            )
+
+        # Process refund with Stripe here. Refund is amount - cancellation fees
+        # If Stripe transaction fails, an error will be raised and an email will
+        # sent so that admin can process manually.
+        self.__refund(user, (amount - self.get_total_cancellation_fees(refund_item_count)))
+
+        # Update line item to show refund
+        self.add_line_item(
+            amount=-amount,
+            description=self.LineDescriptions.REFUND,
+        )
+
+        # Send email to confirm refund.
+        if self.owner.email:
+            self.__send_refund_confirmation(amount, confirmation_message)
+
+    def __refund(self, user, amount):
+        """
+        Updates the invoice balance by adding
+        accounting entries for refunds.
+        """
+
+        amount = min(amount, self.total_paid)
+        if self.is_tendered and amount:
+            self.balance += amount
+            self.payments_credits -= amount
+            self.save()
+
+            # Make the reversing account entry
+            make_acct_entries_reversing(user, self, amount)
+
+            return True
+
+        return False
+
+    def __send_refund_confirmation(self, amount, confirmation_message):
+        """Send refund confirmation email"""
+        invoice_url = None
+
+        if not confirmation_message:
+            confirmation_message = self.get_refund_confirmation_message(amount)
+            invoice_url = reverse('invoice.view', args=[self.pk, self.guid]),
+
+        notification.send_emails([self.owner.email], 'refund_confirmation', {
+            'confirmation_message': confirmation_message,
+            'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+            'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+            'invoice': self,
+            'title': self.split_title(),
+        })
+
+    def get_refund_confirmation_message(self, amount):
+        """Get default refund confirmation message"""
+        cancellation_fee_message = ""
+        if self.total_cancellation_fees:
+            cancellation_fee_message = f" and a cancellation fee of " \
+                                       f"${self.total_cancellation_fees} has been processed"
+
+        return f"You have been refunded ${amount}{cancellation_fee_message}."
+
     def add_line_item(self, amount, description, user=None):
         """Add extra line item to this invoice"""
         InvoiceLineItem.objects.create(
@@ -463,6 +569,14 @@ class Invoice(models.Model):
 #         if self.is_void:
 #             self.is_void = False
 #             self.save()
+
+    @property
+    def total_paid(self):
+        """Total of approved payments"""
+        data = self.payment_set.filter(status_detail='approved'
+            ).aggregate(models.Sum('amount'))
+
+        return data.get('amount__sum') or 0
 
     def get_first_approved_payment(self):
         """

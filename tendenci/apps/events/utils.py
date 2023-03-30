@@ -2174,19 +2174,36 @@ def get_cancellation_confirmation_message(event, registrants):
                   f"You will receive an email confirmation with a link to your updated invoice " \
                   f"once event administrators have processed your refund."
     elif allow_refunds == "Auto":
-        registration = registrants[0].registration
-        invoice = registration.invoice
-        amount = 0
-        fee = 0
+        message = get_refund_confirmation_message(event, registrants, True)
 
-        for registrant in registrants:
-            amount += registrant.amount
-            fee += registrant.cancellation_fee
+    return message
 
+def get_refund_confirmation_message(event, registrants, include_invoice_url=False):
+    """
+    Get refund confirmation message for registrants.
+    In some cases, we will leave out the invoice_url (ex. in an email where we already include it).
+    This will also be the cancellation confirmation message when auto refunds are turned on.
+    """
+    event_date = event.start_dt.strftime("%m/%d/%Y")
+    registration = registrants[0].registration
+    invoice = registration.invoice
+    amount = 0
+    fee = 0
+
+    for registrant in registrants:
+        amount += registrant.amount
+        fee += registrant.cancellation_fee
+
+    cancellation_fee_message = ""
+    if fee:
+        cancellation_fee_message = f", and your cancellation fee of ${fee} processed"
+
+    message = f"Your registration fee in the amount of ${amount} for {event.title} on " \
+              f"{event_date} has been canceled{cancellation_fee_message}. "
+
+    if include_invoice_url:
         invoice_url = reverse('invoice.view', args=[invoice.pk, invoice.guid])
-        message = f"Your registration fee in the amountt of ${amount} for {event.title} on " \
-                  f"{event_date} has been canceled, and your cancellation fee of ${fee} processed. " \
-                  f"You may access your final registration invoice " \
-                  f"<a class='alert-link' href={invoice_url}> here</a>."
+        message +=  f"You may access your final registration invoice " \
+                    f"<a class='alert-link' href={invoice_url}> here</a>."
 
     return message
