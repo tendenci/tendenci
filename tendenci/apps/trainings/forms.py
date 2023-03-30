@@ -138,6 +138,7 @@ class CoursesInfoForm(FormControlWidgetMixin, forms.Form):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         self.participants = kwargs.pop('participants')
+        self.hide_courses = kwargs.pop('hide_courses')
         super(CoursesInfoForm, self).__init__(*args, **kwargs)
 
         online_qs = Course.objects.filter(
@@ -145,6 +146,9 @@ class CoursesInfoForm(FormControlWidgetMixin, forms.Form):
                             id__in=Transcript.objects.filter(
                                 user__in=self.participants
                                 ).values_list('course__id', flat=True))
+        if self.hide_courses:
+            online_qs = online_qs.none()
+            
         self.fields['l'].queryset = online_qs
 
         onsite_qs = Course.objects.filter(
@@ -152,6 +156,8 @@ class CoursesInfoForm(FormControlWidgetMixin, forms.Form):
                             id__in=Transcript.objects.filter(
                                 user__in=self.participants
                                 ).values_list('course__id', flat=True))
+        if self.hide_courses:
+            onsite_qs = onsite_qs.none()
         self.fields['s'].queryset = onsite_qs
 
 
