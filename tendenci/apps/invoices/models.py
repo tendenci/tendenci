@@ -455,7 +455,7 @@ class Invoice(models.Model):
         [payment] = self.payment_set.filter(status_detail='approved')[:1] or [None]
         return payment
 
-    def stripe_connected_account(self):
+    def stripe_connected_account(self, scope='read_write'):
         """
         Get the stripe connected account for this invoice.
         """
@@ -466,6 +466,7 @@ class Invoice(models.Model):
             return None
         
         [stripe_account] = StripeAccount.objects.filter(
+                            scope=scope,
                             entity=self.entity,
                             status_detail='active'
                             ).values_list('stripe_user_id',
