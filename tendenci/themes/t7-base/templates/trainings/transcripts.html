@@ -54,7 +54,7 @@
 
 {% if participants_form %}
 <div id="block_step_first" role="tabpanel" class="tab-pane{% if step == 'step1' %} active{% endif %}">
- <form id="participants-form" class="" action="" method="get">	
+ <form id="participants-form" class="" action=""?{{ qs }} method="post">{% csrf_token %}	
 	{% include "trainings/includes/participants_form.html" %}
 	<div class="col-sm-6">
 	<div class="pull-left">
@@ -67,7 +67,7 @@
 
 
 <div id="block_step_second" role="tabpanel" class="tab-pane{% if step == 'step2' %} active{% endif %}">
-<form id="courses-info-form" class="" action="" method="get">
+<form id="courses-info-form" class="" action=""?{{ qs }} method="post">{% csrf_token %}
 	{% if hidden_participants_form %}
 	{{ hidden_participants_form|styled_form }}
 	{% endif %}

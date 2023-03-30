@@ -1,6 +1,7 @@
 from urllib.parse import urlparse
 from wsgiref.util import FileWrapper
 import subprocess
+import json
 #from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic.edit import CreateView
@@ -20,7 +21,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from .models import (TeachingActivity, OutsideSchool, Transcript,
-             CertCat, Certification, CorpTranscriptsZipFile)        
+             CertCat, Certification, CorpTranscriptsZipFile, Course)        
 from .forms import (TeachingActivityForm,
                     OutsideSchoolForm,
                     ParticipantsForm,
@@ -153,11 +154,22 @@ def transcripts(request, user_id=None, corp_profile_id=None,
     if corp_profile_id:
         corp_profile = get_object_or_404(CorpProfile, pk=corp_profile_id)
         if request.user.is_superuser or corp_profile.is_rep(request.user):
-            participants_form = ParticipantsForm(request.GET,
+            participants_form = ParticipantsForm(request.POST,
                                          request=request,
                                          corp_profile=corp_profile)
-            if participants_form.is_valid():
-                participants = participants_form.cleaned_data['p']
+
+            if request.method == 'POST':
+                if participants_form.is_valid():
+                    participants = participants_form.cleaned_data['p']
+                    request.session['transcripts_p'] = participants
+            else: # GET
+                if 'transcripts_p' in request.session:
+                    if request.GET.get('page') or generate_pdf:
+                        participants = request.session['transcripts_p']
+                    else:
+                        del request.session['transcripts_p']
+                        if 'transcripts_c' in request.session:
+                            del request.session['transcripts_c']
         else:
             raise Http403
     else:
@@ -175,26 +187,42 @@ def transcripts(request, user_id=None, corp_profile_id=None,
         participants = [user_this.id]
 
     if participants:
-        courses_info_form = CoursesInfoForm(request.GET,
+        courses_info_form = CoursesInfoForm(request.POST,
                                             request=request,
                                             participants=participants)
+        if request.method == 'POST':
+            if courses_info_form.is_valid():
+                online_courses = courses_info_form.cleaned_data['l']
+                onsite_courses = courses_info_form.cleaned_data['s']
+                include_outside_schools = courses_info_form.cleaned_data['include_outside_schools']
+                include_teaching_activities = courses_info_form.cleaned_data['include_teaching_activities']
+                request.session['transcripts_c'] = json.dumps({'l': list(online_courses.values_list('id', flat=True)),
+                                                    's': list(onsite_courses.values_list('id', flat=True)),
+                                                    'outside': include_outside_schools,
+                                                    'teaching': include_teaching_activities})
 
-        if courses_info_form.is_valid():
-            online_courses = courses_info_form.cleaned_data['l']
-            onsite_courses = courses_info_form.cleaned_data['s']
-            include_outside_schools = courses_info_form.cleaned_data['include_outside_schools']
-            include_teaching_activities = courses_info_form.cleaned_data['include_teaching_activities']
-
-            if 'step2' in request.GET:
-                step = 'step3'
-
-                users = User.objects.filter(id__in=participants)
+                if 'step2' in request.POST:
+                    step = 'step3'
+    
+                    users = User.objects.filter(id__in=participants)
+        else: # GET
+            if 'transcripts_c' in request.session:
+                if request.GET.get('page') or generate_pdf:
+                    courses_info = json.loads(request.session['transcripts_c'])
+                    online_courses = Course.objects.filter(id__in=courses_info.get('l'))
+                    onsite_courses = Course.objects.filter(id__in=courses_info.get('s'))
+                    include_outside_schools = courses_info.get('outside')
+                    include_teaching_activities = courses_info.get('teaching')
+                    step = 'step3'
+                    users = User.objects.filter(id__in=participants)
+                else:
+                    del request.session['transcripts_c']
 
     if participants_form:
         if not courses_info_form:
             step = 'step1'
         if step != 'step1':
-            hidden_participants_form = ParticipantsForm(request.GET,
+            hidden_participants_form = ParticipantsForm(request.POST,
                                          request=request,
                                          corp_profile=corp_profile,
                                          hidden=True)
