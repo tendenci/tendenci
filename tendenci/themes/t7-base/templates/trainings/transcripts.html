@@ -38,7 +38,7 @@
 
 {% block content %}
 
-<h1>{% trans 'Transcripts' %}</h1>
+<h1>{% trans 'Transcripts' %} {% if corp_profile %}<small>- {{ corp_profile.name }}</small>{% endif %}</h1>
 
 <div id="block_transcript_nav">
 	<ul class="nav nav-tabs nav-justified cm-wizard" role="tablist">
@@ -74,6 +74,7 @@
 	{% include "trainings/includes/courses_info_form.html" %}
 	<br />
 	<div class="col-sm-12">
+	<div id="msg-alert" class="hidden alert alert-danger"></div>
 	<div class="pull-left clearfix">
 		<input type="submit" value="Continue" name="step2" class="btn btn-primary text-uppercase">
 	</div>
@@ -138,6 +139,33 @@
 		$(document).ready(function(){
 			$('.btnPrevious').click(function(){
 			 $('.nav-tabs > .active').prev('li').find('a').trigger('click');
+			});
+			
+			$('form#courses-info-form input[type=submit]').click(function(e){
+				var total;
+				var num_allowed;
+				var limit = 1188; 
+				var num_p = $('form#courses-info-form input[name="p"]').length;
+				var num_l = $('form#courses-info-form input[name="l"]:checked').length;
+				var num_s = $('form#courses-info-form input[name="s"]:checked').length;
+				var num_selected = num_l + num_s;
+				total = num_p + num_selected;
+				
+				if (total > limit){
+					if (num_p > limit){
+						num_allowed = 0;
+					}else{
+						num_allowed = limit - num_p;
+					}
+					$('form #msg-alert').text("Too many courses selected! Allowed: " + num_allowed + ", Selected: " + num_selected + ".");
+		            $('form #msg-alert').removeClass('hidden');
+		            setTimeout(function () {
+		                $('form #msg-alert').fadeOut();
+		            }, 5000);
+            
+					e.preventDefault();
+					return false;
+				}
 			});
 		});
 	}(jQuery));

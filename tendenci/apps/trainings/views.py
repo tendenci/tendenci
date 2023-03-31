@@ -150,7 +150,7 @@ def transcripts(request, user_id=None, corp_profile_id=None,
     include_teaching_activities = False
     users = None
     step = 'step2'
-    MAX_USERS = 100 # if number of users > 100, courses will not show on transcripts
+    #MAX_USERS = 100 # if number of users > 100, courses will not show on transcripts
 
     if corp_profile_id:
         corp_profile = get_object_or_404(CorpProfile, pk=corp_profile_id)
@@ -190,8 +190,7 @@ def transcripts(request, user_id=None, corp_profile_id=None,
     if participants:
         courses_info_form = CoursesInfoForm(request.POST,
                                             request=request,
-                                            participants=participants,
-                                            hide_courses=len(participants) > MAX_USERS)
+                                            participants=participants,)
         if request.method == 'POST':
             if courses_info_form.is_valid():
                 online_courses = courses_info_form.cleaned_data['l']
@@ -199,11 +198,11 @@ def transcripts(request, user_id=None, corp_profile_id=None,
                 include_outside_schools = courses_info_form.cleaned_data['include_outside_schools']
                 include_teaching_activities = courses_info_form.cleaned_data['include_teaching_activities']
 
-                if len(participants) > MAX_USERS:
-                    online_courses = online_courses.none()
-                    onsite_courses = onsite_courses.none()
-                    include_outside_schools = False
-                    include_teaching_activities = False
+                # if len(participants) > MAX_USERS:
+                #     online_courses = online_courses.none()
+                #     onsite_courses = onsite_courses.none()
+                #     include_outside_schools = False
+                #     include_teaching_activities = False
                 courses_info = {'l': list(online_courses.values_list('id', flat=True)),
                                 's': list(onsite_courses.values_list('id', flat=True)),
                                 'outside': include_outside_schools,
