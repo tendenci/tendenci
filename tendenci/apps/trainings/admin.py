@@ -295,7 +295,16 @@ class UserCertDataAdmin(admin.ModelAdmin):
                     'show_user',
                     'certification',
                     'certification_dt',
-                    'diamond_1_dt',]
+                    'diamond_1_dt',
+                    'diamond_2_dt',
+                    'diamond_3_dt',
+                    'diamond_4_dt',
+                    'diamond_5_dt',
+                    'diamond_6_dt',
+                    'diamond_7_dt',
+                    'diamond_8_dt',
+                    'diamond_9_dt',
+                    'show_transcript']
     #list_editable = ('certification_dt', 'diamond_1_dt')
     search_fields = ['user__first_name',
                      'user__last_name',
@@ -336,6 +345,14 @@ class UserCertDataAdmin(admin.ModelAdmin):
                 )
         return ""
     show_user.short_description = 'User'
+    
+    @mark_safe
+    def show_transcript(self, instance):
+        if instance.user:
+            url = reverse('trainings.transcripts_user', args=[instance.user.id])
+            return f'<a href="{url}" title="View Transcripts">View Transcripts</a>'
+        return ""
+    show_transcript.short_description = 'Transcript'
 
 
 class BluevoltExamImportAdmin(admin.ModelAdmin):
