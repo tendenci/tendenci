@@ -160,7 +160,7 @@
 					$('form #msg-alert').text("Too many courses selected! Allowed: " + num_allowed + ", Selected: " + num_selected + ".");
 		            $('form #msg-alert').removeClass('hidden');
 		            setTimeout(function () {
-		                $('form #msg-alert').fadeOut();
+		                $('form #msg-alert').addClass('hidden');
 		            }, 5000);
             
 					e.preventDefault();

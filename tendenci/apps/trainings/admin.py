@@ -292,7 +292,7 @@ class TranscriptAdmin(admin.ModelAdmin):
 class UserCertDataAdmin(admin.ModelAdmin):
     model = UserCertData
     list_display = ['id',
-                    'user',
+                    'show_user',
                     'certification',
                     'certification_dt',
                     'diamond_1_dt',]
@@ -323,6 +323,19 @@ class UserCertDataAdmin(admin.ModelAdmin):
         if obj: # editing
             return self.readonly_fields + ('user',)
         return self.readonly_fields
+
+    @mark_safe
+    def show_user(self, instance):
+        if instance.user:
+            name = instance.user.get_full_name()
+            if not name:
+                name = instance.user.username
+            return '<a href="{0}" title="{1}">{1}</a>'.format(
+                    reverse('profile', args=[instance.user.username]),
+                    name
+                )
+        return ""
+    show_user.short_description = 'User'
 
 
 class BluevoltExamImportAdmin(admin.ModelAdmin):
