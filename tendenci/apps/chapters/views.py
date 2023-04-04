@@ -137,7 +137,7 @@ def search(request, template_name="chapters/search.html"):
             chapters = chapters.filter(state=state)
         if county:
             chapters = chapters.filter(county__iexact=county)
-        chapters = chapters.order_by('-create_dt')
+        chapters = chapters.order_by('title')
     else:
         chapters = Chapter.objects.none()
 
