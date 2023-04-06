@@ -608,9 +608,9 @@ class Transcript(models.Model):
             if not self.date:
                 self.date = date.today()
 
-        assign_diamond_number = kwargs.pop('assign_diamond_number', True)
-        if assign_diamond_number and not self.apply_to:
-            self.apply_to = self.caculate_apply_to()
+            assign_diamond_number = kwargs.pop('assign_diamond_number', True)
+            if assign_diamond_number and not self.apply_to:
+                self.apply_to = self.caculate_apply_to()
         super(Transcript, self).save(*args, **kwargs)
 
 
