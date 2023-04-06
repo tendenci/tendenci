@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.conf import settings
 
 from tendenci.libs.utils import python_executable
+from tendenci.apps.theme.templatetags.static import static
 from .models import (SchoolCategory, Certification,
                      CertCat, Course, Transcript,
                      TeachingActivity,
@@ -40,6 +41,13 @@ class TeachingActivityAdmin(admin.ModelAdmin):
             
         )},),
     )
+    
+    autocomplete_fields = ('user',)
+
+    class Media:
+        css = {
+            "all": (static("css/autocomplete_ext.css"),)
+        }
 
     def get_readonly_fields(self, request, obj=None):
         if obj: # editing
@@ -63,6 +71,7 @@ class OutsideSchoolAdmin(admin.ModelAdmin):
                      'user__last_name',
                      'user__email']
     list_filter = ['status_detail',]
+    list_per_page = 20
     #form = OutsideSchoolAdminForm
     fieldsets = (
         (None, {
@@ -78,6 +87,12 @@ class OutsideSchoolAdmin(admin.ModelAdmin):
             
         )},),
     )
+    autocomplete_fields = ('user',)
+
+    class Media:
+        css = {
+            "all": (static("css/autocomplete_ext.css"),)
+        }
 
     def get_readonly_fields(self, request, obj=None):
         if obj: # editing
