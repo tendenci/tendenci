@@ -2167,12 +2167,12 @@ def get_cancellation_confirmation_message(event, registrants):
     allow_refunds = get_setting("site", "global", "allow_refunds")
 
     message = None
-    event_date = event.start_dt.strftime("%m/%d/%Y")
 
     if allow_refunds == "Yes":
-        message = f"You have canceled your registration to { event.title } on { event_date }. " \
-                  f"You will receive an email confirmation with a link to your updated invoice " \
-                  f"once event administrators have processed your refund."
+        message = f"You have canceled your registration to { event.title } on " \
+                  f"{ event.display_start_date }. You will receive an email confirmation " \
+                  f"with a link to your updated invoice once event administrators " \
+                  f"have processed your refund."
     elif allow_refunds == "Auto":
         message = get_refund_confirmation_message(event, registrants, True)
 
@@ -2184,7 +2184,6 @@ def get_refund_confirmation_message(event, registrants, include_invoice_url=Fals
     In some cases, we will leave out the invoice_url (ex. in an email where we already include it).
     This will also be the cancellation confirmation message when auto refunds are turned on.
     """
-    event_date = event.start_dt.strftime("%m/%d/%Y")
     registration = registrants[0].registration
     invoice = registration.invoice
     amount = 0
@@ -2194,12 +2193,15 @@ def get_refund_confirmation_message(event, registrants, include_invoice_url=Fals
         amount += registrant.amount
         fee += registrant.cancellation_fee
 
+    amount = min(amount, invoice.refundable_amount)
+    fee = min(fee, invoice.total_cancellation_fees_pending)
+
     cancellation_fee_message = ""
     if fee:
         cancellation_fee_message = f", and your cancellation fee of ${fee} processed"
 
     message = f"Your registration fee in the amount of ${amount} for {event.title} on " \
-              f"{event_date} has been canceled{cancellation_fee_message}. "
+              f"{event.display_start_date} has been canceled{cancellation_fee_message}. "
 
     if include_invoice_url:
         invoice_url = reverse('invoice.view', args=[invoice.pk, invoice.guid])

@@ -1,7 +1,12 @@
 from datetime import datetime
 from django import forms
 from django.utils.translation import gettext_lazy as _
+
 from tendenci.apps.payments.models import Payment, PaymentMethod
+
+
+class RefundForm(forms.Form):
+    amount = forms.DecimalField(max_digits=10, decimal_places=2)
 
 
 class MarkAsPaidForm(forms.ModelForm):

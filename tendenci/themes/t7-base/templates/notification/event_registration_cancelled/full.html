@@ -15,18 +15,23 @@
     <p style="margin:2px">
 
         {% if not user_is_registrant %}
-            {% if user.is_anonymous %} An anonymous user {% else %} <a href="{% url 'profile' user.username %}">{{ user.first_name }} {{ user.last_name }}</a>{% endif %} has {% if allow_refunds == "Auto" %}canceled{% else %}requested cancellation of{% endif %} the registration for {% if registrant.first_name or registrant.last_name %} {{ registrant.first_name }} {{ registrant.last_name }} {% else %} {% trans "guest" %} #{{ registrant.pk }} {% endif %}
+            {% if user.is_anonymous %} An anonymous user {% else %} <a href="{% url 'profile' user.username %}">{{ user.first_name }} {{ user.last_name }}</a>{% endif %} has {% if can_auto_refund %}canceled{% else %}requested cancellation of{% endif %} the registration for {% if registrant.first_name or registrant.last_name %} {{ registrant.first_name }} {{ registrant.last_name }} {% else %} {% trans "guest" %} #{{ registrant.pk }} {% endif %}
         {% else %}
 
-            <a href="{% url 'profile' user.username %}">{% if registrant.first_name or registrant.last_name %}{{ registrant.first_name }} {{ registrant.last_name }} {% else %} {% trans "guest" %} #{{ registrant.pk }}{% endif %}</a> has {% if allow_refunds == "Auto" %} canceled {% else %} requested to cancel{% endif %} their registration
+            <a href="{% url 'profile' user.username %}">{% if registrant.first_name or registrant.last_name %}{{ registrant.first_name }} {{ registrant.last_name }} {% else %} {% trans "guest" %} #{{ registrant.pk }}{% endif %}</a> has {% if can_auto_refund %} canceled {% else %} requested to cancel{% endif %} their registration
 
         {% endif %}
             for {{ event.title }} on {{ event.start_dt }} on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
 
-        <div>
+            <div>
+                <p>
+                {% if allow_refunds == "Auto" and not can_auto_refund %}
+                Automatic refunds are turned on, but the system was not able to refund in this case. You can still refund manually from the invoice. {% endif %}
+                <br/>
         <a href="{% url 'invoice.view' registrant.registration.invoice.pk registrant.registration.invoice.guid %}">
-            {% if allow_refunds == "Yes" %}Refund their registration here{% else %}View their {% if allow_refunds == "Auto" %} final {% endif %} registration invoice here{% endif %}</a>
-        </div>
+            {% if can_refund and not can_auto_refund %}Refund their registration here{% else %}View their {% if can_auto_refund %} final {% endif %} registration invoice here{% endif %}</a>
+                </p>
+            </div>
 
 
 </p>

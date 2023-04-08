@@ -1523,6 +1523,11 @@ class Event(TendenciBaseModel):
             return self.image.file
         return None
 
+    @property
+    def display_start_date(self):
+        """Start date formatted for confirmation messages"""
+        return self.start_dt.strftime("%m/%d/%Y")
+
     def date_range(self, start_date, end_date):
         for n in range((end_date - start_date).days):
             yield start_date + timedelta(n)

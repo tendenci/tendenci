@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
@@ -26,7 +27,7 @@ from tendenci.apps.perms.decorators import is_enabled, superuser_required
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.notifications.utils import send_notifications
-from tendenci.apps.payments.forms import MarkAsPaidForm
+from tendenci.apps.payments.forms import MarkAsPaidForm, RefundForm
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.invoices.forms import ReportsOverviewForm, AdminNotesForm, AdminVoidForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
@@ -150,7 +151,6 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     return render_to_resp(request=request, template_name=template_name,
         context={
         'invoice': invoice,
-        'allow_refunds': get_setting('site', 'global', 'allow_refunds') != "No",
         'obj': obj,
         'obj_name': obj_name,
         'guid': guid,
@@ -216,6 +216,55 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
         })
 
 
+@superuser_required
+def refund(request, id, template_name='invoices/refund.html'):
+    """
+    Refunds specified amount
+    """
+    invoice = get_object_or_404(Invoice, pk=id)
+
+    if not invoice.allow_edit_by(request.user):
+        raise Http403
+
+    if request.method == 'POST':
+        form = RefundForm(request.POST)
+
+        if form.is_valid():
+
+            try:
+                # update invoice; make accounting entries
+                invoice.refund(
+                    form.cleaned_data.get('amount'),
+                    request.user,
+                )
+
+                EventLog.objects.log(instance=invoice)
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    invoice.admin_refund_confirmation_message,
+                )
+
+                return redirect(invoice)
+
+            except ValidationError as e:
+                form.add_error('amount', e.messages)
+
+    else:
+        form = RefundForm(
+            initial={
+                'amount': invoice.refundable_amount,
+                'process_cancellation_fees_count': invoice.cancellation_fee_count,
+            })
+
+
+    return render_to_resp(
+        request=request, template_name=template_name, context={
+            'invoice': invoice,
+            'form': form,
+        })
+
+
 def mark_as_paid_old(request, id):
     """
     Sets invoice balance to 0 and adds
@@ -252,6 +301,7 @@ def void_payment(request, id):
 
     messages.add_message(request, messages.SUCCESS, _('Successfully voided payment for Invoice %(pk)s.' % {'pk':invoice.id}))
     return redirect(invoice)
+
 
 @superuser_required
 def void_invoice(request, id, form_class=AdminVoidForm, template_name="invoices/void.html"):

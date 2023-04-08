@@ -2751,6 +2751,7 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                 'event.cancel_registration', args=[event.pk, registration.pk]))
 
         # check if already canceled. if so, do nothing
+        confirmation_message = None
         if not registration.canceled:
             refund_amount = 0
             allow_refunds = get_setting('site', 'global', 'allow_refunds')
@@ -2794,6 +2795,8 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                         'registrant':registrant,
                         'user_is_registrant': user_is_registrant,
                         'allow_refunds': allow_refunds,
+                        'can_refund': invoice.can_refund,
+                        'can_auto_refund': invoice.can_auto_refund,
                     })
 
 
@@ -2801,11 +2804,11 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                 EventLog.objects.log(instance=registrant)
 
             # Refund if automatic refunds turned on
-            if allow_refunds == 'Auto' and refund_amount:
+            if registration.invoice.can_auto_refund and refund_amount:
+                refund_amount = min(refund_amount, registration.invoice.refundable_amount)
                 confirmation_message = get_refund_confirmation_message(event, registrants)
                 registration.invoice.refund(
                     refund_amount,
-                    registrants.count(),
                     request.user,
                     confirmation_message,
                 )
@@ -2813,9 +2816,8 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
             registration.canceled = True
             registration.save()
 
-        message = get_cancellation_confirmation_message(event, registrants)
-        if message:
-            messages.success(request, message)
+        if confirmation_message:
+            messages.success(request, confirmation_message)
         return HttpResponseRedirect(
             reverse('event.registration_confirmation',
             args=[event.pk, registration.registrant.hash])
@@ -2882,6 +2884,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                 'event.cancel_registrant', args=[event.pk, registrant.pk]))
 
         # check if already canceled. if so, do nothing
+        confirmation_message = None
         if not registrant.cancel_dt:
             user_is_registrant = False
             if request.user.is_authenticated and registrant.user:
@@ -2925,9 +2928,11 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
 
             # Refund if automatic refunds turned on
             allow_refunds = get_setting('site', 'global', 'allow_refunds')
-            if allow_refunds == 'Auto' and registrant.amount:
+            can_auto_refund = invoice.can_auto_refund
+            if invoice.can_auto_refund and registrant.amount:
+                refund_amount = min(registrant.amount, invoice.refundable_amount)
                 confirmation_message = get_refund_confirmation_message(event, [registrant])
-                invoice.refund(registrant.amount, 1, request.user, confirmation_message)
+                invoice.refund(refund_amount, request.user, confirmation_message)
 
             if recipients and notification:
                 notification.send_emails(recipients, 'event_registration_cancelled', {
@@ -2940,12 +2945,13 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                     'registrant':registrant,
                     'user_is_registrant': user_is_registrant,
                     'allow_refunds': allow_refunds,
+                    'can_refund': invoice.can_refund,
+                    'can_auto_refund': can_auto_refund,
                 })
 
         # back to invoice
-        message = get_cancellation_confirmation_message(event, [registrant])
-        if message:
-            messages.success(request, message)
+        if confirmation_message:
+            messages.success(request, confirmation_message)
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', args=[event.pk, registrant.hash]))
 

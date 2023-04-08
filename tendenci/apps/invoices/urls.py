@@ -13,6 +13,7 @@ urlpatterns = [
     re_path(r'^detail/(?P<id>\d+)/$', views.detail, name="invoice.detail"),
     re_path(r'^download/(?P<id>\d+)/$', views.download_pdf, name="invoice.download"),
     re_path(r'^email/(?P<invoice_id>\d+)/$', views.email_invoice, name="invoice.email"),
+    re_path(r'^refund/(?P<id>\d+)/$', views.refund, name="invoice.refund"),
     re_path(r'^mark-as-paid/(?P<id>\d+)/$', views.mark_as_paid, name="invoice.mark_as_paid"),
 #     re_path(r'^unvoid-invoice/(?P<id>\d+)/$', views.unvoid_invoice, name="invoice.unvoid_invoice"),
     re_path(r'^void-invoice/(?P<id>\d+)/$', views.void_invoice, name="invoice.void_invoice"),
