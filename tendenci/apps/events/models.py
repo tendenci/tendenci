@@ -981,6 +981,10 @@ class Registrant(models.Model):
                 return _('Guest of {}').format(' '.join(primary_registrant))
         return None
 
+    def course(self):
+        event = self.registration.event
+        return event.course
+
     @classmethod
     def event_registrants(cls, event=None):
 
@@ -1348,7 +1352,7 @@ class Event(TendenciBaseModel):
             set_s3_file_permission(self.image.file, public=self.is_public())
 
     def __str__(self):
-        return self.title
+        return f'{self.title} ({self.start_dt.strftime("%m/%d/%Y")} - {self.end_dt.strftime("%m/%d/%Y")})'
 
     @property
     def has_addons(self):

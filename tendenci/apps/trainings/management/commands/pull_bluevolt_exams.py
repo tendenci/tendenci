@@ -11,7 +11,7 @@ import requests
 
 class Command(BaseCommand):
     """
-    Pull BV exams (enrollment) data through BV API.
+    Import BV exams data through BV API.
     
     Usage: python manage.py pull_bluevolt_exams --import_id 1
     
