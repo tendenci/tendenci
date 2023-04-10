@@ -398,7 +398,7 @@ class BluevoltExamImportAdmin(admin.ModelAdmin):
             obj.save()
             
             subprocess.Popen([python_executable(), "manage.py",
-                              "pull_bluevolt_exams",
+                              "import_bluevolt_exams",
                               "--import_id",
                               str(obj.id)])  
     

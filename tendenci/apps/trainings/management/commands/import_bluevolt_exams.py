@@ -13,7 +13,7 @@ class Command(BaseCommand):
     """
     Import BV exams data through BV API.
     
-    Usage: python manage.py pull_bluevolt_exams --import_id 1
+    Usage: python manage.py import_bluevolt_exams --import_id 1
     
     """
     
