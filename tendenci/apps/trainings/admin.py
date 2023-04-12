@@ -179,6 +179,10 @@ class ExamAdmin(admin.ModelAdmin):
                     'date',
                     'grade',
                     ]
+    search_fields = ['user__first_name',
+                     'user__last_name',
+                     'user__username',
+                     'user__email']
     fieldsets = (
         (None, {
             'fields': (
@@ -236,7 +240,8 @@ class TranscriptAdmin(admin.ModelAdmin):
     list_display_links = ('edit_link',)
     search_fields = ['user__first_name',
                      'user__last_name',
-                     'user__email']
+                     'user__email',
+                     'user__username']
     list_filter = ['certification_track', 'school_category', 'status',]
     fieldsets = (
         (None, {

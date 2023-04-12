@@ -84,6 +84,7 @@ class Command(BaseCommand):
                 score = scores_result['Score']
                 #print('score=', score)
                 completion_date = scores_result['CompletionDate']
+                progress = scores_result['Progress']
                 # get course by module_id
                 module_payload = {'apiKey': api_key,
                                   'id': module_id}
@@ -127,34 +128,39 @@ class Command(BaseCommand):
                             
                             # STEP 3: Insert into transcripts if not already in there
                             #         and user has completed the course          
-    
+
                             # check if already exists
                             [transcript] = Transcript.objects.filter(course=course, user=user)[:1] or [None]
-                            if completion_date and not transcript:
-                                if score:
-                                    score = '%.0f' % float(score)
-                                else:
-                                    score = 0
-                                exam = Exam(user=user,
-                                            course=course,
-                                            grade=score)
-                                exam.date = dparser.parse(completion_date)
-                                exam.save()
-                                transcript = Transcript(
-                                             exam=exam,
-                                             parent_id=exam.id,
-                                             location_type='online',
-                                             user=user,
-                                             course=course,
-                                             school_category=course.school_category,
-                                             credits=course.credits,
-                                             certification_track=certification_track,
-                                             status='approved'
-                                            )
-                                transcript.save()
-                                num_inserted += 1
-                                print(transcript, f'{transcript.id}... added')
-                                #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" added')
+                            if not transcript:
+                                if 'Passed' in progress and completion_date:
+                                    # if score:
+                                    #     score = int('%.0f' % float(score))
+                                    # else:
+                                    #     score = 0
+                                    if not score:
+                                        continue
+
+                                    if score >= course.min_score:
+                                        exam = Exam(user=user,
+                                                    course=course,
+                                                    grade=score)
+                                        exam.date = dparser.parse(completion_date)
+                                        exam.save()
+                                        transcript = Transcript(
+                                                     exam=exam,
+                                                     parent_id=exam.id,
+                                                     location_type='online',
+                                                     user=user,
+                                                     course=course,
+                                                     school_category=course.school_category,
+                                                     credits=course.credits,
+                                                     certification_track=certification_track,
+                                                     status='approved'
+                                                    )
+                                        transcript.save()
+                                        num_inserted += 1
+                                        print(transcript, f'{transcript.id}... added')
+                                        #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" added')
                             #else:
                                 #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - DUBLICATE TRANSACTION: Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" already exists')
 
