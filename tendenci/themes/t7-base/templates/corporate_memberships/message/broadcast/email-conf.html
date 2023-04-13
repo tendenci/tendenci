@@ -4,16 +4,22 @@
 
 <div class="t-message-pending">
   <h1>{% trans "Broadcast E-mail Confirmation" %}</h1>
-	<div>{% trans "Total emails sent:" %} {{ total_sent }}</div>
+  {% if bce.status == 'completed' %}
+  	<div><strong>{% trans "Email Subject:" %}</strong> {{ email.subject }}</div>
+	<div><strong>{% trans "Total emails sent:" %}</strong> {{ total_sent }}</div>
 	<div>&nbsp;</div>
 	
 	<ol>
     {% for corp_member in corp_members %}
 	<li>
-	{{ corp_member.corp_profile.name }} ({{ corp_member.corp_profile.num_reps }})
+	{{ corp_member.corp_profile.name }} ({{ corp_member.corp_profile.reps.count }})
 	</li>
 	{% endfor %}
 	</ol>
+	{% else %}
+	<div>{% trans "Your broadcast email is being processed.<br /> Kindly refresh this page or wait for the confirmation email to check the status of your broadcast email." %}</div>
+	
+	{% endif %}
 </div>
 {% endblock %}
 
@@ -21,9 +27,9 @@
     {{ block.super }}
     
 <script type="text/javascript">  
-    (function($) {
-        $('#m-streaming-content').remove();
-     })(jQuery);
+    //(function($) {
+    //    $('#m-streaming-content').remove();
+    // })(jQuery);
  </script>
 
 {% endblock %}

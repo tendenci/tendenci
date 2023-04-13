@@ -2430,6 +2430,30 @@ class NoticeLogRecord(models.Model):
         app_label = 'corporate_memberships'
 
 
+class BroadcastEmail(models.Model):
+    STATUS_CHOICES = (
+        ("pending", _("Pending")),
+        ("completed", _("Completed")),
+        ("failed", _("Failed")),
+    )
+    guid = models.CharField(max_length=50, editable=False)
+    params_dict = DictField(_('Parameters Dict'))
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    start_dt = models.DateTimeField(auto_now_add=True)
+    finish_dt = models.DateTimeField(null=True, blank=True)
+    total_sent = models.IntegerField(default=0)
+    status = models.CharField(max_length=50,
+                default="pending", choices=STATUS_CHOICES)
+
+    class Meta:
+        app_label = 'corporate_memberships'
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid4())
+        super(BroadcastEmail, self).save(*args, **kwargs)
+
+
 def delete_corp_profile(sender, **kwargs):
     corp_membership = kwargs['instance']
     corp_profile = corp_membership.corp_profile

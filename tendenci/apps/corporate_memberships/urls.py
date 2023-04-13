@@ -73,6 +73,9 @@ urlpatterns = [
     
     # message
     re_path(r'^%s/message/broadcast/$' % urlpath, views.broadcast_email, name='corpmembership.broadcast_email'),
+    re_path(r'^%s/message/broadcast/conf/(?P<bce_id>\d+)/(?P<guid>[\d\w-]+)/$' % urlpath,
+            views.broadcast_email_conf,
+            name='corpmembership.broadcast_email_conf'),
 
 
     # import to CorpMembership
