@@ -94,9 +94,14 @@ class Committee(BasePage):
 
         officer_users = [officer.user for officer in self.officers(
             ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        # include officers in chapters that are associated with this group
+        for chapter in self.group.chapter_set.all():
+            officer_users.extend([officer.user for officer in chapter.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))])
         if officer_users:
             ObjectPermission.objects.assign(officer_users,
                                         self.group, perms=perms)
+        
 
     def is_committee_leader(self, user):
         """
