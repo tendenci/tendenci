@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
+from tendenci.apps.entities.models import Entity
 from tendenci.apps.perms.models import TendenciBaseModel
 
 
@@ -15,6 +16,7 @@ class StripeAccount(TendenciBaseModel):
     default_currency = models.CharField(max_length=5, default='usd')
     country = models.CharField(max_length=5, default='US')
     stripe_user_id = models.CharField(_(u'Stripe user id'), max_length=200, unique=True)
+    entity = models.ForeignKey(Entity, unique=True, blank=True, null=True, on_delete=models.SET_NULL)
     
     scope = models.CharField(max_length=20)
 #     token_type = models.CharField(max_length=20)
@@ -27,6 +29,8 @@ class StripeAccount(TendenciBaseModel):
     def __str__(self):
         return self.account_name
 
+    def delete(self, *args, **kwargs):
+        self.hard_delete()
 
 class Charge(models.Model):
     account = models.ForeignKey(StripeAccount, related_name="stripe_charges", on_delete=models.CASCADE)

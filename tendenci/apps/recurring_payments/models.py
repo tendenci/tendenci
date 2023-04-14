@@ -662,6 +662,12 @@ class RecurringPaymentInvoice(models.Model):
                        'description': description,
                        'customer': self.recurring_payment.customer_profile_id
                       }
+            
+            # Check if this transaction should be made to a connected account
+            connected_account = payment.invoice.stripe_connected_account()
+            if connected_account:
+                stripe.client_id = get_setting('module', 'payments', 'stripe_connect_client_id')
+                params.update({'stripe_account': connected_account})
 
             success = False
             response_d = {
