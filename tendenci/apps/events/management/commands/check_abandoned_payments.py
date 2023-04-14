@@ -99,6 +99,7 @@ class Command(BaseCommand):
                                 registration_configuration__payment_required=True,
                                 status=True,
                                 status_detail='active')
+        events = events.filter(registration_configuration__external_payment_link='')
         if event_id:
             events = events.filter(id=event_id)
         
