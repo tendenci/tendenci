@@ -909,6 +909,7 @@ class UserUploadForm(forms.ModelForm):
         header_line_index = file_content.find('\n')
         header_list = ((file_content[:header_line_index]
                             ).strip('\r')).split(',')
+        header_list = [name.strip('"') for name in header_list]
         header_list = normalize_field_names(header_list)
         key_list = []
         for key in key.split(','):
