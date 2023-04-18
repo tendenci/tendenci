@@ -53,7 +53,7 @@ class Command(BaseCommand):
 
         for corp_member in corp_members:
             corp_profile = corp_member.corp_profile
-            reps = corp_member.corp_profile.reps.all()
+            reps = corp_member.corp_profile.reps.filter(is_member_rep=True)
             corp_profile.num_reps = len(reps)
             for rep in reps:
                 email.recipient = rep.user.email
