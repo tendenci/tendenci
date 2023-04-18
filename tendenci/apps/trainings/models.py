@@ -700,3 +700,7 @@ class CorpTranscriptsZipFile(models.Model):
             return CorpProfile.objects.get(id=self.corp_profile_id)
         return None
 
+    def delete(self, *args, **kwargs):
+        if self.zip_file:
+            self.zip_file.delete(save=False)
+        super(CorpTranscriptsZipFile, self).delete(*args, **kwargs)  
