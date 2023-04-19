@@ -370,7 +370,7 @@ class UserCertDataAdmin(admin.ModelAdmin):
     def show_transcript(self, instance):
         if instance.user:
             url = reverse('trainings.transcripts_user', args=[instance.user.id])
-            return f'<a href="{url}" title="View Transcripts">View Transcripts</a>'
+            return f'<a href="{url}" title="View Transcript">View Transcript</a>'
         return ""
     show_transcript.short_description = 'Transcript'
 
