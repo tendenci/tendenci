@@ -255,6 +255,7 @@ class TranscriptAdmin(admin.ModelAdmin):
                     'location_type',
                     'credits',
                     'certification_track',
+                    'date',
                     'apply_to',
                     'status', 
                     ]
@@ -262,8 +263,9 @@ class TranscriptAdmin(admin.ModelAdmin):
     search_fields = ['user__first_name',
                      'user__last_name',
                      'user__email',
-                     'user__username']
-    list_filter = ['certification_track', 'school_category', 'status',]
+                     'user__username',
+                     'course__name']
+    list_filter = ['certification_track', 'location_type', 'school_category', 'status',]
     fieldsets = (
         (None, {
             'fields': (
