@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django.conf import settings
+from django.contrib import messages
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.theme.templatetags.static import static
@@ -14,7 +15,7 @@ from .models import (SchoolCategory, Certification,
                      UserCertData,
                      Exam,
                      BluevoltExamImport)
-from .forms import CourseForm
+from .forms import CourseForm, UpdateTranscriptActionForm
 
 
 class TeachingActivityAdmin(admin.ModelAdmin):
@@ -227,6 +228,26 @@ class ExamAdmin(admin.ModelAdmin):
     show_course.admin_order_field = 'course__name'
 
 
+def assign_cert_track_to_selected(modeladmin, request, queryset):
+    try:
+        cert_id = int(request.POST['cert'])
+    except:
+        cert_id = None
+    if cert_id:
+        cert = Certification.objects.get(id=cert_id)
+        count = 0
+        for transcript in queryset:
+            transcript.certification_track = cert
+            transcript.save()
+            count += 1
+        if count > 0:
+            if count == 1:
+                modeladmin.message_user(request, ("Successfully assigned certification track '%s' to %d row") % (cert, count,), messages.SUCCESS)
+            else:
+                modeladmin.message_user(request, ("Successfully assigned certification track '%s' to %d rows") % (cert, count,), messages.SUCCESS)
+assign_cert_track_to_selected.short_description = 'Assign certification track to selected Transcripts'
+
+
 class TranscriptAdmin(admin.ModelAdmin):
     model = Transcript
     list_display = ['id', 'edit_link', 'show_user', 'course', 'show_school',
@@ -257,6 +278,16 @@ class TranscriptAdmin(admin.ModelAdmin):
         )},),
     )
     list_editable = ('certification_track', 'apply_to', 'status',)
+    actions = [
+        assign_cert_track_to_selected,
+    ]
+    action_form = UpdateTranscriptActionForm
+
+    class Media:
+        js = (
+            '//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js',
+             static('js/trainings_admin_action.js'),
+        )
 
     def edit_link(self, obj):
         return "Edit"

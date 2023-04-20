@@ -2,10 +2,22 @@ from django.utils.translation import gettext_lazy as _
 from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.contrib.admin.helpers import ActionForm
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.forms import FormControlWidgetMixin
-from .models import Course, TeachingActivity, OutsideSchool, Transcript
+from .models import Course, Certification, TeachingActivity, OutsideSchool, Transcript
+
+
+class UpdateTranscriptActionForm(ActionForm):
+    cert = forms.ChoiceField(required=False, label=_(' '),  choices=())
+    
+    def __init__(self, *args, **kwargs):
+        super(UpdateTranscriptActionForm, self).__init__(*args, **kwargs)
+        certs = Certification.objects.all().order_by('name')
+            
+        self.fields['cert'].choices = [(0,  '--- Select a Certification Track ---')] + [
+                        (cert.id, cert.name) for cert in certs]
 
 
 def get_participants_choices(user, corp_profile, include_user=True):
