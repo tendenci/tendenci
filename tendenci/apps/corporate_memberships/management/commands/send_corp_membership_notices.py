@@ -21,6 +21,11 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
+        from tendenci.apps.site_settings.utils import get_setting
+        if not get_setting('module', 'corporate_memberships', 'notificationson'):
+            print('Notifications is off ... exiting')
+            return
+            
         verbosity = 1
         if 'verbosity' in options:
             verbosity = options['verbosity']
@@ -42,7 +47,6 @@ class Command(BaseCommand):
             NoticeLogRecord)
         from tendenci.apps.notifications import models as notification
         from tendenci.apps.base.utils import fieldify
-        from tendenci.apps.site_settings.utils import get_setting
 
         site_display_name = get_setting('site', 'global', 'sitedisplayname')
         site_contact_name = get_setting('site', 'global', 'sitecontactname')
