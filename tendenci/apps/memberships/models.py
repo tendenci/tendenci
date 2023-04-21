@@ -807,17 +807,19 @@ class MembershipDefault(TendenciBaseModel):
             typical membership emails.
         Returns outcome via boolean.
         """
-        ret = Notice.send_notice(
-            request=request,
-            emails=self.user.email,
-            notice_type=notice_type,
-            membership=self,
-            membership_type=self.membership_type,
-        )
-        # log notice
-        Notice.log_notices([self],
-                           notice_type=notice_type
-                           )
+        ret = False
+        if get_setting('module', 'corporate_memberships', 'notificationson'):
+            ret = Notice.send_notice(
+                request=request,
+                emails=self.user.email,
+                notice_type=notice_type,
+                membership=self,
+                membership_type=self.membership_type,
+            )
+            # log notice
+            Notice.log_notices([self],
+                               notice_type=notice_type
+                               )
 
         return ret
 
@@ -825,7 +827,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         Notify corp reps when individuals joined/renewed under a corporation.
         """
-        if self.corporate_membership_id:
+        if get_setting('module', 'corporate_memberships', 'notificationson') and self.corporate_membership_id:
             from tendenci.apps.corporate_memberships.models import CorpMembership
             [corp_membership] = CorpMembership.objects.filter(
                                 pk=self.corporate_membership_id
@@ -927,7 +929,8 @@ class MembershipDefault(TendenciBaseModel):
             from tendenci.apps.notifications.utils import send_welcome_email
             self.user.is_active = True
             self.user.save()
-            send_welcome_email(self.user)
+            if get_setting('module', 'corporate_memberships', 'notificationson'):
+                send_welcome_email(self.user)
 
         if not self.renewal:
             # add new member to the default group
