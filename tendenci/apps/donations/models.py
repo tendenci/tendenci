@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.donations.managers import DonationManager
+from tendenci.apps.base.utils import tcurrency
 
 class Donation(models.Model):
     guid = models.CharField(max_length=50)
@@ -36,6 +37,9 @@ class Donation(models.Model):
     status = models.BooleanField(default=True, null=True)
 
     objects = DonationManager()
+    
+    def __str__(self):
+        return f'Donation {tcurrency(self.donation_amount)} by {self.first_name} {self.last_name}'
 
     class Meta:
         app_label = 'donations'

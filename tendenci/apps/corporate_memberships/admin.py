@@ -219,6 +219,7 @@ approve_selected.short_description = u'Approve selected'
 
 class CorpMembershipAdmin(TendenciBaseModelAdmin):
     list_display = ['profile',
+                    'account_id',
                     'statusdetail',
                     'parent_entity',
                     'cm_type',
@@ -230,7 +231,7 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                     'roster_link',
                     'invoice_url']
     list_filter = ['corporate_membership_type', StatusDetailFilter, 'join_dt', 'expiration_dt']
-    search_fields = ['corp_profile__name']
+    search_fields = ['corp_profile__name', 'corp_profile__account_id']
 
     actions = [approve_selected,]
 
@@ -246,6 +247,11 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                     ).exclude(status_detail='archive'
                               ).order_by('status_detail',
                                          'corp_profile__name')
+
+    def account_id(self, instance):
+        return instance.corp_profile.account_id
+    account_id.short_description = _('Account ID')
+    account_id.admin_order_field = 'corp_profile__account_id'
 
     @mark_safe
     def profile(self, instance):
@@ -600,6 +606,7 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
         inlines = (ProductInline,) + inlines
     fieldsets = [(_('Company Details'), {
                       'fields': ('name',
+                                 'account_id',
                                  'logo_file',
                                  'url',
                                  'number_employees',

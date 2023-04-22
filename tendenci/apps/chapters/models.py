@@ -187,6 +187,9 @@ class Chapter(BasePage):
         """
         Update the associated group perms for the officers of this chapter. 
         Grant officers the view and change permissions for their own group.
+        
+        Note: this group is unique among chapters, but might be shared by committees.
+
         """
         if not self.group:
             return
@@ -197,6 +200,10 @@ class Chapter(BasePage):
 
         officer_users = [officer.user for officer in self.officers(
             ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        # include officers in committees that are associated with this group
+        for committee in self.group.committee_set.all():
+            officer_users.extend([officer.user for officer in committee.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))])
         if officer_users:
             ObjectPermission.objects.assign(officer_users,
                                         self.group, perms=perms)
@@ -207,6 +214,9 @@ class Chapter(BasePage):
         """
         Update the associated newsletter_group perms for the officers of this chapter. 
         Grant officers the view and change permissions for their own group.
+
+        Note: this newsletter group could be shared by chapters, 
+               and by committees.
         """
         if not self.newsletter_group:
             return
@@ -217,6 +227,14 @@ class Chapter(BasePage):
 
         officer_users = [officer.user for officer in self.officers(
             ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        # include officers in committees that are associated with this group
+        for committee in self.newsletter_group.committee_set.all():
+            officer_users.extend([officer.user for officer in committee.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))])
+        # also check if newsletter_group is shared by other chapters
+        for chapter in self.newsletter_group.chapter_set.exclude(id=self.id):
+            officer_users.extend([officer.user for officer in chapter.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))])
         if officer_users:
             ObjectPermission.objects.assign(officer_users,
                                         self.newsletter_group, perms=perms)
@@ -1682,13 +1700,6 @@ class Notice(models.Model):
         context['chapter_membership'] = chapter_membership
         context.update(global_context)
 
-        if chapter_membership and chapter_membership.expire_dt:
-            context.update({
-                'expire_dt': time.strftime(
-                "%d-%b-%y %I:%M %p",
-                chapter_membership.expire_dt.timetuple()),
-            })
-
         if chapter_membership and chapter_membership.payment_method:
             payment_method_name = chapter_membership.payment_method.human_name
         else:
@@ -1706,8 +1717,8 @@ class Notice(models.Model):
         else:
             invoice_link = ""
             total_amount = ""
-        if chapter_membership.expire_dt:
-            expire_dt = time.strftime("%d-%b-%y %I:%M %p",
+        if chapter_membership and chapter_membership.expire_dt:
+            expire_dt = time.strftime("%d-%b-%y",
                                       chapter_membership.expire_dt.timetuple())
         else:
             expire_dt = ''

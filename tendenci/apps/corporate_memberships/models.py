@@ -225,6 +225,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
 
 class CorpProfile(TendenciBaseModel):
     guid = models.CharField(max_length=50)
+    account_id = models.IntegerField(blank=True, null=True, unique=True)
     logo = models.ForeignKey(File, null=True, on_delete=models.SET_NULL)
     name = models.CharField(max_length=250, unique=True)
     address = models.CharField(_('Address'), max_length=150,

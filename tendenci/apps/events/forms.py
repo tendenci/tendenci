@@ -1727,8 +1727,11 @@ class RegistrationForm(forms.Form):
         override_table = self.cleaned_data['override_table']
         override_price_table = self.cleaned_data['override_price_table']
 
-        if override_table and override_price_table <0:
-            raise forms.ValidationError(_('Override price must be a positive number.'))
+        if override_table:
+            if override_price_table is None:
+                raise forms.ValidationError(_('Override is checked, but override price is not specified.'))
+            elif  override_price_table < 0:
+                raise forms.ValidationError(_('Override price must be a positive number.'))
         return override_price_table
 
 

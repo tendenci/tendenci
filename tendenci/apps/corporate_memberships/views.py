@@ -671,6 +671,7 @@ def corpprofile_view(request, id, template="corporate_memberships/profiles/view.
                    'members_count': members_count,
                    'members_first10': members_first10,
                    'reps': reps,
+                   'is_rep': corp_profile.is_rep(request.user),
                    'all_records': all_records,
                    'invoices': invoices
                    })

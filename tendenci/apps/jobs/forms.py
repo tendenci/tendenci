@@ -243,6 +243,7 @@ class JobForm(TendenciBaseForm):
         if hasattr(self, 'user'):
             kwargs.update({'user': self.user})
         super(JobForm, self).__init__(*args, **kwargs)
+        self.fields['slug'].help_text = 'Letters, numbers or hyphens only. ex: my-job'
         if self.instance.header_image:
             self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> %s: <a target="_blank" href="/files/%s/">%s</a>' % (_('Remove current image'), self.instance.header_image.id, basename(self.instance.header_image.file.name))
         else:

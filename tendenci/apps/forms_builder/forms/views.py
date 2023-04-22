@@ -424,6 +424,10 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
     if edit_mode:
         if not has_perm(request.user,'forms.change_formentry',entry):
             raise Http403
+    else:
+        # form submission needs to check permission as well
+        if not has_view_perm(request.user,'forms.view_form',form):
+            raise Http403
 
     # If form has a recurring payment, make sure the user is logged in
     if form.recurring_payment:

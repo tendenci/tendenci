@@ -236,7 +236,7 @@ class RegistrationConfiguration(models.Model):
         Return boolean.
         """
         has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
-        has_account = get_setting('site', 'global', 'merchantaccount') is not ''
+        has_account = get_setting('site', 'global', 'merchantaccount') != ''
         has_api = any([settings.MERCHANT_LOGIN, settings.PAYPAL_MERCHANT_LOGIN])
 
         return all([has_method, has_account, has_api])
@@ -547,6 +547,28 @@ class Registration(models.Model):
     @property
     def hash(self):
         return md5(".".join([str(self.event.pk), str(self.pk)]).encode()).hexdigest()
+
+    def allow_adjust_invoice_by(self, request_user):
+        """
+        Returns whether or not the request_user can adjust invoice
+        for this event registration.
+        """
+        if not request_user.is_anonymous:
+            if request_user.is_superuser:
+                return True
+            # check if request_user is chapter leader or committee leader
+            if get_setting('module', 'events', 'leadercanadjust'):
+                [group] = self.event.groups.all()[:1] or [None]
+                if group:
+                    [committee] = group.committee_set.all()[:1] or [None]
+                    if committee:
+                        return committee.is_committee_leader(request_user)
+    
+                    [chapter] = group.chapter_set.all()[:1] or [None]
+                    if chapter:
+                        return chapter.is_chapter_leader(request_user)
+
+        return False
 
     def payment_abandoned(self):
         if self.invoice and self.invoice.balance > 0 and \

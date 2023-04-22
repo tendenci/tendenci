@@ -5,9 +5,13 @@
 
 {% if sa %}
 <p class="text-success">{{ msg_string }}</p>
-<p>{% blocktrans with account_name=sa.account_name %}Account <strong>{{ account_name }}</strong> is connected.{% endblocktrans %}</p>
+<p>{% blocktrans with account_name=sa.account_name %}Account <strong>{{ account_name }}</strong> is connected.{% endblocktrans %}
+   {% if request.user.is_superuser %}
+   <a href="{% url 'admin:stripe_stripeaccount_change' sa.id %}">{% trans 'View Account' %}</a>
+   {% endif %}
+</p>
 {% url "stripe_connect.deauthorize" sa.pk as deauthorize_url %}
-<p>{% blocktrans %}Click <a href="{{ deauthorize_url }}">here</a> to disconnect the account.{% endblocktrans %}</p>
+<p>{% blocktrans %}Click <a href="{{ deauthorize_url }}">here</a> to disconnect this account.{% endblocktrans %}</p>
 {% else %}
 <h3 class="text-warning">Connection Faliled</h3>
 <p>{{ msg_string }}</p>

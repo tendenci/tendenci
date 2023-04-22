@@ -443,6 +443,8 @@ class CorpProfileBaseForm(FormControlWidgetMixin, forms.ModelForm):
                 
             file_object, created = File.objects.get_or_create(
                 file=logo_file,
+                content_type=content_type,
+                object_id=corp_profile.pk,
                 defaults=defaults)
                 
             corp_profile.logo = file_object
