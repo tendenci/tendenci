@@ -55,25 +55,21 @@ class AuthNetAPI:
         ref_id = res_dict.get('refId', '')
         if str(payment.id) == ref_id:
             if res_dict['messages']['resultCode'] == 'Ok':
-                payment.response_code = res_dict['transactionResponse']['responseCode']
-                payment.response_reason_code = payment.response_code
-                # payment.response_reason_text = 
-                # payment.trans_id = res_dict['transactionResponse']['transId']
-                # payment.card_type = 
-                # payment.account_number = 
-                # payment.auth_code = 
-                # payment.avs_code = 
-                # payment.amount = 
-                # payment.first_name = 
-                # payment.last_name = 
-                # payment.company = 
-                # payment.address = 
-                # payment.city = 
-                # payment.state = 
-                # payment.country = 
-                # payment.phone = 
-                # payment.fax = 
-                # payment.email = 
+                tran_response = res_dict['transactionResponse']
+                payment.response_code = tran_response['responseCode']
+                if payment.response_code == '1':
+                    if 'messages' in tran_response:
+                        payment.response_reason_code = tran_response['messages'][0]['code']
+                        payment.response_reason_text = tran_response['messages'][0]['description']
+                else:
+                    if 'errors' in tran_response:
+                        payment.response_reason_code = tran_response['errors'][0]['errorCode']
+                        payment.response_reason_text = tran_response['errors'][0]['errorText']
+                payment.trans_id = tran_response['transId']
+                payment.card_type = tran_response['accountType']
+                payment.account_number = ''
+                payment.auth_code = tran_response['authCode']
+                payment.avs_code = tran_response['authCode']
                 
                 if payment.response_code == '1': # Approved
                     payment.mark_as_paid()

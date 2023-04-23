@@ -49,8 +49,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
         r = anet_api.create_txn_request(payment, opaque_value, opaque_descriptor)
         if r.ok:
             res_dict = r.json()
-            print(res_dict)
-            #TODO
+
             anet_api.process_txn_response(request, res_dict, payment)
             
             template_name = 'payments/receipt.html'
@@ -66,6 +65,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
                                   'public_client_key': settings.AUTHNET_PUBLIC_CLIENT_KEY})
 
 
+# remove later
 def pay_online_direct(request, payment_id, guid='', template_name='payments/authorizenet/payonline_direct.html'):
     if not getattr(settings, 'MERCHANT_LOGIN', ''):
         url_setup_guide = 'https://www.tendenci.com/help-files/setting-up-online-payment-processor-and-merchant-provider-on-a-tendenci-site/'
