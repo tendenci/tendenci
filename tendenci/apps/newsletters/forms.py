@@ -66,6 +66,7 @@ class OldGenerateForm(forms.ModelForm):
     class Meta:
         model = Newsletter
         fields = "__all__"
+        exclude = ["enforce_direct_mail_flag"]
         widgets = {
             'subject': forms.TextInput(attrs={'size': 50}),
             'event_start_dt': SelectDateWidget(None, list(range(THIS_YEAR, THIS_YEAR+10))),
