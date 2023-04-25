@@ -2805,13 +2805,20 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
 
             # Refund if automatic refunds turned on
             if registration.invoice.can_auto_refund and refund_amount:
-                refund_amount = min(refund_amount, registration.invoice.refundable_amount)
-                confirmation_message = get_refund_confirmation_message(event, registrants)
-                registration.invoice.refund(
-                    refund_amount,
-                    request.user,
-                    confirmation_message,
-                )
+                try:
+                    refund_amount = min(refund_amount, registration.invoice.refundable_amount)
+                    confirmation_message = get_refund_confirmation_message(event, registrants)
+                    registration.invoice.refund(
+                        refund_amount,
+                        request.user,
+                        confirmation_message,
+                    )
+                except:
+                    messages.set_level(request, messages.ERROR)
+                    messages.error(
+                        request,
+                        f"Refund in the amount of ${refund_amount} failed to process. Please contact support.",
+                    )
 
             registration.canceled = True
             registration.save()
@@ -2930,9 +2937,16 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
             allow_refunds = get_setting('site', 'global', 'allow_refunds')
             can_auto_refund = invoice.can_auto_refund
             if invoice.can_auto_refund and registrant.amount:
-                refund_amount = min(registrant.amount, invoice.refundable_amount)
-                confirmation_message = get_refund_confirmation_message(event, [registrant])
-                invoice.refund(refund_amount, request.user, confirmation_message)
+                try:
+                    refund_amount = min(registrant.amount, invoice.refundable_amount)
+                    confirmation_message = get_refund_confirmation_message(event, [registrant])
+                    invoice.refund(refund_amount, request.user, confirmation_message)
+                except:
+                    messages.set_level(request, messages.ERROR)
+                    messages.error(
+                        request,
+                        f"Refund in the amount of ${refund_amount} failed to process. Please contact support.",
+                    )
 
             if recipients and notification:
                 notification.send_emails(recipients, 'event_registration_cancelled', {

@@ -44,12 +44,13 @@ class MarkAsPaidForm(forms.ModelForm):
         instance.first_name = invoice.bill_to_first_name
         instance.last_name = invoice.bill_to_last_name
         instance.email = invoice.bill_to_email
-        instance.status_detail = 'approved'
 
         instance.creator = user
         instance.creator_username = user.username
         instance.owner = user
         instance.owner_username = user.username
+
+        instance.mark_as_paid()
 
         instance.save()
 

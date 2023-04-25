@@ -17,7 +17,7 @@
     <p>
         {% if invoice %}
                 <a href="{% url 'invoice.view' invoice.pk invoice.guid %}">
-                    You may access your final invoice here
+                    You may access {% if is_admin_notice %}the{% else %} your final {% endif %} invoice here
                 </a>
         {% endif %}
     </p>

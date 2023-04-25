@@ -250,6 +250,13 @@ def refund(request, id, template_name='invoices/refund.html'):
             except ValidationError as e:
                 form.add_error('amount', e.messages)
 
+            except Exception as e:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    invoice.admin_refund_failure_message,
+                )
+
     else:
         form = RefundForm(
             initial={

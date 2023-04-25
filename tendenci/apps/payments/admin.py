@@ -4,7 +4,8 @@ from django.db.models.functions import Concat
 from django.db.models import Value
 from django.utils.translation import gettext_lazy as _
 
-from tendenci.apps.payments.models import Payment, PaymentMethod
+from tendenci.apps.base.admin import ReadOnlyMixin
+from tendenci.apps.payments.models import Payment, PaymentMethod, Refund
 from tendenci.apps.theme.templatetags.static import static
 
 
@@ -80,5 +81,10 @@ class PaymentMethodAdmin(admin.ModelAdmin):
     list_display_links = ('human_name',)
 
 
+class RefundAdmin(ReadOnlyMixin, admin.ModelAdmin):
+    list_display = ['id', 'trans_id', 'refund_id', 'amount', 'response_status', 'transaction_dt']
+
+
+admin.site.register(Refund, RefundAdmin)
 admin.site.register(Payment, PaymentAdmin)
 admin.site.register(PaymentMethod, PaymentMethodAdmin)

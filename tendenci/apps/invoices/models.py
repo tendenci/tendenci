@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime
 
+import stripe
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
@@ -11,7 +13,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models.signals import post_save
 
 from tendenci.apps.notifications import models as notification
-from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.perms.utils import has_perm, get_notice_recipients
 from tendenci.apps.invoices.managers import InvoiceManager
 from tendenci.apps.invoices.listeners import update_profiles_total_spend
 from tendenci.apps.accountings.utils import (make_acct_entries, make_acct_entries_reversing,
@@ -481,11 +483,15 @@ class Invoice(models.Model):
         Indicate if invoice can be refunded.
         Invoice can be refunded if refunds are allowed in
         site settings, there is a refundable amount, and
-        the refundable amount has been paid.
+        the refundable amount has been paid through Stripe (has trans_id).
         """
         allow_refunds = get_setting('site', 'global', 'allow_refunds')
 
-        return allow_refunds != "No" and self.refundable_amount > 0 and self.refundable_amount_paid
+        return (
+            allow_refunds != "No" and
+            self.refundable_amount > 0 and
+            self.refundable_amount_paid
+        )
 
     @property
     def can_auto_refund(self):
@@ -542,7 +548,13 @@ class Invoice(models.Model):
         # correct amount of pending cancellation fees.
         confirmation_message = confirmation_message or self.get_refund_confirmation_message(amount)
 
-        self.__refund(user, amount)
+        # Execute refund. Alert admin if it fails.
+        try:
+            self.__refund(user, amount)
+        except Exception as e:
+            self.__send_failed_refund_notice(amount)
+            raise
+
 
         # Update line item to show refund
         self.add_line_item(
@@ -552,7 +564,7 @@ class Invoice(models.Model):
 
         # Send email to confirm refund.
         if self.owner.email:
-            self.__send_refund_confirmation(amount, confirmation_message)
+            self.__send_refund_confirmation(amount, confirmation_message, [self.owner.email])
 
     def should_deduct_cancellation_fees(self, amount):
         """
@@ -577,11 +589,10 @@ class Invoice(models.Model):
         """
         Updates the invoice balance by adding
         accounting entries for refunds.
-
-        (TODO: Will process with Stripe)
         """
         amount = min(self.get_amount_to_refund(amount), self.total_paid)
         if self.is_tendered and amount:
+            self.__execute_refund_transaction(amount)
             self.balance += amount
             self.payments_credits -= amount
             self.save()
@@ -589,7 +600,40 @@ class Invoice(models.Model):
             # Make the reversing account entry
             make_acct_entries_reversing(user, self, amount)
 
-    def __send_refund_confirmation(self, amount, confirmation_message):
+    def __execute_refund_transaction(self, amount):
+        """Execute refund for amount given it's covered by refundable payments"""
+        payments = self.payment_set.refundable().filter(status_detail='approved')
+
+        remaining_amount = amount
+
+        for payment in payments:
+            refundable_amount = min(remaining_amount, payment.refundable_amount)
+            available_amount = payment.refundable_amount
+            if refundable_amount:
+                # If there's an error, it will be raised and an email will be sent to admin.
+                payment.refund(refundable_amount)
+
+            if remaining_amount <= available_amount:
+                break
+
+            remaining_amount -= available_amount
+
+    def __send_failed_refund_notice(self, amount):
+        """Send Admin notice in case of failed refund"""
+        recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+        if recipients:
+            message = self.get_refund_failure_message(amount)
+            self.__send_refund_confirmation(
+                amount, message, recipients, is_admin_notice=True, failed=True)
+
+    def __send_refund_confirmation(
+            self,
+            amount,
+            confirmation_message,
+            recipients,
+            is_admin_notice=False,
+            failed=False,
+        ):
         """Send refund confirmation email"""
         invoice_url = None
 
@@ -597,12 +641,14 @@ class Invoice(models.Model):
             confirmation_message = self.get_refund_confirmation_message(amount)
             invoice_url = reverse('invoice.view', args=[self.pk, self.guid]),
 
-        notification.send_emails([self.owner.email], 'refund_confirmation', {
+        notification.send_emails(recipients, 'refund_confirmation', {
             'confirmation_message': confirmation_message,
             'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
             'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
             'invoice': self,
+            'is_admin_notice': is_admin_notice,
             'title': self.split_title(),
+            'failed': failed,
         })
 
     @property
@@ -610,6 +656,16 @@ class Invoice(models.Model):
         """Return Event tied to invoice (if there is one)"""
         obj = self.get_object()
         return getattr(obj, 'event', None)
+
+    def get_refund_failure_message(self, amount):
+        """Get default refund failure message"""
+        message = f"Refund to {self.owner.first_name} {self.owner.last_name} in amount ${amount} " \
+                  f"failed to process through Stripe"
+
+        if self.event:
+            message += f" for {self.event.title} on {self.event.display_start_date}"
+
+        return f"{message}."
 
     def get_refund_confirmation_message(self, amount):
         """Get default refund confirmation message"""
@@ -641,6 +697,21 @@ class Invoice(models.Model):
         return f"{message} for {self.event.title} on {self.event.display_start_date} " \
                f"has been processed."
 
+    @property
+    def admin_refund_failure_message(self):
+        """Message to display to confirm refund failed"""
+        profile_url = reverse('profile', args=[self.owner.username])
+        name = f"{self.owner.first_name} {self.owner.last_name}"
+        message = f"Refund to <a class='alert-link' href={profile_url}>{name}</a>"
+
+        if not self.event:
+            return f"{message} has failed to process through Stripe."
+
+        profile_url = reverse('profile', args=[self.owner.username])
+
+        return f"{message} for {self.event.title} on {self.event.display_start_date} " \
+               f"has failed to process through Stripe."
+
     def add_line_item(self, amount, description, user=None):
         """Add extra line item to this invoice"""
         InvoiceLineItem.objects.create(
@@ -664,9 +735,12 @@ class Invoice(models.Model):
 
     @property
     def total_paid(self):
-        """Total of approved payments"""
-        data = self.payment_set.filter(status_detail='approved'
-            ).aggregate(models.Sum('amount'))
+        """
+        Total of approved payments through Stripe,
+        with a remaining refundable amount.
+        """
+        data = self.payment_set.refundable().filter(status_detail='approved'
+                                                ).aggregate(models.Sum('amount'))
 
         return data.get('amount__sum') or 0
 
