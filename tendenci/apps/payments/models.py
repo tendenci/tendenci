@@ -21,7 +21,7 @@ class PaymentQuerySet(models.QuerySet):
 
     def refundable(self):
         """Filter Stripe payments with a remaining refundable amount"""
-        return self.stripe().filter(refundable_amount__gt=0)
+        return self.stripe().filter(refundable_amount__gt=0, status_detail='approved')
 
 
 class PaymentManager(models.Manager.from_queryset(PaymentQuerySet)):
@@ -136,7 +136,9 @@ class Payment(models.Model):
 
     def refund(self, amount=None):
         """Refund full or partial amount of Payment through Stripe"""
-        if not self.trans_id:
+        merchant_account = get_setting("site", "global", "merchantaccount").lower()
+
+        if not self.trans_id or merchant_account != 'stripe':
             raise Exception("Refund requires a Stripe transaction ID")
 
         refundable_amount = amount or self.amount

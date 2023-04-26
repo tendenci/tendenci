@@ -558,7 +558,6 @@ class Invoice(models.Model):
             self.__send_failed_refund_notice(amount)
             raise
 
-
         # Update line item to show refund
         self.add_line_item(
             amount=-amount,
@@ -573,7 +572,7 @@ class Invoice(models.Model):
         """
         Indicate if cancellation fees should be deducted from refund.
         Cancellation fees should be deducted if refunding an amount
-        greater than or equal to cancellation fees pending payment.
+        greater than cancellation fees pending payment.
         """
         return (
             self.total_cancellation_fees_pending and
@@ -591,7 +590,7 @@ class Invoice(models.Model):
     def __refund(self, user, amount):
         """
         Updates the invoice balance by adding
-        accounting entries for refunds.
+        accounting entries for refunds and initiates actual refund.
         """
         amount = min(self.get_amount_to_refund(amount), self.total_paid)
         if self.is_tendered and amount:
@@ -607,7 +606,7 @@ class Invoice(models.Model):
 
     def __execute_refund_transaction(self, amount):
         """Execute refund for amount given it's covered by refundable payments"""
-        payments = self.payment_set.refundable().filter(status_detail='approved')
+        payments = self.payment_set.refundable()
 
         remaining_amount = amount
 
@@ -744,8 +743,7 @@ class Invoice(models.Model):
         Total of approved payments through Stripe,
         with a remaining refundable amount.
         """
-        data = self.payment_set.refundable().filter(status_detail='approved'
-                                                ).aggregate(models.Sum('amount'))
+        data = self.payment_set.refundable().aggregate(models.Sum('amount'))
 
         return data.get('amount__sum') or 0
 
