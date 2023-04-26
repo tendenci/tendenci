@@ -1919,5 +1919,22 @@
         "scope_category": "service",
         "store": true,
         "updated_by": ""
+    },
+  {
+        "default_value": false,
+        "description": "Indicate whether or not to include Credits in Events.",
+        "data_type": "boolean",
+        "update_dt": "2023-04-25 11:59:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "use_credits",
+        "value": false,
+        "label": "Use Credits",
+        "input_value": "false,true",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]

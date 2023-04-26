@@ -26,6 +26,11 @@
             <li role="presentation" class="dropdown {% if label == 'overview' %}active{% endif %}">
                 <a href="{% url "event.edit" event.pk %}">{% trans "Overview" %}</a>
             </li>
+            {% if event.use_credits_enabled %}
+            <li role="presentation" class="dropdown {% if label == 'credits' %}active{% endif %}">
+                <a href="{% url "event.credits_edit" event.pk %}">{% trans "Credits" %}</a>
+            </li>
+            {% endif %}
             <li role="presentation"  class="dropdown {% if label == 'location' %}active{% endif %}">
                 <a href="{% url "event.location_edit" event.pk %}">{% trans "Location" %}</a>
             </li>
@@ -51,6 +56,9 @@
         <form id="event-form" class="form-horizontal"  action="." method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ multi_event_forms|styled_multi_forms }}
+            {% if event.use_credits_enabled %}
+              {% credits_form_display event credit_forms %}
+            {% endif %}
             {% if label != "pricing" %}
             <input class="btn btn-default" type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
             {% endif %}

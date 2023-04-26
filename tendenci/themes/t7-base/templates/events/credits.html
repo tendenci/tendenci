@@ -1,0 +1,117 @@
+<style>
+  .subtable label {
+      display: none;
+  }
+  .headings {
+      margin-left: 38%;
+      font-size: .8em;
+  }
+  .headings .col-md-8 {
+      float: left;
+      width: 33%;
+  }
+  .subtable {
+      margin-left: 50px;
+      margin-bottom: 15px;
+  }
+  .row {
+      width: 100%;
+  }
+  input {
+      float: left;
+  }
+  input[type=number] {
+      width: 15%;
+  }
+  input[type=text] {
+      width: 25%;
+      margin-left: 10px;
+  }
+  input[type=checkbox] {
+      width: 40%;      
+  }
+  input[readonly="readonly"] {
+      border: 0px;
+      width: 110px;
+      font-size: .85em;
+  }
+
+  @media screen and (max-width: 1200px) {
+  input[type=text] {
+      width: 20%;
+      margin-left: 10px;
+  }      
+  }
+  @media screen and (max-width: 1000px) {
+    input[type=text] {
+        margin-left: 5px;
+    }
+    input[type=checkbox] {
+      width: 32%;      
+    }
+    input[readonly="readonly"] {
+        width: 105px;
+        font-size: .8em
+    }
+    .subtable {
+        margin-left: 20px;   
+    }
+  }
+  @media screen and (max-width: 767px) {
+    input[type=checkbox] {
+      width: 48%;      
+    }      
+  }
+@media screen and (max-width: 767px) {
+    input[type=checkbox] {
+      width: 45%;      
+    }      
+}
+@media screen and (max-width: 655px) {
+    input[type=checkbox] {
+      width: 40%;      
+    }      
+  }
+  @media screen and (max-width: 540px) {
+    input[type=text] {
+        margin-left: 1px;
+    }
+    input[type=checkbox] {
+      width: 32%;      
+    }
+    input[readonly="readonly"] {
+      width: 105px;
+    }
+  }
+  @media screen and (max-width: 420px) {
+      .headings {
+          font-size: .75em;
+      }
+      .subtable {
+          font-size: .75em;
+          margin-left: 10px;
+      }
+    input[type=checkbox] {
+      width: 25%;      
+    }
+  }
+</style>
+
+{% if credit_forms %}
+<div class="headings">
+  <div class="col-md-8" >Available</div>
+  <div class="col-md-8">Credits</div>
+  <div class="col-md-8">Alternate CEU ID</div>
+</div>
+{% endif %}
+
+{% for category, forms in credit_forms.items %}
+<b>{{category}}</b> <br/>
+<div class="subtable">
+  {% for form in forms %}
+  <div class="row">
+    {{form}}
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}

@@ -35,6 +35,7 @@ urlpatterns = [
     re_path(r'^%s/add/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, views.add, name="event.add"),
 
     re_path(r'^%s/overview/edit/(?P<id>\d+)/$' % urlpath, views.edit, name="event.edit"),
+    re_path(r'^%s/credits/edit/(?P<id>\d+)/$' % urlpath, views.credits_edit, name="event.credits_edit"),
     re_path(r'^%s/location/edit/(?P<id>\d+)/$' % urlpath, views.location_edit, name="event.location_edit"),
     re_path(r'^%s/organizer/edit/(?P<id>\d+)/$' % urlpath, views.organizer_edit, name="event.organizer_edit"),
     re_path(r'^%s/sponsor/edit/(?P<id>\d+)/$' % urlpath, views.sponsor_edit, name="event.sponsor_edit"),

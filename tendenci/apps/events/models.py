@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 from django.db.models.aggregates import Sum
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
@@ -171,6 +172,15 @@ class CEUCategory(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class EventCredit(models.Model):
+    """Credits configured for an Event"""
+    event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    ceu_subcategory = models.ForeignKey(CEUCategory, on_delete=models.DO_NOTHING)
+    credit_count = models.PositiveSmallIntegerField(default=0)
+    alternate_ceu_id = models.CharField(max_length=150, blank=True, null=True)
+    available = models.BooleanField(default=True)
 
 
 class RegistrationConfiguration(models.Model):
@@ -1640,6 +1650,25 @@ class Event(TendenciBaseModel):
             event=self,
             status=True
             ).exists()
+
+    @property
+    def use_credits_enabled(self):
+        """Indicates if use_credits is enabled"""
+        return get_setting("module", "events", "use_credits")
+
+    @cached_property
+    def credits(self):
+        """Credits configured for this Event"""
+        return self.eventcredit_set.all()
+
+    def get_credit_configuration_by_id(self, ceu_category_id):
+        """Get credit configuration by CEUCategory ID"""
+        category = CEUCategory.objects.get(pk=ceu_category_id)
+        return self.get_credit_configuration(category)
+
+    def get_credit_configuration(self, ceu_category):
+        """Get credit configuration for given CEUCategory"""
+        return self.credits.filter(ceu_subcategory=ceu_category).first()
 
     # this function is to display the event date in a nice way.
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010
