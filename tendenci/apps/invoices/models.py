@@ -16,8 +16,11 @@ from tendenci.apps.notifications import models as notification
 from tendenci.apps.perms.utils import has_perm, get_notice_recipients
 from tendenci.apps.invoices.managers import InvoiceManager
 from tendenci.apps.invoices.listeners import update_profiles_total_spend
-from tendenci.apps.accountings.utils import (make_acct_entries, make_acct_entries_reversing,
-                                             make_acct_entries_initial_reversing)
+from tendenci.apps.accountings.utils import (
+    make_acct_entries,
+    make_acct_entries_reversing,
+    make_acct_entries_initial_reversing,
+)
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.stripe.models import StripeAccount
@@ -597,7 +600,9 @@ class Invoice(models.Model):
             self.payments_credits -= amount
             self.save()
 
-            # Make the reversing account entry
+            # Make the reversing accounting entries
+            make_acct_entries_initial_reversing(user, self, amount)
+            # This calls make_acct_entries_closing_reversing as well
             make_acct_entries_reversing(user, self, amount)
 
     def __execute_refund_transaction(self, amount):

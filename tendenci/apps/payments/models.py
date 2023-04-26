@@ -13,6 +13,10 @@ from tendenci.apps.site_settings.utils import get_setting
 class PaymentQuerySet(models.QuerySet):
     def stripe(self):
         """Filter payments with a Stripe transaction ID"""
+        merchant_account = get_setting("site", "global", "merchantaccount").lower()
+        if merchant_account != 'stripe':
+            return self.none()
+
         return self.exclude(trans_id='')
 
     def refundable(self):
