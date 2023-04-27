@@ -13,6 +13,12 @@ class Command(BaseCommand):
     """
     Import BV exams data through BV API.
     
+    Per Astro Whang at BlueVolt, there is no credits field, no grade/score can be looked up to
+    determine if a user has passed a course. Instead, we should utilize the enrollment status of 
+    "Complete".
+    Astro Whang: There is no “credit” field and instead you’ll be utilizing the enrollment 
+    status of “Complete” to credit the learners who have completed the course.
+    
     Usage: python manage.py import_bluevolt_exams --import_id 1
     
     """
@@ -33,8 +39,9 @@ class Command(BaseCommand):
         api_endpoint_base_url = settings.BLUEVOLT_API_ENDPOINT_BASE_URL
         #enrollment_url = api_endpoint_base_url + 'GetUserCourseEnrollment'
         # Currently, we have to use both v2 and v3 APIs to get what we need
-        score_url = api_endpoint_base_url + '/v3/modules/scores'
-        module_url = api_endpoint_base_url + '/v2/GetModule'
+        #score_url = api_endpoint_base_url + '/v3/modules/scores'
+        #module_url = api_endpoint_base_url + '/v2/GetModule'
+        enrollment_url = api_endpoint_base_url + '/v3/enrollments'
         course_url = api_endpoint_base_url + '/v2/GetCourse'
         user_url = api_endpoint_base_url + '/v2/GetUser'
         messages = []
@@ -67,102 +74,86 @@ class Command(BaseCommand):
         # date_to = date.today()
         # ----------------
         
-        # STEP 1: Get a list of scores
+        # STEP 1: Get a list of enrollments - pull the Completed only
         payload = {'apiKey': api_key ,
-                   'completionDateStart': date_from.strftime('%Y-%m-%d') ,
-                   'completionDateEnd': date_to.strftime('%Y-%m-%d')}
-        r = requests.get(score_url, params=payload)
+                   'enrollmentStatus': 'Complete',
+                   'lastUpdatedUTCStart': date_from.strftime('%Y-%m-%d') ,
+                   'lastUpdatedUTCEnd': date_to.strftime('%Y-%m-%d')}
+        r = requests.get(enrollment_url, params=payload)
         if r.status_code == 200:
-            scores_results = r.json()
+            enrollment_results = r.json()
             messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' - STARTED')
             # default certification_track
             [certification_track] = Certification.objects.filter(enable_diamond=True)[:1] or [None]
 
-            for scores_result in scores_results['Collection']:
-                module_id = scores_result['ModuleId']
-                user_id = scores_result['UserId']
-                score = scores_result['Score']
-                #print('score=', score)
-                completion_date = scores_result['CompletionDate']
-                progress = scores_result['Progress']
-                # get course by module_id
-                module_payload = {'apiKey': api_key,
-                                  'id': module_id}
-                module_r = requests.get(module_url, params=module_payload)
-                if module_r.status_code == 200:
-                    module_result = module_r.json()
+            for enrollment_result in enrollment_results['Collection']:
+                course_id = enrollment_result['CourseId']
+                user_id = enrollment_result['UserId']
+                completion_date = enrollment_result['CompletionDate']
                 
-                    course_id = module_result['CourseInstanceId']
+                # STEP 2: Get course detail to course code
+                #TODO: Store the maps for CourseId and UserId so that we
+                #    don't have to retrieve the same courses and users
+                course_payload = {'apiKey': api_key,
+                                  'courseId': course_id}
+                course_r = requests.get(course_url, params=course_payload)
+                if course_r.status_code == 200:
+                    course_result = course_r.json()
+                    course_code = course_result['ExternalCourseCode']
+                    # given course_code, find the course
+                    [course] = Course.objects.filter(course_code=course_code)[:1] or [None]
+                    if not course:
+                        msg = f'Course with course code {course_code} does not exist!'
+                        print(msg)
+                        messages.append(msg)
+                        continue
 
-                    # STEP 2: Get course detail to course code
-                    #TODO: Store the maps for CourseId and UserId so that we
-                    #    don't have to retrieve the same courses and users
-                    course_payload = {'apiKey': api_key,
-                                      'courseId': course_id}
-                    course_r = requests.get(course_url, params=course_payload)
-                    if course_r.status_code == 200:
-                        course_result = course_r.json()
-                        course_code = course_result['ExternalCourseCode']
-                        # given course_code, find the course
-                        [course] = Course.objects.filter(course_code=course_code)[:1] or [None]
-                        if not course:
-                            msg = f'Course with course code {course_code} does not exist!'
+                    # STEP 3: Get user info to find username
+                    user_payload = {'apiKey': api_key,
+                                    'userID': user_id}
+                    user_r = requests.get(user_url, params=user_payload)
+                    if user_r.status_code == 200:
+                        user_result = user_r.json()[0]
+                        username = user_result['UserName']
+                        # given a username, find the user
+                        [user] = User.objects.filter(username=username)[:1] or [None]
+                        if not user:
+                            msg = f'User with username {username} does not exist!'
                             print(msg)
                             messages.append(msg)
                             continue
-    
-                        # STEP 3: Get user info to find username
-                        user_payload = {'apiKey': api_key,
-                                        'userID': user_id}
-                        user_r = requests.get(user_url, params=user_payload)
-                        if user_r.status_code == 200:
-                            user_result = user_r.json()[0]
-                            username = user_result['UserName']
-                            # given a username, find the user
-                            [user] = User.objects.filter(username=username)[:1] or [None]
-                            if not user:
-                                msg = f'User with username {username} does not exist!'
-                                print(msg)
-                                messages.append(msg)
-                                continue
+                        
+                        # STEP 3: Insert into transcripts if not already in there
+                        #         and user has completed the course          
+
+                        # check if already exists, but would someone take same courses again?
+                        [transcript] = Transcript.objects.filter(course=course,
+                                                                 user=user,
+                                                                 location_type='online')[:1] or [None]
+                        if not transcript:
                             
-                            # STEP 3: Insert into transcripts if not already in there
-                            #         and user has completed the course          
-
-                            # check if already exists
-                            [transcript] = Transcript.objects.filter(course=course, user=user)[:1] or [None]
-                            if not transcript:
-                                if 'Passed' in progress and completion_date:
-                                    # if score:
-                                    #     score = int('%.0f' % float(score))
-                                    # else:
-                                    #     score = 0
-                                    if not score:
-                                        continue
-
-                                    if score >= course.min_score:
-                                        exam = Exam(user=user,
-                                                    course=course,
-                                                    grade=score)
-                                        exam.date = dparser.parse(completion_date)
-                                        exam.save()
-                                        transcript = Transcript(
-                                                     exam=exam,
-                                                     parent_id=exam.id,
-                                                     location_type='online',
-                                                     user=user,
-                                                     course=course,
-                                                     school_category=course.school_category,
-                                                     credits=course.credits,
-                                                     certification_track=certification_track,
-                                                     status='approved'
-                                                    )
-                                        transcript.save()
-                                        num_inserted += 1
-                                        print(transcript, f'{transcript.id}... added')
-                                        #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" added')
-                            #else:
-                                #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - DUBLICATE TRANSACTION: Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" already exists')
+                            exam = Exam(user=user,
+                                        course=course,
+                                        grade=100)
+                            exam.date = dparser.parse(completion_date)
+                            exam.save()
+                            transcript = Transcript(
+                                         exam=exam,
+                                         parent_id=exam.id,
+                                         location_type='online',
+                                         user=user,
+                                         course=course,
+                                         school_category=course.school_category,
+                                         credits=course.credits,
+                                         certification_track=certification_track,
+                                         status='approved'
+                                        )
+                            transcript.save()
+                            num_inserted += 1
+                            print(transcript, f'{transcript.id}... added')
+                            #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" added')
+                        #else:
+                            #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - DUBLICATE TRANSACTION: Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" already exists')
 
             end_dt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             if num_inserted == 1:
