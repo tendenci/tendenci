@@ -48,7 +48,7 @@ class Command(BaseCommand):
         num_inserted = 0
 
         if not import_id:
-            date_from = date.today() - timedelta(days=8)
+            date_from = date.today() - timedelta(days=7)
             date_to = date.today()
             bv_import = BluevoltExamImport(
                                     date_from=date_from,
