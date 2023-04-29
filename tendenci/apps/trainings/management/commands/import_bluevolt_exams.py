@@ -163,7 +163,7 @@ class Command(BaseCommand):
 
             messages.append(end_dt + ' - ENDED')
 
-            if import_id and bv_import:
+            if bv_import:
                 # Update bv_import object
                 bv_import.num_inserted = num_inserted
                 bv_import.result_detail = '\n'.join(messages)
