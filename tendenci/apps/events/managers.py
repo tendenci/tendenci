@@ -1,3 +1,4 @@
+from datetime import datetime
 import operator
 from haystack.query import SearchQuerySet
 from functools import reduce
@@ -89,6 +90,13 @@ class EventManager(TendenciBaseManager):
         Gets all events including status_detail 'template'.
         """
         return super(EventManager, self).get_queryset()
+
+    def available_parent_events(self):
+        """Returns all available upcoming parent events"""
+        return self.filter(
+            start_dt__gt=datetime.now(),
+            event_relationship=self.model.EventRelationship.PARENT,
+        )
 
 
 class EventTypeManager(Manager):

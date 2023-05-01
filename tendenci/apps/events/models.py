@@ -1580,7 +1580,28 @@ class Event(TendenciBaseModel):
     """
     Calendar Event
     """
+    class EventRelationship:
+        PARENT = 'parent'
+        CHILD = 'child'
+
+        CHOICES = (
+            (PARENT, 'Is Parent Event'),
+            (CHILD, 'Is Child Event')
+        )
+
     guid = models.CharField(max_length=40, editable=False)
+    parent = models.ForeignKey(
+        'self',
+        null=True,
+        on_delete=models.CASCADE,
+        help_text="Larger symposium this event is a part of",
+    )
+    event_relationship = models.CharField(
+        max_length=50,
+        choices=EventRelationship.CHOICES,
+        default=EventRelationship.PARENT,
+        help_text="Select 'child' if this is a sub-event of a larger symposium",
+    )
     type = models.ForeignKey(Type, blank=True, null=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=150, blank=True)
     course = models.ForeignKey(Course, blank=True, null=True, on_delete=models.SET_NULL)
@@ -1632,6 +1653,16 @@ class Event(TendenciBaseModel):
         super(Event, self).__init__(*args, **kwargs)
         self.private_slug = self.private_slug or Event.make_slug()
 
+    @property
+    def has_child_events(self):
+        """Indicate whether event has child events"""
+        return self.child_events.exists()
+
+    @property
+    def child_events(self):
+        """All child events tied to this event"""
+        return Event.objects.filter(parent_id=self.pk)
+
     def get_meta(self, name):
         """
         This method is standard across all models that are
@@ -1675,6 +1706,11 @@ class Event(TendenciBaseModel):
             event=self,
             status=True
             ).exists()
+
+    @property
+    def nested_events_enabled(self):
+        """Indicates if nested_events is enabled"""
+        return get_setting("module", "events", "nested_events")
 
     @property
     def use_credits_enabled(self):

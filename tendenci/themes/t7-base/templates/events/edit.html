@@ -105,6 +105,11 @@
             }
         });
         $('#event-form').on("submit", function() {
+            // Enable event_relationship if it's disabled so that POST doesn't fail.
+            // It will use the existing value for the Event.
+            if ($('#id_event_relationship').is(':disabled')) {
+                $('#id_event_relationship').prop('disabled', false);
+            }
             if ($('#id_apply_changes_to_3').is(':checked') && displayConfirmation) {
                 $('#confirm-dialog').dialog('open');
                 return false;
@@ -191,5 +196,10 @@
             $('.regconfpricing_formset .section-description').addClass('well');
         });
     </script>
+
+    <script type="text/javascript">
+        {% include 'events/include/parent_child_events.js' %}
+    </script>
+        
     {% include 'tags/autocomplete.html' %}
 {% endblock %}

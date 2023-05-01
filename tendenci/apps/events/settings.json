@@ -1375,5 +1375,22 @@
         "scope_category": "events",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": false,
+        "description": "Indicate whether or not to use nested events.",
+        "data_type": "boolean",
+        "update_dt": "2023-05-01 16:15:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "nested_events",
+        "value": false,
+        "label": "Enable Nested Events",
+        "input_value": "false,true",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]

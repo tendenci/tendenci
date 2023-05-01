@@ -742,12 +742,21 @@ class EventForm(TendenciBaseForm):
                  ('pending',_('Pending')),
                  ('template',_('Template')),))
 
+    parent = forms.ModelChoiceField(
+        required=False,
+        queryset=Event.objects.available_parent_events(),
+        help_text="Larger symposium this event is a part of",
+    )
+
+
     class Meta:
         model = Event
         fields = (
             'title',
             'course',
             'description',
+            'event_relationship',
+            'parent',
             'start_dt',
             'end_dt',
             'is_recurring_event',
@@ -777,7 +786,9 @@ class EventForm(TendenciBaseForm):
         }
 
         fieldsets = [(_('Event Information'), {
-                      'fields': ['title',
+                      'fields': ['event_relationship',
+                                 'parent',
+                                 'title',
                                  'course',
                                  'description',
                                  'is_recurring_event',
@@ -828,6 +839,9 @@ class EventForm(TendenciBaseForm):
         super(EventForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
+            self.fields['parent'].queryset = self.fields['parent'].queryset.exclude(
+                pk=self.instance.pk
+            )
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if 'private_slug' in self.fields:
                 self.fields['enable_private_slug'].help_text = self.instance.get_private_slug(absolute_url=True)
@@ -877,6 +891,15 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('end_event_date')
             self.fields.pop('photo_upload')
 
+        # Set event relationship field to read only if this is a parent
+        # event that already has children, or a child event with a parent
+        # set
+        nested_events = get_setting('module', 'events', 'nested_events')
+        if self.edit_mode and nested_events:
+            has_child_events = self.instance.pk and self.instance.has_child_events
+            if has_child_events or self.instance.parent:
+                self.fields['event_relationship'].widget.attrs.update({'disabled': True})
+
         default_groups = Group.objects.filter(status=True, status_detail="active",
                                               show_for_events=True)
         if not self.user.is_superuser:
@@ -910,6 +933,10 @@ class EventForm(TendenciBaseForm):
                 location_type='onsite',
                 status_detail='enabled').order_by('name') # onsite courses only
         
+        # If nested events is not enabled, remove it from the form
+        if not nested_events:
+            del self.fields['event_relationship']
+            del self.fields['parent']
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
