@@ -26,6 +26,7 @@ from tendenci.apps.recurring_payments.authnet.utils import direct_response_dict
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.stripe.utils import stripe_set_app_info
+from tendenci.apps.payments.authorizenet.utils import AuthNetAPI
 
 
 BILLING_PERIOD_CHOICES = (
@@ -216,21 +217,27 @@ class RecurringPayment(models.Model):
                 self.save()
             else:
                 # create a customer profile on payment gateway
-                cp = CIMCustomerProfile()
-                d = {'email': self.user.email,
-                     'customer_id': str(self.id)}
-                success, response_d = cp.create(**d)
-                print(success, response_d)
+                authnet_api = AuthNetAPI()
+                opt_d = {'user_id': self.user.id, 'email': self.user.email}
+                success, customer_profile_id, message_d = authnet_api.create_customer_profile(**opt_d)
                 if success:
-                    self.customer_profile_id = response_d['customer_profile_id']
+                    self.customer_profile_id = customer_profile_id
                     self.save()
-                else:
-                    if response_d["message_code"] == 'E00039':
-                        p = re.compile(r'A duplicate record with ID (\d+) already exists.', re.I)
-                        match = p.search(response_d['message_text'])
-                        if match:
-                            self.customer_profile_id  = match.group(1)
-                            self.save()
+                    
+                # cp = CIMCustomerProfile()
+                # d = {'email': self.user.email,
+                #      'customer_id': str(self.id)}
+                # success, response_d = cp.create(**d)
+                # if success:
+                #     self.customer_profile_id = response_d['customer_profile_id']
+                #     self.save()
+                # else:
+                #     if response_d["message_code"] == 'E00039':
+                #         p = re.compile(r'A duplicate record with ID (\d+) already exists.', re.I)
+                #         match = p.search(response_d['message_text'])
+                #         if match:
+                #             self.customer_profile_id  = match.group(1)
+                #             self.save()
 
     def delete_customer_profile(self):
         """Delete the customer profile on payment gateway

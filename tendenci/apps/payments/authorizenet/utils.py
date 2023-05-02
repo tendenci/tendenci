@@ -2,6 +2,7 @@ import time
 import hmac
 import requests
 import hashlib
+import re
 from django.conf import settings
 from django.http import Http404
 from django.db import transaction
@@ -20,6 +21,87 @@ class AuthNetAPI:
         self.txn_key = settings.MERCHANT_TXN_KEY
         self.headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
         self.api_endpoint = settings.AUTHNET_API_ENDPOINT
+
+
+    def get_hosted_profile_page_request(self, customer_profile_id):
+        """
+        API call getHostedProfilePageRequest
+        
+        https://developer.authorize.net/api/reference/index.html#customer-profiles
+        """
+        iframe_communicator_url = get_setting('site', 'global', 'siteurl') + \
+                                 reverse('recurring_payment.authnet.iframe_communicator')
+        request_dict = {
+            "getHostedProfilePageRequest": {
+                "merchantAuthentication": {
+                    "name": self.login,
+                    "transactionKey": self.txn_key
+                },
+                "customerProfileId": customer_profile_id,
+                "hostedProfileSettings": {
+                    "setting": [
+                        {
+                            "settingName": "hostedProfileIFrameCommunicatorUrl",
+                            "settingValue": iframe_communicator_url
+                        },
+                        {
+                            "settingName": "hostedProfilePageBorderVisible",
+                            "settingValue": "true"
+                        }
+                    ]
+                }
+            }
+        }
+
+  
+        
+
+    def create_customer_profile(self, **opt_d):
+        """
+        Take a dict which includes 'user_id', 'email' and 'description',
+        return a tuple (success, customer_profile_id, message list)
+        """
+        res = self.create_customer_profile_request(**opt_d)
+        if res.ok:
+            res_dict = res.json()
+            return self.create_customer_profile_response(res_dict)
+        return False, None, None
+
+    def create_customer_profile_request(self, **opt_d):
+        user_id = opt_d.get('user_id')
+        email = opt_d.get('email')
+        description = opt_d.get('description', '')
+        request_dict = {
+            "createCustomerProfileRequest": {
+                "merchantAuthentication": {
+                    "name": self.login,
+                    "transactionKey": self.txn_key
+                },
+                "profile": {
+                    "merchantCustomerId": user_id,
+                    "description": description,
+                    "email": email,
+                }
+            }
+        }
+        return requests.post(self.api_endpoint, headers=self.headers, json=request_dict)
+
+    def create_customer_profile_response(self, res_dict):
+        """
+        Parse the result from createCustomerProfileRequest,
+        and return customerProfileId
+        """
+        if res_dict['messages']['resultCode'] == 'Ok':
+            return True, res_dict['customerProfileId'], res_dict['messages']['message']
+        
+        # check if a customer profile already exist
+        if res_dict['messages']['message'][0]['code'] == 'E00039':
+            text = res_dict['messages']['message'][0]['text']
+            p = re.compile(r'A duplicate record with ID (\d+) already exists.', re.I)
+            match = p.search(text)
+            if match:
+                return True, match.group(1), res_dict['messages']['message'] 
+        return False, None, res_dict['messages']['message']
 
     def create_txn_request(self, payment, opaque_value, opaque_descriptor):
         request_dict = {
