@@ -1656,12 +1656,17 @@ class Event(TendenciBaseModel):
     @property
     def has_child_events(self):
         """Indicate whether event has child events"""
-        return self.child_events.exists()
+        return self.nested_events_enabled and self.child_events.exists()
 
     @property
     def child_events(self):
         """All child events tied to this event"""
         return Event.objects.filter(parent_id=self.pk)
+
+    @property
+    def can_configure_credits(self):
+        """Indicates if credits can be configured on this Event"""
+        return self.use_credits_enabled and not self.has_child_events
 
     def get_meta(self, name):
         """
