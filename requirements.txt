@@ -3,7 +3,6 @@ six
 configparser
 Django>=3.2,<4.0
 django-formtools>=1.0
-pisa
 Pillow==9.4.0
 django-authority>=0.14
 django-countries==7.2.1
