@@ -1149,7 +1149,7 @@ class Organizer(models.Model):
         return self.name
 
 
-class Speaker(models.Model):
+class Speaker(OrderingBaseModel):
     """
     Event speaker
     Event can have multiple speakers

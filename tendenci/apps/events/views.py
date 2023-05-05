@@ -235,7 +235,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
 
     EventLog.objects.log(instance=event)
 
-    speakers = event.speaker_set.order_by('pk')
+    speakers = event.speaker_set.order_by('position', 'pk')
     organizers = event.organizer_set.all().order_by('pk') or None
 
     organizer = None
@@ -295,7 +295,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
 def speaker_list(request, event_id, template_name='events/speakers.html'):
     event = get_object_or_404(Event.objects.get_all(), pk=event_id)
 
-    speakers = event.speaker_set.order_by('pk')
+    speakers = event.speaker_set.order_by('position', 'pk')
 
     return render_to_resp(request=request, template_name=template_name, context={
         'event': event,

@@ -1103,13 +1103,15 @@ class SpeakerForm(FormControlWidgetMixin, BetterModelForm):
             'file',
             'featured',
             'description',
+            'position'
         )
 
         fieldsets = [(_('Speaker'), {
           'fields': ['name',
                     'file',
                     'featured',
-                    'description'
+                    'description',
+                    'position'
                     ],
           'legend': '',
           'classes': ['boxy-grey'],
