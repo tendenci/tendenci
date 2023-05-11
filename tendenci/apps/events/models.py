@@ -176,11 +176,28 @@ class CEUCategory(models.Model):
 
 class EventCredit(models.Model):
     """Credits configured for an Event"""
-    event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    event = models.ManyToManyField('Event', blank=True)
     ceu_subcategory = models.ForeignKey(CEUCategory, on_delete=models.DO_NOTHING)
     credit_count = models.PositiveSmallIntegerField(default=0)
     alternate_ceu_id = models.CharField(max_length=150, blank=True, null=True)
-    available = models.BooleanField(default=True)
+    available = models.BooleanField(default=False)
+
+    def save(self, apply_changes_to='self', *args, **kwargs):
+        """Update for recurring events after save"""
+        super().save(*args, **kwargs)
+        if apply_changes_to != 'self':
+            recurring_events = self.event.recurring_event.event_set.all()
+
+            if apply_changes_to == 'rest':
+                recurring_events = recurring_events.filter(start_dt__gte=self.event.start_dt)
+
+            # Update existing configs. Create new ones if needed.
+            for event in recurring_events:
+                credit = event.get_or_create_credit_configuration(self.ceu_subcategory, True)
+                credit.credit_count = self.credit_count
+                credit.alternate_ceu_id = self.alternate_ceu_id
+                credit.available = self.available
+                credit.save()
 
 
 class RegistrationConfiguration(models.Model):
@@ -1661,10 +1678,16 @@ class Event(TendenciBaseModel):
         """Credits configured for this Event"""
         return self.eventcredit_set.all()
 
-    def get_credit_configuration_by_id(self, ceu_category_id):
-        """Get credit configuration by CEUCategory ID"""
+    def get_or_create_credit_configuration(self, ceu_category_id, should_create):
+        """Get or create credit configuration for a given CEUCategory"""
         category = CEUCategory.objects.get(pk=ceu_category_id)
-        return self.get_credit_configuration(category)
+        credit = self.get_credit_configuration(category)
+
+        if not credit and should_create:
+            credit = EventCredit.objects.create(ceu_subcategory_id=ceu_category_id)
+            credit.event.add(self)
+
+        return credit
 
     def get_credit_configuration(self, ceu_category):
         """Get credit configuration for given CEUCategory"""

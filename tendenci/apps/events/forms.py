@@ -656,6 +656,7 @@ class EventCreditForm(forms.Form):
             'event_id': event.pk,
         }
 
+
         # If this credit has been configured for this event, add the details as configured.
         credit = event.get_credit_configuration(category)
         if credit:
@@ -667,23 +668,23 @@ class EventCreditForm(forms.Form):
             prefix=prefix,
             initial=initial)
 
-    def save(self, *args, **kwargs):
+    def save(self, apply_changes_to, *args, **kwargs):
         event = Event.objects.get(pk=self.cleaned_data.get('event_id'))
+        credit_count = self.cleaned_data.get('credit_count')
 
         # Update if the Event already has this credit configured, or if credit count was set.
-        should_update = event.get_credit_configuration_by_id(
-            self.cleaned_data.get('ceu_category_id'))
-        credit_count = self.cleaned_data.get('credit_count', 0)
+        credit = event.get_or_create_credit_configuration(
+            self.cleaned_data.get('ceu_category_id'), credit_count)
 
-        if credit_count or should_update:
-           credit, _ = EventCredit.objects.get_or_create(
-               event_id=event.pk,
-               ceu_subcategory_id=self.cleaned_data.get('ceu_category_id'),
-           )
-           credit.credit_count = credit_count
-           credit.alternate_ceu_id = self.cleaned_data.get('alternate_ceu_id')
-           credit.available = self.cleaned_data.get('available', False)
-           credit.save()
+        if credit:
+            try:
+                credit.credit_count = credit_count
+                credit.alternate_ceu_id = self.cleaned_data.get('alternate_ceu_id')
+                credit.available = self.cleaned_data.get('available', False)
+                credit.save(apply_changes_to=apply_changes_to)
+            except Exception:
+                raise ValidationError(f"{credit.ceu_subcategory} not updated, try again.")
+            return credit
 
 
 class EventForm(TendenciBaseForm):
