@@ -162,6 +162,7 @@ class CEUCategory(models.Model):
     Can optionally be included in Events
     """
     name = models.CharField(max_length=255)
+    code = models.CharField(max_length=15)
     parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
 
     class Meta:
