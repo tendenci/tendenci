@@ -291,7 +291,7 @@ class StandardRegFormAdmin(admin.ModelAdmin):
 
 
 class CEUCategoryAdminInline(admin.TabularInline):
-    fieldsets = ((None, {'fields': ('name',)}),)
+    fieldsets = ((None, {'fields': ('code', 'name',)}),)
     model = CEUCategory
     extra = 0
     verbose_name = _("Continuing Education Unit Sub-Category")
@@ -299,9 +299,9 @@ class CEUCategoryAdminInline(admin.TabularInline):
 
 
 class CEUCategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name',)
+    list_display = ('id', 'code', 'name',)
     list_display_links = ('name',)
-    fieldsets = ((None, {'fields': ('name',)}),)
+    fieldsets = ((None, {'fields': ('code', 'name',)}),)
     inlines = (CEUCategoryAdminInline,)
     verbose_name = _("Continuing Education Unit Category")
     verbose_name_plural = _("Continuing Education Unit Categories")
