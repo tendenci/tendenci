@@ -718,8 +718,6 @@ def credits_edit(request, id, form_class=EventCreditForm, template_name="events/
             return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
         return HttpResponseRedirect(reverse(redirect_url, args=[event.pk]))
 
-    form_apply_recurring = ApplyRecurringChangesForm()
-
     no_subcategories = dict()
     for category in CEUCategory.objects.all():
         parent = category.parent
@@ -747,11 +745,15 @@ def credits_edit(request, id, form_class=EventCreditForm, template_name="events/
         credit_forms[category.name] = [EventCreditForm.pre_populate_form(
             event, category, prefix=f"form_{category.pk}")]
 
-    if event.is_recurring_event:
-        credit_forms.append(form_apply_recurring)
+    form_apply_recurring = ApplyRecurringChangesForm()
+    multi_event_forms = [form_apply_recurring] if event.is_recurring_event else list()
 
     return render_to_resp(request=request, template_name=template_name,
-        context={'event': event, 'credit_forms': credit_forms, 'label': "credits"})
+        context={
+            'event': event,
+            'credit_forms': credit_forms,
+            'multi_event_forms': multi_event_forms,
+            'label': "credits"})
 
 
 @is_enabled('events')

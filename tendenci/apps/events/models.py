@@ -183,18 +183,22 @@ class EventCredit(models.Model):
     alternate_ceu_id = models.CharField(max_length=150, blank=True, null=True)
     available = models.BooleanField(default=False)
 
-    def save(self, apply_changes_to='self', *args, **kwargs):
+    def save(self, apply_changes_to='self', from_event=None, *args, **kwargs):
         """Update for recurring events after save"""
         super().save(*args, **kwargs)
         if apply_changes_to != 'self':
-            recurring_events = self.event.recurring_event.event_set.all()
+            if not from_event:
+                raise Exception("Must provide event to update recurring events from")
+
+            recurring_events = from_event.recurring_event.event_set.all()
 
             if apply_changes_to == 'rest':
-                recurring_events = recurring_events.filter(start_dt__gte=self.event.start_dt)
+                recurring_events = recurring_events.filter(
+                    start_dt__gte=from_event.start_dt)
 
             # Update existing configs. Create new ones if needed.
             for event in recurring_events:
-                credit = event.get_or_create_credit_configuration(self.ceu_subcategory, True)
+                credit = event.get_or_create_credit_configuration(self.ceu_subcategory.pk, True)
                 credit.credit_count = self.credit_count
                 credit.alternate_ceu_id = self.alternate_ceu_id
                 credit.available = self.available

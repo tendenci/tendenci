@@ -681,7 +681,7 @@ class EventCreditForm(forms.Form):
                 credit.credit_count = credit_count
                 credit.alternate_ceu_id = self.cleaned_data.get('alternate_ceu_id')
                 credit.available = self.cleaned_data.get('available', False)
-                credit.save(apply_changes_to=apply_changes_to)
+                credit.save(apply_changes_to=apply_changes_to, from_event=event)
             except Exception:
                 raise ValidationError(f"{credit.ceu_subcategory} not updated, try again.")
             return credit
