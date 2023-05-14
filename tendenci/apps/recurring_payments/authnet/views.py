@@ -15,6 +15,7 @@ from tendenci.apps.base.decorators import ssl_required
 from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
 from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
 from tendenci.apps.recurring_payments.authnet.utils import get_token, get_test_mode
+from tendenci.apps.payments.authorizenet.utils import AuthNetAPI
 
 
 @login_required
@@ -44,8 +45,14 @@ def manage_payment_info(request, recurring_payment_id,
              'description': rp.description,
              'customer_id': str(rp.id)}
         success, response_d = cp.create(**d)
+        
+        authnet_api = AuthNetAPI()
+        success, customer_profile_id, message_list = authnet_api.create_customer_profile(user_id=rp.user.id,
+                                                                                         email=rp.user.email,
+                                                                                         description=rp.description,)
+        
         if success:
-            rp.customer_profile_id = response_d['customer_profile_id']
+            rp.customer_profile_id = customer_profile_id
             rp.save()
         else:
             gateway_error = True
@@ -55,21 +62,15 @@ def manage_payment_info(request, recurring_payment_id,
     # get the token from payment gateway for this customer (customer_profile_id=4356210)
     token = ""
     if not gateway_error:
-        hosted_profile_page = CIMHostedProfilePage(rp.customer_profile_id)
-        success, response_d = hosted_profile_page.get()
-
-        if not success:
-            gateway_error = True
-        else:
-            token = response_d['token']
+        token, gateway_error = authnet_api.get_token(rp.customer_profile_id)
 
     return render_to_resp(request=request, template_name=template_name,
         context={'token': token,
-                                              'test_mode': test_mode,
-                                              'form_post_url': form_post_url,
-                                              'rp': rp,
-                                              'gateway_error': gateway_error
-                                              })
+                          'test_mode': test_mode,
+                          'form_post_url': form_post_url,
+                          'rp': rp,
+                          'gateway_error': gateway_error
+                          })
 
 
 @ssl_required
@@ -95,8 +96,10 @@ def update_payment_info(request, recurring_payment_id,
     else:
         payment_profile = None
 
-    token, gateway_error = get_token(rp, CIMCustomerProfile, CIMHostedProfilePage,
-                                     is_secure=request.is_secure())
+    authnet_api = AuthNetAPI()
+    token, gateway_error = authnet_api.get_token(rp.customer_profile_id)
+    #token, gateway_error = get_token(rp, CIMCustomerProfile, CIMHostedProfilePage,
+    #                                is_secure=request.is_secure())
     test_mode = get_test_mode()
 
     return render_to_resp(request=request, template_name=template_name,
@@ -122,7 +125,7 @@ def update_payment_profile_local(request):
         raise Http403
 
     ret_d = {}
-    valid_cpp_ids, invalid_cpp_ids = rp.populate_payment_profile(validation_mode='liveMode')
+    valid_cpp_ids, invalid_cpp_ids = rp.populate_payment_profile()
     if valid_cpp_ids:
         if payment_profile_id in valid_cpp_ids:
             ret_d['valid_cpp_id'] = payment_profile_id
@@ -152,9 +155,10 @@ def retrieve_token(request):
     if guid != rp.guid:
         raise Http403
 
-    token, gateway_error = get_token(rp,
-                                     CIMCustomerProfile,
-                                     CIMHostedProfilePage,
-                                     is_secure=request.is_secure())
-
+    authnet_api = AuthNetAPI()
+    token, gateway_error = authnet_api.get_token(rp.customer_profile_id)
+    # token, gateway_error = get_token(rp,
+    #                                  CIMCustomerProfile,
+    #                                  CIMHostedProfilePage,
+    #                                  is_secure=request.is_secure())
     return HttpResponse(token)

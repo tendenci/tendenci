@@ -8,7 +8,7 @@ from django.urls import reverse
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.authorizenet.utils import AuthNetAPI, authorizenet_thankyou_processing
-from tendenci.apps.payments.utils import log_silent_post
+from tendenci.apps.payments.utils import log_silent_post, payment_processing_object_updates
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.authorizenet.utils import get_form_token
@@ -50,8 +50,21 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
         if r.ok:
             res_dict = r.json()
 
-            anet_api.process_txn_response(request, res_dict, payment)
-            
+            anet_api.process_txn_response(request.user, res_dict, payment)
+            if payment.is_approved:
+                payment_processing_object_updates(request, payment)
+                
+                # for membership auto renew, get customer_profile_id from the transaction
+                # and add a recurring payment now
+                obj = payment.invoice.get_object()
+                if obj and hasattr(obj, 'memberships'):
+                    if obj.memberships:
+                        membership = obj.memberships()[0]
+                        if membership.auto_renew and not membership.has_rp(platform='authorizenet'):
+                            kwargs = {'platform': 'authorizenet',}
+                            rp = membership.get_or_create_rp(request.user, **kwargs)
+                            rp.create_customer_profile_from_trans_id(payment.trans_id)
+
             template_name = 'payments/receipt.html'
             return render_to_resp(request=request, template_name=template_name,
                               context={'payment':payment})

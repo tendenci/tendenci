@@ -67,7 +67,8 @@ def direct_response_dict(direct_response_str):
     max_length = len(direct_response_fields)
     # the x_delim_char we specified is || (in cim.py)
     # the delimiter in the response_code WAS comma, but now it's ||
-    direct_response_list = direct_response_str.split('||')
+    # the delimiter is comma now (5/13/2023)
+    direct_response_list = direct_response_str.split(',')
     for i, value in enumerate(direct_response_list):
         if i < max_length:
             response_dict[direct_response_fields[i]] = value

@@ -17,26 +17,144 @@ from tendenci.apps.site_settings.utils import get_setting
 
 class AuthNetAPI:
     def __init__(self):
-        self.login = settings.MERCHANT_LOGIN
-        self.txn_key = settings.MERCHANT_TXN_KEY
         self.headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
         self.api_endpoint = settings.AUTHNET_API_ENDPOINT
+        self.merchant_authentication = {"name": settings.MERCHANT_LOGIN,
+                                        "transactionKey": settings.MERCHANT_TXN_KEY}
 
+    def post_requests(self, request_dict):
+        return requests.post(self.api_endpoint, headers=self.headers, json=request_dict)
 
-    def get_hosted_profile_page_request(self, customer_profile_id):
+    def process_response(self, res):
         """
-        API call getHostedProfilePageRequest
+        Process response.
+        Returns (Success, code, text, res_dict)
+        """
+        if res.ok:
+            res_dict = res.json()
+            result_code = res_dict['messages']['resultCode']
+            code = res_dict['messages']['message'][0]['code']
+            text = res_dict['messages']['message'][0]['text']
+            if result_code == 'Ok':
+                return True, code, text, res_dict
+            return False, code, text, res_dict
+        return False, '', str(res.status_code), {}
+
+    def get_public_client_key(self):
+        """
+        Get the public client key
+        """
+        request_dict = {
+            "getMerchantDetailsRequest": {
+                "merchantAuthentication": self.merchant_authentication
+            }  
+        }
+        res = self.post_requests(request_dict)
+        success, code, text, res_dict = self.process_response(res)
+        if success:
+            return res_dict['publicClientKey']
+        return ''
+
+    def create_customer_profile_from_trans(self, trans_id):
+        """
+        Create customer profile from a transaction (for membership auto renewal)
         
-        https://developer.authorize.net/api/reference/index.html#customer-profiles
+        return (customer_profile_id, customer_payment_profile_id_list)
+        """
+        request_dict = {
+            "createCustomerProfileFromTransactionRequest": {
+                "merchantAuthentication": self.merchant_authentication,
+                "transId": trans_id
+            }
+        }
+        res = self.post_requests(request_dict)
+        success, code, text, res_dict = self.process_response(res)
+        if success:
+            return res_dict['customerProfileId'], res_dict['customerPaymentProfileIdList']
+
+    def charge_customer_profile(self, payment, customer_profile_id, payment_profile_id):
+        """
+        Authorize and capture a payment using a stored customer payment profile.
+        return (success, code, text, res_dict)
+    
+        https://developer.authorize.net/api/reference/index.html#payment-transactions-charge-a-customer-profile
+        """
+        request_dict = {
+            "createTransactionRequest": {
+                "merchantAuthentication": self.merchant_authentication,
+                "refId": str(payment.id),
+                "transactionRequest": {
+                    "transactionType": "authCaptureTransaction",
+                    "amount": str(payment.invoice.balance),
+                    "currencyCode": get_setting('site', 'global', 'currency'),
+                      "profile": {
+                          "customerProfileId": customer_profile_id,
+                          "paymentProfile": { "paymentProfileId": payment_profile_id }
+                      },
+                    "order": {
+                        "invoiceNumber": str(payment.invoice.id),
+                        "description": payment.description
+                    }
+                }
+            }    
+        }
+        res = self.post_requests(request_dict)
+        return self.process_response(res)
+
+    def get_customer_payment_profiles(self, customer_profile_id):
+        request_dict = {
+            "getCustomerProfileRequest": {
+                "merchantAuthentication": self.merchant_authentication,
+                "customerProfileId": customer_profile_id,
+                "includeIssuerInfo": "false"
+            }
+        }
+        res = self.post_requests(request_dict)
+        success, code, text, res_dict = self.process_response(res)
+        if success:
+            if 'paymentProfiles' in res_dict['profile']:
+                payment_profiles = res_dict['profile']['paymentProfiles']
+                return payment_profiles
+        return []
+
+    def validate_customer_payment_profile(self, customer_profile_id,
+                                           customer_payment_profile_id):
+        if hasattr(settings, 'AUTHNET_CIM_TEST_MODE') and settings.AUTHNET_CIM_TEST_MODE:
+            validate_mode = 'testMode'
+        else:
+            validate_mode = 'liveMode'
+        request_dict = {
+            "validateCustomerPaymentProfileRequest": {
+                "merchantAuthentication": self.merchant_authentication,
+                "customerProfileId": customer_profile_id,
+                 "customerPaymentProfileId": customer_payment_profile_id,
+                 "validationMode": validate_mode
+            }
+        }
+        res = self.post_requests(request_dict)
+        success, code, text, res_dict = self.process_response(res)
+        if success:
+            direct_response = res_dict['directResponse'].split(',')
+            # response_code == response_reason_code == 1 
+            if direct_response[0] == direct_response[1] == '1':
+                # approved == valid
+                return True
+
+        return False
+   
+
+    def get_token(self, customer_profile_id):
+        """
+        Get token using getHostedProfilePageRequest method
+        Return a tuple: (token, error message or '')
+        
+        https://developer.authorize.net/api/reference/index.html#customer-profiles-get-accept-customer-profile-page
         """
         iframe_communicator_url = get_setting('site', 'global', 'siteurl') + \
                                  reverse('recurring_payment.authnet.iframe_communicator')
         request_dict = {
             "getHostedProfilePageRequest": {
-                "merchantAuthentication": {
-                    "name": self.login,
-                    "transactionKey": self.txn_key
-                },
+                "merchantAuthentication": self.merchant_authentication,
                 "customerProfileId": customer_profile_id,
                 "hostedProfileSettings": {
                     "setting": [
@@ -52,9 +170,26 @@ class AuthNetAPI:
                 }
             }
         }
+        res = self.post_requests(request_dict)
+        success, code, text, res_dict = self.process_response(res)
 
-  
-        
+        if success:
+            return res_dict.get('token'), ''
+
+        if code:
+            return '', f'{code}:{text}'
+    
+        return '', str(res.status_code)  
+
+    def delete_customer_profile(self, customer_profile_id):
+        request_dict = {
+            "deleteCustomerProfileRequest": {
+                "merchantAuthentication": self.merchant_authentication,
+                "customerProfileId": customer_profile_id
+            }
+        }
+        res = self.post_requests(request_dict)
+        return self.process_response(res)
 
     def create_customer_profile(self, **opt_d):
         """
@@ -62,8 +197,8 @@ class AuthNetAPI:
         return a tuple (success, customer_profile_id, message list)
         """
         res = self.create_customer_profile_request(**opt_d)
-        if res.ok:
-            res_dict = res.json()
+        success, code, text, res_dict = self.process_response(res)
+        if success:
             return self.create_customer_profile_response(res_dict)
         return False, None, None
 
@@ -73,10 +208,7 @@ class AuthNetAPI:
         description = opt_d.get('description', '')
         request_dict = {
             "createCustomerProfileRequest": {
-                "merchantAuthentication": {
-                    "name": self.login,
-                    "transactionKey": self.txn_key
-                },
+                "merchantAuthentication": self.merchant_authentication,
                 "profile": {
                     "merchantCustomerId": user_id,
                     "description": description,
@@ -84,7 +216,7 @@ class AuthNetAPI:
                 }
             }
         }
-        return requests.post(self.api_endpoint, headers=self.headers, json=request_dict)
+        return self.post_requests(request_dict)
 
     def create_customer_profile_response(self, res_dict):
         """
@@ -106,10 +238,7 @@ class AuthNetAPI:
     def create_txn_request(self, payment, opaque_value, opaque_descriptor):
         request_dict = {
             "createTransactionRequest": {
-                "merchantAuthentication": {
-                    "name": self.login,
-                    "transactionKey": self.txn_key
-                },
+                "merchantAuthentication": self.merchant_authentication,
                 "refId": str(payment.id),
                 "transactionRequest": {
                     "transactionType": "authCaptureTransaction",
@@ -127,9 +256,9 @@ class AuthNetAPI:
                 }
             }
         }
-        return requests.post(self.api_endpoint, headers=self.headers, json=request_dict)
+        return self.post_requests(request_dict)
     
-    def process_txn_response(self, request, res_dict, payment):
+    def process_txn_response(self, user, res_dict, payment):
         """
         1. Update payment (equivalent to the old payment_update_authorizenet)
         2. Update object - call payment_processing_object_updates(request, payment)
@@ -156,7 +285,7 @@ class AuthNetAPI:
                 if payment.response_code == '1': # Approved
                     payment.mark_as_paid()
                     payment.save()
-                    payment.invoice.make_payment(request.user, payment.amount)
+                    payment.invoice.make_payment(user, payment.amount)
                 elif payment.response_code == '2': # Declined:
                     payment.status_detail = 'declined'
                     payment.save()
@@ -171,11 +300,6 @@ class AuthNetAPI:
                 if payment.status_detail == '':
                     payment.status_detail = 'not approved'
                 payment.save()
-                
-                
-            
-            
-            
 
 
 def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
