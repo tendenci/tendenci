@@ -495,6 +495,7 @@ def corpmembership_upgrade(request, id,
     """
     Corporate membership upgrade.
     """
+    from tendenci.apps.user_groups.models import GroupMembership
     app = CorpMembershipApp.objects.current_app()
     if not app:
         raise Http404
@@ -523,6 +524,22 @@ def corpmembership_upgrade(request, id,
                         ).filter(
                     Q(corp_profile_id=corp_profile.id)
                     | Q(corporate_membership_id=corp_membership.id))
+            for membership in memberships:
+                old_membership_type = membership.membership_type
+                # delete user from old group
+                GroupMembership.objects.filter(
+                        member=membership.user,
+                        group=old_membership_type.group,
+                    ).delete()
+                # add to new group
+                if not GroupMembership.objects.filter(
+                        member=membership.user,
+                        group=membership_type.group,
+                    ).exists():
+                    GroupMembership.add_to_group(
+                        member=membership.user,
+                        group=membership_type.group,
+                    )
             memberships.update(membership_type=membership_type)
 
             # log an event
