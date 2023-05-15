@@ -1488,13 +1488,13 @@ def copy_event(event, user, reuse_rel=False, set_repeat_of=False):
 
     # Copy credit configuration
     for config in event.eventcredit_set.all():
-        EventCredit.objects.create(
-            event_id=new_event.pk,
+        credit = EventCredit.objects.create(
             ceu_subcategory=config.ceu_subcategory,
             credit_count=config.credit_count,
             alternate_ceu_id=config.alternate_ceu_id,
             available=config.available,
         )
+        credit.event.add(new_event)
 
     #copy place
     place = event.place
