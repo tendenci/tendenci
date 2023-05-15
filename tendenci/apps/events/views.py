@@ -2754,7 +2754,7 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
         confirmation_message = None
         if not registration.canceled:
             refund_amount = 0
-            allow_refunds = get_setting('site', 'global', 'allow_refunds')
+            allow_refunds = get_setting('module', 'events', 'allow_refunds')
 
             for registrant in registrants:
                 user_is_registrant = False
@@ -2934,7 +2934,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
 
             # Refund if automatic refunds turned on
-            allow_refunds = get_setting('site', 'global', 'allow_refunds')
+            allow_refunds = get_setting('module', 'events', 'allow_refunds')
             can_auto_refund = invoice.can_auto_refund
             if invoice.can_auto_refund and registrant.amount:
                 try:

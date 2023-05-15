@@ -2164,7 +2164,7 @@ def get_cancellation_confirmation_message(event, registrants):
     Get cancellation confirmation message for registrants.
     Message will vary based on allow_refunds setting.
     """
-    allow_refunds = get_setting("site", "global", "allow_refunds")
+    allow_refunds = get_setting("module", "events", "allow_refunds")
 
     message = None
 

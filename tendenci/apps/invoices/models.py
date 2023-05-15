@@ -488,7 +488,7 @@ class Invoice(models.Model):
         site settings, there is a refundable amount, and
         the refundable amount has been paid through Stripe (has trans_id).
         """
-        allow_refunds = get_setting('site', 'global', 'allow_refunds')
+        allow_refunds = get_setting('module', 'events', 'allow_refunds')
 
         return (
             allow_refunds != "No" and
@@ -503,7 +503,7 @@ class Invoice(models.Model):
         Setting must be enabled, and refundable amount
         must allow for deducting any cancellation fees.
         """
-        allow_refunds = get_setting('site', 'global', 'allow_refunds')
+        allow_refunds = get_setting('module', 'events', 'allow_refunds')
 
         can_deduct_fees = self.refundable_amount >= self.total_cancellation_fees_pending
 
@@ -511,7 +511,7 @@ class Invoice(models.Model):
 
     @property
     def refund_disabled_reason(self):
-        if get_setting('site', 'global', 'allow_refunds') == "No":
+        if get_setting('module', 'events', 'allow_refunds') == "No":
             return "Refunds can be enabled by an administrator."
 
         if not self.refundable_amount:

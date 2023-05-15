@@ -72,7 +72,7 @@ def event_cancel_modal(
     if len(registrants) > 1:
         cancellation_fee *= len(registrants)
 
-    allow_refunds_setting = get_setting("site", "global", "allow_refunds")
+    allow_refunds_setting = get_setting("module", "events", "allow_refunds")
     allow_refunds = allow_refunds_setting and allow_refunds_setting != "No"
 
     context.update({
