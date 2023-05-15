@@ -135,3 +135,10 @@
   <a href='/admin/events/ceucategory/'> {% trans 'Add Credits' %}</a>
 {% endif %}
 </div>
+{% if credit_forms and event.allow_credit_configuration_with_warning %}
+<div>
+  <b>Note: If creating sub-events for this event,
+credits should be added at the sub-event level in the
+    sub-event credits tables.</b>
+</div>
+{% endif %}

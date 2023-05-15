@@ -31,7 +31,7 @@ from pytz import UnknownTimeZoneError
 from tendenci.apps.events.models import (Event, Place, Speaker, Organizer, Sponsor,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption, CustomRegField, Type,
-    TypeColorSet, RecurringEvent)
+    TypeColorSet, RecurringEvent, EventCredit, EventStaff)
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.site_settings.utils import get_setting
@@ -1441,14 +1441,19 @@ def clean_price(price, user):
 
     return price, price_pk, amount
 
-def copy_event(event, user, reuse_rel=False):
+def copy_event(event, user, reuse_rel=False, set_repeat_of=False):
     #copy event
     new_event = Event.objects.create(
         title = event.title,
         entity = event.entity,
+        event_relationship=event.event_relationship,
+        event_code=event.event_code,
+        short_name=event.short_name,
+        delivery_method=event.delivery_method,
         description = event.description,
         timezone = event.timezone,
         type = event.type,
+        repeat_uuid = event.repeat_uuid,
         image = event.image,
         start_dt = event.start_dt,
         end_dt = event.end_dt,
@@ -1476,6 +1481,21 @@ def copy_event(event, user, reuse_rel=False):
     )
     new_event.groups.add(*list(event.groups.all()))
 
+    if set_repeat_of:
+        new_event.parent = event.parent
+        new_event.repeat_of = event
+        new_event.save(update_fields=['parent', 'repeat_of'])
+
+    # Copy credit configuration
+    for config in event.eventcredit_set.all():
+        EventCredit.objects.create(
+            event_id=new_event.pk,
+            ceu_subcategory=config.ceu_subcategory,
+            credit_count=config.credit_count,
+            alternate_ceu_id=config.alternate_ceu_id,
+            available=config.available,
+        )
+
     #copy place
     place = event.place
     if place:
@@ -1494,6 +1514,19 @@ def copy_event(event, user, reuse_rel=False):
             )
             new_event.place = new_place
         new_event.save()
+
+    #copy speakers
+    for staff in event.eventstaff_set.all():
+        if reuse_rel:
+            staff.event.add(new_event)
+        else:
+            new_staff = EventStaff.objects.create(
+                name=staff.name,
+                role=staff.role,
+                include_on_certificate=staff.include_on_certificate,
+            )
+            new_staff.event.add(new_event)
+
 
     #copy speakers
     for speaker in event.speaker_set.all():
@@ -1515,6 +1548,7 @@ def copy_event(event, user, reuse_rel=False):
             new_organizer = Organizer.objects.create(
                 user = organizer.user,
                 name = organizer.name,
+                image = organizer.image,
                 description = organizer.description,
             )
             new_organizer.event.add(new_event)
@@ -1525,7 +1559,9 @@ def copy_event(event, user, reuse_rel=False):
             sponsor.event.add(new_event)
         else:
             new_sponsor = Sponsor.objects.create(
+                name = sponsor.name,
                 description = sponsor.description,
+                image = sponsor.image,
             )
             new_sponsor.event.add(new_event)
 
@@ -1537,6 +1573,8 @@ def copy_event(event, user, reuse_rel=False):
             limit = old_regconf.limit,
             enabled = old_regconf.enabled,
             require_guests_info = old_regconf.require_guests_info,
+            allow_guests=old_regconf.allow_guests,
+            guest_limit=old_regconf.guest_limit,
             is_guest_price = old_regconf.is_guest_price,
             discount_eligible = old_regconf.discount_eligible,
             display_registration_stats = old_regconf.display_registration_stats,

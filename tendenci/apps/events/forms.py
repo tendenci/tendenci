@@ -29,7 +29,7 @@ from tendenci.apps.events.models import (
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
-    RecurringEvent, Registrant, EventCredit
+    RecurringEvent, Registrant, EventCredit, EventStaff
 )
 
 from tendenci.libs.form_utils.forms import BetterModelForm
@@ -687,6 +687,29 @@ class EventCreditForm(forms.Form):
             return credit
 
 
+class StaffForm(FormControlWidgetMixin, BetterModelForm):
+    label = _('Staff Member')
+
+    class Meta:
+        model = EventStaff
+
+        fields = (
+            'name',
+            'role',
+            'include_on_certificate',
+        )
+
+        fieldsets = [(_('Staff'), {
+          'fields': ['name',
+                     'role',
+                     'include_on_certificate',
+                    ],
+          'legend': '',
+          'classes': ['boxy-grey'],
+          })
+        ]
+
+
 class EventForm(TendenciBaseForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
@@ -748,15 +771,24 @@ class EventForm(TendenciBaseForm):
         help_text="Larger symposium this event is a part of",
     )
 
+    repeat_of = forms.ModelChoiceField(
+        required=False,
+        queryset=Event.objects.available_child_events(),
+        help_text="Select child event this is a repeat of",
+    )
 
     class Meta:
         model = Event
         fields = (
             'title',
             'course',
+            'event_code',
+            'short_name',
+            'delivery_method',
             'description',
             'event_relationship',
             'parent',
+            'repeat_of',
             'start_dt',
             'end_dt',
             'is_recurring_event',
@@ -788,8 +820,11 @@ class EventForm(TendenciBaseForm):
         fieldsets = [(_('Event Information'), {
                       'fields': ['event_relationship',
                                  'parent',
+                                 'repeat_of',
+                                 'event_code',
                                  'title',
                                  'course',
+                                 'short_name',
                                  'description',
                                  'is_recurring_event',
                                  'frequency',
@@ -808,6 +843,7 @@ class EventForm(TendenciBaseForm):
                        'fields': ['on_weekend',
                                   'timezone',
                                   'priority',
+                                  'delivery_method',
                                   'type',
                                   'groups',
                                   'external_url',
@@ -874,6 +910,7 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('frequency')
             self.fields.pop('end_recurring')
             self.fields.pop('recurs_on')
+            self.fields['repeat_of'].widget.attrs.update({'disabled': True})
         else:
             if is_template:
                 # hide recurring event fields when adding a template
@@ -899,6 +936,9 @@ class EventForm(TendenciBaseForm):
             has_child_events = self.instance.pk and self.instance.has_child_events
             if has_child_events or self.instance.parent:
                 self.fields['event_relationship'].widget.attrs.update({'disabled': True})
+
+            if self.instance.parent:
+                self.fields['parent'].widget.attrs.update({'disabled': True})
 
         default_groups = Group.objects.filter(status=True, status_detail="active",
                                               show_for_events=True)
@@ -937,6 +977,7 @@ class EventForm(TendenciBaseForm):
         if not nested_events:
             del self.fields['event_relationship']
             del self.fields['parent']
+            del self.fields['repeat_of']
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
@@ -1247,12 +1288,52 @@ class SpeakerForm(FormControlWidgetMixin, BetterModelForm):
         return self.cleaned_data
 
 
-class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
+class ImageUploadFormMixin:
+    """Mixin to upload an image"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.image:
+            name = f"{self.label.lower()}-remove_photo"
+            self.fields['image_upload'].help_text = f'<input name="{name}" id="id_{name}" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
+
+    def clean_image_upload(self):
+        """Validation image upload"""
+        image_upload = self.cleaned_data['image_upload']
+        if image_upload:
+            extension = splitext(image_upload.name)[1]
+
+            # check the extension
+            if extension.lower() not in ALLOWED_LOGO_EXT:
+                raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
+
+            # check the image header
+            image_type = '.%s' % imghdr.what('', image_upload.read())
+            if image_type not in ALLOWED_LOGO_EXT:
+                raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
+
+            max_upload_size = get_max_file_upload_size()
+            if image_upload.size > max_upload_size:
+                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(upload_size)s') % {
+                                'max_upload_size': filesizeformat(max_upload_size),
+                                'upload_size': filesizeformat(image_upload.size)})
+
+        return image_upload
+
+    def save(self, *args, **kwargs):
+        """Remove image if needed"""
+        instance = super().save(*args, **kwargs)
+        if self.data.get(f'{self.label.lower()}-remove_photo'):
+            instance.image = None
+        return instance
+
+
+class OrganizerForm(ImageUploadFormMixin, FormControlWidgetMixin, forms.ModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Organizer._meta.app_label,
         'storme_model':Organizer._meta.model_name.lower()}))
     label = 'Organizer'
+    image_upload = forms.FileField(label=_('Logo'), required=False)
 
     class Meta:
         model = Organizer
@@ -1260,6 +1341,7 @@ class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
         fields = (
             'name',
             'description',
+            'image_upload',
         )
 
     def __init__(self, *args, **kwargs):
@@ -1270,18 +1352,21 @@ class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
 
-class SponsorForm(FormControlWidgetMixin, forms.ModelForm):
+class SponsorForm(ImageUploadFormMixin, FormControlWidgetMixin, forms.ModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Sponsor._meta.app_label,
         'storme_model':Sponsor._meta.model_name.lower()}))
     label = 'Sponsor'
+    image_upload = forms.FileField(label=_('Logo'), required=False)
 
     class Meta:
         model = Sponsor
 
         fields = (
+            'name',
             'description',
+            'image_upload'
         )
 
     def __init__(self, *args, **kwargs):
@@ -1476,6 +1561,8 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'payment_method',
             'payment_required',
             'external_payment_link',
+            'allow_guests',
+            'guest_limit',
             'require_guests_info',
             'discount_eligible',
             'gratuity_enabled',
@@ -1501,6 +1588,8 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     'payment_method',
                     'payment_required',
                     'external_payment_link',
+                    'allow_guests',
+                    'guest_limit',
                     'require_guests_info',
                     'discount_eligible',
                     'gratuity_enabled',

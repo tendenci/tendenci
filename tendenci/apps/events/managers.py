@@ -98,6 +98,14 @@ class EventManager(TendenciBaseManager):
             event_relationship=self.model.EventRelationship.PARENT,
         )
 
+    def available_child_events(self):
+        """Returns all upcoming child events available to use as 'repeat_of'"""
+        return self.filter(
+            start_dt__gt=datetime.now(),
+            event_relationship=self.model.EventRelationship.CHILD,
+            repeat_of__isnull=True,
+        ).order_by('parent_id')
+
 
 class EventTypeManager(Manager):
     def search(self, query=None, *args, **kwargs):
