@@ -195,8 +195,7 @@ class Payment(models.Model):
                                            "global",
                                            "merchantaccount").lower()
             if merchant_account == "authorizenet":
-                self.response_page = reverse('authorizenet.sim_thank_you',
-                                             args=[self.id])
+                self.response_page = ''
             elif merchant_account == "firstdata":
                 self.response_page = reverse('firstdata.thank_you',
                                              args=[self.id])

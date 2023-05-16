@@ -697,11 +697,11 @@ MERCHANT_TXN_KEY = ''
 # Authorize.Net
 AUTHNET_API_ENDPOINT = 'https://api.authorize.net/xml/v1/request.api'
 AUTHNET_POST_URL = 'https://accept.authorize.net/payment/payment'
-AUTHNET_SIGNATURE_KEY = ''
-AUTHNET_PUBLIC_CLIENT_KEY = ''
-
-AUTHNET_CIM_API_TEST_URL = 'https://apitest.authorize.net/xml/v1/request.api'
-AUTHNET_CIM_API_URL = 'https://api2.authorize.net/xml/v1/request.api'
+# AUTHNET_SIGNATURE_KEY = ''
+#
+#
+# AUTHNET_CIM_API_TEST_URL = 'https://apitest.authorize.net/xml/v1/request.api'
+# AUTHNET_CIM_API_URL = 'https://api2.authorize.net/xml/v1/request.api'
 
 # FirstData
 FIRSTDATA_POST_URL = 'https://secure.linkpt.net/lpcentral/servlet/lppay'

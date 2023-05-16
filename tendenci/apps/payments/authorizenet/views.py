@@ -8,12 +8,12 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
-from tendenci.apps.payments.authorizenet.utils import AuthNetAPI, authorizenet_thankyou_processing
-from tendenci.apps.payments.utils import log_silent_post, payment_processing_object_updates
+from tendenci.apps.payments.authorizenet.utils import AuthNetAPI
+from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.payments.models import Payment
-from tendenci.apps.payments.authorizenet.utils import get_form_token
+#from tendenci.apps.payments.authorizenet.utils import get_form_token
 from .forms import AcceptJSPaymentForm
 
 
@@ -34,6 +34,9 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
         
         payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
     
+        return HttpResponseRedirect(reverse('invoice.view', args=[payment.invoice.id]))
+
+    if payment.is_approved:
         return HttpResponseRedirect(reverse('invoice.view', args=[payment.invoice.id]))
 
     if 'apitest' in settings.AUTHNET_API_ENDPOINT:
@@ -91,56 +94,63 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
                                   'public_client_key': public_client_key})
 
 
-# remove later
-def pay_online_direct(request, payment_id, guid='', template_name='payments/authorizenet/payonline_direct.html'):
-    if not getattr(settings, 'MERCHANT_LOGIN', ''):
-        url_setup_guide = 'https://www.tendenci.com/help-files/setting-up-online-payment-processor-and-merchant-provider-on-a-tendenci-site/'
-        url_setup_guide = '<a href="{0}">{0}</a>'.format(url_setup_guide)
-        merchant_provider = get_setting("site", "global", "merchantaccount")
-        msg_string = str(_('ERROR: Online payment has not yet be set up or configured correctly. '))
-        if request.user.is_superuser:
-            msg_string += str(_('Please follow the guide {0} to complete the setup process for {1}, then try again.').format(url_setup_guide, merchant_provider))
-        else:
-            msg_string += str(_('Please contact the site administrator to complete the setup process.'))
-            
-        messages.add_message(request, messages.ERROR, _(msg_string))
-        
-        payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
-    
-        return HttpResponseRedirect(reverse('invoice.view', args=[payment.invoice.id]))
+# def thank_you(request, payment_id, guid='', template_name='payments/receipt.html'):
+#     #payment, processed = stripe_thankyou_processing(request, dict(request.POST.items()))
+#     payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
+#
+#     return render_to_resp(request=request, template_name=template_name,
+#                               context={'payment':payment})
 
-    payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
-    token =  get_form_token(request, payment)
-    post_url = settings.AUTHNET_POST_URL
-    print('token=', token)
-    return render_to_resp(request=request, template_name=template_name,
-                              context={
-                                  'payment': payment,
-                                  'token': token,
-                                  'post_url': post_url})
-
-
-
-@csrf_exempt
-def sim_thank_you(request, payment_id,
-                  template_name='payments/authorizenet/thankyou.html'):
-    payment = authorizenet_thankyou_processing(
-                                        request,
-                                        request.POST.copy())
-
-    return render_to_resp(request=request, template_name=template_name,
-                              context={'payment': payment})
+# # remove later
+# def pay_online_direct(request, payment_id, guid='', template_name='payments/authorizenet/payonline_direct.html'):
+#     if not getattr(settings, 'MERCHANT_LOGIN', ''):
+#         url_setup_guide = 'https://www.tendenci.com/help-files/setting-up-online-payment-processor-and-merchant-provider-on-a-tendenci-site/'
+#         url_setup_guide = '<a href="{0}">{0}</a>'.format(url_setup_guide)
+#         merchant_provider = get_setting("site", "global", "merchantaccount")
+#         msg_string = str(_('ERROR: Online payment has not yet be set up or configured correctly. '))
+#         if request.user.is_superuser:
+#             msg_string += str(_('Please follow the guide {0} to complete the setup process for {1}, then try again.').format(url_setup_guide, merchant_provider))
+#         else:
+#             msg_string += str(_('Please contact the site administrator to complete the setup process.'))
+#
+#         messages.add_message(request, messages.ERROR, _(msg_string))
+#
+#         payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
+#
+#         return HttpResponseRedirect(reverse('invoice.view', args=[payment.invoice.id]))
+#
+#     payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
+#     token =  get_form_token(request, payment)
+#     post_url = settings.AUTHNET_POST_URL
+#     print('token=', token)
+#     return render_to_resp(request=request, template_name=template_name,
+#                               context={
+#                                   'payment': payment,
+#                                   'token': token,
+#                                   'post_url': post_url})
 
 
-@csrf_exempt
-def silent_post(request):
-    # for now, we only handle AUTH_CAPTURE AND AUTH_ONLY
-    if not request.POST.get('x_type', '').lower() in ['auth_capture', 'auth_only']:
-        return HttpResponse('')
 
-    payment = authorizenet_thankyou_processing(
-        request, request.POST.copy())
+# @csrf_exempt
+# def sim_thank_you(request, payment_id,
+#                   template_name='payments/authorizenet/thankyou.html'):
+#     payment = authorizenet_thankyou_processing(
+#                                         request,
+#                                         request.POST.copy())
+#
+#     return render_to_resp(request=request, template_name=template_name,
+#                               context={'payment': payment})
 
-    log_silent_post(request, payment)
 
-    return HttpResponse('ok')
+# @csrf_exempt
+# def silent_post(request):
+#     # for now, we only handle AUTH_CAPTURE AND AUTH_ONLY
+#     if not request.POST.get('x_type', '').lower() in ['auth_capture', 'auth_only']:
+#         return HttpResponse('')
+#
+#     payment = authorizenet_thankyou_processing(
+#         request, request.POST.copy())
+#
+#     log_silent_post(request, payment)
+#
+#     return HttpResponse('ok')
