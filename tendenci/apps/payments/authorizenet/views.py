@@ -5,11 +5,13 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.authorizenet.utils import AuthNetAPI, authorizenet_thankyou_processing
 from tendenci.apps.payments.utils import log_silent_post, payment_processing_object_updates
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.authorizenet.utils import get_form_token
 from .forms import AcceptJSPaymentForm
@@ -39,6 +41,17 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
     else:
         accept_js_url = 'https://js.authorize.net/v3/AcceptUI.js'
 
+    public_client_key = get_setting('module', 'payments', 'authnetpublicclientkey')
+    if not public_client_key:
+        anet_api = AuthNetAPI()
+        public_client_key = anet_api.get_public_client_key()
+        if public_client_key:
+            Setting.objects.filter(name='authnetpublicclientkey',
+                                   scope='module',
+                                   scope_category='payments').update(value=public_client_key)
+        else:
+            messages.add_message(request, messages.ERROR, _('Error retrieving public client key. Please contact site administrator.'))
+
     payment_form = AcceptJSPaymentForm(request.POST or None)
 
     if request.method == "POST" and payment_form.is_valid():
@@ -49,11 +62,8 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
         r = anet_api.create_txn_request(payment, opaque_value, opaque_descriptor)
         if r.ok:
             res_dict = r.json()
-
             anet_api.process_txn_response(request.user, res_dict, payment)
             if payment.is_approved:
-                payment_processing_object_updates(request, payment)
-                
                 # for membership auto renew, get customer_profile_id from the transaction
                 # and add a recurring payment now
                 obj = payment.invoice.get_object()
@@ -65,6 +75,9 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
                             rp = membership.get_or_create_rp(request.user, **kwargs)
                             rp.create_customer_profile_from_trans_id(payment.trans_id)
 
+                # payment is approved, update object
+                payment_processing_object_updates(request, payment)
+
             template_name = 'payments/receipt.html'
             return render_to_resp(request=request, template_name=template_name,
                               context={'payment':payment})
@@ -75,7 +88,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
                                   'payment_form': payment_form,
                                   'accept_js_url': accept_js_url,
                                   'api_login': settings.MERCHANT_LOGIN,
-                                  'public_client_key': settings.AUTHNET_PUBLIC_CLIENT_KEY})
+                                  'public_client_key': public_client_key})
 
 
 # remove later

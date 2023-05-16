@@ -18,11 +18,8 @@ from dateutil.relativedelta import relativedelta
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.recurring_payments.managers import RecurringPaymentManager
-from tendenci.apps.recurring_payments.authnet.cim import (CIMCustomerProfile,
-                                            CIMCustomerPaymentProfile,
-                                            CIMCustomerProfileTransaction)
-from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
-from tendenci.apps.recurring_payments.authnet.utils import direct_response_dict
+#from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
+#from tendenci.apps.recurring_payments.authnet.utils import direct_response_dict
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.stripe.utils import stripe_set_app_info
@@ -200,8 +197,8 @@ class RecurringPayment(models.Model):
                                              payment_profile_id=customer_payment_profile_id,
                                              creator=self.user,
                                              owner=self.user,
-                                             creator_username= self.user.username,
-                                             owner_username = self.user.username)
+                                             creator_username=self.user.username,
+                                             owner_username =self.user.username)
                 payment_profile.save()
 
 
@@ -669,30 +666,19 @@ class RecurringPaymentInvoice(models.Model):
                 payment.save()
                 payment.invoice.make_payment(self.recurring_payment.user, Decimal(payment.amount))
 
-        else:
-            # # make a transaction using CIM
-            # d = {'amount': amount,
-            #      'order': {
-            #                'invoice_number': str(payment.invoice_num),
-            #                'description': description,
-            #                'recurring_billing': 'true'
-            #                }
-            #      }
-            #
-            # cpt = CIMCustomerProfileTransaction(self.recurring_payment.customer_profile_id,
-            #                                     payment_profile_id)
-            #
-            # success, response_d = cpt.create(**d)
-            
+        else:           
             # make a transaction
             authnet_api = AuthNetAPI()
             success, code, text, res_dict = authnet_api.charge_customer_profile(payment,
                                                                                 self.recurring_payment.customer_profile_id,
                                                                                 payment_profile_id)
-            authnet_api.process_txn_response(self, self.recurring_payment.user, res_dict, payment)
+            authnet_api.process_txn_response(self.recurring_payment.user, res_dict, payment)
+            response_d = {
+                          'result_code': res_dict['messages']['resultCode'],  # Error, Ok
+                          'message_code': code,    # I00001, E00027
+                          'message_text': text
+                          }
 
-            # update the payment entry with the direct response returned from payment gateway
-            #payment = payment_update_from_response(payment, response_d['direct_response'])
 
         if success:
             # approve membership

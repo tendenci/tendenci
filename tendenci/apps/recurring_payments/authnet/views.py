@@ -13,64 +13,63 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.base.decorators import ssl_required
 
 from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
-from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
-from tendenci.apps.recurring_payments.authnet.utils import get_token, get_test_mode
+from tendenci.apps.recurring_payments.authnet.utils import get_test_mode
 from tendenci.apps.payments.authorizenet.utils import AuthNetAPI
 
 
-@login_required
-def manage_payment_info(request, recurring_payment_id,
-                          template_name="recurring_payments/authnet/cim_manage_payment_iframe2.html"):
-    """
-    Add or edit payment info.
-    """
-    rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
-    gateway_error = False
-
-    # only admin or user self can access this page
-    if not request.user.profile.is_superuser and request.user.id != rp.user.id:
-        raise Http403
-
-    if hasattr(settings, 'AUTHNET_CIM_TEST_MODE') and  settings.AUTHNET_CIM_TEST_MODE:
-        test_mode = 'true'
-        form_post_url = "https://test.authorize.net/customer/manage"
-    else:
-        test_mode = 'false'
-        form_post_url = "https://accept.authorize.net/customer/manage"
-
-    if not rp.customer_profile_id:
-        # customer_profile is not available yet for this customer, create one now
-        cp = CIMCustomerProfile()
-        d = {'email': rp.user.email,
-             'description': rp.description,
-             'customer_id': str(rp.id)}
-        success, response_d = cp.create(**d)
-        
-        authnet_api = AuthNetAPI()
-        success, customer_profile_id, message_list = authnet_api.create_customer_profile(user_id=rp.user.id,
-                                                                                         email=rp.user.email,
-                                                                                         description=rp.description,)
-        
-        if success:
-            rp.customer_profile_id = customer_profile_id
-            rp.save()
-        else:
-            gateway_error = True
-
-    #payment_profiles = PaymentProfile.objects.filter(recurring_payment=rp, status=1, status_detail='active')
-
-    # get the token from payment gateway for this customer (customer_profile_id=4356210)
-    token = ""
-    if not gateway_error:
-        token, gateway_error = authnet_api.get_token(rp.customer_profile_id)
-
-    return render_to_resp(request=request, template_name=template_name,
-        context={'token': token,
-                          'test_mode': test_mode,
-                          'form_post_url': form_post_url,
-                          'rp': rp,
-                          'gateway_error': gateway_error
-                          })
+# @login_required
+# def manage_payment_info(request, recurring_payment_id,
+#                           template_name="recurring_payments/authnet/cim_manage_payment_iframe2.html"):
+#     """
+#     Add or edit payment info.
+#     """
+#     rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
+#     gateway_error = False
+#
+#     # only admin or user self can access this page
+#     if not request.user.profile.is_superuser and request.user.id != rp.user.id:
+#         raise Http403
+#
+#     if hasattr(settings, 'AUTHNET_CIM_TEST_MODE') and  settings.AUTHNET_CIM_TEST_MODE:
+#         test_mode = 'true'
+#         form_post_url = "https://test.authorize.net/customer/manage"
+#     else:
+#         test_mode = 'false'
+#         form_post_url = "https://accept.authorize.net/customer/manage"
+#
+#     if not rp.customer_profile_id:
+#         # customer_profile is not available yet for this customer, create one now
+#         cp = CIMCustomerProfile()
+#         d = {'email': rp.user.email,
+#              'description': rp.description,
+#              'customer_id': str(rp.id)}
+#         success, response_d = cp.create(**d)
+#
+#         authnet_api = AuthNetAPI()
+#         success, customer_profile_id, message_list = authnet_api.create_customer_profile(user_id=rp.user.id,
+#                                                                                          email=rp.user.email,
+#                                                                                          description=rp.description,)
+#
+#         if success:
+#             rp.customer_profile_id = customer_profile_id
+#             rp.save()
+#         else:
+#             gateway_error = True
+#
+#     #payment_profiles = PaymentProfile.objects.filter(recurring_payment=rp, status=1, status_detail='active')
+#
+#     # get the token from payment gateway for this customer (customer_profile_id=4356210)
+#     token = ""
+#     if not gateway_error:
+#         token, gateway_error = authnet_api.get_token(rp.customer_profile_id)
+#
+#     return render_to_resp(request=request, template_name=template_name,
+#         context={'token': token,
+#                           'test_mode': test_mode,
+#                           'form_post_url': form_post_url,
+#                           'rp': rp,
+#                           'gateway_error': gateway_error
+#                           })
 
 
 @ssl_required

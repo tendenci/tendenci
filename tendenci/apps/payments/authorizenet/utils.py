@@ -382,6 +382,7 @@ def get_form_token(request, payment):
     return None
 
 
+# delete later
 def prepare_authorizenet_sim_form(request, payment):
     x_fp_timestamp = str(int(time.time()))
     x_amount = "%.2f" % payment.amount
@@ -428,6 +429,7 @@ def prepare_authorizenet_sim_form(request, payment):
     return form
 
 
+# delete later
 def verify_hash(signature_key, response_d):
     if not signature_key:
         return False
@@ -451,7 +453,7 @@ def verify_hash(signature_key, response_d):
     return sha2_hash == computed_hash
 
     
-
+# delete later
 def authorizenet_thankyou_processing(request, response_d, **kwargs):
     from django.shortcuts import get_object_or_404
 
@@ -485,6 +487,7 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
 
         return payment
 
+# delete later
 def payment_update_authorizenet(request, response_d, payment, **kwargs):
     from decimal import Decimal
     payment.response_code = response_d.get('x_response_code', '')
