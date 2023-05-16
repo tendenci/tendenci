@@ -36,6 +36,8 @@ function deleteRegistrant(ele, prefix) {
         }
     }
 
+    updateAddRegistrantButton(formCount);
+
     return false;
 }
 
@@ -46,6 +48,7 @@ function updateIndex(e, prefix, idx){
         {$(e).attr("for", $(e).attr("for").replace(id_regex, replacement));}
     if (e.id) {e.id = e.id.replace(id_regex, replacement);}
     if (e.name){ e.name = e.name.replace(id_regex, replacement);}
+
 }
 
 // update the serial number on the form. ex: Registrant #3, Reg #3
@@ -67,6 +70,17 @@ function updateFormHeader(this_form, prefix, idx){
     };
 
 };
+
+function updateAddRegistrantButton(formCount) {
+    if (guest_limit == 0) { return; }
+
+    var guest_limit = {{ event.registration_configuration.guest_limit }};
+    if (formCount > guest_limit) {
+        $('.add-registrant-box button').hide();
+    } else {
+        $('.add-registrant-box button').show();
+    }
+}
 
 function addRegistrant(ele, prefix, price) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
@@ -133,6 +147,7 @@ function addRegistrant(ele, prefix, price) {
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
     updateFormHeader(row, prefix, formCount);
     updateSummaryEntry(prefix, formCount, price);
+    updateAddRegistrantButton(formCount + 1);
 
     $(row)[0].scrollIntoView();
 

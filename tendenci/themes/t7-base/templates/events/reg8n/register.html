@@ -319,8 +319,7 @@
                 {% endfor %}
             </div>
 
-
-             {% if not event.is_table %}
+             {% if not event.is_table and event.registration_configuration.allow_guests %}
             <div class="add-registrant-box">
                 <button type="button" class="btn btn-default" onClick="add_registrants(this, 'registrant'); return false;" title="{% trans "Add another one before pressing Register & Pay" %}">{% trans "Add Another Registrant" %}</button>
             </div>

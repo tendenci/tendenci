@@ -182,6 +182,7 @@
                 $.each($price, function(k, v) { if ($(v).val()=='') { $(v).val(0); } })
 
                 $.each(forms, function(index, form) { if($elem.prop('checked')) form.show(); else form.hide(); });
+                toggle_guests();
             }
             $('input#id_regconf-enabled').change(hide_forms_on_enabled_fn);
             hide_forms_on_enabled_fn();
@@ -199,7 +200,10 @@
     <script type="text/javascript">
         {% include 'events/include/parent_child_events.js' %}
     </script>
-    
+        <script type="text/javascript">
+        {% include 'events/include/guests.js' %}
+    </script>
+
 <script type="text/javascript">
 {% include 'events/include/event_form_custom_reg.js' %}
 </script>
