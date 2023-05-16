@@ -18,6 +18,7 @@ urlpatterns = [
     re_path(r'^%s/ics/$' % urlpath, views.icalendar, name="event.ics"),
     re_path(r'^%s/print-view/(?P<id>\d+)/$' % urlpath, views.print_view, name="event.print_view"),
     re_path(r'^%s/add/$' % urlpath, views.add, name="event.add"),
+    re_path(r'^%s/child-events/$' % urlpath, views.get_child_events, name="events.get_child_events"),
     re_path(r'^%s/add/template/$' % urlpath, views.add, {'is_template': True}, name="event.add_template"),
     re_path(r'^%s/import/add/$' % urlpath, views.import_add, name='event.import_add'),
     re_path(r'^%s/import/preview/(?P<import_id>\d+)/$' % urlpath, views.import_preview, name='event.import_preview'),

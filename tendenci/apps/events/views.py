@@ -27,7 +27,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect, Http404, HttpResponse, JsonResponse
 from django.http import QueryDict
 from django.urls import reverse
 from django.contrib import messages
@@ -1470,6 +1470,16 @@ def get_place(request):
 
     return HttpResponse('Requires POST method.')
 
+@is_enabled('events')
+@login_required
+def get_child_events(request):
+    """Get child events for a parent"""
+    parent_id = request.GET.get('parent')
+    event = get_object_or_404(Event, id=parent_id)
+
+    options = [{'value': x.pk, 'text': x.title} for x in event.child_events]
+    default = [{'value': "", 'text': '---------'}]
+    return JsonResponse(default + options, safe=False)
 
 @is_enabled('events')
 @login_required

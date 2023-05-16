@@ -36,7 +36,32 @@ $('#id_event_relationship').on('change', function() {
 
 // Show 'repeat of' if Parent event selected
 $('#id_parent').on('change', function() {
-    toggle_repeat($('#id_parent').val());
+    var parent = $('#id_parent').val();
+    var repeat_of = $('#id_repeat_of');
+    repeat_of.empty();
+
+    if (!parent) {
+        toggle_repeat(parent);
+        return;
+    }
+
+    // Populate repeat of options based on parent selected
+    $.ajax({
+        url: '/events/child-events/',
+        method: 'GET',
+        data: {'parent': parent},
+        success: function(response) {
+            var toggle_val = null;
+            if (response.length > 1) {
+                response.forEach(function(option) {
+                    repeat_of.append($('<option></option>').attr('value', option.value).text(option.text));
+                });
+                    toggle_val = parent;
+                }
+                toggle_repeat(toggle_val);
+                return;
+            }
+    });
 });
 
 // If 'repeat_of' selected, disable everything else

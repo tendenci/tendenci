@@ -773,7 +773,7 @@ class EventForm(TendenciBaseForm):
 
     repeat_of = forms.ModelChoiceField(
         required=False,
-        queryset=Event.objects.available_child_events(),
+        queryset=Event.objects.none(),
         help_text="Select child event this is a repeat of",
     )
 
@@ -875,6 +875,7 @@ class EventForm(TendenciBaseForm):
         super(EventForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
+            self.fields['repeat_of'].queryset = Event.objects.filter(pk=self.instance.repeat_of.pk)
             self.fields['parent'].queryset = self.fields['parent'].queryset.exclude(
                 pk=self.instance.pk
             )
