@@ -16,7 +16,6 @@ from tendenci.apps.recurring_payments.models import (RecurringPayment,
                                        PaymentProfile,
                                        RecurringPaymentInvoice,
                                        PaymentTransaction)
-from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
 from tendenci.apps.recurring_payments.authnet.utils import get_token
 from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
 from tendenci.apps.payments.models import Payment
