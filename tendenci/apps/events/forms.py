@@ -875,7 +875,9 @@ class EventForm(TendenciBaseForm):
         super(EventForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
-            self.fields['repeat_of'].queryset = Event.objects.filter(pk=self.instance.repeat_of.pk)
+            if self.instance.repeat_of:
+                self.fields['repeat_of'].queryset = Event.objects.filter(
+                    pk=self.instance.repeat_of.pk)
             self.fields['parent'].queryset = self.fields['parent'].queryset.exclude(
                 pk=self.instance.pk
             )

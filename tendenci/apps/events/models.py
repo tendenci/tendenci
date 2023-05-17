@@ -1786,11 +1786,7 @@ class Event(TendenciBaseModel):
         return reverse('registration_event_register', args=[self.pk])
 
     def save(self, *args, **kwargs):
-        if not self.pk and self.repeat_of:
-            if not self.repeat_of.repeat_uuid:
-                self.repeat_of.repeat_uuid = uuid.uuid4()
-                self.repeat_of.save(update_fields=['repeat_uuid'])
-
+        self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
         self.guid = self.guid or str(uuid.uuid4())
         super(Event, self).save(*args, **kwargs)
 

@@ -1453,7 +1453,6 @@ def copy_event(event, user, reuse_rel=False, set_repeat_of=False):
         description = event.description,
         timezone = event.timezone,
         type = event.type,
-        repeat_uuid = event.repeat_uuid,
         image = event.image,
         start_dt = event.start_dt,
         end_dt = event.end_dt,
@@ -1484,7 +1483,8 @@ def copy_event(event, user, reuse_rel=False, set_repeat_of=False):
     if set_repeat_of:
         new_event.parent = event.parent
         new_event.repeat_of = event
-        new_event.save(update_fields=['parent', 'repeat_of'])
+        new_event.repeat_uuid = event.repeat_uuid
+        new_event.save(update_fields=['parent', 'repeat_of', 'repeat_uuid'])
 
     # Copy credit configuration
     for config in event.eventcredit_set.all():

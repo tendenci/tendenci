@@ -112,7 +112,10 @@
             // It will use the existing value for the Event.
             if ($('#id_event_relationship').is(':disabled')) {
                 $('#id_event_relationship').prop('disabled', false);
+                $('#id_parent').prop('disabled', false);
+                $('#id_repeat_of').prop('disabled', false);
             }
+
             if ($('#id_apply_changes_to_3').is(':checked') && displayConfirmation) {
                 $('#confirm-dialog').dialog('open');
                 return false;
