@@ -220,7 +220,13 @@ div.pricing-list-wrap li{
           </div>
         </div>
         {% endif %}
-        
+
+        {% if event.has_child_events %}
+          <br /><br />
+          {% child_events_display event %}
+          <br/><br/>
+        {% endif %}
+
         {% if addons %}
         <hr/>
         <h4 class="time-period">{% trans "Addons" %}</h4> 

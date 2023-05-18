@@ -374,7 +374,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
             return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('event.search'), query.replace('tag:', '')))
 
     filters = get_query_filters(request.user, 'events.view_event')
-    events = Event.objects.filter(filters).distinct()
+    events = Event.objects.exclude_children().filter(filters).distinct()
     events = events.filter(enable_private_slug=False)
     if request.user.is_authenticated:
         events = events.select_related()
@@ -445,8 +445,9 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         events = events.order_by('start_dt', '-priority')
 
     if with_registration:
-        myevents = Event.objects.filter(registration__registrant__email=request.user.email,
-                                        registration__registrant__cancel_dt=None)
+        myevents = Event.objects.exclude_children().filter(
+            registration__registrant__email=request.user.email,
+            registration__registrant__cancel_dt=None)
         events = [event for event in events if event in myevents]
 
     EventLog.objects.log()
@@ -577,6 +578,18 @@ def print_view(request, id, template_name="events/print-view.html"):
     else:
         raise Http403
 
+@is_enabled('events')
+@login_required
+def display_child_events(request, id, template_name="events/edit.html"):
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
+
+    if request.method == "POST":
+        if "_save" in request.POST:
+            return HttpResponseRedirect(reverse('event', args=[event.pk]))
+        return HttpResponseRedirect(reverse('event.pricing_edit', args=[event.pk]))
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'multi_event_forms': list(), 'label': 'children'})
 
 @is_enabled('events')
 @login_required
@@ -1230,6 +1243,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
 @login_required
 def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/edit.html"):
     event = get_object_or_404(Event.objects.get_all(), pk=id)
+    redirect = 'event.display_child_events' if event.has_child_events else 'event.pricing_edit'
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http403
@@ -1267,7 +1281,7 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
-                return HttpResponseRedirect(reverse('event.pricing_edit', args=[event.pk]))
+                return HttpResponseRedirect(reverse(redirect, args=[event.pk]))
             else:
                 recurring_events = event.recurring_event.event_set.exclude(pk=event.pk)
                 if apply_changes_to == 'rest':
@@ -1284,7 +1298,7 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
-                return HttpResponseRedirect(reverse('event.pricing_edit', args=[event.pk]))
+                return HttpResponseRedirect(reverse(redirect, args=[event.pk]))
     else:
         form_regconf = Reg8nEditForm(
             instance=event.registration_configuration,

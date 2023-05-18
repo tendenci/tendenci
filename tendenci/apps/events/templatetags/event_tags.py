@@ -32,6 +32,16 @@ def credits_form_display(context, event, credit_forms, user):
     })
     return context
 
+
+@register.inclusion_tag("events/child_events.html", takes_context=True)
+def child_events_display(context, event, edit=False):
+    context.update({
+        "child_events": event.child_events,
+        "edit": edit,
+    })
+    return context
+
+
 @register.inclusion_tag("events/options.html", takes_context=True)
 def event_options(context, user, event):
     context.update({

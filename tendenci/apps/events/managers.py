@@ -106,6 +106,9 @@ class EventManager(TendenciBaseManager):
             repeat_of__isnull=True,
         ).order_by('parent_id')
 
+    def exclude_children(self):
+        """Exclude child events"""
+        return self.exclude(parent__isnull=False)
 
 class EventTypeManager(Manager):
     def search(self, query=None, *args, **kwargs):

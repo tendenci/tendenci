@@ -1742,7 +1742,7 @@ class Event(TendenciBaseModel):
     @property
     def child_events(self):
         """All child events tied to this event"""
-        return Event.objects.filter(parent_id=self.pk)
+        return Event.objects.filter(parent_id=self.pk).order_by('start_dt')
 
     @property
     def can_configure_credits(self):
@@ -1777,6 +1777,9 @@ class Event(TendenciBaseModel):
 
     def get_absolute_url(self):
         return reverse('event', args=[self.pk])
+
+    def get_absolute_edit_url(self):
+        return reverse('event.edit', args=[self.pk])
 
     def get_registration_url(self):
         """ This is used to include a sign up url in the event.
