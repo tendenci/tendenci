@@ -757,16 +757,16 @@ def membership_details(request, chapter_membership_id=0,
 
     if request.user.is_superuser or is_chapter_leader:
         if 'approve' in request.GET:
-            chapter_membership.approve(request_user=request.user)
-            messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
+            if chapter_membership.approve(request_user=request.user):
+                messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
 
         if 'disapprove' in request.GET:
-            chapter_membership.disapprove(request_user=request.user)
-            messages.add_message(request, messages.SUCCESS, _('Successfully Disapproved'))
+            if chapter_membership.disapprove(request_user=request.user):
+                messages.add_message(request, messages.SUCCESS, _('Successfully Disapproved'))
 
         if 'expire' in request.GET:
-            chapter_membership.expire(request_user=request.user)
-            messages.add_message(request, messages.SUCCESS, _('Successfully Expired'))
+            if chapter_membership.expire(request_user=request.user):
+                messages.add_message(request, messages.SUCCESS, _('Successfully Expired'))
 
 
     app = chapter_membership.app

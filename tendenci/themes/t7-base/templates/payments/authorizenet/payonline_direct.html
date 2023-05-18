@@ -1,0 +1,95 @@
+{% extends "payments/base.html" %}
+{% load payments_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Pay Online' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="well basic-info">
+  <div>{% trans 'Invoice #' %}: {{ payment.invoice.id }}</div>
+  <div>{% trans 'Description' %}: {{ payment.description }}</div>
+  <div id="total-amount">{% trans 'Total' %}: {{ payment.amount|format_currency }}</div>
+</div>
+
+<div class="forms">
+
+<div>
+	<a href="https://www.authorize.net/" target="_blank"><img src="https://www.authorize.net/content/dam/anet-redesign/reseller/authorizenet-200x50.png" border="0" alt="Authorize.net Logo" width="200" height="50"/></a>
+	<!-- <button id="btnOpenAuthorizeNetIFrame" onclick="">Show Payment Form</button> -->
+</div>
+	
+<div id="iframe_holder" class="center-block" style="width:90%;max-width: 1000px">
+	<iframe id="add_payment" class="embed-responsive-item panel" name="add_payment" width="100%" frameborder="0" scrolling="no" hidden="false">
+	</iframe>
+</div>
+
+<form id="send_token" action="" method="post" target="add_payment">
+	<input type="hidden" name="token" value="{{ token }}" />
+</form>
+
+</div>
+
+<p>&nbsp;</p>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+<script type="text/javascript">
+	$(function () {
+	
+		//$("#btnOpenAuthorizeNetIFrame").click(function () {
+			$("#add_payment").show();
+			$("#send_token").attr({ "action": "{{ post_url }}", "target": "add_payment" }).submit();
+			$(window).scrollTop($('#add_payment').offset().top - 50);
+		//});
+	
+	});
+</script>
+
+<script type="text/javascript">
+	(function () {
+		if (!window.AuthorizeNetIFrame) window.AuthorizeNetIFrame = {};
+			AuthorizeNetIFrame.onReceiveCommunication = function (querystr) {
+				var params = parseQueryString(querystr);
+					switch (params["action"]) {
+						case "successfulSave":
+							break;
+						case "cancel":
+							break;
+						case "resizeWindow":
+							var w = parseInt(params["width"]);
+							var h = parseInt(params["height"]);
+							var ifrm = document.getElementById("add_payment");
+							ifrm.style.width = w.toString() + "px";
+							ifrm.style.height = h.toString() + "px";
+							break;
+						case "transactResponse":
+							var ifrm = document.getElementById("add_payment");
+							ifrm.style.display = 'none';
+						}
+				};
+
+			function parseQueryString(str) {
+				var vars = [];
+				var arr = str.split('&');
+				var pair;
+				for (var i = 0; i < arr.length; i++) {
+					pair = arr[i].split('=');
+					vars.push(pair[0]);
+					vars[pair[0]] = unescape(pair[1]);
+					}
+				return vars;
+				}
+	}());
+</script>
+
+{% endblock %}
