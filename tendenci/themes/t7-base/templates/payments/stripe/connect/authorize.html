@@ -5,9 +5,20 @@
 <h1>{% trans 'Connect with Stripe' %}</h1>
 <div>
 {% if MODULE_PAYMENTS_STRIPE_CONNECT_CLIENT_ID %}
-<p>{% trans 'Please click the button below to connect with Stripe.' %}</p>
-<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id={{ MODULE_PAYMENTS_STRIPE_CONNECT_CLIENT_ID }}&scope=read_write&state={{ csrf_token }}">
+<p>{% trans 'Please click one of the buttons below to connect with Stripe.' %}</p>
+<div>
+<strong>{% trans 'For Standard Account:' %}</strong> <a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id={{ MODULE_PAYMENTS_STRIPE_CONNECT_CLIENT_ID }}&scope=read_write&state={{ csrf_token }}">
 <img src="{% static 'images/stripe-blue-on-light.png' %}" alt="Connect with stripe"></a>
+</div>
+<br />
+<div>
+<strong>{% trans 'For Express Account:' %}</strong> <a href="https://connect.stripe.com/express/oauth/authorize?response_type=code&client_id={{ MODULE_PAYMENTS_STRIPE_CONNECT_CLIENT_ID }}&scope=read_write&state={{ csrf_token }}">
+<img src="{% static 'images/stripe-blue-on-light.png' %}" alt="Connect with stripe"></a>
+</div>
+
+<br />
+<div>{% trans 'For more on stripe account types, please check out' %} <a target="_blank" href="https://stripe.com/docs/connect/accounts">{% trans 'choose your account type' %}</a></div>
+
 {% else %}
 {% trans 'The Stripe connect is not enabled.' %}
 {% endif %}
