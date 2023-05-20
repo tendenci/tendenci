@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from decimal import Decimal
 
 from django.db import models
 from django.urls import reverse
@@ -455,7 +456,7 @@ class Invoice(models.Model):
         [payment] = self.payment_set.filter(status_detail='approved')[:1] or [None]
         return payment
 
-    def stripe_connected_account(self, scope='read_write'):
+    def stripe_connected_account(self, scope=''):
         """
         Get the stripe connected account for this invoice.
         """
@@ -465,13 +466,21 @@ class Invoice(models.Model):
         if not get_setting('module', 'payments', 'stripe_connect_client_id'):
             return None
         
-        [stripe_account] = StripeAccount.objects.filter(
-                            scope=scope,
+        stripe_accounts = StripeAccount.objects.filter(
                             entity=self.entity,
-                            status_detail='active'
-                            ).values_list('stripe_user_id',
-                                          flat=True)[:1] or [None]
-        return stripe_account
+                            status_detail='active')
+
+        if scope:
+            stripe_accounts = stripe_accounts.filter(scope=scope)
+
+        [stripe_account] = stripe_accounts[:1] or [None]
+        if stripe_account:
+            return stripe_account.stripe_user_id, stripe_account.scope 
+
+        return None, None
+
+    def get_stripe_application_fee(self, amount):
+        return Decimal(amount) * Decimal(0.029) + Decimal(0.30)
 
 
 # add signals
