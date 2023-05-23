@@ -17,7 +17,7 @@ $('select#id_place-place').on("change", function() {
                     $('input#id_place-city').val(json["city"]);
                     $('input#id_place-state').val(json["state"]);
                     $('input#id_place-zip').val(json["zip"]);
-                    $('input#id_place-country').val(json["country"]);
+                    $('select#id_place-country option[value="' + json["country"] + '"]').prop('selected', true); 
                     $('input#id_place-url').val(json["url"]);
                 }
             }

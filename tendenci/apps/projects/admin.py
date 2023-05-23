@@ -195,6 +195,8 @@ class ProjectAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def group_link(self, instance):
+        if not instance.group:
+            return ''
         group_url = reverse('group.detail',args=[instance.group.slug])
         group_name = instance.group.name
                             

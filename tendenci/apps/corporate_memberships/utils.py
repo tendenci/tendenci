@@ -21,6 +21,7 @@ from tendenci.apps.base.utils import normalize_newline, tcurrency
 from tendenci.apps.newsletters.utils import get_newsletter_connection
 
 
+# Delete later
 def broadcast_emails_to_corp(email, **kwargs):
     """
     Broadcast email to corporate members.

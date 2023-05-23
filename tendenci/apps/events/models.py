@@ -41,6 +41,7 @@ from tendenci.apps.base.utils import (localize_date, get_timezone_choices,
 from tendenci.apps.emails.models import Email
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
+from tendenci.apps.trainings.models import Course, Certification
 
 # from south.modelsinspector import add_introspection_rules
 # add_introspection_rules([], [r'^timezone_field\.TimeZoneField'])
@@ -502,6 +503,23 @@ class Registration(models.Model):
     reg_conf_price = models.ForeignKey(RegConfPricing, null=True, on_delete=models.SET_NULL)
 
     reminder = models.BooleanField(default=False)
+    
+    key_contact_name = models.CharField(_('Training Contact'),
+                                        max_length=150,
+                                        blank=True,
+                                        default='')
+    key_contact_phone = models.CharField(_('Training Contact Phone'),
+                                        max_length=50,
+                                        blank=True,
+                                        default='')
+    key_contact_fax = models.CharField(_('Training Contact Fax'),
+                                        max_length=50,
+                                        blank=True,
+                                        default='')
+    need_reservation = models.BooleanField(default=False)
+    nights = models.PositiveSmallIntegerField(default=0, blank=True,)
+    begin_dt = models.DateField(_("Beginning on"), blank=True, null=True)
+    
 
     # TODO: Payment-Method must be soft-deleted
     # so that it may always be referenced
@@ -901,6 +919,9 @@ class Registrant(models.Model):
         decimal_places=2,
         default=0
     )
+    certification_track = models.ForeignKey(Certification,
+                                   null=True, blank=True,
+                                   on_delete=models.SET_NULL)
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
     memberid = models.CharField(_('Member ID'), max_length=50, blank=True, null=True)
@@ -959,6 +980,10 @@ class Registrant(models.Model):
             if primary_registrant:
                 return _('Guest of {}').format(' '.join(primary_registrant))
         return None
+
+    def course(self):
+        event = self.registration.event
+        return event.course
 
     @classmethod
     def event_registrants(cls, event=None):
@@ -1243,6 +1268,7 @@ class Event(TendenciBaseModel):
     guid = models.CharField(max_length=40, editable=False)
     type = models.ForeignKey(Type, blank=True, null=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=150, blank=True)
+    course = models.ForeignKey(Course, blank=True, null=True, on_delete=models.SET_NULL)
     description = models.TextField(blank=True)
     all_day = models.BooleanField(default=False)
     start_dt = models.DateTimeField()
@@ -1326,7 +1352,7 @@ class Event(TendenciBaseModel):
             set_s3_file_permission(self.image.file, public=self.is_public())
 
     def __str__(self):
-        return self.title
+        return f'{self.title} ({self.start_dt.strftime("%m/%d/%Y")} - {self.end_dt.strftime("%m/%d/%Y")})'
 
     @property
     def has_addons(self):
@@ -1582,6 +1608,26 @@ class Event(TendenciBaseModel):
 
         return all((self.enable_private_slug, self.private_slug, self.private_slug == slug))
 
+    def get_certification_choices(self):
+        choices = []
+        if self.course:
+            school_category = self.course.school_category
+            if school_category:
+                choices.append(('', '----------'))
+                for certcat in school_category.certcat_set.all():
+                    choices.append((certcat.certification.id, certcat.certification.name))
+        return choices
+
+    def reg_end_dt(self):
+        """
+        Registration end date.
+        """
+        [pricing] = RegConfPricing.objects.filter(
+                    reg_conf=self.registration_configuration,
+                    status=True).order_by('-end_dt')[:1] or [None]
+        if pricing:
+            return pricing.end_dt
+
 
 class StandardRegForm(models.Model):
     """
@@ -1807,6 +1853,13 @@ class CustomRegFormEntry(models.Model):
     def set_group_subscribers(self, user):
         for entry in self.field_entries.filter(field__field_function="GroupSubscription"):
             entry.field.execute_function(self, entry.value, user=user)
+
+    def get_certification_track(self):
+        [registrant] = Registrant.objects.filter(custom_reg_form_entry=self)[:1] or None
+        if registrant and registrant.certification_track:
+            return registrant.certification_track.id
+
+        return None
 
 
 class CustomRegFieldEntry(models.Model):

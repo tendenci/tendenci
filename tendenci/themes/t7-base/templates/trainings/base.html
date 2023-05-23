@@ -1,0 +1,9 @@
+{% extends "site_base.html" %}
+
+{% block title %}{% trans 'Trainings' %} {% endblock %}
+
+{% block top_bar %}
+    {% if request.user.is_authenticated %}
+        {% include "trainings/top_nav.html" %}
+    {% endif %}
+{% endblock %}

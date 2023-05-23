@@ -1,0 +1,7 @@
+{% extends "base-wide.html" %}
+
+{% block top_bar %}
+    {% if request.user.is_authenticated %}
+        {% include "trainings/top_nav.html" %}
+    {% endif %}
+{% endblock %}

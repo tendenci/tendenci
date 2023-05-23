@@ -1565,29 +1565,31 @@ def membership_default_add(request, slug='', membership_id=None,
                     membership.pend()
                     membership.save()  # save pending status
 
-                    if membership.is_renewal():
-                        notice_sent = Notice.send_notice(
-                            request=request,
-                            emails=membership.user.email,
-                            notice_type='renewal',
-                            membership=membership,
-                            membership_type=membership.membership_type,
-                        )
-                        memberships_renewal_notified.append(membership)
-
-                    else:
-                        notice_sent =  Notice.send_notice(
-                            request=request,
-                            emails=membership.user.email,
-                            notice_type='join',
-                            membership=membership,
-                            membership_type=membership.membership_type,
-                        )
-                        memberships_join_notified.append(membership)
+                    if get_setting('module', 'corporate_memberships', 'notificationson'):
+                        if membership.is_renewal():
+                            notice_sent = Notice.send_notice(
+                                request=request,
+                                emails=membership.user.email,
+                                notice_type='renewal',
+                                membership=membership,
+                                membership_type=membership.membership_type,
+                            )
+                            memberships_renewal_notified.append(membership)
+    
+                        else:
+                            notice_sent =  Notice.send_notice(
+                                request=request,
+                                emails=membership.user.email,
+                                notice_type='join',
+                                membership=membership,
+                                membership_type=membership.membership_type,
+                            )
+                            memberships_join_notified.append(membership)
                 else:
                     is_renewal = membership.is_renewal()
                     membership.approve(request_user=customer)
-                    notice_sent = membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
+                    if get_setting('module', 'corporate_memberships', 'notificationson'):
+                        notice_sent = membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
 
                 # application complete
                 membership.application_complete_dt = datetime.now()
@@ -1639,20 +1641,21 @@ def membership_default_add(request, slug='', membership_id=None,
                     ))
 
             # send email notification to admin
-            if not notice_sent:
-                recipients = get_notice_recipients(
-                    'module', 'memberships',
-                    'membershiprecipients')
-
-                extra_context = {
-                    'membership': membership,
-                    'app': app,
-                    'request': request
-                }
-                send_email_notification(
-                    'membership_joined_to_admin',
-                    recipients,
-                    extra_context)
+            if get_setting('module', 'corporate_memberships', 'notificationson'):
+                if not notice_sent:
+                    recipients = get_notice_recipients(
+                        'module', 'memberships',
+                        'membershiprecipients')
+    
+                    extra_context = {
+                        'membership': membership,
+                        'app': app,
+                        'request': request
+                    }
+                    send_email_notification(
+                        'membership_joined_to_admin',
+                        recipients,
+                        extra_context)
 
             # redirect: confirmation page
             return HttpResponseRedirect(reverse(
