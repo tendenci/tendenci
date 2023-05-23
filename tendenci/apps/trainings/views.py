@@ -15,11 +15,13 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse, Http404
 #from django.db.models import Q
 from django.contrib import messages
+from django.utils.decorators import method_decorator
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.decorators import is_enabled
 from .models import (TeachingActivity, OutsideSchool, Transcript,
              CertCat, Certification, CorpTranscriptsZipFile, Course)        
 from .forms import (TeachingActivityForm,
@@ -29,6 +31,7 @@ from .forms import (TeachingActivityForm,
 from .utils import generate_transcript_pdf
 
 
+@method_decorator(is_enabled('trainings'), name="dispatch")
 class TeachingActivityCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = 'trainings/teaching_activities/add.html'
     form_class = TeachingActivityForm
@@ -50,6 +53,7 @@ class TeachingActivityCreateView(LoginRequiredMixin, SuccessMessageMixin, Create
         return reverse('trainings.teaching_activities')
 
 
+@method_decorator(is_enabled('trainings'), name="dispatch")
 class TeachingActivityListView(LoginRequiredMixin, ListView):
     template_name = 'trainings/teaching_activities/list.html'
 
@@ -81,6 +85,7 @@ class TeachingActivityListView(LoginRequiredMixin, ListView):
         return context
 
 
+@method_decorator(is_enabled('trainings'), name="dispatch")
 class OutsideSchoolCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = 'trainings/outside_schools/add.html'
     form_class = OutsideSchoolForm
@@ -101,6 +106,7 @@ class OutsideSchoolCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateVie
         return kwargs
 
 
+@method_decorator(is_enabled('trainings'), name="dispatch")
 class OutsideSchoolListView(LoginRequiredMixin, ListView):
     template_name = 'trainings/outside_schools/list.html'
 
@@ -131,6 +137,7 @@ class OutsideSchoolListView(LoginRequiredMixin, ListView):
         return context
 
 
+@is_enabled('trainings')
 @login_required
 def transcripts(request, user_id=None, corp_profile_id=None,
                 generate_pdf=False,
@@ -289,6 +296,7 @@ def transcripts(request, user_id=None, corp_profile_id=None,
             context=params)
 
 
+@is_enabled('trainings')
 @login_required
 def transcripts_corp_pdf_download(request, tz_id=None,):
     tz = get_object_or_404(CorpTranscriptsZipFile, pk=tz_id)
@@ -305,6 +313,7 @@ def transcripts_corp_pdf_download(request, tz_id=None,):
     return response
 
 
+@is_enabled('trainings')
 @login_required
 def corp_pdf_download_list(request, tz_id=None,):
     tzs = CorpTranscriptsZipFile.objects.all()
@@ -318,6 +327,8 @@ def corp_pdf_download_list(request, tz_id=None,):
     return render_to_resp(request=request, template_name=template_name,
                           context={'tzs': tzs})
 
+
+@is_enabled('trainings')
 def delete_downloadable(request, tz_id):
     tz = get_object_or_404(CorpTranscriptsZipFile, pk=tz_id)
     if request.user != tz.creator and not request.user.is_superuser:
