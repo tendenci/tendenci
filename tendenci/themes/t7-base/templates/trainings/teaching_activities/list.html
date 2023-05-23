@@ -1,0 +1,68 @@
+{% extends "trainings/base.html" %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+
+
+{% block title %}{% trans "Teaching Activities" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <style>
+    .table.activities-list a:link{
+    	text-decoration: none; 
+    }
+    .table.activities-list a:visited{
+    	text-decoration: none; 
+    }
+    .table.activities-list a.desc:after {
+	    content: " \f106";
+	    font-family: FontAwesome;
+	    font-size: 14px;
+	}
+
+	.table.activities-list a.asc:after {
+	    content: " \f107";
+	    font-family: FontAwesome;
+	    font-size: 14px;
+	}
+    </style>
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <a class="pull-right btn btn-primary" href="{% url 'trainings.add_teaching_activities' %}">{% trans "Add" %}</a>
+  <h1>{% trans 'Teaching Activities' %}</h1>
+
+</div>
+
+    {% autopaginate object_list 50 %}
+
+<table class="table table-striped table-bordered activities-list">
+	 <tr>
+		 <th><a {% if s == 'activity_name' %}class="{% if o %}{{ o }}{% endif %}"{% endif %} 
+	     href="{% url 'trainings.teaching_activities' %}?s=activity_name&o={{ next_order }}">{% trans "Activity Name" %}</a></th>
+	     <th><a {% if s == 'date' %}class="{% if o %}{{ o }}{% endif %}"{% endif %} 
+	     href="{% url 'trainings.teaching_activities' %}?s=date&o={{ next_order }}">{% trans "Date" %}</a></th>
+		 <th><a {% if s == 'status_detail' %}class="{% if o %}{{ o }}{% endif %}"{% endif %} 
+	     href="{% url 'trainings.teaching_activities' %}?s=status_detail&o={{ next_order }}">{% trans "Status" %}</a></th>
+	 </tr>
+	 {% for activity in object_list %}
+		<tr>
+			<td>{{ activity.activity_name }}</td>
+			<td nowrap>{{ activity.date|date }}</td>
+			<td>{{ activity.status_detail|capfirst }}</td>
+	   </tr>
+    {% endfor %}
+</table>
+
+    {% paginate %}
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+{% endblock %}

@@ -355,6 +355,23 @@ class Profile(Person):
 
         return False
 
+    def allow_view_transcript(self, user2_compare):
+        """
+        Check if `user2_compare` is allowed to view this user's transcript.
+        """
+        if user2_compare.is_superuser:
+            return True
+
+        if user2_compare == self.user:
+            return True
+        
+        if self.membership and self.membership.corp_profile_id:
+            corp_profile_id = self.membership.corp_profile_id
+            if user2_compare.corpmembershiprep_set.filter(corp_profile_id=corp_profile_id).exists():
+                return True # user2_compare is a rep of the corp that this user is a member of
+
+        return False
+
     def can_renew(self):
         """
         Looks at all memberships the user is actively associated

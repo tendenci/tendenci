@@ -243,6 +243,13 @@
                                 <b>{% trans "Expire Date:" %}</b> {{ membership.expire_dt }}<br />
                             {% endif %}
                         {% endif %}
+                       
+                       {% if MODULE_TRAININGS_ENABLED %}
+                       {% if request.user.profile.is_superuser or is_rep %}
+                       <a href="{% url 'trainings.transcripts_user' profile.user.id %}">{% trans "View Transcript" %}</a>
+                       {% endif %}
+                       {% endif %}
+                        
                     </div>
                 </div>
             </div>

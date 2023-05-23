@@ -1,6 +1,7 @@
 {% extends "corporate_memberships/base-wide.html" %}
 {% load base_filters %}
 {% load corporate_memberships_tags %}
+{% load corporate_memberships_filters %}
 
 {% block title %}{{ block.super }}{% trans "Corporate Profile" %}{% endblock %}
 
@@ -175,6 +176,15 @@
     {% if members_count > 10 %}
     <div><a href="{% url 'corpmembership.roster_search' %}?cm_id={{ corp_membership.id }}">{% trans 'View All Members' %}</a></div>
     {% endif %}
+    
+    {% if members_count > 0 and MODULE_TRAININGS_ENABLED %}
+    {% if request.user.is_superuser or corp_profile|is_rep:request.user %}
+    <div>
+    	<a href="{% url 'trainings.transcripts_corp' corp_profile.id %}">{% trans "View Transcripts" %}</a>
+    </div>
+    {% endif %}
+    {% endif %}
+                        
 
     {% else %}
     <div><em>{% trans "No members joined yet" %}</em></div>

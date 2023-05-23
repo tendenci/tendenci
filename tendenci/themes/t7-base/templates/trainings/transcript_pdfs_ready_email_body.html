@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<title>{% trans "Transcripts Ready for Download" %}</title>
+<meta charset="UTF-8">
+</head>
+<body>
+    <p>
+        {% trans 'Greetings' %} {{ creator.first_name }},<br /><br />
+
+        {% blocktrans with start_dt=obj.start_dt|date %}The training transcripts you requested on {{ start_dt }} has finished and is now ready for download.{% endblocktrans %}
+        <br />
+        <br />
+        {% trans "Click this link to start the download (requires login)" %}: <a href="{{ obj.get_download_url }}">{% trans 'Download' %}</a>
+    </p>
+
+</body>
+</html>

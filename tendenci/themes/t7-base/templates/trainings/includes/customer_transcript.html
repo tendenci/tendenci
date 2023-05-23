@@ -1,0 +1,122 @@
+{% load training_tags %}
+{% load training_filters %}
+	{% get_transcripts customer online_courses=online_courses location_type='online' as online_courses_ts %}
+	{% if online_courses_ts %}
+	<h3 class="col-xs-12">{% trans "OnLine Courses" %}</h3>
+	<div class="table-dynamic">
+		<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<td class="col-sm-4">{% trans "Course" %}</td>
+				<td class="col-sm-4">{% trans "Type" %}</td>
+				<td class="col-sm-1">{% trans "Credits" %}</td>
+				<td class="col-sm-1">{% trans "Date" %}</td>
+				<td class="col-sm-1">{% trans "status" %}</td>
+			</tr>
+		</thead>
+		<tbody>
+			{% for transcript in online_courses_ts %}
+			<tr>
+				<td>{{ transcript.course.name }}</td>
+				<td>{{ transcript.school_category }}</td>
+				<td>{{ transcript.credits }}</td>
+				<td>{{ transcript.date|date:'m/d/Y' }}</td>
+				<td>{{ transcript.status|capfirst }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		</table>
+	</div>
+	{% endif %}
+	
+	{% get_transcripts customer onsite_courses=onsite_courses location_type='onsite' as onsite_courses_ts %}
+	{% if onsite_courses_ts %}				
+	<h3 class="col-xs-12">{% trans "OnSite Courses" %}</h3>
+	<div class="table-dynamic">
+		<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<td class="col-sm-4">{% trans "Course" %}</td>
+				<td class="col-sm-4">{% trans "Type" %}</td>
+				<td class="col-sm-1">{% trans "Credits" %}</td>
+				<td class="col-sm-1">{% trans "Date" %}</td>
+				<td class="col-sm-1">{% trans "status" %}</td>
+			</tr>
+		</thead>
+		<tbody>
+			{% for transcript in onsite_courses_ts %}
+		    <tr>
+				<td>{{ transcript.course.name }}</td>
+				<td>{{ transcript.school_category }}</td>
+				<td>{{ transcript.credits }}</td>
+				<td>{{ transcript.date|date:'m/d/Y' }}</td>
+				<td>{{ transcript.status|capfirst }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		</table>
+	</div>
+	{% endif %}
+	
+	{% if include_outside_schools %}
+	{% get_outside_schools customer as outside_schools %}
+	{% if outside_schools %}				
+	<h3 class="col-xs-12">{% trans "Outside Schools" %}</h3>
+	<div class="table-dynamic">
+		<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<td class="col-sm-4">{% trans "School Name" %}</td>
+				<td class="col-sm-4">{% trans "Type" %}</td>
+				<td class="col-sm-1">{% trans "Credits" %}</td>
+				<td class="col-sm-1">{% trans "Date" %}</td>
+				<td class="col-sm-1">{% trans "Status" %}</td>
+			</tr>
+		</thead>
+		<tbody>
+			{% for transcript in outside_schools %}
+			<tr>
+				<td>{{ transcript.get_school_name }}</td>
+				<td>{{ transcript.school_category }}</td>
+				<td>{{ transcript.credits }}</td>
+				<td>{{ transcript.date|date:'m/d/Y' }}</td>
+				<td>{{ transcript.status|capfirst }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		</table>
+	</div>
+	{% endif %}
+	{% endif %}
+	
+	{% if include_teaching_activities %}
+	{% get_teaching_activities customer as teaching_activities %}
+	{% if teaching_activities %}			
+	<h3 class="col-xs-12">{% trans "Teaching Activities" %}</h3>
+	<div class="table-dynamic">
+		<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<td class="col-sm-6">{% trans "Teaching Activity" %}</td>
+				<td class="col-sm-6">{% trans "Date" %}</td>
+			</tr>
+		</thead>
+		<tbody>
+			{% for teaching_activity in teaching_activities %}
+			<tr>
+				<td>{{ teaching_activity.activity_name }}</td>
+				<td>{{ teaching_activity.date|date:'m/d/Y' }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		</table>
+	</div>
+	{% endif %}
+	{% endif %}
+	
+	<div class="clearfix">
+	{% for cert in certs %}
+	{% show_certification cert customer for_pdf %}
+	{% endfor %}
+	
+	</div>

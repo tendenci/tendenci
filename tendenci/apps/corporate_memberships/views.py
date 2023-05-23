@@ -56,6 +56,7 @@ from tendenci.apps.corporate_memberships.models import (
                                          CorporateMembershipType,
                                          Creator,
                                          Notice,
+                                         BroadcastEmail,
                                          )
 from tendenci.apps.corporate_memberships.forms import (
                                          CorpMembershipForm,
@@ -96,6 +97,7 @@ from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import escape_csv
+from tendenci.apps.emails.models import Email
 
 
 @login_required
@@ -140,15 +142,30 @@ def broadcast_email(request):
                 email.save(request.user, log=False)
                 corp_members = form.cleaned_data['corp_members']
                 #TODO: Put it into a queue instead of sending immediately
-                retn_content = broadcast_emails_to_corp(email,
-                                                       corp_members=corp_members, 
-                                                        request=request)
+                bce = BroadcastEmail(
+                    params_dict={'email_id': email.id,
+                                 'corp_member_ids': ','.join(str(c.id) for c in corp_members)},
+                    creator=request.user,)
+                bce.save()
+                # start a subprocess to generate a zip file
+                subprocess.Popen([python_executable(), "manage.py",
+                              "run_broadcast_email",
+                              str(bce.pk) ])
+                messages.add_message(request, messages.INFO, _("Your email is being sent. Please reload in a few seconds to check if it's done."))
+                
+        
+                # retn_content = broadcast_emails_to_corp(email,
+                #                                        corp_members=corp_members, 
+                #                                         request=request)
                 corp_names = ', '.join([corp_member.corp_profile.name for corp_member in corp_members[:5]])
                 if len(corp_members) > 5:
                     corp_names += " ..."
                 EventLog.objects.log(instance=email,
                                      description=f'Broadcase email (id: {email.id}) sent to {len(corp_members)} corp member(s) - {corp_names}.')
-                return StreamingHttpResponse(streaming_content=retn_content)
+                # redirect to the confirmation page
+                return redirect(reverse('corpmembership.broadcast_email_conf',
+                                        kwargs={'bce_id': bce.id, 'guid': bce.guid}))
+                #return StreamingHttpResponse(streaming_content=retn_content)
             
      
     if step2:
@@ -170,6 +187,23 @@ def broadcast_email(request):
     return render_to_resp(request=request, template_name=template_name,
                           context={'form': form,
                                    'corp_types': corp_types})
+
+
+@login_required
+def broadcast_email_conf(request, bce_id, guid,
+                         template_name='corporate_memberships/message/broadcast/email-conf.html'):
+    bce = get_object_or_404(BroadcastEmail, id=bce_id, guid=guid)
+    if not (request.user.is_superuser or bce.creator == request.user):
+        raise Http403
+
+    email_id = bce.params_dict['email_id']
+    [email] = Email.objects.filter(id=email_id)[:1] or [None]
+    corp_members = CorpMembership.objects.filter(id__in=bce.params_dict['corp_member_ids'])
+    return render_to_resp(request=request, template_name=template_name,
+                          context={'bce': bce,
+                                   'email': email,
+                                   'total_sent': bce.total_sent,
+                                   'corp_members': corp_members})
 
 
 @is_enabled('corporate_memberships')
@@ -408,37 +442,38 @@ def corpmembership_add(request, slug='',
             # if authentication_method == 'secret_code'
 
             # send notification to user
-            if creator:
-                recipients = [creator.email]
-            else:
-                recipients = [request.user.email]
-                
-            if request.user.is_authenticated and Notice.objects.filter(
-                                 notice_time='attimeof',
-                                 notice_type='join',
-                                 status_detail='active'
-                                 ).exists():
-                corp_membership.send_notice_email(request, 'join')
-            else:
+            if get_setting('module', 'corporate_memberships', 'notificationson'):
+                if creator:
+                    recipients = [creator.email]
+                else:
+                    recipients = [request.user.email]
+                    
+                if request.user.is_authenticated and Notice.objects.filter(
+                                     notice_time='attimeof',
+                                     notice_type='join',
+                                     status_detail='active'
+                                     ).exists():
+                    corp_membership.send_notice_email(request, 'join')
+                else:
+                    extra_context = {
+                        'object': corp_membership,
+                        'request': request,
+                        'invoice': inv,
+                    }
+                    send_email_notification('corp_memb_added_user',
+                                            recipients, extra_context)
+
+                # send notification to administrators
+                recipients = get_notice_recipients(
+                                           'module', 'corporate_memberships',
+                                           'corporatemembershiprecipients')
                 extra_context = {
                     'object': corp_membership,
                     'request': request,
-                    'invoice': inv,
+                    'creator': creator
                 }
-                send_email_notification('corp_memb_added_user',
-                                        recipients, extra_context)
-
-            # send notification to administrators
-            recipients = get_notice_recipients(
-                                       'module', 'corporate_memberships',
-                                       'corporatemembershiprecipients')
-            extra_context = {
-                'object': corp_membership,
-                'request': request,
-                'creator': creator
-            }
-            send_email_notification('corp_memb_added', recipients,
-                                    extra_context)
+                send_email_notification('corp_memb_added', recipients,
+                                        extra_context)
             # log an event
             EventLog.objects.log(instance=corp_membership)
             # handle online payment
@@ -630,17 +665,18 @@ def corpmembership_edit(request, id,
             #     create_salesforce_lead(sf, corp_membership.corp_profile)
 
             # send notification to administrators
-            if not is_superuser:
-                recipients = get_notice_recipients('module',
-                                                   'corporate_membership',
-                                                   'corporatemembershiprecipients')
-                extra_context = {
-                    'object': corp_membership,
-                    'request': request,
-                }
-                send_email_notification('corp_memb_edited',
-                                        recipients,
-                                        extra_context)
+            if get_setting('module', 'corporate_memberships', 'notificationson'):
+                if not is_superuser:
+                    recipients = get_notice_recipients('module',
+                                                       'corporate_membership',
+                                                       'corporatemembershiprecipients')
+                    extra_context = {
+                        'object': corp_membership,
+                        'request': request,
+                    }
+                    send_email_notification('corp_memb_edited',
+                                            recipients,
+                                            extra_context)
             # log an event
             EventLog.objects.log(instance=corp_membership)
             # redirect to view
@@ -1289,25 +1325,27 @@ def corp_renew(request, id,
                     new_corp_membership.approve_renewal(request)
                 else:
                     # send a notice to admin
-                    recipients = get_notice_recipients(
-                                           'module',
-                                           'corporate_memberships',
-                                           'corporatemembershiprecipients')
-                    send_email_notification('corp_memb_renewed',
-                                            recipients, extra_context)
+                    if get_setting('module', 'corporate_memberships', 'notificationson'):
+                        recipients = get_notice_recipients(
+                                               'module',
+                                               'corporate_memberships',
+                                               'corporatemembershiprecipients')
+                        send_email_notification('corp_memb_renewed',
+                                                recipients, extra_context)
 
                 # send an email to dues reps
-                recipients = dues_rep_emails_list(new_corp_membership)
-                if Notice.objects.filter(notice_time='attimeof',
-                                 notice_type='renewal',
-                                 status=True,
-                                 status_detail='active'
-                                 ).exists():
-                    new_corp_membership.send_notice_email(request, 'renewal')
-                else:
-                    send_email_notification('corp_memb_renewed_user',
-                                            recipients, extra_context)
-
+                if get_setting('module', 'corporate_memberships', 'notificationson'):
+                    recipients = dues_rep_emails_list(new_corp_membership)
+                    if Notice.objects.filter(notice_time='attimeof',
+                                     notice_type='renewal',
+                                     status=True,
+                                     status_detail='active'
+                                     ).exists():
+                        new_corp_membership.send_notice_email(request, 'renewal')
+                    else:
+                        send_email_notification('corp_memb_renewed_user',
+                                                recipients, extra_context)
+    
                 return HttpResponseRedirect(reverse(
                                             'corpmembership.renew_conf',
                                             args=[new_corp_membership.id]))

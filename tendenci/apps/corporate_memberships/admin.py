@@ -599,6 +599,8 @@ class BranchInlineAdmin(admin.StackedInline):
 class CorpProfileAdmin(TendenciBaseModelAdmin):
     model = CorpProfile
     list_display = ['name',]
+    if get_setting('module', 'trainings', 'enabled'):
+        list_display.append('show_transcripts')
     search_fields = ('name',)
     inlines = (CorpMembershipRepInlineAdmin, BranchInlineAdmin,
                CorpMembershipInlineAdmin)
@@ -644,6 +646,16 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
         
         form.save_logo(instance, request.user)
         return instance
+
+    @mark_safe
+    def show_transcripts(self, instance):
+        if instance:
+            corp_mem = instance.corp_membership
+            if corp_mem and corp_mem.members_count > 0:
+                url = reverse('trainings.transcripts_corp', args=[instance.id])
+                return f'<a href="{url}" title="View Transcripts">View Transcripts</a>'
+        return ""
+    show_transcripts.short_description = 'Transcripts'
 
 
 class CorpMembershipRepAdmin(admin.ModelAdmin):

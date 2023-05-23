@@ -1,0 +1,86 @@
+{% load training_filters %}
+{% load training_tags %}
+
+{% if for_pdf %}
+<h3 class="col-xs-12" style="margin-top: 2em;">{{ cert.name }}</h3>
+<table style="width:100%">
+<tr>
+ <td style="width:67%" valign="top">
+	<table class="table table-bordered table-hover">
+	<thead>
+		<tr>
+			<td class="col-sm-4">{% trans "Category" %}</td>
+			<td class="col-sm-4">{% trans "Credits Required" %}</td>
+			<td class="col-sm-4">{% trans "Credits Earned" %}</td>
+		</tr>
+	</thead>
+	<tbody>
+		{% if num_diamonds > 0 %}
+		<tr>
+			<td>{{ cert.diamond_name }}</td>
+			<td>{{ cert.diamond_required_credits }}</td>
+			<td>{{ diamonds_credits_earned }}</td>
+		</tr>
+		{% else %}
+	    {% for certcat in cert.certcats %}
+		<tr>
+			<td>{{ certcat.category.name }}</td>
+			<td>{{ certcat.required_credits }}</td>
+			<td>{{ certcat|get_earned_credits:customer }}</td>
+		</tr>
+		{% endfor %}
+		{% endif %}																																			</tbody>
+	</table>
+ </td>
+ {% if num_diamonds > 0 %}
+ {% get_diamond_image num_diamonds for_pdf=for_pdf as diamond_image %}
+ {% if diamond_image %}
+ <td style="width:33%" align="center">
+ <img src="{{ diamond_image }}" alt="diamonds" title="">
+ </td>
+ {% endif %}
+ {% endif %}
+ </tr>	
+</table>
+
+{% else %}
+
+<h3 class="col-xs-12">{{ cert.name }}</h3>
+<div class="table-dynamic row">
+ <div class="col-sm-8">
+	<table class="table table-bordered table-hover">
+	<thead>
+		<tr>
+			<td class="col-sm-4">{% trans "Category" %}</td>
+			<td class="col-sm-4">{% trans "Credits Required" %}</td>
+			<td class="col-sm-4">{% trans "Credits Earned" %}</td>
+		</tr>
+	</thead>
+	<tbody>
+		{% if num_diamonds > 0 %}
+		<tr>
+			<td>{{ cert.diamond_name }}</td>
+			<td>{{ cert.diamond_required_credits }}</td>
+			<td>{{ diamonds_credits_earned }}</td>
+		</tr>
+		{% else %}
+	    {% for certcat in cert.certcats %}
+		<tr>
+			<td>{{ certcat.category.name }}</td>
+			<td>{{ certcat.required_credits }}</td>
+			<td>{{ certcat|get_earned_credits:customer }}</td>
+		</tr>
+		{% endfor %}
+		{% endif %}																																			</tbody>
+	</table>
+ </div>
+ {% if num_diamonds > 0 %}
+ {% get_diamond_image num_diamonds as diamond_image %}
+ {% if diamond_image %}
+ <div class="col-sm-4">
+ <img src="{{ diamond_image }}" alt="diamonds" title="">
+ </div>
+ {% endif %}
+ {% endif %}	
+</div>
+{% endif %}

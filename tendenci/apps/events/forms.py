@@ -398,6 +398,15 @@ class FormForCustomRegForm(forms.ModelForm):
                 self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'),
                                                              required=False, initial=True)
 
+        # certification_track field
+        if self.event and self.event.course:
+            cert_choices = self.event.get_certification_choices()
+            if cert_choices:
+                self.fields['certification_track'] = forms.ChoiceField(
+                                label=_('Certification track'),
+                                choices = cert_choices,
+                                required=False)
+
         # --------------------------
         if self.pricings:
             # add the price options field
@@ -689,6 +698,7 @@ class EventForm(TendenciBaseForm):
         model = Event
         fields = (
             'title',
+            'course',
             'description',
             'start_dt',
             'end_dt',
@@ -720,6 +730,7 @@ class EventForm(TendenciBaseForm):
 
         fieldsets = [(_('Event Information'), {
                       'fields': ['title',
+                                 'course',
                                  'description',
                                  'is_recurring_event',
                                  'frequency',
@@ -842,6 +853,15 @@ class EventForm(TendenciBaseForm):
         self.fields['timezone'].initial = settings.TIME_ZONE
         
         self.fields['type'].required = True
+
+        # check if course field is needed
+        if not get_setting('module', 'events', 'usewithtrainings'):
+            del self.fields['course']
+        else:
+            self.fields['course'].queryset = self.fields['course'].queryset.filter(
+                location_type='onsite',
+                status_detail='enabled').order_by('name') # onsite courses only
+        
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
@@ -1816,7 +1836,7 @@ class RegistrantForm(forms.Form):
     FIELD_NAMES = ['salutation', 'first_name', 'last_name', 'email', 'mail_name',
                    'position_title', 'company_name', 'phone', 'address',
                    'city', 'state', 'zip_code', 'country', 'meal_option',
-                   'comments']
+                   'comments', 'certification_track']
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', AnonymousUser)
@@ -1879,6 +1899,15 @@ class RegistrantForm(forms.Form):
                 self.empty_permitted = False
         else:
             self.empty_permitted = False
+
+        # certification field
+        if self.event.course:
+            cert_choices = self.event.get_certification_choices()
+            if cert_choices:
+                self.fields['certification_track'] = forms.ChoiceField(
+                                label=_('Certification track'),
+                                choices = cert_choices,
+                                required=False)
 
         if self.pricings:
             # add the price options field

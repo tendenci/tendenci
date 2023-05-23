@@ -16,6 +16,23 @@
         "store": true,
         "updated_by": ""
     },
+    {
+        "default_value": "false",
+        "description": "Use with trainings module.",
+        "data_type": "boolean",
+        "update_dt": "2022-11-08 21:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "usewithtrainings",
+        "value": "false",
+        "label": "Use with Trainings",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
+    },
    {
         "default_value": "",
         "description": "Registrations emails will be sent to these email addresses.",

@@ -1,0 +1,36 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+
+<ul id="t-admin-megamenu-trainings-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'trainings' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'trainings.teaching_activities' %}">{% trans "Teaching activities" %}</a>
+                        </span>
+                    </li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'trainings.outside_schools' %}">{% trans "Outside Schools" %}</a>
+                        </span>
+                    </li>
+                </ul>
+
+                
+            </div>
+        </div>
+    </li>
+</ul>

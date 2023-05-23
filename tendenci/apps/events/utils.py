@@ -1079,6 +1079,7 @@ def create_registrant_from_form(*args, **kwargs):
     impementation of events in the registration module.
     """
     from tendenci.apps.events.forms import FormForCustomRegForm
+    from tendenci.apps.trainings.models import Certification
 
     # arguments were getting kinda long
     # moved them to an unpacked version
@@ -1129,6 +1130,15 @@ def create_registrant_from_form(*args, **kwargs):
             users = User.objects.filter(email=registrant.email)
             if users:
                 registrant.user = users[0]
+
+    if event and event.course:
+        # certification_track
+        try:
+            certification_id = int(form.cleaned_data.get('certification_track', 0) or 0)
+        except ValueError:
+            certification_id = 0
+        if certification_id:
+            [registrant.certification_track] = Certification.objects.filter(id=certification_id)[:1] or [None]
 
     registrant.save()
     add_sf_attendance(registrant, event)
@@ -1611,6 +1621,7 @@ def get_active_days(event):
 
 def get_custom_registrants_initials(entries, **kwargs):
     initials = []
+    check_cert = kwargs.get('check_cert', False)
     for entry in entries:
         fields_d = {}
         field_entries = entry.field_entries.all()
@@ -1620,6 +1631,8 @@ def get_custom_registrants_initials(entries, **kwargs):
             else:
                 field_key = 'field_%d' % field_entry.field.id
             fields_d[field_key] = field_entry.value
+        if check_cert:
+            fields_d['certification_track'] = entry.get_certification_track()
         initials.append(fields_d)
     return initials
 
