@@ -251,7 +251,7 @@ class Chapter(BasePage):
 
     def is_chapter_member(self, user):
         if not user.is_anonymous:
-            return self.chaptermembership_set.filter(user=user).exists()
+            return self.chaptermembership_set.filter(user=user, status=True).exists()
 
         return False
 
@@ -816,7 +816,7 @@ class ChapterMembership(TendenciBaseModel):
             elif status == 'pending':
                 actions.append((approve_link, _('Approve')))
                 actions.append((disapprove_link, _('Disapprove')))
-                actions.append((expire_link, _('Expire Chapter Membership')))
+                #actions.append((expire_link, _('Expire Chapter Membership')))
             elif status == 'expired':
                 actions.append((approve_link, _('Approve Chapter Membership')))
  

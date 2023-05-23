@@ -257,10 +257,18 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
                       }
 
             # Check if this transaction should be made to a connected account
-            connected_account = payment.invoice.stripe_connected_account()
-            if connected_account:
+            connected_account_id, scope = payment.invoice.stripe_connected_account()
+            if connected_account_id:
                 stripe.client_id = get_setting('module', 'payments', 'stripe_connect_client_id')
-                params.update({'stripe_account': connected_account})
+                if scope == 'express':
+                    # is there application fee (application_fee_amount)?
+                    application_fee = payment.invoice.get_stripe_application_fee(payment.amount)
+                    params.update({
+                                    'application_fee_amount': math.trunc(application_fee * 100),
+                                    "transfer_data": {"destination": connected_account_id
+                                }},)
+                else:
+                    params.update({'stripe_account': connected_account_id})
 
             if customer:
                 params.update({'customer': customer.id})

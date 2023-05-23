@@ -83,8 +83,8 @@ def view_account(request, recurring_payment_id, guid=None,
     # get ready for the add/update payment method button
     test_mode = get_test_mode()
     is_active = (rp.status_detail == 'active')
-    if is_active:
-        #rp.populate_payment_profile()
+    if is_active and rp.platform == 'authorizenet':
+        rp.populate_payment_profile()
         payment_profiles = PaymentProfile.objects.filter(
                             customer_profile_id=rp.customer_profile_id,
                             status=True, status_detail='active')

@@ -1,3 +1,12 @@
+### 14.4 [2023-05-16]
+
+* Updated Authorize.Net payment gateway integration. 1) Switched SIM to Accept Hosted beause SIM is deprecated https://developer.authorize.net/api/upgrade_guide.html. 2) Removed xml.etree.ElementTree that was used by CIM in recurring payments. The xml.etree.ElementTree module is no longer supported. https://docs.python.org/3/library/xml.etree.elementtree.html
+* Integrated stripe connect to payments. https://tendenci.readthedocs.io/en/latest/topic-guides/payments.html#how-to-use-stripe-connect
+* Updated forums to not send notifications to those listed in the emailblocks.
+* Set the default value for enforce_direct_mail_flag to True on newsletter add. 
+* Other small fixes.
+
+
 ### 14.3.6 [2023-03-28]
 
 * Chapter leaders are now not allowed to renew their chapter memberships that are not in renewal period.

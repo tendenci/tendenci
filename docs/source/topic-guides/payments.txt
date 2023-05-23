@@ -1,7 +1,11 @@
-Recurring Payments
-==================
+Payments
+========
 
-Tendenci supports recurring payments when using `Stripe`_ or `Authorize.net`_ as the payment gateway.
+
+Recurring Payments
+^^^^^^^^^^^^^^^^^^
+
+Tendenci supports recurring payments when using `Stripe`_ or `Authorize.net`_ as the payment gaeway.
 
 .. _`Stripe`: https://stripe.com
 .. _`Authorize.net`: https://www.authorize.net
@@ -51,3 +55,15 @@ Stripe and Authorize.net manage their test systems differently. For Stripe, the 
 .. _`test only access key`: https://stripe.com/docs/testing
 .. _`different API endpoints`: https://developer.authorize.net/hello_world/testing_guide/
 
+
+
+How to Use Stripe Connect?
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The current integration makes charges directly on the connected account. The connected account is responsible for the Stripe fees, etc.
+
+1) Get the Stripe Connect Client ID from your stripe account, enter it to the site setting "Stripe Connect Client ID" at https://www.example.com/settings/module/payments/#id_stripe_connect_client_id.
+
+2) Add the redirect url https://www.example.com/payments/stripe/connect/fetch-access-token/ to your stripe application settings at https://dashboard.stripe.com/test/settings/connect under Integration.
+
+3) Add connected accounts at admin backend https://www.example.com/admin/stripe/stripeaccount/, and associate an entity to each stripe account. Now payment will be paid directly to the connected stripe account with the same entity tied to the invoice. 

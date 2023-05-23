@@ -7,9 +7,10 @@ from tendenci.apps.base.fields import EmailVerificationField, PriceField
 # from captcha.fields import CaptchaField
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.forms import CustomCatpchaField
+from tendenci.apps.base.forms import FormControlWidgetMixin
 
 
-class MakePaymentForm(forms.ModelForm):
+class MakePaymentForm(FormControlWidgetMixin, forms.ModelForm):
     captcha = CustomCatpchaField(label=_('Type the code below'))
     # TODO: Make check-paid an admin only option
     payment_amount = PriceField(max_digits=10, decimal_places=2)
