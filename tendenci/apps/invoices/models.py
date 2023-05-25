@@ -760,10 +760,10 @@ class Invoice(models.Model):
         Get the stripe connected account for this invoice.
         """
         if not self.entity:
-            return None
+            return None, None
 
         if not get_setting('module', 'payments', 'stripe_connect_client_id'):
-            return None
+            return None, None
         
         stripe_accounts = StripeAccount.objects.filter(
                             entity=self.entity,
