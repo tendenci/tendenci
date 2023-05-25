@@ -273,8 +273,9 @@ class RecurringPayment(models.Model):
             # 
             customer_payment_profile_id = customer_payment_profile['customerPaymentProfileId']
             # validate this payment profile
-            is_valid = authnet_api.validate_customer_payment_profile(self.customer_profile_id,
-                                                          customer_payment_profile_id)              
+            #is_valid = authnet_api.validate_customer_payment_profile(self.customer_profile_id,
+            #                                              customer_payment_profile_id)
+            is_valid = True              
             if is_valid:
                 valid_customer_payment_profile_ids.append(customer_payment_profile_id)
             else:
