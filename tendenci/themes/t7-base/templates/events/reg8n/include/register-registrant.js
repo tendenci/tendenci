@@ -79,7 +79,8 @@ function addRegistrant(ele, prefix, price) {
 
     {% if not event.require_guests_info  %}
     // remove required att
-    $(row).find('div.label').removeClass("required");
+    $(row).find('div.form-label').removeClass("required");
+    $(row).find('div.field > input').removeAttr("required");
     {% endif %}
 
     // update id attr
