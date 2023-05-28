@@ -5,6 +5,7 @@ import math
 from decimal import Decimal
 from hashlib import md5
 import csv
+
 #from dateutil.parser import parse
 from datetime import datetime, timedelta, date
 import time as ttime
@@ -13,7 +14,7 @@ import calendar
 from collections import OrderedDict
 from dateutil.parser import parse as dparse, ParserError 
 from dateutil.relativedelta import relativedelta
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote as url_quote
  
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -1302,9 +1303,9 @@ def membership_default_add(request, slug='', membership_id=None,
         if app.use_for_corp:
             redirect_url = reverse('membership_default.corp_pre_add')
 
-            if username:
+            if username and u:
                 return HttpResponseRedirect(
-                    '%s?username=%s' % (redirect_url, u.username))
+                    '%s?username=%s' % (redirect_url, url_quote(u.username)))
             return redirect(redirect_url)
 
     if not (request.user.is_superuser or (join_under_corporate and is_corp_rep)):

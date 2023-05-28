@@ -277,7 +277,7 @@
           
           <h3>{% trans 'Memberships' %}
             {% if membership_apps %}
-            <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" membership_apps.0.slug %}?username={{ user_this.username }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
+            <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" membership_apps.0.slug %}?username={{ user_this.username|urlencode }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
             {% else %}
             <a title="{% trans 'Create a membership application' %}" href="{% url "admin:memberships_membershipapp_add" %}" class="glyph plus">+</a>
             {% endif %}
@@ -287,7 +287,7 @@
           <div class="app-links">
             {% for app in membership_apps %}
             <div>
-              <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" app.slug %}?username={{ user_this.username }}">{% trans 'Join' %}</a>
+              <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" app.slug %}?username={{ user_this.username|urlencode }}">{% trans 'Join' %}</a>
               {{ app.name }}
             </div>
             {% endfor %}
