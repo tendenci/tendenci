@@ -202,7 +202,7 @@ class PercentField(fields.DecimalField):
 
     def prepare_value(self, value):
         """Display as whole number"""
-        value = super(PercentField, self).prepare_value(value)
+        value = super(PercentField, self).prepare_value(value) or 0
 
         # Display invalid values in a way expected by user.
         if self.error_occurred:
@@ -234,7 +234,11 @@ class PercentField(fields.DecimalField):
         # Track raw input in order to display value correctly in case of error.
         self.raw_input = value
 
-        value = super(PercentField, self).clean(value)
+        try:
+            value = super(PercentField, self).clean(value)
+        except Exception as e:
+            self.raise_validation_error(e.args[0])
+
         if value is None:
             return 0
 
