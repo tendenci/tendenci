@@ -260,7 +260,7 @@ class RegistrationConfiguration(models.Model):
         cancellation_fee = self.cancellation_fee
 
         if self.cancellation_percent:
-            cancellation_fee = amount * self.cancellation_percent
+            cancellation_fee = round(amount * self.cancellation_percent, 2)
 
         return cancellation_fee
 
