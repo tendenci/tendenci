@@ -15,24 +15,56 @@
     <p style="margin:2px">
 
         {% if not user_is_registrant %}
-            {% if user.is_anonymous %} An anonymous user {% else %} <a href="{% url 'profile' user.username %}">{{ user.first_name }} {{ user.last_name }}</a>{% endif %} has {% if can_auto_refund %}canceled{% else %}requested cancellation of{% endif %} the registration for {% if registrant.first_name or registrant.last_name %} {{ registrant.first_name }} {{ registrant.last_name }} {% else %} {% trans "guest" %} #{{ registrant.pk }} {% endif %}
+            {% if user.is_anonymous %}
+                {% if can_auto_refund %}
+                    {% trans "An anonymous user has canceled the registration for:" %}
+                {% else %}
+                    {% trans "An anonymous user has requested cancellation of the registration for:" %}
+                {% endif %}
+            {% else %}
+                {% if can_auto_refund %}
+                    <a href="{% url 'profile' user.username %}">{% blocktrans with user.first_name as first_name and user.last_name as last_name %}{{ first_name }} {{ last_name }}</a> has canceled the registration for: {% endblocktrans %}
+                {% else %}
+                    <a href="{% url 'profile' user.username %}">{% blocktrans with user.first_name as first_name and user.last_name as last_name %}{{ first_name }} {{ last_name }}</a> has requested cancellation of the registration for: {% endblocktrans %}
+                {% endif %}
+{% if registrant.first_name or registrant.last_name %} {{ registrant.first_name }} {{ registrant.last_name }} {% else %} {% trans "Guest" %} #{{ registrant.pk }} {% endif %}
+            {% endif %}
         {% else %}
-
-            <a href="{% url 'profile' user.username %}">{% if registrant.first_name or registrant.last_name %}{{ registrant.first_name }} {{ registrant.last_name }} {% else %} {% trans "guest" %} #{{ registrant.pk }}{% endif %}</a> has {% if can_auto_refund %} canceled {% else %} requested to cancel{% endif %} their registration
-
+            {% if registrant.first_name or registrant.last_name %}
+                {% if can_auto_refund %}
+                    <a href="{% url 'profile' user.username %}">{% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name %}{{ first_name }} {{ last_name }} </a> has canceled their registration. {% endblocktrans %}
+                {% else %}
+                    <a href="{% url 'profile' user.username %}">{% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name %}{{ first_name }} {{ last_name }} </a> has requested to cancel their registration. {% endblocktrans %}
+                {% endif %}
+            {% else %}
+                {% if can_auto_refund %}
+                    {% blocktrans with registrant.pk as registrant_id %}Guest #{{ registrant_id }} has canceled their registration.{% endblocktrans %}
+                {% else %}
+                    {% blocktrans with registrant.pk as registrant_id %}Guest #{{ registrant_id }} has requested to cancel their registration.{% endblocktrans %}
+                {% endif %}
+            {% endif %}
         {% endif %}
-            for {{ event.title }} on {{ event.start_dt }} on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
 
-            <div>
-                <p>
+        <br/>
+        {% blocktrans with event.title as title and event.start_dt as start_dt %}
+        Registration: {{ title }} on {{ start_dt }} on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+        {% endblocktrans %}
+
+        <div>
+            <p>
                 {% if allow_refunds == "Auto" and not can_auto_refund %}
-                Automatic refunds are turned on, but the system was not able to refund in this case. You can still refund manually from the invoice. {% endif %}
+                    {% trans "Automatic refunds are turned on, but the system was not able to refund in this case. You can still refund manually from the invoice." %}
+                {% endif %}
                 <br/>
-        <a href="{% url 'invoice.view' registrant.registration.invoice.pk registrant.registration.invoice.guid %}">
-            {% if can_refund and not can_auto_refund %}Refund their registration here{% else %}View their {% if can_auto_refund %} final {% endif %} registration invoice here{% endif %}</a>
-                </p>
-            </div>
-
+                <a href="{% url 'invoice.view' registrant.registration.invoice.pk registrant.registration.invoice.guid %}">
+                    {% if can_refund and not can_auto_refund %}
+                        {% trans "Refund their registration here" %}
+                    {% else %}
+                        {% trans "View their registration invoice here" %}
+                    {% endif %}
+                </a>
+            </p>
+        </div>
 
 </p>
 <p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registration_confirmation" event.pk registrant.registration.pk %}">{% trans "View registration details" %}</a></p>

@@ -242,7 +242,7 @@ def refund(request, id, template_name='invoices/refund.html'):
                 messages.add_message(
                     request,
                     messages.SUCCESS,
-                    invoice.admin_refund_confirmation_message,
+                    _(invoice.admin_refund_confirmation_message),
                 )
 
                 return redirect(invoice)
@@ -254,7 +254,7 @@ def refund(request, id, template_name='invoices/refund.html'):
                 messages.add_message(
                     request,
                     messages.ERROR,
-                    invoice.admin_refund_failure_message,
+                    _(invoice.admin_refund_failure_message),
                 )
 
     else:

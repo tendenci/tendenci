@@ -383,7 +383,7 @@
                 </div>
             {% endif %}
 
-            {% if reg_form.captcha %}
+            {% if reg_form.captcha and not do_confirmation %}
                 <div class="form-field">
                     <div class="error">{{ reg_form.captcha.errors }}</div>
                     <div class="required">{{ reg_form.captcha.label }}</div>

@@ -82,11 +82,11 @@
         {% if registrant %}
             <div>
               <a href="{% url 'event.cancel_registrant' event.pk registrant.pk %}">
-                Cancel
+                {% trans "Cancel" %}
               </a>
             </div>
         {% else %}
-            <div> <a href="{% url 'profile' user.username %}">Cancel</a></div>
+            <div> <a href="{% url 'profile' user.username %}">{% trans "Cancel" %}</a></div>
         {% endif %}
     {% endif %}
     {% endif %}

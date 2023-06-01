@@ -1087,7 +1087,6 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                     recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
 
                 for cur_event in recurring_events:
-                    print(request.POST)
                     form_regconf2 = form_class(
                         request.POST, instance=cur_event.registration_configuration,
                         reg_form_queryset=reg_form_queryset, recurring_edit=True, prefix='regconf'
@@ -2839,16 +2838,15 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                     )
                 except:
                     messages.set_level(request, messages.ERROR)
-                    messages.error(
-                        request,
-                        f"Refund in the amount of ${refund_amount} failed to process. Please contact support.",
-                    )
+                    error_message = f"Refund in the amount of ${refund_amount} failed to process. " \
+                                    f"Please contact support."
+                    messages.error(request, _(error_message))
 
             registration.canceled = True
             registration.save()
 
         if confirmation_message:
-            messages.success(request, confirmation_message)
+            messages.success(request, _(confirmation_message))
         return HttpResponseRedirect(
             reverse('event.registration_confirmation',
             args=[event.pk, registration.registrant.hash])
@@ -2967,10 +2965,9 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                     invoice.refund(refund_amount, request.user, confirmation_message)
                 except:
                     messages.set_level(request, messages.ERROR)
-                    messages.error(
-                        request,
-                        f"Refund in the amount of ${refund_amount} failed to process. Please contact support.",
-                    )
+                    error_mesage = f"Refund in the amount of ${refund_amount} failed to process. " \
+                                   f"Please contact support."
+                    messages.error(request, _(error_message))
 
             if recipients and notification:
                 notification.send_emails(recipients, 'event_registration_cancelled', {
@@ -2989,7 +2986,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
 
         # back to invoice
         if confirmation_message:
-            messages.success(request, confirmation_message)
+            messages.success(request, _(confirmation_message))
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', args=[event.pk, registrant.hash]))
 

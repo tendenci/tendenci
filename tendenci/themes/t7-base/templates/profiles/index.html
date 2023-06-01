@@ -403,7 +403,7 @@
                 <td>
                   {% if reg.event.can_cancel and reg.reg8n_status != "cancelled" %}
                   <a href="{% url 'event.cancel_registration' reg.event.pk reg.registration.pk %}">
-                    Cancel
+                    {% trans "Cancel" %}
                   </a>
                   {% endif %}
                 </td>

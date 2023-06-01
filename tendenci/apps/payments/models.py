@@ -144,7 +144,7 @@ class Payment(models.Model):
         merchant_account = get_setting("site", "global", "merchantaccount").lower()
 
         if not self.trans_id or merchant_account != 'stripe':
-            raise Exception("Refund requires a Stripe transaction ID")
+            raise Exception(_("Refund requires a Stripe transaction ID"))
 
         refundable_amount = amount or self.amount
         Refund.objects.create(
@@ -325,9 +325,9 @@ class Refund(models.Model):
         FAILED = 'failed'
 
         CHOICES = (
-            (PENDING, 'Pending'),
-            (SUCCEEDED, 'Succeeded'),
-            (FAILED, 'Failed')
+            (PENDING, _('Pending')),
+            (SUCCEEDED, _('Succeeded')),
+            (FAILED, _('Failed'))
         )
 
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)

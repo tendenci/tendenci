@@ -15,7 +15,7 @@
     <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans 'Invoice Refund'%}</h1>
   </div>
 
-  <a class="btn btn-default" href="{% url "invoice.view" invoice.pk %}" class="links">View Invoice #{{ invoice.pk }}</a>
+  <a class="btn btn-default" href="{% url "invoice.view" invoice.pk %}" class="links">{% trans "View Invoice" %} #{{ invoice.pk }}</a>
   <br /><br />
 
   <div class="invoice-adjust">
@@ -70,7 +70,7 @@
         {{ form.amount }}
       </div>
         {% if form.amount.errors %}
-        {{ form.amount.errors }}
+            {{ form.amount.errors }}
         {% endif %}
       <div class="clear-left"></div>
       <div class="field-wrapper">
@@ -83,7 +83,7 @@
       <div class="field-wrapper">
         <label class="field-label">{% trans 'Pending Cancellation Fees:'%}</label>
         <div>{{invoice.total_cancellation_fees_pending|format_currency }}</div>
-        To be deducted when refund is larger than pending cancellation fees.
+        {% trans "To be deducted when refund is larger than pending cancellation fees." %}
       </div>
       {% endif %}
 

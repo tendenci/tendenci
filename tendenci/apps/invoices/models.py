@@ -33,8 +33,8 @@ STATUS_DETAIL_CHOICES = (
 
 class Invoice(models.Model):
     class LineDescriptions:
-        CANCELLATION_FEE = 'Cancellation fee'
-        REFUND = 'Refund'
+        CANCELLATION_FEE = _('Cancellation fee')
+        REFUND = _('Refund')
 
     guid = models.CharField(max_length=50)
 
@@ -538,14 +538,14 @@ class Invoice(models.Model):
         Only allowed if allow_refunds site setting is on.
         """
         if amount <= 0:
-            raise ValidationError("Amount refunded must be greater than 0.")
+            raise ValidationError(_("Amount refunded must be greater than 0."))
 
         if not self.can_refund:
-            raise ValidationError(f"Refunds not allowed. {self.refund_disabled_reason}")
+            raise ValidationError(_(f"Refunds not allowed. {self.refund_disabled_reason}"))
 
         if amount > self.refundable_amount:
             raise ValidationError(
-                f"Can only refund a maximum of ${self.refundable_amount}"
+                _(f"Can only refund a maximum of ${self.refundable_amount}")
             )
 
         # Create confirmation message prior to refund so we have the
