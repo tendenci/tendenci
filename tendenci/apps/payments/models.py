@@ -126,6 +126,11 @@ class Payment(models.Model):
         super(Payment, self).save(*args, **kwargs)
 
     @property
+    def completed_refunds(self):
+        """All completed refunds associated with this payment"""
+        return self.refund_set.filter(response_status=Refund.Status.SUCCEEDED)
+
+    @property
     def is_approved(self):
         return self.response_code == '1' and self.response_reason_code == '1'
 
@@ -351,3 +356,8 @@ class Refund(models.Model):
             self.response_reason_text = refund_response
 
         self.save()
+
+    @property
+    def net_amount(self):
+        print(self.amount * -1)
+        return self.amount * -1

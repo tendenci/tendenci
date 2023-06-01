@@ -21,7 +21,7 @@ There can be, theoretically, multiple payments for one invoice.
 Only a TENDERED invoice can have a payment created for it, but if the payment
 were to not be approved then it is possible for the user to initiate payment
 again resulting in more than one payment per invoice. The real trail is on the accounting side - note the yellow &quot;accounting&quot; link below for more information. <br><br>***Reversing a payment does *NOT* issue a credit or refund.  It will simply reverse
-the payment entries in the general ledger for accounting purposes.
+the payment entries in the general ledger for accounting purposes. The exception is if you have refunds enabled. In that case, if a refund was issued the details will be displayed with the associated payment.
 {% endblocktrans %}<p>
 
 <div class="payment-view-block">
@@ -93,6 +93,19 @@ the payment entries in the general ledger for accounting purposes.
 <td><strong>{% trans "Amount:" %} {{ payment.amount|format_currency }}</strong></td>
 <td><strong>{% trans "Method:" %} {{ payment.method }}</strong></td>
 </tr>
+
+{% if payment.completed_refunds.exists %}
+<tr>
+  <td><strong>{% trans "Refunds: " %}</strong></td>
+</tr>
+{% endif %}
+
+{% for refund in payment.completed_refunds %}
+<tr>
+    <td>{% trans "Refunded Amount:" %} {{ refund.net_amount|format_currency}}</td>
+    <td>{% trans "Refund ID:" %} {{refund.refund_id}}</td>
+</tr>
+{% endfor %}
 
 {% if payment.check_number %}
 <td>&nbsp;</td>
