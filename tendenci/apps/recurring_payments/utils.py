@@ -345,6 +345,10 @@ def run_a_recurring_payment(rp, verbosity=0):
                         # the payment gateway is probably not configured correctly
                         # email to tendenci script support
                         rp_email_notice.email_script_support_transaction_error(payment_transaction)
+
+                    # stop going through the same error again and again!
+                    if not success:
+                        break
             else:
                 # email admin - payment profile not set up
                 # to admin
