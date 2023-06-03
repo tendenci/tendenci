@@ -581,19 +581,25 @@ class Invoice(models.Model):
         )
 
     def get_amount_to_refund(self, amount):
-        """Get amount to refund, adjusting for fees."""
+        """
+        Return tuple of amount to refund, adjusted for fees and
+        total cancellation fees. Cancellation fees should be 0
+        if unable to deduct from amount.
+        """
         if not self.should_deduct_cancellation_fees(amount):
-            return amount
+            return amount, 0
 
         # Deduct pending cancellation fees
-        return amount - self.total_cancellation_fees_pending
+        return amount - self.total_cancellation_fees_pending, self.total_cancellation_fees_pending
 
     def __refund(self, user, amount):
         """
         Updates the invoice balance by adding
         accounting entries for refunds and initiates actual refund.
         """
-        amount = min(self.get_amount_to_refund(amount), self.total_paid)
+        refund_amount, fees = self.get_amount_to_refund(amount)
+        fees = fees if amount > fees else 0
+        amount = min(refund_amount, self.total_paid)
         if self.is_tendered and amount:
             self.__execute_refund_transaction(amount)
             self.balance += amount
@@ -601,9 +607,12 @@ class Invoice(models.Model):
             self.save()
 
             # Make the reversing accounting entries
-            make_acct_entries_initial_reversing(user, self, amount)
+            make_acct_entries_initial_reversing(user, self, amount + fees)
             # This calls make_acct_entries_closing_reversing as well
-            make_acct_entries_reversing(user, self, amount)
+            make_acct_entries_reversing(user, self, amount + fees)
+            # Make accounting entries for any cancellation fees deducted
+            if fees:
+                make_acct_entries(user, self, fees)
 
     def __execute_refund_transaction(self, amount):
         """Execute refund for amount given it's covered by refundable payments"""
