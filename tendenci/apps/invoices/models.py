@@ -567,7 +567,7 @@ class Invoice(models.Model):
         )
 
         # Send email to confirm refund.
-        if self.owner.email:
+        if self.owner and self.owner.email:
             email = self.owner.email
         else:
             email = self.bill_to_email
