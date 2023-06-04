@@ -2965,7 +2965,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                     invoice.refund(refund_amount, request.user, confirmation_message)
                 except:
                     messages.set_level(request, messages.ERROR)
-                    error_mesage = f"Refund in the amount of ${refund_amount} failed to process. " \
+                    error_message = f"Refund in the amount of ${refund_amount} failed to process. " \
                                    f"Please contact support."
                     messages.error(request, _(error_message))
 
