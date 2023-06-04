@@ -21,6 +21,7 @@ from tendenci.apps.accountings.utils import (
     make_acct_entries,
     make_acct_entries_reversing,
     make_acct_entries_initial_reversing,
+    make_acct_entries_refund
 )
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.site_settings.utils import get_setting
@@ -606,13 +607,7 @@ class Invoice(models.Model):
             self.payments_credits -= amount
             self.save()
 
-            # Make the reversing accounting entries
-            make_acct_entries_initial_reversing(user, self, amount + fees)
-            # This calls make_acct_entries_closing_reversing as well
-            make_acct_entries_reversing(user, self, amount + fees)
-            # Make accounting entries for any cancellation fees deducted
-            if fees:
-                make_acct_entries(user, self, fees)
+            make_acct_entries_refund(user, self, amount)
 
     def __execute_refund_transaction(self, amount):
         """Execute refund for amount given it's covered by refundable payments"""

@@ -11,9 +11,9 @@
     <h1>{% trans "General Ledger Account Numbers" %}</h1>
 
     <div class="accounting-wrap">
-    <p>A = Asset &nbsp; L = Liabilities &nbsp; I = Income &nbsp; E = Expense &nbsp; Q = Owners Equity</p>
+    <p>A = Asset &nbsp; L = Liabilities &nbsp; I = Income &nbsp; E = Expense &nbsp; Q = Owners Equity &nbsp; C = Contra-revenue </p>
     {% for acct in accts %}
-        {{acct.account_number}} = {{ acct.description }} ({{acct.type}}) {{2|add:-1}}<br />
+        {{acct.account_number}} = {{ acct.description }} ({{acct.type}})<br />
     {% endfor %}
 
     </div>
