@@ -23,18 +23,18 @@
                 {% endif %}
             {% else %}
                 {% if can_auto_refund %}
-                    <a href="{% url 'profile' user.username %}">{% blocktrans with user.first_name as first_name and user.last_name as last_name %}{{ first_name }} {{ last_name }}</a> has canceled the registration for: {% endblocktrans %}
+                    <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' user.username %}">{% blocktrans with user.first_name as first_name and user.last_name as last_name %}{{ first_name }} {{ last_name }}</a> has canceled the registration for: {% endblocktrans %}
                 {% else %}
-                    <a href="{% url 'profile' user.username %}">{% blocktrans with user.first_name as first_name and user.last_name as last_name %}{{ first_name }} {{ last_name }}</a> has requested cancellation of the registration for: {% endblocktrans %}
+                    <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' user.username %}">{% blocktrans with user.first_name as first_name and user.last_name as last_name %}{{ first_name }} {{ last_name }}</a> has requested cancellation of the registration for: {% endblocktrans %}
                 {% endif %}
 {% if registrant.first_name or registrant.last_name %} {{ registrant.first_name }} {{ registrant.last_name }} {% else %} {% trans "Guest" %} #{{ registrant.pk }} {% endif %}
             {% endif %}
         {% else %}
             {% if registrant.first_name or registrant.last_name %}
                 {% if can_auto_refund %}
-                    <a href="{% url 'profile' user.username %}">{% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name %}{{ first_name }} {{ last_name }} </a> has canceled their registration. {% endblocktrans %}
+                    <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' user.username %}">{% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name %}{{ first_name }} {{ last_name }} </a> has canceled their registration. {% endblocktrans %}
                 {% else %}
-                    <a href="{% url 'profile' user.username %}">{% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name %}{{ first_name }} {{ last_name }} </a> has requested to cancel their registration. {% endblocktrans %}
+                    <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' user.username %}">{% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name %}{{ first_name }} {{ last_name }} </a> has requested to cancel their registration. {% endblocktrans %}
                 {% endif %}
             {% else %}
                 {% if can_auto_refund %}
@@ -56,7 +56,7 @@
                     {% trans "Automatic refunds are turned on, but the system was not able to refund in this case. You can still refund manually from the invoice." %}
                 {% endif %}
                 <br/>
-                <a href="{% url 'invoice.view' registrant.registration.invoice.pk registrant.registration.invoice.guid %}">
+                <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'invoice.view' registrant.registration.invoice.pk registrant.registration.invoice.guid %}">
                     {% if can_refund and not can_auto_refund %}
                         {% trans "Refund their registration here" %}
                     {% else %}
