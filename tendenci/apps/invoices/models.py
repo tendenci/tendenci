@@ -568,7 +568,11 @@ class Invoice(models.Model):
 
         # Send email to confirm refund.
         if self.owner.email:
-            self.__send_refund_confirmation(amount, confirmation_message, [self.owner.email])
+            email = self.owner.email
+        else:
+            email = self.bill_to_email
+        if email:
+            self.__send_refund_confirmation(amount, confirmation_message, [email])
 
     def should_deduct_cancellation_fees(self, amount):
         """
