@@ -2878,17 +2878,13 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
     event = get_object_or_404(Event, pk=event_id)
 
     if registrant_id:
-        try:
-            registrant = Registrant.objects.get(
-                registration__event=event,
-                pk =registrant_id,
-            )
-
-            # check permission
-            if not has_perm(request.user, 'events.view_registrant', registrant):
+        registrant = get_object_or_404(Registrant,
+                                       registration__event=event,
+                                       pk =registrant_id,)
+        # check permission
+        if not has_perm(request.user, 'events.view_registrant', registrant):
+            if not (request.user.is_authenticated and request.user == registrant.user): 
                 raise Http403
-        except:
-            raise Http404
     elif hash:
         sqs = Registrant.objects.filter(registration__event=event)
         sqs = sqs.order_by("-update_dt")
