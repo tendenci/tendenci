@@ -252,6 +252,26 @@ class AuthNetAPI:
                    "order": {
                     "invoiceNumber": payment.invoice.id,
                     "description": payment.description
+                    },
+                   "billTo": {
+                        "firstName": payment.first_name,
+                        "lastName": payment.last_name,
+                        "company": payment.company,
+                        "address": payment.address,
+                        "city": payment.city,
+                        "state": payment.state,
+                        "zip": payment.zip,
+                        "country": payment.country
+                    },
+                    "shipTo": {
+                        "firstName": payment.ship_to_first_name,
+                        "lastName": payment.ship_to_last_name,
+                        "company": payment.ship_to_company,
+                        "address": payment.ship_to_address,
+                        "city": payment.ship_to_city,
+                        "state": payment.ship_to_state,
+                        "zip": payment.ship_to_zip,
+                        "country": payment.ship_to_country
                     }
                 }
             }
