@@ -5,6 +5,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.auth.models import User
 
 from tagging.fields import TagField
 from tendenci.apps.perms.models import TendenciBaseModel
@@ -26,6 +27,7 @@ def file_directory(instance, filename):
 class Staff(OrderingBaseModel, TendenciBaseModel):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=75, unique=True)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     department = models.ForeignKey('Department', blank=True, null=True, on_delete=models.SET_NULL)
     positions = models.ManyToManyField('Position', blank=True)
     education = models.TextField(blank=True, null=True)
