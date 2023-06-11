@@ -1,5 +1,5 @@
 import requests
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import pprint
 
 from django.conf import settings
@@ -118,11 +118,13 @@ class HigherLogicAPI:
         for registrant in regs:
             reg8n = registrant.registration 
             event = reg8n.event
-            if event.registration_configuration.enabled:
-                community_groups.append({"GroupId": f'event-{event.id}',
-                    "GroupName": event.title,
-                    "GroupType": "Event",
-                    "Role": ''})
+            # skip the past events
+            if event.start_dt > now - timedelta(days=1): 
+                if event.registration_configuration.enabled:
+                    community_groups.append({"GroupId": f'event-{event.id}',
+                        "GroupName": event.title,
+                        "GroupType": "Event",
+                        "Role": ''})
         return community_groups
 
     def get_user_address_list(self, profile):

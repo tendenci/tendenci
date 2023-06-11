@@ -15,12 +15,10 @@ def save_unpushed_items(sender, **kwargs):
     """
     instance = kwargs['instance']
     deleted = kwargs.get('deleted', False)
-    if sender in (User, Profile, Registrant, MembershipDefault, Staff, GroupMembership):
-        user_id = instance.user.id
-        
+    if sender in (User, Profile, Registrant, MembershipDefault, Staff, GroupMembership):        
         if sender is User:
             user = instance
-        if sender is Profile:
+        elif sender is Profile:
             profile = instance
             user = profile.user
         else:
@@ -38,7 +36,7 @@ def save_unpushed_items(sender, **kwargs):
             identifier = profile.account_id       
 
             params = {
-                'user_id': user_id,
+                'user_id': user.id,
                 'identifier': identifier,
                 'deleted': deleted
             }
