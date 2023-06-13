@@ -62,6 +62,9 @@ urlpatterns = [
     re_path(r'^%s/export/status/(?P<identifier>\d+)/$' % urlpath, views.export_status, name="event.export_status"),
     re_path(r'^%s/export/download/(?P<identifier>\d+)/$' % urlpath, views.export_download, name="event.export_download"),
 
+    # event badges
+    re_path(r'^%s/(?P<event_id>\d+)/badges/$' % urlpath, views.event_badges, name='event.badges'),
+
     # speakers_list view does not exist
     re_path(r'^%s/(?P<event_id>\d+)/speakers/$' % urlpath, views.speaker_list, name="event.speakers"),
     re_path(r'^%s/(?P<event_id>\d+)/attendees/$' % urlpath, views.view_attendees, name="event.attendees"),
@@ -110,6 +113,9 @@ urlpatterns = [
 
     re_path(r'^%s/types/$' % urlpath, views.types, name='event.types'),
     re_path(r'^%s/reassign_type/(?P<type_id>\d+)$' % urlpath, views.reassign_type, name='event.reassign_type'),
+
+    # registrant badge
+    re_path(r'^%s/registrants/(?P<registrant_id>\d+)/badge/$' % urlpath, views.registrant_badge, name='registrant.badge'),
 
     # registrants (search/view); admin-only
     re_path(r'^%s/registrants/search/$' % urlpath, views.global_registrant_search, name="event.global.registrant.search"),
