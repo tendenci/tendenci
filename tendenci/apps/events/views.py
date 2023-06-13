@@ -3769,6 +3769,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 
     return render_to_resp(request=request, template_name=template_name, context={
         'event': event,
+        'use_badges': settings.USE_BADGES,
         'registrants': registrants,
         'balance_sum': balance_sum,
         'total_sum': total_sum,
@@ -3826,6 +3827,61 @@ def registrant_details(request, id=0, hash='', template_name='events/registrants
             context={'registrant': registrant})
     else:
         raise Http403
+
+
+@is_enabled('events')
+@login_required
+def event_badges(request, event_id=0, template_name='events/badges.html'):
+    event = get_object_or_404(Event, pk=event_id)
+
+    if not has_perm(request.user,'events.view_event', event) and settings.USE_BADGES:
+        raise Http403
+
+    registrations = event.registration_set.all()
+    registrants = list()
+    current_batch = list()
+
+    for registration in registrations:
+        for registrant in registration.registrant_set.filter(cancel_dt__isnull=True):
+            has_max_badges_per_page = len(current_batch) == 6
+
+            if not has_max_badges_per_page:
+                current_batch.append(registrant)
+            if has_max_badges_per_page:
+                registrants.append({'display': 'front', 'registrants': current_batch.copy()})
+                registrants.append({'display': 'back', 'registrants': current_batch.copy()})
+                current_batch = list()
+
+    if current_batch:
+        registrants.append({'display': 'front', 'registrants': current_batch.copy()})
+        registrants.append({'display': 'back', 'registrants': current_batch.copy()})
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+            'registrants': registrants,
+            'event': event,
+        })
+
+
+@is_enabled('events')
+@login_required
+def registrant_badge(request, registrant_id=0, template_name='events/badges.html'):
+    registrant = get_object_or_404(Registrant, pk=registrant_id)
+
+    if not has_perm(request.user,'registrants.view_registrant', registrant) and settings.USE_BADGES:
+        raise Http403
+
+
+    registrants = [
+        {'display': 'front', 'registrants': [registrant]},
+        {'display': 'back', 'registrants': [registrant]},
+    ]
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+            'registrants': registrants,
+            'event': registrant.registration.event,
+        })
 
 
 @is_enabled('events')

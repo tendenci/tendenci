@@ -118,3 +118,9 @@ table#registrant-table a:hover {
 #checked-in-total{
 	text-align: center;
 }
+.print-badges {
+	width: 99%;
+}
+.print-badge-cell {
+	padding: 5px;
+}
