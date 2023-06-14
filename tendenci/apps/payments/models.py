@@ -2,11 +2,13 @@ import uuid
 
 import stripe
 
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.payments.stripe.utils import stripe_set_app_info
 from tendenci.apps.site_settings.utils import get_setting
 
 
@@ -291,17 +293,29 @@ class PaymentMethod(models.Model):
 
 
 class RefundQuerySet(models.QuerySet):
+    def connect_to_stripe(self):
+        """Make sure Stripe has the API Key"""
+        stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+        stripe.api_version = settings.STRIPE_API_VERSION
+        stripe_set_app_info(stripe)
+
     def create(self, *args, **kwargs):
         """Refund through Stripe and save record of transaction"""
         instance = super().create(*args, **kwargs)
         try:
             amount_in_cents = int(instance.amount * 100)
-            response = stripe.Refund.create(
-                charge=instance.trans_id,
-                amount=amount_in_cents,
-            )
+            params = {'charge': instance.trans_id, 'amount': amount_in_cents}
+            stripe_connected_account, scope = instance.invoice.stripe_connected_account()
+
+            if stripe_connected_account:
+                params.update({'stripe_account': stripe_connected_account})
+                if scope == "express":
+                    params.update({'refund_application_fee':True})
+
+            self.connect_to_stripe()
+            response = stripe.Refund.create(**params)
             instance.update_stripe(response)
-        except stripe.error.StripeError as e:
+        except Exception as e:
             instance.response_status = Refund.Status.FAILED
             instance.error_message = e
             instance.save(update_fields=['error_message', 'response_status'])
@@ -310,7 +324,6 @@ class RefundQuerySet(models.QuerySet):
 
 class RefundManager(models.Manager.from_queryset(RefundQuerySet)):
     pass
-
 
 
 class Refund(models.Model):
@@ -359,5 +372,4 @@ class Refund(models.Model):
 
     @property
     def net_amount(self):
-        print(self.amount * -1)
         return self.amount * -1
