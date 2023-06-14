@@ -557,7 +557,7 @@ class Invoice(models.Model):
         try:
             self.__refund(user, amount)
         except Exception as e:
-            self.__send_failed_refund_notice(amount)
+            self.__send_failed_refund_notice(amount, e)
             raise
 
         # Update line item to show refund
@@ -631,11 +631,11 @@ class Invoice(models.Model):
 
             remaining_amount -= available_amount
 
-    def __send_failed_refund_notice(self, amount):
+    def __send_failed_refund_notice(self, amount, error):
         """Send Admin notice in case of failed refund"""
         recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
         if recipients:
-            message = self.get_refund_failure_message(amount)
+            message = self.get_refund_failure_message(amount, error)
             self.__send_refund_confirmation(
                 amount, message, recipients, is_admin_notice=True, failed=True)
 
@@ -670,7 +670,7 @@ class Invoice(models.Model):
         obj = self.get_object()
         return getattr(obj, 'event', None)
 
-    def get_refund_failure_message(self, amount):
+    def get_refund_failure_message(self, amount, error):
         """Get default refund failure message"""
         message = f"Refund to {self.owner.first_name} {self.owner.last_name} in amount ${amount} " \
                   f"failed to process through Stripe"
@@ -678,7 +678,7 @@ class Invoice(models.Model):
         if self.event:
             message += f" for {self.event.title} on {self.event.display_start_date}"
 
-        return f"{message}."
+        return f"{message}. Reason for failure: {error}."
 
     def get_refund_confirmation_message(self, amount):
         """Get default refund confirmation message"""
