@@ -302,6 +302,7 @@ class HigherLogicAPI:
             api_url = self.api_base_url + '/contactinfo'
             res = self.post_requests(api_url, request_list)
             self.process_response(res)
+            return res
 
     def remove_user(self, account_id):
         request_list = [{'ContactDetails': {
