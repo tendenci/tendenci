@@ -84,10 +84,12 @@ from tendenci.apps.base.utils import get_next_url
 
 @login_required
 def memberships_search(request, app_id=0, template_name="memberships/search-per-app.html"):
+    """
+    Allow users with membership view permission to access, but export and email are limited to
+    those with change permission.
+    """
     app = get_object_or_404(MembershipApp, pk=app_id)
-    """
-    Allow users with membership view permission to access
-    """
+
     if not has_perm(request.user, 'memberships.view_membershipdefault'):
         raise Http403
 
