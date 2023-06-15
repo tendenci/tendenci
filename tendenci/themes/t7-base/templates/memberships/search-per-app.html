@@ -73,9 +73,11 @@ h3{
 				<div id="members-wrap">
 				<table class="table table-striped table-bordered">
 					<tr>
+					{% if has_change_perm %}
 					<th><input type="checkbox" id="select_members_all" class="action-select"></th>
 					<th>View</th>
 					<th>Edit</th>
+					{% endif %}
 					{% for app_field in app_fields %}
 						<th nowrap>{{ app_field.label }}</th>
 					{% endfor %}
@@ -88,9 +90,11 @@ h3{
 			
 					{% for membership in memberships %}
 					<tr>
+						{% if has_change_perm %}
 						<td><input type="checkbox" name="selected_members" value="{{ membership.id }}" class="action-select"></td>
 						<td><a href="{% url "membership.details" membership.id  %}"><img src="{% static 'images/icons/external_16x16.png' %}" alt="View membership: {{ membership }}"></a></td>
 						<td><a href="{% url "membership_default.edit" membership.id  %}">{% trans "Edit" %}</a></td>
+						{% endif %}
 						{% render_member_row membership app_fields %}
 						<td nowrap>{{ membership.create_dt|date:"N j, Y" }}</td>
 						<td nowrap>{{ membership.join_dt|date:"N j, Y" }}</td>
@@ -108,7 +112,7 @@ h3{
 		        {% paginate %}
 
 				{# display email_form here #}
-				
+				{% if has_change_perm %}
 				{% if total_members > 0 and not search_form.errors.values %}
 				<div class="big" style="margin-top: 2em;">				
 					<a id="toggle-email-form"  data-toggle="collapse" href="#email-form" aria-expanded="false" aria-controls="email-form">
@@ -150,6 +154,7 @@ h3{
 					</div>
 				 
 				</div>
+				{% endif %}
 				{% endif %}
 
 				</form>

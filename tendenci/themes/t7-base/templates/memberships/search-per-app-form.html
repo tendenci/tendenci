@@ -11,7 +11,9 @@
 	            {% trans "Search" %}
 	        </button>
 			<a href="" class="clearall">{% trans "Clear All" %}</a>
+			{% if has_change_perm %}
 			<button type="submit" name="export" id="export-btn" class="btn btn-xs btn-info">{% trans 'Export' %}</button>
+			{% endif %}
 	    </div>
 	</div>
 

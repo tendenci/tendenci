@@ -85,8 +85,14 @@ from tendenci.apps.base.utils import get_next_url
 @login_required
 def memberships_search(request, app_id=0, template_name="memberships/search-per-app.html"):
     app = get_object_or_404(MembershipApp, pk=app_id)
-    if not has_perm(request.user, 'memberships.change_membershipdefault'):
+    """
+    Allow users with membership view permission to access
+    """
+    if not has_perm(request.user, 'memberships.view_membershipdefault'):
         raise Http403
+
+    # check if you has the change perm
+    has_change_perm = has_perm(request.user, 'memberships.change_membershipdefault')
 
     memberships = MembershipDefault.objects.filter(app_id=app.id
                                     ).exclude(status_detail='archive')
@@ -143,6 +149,8 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
         memberships = memberships.order_by('user__last_name', 'user__first_name')
     
         if 'export' in request.GET:
+            if not has_change_perm:
+                raise Http403
             EventLog.objects.log(description="memberships export from memberships search")
     
             response = StreamingHttpResponse(
@@ -165,6 +173,8 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
 
         if ('email_members' in request.POST or 'email_members_selected' in request.POST) \
                 and email_form.is_valid():
+            if not has_change_perm:
+                raise Http403
             if 'email_members_selected' in request.POST:
                 selected_members = request.POST.getlist('selected_members')
                 if selected_members:
@@ -198,6 +208,7 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
     return render_to_resp(request=request, template_name=template_name,
         context={
             'memberships': memberships,
+            'has_change_perm': has_change_perm,
             'search_form': form,
             'email_form': email_form,
             'total_members': memberships.count(),
