@@ -2774,79 +2774,9 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                 'event.cancel_registration', args=[event.pk, registration.pk]))
 
         # check if already canceled. if so, do nothing
-        confirmation_message = None
         if not registration.canceled:
-            refund_amount = 0
-            allow_refunds = get_setting('module', 'events', 'allow_refunds')
+            registration.cancel(request)
 
-            for registrant in registrants:
-                user_is_registrant = False
-                if not request.user.is_anonymous and registrant.user:
-                    if request.user.id == registrant.user.id:
-                        user_is_registrant = True
-
-                registrant.cancel_dt = datetime.now()
-                registrant.save()
-
-                # update the amount_paid in registration
-                if registrant.amount:
-                    if registrant.registration.amount_paid:
-                        registrant.registration.amount_paid -= registrant.amount
-                        registrant.registration.save()
-
-                    # update the invoice if invoice is not tendered
-                    invoice = registrant.registration.invoice
-                    if invoice and not invoice.is_tendered:
-                        invoice.total -= registrant.amount
-                        invoice.subtotal -= registrant.amount
-                        invoice.balance -= registrant.amount
-                        invoice.save(request.user)
-
-                    # Update invoice with cancellation fee if one set.
-                    registrant.process_cancellation_fee(request.user)
-                    refund_amount += registrant.amount
-
-                recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-                if recipients and notification:
-                    notification.send_emails(recipients, 'event_registration_cancelled', {
-                        'event':event,
-                        'user':request.user,
-                        'registrants_paid':event.registrants(with_balance=False),
-                        'registrants_pending':event.registrants(with_balance=True),
-                        'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
-                        'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
-                        'registrant':registrant,
-                        'user_is_registrant': user_is_registrant,
-                        'allow_refunds': allow_refunds,
-                        'can_refund': invoice.can_refund,
-                        'can_auto_refund': invoice.can_auto_refund,
-                    })
-
-
-                # Log an event for each registrant in the loop
-                EventLog.objects.log(instance=registrant)
-
-            # Refund if automatic refunds turned on
-            if registration.invoice.can_auto_refund and refund_amount:
-                try:
-                    refund_amount = min(refund_amount, registration.invoice.refundable_amount)
-                    confirmation_message = get_refund_confirmation_message(event, registrants)
-                    registration.invoice.refund(
-                        refund_amount,
-                        request.user,
-                        confirmation_message,
-                    )
-                except:
-                    messages.set_level(request, messages.ERROR)
-                    error_message = f"Refund in the amount of ${refund_amount} failed to process. " \
-                                    f"Please contact support."
-                    messages.error(request, _(error_message))
-
-            registration.canceled = True
-            registration.save()
-
-        if confirmation_message:
-            messages.success(request, _(confirmation_message))
         return HttpResponseRedirect(
             reverse('event.registration_confirmation',
             args=[event.pk, registration.registrant.hash])
@@ -2908,81 +2838,8 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
             return HttpResponseRedirect(reverse(
                 'event.cancel_registrant', args=[event.pk, registrant.pk]))
 
-        # check if already canceled. if so, do nothing
-        confirmation_message = None
-        if not registrant.cancel_dt:
-            user_is_registrant = False
-            if request.user.is_authenticated and registrant.user:
-                if request.user == registrant.user:
-                    user_is_registrant = True
-
-            registrant.cancel_dt = datetime.now()
-            registrant.save()
-
-            # update the amount_paid in registration
-            if registrant.amount:
-                if registrant.registration.amount_paid:
-                    registrant.registration.amount_paid -= registrant.amount
-                    registrant.registration.save()
-
-                # update the invoice if invoice is not tendered
-                invoice = registrant.registration.invoice
-                if not invoice.is_tendered:
-                    invoice.total -= registrant.amount
-                    invoice.subtotal -= registrant.amount
-                    invoice.balance -= registrant.amount
-                    invoice.save(request.user)
-
-                # Update invoice with cancellation fee if one set.
-                registrant.process_cancellation_fee(request.user)
-
-            # check if all registrants in this registration are canceled.
-            # if so, update the canceled field.
-            reg8n = registrant.registration
-            exist_not_canceled = Registrant.objects.filter(
-                                registration=reg8n,
-                                cancel_dt__isnull=True
-                                ).exists()
-            if not exist_not_canceled:
-                reg8n.canceled = True
-                reg8n.save()
-
-            EventLog.objects.log(instance=registrant)
-
-            recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-
-            # Refund if automatic refunds turned on
-            allow_refunds = get_setting('module', 'events', 'allow_refunds')
-            can_auto_refund = invoice.can_auto_refund
-            if invoice.can_auto_refund and registrant.amount:
-                try:
-                    refund_amount = min(registrant.amount, invoice.refundable_amount)
-                    confirmation_message = get_refund_confirmation_message(event, [registrant])
-                    invoice.refund(refund_amount, request.user, confirmation_message)
-                except:
-                    messages.set_level(request, messages.ERROR)
-                    error_message = f"Refund in the amount of ${refund_amount} failed to process. " \
-                                   f"Please contact support."
-                    messages.error(request, _(error_message))
-
-            if recipients and notification:
-                notification.send_emails(recipients, 'event_registration_cancelled', {
-                    'event':event,
-                    'user':request.user,
-                    'registrants_paid':event.registrants(with_balance=False),
-                    'registrants_pending':event.registrants(with_balance=True),
-                    'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
-                    'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
-                    'registrant':registrant,
-                    'user_is_registrant': user_is_registrant,
-                    'allow_refunds': allow_refunds,
-                    'can_refund': invoice.can_refund,
-                    'can_auto_refund': can_auto_refund,
-                })
-
+        registrant.cancel(request)
         # back to invoice
-        if confirmation_message:
-            messages.success(request, _(confirmation_message))
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', args=[event.pk, registrant.hash]))
 

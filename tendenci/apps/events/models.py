@@ -5,6 +5,7 @@ import operator
 from datetime import datetime, timedelta
 from functools import reduce
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
@@ -22,8 +23,11 @@ from tagging.fields import TagField
 from timezone_field import TimeZoneField
 
 from tendenci.apps.events.managers import EventManager, RegistrantManager, EventTypeManager
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.notifications import models as notification
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.utils import get_notice_recipients
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
@@ -712,6 +716,50 @@ class Registration(models.Model):
             #notify the admins too
             email_admins(self.event, self.invoice.total, self_reg8n, self, registrants)
 
+    def refund(self, request, refund_amount, confirmation_message):
+        """Refund this registrant's invoice"""
+        if get_setting('module', 'events', 'allow_refunds') == "No":
+            return
+
+        try:
+            self.invoice.refund(refund_amount, request.user, confirmation_message)
+        except:
+            messages.set_level(request, messages.ERROR)
+            error_message = f"Refund in the amount of ${refund_amount} failed to process. " \
+                            f"Please contact support."
+            messages.error(request, _(error_message))
+
+        messages.success(request, _(confirmation_message))
+
+    def cancel(self, request, refund=True):
+        """
+        Cancel all registrants on this registration.
+        Refunding here is optional in the case that it is done
+        separately (ex in the Refund menu)
+
+        Call registrant.cancel with check_registration_status set and
+        refund set to False to  hold off on these tasks until after
+        the loop.
+        """
+        if self.canceled:
+            return
+
+        registrants = self.registrant_set.filter(cancel_dt__isnull=True)
+        refund_amount = 0
+
+        for registrant in registrants:
+            registrant.cancel(request, check_registration_status=False, refund=False)
+            if registrant.amount:
+                refund_amount += registrant.amount
+
+        # Refund if applicable
+        if refund and self.invoice.can_auto_refund and refund_amount:
+            confirmation_message = self.event.get_refund_confirmation_message(registrants)
+            self.refund(request, refund_amount, confirmation_message)
+
+        self.canceled = True
+        self.save()
+
     def status(self):
         """
         Returns registration status.
@@ -1053,6 +1101,120 @@ class Registrant(models.Model):
 
     def get_absolute_url(self):
         return reverse('event.registration_confirmation', args=[self.registration.event.pk, self.registration.pk])
+
+    @property
+    def invoice(self):
+        """Invoice for this registrant"""
+        return self.registration.invoice
+
+    def cancel(self, request, check_registration_status=True, refund=True):
+        """
+        Cancel registrant.
+
+        By default, check and update Registration status if all
+        registrants have canceled. This can be turned off in the case
+        of looping through and cancelling all registrants. In that
+        case, it would be done at the end of the loop.
+        See Registration.cancel
+
+        By default, will refund if configured for auto refunds.
+        Turn this off if refund is being done separately in Refund menu.
+        """
+        if self.cancel_dt:
+            return
+
+        can_refund = False
+        can_auto_refund = False
+        confirmation_message = None
+        if self.invoice.can_auto_refund and self.amount:
+            confirmation_message = self.event.get_refund_confirmation_message([self])
+
+        self.cancel_dt = datetime.now()
+        self.save()
+
+        # update the amount_paid in registration
+        if self.amount:
+            if self.registration.amount_paid:
+                self.registration.amount_paid -= self.amount
+                self.registration.save()
+
+            # update the invoice if invoice is not tendered
+            if not self.invoice.is_tendered:
+                self.invoice.total -= self.amount
+                self.invoice.subtotal -= self.amount
+                self.invoice.balance -= self.amount
+                self.invoice.save(request.user)
+
+            # Update invoice with cancellation fee if one set.
+            self.process_cancellation_fee(request.user)
+
+            can_refund = self.invoice.can_refund
+            can_auto_refund = self.invoice.can_auto_refund
+            # Refund if applicable
+            if refund and can_auto_refund:
+                self.refund(request, confirmation_message)
+
+        # check if all registrants in this registration are canceled.
+        # if so, update the canceled field.
+        reg8n = self.registration
+        if check_registration_status and not reg8n.registrant_set.filter(
+                registration=reg8n,
+                cancel_dt__isnull=True
+        ).exists():
+            reg8n.canceled = True
+            reg8n.save()
+        EventLog.objects.log(instance=self)
+
+        # Notify of cancellation
+        self.send_cancellation_notification(request.user, can_refund, can_auto_refund, refund)
+
+    @property
+    def refund_amount(self):
+        return min(self.amount, self.invoice.refundable_amount)
+
+    def refund(self, request, confirmation_message):
+        """Refund this registrant's invoice"""
+        if get_setting('module', 'events', 'allow_refunds') == "No":
+            return
+
+        try:
+            refund_amount = self.refund_amount
+            if refund_amount:
+                self.invoice.refund(self.refund_amount, request.user, confirmation_message)
+        except:
+            messages.set_level(request, messages.ERROR)
+            error_message = f"Refund in the amount of ${registrant.refund_amount} failed to process. " \
+                            f"Please contact support."
+            messages.error(request, _(error_message))
+
+        messages.success(request, _(confirmation_message))
+
+    def send_cancellation_notification(self, user, can_refund, can_auto_refund, include_refund=True):
+        """
+        Send cancellation notification.
+
+        include_refund defaults to True to include refund info in email.
+        Turn this off if refund is separate. This can happen if refund is
+        processed separately (ex: when cancelling from the Refund menu)
+        """
+        user_is_registrant = user.is_authenticated and self.user and user == self.user
+        recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+
+        allow_refunds =  get_setting('module', 'events', 'allow_refunds') and include_refund
+        if recipients and notification:
+            notification.send_emails(recipients, 'event_registration_cancelled', {
+                'event': self.event,
+                'user': user,
+                'registrants_paid': self.event.registrants(with_balance=False),
+                'registrants_pending': self.event.registrants(with_balance=True),
+                'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+                'registrant': self,
+                'user_is_registrant': user_is_registrant,
+                'allow_refunds': allow_refunds,
+                'can_refund': can_refund and include_refund,
+                'can_auto_refund': can_auto_refund and include_refund,
+            })
 
     def reg8n_status(self):
         """
@@ -1493,6 +1655,37 @@ class Event(TendenciBaseModel):
             if self.start_dt:
                 return "{0.day} {0:%b %Y}".format(self.start_dt)
         return ''
+
+    def get_refund_confirmation_message(self, registrants, include_invoice_url=False):
+        """
+        Get refund confirmation message for registrants.
+        In some cases, we will leave out the invoice_url (ex. in an email where we already include it).
+        This will also be the cancellation confirmation message when auto refunds are turned on.
+        """
+        invoice = registrants[0].invoice
+        amount = 0
+        fee = 0
+
+        for registrant in registrants:
+            amount += registrant.amount
+            fee += registrant.cancellation_fee
+
+        amount = min(amount, invoice.refundable_amount)
+        fee = min(fee, invoice.total_cancellation_fees_pending)
+
+        cancellation_fee_message = ""
+        if fee:
+            cancellation_fee_message = f", and your cancellation fee of ${fee} processed"
+
+        message = f"Your registration fee in the amount of ${amount} for {self.title} on " \
+                  f"{self.display_start_date} has been canceled{cancellation_fee_message}. "
+
+        if include_invoice_url:
+            invoice_url = reverse('invoice.view', args=[invoice.pk, invoice.guid])
+            message += f"You may access your final registration invoice " \
+                       f"<a class='alert-link' href={invoice_url}> here</a>."
+
+        return message
 
     def registrants(self, **kwargs):
         """
