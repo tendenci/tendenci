@@ -86,7 +86,12 @@
         {% trans "To be deducted when refund is larger than pending cancellation fees." %}
       </div>
       {% endif %}
-
+      {% if allow_cancel %}
+      <div class="field-wrapper">
+        <label class="field-label">{% trans 'Cancel Registration?' %}</label>
+        <div>{{form.cancel_registration}}</div>
+      </div>
+      {% endif %}
       <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Submit' %}" id="adjust-sumit-button" />
     </form>
     <br /><br />

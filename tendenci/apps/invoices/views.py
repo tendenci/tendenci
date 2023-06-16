@@ -232,11 +232,18 @@ def refund(request, id, template_name='invoices/refund.html'):
         if form.is_valid():
 
             try:
+                amount = form.cleaned_data.get('amount')
+                # Cancel registration if indicated. This needs
+                # to happen before refund so that cancellation
+                # fees are deducted.
+                if form.cleaned_data.get('cancel_registration'):
+                    invoice.registration.cancel(request)
+                    # If we canceled using the refund form, the amount entered into
+                    # the form might be greater than the refundable amount
+                    amount = min(amount, invoice.refundable_amount)
+
                 # update invoice; make accounting entries
-                invoice.refund(
-                    form.cleaned_data.get('amount'),
-                    request.user,
-                )
+                invoice.refund(amount, request.user)
 
                 EventLog.objects.log(instance=invoice)
                 messages.add_message(
@@ -261,14 +268,19 @@ def refund(request, id, template_name='invoices/refund.html'):
         form = RefundForm(
             initial={
                 'amount': invoice.refundable_amount,
-                'process_cancellation_fees_count': invoice.cancellation_fee_count,
+                'cancel_registration': False,
             })
 
+
+    allow_cancel = False
+    if invoice.registration:
+        allow_cancel = not invoice.registration.canceled
 
     return render_to_resp(
         request=request, template_name=template_name, context={
             'invoice': invoice,
             'form': form,
+            'allow_cancel': allow_cancel,
         })
 
 

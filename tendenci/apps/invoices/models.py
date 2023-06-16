@@ -670,6 +670,22 @@ class Invoice(models.Model):
         obj = self.get_object()
         return getattr(obj, 'event', None)
 
+    @property
+    def registration(self):
+        """If Invoice is tied to an event, then the obj is a Registration"""
+        if self.event:
+            obj = self.get_object()
+            return obj
+        return None
+
+    def cancel_registration(self, request, refund=False):
+        """Cancel registration for this invoice"""
+        if not self.registration:
+            raise Exception(_("No registration to cancel."))
+
+        self.registration.cancel(request, refund)
+
+
     def get_refund_failure_message(self, amount, error):
         """Get default refund failure message"""
         message = f"Refund to {self.owner.first_name} {self.owner.last_name} in amount ${amount} " \
