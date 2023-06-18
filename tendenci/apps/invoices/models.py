@@ -729,14 +729,16 @@ class Invoice(models.Model):
     @property
     def admin_refund_failure_message(self):
         """Message to display to confirm refund failed"""
-        profile_url = reverse('profile', args=[self.owner.username])
-        name = f"{self.owner.first_name} {self.owner.last_name}"
-        message = f"Refund to <a class='alert-link' href={profile_url}>{name}</a>"
+        if self.owner:
+            profile_url = reverse('profile', args=[self.owner.username])
+            name = f"{self.owner.first_name} {self.owner.last_name}"
+            message = f"Refund to <a class='alert-link' href={profile_url}>{name}</a>"
+        else:
+            name = f"{self.bill_to} {self.bill_to_email}"
+            message = f"Refund to {name}"
 
         if not self.event:
             return f"{message} has failed to process through Stripe."
-
-        profile_url = reverse('profile', args=[self.owner.username])
 
         return f"{message} for {self.event.title} on {self.event.display_start_date} " \
                f"has failed to process through Stripe."
