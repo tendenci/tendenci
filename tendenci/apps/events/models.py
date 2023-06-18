@@ -1183,7 +1183,7 @@ class Registrant(models.Model):
                 self.invoice.refund(self.refund_amount, request.user, confirmation_message)
         except:
             messages.set_level(request, messages.ERROR)
-            error_message = f"Refund in the amount of ${registrant.refund_amount} failed to process. " \
+            error_message = f"Refund in the amount of ${self.refund_amount} failed to process. " \
                             f"Please contact support."
             messages.error(request, _(error_message))
 
