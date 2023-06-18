@@ -714,14 +714,16 @@ class Invoice(models.Model):
     @property
     def admin_refund_confirmation_message(self):
         """Message to display to confirm refund completed"""
-        profile_url = reverse('profile', args=[self.owner.username])
-        name = f"{self.owner.first_name} {self.owner.last_name}"
-        message = f"Refund to <a class='alert-link' href={profile_url}>{name}</a>"
+        if self.owner:
+            profile_url = reverse('profile', args=[self.owner.username])
+            name = f"{self.owner.first_name} {self.owner.last_name}"
+            message = f"Refund to <a class='alert-link' href={profile_url}>{name}</a>"
+        else:
+            name = f"{self.bill_to} {self.bill_to_email}"
+            message = f"Refund to {name}"
 
         if not self.event:
             return f"{message} has been processed."
-
-        profile_url = reverse('profile', args=[self.owner.username])
 
         return f"{message} for {self.event.title} on {self.event.display_start_date} " \
                f"has been processed."
