@@ -232,25 +232,24 @@ def refund(request, id, template_name='invoices/refund.html'):
         if form.is_valid():
 
             try:
+                message = _(invoice.admin_refund_confirmation_message)
                 amount = form.cleaned_data.get('amount')
                 # Cancel registration if indicated. This needs
                 # to happen before refund so that cancellation
                 # fees are deducted.
                 if form.cleaned_data.get('cancel_registration'):
-                    invoice.registration.cancel(request)
-                    # If we canceled using the refund form, the amount entered into
-                    # the form might be greater than the refundable amount
-                    amount = min(amount, invoice.refundable_amount)
+                    invoice.registration.cancel(request, refund=False)
+                    message += _(" Registration has been canceled.")
+                    # If we canceled using the refund form, we need to make
+                    # sure the invoice is updated so it doesn't fail the
+                    # check for max refundable amount
+                    invoice.refresh_from_db()
 
                 # update invoice; make accounting entries
                 invoice.refund(amount, request.user)
 
                 EventLog.objects.log(instance=invoice)
-                messages.add_message(
-                    request,
-                    messages.SUCCESS,
-                    _(invoice.admin_refund_confirmation_message),
-                )
+                messages.add_message(request, messages.SUCCESS, message)
 
                 return redirect(invoice)
 
