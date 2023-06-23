@@ -29,7 +29,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.notifications.utils import send_notifications
 from tendenci.apps.payments.forms import MarkAsPaidForm, RefundForm
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.payments.models import Payment
+from tendenci.apps.payments.models import (Payment, Refund)
 from tendenci.apps.invoices.forms import ReportsOverviewForm, AdminNotesForm, AdminVoidForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
 from tendenci.apps.invoices.utils import invoice_pdf, iter_invoices
 from tendenci.apps.emails.models import Email
@@ -65,6 +65,13 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
                                           create_dt__date__gte=start_dt,
                                           create_dt__date__lte=end_dt
                                           ).exclude(trans_id='')
+        refunds = Refund.objects.filter(
+            response_status=Refund.Status.SUCCEEDED,
+            transaction_dt__date__gte=start_dt,
+            transaction_dt__date__lte=end_dt,
+            invoice__is_void=False
+        )
+
         if entity:
             invoices = invoices.filter(entity=entity)
             payments = payments.filter(invoice__entity=entity)
@@ -72,11 +79,13 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
         invoice_total_amount_paid = invoices.filter(balance__lte=0).aggregate(Sum('total'))['total__sum'] or 0
         invoice_total_balance = invoices.aggregate(Sum('balance'))['balance__sum'] or 0
         total_cc = payments.aggregate(Sum('amount'))['amount__sum'] or 0
-
+        total_refunds = refunds.aggregate(Sum('amount'))['amount__sum'] * -1 or 0
         total_amount_by_object_type = invoices.values('object_type__app_label').annotate(sum=Sum('total')).order_by('-sum')
-        amount_paid_by_object_type = invoices.filter(balance__lte=0).values('object_type__app_label').annotate(sum=Sum('total')).order_by('-sum')
+        amount_paid_by_object_type = invoices.filter(balance__lte=0).values('object_type__app_label').annotate(sum=Sum('total'), refunds=Sum('refunds')).order_by('-sum')
         total_balance_by_object_type = invoices.filter(balance__gt=0).values('object_type__app_label').annotate(balance_sum=Sum('balance')).order_by('-balance_sum')
         total_cc_by_object_type = payments.filter(invoice__balance__lte=0).values('invoice__object_type__app_label').annotate(sum=Sum('amount')).order_by('-sum')
+
+        invoice_total_amount_paid += total_refunds
 
         total_amount_d = {}
         amount_paid_d = {}
@@ -88,7 +97,8 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
                 total_amount_d[item['object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount)]
         for item in amount_paid_by_object_type:
             if item['sum']:
-                amount_paid_d[item['object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount_paid)]
+                net_amount = item['sum'] - item.get('refunds', 0)
+                amount_paid_d[item['object_type__app_label'] or 'unknown'] = [net_amount, '{0:.2%}'.format(net_amount/invoice_total_amount_paid)]
         for item in total_balance_by_object_type:
             if item['balance_sum']:
                 balance_d[item['object_type__app_label'] or 'unknown'] = [item['balance_sum'], '{0:.2%}'.format(item['balance_sum']/invoice_total_balance)]
@@ -108,7 +118,9 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
                  'invoice_total_amount': invoice_total_amount,
                  'invoice_total_amount_paid': invoice_total_amount_paid,
                  'invoice_total_balance': invoice_total_balance,
-                 'total_cc': total_cc})
+                 'total_cc': total_cc,
+                 'total_refunds': total_refunds,
+                 })
 
 
 @is_enabled('invoices')

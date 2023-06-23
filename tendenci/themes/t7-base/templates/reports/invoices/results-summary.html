@@ -9,6 +9,7 @@
                 <th>{% trans 'Count' %}</th>
                 <th>{% trans 'Total' %}</th>
                 <th>{% trans 'Payments' %}</th>
+                <th>{% trans 'Refunds' %}</th>
                 <th>{% trans 'Balance' %}</th>
             </tr>
             {% for item in results %}
@@ -17,6 +18,7 @@
                 <td>{{ item.count }} invoices</td>
                 <td>{{ item.total__sum|format_currency }}</td>
                 <td>{{ item.payments_credits__sum|format_currency }}</td>
+                <td>{{ item.refunds__sum|format_currency }}</td>
                 <td>{{ item.balance__sum|format_currency }}</td>
             </tr>
             {% endfor %}
@@ -25,6 +27,7 @@
                 <th>{{ totals.count }} invoices</th>
                 <th>{{ totals.total|format_currency }}</th>
                 <th>{{ totals.payments_credits|format_currency }}</th>
+                <th>{{ totals.refunds|format_currency }}</th>
                 <th>{{ totals.balance|format_currency }}</th>
             </tr>
         </table>
@@ -49,12 +52,14 @@
                 <th>{% trans 'Count' %}</th>
                 <th>{% trans 'Total' %}</th>
                 <th>{% trans 'Payments' %}</th>
+                <th>{% trans 'Refunds' %}</th>
                 <th>{% trans 'Balance' %}</th>
             </tr>
             <tr class="summary-labels">
                 <th>{{ item.count }} {% trans 'invoices' %}</th>
                 <th>{{ item.total__sum|format_currency }}</th>
                 <th>{{ item.payments_credits__sum|format_currency }}</th>
+                <th>{{ item.refunds__sum|format_currency }}</th>
                 <th>{{ item.balance__sum|format_currency }}</th>
             </tr>
         </table>
@@ -66,6 +71,7 @@
                 <th>{% trans 'Title' %}</th>
                 <th>{% trans 'Total' %}</th>
                 <th>{% trans 'Payments' %}</th>
+                <th>{% trans 'Refunds' %}</th>
                 <th>{% trans 'Balance' %}</th>
             </tr>
         {% for summary in item.summary %}
@@ -81,6 +87,7 @@
                     {% elif invoice.title %}{{ invoice.title }}{% endif %}</a></td>
                 <td class="inv-total">{{ summary.total|format_currency }}</td>
                 <td class="inv-payments-credits">{{ summary.payments_credits|format_currency }}</td>
+                <td class="inv-payments-credits">{{summary.refunds|format_currency}}</td>
                 <td class="inv-balance">{{ summary.balance|format_currency }}</td>
             </tr>
             {% endwith %}
@@ -89,12 +96,14 @@
                 <th>{% trans 'Title' %}</th>
                 <th>{% trans 'Total' %}</th>
                 <th>{% trans 'Payments' %}</th>
+                <th>{% trans 'Refunds' %}</th>
                 <th>{% trans 'Balance' %}</th>
             </tr>
             <tr class="summary-labels">
                 <th>{% trans 'Summary' %}</th>
                 <th>{{ item.total__sum|format_currency }}</th>
                 <th>{{ item.payments_credits__sum|format_currency }}</th>
+                <th>{{ item.refunds__sum|format_currency }}</th>
                 <th>{{ item.balance__sum|format_currency }}</th>
             </tr>
         </table>
