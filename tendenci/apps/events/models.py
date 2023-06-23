@@ -746,6 +746,8 @@ class Registration(models.Model):
         Call registrant.cancel with check_registration_status set and
         refund set to False to  hold off on these tasks until after
         the loop.
+        Set cancellation_fees if you need to override the default calcuated
+        fees.
         """
         if self.canceled:
             return
@@ -764,7 +766,7 @@ class Registration(models.Model):
                 refund_amount += registrant.amount
 
         # Adjust and process cancellation fees if indicated
-        if cancellation_fees:
+        if cancellation_fees is not None:
             self.process_adjusted_cancellation_fees(cancellation_fees, request.user)
 
         # Refund if applicable
@@ -1079,18 +1081,13 @@ class Registrant(models.Model):
         """Cancellation fee for registrant"""
         return self.registration_configuration.get_cancellation_fee(self.amount)
 
-    def process_cancellation_fee(self, user=None, cancellation_fee=None):
+    def process_cancellation_fee(self, user=None):
         """Add cancellation fee to invoice"""
         # Only applicable if refunds are enabled
         if not self.allow_refunds:
             return
 
-        # Adjust cancellation_fee if indicated.
-        if cancellation_fee is not None:
-            self.registration.invoice.adjusted_cancellation_fee = cancellation_fee
-            self.registration.invoice.save(update_fields=['adjusted_cancellation_fee'])
-
-        cancellation_fee = cancellation_fee or self.cancellation_fee
+        cancellation_fee = self.cancellation_fee
 
         if cancellation_fee:
             self.registration.invoice.add_line_item(
@@ -1174,7 +1171,7 @@ class Registrant(models.Model):
         By default, will refund if configured for auto refunds.
         Turn this off if refund is being done separately in Refund menu.
         Turn off process_cancellation_fee to bulk adjust cancellation fees
-        for entire invoice.
+        for entire invoice separately.
         """
         if self.cancel_dt:
             return
