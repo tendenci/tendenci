@@ -2474,7 +2474,14 @@ class Addon(models.Model):
 
 class AddonOption(models.Model):
     addon = models.ForeignKey(Addon, related_name="options", on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
+    title = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text='If only one option, please use the first "Title" field ' \
+                  'at the top of the form instead. Radio buttons will not ' \
+                  'be displayed if more than one option is not offered.'
+    )
     # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
     # choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
 

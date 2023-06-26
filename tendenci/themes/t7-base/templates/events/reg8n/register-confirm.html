@@ -208,7 +208,9 @@
             <tr>
                 <td>
                     {{ addon.addon.title }}
+                    {% if addon.reggaddonoption_set.count > 1 %}
                     ({% for option in addon.regaddonoption_set.all %}{{ option.option.title }}{% if not forloop.last %}, {% endif %}{% endfor %})
+                    {% endif %}
                 </td>
                 <td class="td-right">
                     <span>{{ addon.amount|format_currency }}</span>

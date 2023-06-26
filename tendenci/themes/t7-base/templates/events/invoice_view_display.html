@@ -61,8 +61,10 @@
         {% for regaddon in regaddons %}
             <tr>
                 <td>
-                {{ regaddon.addon.title }}
-                ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                    {{ regaddon.addon.title }}
+                {% if regaddon.regaddonoption_set.count > 1 %}
+                    ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                    {% endif %}
                 </td>
                 <td class="td-right">
                     <span>{{ regaddon.amount|format_currency }}</span>

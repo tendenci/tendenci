@@ -127,7 +127,9 @@
                     <tr>
                         <td>
                             <span>{{ regaddon.addon.title }}
-                            ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                            {% if regaddon.regaddonoption_set.count > 1 %}
+    ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                            {% endif %}
                             </span>
                         </td>
                     </tr>
