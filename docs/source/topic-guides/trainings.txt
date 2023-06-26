@@ -15,7 +15,7 @@ A certificate is granted to a user upon completion of all the courses that meet 
 What are diamond requirements?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Diamond requirements of a certification is set of additional requirements that a user can pursue. There are up to 9 diamonds a user can receive. 
+Diamond requirements of a certification is set of additional requirements that a user can pursue after completing the certification. There are up to 9 diamonds a user can receive. 
 
 
 How to offer online and onsite courses?
