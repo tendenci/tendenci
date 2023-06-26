@@ -532,6 +532,9 @@ class RegConfPricing(OrderingBaseModel):
         now = datetime.now()
         filter_and, filter_or = None, None
 
+        # Hide non-member pricing if setting turned on
+        is_strict = is_strict or get_setting('module', 'events', 'hide_member_pricing')
+
         if is_strict:
             if user.is_anonymous:
                 filter_or = {'allow_anonymous': True}
