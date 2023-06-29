@@ -75,7 +75,7 @@ urlpatterns += [
 
     re_path(r'^redirects/', include('tendenci.apps.redirects.urls')),
     re_path(r'^mobile/', include('tendenci.apps.mobile.urls')),
-    re_path(r'^campaign_monitor/', include('tendenci.apps.campaign_monitor.urls')),
+    #re_path(r'^campaign_monitor/', include('tendenci.apps.campaign_monitor.urls')),
     re_path(r'^discounts/', include('tendenci.apps.discounts.urls')),
     re_path(r'^versions/', include('tendenci.apps.versions.urls')),
     re_path(r'^reports/', include('tendenci.apps.reports.urls')),

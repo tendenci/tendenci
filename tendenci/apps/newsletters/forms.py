@@ -9,7 +9,7 @@ from django_q.tasks import schedule
 
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.campaign_monitor.models import Template
+#from tendenci.apps.campaign_monitor.models import Template
 from tendenci.apps.newsletters.utils import get_type_choices, is_newsletter_relay_set, get_default_template_choices
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.apps.newsletters.models import (
@@ -33,12 +33,12 @@ EMAIL_SEARCH_CRITERIA_CHOICES = (
 )
 
 
-class TemplateForm(forms.ModelForm):
-    class Meta:
-        model = Template
-        exclude = ["template_id", "create_date", "update_date", "cm_preview_url", "cm_screenshot_url"]
-
-    zip_file = forms.FileField(required=False)
+# class TemplateForm(forms.ModelForm):
+#     class Meta:
+#         model = Template
+#         exclude = ["template_id", "create_date", "update_date", "cm_preview_url", "cm_screenshot_url"]
+#
+#     zip_file = forms.FileField(required=False)
 
 
 class GenerateForm(forms.Form):
