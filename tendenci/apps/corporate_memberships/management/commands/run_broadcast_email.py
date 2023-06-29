@@ -41,7 +41,7 @@ class Command(BaseCommand):
         if not email:
             raise CommandError('email does not exist.')
 
-        corp_member_ids = bce.params_dict['corp_member_ids']
+        corp_member_ids = [int(id) for id in bce.params_dict['corp_member_ids'].split(',')]
         corp_members = CorpMembership.objects.filter(id__in=corp_member_ids)[:1] or [None]
         if not corp_members:
             raise CommandError('No corp members passed.')
