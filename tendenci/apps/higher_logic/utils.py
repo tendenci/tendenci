@@ -170,31 +170,27 @@ class HigherLogicAPI:
                     "FormattedNumber": profile.phone,
                     "PhoneType": "Main Phone",
                     "IsPreferred": True,
-                    "IsSmsPreferred": False, 
                     "DoNotPublish": profile.hide_phone
                   })
         if profile.work_phone:
             phones.append({
                     "FormattedNumber": profile.work_phone,
                     "PhoneType": "Work",
-                    "IsPreferred": False,
-                    "IsSmsPreferred": False, 
+                    "IsPreferred": True,
                     "DoNotPublish": profile.hide_phone
                   })
         if profile.home_phone:
             phones.append({
                     "FormattedNumber": profile.home_phone,
                     "PhoneType": "Home",
-                    "IsPreferred": False,
-                    "IsSmsPreferred": False, 
+                    "IsPreferred": True,
                     "DoNotPublish": profile.hide_phone
                   })
         if profile.mobile_phone:
             phones.append({
                     "FormattedNumber": profile.mobile_phone,
                     "PhoneType": "Mobile",
-                    "IsPreferred": False,
-                    "IsSmsPreferred": True, 
+                    "IsPreferred": True,
                     "DoNotPublish": profile.hide_phone
                   })
         return phones
