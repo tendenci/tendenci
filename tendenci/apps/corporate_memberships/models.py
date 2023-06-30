@@ -1988,10 +1988,12 @@ class CorpMembershipRep(models.Model):
         corp_app = CorpMembershipApp.objects.current_app()
         if corp_app.dues_reps_group:
             if corp_app.dues_reps_group.is_member(self.user):
-                corp_app.dues_reps_group.remove_user(self.user)
+                if not self.user.corpmembershiprep_set.exclude(id=self.id, is_dues_rep=True).exists():
+                    corp_app.dues_reps_group.remove_user(self.user)
         if corp_app.member_reps_group:
             if corp_app.member_reps_group.is_member(self.user):
-                corp_app.member_reps_group.remove_user(self.user)
+                if not self.user.corpmembershiprep_set.exclude(id=self.id, is_member_rep=True).exists():
+                    corp_app.member_reps_group.remove_user(self.user)
 
 
 class IndivEmailVerification(models.Model):
