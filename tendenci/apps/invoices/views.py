@@ -249,23 +249,34 @@ def refund(request, id, template_name='invoices/refund.html'):
                 # Adjust cancellation fees if they have changed
                 cancellation_fees = None
                 fees = form.cleaned_data.get('cancellation_fees')
-                if fees and fees != invoice.default_cancellation_fees:
+                if fees != invoice.default_cancellation_fees:
                     cancellation_fees = fees
+
+                # If adjusting cancellation fees, update validation message
+                # to include both fees and refund amouont
+                cancel = form.cleaned_data.get('cancel_registration')
+                if (cancellation_fees is not None and
+                    (cancel or invoice.total_cancellation_fees) and
+                    fees + amount > invoice.total_less_refunds):
+                    raise ValidationError(
+                        f'The sum of the refunded amount and cancellation fee ' \
+                        f'must be less than or equal to {invoice.total_less_refunds}'
+                    )
 
                 # Cancel registration if indicated. This needs
                 # to happen before refund so that cancellation
                 # fees are deducted.
-                if form.cleaned_data.get('cancel_registration'):
-                    if fees + amount > invoice.refundable_amount:
-                        raise ValidationError(
-                            f'The sum of the refunded amount and cancellation fee ' \
-                            f'must be less than or equal to {invoice.refundable_amount}'
-                        )
+                if cancel:
                     # Cancel registration
                     invoice.registration.cancel(
                         request, refund=False, cancellation_fees=cancellation_fees)
                     invoice.refresh_from_db()
                     message += _(" Registration has been canceled.")
+
+                elif cancellation_fees is not None and invoice.total_cancellation_fees:
+                    invoice.registration.process_adjusted_cancellation_fees(
+                        cancellation_fees, request.user)
+                    invoice.refresh_from_db()
 
                 # update invoice; make accounting entries
                 notes = form.cleaned_data.get('refund_notes')
@@ -296,14 +307,17 @@ def refund(request, id, template_name='invoices/refund.html'):
 
 
     allow_cancel = False
+    is_canceled = False
     if invoice.registration:
         allow_cancel = not invoice.registration.canceled
+        is_canceled = invoice.registration.canceled
 
     return render_to_resp(
         request=request, template_name=template_name, context={
             'invoice': invoice,
             'form': form,
             'allow_cancel': allow_cancel,
+            'is_canceled': is_canceled,
         })
 
 

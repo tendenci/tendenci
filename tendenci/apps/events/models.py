@@ -726,9 +726,10 @@ class Registration(models.Model):
         if not self.allow_refunds:
             return
 
-        refund_amount = min(refund_amount, self.invoice.refundable_amount)
+        refund_amount = self.invoice.get_refund_amount(refund_amount)
         try:
-            self.invoice.refund(refund_amount, request.user, confirmation_message)
+            if refund_amount:
+                self.invoice.refund(refund_amount, request.user, confirmation_message)
         except:
             messages.set_level(request, messages.ERROR)
             error_message = f"Refund in the amount of ${refund_amount} failed to process. " \
@@ -754,7 +755,6 @@ class Registration(models.Model):
 
         registrants = self.registrant_set.filter(cancel_dt__isnull=True)
         refund_amount = 0
-        confirmation_message = self.event.get_refund_confirmation_message(registrants)
         for registrant in registrants:
             registrant.cancel(
                 request,
@@ -769,6 +769,8 @@ class Registration(models.Model):
         if cancellation_fees is not None:
             self.process_adjusted_cancellation_fees(cancellation_fees, request.user)
 
+        confirmation_message = self.event.get_refund_confirmation_message(registrants)
+
         # Refund if applicable
         if refund and self.invoice.can_auto_refund and refund_amount:
             self.refund(request, refund_amount, confirmation_message)
@@ -777,22 +779,21 @@ class Registration(models.Model):
         self.save()
 
     def process_adjusted_cancellation_fees(self, cancellation_fee, user=None):
-        """Adjust and process cancellation fees for invoice"""
+        """
+        Adjust and process cancellation fees for invoice.
+        Set update_fee to True to update existing cancellation line item
+        instead of adding a new one.
+        """
         # Only applicable if refunds are enabled
         if not self.allow_refunds:
             return
 
         # Adjust cancellation_fee
-        self.invoice.adjusted_cancellation_fee = cancellation_fee
-        self.invoice.save(update_fields=['adjusted_cancellation_fee'])
+        self.invoice.adjusted_cancellation_fees = cancellation_fee
+        self.invoice.save(update_fields=['adjusted_cancellation_fees'])
 
         # Update invoice with adjusted cancellation fee
-        self.invoice.add_line_item(
-            cancellation_fee,
-            Invoice.LineDescriptions.CANCELLATION_FEE,
-            user,
-            update_total=False,
-        )
+        self.invoice.update_cancellation_fee_line_item(cancellation_fee, user)
 
     def status(self):
         """
@@ -1178,10 +1179,6 @@ class Registrant(models.Model):
 
         can_refund = False
         can_auto_refund = False
-        confirmation_message = None
-        if self.invoice.can_auto_refund and self.amount:
-            confirmation_message = self.event.get_refund_confirmation_message([self])
-
         self.cancel_dt = datetime.now()
         self.save()
 
@@ -1204,6 +1201,11 @@ class Registrant(models.Model):
             # Refund and apply cancellation fees if applicable
             if process_cancellation_fee:
                 self.process_cancellation_fee(request.user)
+
+            confirmation_message = None
+            if self.invoice.can_auto_refund and self.amount:
+                confirmation_message = self.event.get_refund_confirmation_message([self])
+
             if refund and can_auto_refund:
                 self.refund(request, confirmation_message)
 
@@ -1230,8 +1232,8 @@ class Registrant(models.Model):
         if not self.allow_refunds:
             return
 
+        refund_amount = self.invoice.get_refund_amount(self.amount)
         try:
-            refund_amount = min(self.amount, self.invoice.refundable_amount)
             if refund_amount:
                 self.invoice.refund(refund_amount, request.user, confirmation_message)
         except:
@@ -1741,11 +1743,11 @@ class Event(TendenciBaseModel):
             amount += registrant.amount
             fee += registrant.cancellation_fee
 
-        amount = min(amount, invoice.refundable_amount)
+        amount = invoice.get_refund_amount(amount)
 
         cancellation_fee_message = ""
-        if not invoice.refundable_amount - amount:
-            cancellation_fee_message = f", and your cancellation fee of ${fee} processed"
+        if invoice.pending_cancellation_fees and amount > invoice.pending_cancellation_fees:
+            cancellation_fee_message = f", and your cancellation fee of ${invoice.pending_cancellation_fees} processed"
 
         message = f"Your registration fee in the amount of ${amount} for {self.title} on " \
                   f"{self.display_start_date} has been canceled{cancellation_fee_message}. "

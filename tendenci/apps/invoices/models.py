@@ -64,6 +64,7 @@ class Invoice(models.Model):
     total = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
     refunds = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     adjusted_cancellation_fees = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
+    applied_cancellation_fees = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     discount_code = models.CharField(_('Discount Code'), max_length=100, blank=True, null=True)
     discount_amount = models.DecimalField(_('Discount Amount'), max_digits=10, decimal_places=2, default=0)
     variance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -476,7 +477,20 @@ class Invoice(models.Model):
         Use cancellation fees originally calculated at
         cancellation, or use adjusted amount.
         """
-        return self.adjusted_cancellation_fees or self.calculated_cancellation_fees
+        fees = self.adjusted_cancellation_fees
+
+        if fees is None:
+            fees = self.calculated_cancellation_fees
+
+        return 0 if fees > self.total_less_refunds else fees
+
+    @property
+    def pending_cancellation_fees(self):
+        """Cancellation fees still pending"""
+        if not self.total_cancellation_fees:
+            return 0
+
+        return self.total_cancellation_fees - self.applied_cancellation_fees
 
     @property
     def default_cancellation_fees(self):
@@ -488,7 +502,9 @@ class Invoice(models.Model):
         if not self.registration:
             return 0
 
-        return self.total_cancellation_fees or self.registration.default_cancellation_fees
+        fees = self.total_cancellation_fees or self.registration.default_cancellation_fees
+
+        return 0 if fees > self.total_less_refunds else fees
 
     @property
     def can_refund(self):
@@ -536,6 +552,16 @@ class Invoice(models.Model):
     def refundable_amount(self):
         """Invoice total minus cancellation fees and refunds"""
         return max(self.total_less_refunds - self.total_cancellation_fees, 0)
+
+    def get_refund_amount(self, amount):
+        """
+        Get refund amount and adjust for cancellation fees if applicable.
+        """
+        if amount < self.refundable_amount and amount > self.pending_cancellation_fees:
+            return amount - self.pending_cancellation_fees
+
+        # Full refundable amount is already adjusted for cancellation fees
+        return min(amount, self.refundable_amount)
 
     @property
     def refundable_amount_paid(self):
@@ -603,6 +629,11 @@ class Invoice(models.Model):
             self.save()
 
             make_acct_entries_refund(user, self, amount)
+
+            # Apply any relevant cancellation fees
+            if self.pending_cancellation_fees > 0:
+                self.applied_cancellation_fees += self.pending_cancellation_fees
+                self.save(update_fields=['applied_cancellation_fees'])
 
     def __execute_refund_transaction(self, amount, notes=None):
         """Execute refund for amount given it's covered by refundable payments"""
@@ -693,9 +724,9 @@ class Invoice(models.Model):
 
         # If no refundable amount remains after refund, then cancellation fees
         # have been processed.
-        if self.total_cancellation_fees and not self.refundable_amount - amount:
+        if self.pending_cancellation_fees and amount > self.pending_cancellation_fees:
             cancellation_fee_message = f" and a cancellation fee of " \
-                                       f"${self.total_cancellation_fees} has been processed"
+                                       f"${self.pending_cancellation_fees} has been processed"
 
         message = f"You have been refunded ${amount}"
 
@@ -738,6 +769,14 @@ class Invoice(models.Model):
 
         return f"{message} for {self.event.title} on {self.event.display_start_date} " \
                f"has failed to process through Stripe."
+
+    def update_cancellation_fee_line_item(self, new_amount, user=None):
+        """Update cancellation fee line item"""
+        self.invoicelineitem_set.filter(
+            description=self.LineDescriptions.CANCELLATION_FEE,
+        ).delete()
+
+        self.add_line_item(new_amount, self.LineDescriptions.CANCELLATION_FEE, user, False)
 
     def add_line_item(self, amount, description, user=None, update_total=True):
         """
