@@ -1,6 +1,8 @@
 import requests
+import re
 from datetime import datetime, timezone, timedelta
 import pprint
+import phonenumbers
 
 from django.conf import settings
 from django.db.models import Q
@@ -160,6 +162,27 @@ class HigherLogicAPI:
                   })
         return addresses  
 
+    def format_phone_number(self, phone):
+        """
+        The required format is: xxx-xxx-xxxx.
+        """
+        p = re.compile(r'\d{3}-\d{3}-\d{4}')
+        if p.search(phone):
+            return phone
+
+        p2 = re.compile(r'\((\d{3})\) (\d{3}-\d{4})')
+        match = p2.search(phone)
+        if match:
+            return f'{match.group(1)}-{match.group(2)}'
+
+        x = phonenumbers.parse(phone, 'US')
+        formatted_phone = phonenumbers.format_number(x, phonenumbers.PhoneNumberFormat.NATIONAL)
+        match = p2.search(formatted_phone)
+        if match:
+            return f'{match.group(1)}-{match.group(2)}'
+
+        return phone
+
     def get_user_phone_list(self, profile):
         """
         Get user phone list
@@ -167,28 +190,28 @@ class HigherLogicAPI:
         phones = []
         if profile.phone:
             phones.append({
-                    "FormattedNumber": profile.phone,
+                    "FormattedNumber": self.format_phone_number(profile.phone),
                     "PhoneType": "Main Phone",
                     "IsPreferred": True,
                     "DoNotPublish": profile.hide_phone
                   })
         if profile.work_phone:
             phones.append({
-                    "FormattedNumber": profile.work_phone,
+                    "FormattedNumber": self.format_phone_number(profile.work_phone),
                     "PhoneType": "Work",
                     "IsPreferred": True,
                     "DoNotPublish": profile.hide_phone
                   })
         if profile.home_phone:
             phones.append({
-                    "FormattedNumber": profile.home_phone,
+                    "FormattedNumber": self.format_phone_number(profile.home_phone),
                     "PhoneType": "Home",
                     "IsPreferred": True,
                     "DoNotPublish": profile.hide_phone
                   })
         if profile.mobile_phone:
             phones.append({
-                    "FormattedNumber": profile.mobile_phone,
+                    "FormattedNumber": self.format_phone_number(profile.mobile_phone),
                     "PhoneType": "Mobile",
                     "IsPreferred": True,
                     "DoNotPublish": profile.hide_phone
