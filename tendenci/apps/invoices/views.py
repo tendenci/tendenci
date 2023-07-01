@@ -230,23 +230,34 @@ def refund(request, id, template_name='invoices/refund.html'):
         form = RefundForm(request.POST)
 
         if form.is_valid():
-
             try:
                 message = _(invoice.admin_refund_confirmation_message)
                 amount = form.cleaned_data.get('amount')
+
+                # Adjust cancellation fees if they have changed
+                cancellation_fees = None
+                fees = form.cleaned_data.get('cancellation_fees')
+                if fees and fees != invoice.default_cancellation_fees:
+                    cancellation_fees = fees
+
                 # Cancel registration if indicated. This needs
                 # to happen before refund so that cancellation
                 # fees are deducted.
                 if form.cleaned_data.get('cancel_registration'):
-                    invoice.registration.cancel(request, refund=False)
-                    message += _(" Registration has been canceled.")
-                    # If we canceled using the refund form, we need to make
-                    # sure the invoice is updated so it doesn't fail the
-                    # check for max refundable amount
+                    if fees + amount > invoice.refundable_amount:
+                        raise ValidationError(
+                            f'The sum of the refunded amount and cancellation fee ' \
+                            f'must be less than or equal to {invoice.refundable_amount}'
+                        )
+                    # Cancel registration
+                    invoice.registration.cancel(
+                        request, refund=False, cancellation_fees=cancellation_fees)
                     invoice.refresh_from_db()
+                    message += _(" Registration has been canceled.")
 
                 # update invoice; make accounting entries
-                invoice.refund(amount, request.user)
+                notes = form.cleaned_data.get('refund_notes')
+                invoice.refund(amount, request.user, notes=notes)
 
                 EventLog.objects.log(instance=invoice)
                 messages.add_message(request, messages.SUCCESS, message)
@@ -267,6 +278,7 @@ def refund(request, id, template_name='invoices/refund.html'):
         form = RefundForm(
             initial={
                 'amount': invoice.refundable_amount,
+                'cancellation_fees': 0,
                 'cancel_registration': False,
             })
 
@@ -668,8 +680,6 @@ def detail(request, id, template_name="invoices/detail.html"):
             "total": abs(row[2])})
 
     EventLog.objects.log(instance=invoice)
-
-    print('here')
 
     return render_to_resp(request=request, template_name=template_name,
         context={

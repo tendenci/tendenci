@@ -141,7 +141,7 @@ class Payment(models.Model):
         self.status_detail = 'approved'
         self.refundable_amount = self.amount
 
-    def refund(self, amount=None):
+    def refund(self, amount=None, notes=None):
         """Refund full or partial amount of Payment through Stripe"""
         merchant_account = get_setting("site", "global", "merchantaccount").lower()
 
@@ -154,6 +154,7 @@ class Payment(models.Model):
             payment=self,
             trans_id=self.trans_id,
             amount=refundable_amount,
+            notes=notes,
         )
 
         self.refundable_amount -= refundable_amount
@@ -358,6 +359,7 @@ class Refund(models.Model):
     refund_id = models.CharField(max_length=100, blank=True, null=True)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
     transaction_dt = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True, null=True)
 
     objects = RefundManager()
 

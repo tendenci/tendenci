@@ -7,7 +7,9 @@ from tendenci.apps.payments.models import Payment, PaymentMethod
 
 class RefundForm(forms.Form):
     amount = forms.DecimalField(max_digits=10, decimal_places=2)
+    cancellation_fees = forms.DecimalField(max_digits=10, decimal_places=2)
     cancel_registration = forms.BooleanField(initial=False, required=False)
+    refund_notes = forms.CharField(widget=forms.Textarea, required=False)
 
 
 class MarkAsPaidForm(forms.ModelForm):

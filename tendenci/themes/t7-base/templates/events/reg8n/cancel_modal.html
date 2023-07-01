@@ -8,12 +8,8 @@
 
         <div class="modal-body">
             {% blocktrans with event.title as title and event.start_dt as start_dt %}Are you sure you want to cancel your registration to {{ title }} on {{ start_dt }}? {% endblocktrans %}
-            {% if cancellation_fee %} <br>
-                {% if allow_refunds %}
-                    {% blocktrans %}A cancellation fee of ${{ cancellation_fee }} will be applied to your invoice prior to refunding your registration fee. {% endblocktrans %}
-                {% else %}
-                    {% blocktrans %}A cancellation fee of ${{ cancellation_fee }} will be applied to your invoice. {% endblocktrans %}
-                {% endif %}
+            {% if cancellation_fee and allow_refunds %} <br>
+                {% blocktrans %}A cancellation fee of ${{ cancellation_fee }} will be applied to your invoice prior to refunding your registration fee. {% endblocktrans %}
             {% endif %}
         </div>
 

@@ -34,7 +34,7 @@ STATUS_DETAIL_CHOICES = (
 
 class Invoice(models.Model):
     class LineDescriptions:
-        CANCELLATION_FEE = _('Cancellation fee')
+        CANCELLATION_FEE = _('Cancellation fee (to be deducted from refunds)')
         REFUND = _('Refund')
 
     guid = models.CharField(max_length=50)
@@ -62,6 +62,8 @@ class Invoice(models.Model):
     payments_credits = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     balance = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     total = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
+    refunds = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    adjusted_cancellation_fees = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     discount_code = models.CharField(_('Discount Code'), max_length=100, blank=True, null=True)
     discount_amount = models.DecimalField(_('Discount Amount'), max_digits=10, decimal_places=2, default=0)
     variance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -224,7 +226,7 @@ class Invoice(models.Model):
                 return ''
         return ''
 
-    def save(self, user=None):
+    def save(self, user=None, *args, **kwargs):
         """
         Set guid, creator and owner if any of
         these fields are missing.
@@ -454,7 +456,7 @@ class Invoice(models.Model):
                 make_acct_entries_initial_reversing(user, self, self.subtotal)
 
     @property
-    def total_cancellation_fees(self):
+    def calculated_cancellation_fees(self):
         """Sum of all cancellation fees"""
         data = self.invoicelineitem_set.filter(
             description=self.LineDescriptions.CANCELLATION_FEE
@@ -463,24 +465,30 @@ class Invoice(models.Model):
         return data.get('total__sum') or 0
 
     @property
-    def total_cancellation_fees_pending(self):
-        """Total amount of cancellation fees pending payment"""
-        cancellation_fees = self.total_cancellation_fees
-        # Only deduct cancellation fees from refund if
-        # full refundable amount has been paid.
-        if not self.refundable_amount_paid or not cancellation_fees:
-            return 0
-
-        if self.balance >= cancellation_fees:
-            return cancellation_fees
-
-        return self.balance
-
-    @property
     def cancellation_fee_count(self):
         """Count of all cancellation fees"""
         return self.invoicelineitem_set.filter(
                 description=self.LineDescriptions.CANCELLATION_FEE).count()
+
+    @property
+    def total_cancellation_fees(self):
+        """
+        Use cancellation fees originally calculated at
+        cancellation, or use adjusted amount.
+        """
+        return self.adjusted_cancellation_fees or self.calculated_cancellation_fees
+
+    @property
+    def default_cancellation_fees(self):
+        """
+        Default cancellation fees will either be
+        the total cancellation fees on the invoice or the default
+        for the registration.
+        """
+        if not self.registration:
+            return 0
+
+        return self.total_cancellation_fees or self.registration.default_cancellation_fees
 
     @property
     def can_refund(self):
@@ -503,13 +511,10 @@ class Invoice(models.Model):
         """
         Indicates auto refunds are allowed.
         Setting must be enabled, and refundable amount
-        must allow for deducting any cancellation fees.
         """
         allow_refunds = get_setting('module', 'events', 'allow_refunds')
 
-        can_deduct_fees = self.refundable_amount >= self.total_cancellation_fees_pending
-
-        return allow_refunds == "Auto" and self.can_refund and can_deduct_fees
+        return allow_refunds == "Auto" and self.can_refund
 
     @property
     def refund_disabled_reason(self):
@@ -523,16 +528,26 @@ class Invoice(models.Model):
             return "Refundable amount must be paid."
 
     @property
+    def total_less_refunds(self):
+        """Invoice total minus refunds"""
+        return self.total - self.refunds
+
+    @property
     def refundable_amount(self):
-        """Invoice total minus cancellation fees"""
-        return max(self.total - self.total_cancellation_fees, 0)
+        """Invoice total minus cancellation fees and refunds"""
+        return max(self.total_less_refunds - self.total_cancellation_fees, 0)
 
     @property
     def refundable_amount_paid(self):
         """Indicate whether refundable amount has been paid"""
         return self.total_paid >= self.refundable_amount
 
-    def refund(self, amount, user=None, confirmation_message=None):
+    @property
+    def net_refunds(self):
+        """Returns net amount of refunds"""
+        return self.refunds * -1
+
+    def refund(self, amount, user=None, confirmation_message=None, notes=None):
         """
         Refund specified amount. Cancellation fees are not refundable and will be
         deducted from refund. Max refund is the total invoice.
@@ -555,7 +570,7 @@ class Invoice(models.Model):
 
         # Execute refund. Alert admin if it fails.
         try:
-            self.__refund(user, amount)
+            self.__refund(user, amount, notes=notes)
         except Exception as e:
             self.__send_failed_refund_notice(amount, e)
             raise
@@ -564,6 +579,8 @@ class Invoice(models.Model):
         self.add_line_item(
             amount=-amount,
             description=self.LineDescriptions.REFUND,
+            user=user,
+            update_total=False
         )
 
         # Send email to confirm refund.
@@ -574,46 +591,20 @@ class Invoice(models.Model):
         if email:
             self.__send_refund_confirmation(amount, confirmation_message, [email])
 
-    def should_deduct_cancellation_fees(self, amount):
-        """
-        Indicate if cancellation fees should be deducted from refund.
-        Cancellation fees should be deducted if refunding an amount
-        greater than cancellation fees pending payment.
-        """
-        return (
-            self.total_cancellation_fees_pending and
-            amount > self.total_cancellation_fees_pending
-        )
-
-    def get_amount_to_refund(self, amount):
-        """
-        Return tuple of amount to refund, adjusted for fees and
-        total cancellation fees. Cancellation fees should be 0
-        if unable to deduct from amount.
-        """
-        if not self.should_deduct_cancellation_fees(amount):
-            return amount, 0
-
-        # Deduct pending cancellation fees
-        return amount - self.total_cancellation_fees_pending, self.total_cancellation_fees_pending
-
-    def __refund(self, user, amount):
+    def __refund(self, user, refund_amount, notes=None):
         """
         Updates the invoice balance by adding
         accounting entries for refunds and initiates actual refund.
         """
-        refund_amount, fees = self.get_amount_to_refund(amount)
-        fees = fees if amount > fees else 0
         amount = min(refund_amount, self.total_paid)
         if self.is_tendered and amount:
-            self.__execute_refund_transaction(amount)
-            self.balance += amount
-            self.payments_credits -= amount
+            self.__execute_refund_transaction(amount, notes=notes)
+            self.refunds += amount
             self.save()
 
             make_acct_entries_refund(user, self, amount)
 
-    def __execute_refund_transaction(self, amount):
+    def __execute_refund_transaction(self, amount, notes=None):
         """Execute refund for amount given it's covered by refundable payments"""
         payments = self.payment_set.refundable()
 
@@ -624,7 +615,7 @@ class Invoice(models.Model):
             available_amount = payment.refundable_amount
             if refundable_amount:
                 # If there's an error, it will be raised and an email will be sent to admin.
-                payment.refund(refundable_amount)
+                payment.refund(refundable_amount, notes=notes)
 
             if remaining_amount <= available_amount:
                 break
@@ -699,9 +690,12 @@ class Invoice(models.Model):
     def get_refund_confirmation_message(self, amount):
         """Get default refund confirmation message"""
         cancellation_fee_message = ""
-        if self.should_deduct_cancellation_fees(amount):
+
+        # If no refundable amount remains after refund, then cancellation fees
+        # have been processed.
+        if self.total_cancellation_fees and not self.refundable_amount - amount:
             cancellation_fee_message = f" and a cancellation fee of " \
-                                       f"${self.total_cancellation_fees_pending} has been processed"
+                                       f"${self.total_cancellation_fees} has been processed"
 
         message = f"You have been refunded ${amount}"
 
@@ -745,18 +739,22 @@ class Invoice(models.Model):
         return f"{message} for {self.event.title} on {self.event.display_start_date} " \
                f"has failed to process through Stripe."
 
-    def add_line_item(self, amount, description, user=None):
-        """Add extra line item to this invoice"""
+    def add_line_item(self, amount, description, user=None, update_total=True):
+        """
+        Add extra line item to this invoice.
+        Set update_total to False to exclude from invoice total.
+        """
         InvoiceLineItem.objects.create(
             total=amount,
             description=description,
             invoice=self,
         )
 
-        self.total += amount
-        self.subtotal += amount
-        self.balance += amount
-        self.save(user)
+        if update_total:
+            self.total += amount
+            self.subtotal += amount
+            self.balance += amount
+            self.save(user)
 
 #     def unvoid(self):
 #         """

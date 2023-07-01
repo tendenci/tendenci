@@ -716,11 +716,17 @@ class Registration(models.Model):
             #notify the admins too
             email_admins(self.event, self.invoice.total, self_reg8n, self, registrants)
 
+    @property
+    def allow_refunds(self):
+        """Indicate if refunds are allowed"""
+        return get_setting('module', 'events', 'allow_refunds') != "No"
+
     def refund(self, request, refund_amount, confirmation_message):
-        """Refund this registrant's invoice"""
-        if get_setting('module', 'events', 'allow_refunds') == "No":
+        """Refund this registration's invoice"""
+        if not self.allow_refunds:
             return
 
+        refund_amount = min(refund_amount, self.invoice.refundable_amount)
         try:
             self.invoice.refund(refund_amount, request.user, confirmation_message)
         except:
@@ -731,7 +737,7 @@ class Registration(models.Model):
 
         messages.success(request, _(confirmation_message))
 
-    def cancel(self, request, refund=True):
+    def cancel(self, request, refund=True, cancellation_fees=None):
         """
         Cancel all registrants on this registration.
         Refunding here is optional in the case that it is done
@@ -746,19 +752,45 @@ class Registration(models.Model):
 
         registrants = self.registrant_set.filter(cancel_dt__isnull=True)
         refund_amount = 0
-
+        confirmation_message = self.event.get_refund_confirmation_message(registrants)
         for registrant in registrants:
-            registrant.cancel(request, check_registration_status=False, refund=False)
+            registrant.cancel(
+                request,
+                check_registration_status=False,
+                refund=False,
+                process_cancellation_fee=cancellation_fees is None,
+            )
             if registrant.amount:
                 refund_amount += registrant.amount
 
+        # Adjust and process cancellation fees if indicated
+        if cancellation_fees:
+            self.process_adjusted_cancellation_fees(cancellation_fees, request.user)
+
         # Refund if applicable
         if refund and self.invoice.can_auto_refund and refund_amount:
-            confirmation_message = self.event.get_refund_confirmation_message(registrants)
             self.refund(request, refund_amount, confirmation_message)
 
         self.canceled = True
         self.save()
+
+    def process_adjusted_cancellation_fees(self, cancellation_fee, user=None):
+        """Adjust and process cancellation fees for invoice"""
+        # Only applicable if refunds are enabled
+        if not self.allow_refunds:
+            return
+
+        # Adjust cancellation_fee
+        self.invoice.adjusted_cancellation_fee = cancellation_fee
+        self.invoice.save(update_fields=['adjusted_cancellation_fee'])
+
+        # Update invoice with adjusted cancellation fee
+        self.invoice.add_line_item(
+            cancellation_fee,
+            Invoice.LineDescriptions.CANCELLATION_FEE,
+            user,
+            update_total=False,
+        )
 
     def status(self):
         """
@@ -799,6 +831,18 @@ class Registration(models.Model):
     @property
     def graguity_in_percentage(self):
         return '{:.1%}'.format(self.gratuity)
+
+    @property
+    def default_cancellation_fees(self):
+        """
+        Default cancellation fee for registration is the
+        sum of all fees for registrants.
+        """
+        fee = 0
+        for registrant in self.registrant_set.all():
+            fee += registrant.cancellation_fee
+
+        return fee
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -1035,15 +1079,25 @@ class Registrant(models.Model):
         """Cancellation fee for registrant"""
         return self.registration_configuration.get_cancellation_fee(self.amount)
 
-    def process_cancellation_fee(self, user=None):
+    def process_cancellation_fee(self, user=None, cancellation_fee=None):
         """Add cancellation fee to invoice"""
-        cancellation_fee = self.cancellation_fee
+        # Only applicable if refunds are enabled
+        if not self.allow_refunds:
+            return
+
+        # Adjust cancellation_fee if indicated.
+        if cancellation_fee is not None:
+            self.registration.invoice.adjusted_cancellation_fee = cancellation_fee
+            self.registration.invoice.save(update_fields=['adjusted_cancellation_fee'])
+
+        cancellation_fee = cancellation_fee or self.cancellation_fee
 
         if cancellation_fee:
             self.registration.invoice.add_line_item(
                 cancellation_fee,
                 Invoice.LineDescriptions.CANCELLATION_FEE,
                 user,
+                update_total=False,
             )
 
     @property
@@ -1107,7 +1161,7 @@ class Registrant(models.Model):
         """Invoice for this registrant"""
         return self.registration.invoice
 
-    def cancel(self, request, check_registration_status=True, refund=True):
+    def cancel(self, request, check_registration_status=True, refund=True, process_cancellation_fee=True):
         """
         Cancel registrant.
 
@@ -1119,6 +1173,8 @@ class Registrant(models.Model):
 
         By default, will refund if configured for auto refunds.
         Turn this off if refund is being done separately in Refund menu.
+        Turn off process_cancellation_fee to bulk adjust cancellation fees
+        for entire invoice.
         """
         if self.cancel_dt:
             return
@@ -1145,12 +1201,12 @@ class Registrant(models.Model):
                 self.invoice.balance -= self.amount
                 self.invoice.save(request.user)
 
-            # Update invoice with cancellation fee if one set.
-            self.process_cancellation_fee(request.user)
-
             can_refund = self.invoice.can_refund
             can_auto_refund = self.invoice.can_auto_refund
-            # Refund if applicable
+
+            # Refund and apply cancellation fees if applicable
+            if process_cancellation_fee:
+                self.process_cancellation_fee(request.user)
             if refund and can_auto_refund:
                 self.refund(request, confirmation_message)
 
@@ -1169,21 +1225,21 @@ class Registrant(models.Model):
         self.send_cancellation_notification(request.user, can_refund, can_auto_refund, refund)
 
     @property
-    def refund_amount(self):
-        return min(self.amount, self.invoice.refundable_amount)
+    def allow_refunds(self):
+        return get_setting('module', 'events', 'allow_refunds') != "No"
 
     def refund(self, request, confirmation_message):
         """Refund this registrant's invoice"""
-        if get_setting('module', 'events', 'allow_refunds') == "No":
+        if not self.allow_refunds:
             return
 
         try:
-            refund_amount = self.refund_amount
+            refund_amount = min(self.amount, self.invoice.refundable_amount)
             if refund_amount:
-                self.invoice.refund(self.refund_amount, request.user, confirmation_message)
+                self.invoice.refund(refund_amount, request.user, confirmation_message)
         except:
             messages.set_level(request, messages.ERROR)
-            error_message = f"Refund in the amount of ${self.refund_amount} failed to process. " \
+            error_message = f"Refund in the amount of ${refund_amount} failed to process. " \
                             f"Please contact support."
             messages.error(request, _(error_message))
 
@@ -1200,7 +1256,6 @@ class Registrant(models.Model):
         user_is_registrant = user.is_authenticated and self.user and user == self.user
         recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
 
-        allow_refunds =  get_setting('module', 'events', 'allow_refunds') and include_refund
         if recipients and notification:
             notification.send_emails(recipients, 'event_registration_cancelled', {
                 'event': self.event,
@@ -1211,7 +1266,7 @@ class Registrant(models.Model):
                 'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                 'registrant': self,
                 'user_is_registrant': user_is_registrant,
-                'allow_refunds': allow_refunds,
+                'allow_refunds': self.allow_refunds and include_refund,
                 'can_refund': can_refund and include_refund,
                 'can_auto_refund': can_auto_refund and include_refund,
             })
@@ -1656,6 +1711,25 @@ class Event(TendenciBaseModel):
                 return "{0.day} {0:%b %Y}".format(self.start_dt)
         return ''
 
+    def get_cancellation_confirmation_message(self, registrants):
+        """
+        Get cancellation confirmation message for registrants.
+        Message will vary based on allow_refunds setting.
+        """
+        allow_refunds = get_setting("module", "events", "allow_refunds")
+
+        message = None
+
+        if allow_refunds == "Yes":
+            message = f"You have canceled your registration to { self.title } on " \
+                      f"{ self.display_start_date }. You will receive an email confirmation " \
+                      f"with a link to your updated invoice once event administrators " \
+                      f"have processed your refund."
+        elif allow_refunds == "Auto":
+            message = self.get_refund_confirmation_message(registrants, True)
+
+        return message
+
     def get_refund_confirmation_message(self, registrants, include_invoice_url=False):
         """
         Get refund confirmation message for registrants.
@@ -1671,10 +1745,9 @@ class Event(TendenciBaseModel):
             fee += registrant.cancellation_fee
 
         amount = min(amount, invoice.refundable_amount)
-        fee = min(fee, invoice.total_cancellation_fees_pending)
 
         cancellation_fee_message = ""
-        if fee:
+        if not invoice.refundable_amount - amount:
             cancellation_fee_message = f", and your cancellation fee of ${fee} processed"
 
         message = f"Your registration fee in the amount of ${amount} for {self.title} on " \
@@ -1854,7 +1927,6 @@ class Event(TendenciBaseModel):
         """
         Check if event is private (i.e. if private enabled)
         """
-        # print('enable_private_slug', self.enable_private_slug)
         # print('private_slug', self.private_slug)
         # print('slug', slug)
 

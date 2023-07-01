@@ -65,7 +65,7 @@
     <p>&nbsp;</p>
 
     <form method="post" action=".">{% csrf_token %}
-      <div class="field-wrapper required">
+      <div class="field-wrapper required" id="amount">
         <label for="id_variance" class="field-label">{% trans 'Refund Amount'%} ({{SITE_GLOBAL_CURRENCYSYMBOL}}):</label>
         {{ form.amount }}
       </div>
@@ -73,29 +73,70 @@
             {{ form.amount.errors }}
         {% endif %}
       <div class="clear-left"></div>
-      <div class="field-wrapper">
-        <label class="field-label">{% trans 'Total Refundable:'%}</label>
-        <div>{{invoice.refundable_amount|format_currency }}</div>
+      <div class="field-wrapper" id="cancellation_fees">
+        <label class="field-label">{% trans 'Cancellation Fees:'%}</label>
+        <div>{{ form.cancellation_fees }}</div>
       </div>
       <div class="clear-left"></div>
-
-      {% if invoice.total_cancellation_fees_pending %}
       <div class="field-wrapper">
-        <label class="field-label">{% trans 'Pending Cancellation Fees:'%}</label>
-        <div>{{invoice.total_cancellation_fees_pending|format_currency }}</div>
-        {% trans "To be deducted when refund is larger than pending cancellation fees." %}
+        <label class="field-label">{% trans 'Total Refundable Amount:' %}</label>
+        <div>{{ invoice.refundable_amount|format_currency }}</div>
+        <div id="refund_instructions"> Refund and cancellation fee totalled must be less than or equal to refundable amount</div>
       </div>
-      {% endif %}
+      <div class="clear-left"></div>
       {% if allow_cancel %}
-      <div class="field-wrapper">
+      <div class="field-wrapper" id="cancel">
         <label class="field-label">{% trans 'Cancel Registration?' %}</label>
         <div>{{form.cancel_registration}}</div>
       </div>
+      <div class="clear-left"></div>
       {% endif %}
+      <div class="field-wrapper">
+        <label class="field-label">{% trans 'Notes/Comments:' %}</label>
+        <div> {{ form.refund_notes }}</div>
+      </div>
+      <div class="clear-left"></div>
       <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Submit' %}" id="adjust-sumit-button" />
     </form>
     <br /><br />
   </div>
 
 </div>
+{% endblock %}
+
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+  $(document).ready(function() {
+      toggle_cancellation($('#id_cancel_registration').is(':checked'));
+      
+      $('#id_cancel_registration').on("change", function() {
+          toggle_cancellation($(this).is(':checked'));
+      });
+
+      function toggle_cancellation(is_cancelling) {
+          if (is_cancelling) {
+
+              // If there's no cancellation fees on the invoice,
+              // use default_cancellation_fees to calculate what the
+              // refund should be
+              if (!{{ invoice.total_cancellation_fees }})
+              {
+                  var amount = {{ invoice.refundable_amount }} - {{ invoice.default_cancellation_fees }};
+                  $('#id_amount').val(amount);
+              }
+              
+              $('#id_cancellation_fees').val({{ invoice.default_cancellation_fees}});
+              $('#cancellation_fees').show();
+              $('#refund_instructions').show();
+          } else {
+              $('#id_amount').val({{ invoice.refundable_amount }});
+              $('#id_cancellation_fees').val({{ invoice.default_cancellation_fees }});
+              $('#cancellation_fees').hide();
+              $('#refund_instructions').hide();
+          }
+      }
+  });
+</script>
 {% endblock %}

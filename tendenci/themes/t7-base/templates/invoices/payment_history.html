@@ -72,6 +72,9 @@
                 <p><strong>{% trans "Refund Status:" %}</strong>
                 {{ refund.response_status }}
                 </p>
+                {% if refund.notes %}
+                <p><strong>{% trans "Notes:" %}</strong> {{refund.notes}}</p>
+                {% endif %}
             <div>
          </td>
          <td class="td-right"> {{ refund.net_amount |format_currency }}</td>

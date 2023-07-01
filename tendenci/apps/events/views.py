@@ -135,8 +135,6 @@ from tendenci.apps.events.utils import (
     registration_earliest_time,
     get_pricing,
     clean_price,
-    get_cancellation_confirmation_message,
-    get_refund_confirmation_message,
     get_event_spots_taken,
     get_ievent,
     get_vevents,
