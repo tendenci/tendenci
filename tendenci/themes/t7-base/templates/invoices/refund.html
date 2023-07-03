@@ -130,7 +130,11 @@
       function toggle_cancellation(is_cancelling, display_cancellation_fees) {
           var cancellation_fees = {{ invoice.total_cancellation_fees }};
           if (is_cancelling) {
-              cancellation_fees += {{ invoice.default_cancellation_fees }};
+              var potential_fees = {{ invoice.default_cancellation_fees }};
+              if ({{ invoice.registered_count }} > 0 ) {
+                  potential_fees *= {{ invoice.registered_count }};
+              }
+              cancellation_fees += potential_fees;
               var amount = {{ invoice.total_less_refunds }} - cancellation_fees;
                   $('#id_amount').val(amount);
           } else {

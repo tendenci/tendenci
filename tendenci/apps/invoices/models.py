@@ -700,13 +700,20 @@ class Invoice(models.Model):
             return obj
         return None
 
+    @property
+    def registered_count(self):
+        """Count currently registered"""
+        if not self.registration:
+            return 0
+
+        return self.registration.registrant_set.filter(cancel_dt__isnull=True).count()
+
     def cancel_registration(self, request, refund=False):
         """Cancel registration for this invoice"""
         if not self.registration:
             raise Exception(_("No registration to cancel."))
 
         self.registration.cancel(request, refund)
-
 
     def get_refund_failure_message(self, amount, error):
         """Get default refund failure message"""
