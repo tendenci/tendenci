@@ -32,13 +32,12 @@ class HigherLogicAPI:
                           'Mexico': 'MX'}
 
     def post_requests(self, api_url, request_data):
-        #return requests.post(api_url, headers=self.headers, json=json.loads(json.dumps(request_data)))
         return requests.post(api_url, headers=self.headers, json=request_data)
 
     def process_response(self, res):
         if not res.ok or res.status_code != 200:
             self.email_support_errors(res.text)
-        print(res)
+        #print(res)
         return res
 
     def dt_isoformat(self, dt):
@@ -324,7 +323,7 @@ class HigherLogicAPI:
 
             request_list.append(contact_dict)
 
-        pprint.pprint(request_list)
+        #pprint.pprint(request_list)
         if request_list:
             api_url = self.api_base_url + '/contactinfo'
             res = self.post_requests(api_url, request_list)
@@ -383,7 +382,7 @@ class HigherLogicAPI:
                     event_dict['Country'] = self.country_code_d.get(event.place.country, '')
             request_list.append(event_dict)
 
-        pprint.pprint(request_list)
+        #pprint.pprint(request_list)
         if request_list:
             api_url = self.api_base_url + '/meeting'
             res = self.post_requests(api_url, request_list)
