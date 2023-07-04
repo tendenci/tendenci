@@ -40,7 +40,7 @@ def search(request, template_name="projects/search.html"):
     if get_setting('site', 'global', 'searchindex') and query:
         projects = Project.objects.search(query, user=request.user)
     else:
-        filters = get_query_filters(request.user, 'projects.search')
+        filters = get_query_filters(request.user, 'projects.view_project')
         projects = Project.objects.filter(filters).distinct()
 
     categories = Category.objects.all()

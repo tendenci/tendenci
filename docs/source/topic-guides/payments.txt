@@ -60,10 +60,12 @@ Stripe and Authorize.net manage their test systems differently. For Stripe, the 
 How to Use Stripe Connect?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The current integration makes charges directly on the connected account. The connected account is responsible for the Stripe fees, etc.
+We have integrated stripe connect for both standard and express accounts. For the standard accounts, the payments are made directly on the connected accounts. The connected accounts are responsible for the Stripe fees, etc. For the express accounts, payments are made to the main account and transfered to the express accounts. The main account is responsible for the Stripe fees, but will retain the application fee that taken from the express accounts. 
+
+To set up stripe connect, please following these steps:
 
 1) Get the Stripe Connect Client ID from your stripe account, enter it to the site setting "Stripe Connect Client ID" at https://www.example.com/settings/module/payments/#id_stripe_connect_client_id.
 
 2) Add the redirect url https://www.example.com/payments/stripe/connect/fetch-access-token/ to your stripe application settings at https://dashboard.stripe.com/test/settings/connect under Integration.
 
-3) Add connected accounts at admin backend https://www.example.com/admin/stripe/stripeaccount/, and associate an entity to each stripe account. Now payment will be paid directly to the connected stripe account with the same entity tied to the invoice. 
+3) Add connected accounts at admin backend https://www.example.com/admin/stripe/stripeaccount/, and associate an entity to each stripe account. Now payment will be paid to the connected stripe account with the same entity tied to the invoice. 

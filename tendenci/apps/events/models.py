@@ -1941,6 +1941,16 @@ class Event(TendenciBaseModel):
                     choices.append((certcat.certification.id, certcat.certification.name))
         return choices
 
+    def reg_start_dt(self):
+        """
+        Registration start date.
+        """
+        [pricing] = RegConfPricing.objects.filter(
+                    reg_conf=self.registration_configuration,
+                    status=True).order_by('start_dt')[:1] or [None]
+        if pricing:
+            return pricing.start_dt
+
     def reg_end_dt(self):
         """
         Registration end date.

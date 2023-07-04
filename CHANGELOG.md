@@ -1,3 +1,19 @@
+### 14.5.1 [2023-07-04]
+
+* Fixed an issue about reps could be removed from dues reps and member reps groups when they're removed from a corp but still associated with other corps.
+* Merged HL integration.
+ 
+
+### 14.5 [2023-06-27]
+
+* **New Feature:** Added Trainings module that allows a Tendenci site to offer certificate programs to users. https://tendenci.readthedocs.io/en/latest/topic-guides/trainings.html
+* Besides the standard accounts, express accounts can also be added to stripe connect in Tendenci. For info how to set up stripe connect, please see https://tendenci.readthedocs.io/en/latest/topic-guides/payments.html#how-to-use-stripe-connect. 
+* Members list is now viewable to users who have the membership view permission. Previously, it requires change permission. However, the export and email abilities in the members list still require change permission.
+* Allowed users with news view and change perms to view un-released news so that they can edit. https://github.com/tendenci/tendenci/issues/1176
+* Resolved the issue about guest info is required on event registration form when only first registrant is required.
+* Other small fixes.
+
+
 ### 14.4 [2023-05-16]
 
 * Updated Authorize.Net payment gateway integration. 1) Switched SIM to Accept Hosted beause SIM is deprecated https://developer.authorize.net/api/upgrade_guide.html. 2) Removed xml.etree.ElementTree that was used by CIM in recurring payments. The xml.etree.ElementTree module is no longer supported. https://docs.python.org/3/library/xml.etree.elementtree.html

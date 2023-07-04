@@ -250,7 +250,7 @@ INSTALLED_APPS = [
     'tendenci.apps.boxes',
     'tendenci.apps.mobile',
     #'tendenci.apps.social_auth',  # Does not support Python 3
-    'tendenci.apps.campaign_monitor',
+    #'tendenci.apps.campaign_monitor',
     'tendenci.apps.theme',
     'tendenci.apps.discounts',
     'tendenci.apps.metrics',

@@ -5,6 +5,8 @@ from django.conf import settings
 class AcceptJSPaymentForm(forms.Form):
     dataValue = forms.CharField(required=True, widget=forms.HiddenInput())
     dataDescriptor = forms.CharField(required=True, widget=forms.HiddenInput())
+    firstName = forms.CharField(required=False, widget=forms.HiddenInput())
+    lastName = forms.CharField(required=False, widget=forms.HiddenInput())
 
 
 class SIMPaymentForm(forms.Form):

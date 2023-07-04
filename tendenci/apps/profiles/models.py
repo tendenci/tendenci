@@ -265,13 +265,13 @@ class Profile(Person):
                 # remove existing photo from storage
                 self.delete_old_photo()
 
-        try:
-            from tendenci.apps.campaign_monitor.utils import update_subscription
-            if hasattr(self, 'old_email') and getattr(self, 'old_email') != self.user.email:
-                update_subscription(self, self.old_email)
-                del self.old_email
-        except ImportError:
-            pass
+        # try:
+        #     from tendenci.apps.campaign_monitor.utils import update_subscription
+        #     if hasattr(self, 'old_email') and getattr(self, 'old_email') != self.user.email:
+        #         update_subscription(self, self.old_email)
+        #         del self.old_email
+        # except ImportError:
+        #     pass
 
     def allow_search_users(self):
         """

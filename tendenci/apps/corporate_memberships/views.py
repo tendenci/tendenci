@@ -198,7 +198,11 @@ def broadcast_email_conf(request, bce_id, guid,
 
     email_id = bce.params_dict['email_id']
     [email] = Email.objects.filter(id=email_id)[:1] or [None]
-    corp_members = CorpMembership.objects.filter(id__in=bce.params_dict['corp_member_ids'])
+    corp_member_ids = [int(id) for id in bce.params_dict['corp_member_ids'].split(',')]
+    if corp_member_ids:
+        corp_members = CorpMembership.objects.filter(id__in=corp_member_ids)
+    else:
+        corp_members = None
     return render_to_resp(request=request, template_name=template_name,
                           context={'bce': bce,
                                    'email': email,

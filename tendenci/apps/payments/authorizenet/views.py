@@ -62,6 +62,8 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
         anet_api = AuthNetAPI()
         opaque_value = payment_form.cleaned_data['dataValue']
         opaque_descriptor = payment_form.cleaned_data['dataDescriptor']
+        payment.first_name = payment_form.cleaned_data['firstName']
+        payment.last_name = payment_form.cleaned_data['lastName']
         r = anet_api.create_txn_request(payment, opaque_value, opaque_descriptor)
         if r.ok:
             res_dict = r.json()
