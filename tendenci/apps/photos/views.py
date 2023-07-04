@@ -238,6 +238,10 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
 
     photo = get_object_or_404(Image, id=id)
     size = [int(s) for s in size.split('x')]
+    for s in size:
+        # height and width must be > 0
+        if s <= 0:
+            raise Http404
     size = aspect_ratio(photo.image_dimensions(), size, constrain)
 
     # check permissions
