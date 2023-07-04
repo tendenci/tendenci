@@ -109,8 +109,9 @@ class PriceWidget(TextInput):
         input_group_html = '<div class="input-group">%s%s</div>' % (input_group_addon_html, html,)
         return mark_safe(input_group_html)
 
+
 class PercentWidget(TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         html = super(PercentWidget, self).render(name, value, attrs)
         input_group_addon_html = '<div class="input-group-addon">%</div>'
         input_group_html = '<div class="input-group">{0}{1}</div>'.format(html, input_group_addon_html)

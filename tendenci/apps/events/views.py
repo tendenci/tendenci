@@ -1085,7 +1085,6 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                     recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
 
                 for cur_event in recurring_events:
-                    print(request.POST)
                     form_regconf2 = form_class(
                         request.POST, instance=cur_event.registration_configuration,
                         reg_form_queryset=reg_form_queryset, recurring_edit=True, prefix='regconf'
@@ -2766,49 +2765,15 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
     cancelled_registrants = registration.registrant_set.filter(cancel_dt__isnull=False)
 
     if request.method == "POST":
+        # If cancellation is no longer allowed, force a refresh so that
+        # "cancellation not allowed message is displayed"
+        if not event.can_cancel:
+            return HttpResponseRedirect(reverse(
+                'event.cancel_registration', args=[event.pk, registration.pk]))
+
         # check if already canceled. if so, do nothing
         if not registration.canceled:
-            for registrant in registrants:
-                user_is_registrant = False
-                if not request.user.is_anonymous and registrant.user:
-                    if request.user.id == registrant.user.id:
-                        user_is_registrant = True
-
-                registrant.cancel_dt = datetime.now()
-                registrant.save()
-
-                # update the amount_paid in registration
-                if registrant.amount:
-                    if registrant.registration.amount_paid:
-                        registrant.registration.amount_paid -= registrant.amount
-                        registrant.registration.save()
-
-                    # update the invoice if invoice is not tendered
-                    invoice = registrant.registration.invoice
-                    if invoice and not invoice.is_tendered:
-                        invoice.total -= registrant.amount
-                        invoice.subtotal -= registrant.amount
-                        invoice.balance -= registrant.amount
-                        invoice.save(request.user)
-
-                recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-                if recipients and notification:
-                    notification.send_emails(recipients, 'event_registration_cancelled', {
-                        'event':event,
-                        'user':request.user,
-                        'registrants_paid':event.registrants(with_balance=False),
-                        'registrants_pending':event.registrants(with_balance=True),
-                        'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
-                        'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
-                        'registrant':registrant,
-                        'user_is_registrant': user_is_registrant,
-                    })
-
-                # Log an event for each registrant in the loop
-                EventLog.objects.log(instance=registrant)
-
-            registration.canceled = True
-            registration.save()
+            registration.cancel(request)
 
         return HttpResponseRedirect(
             reverse('event.registration_confirmation',
@@ -2841,17 +2806,13 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
     event = get_object_or_404(Event, pk=event_id)
 
     if registrant_id:
-        try:
-            registrant = Registrant.objects.get(
-                registration__event=event,
-                pk =registrant_id,
-            )
-
-            # check permission
-            if not has_perm(request.user, 'events.view_registrant', registrant):
+        registrant = get_object_or_404(Registrant,
+                                       registration__event=event,
+                                       pk =registrant_id,)
+        # check permission
+        if not has_perm(request.user, 'events.view_registrant', registrant):
+            if not (request.user.is_authenticated and request.user == registrant.user): 
                 raise Http403
-        except:
-            raise Http404
     elif hash:
         sqs = Registrant.objects.filter(registration__event=event)
         sqs = sqs.order_by("-update_dt")
@@ -2869,59 +2830,17 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
         raise Http404
 
     if request.method == "POST":
-        # check if already canceled. if so, do nothing
-        if not registrant.cancel_dt:
-            user_is_registrant = False
-            if request.user.is_authenticated and registrant.user:
-                if request.user == registrant.user:
-                    user_is_registrant = True
+        # If cancellation is no longer allowed, force a refresh so that
+        # "cancellation not allowed message is displayed"
+        if not event.can_cancel:
+            return HttpResponseRedirect(reverse(
+                'event.cancel_registrant', args=[event.pk, registrant.pk]))
 
-            registrant.cancel_dt = datetime.now()
-            registrant.save()
-
-            # update the amount_paid in registration
-            if registrant.amount:
-                if registrant.registration.amount_paid:
-                    registrant.registration.amount_paid -= registrant.amount
-                    registrant.registration.save()
-
-                # update the invoice if invoice is not tendered
-                invoice = registrant.registration.invoice
-                if not invoice.is_tendered:
-                    invoice.total -= registrant.amount
-                    invoice.subtotal -= registrant.amount
-                    invoice.balance -= registrant.amount
-                    invoice.save(request.user)
-
-            # check if all registrants in this registration are canceled.
-            # if so, update the canceled field.
-            reg8n = registrant.registration
-            exist_not_canceled = Registrant.objects.filter(
-                                registration=reg8n,
-                                cancel_dt__isnull=True
-                                ).exists()
-            if not exist_not_canceled:
-                reg8n.canceled = True
-                reg8n.save()
-
-            EventLog.objects.log(instance=registrant)
-
-            recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-            if recipients and notification:
-                notification.send_emails(recipients, 'event_registration_cancelled', {
-                    'event':event,
-                    'user':request.user,
-                    'registrants_paid':event.registrants(with_balance=False),
-                    'registrants_pending':event.registrants(with_balance=True),
-                    'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
-                    'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
-                    'registrant':registrant,
-                    'user_is_registrant': user_is_registrant,
-                })
-
+        registrant.cancel(request)
         # back to invoice
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', args=[event.pk, registrant.hash]))
+
 
     if registrant.custom_reg_form_entry:
         registrant.assign_mapped_fields()

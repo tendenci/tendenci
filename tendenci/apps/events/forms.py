@@ -36,7 +36,7 @@ from tendenci.libs.form_utils.forms import BetterModelForm
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, StateSelectField, PriceField
+from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, StateSelectField, PercentField, PriceField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.emails.models import Email
@@ -1361,6 +1361,37 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
         mce_attrs={'storme_app_label':RegistrationConfiguration._meta.app_label,
         'storme_model':RegistrationConfiguration._meta.model_name.lower()}))
 
+    cancellation_fee = PriceField(
+        label=_('Cancellation Fee'),
+        max_digits=21,
+        decimal_places=2,
+        initial=0.00,
+        help_text=_('Fee registrant pays when cancelling. ' \
+                    'Leave as 0 if there is no cancellation fee. ' \
+                    'If cancellation percent is set, that will be used instead.'
+                    )
+    )
+
+    cancellation_percent = PercentField(
+        label=_('Cancellation Percent'),
+        allowed_decimal_places=0,
+        help_text=_(
+            'Percent of total price registrant pays when cancelling. ' \
+            'If percent is set, this is used to calculate cancellation fee, ' \
+            'overriding other configuration for cancellation fee. ' \
+            'Leave as 0% to set cancellation fee directly instead.'
+        )
+    )
+
+    cancel_by_dt = forms.DateField(
+        label=_('Cancel by'),
+        required=False,
+        widget=forms.DateInput(attrs={'class':'datepicker'}),
+        help_text=_('Date through which cancellation is allowed.')
+    )
+
+
+
     class Meta:
         model = RegistrationConfiguration
 
@@ -1382,7 +1413,11 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'reminder_days',
             'registration_email_type',
             'registration_email_text',
-            'reply_to'
+            'reply_to',
+            'cancel_by_dt',
+            'cancellation_fee',
+            'cancellation_percent',
+            'cancel_by_dt',
         )
 
         fieldsets = [(_('Registration Configuration'), {
@@ -1403,7 +1438,10 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     'reminder_days',
                     'registration_email_type',
                     'registration_email_text',
-                    'reply_to'
+                    'reply_to',
+                    'cancellation_fee',
+                    'cancellation_percent',
+                    'cancel_by_dt',
                     ],
           'legend': ''
           })

@@ -135,7 +135,9 @@ def invoice_total_display(request, invoice):
 @register.inclusion_tag("invoices/payment_history.html")
 def payment_history_display(request, invoice):
     payments = invoice.payment_set.order_by('-id')
+    refunds = invoice.refund_set.order_by('-id')
 
     return {'request':request,
             'invoice':invoice,
-            'payments': payments}
+            'payments': payments,
+            'refunds': refunds}

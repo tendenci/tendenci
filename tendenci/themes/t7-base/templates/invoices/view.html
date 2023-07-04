@@ -41,6 +41,14 @@
   </div>
   {% endif %}
 
+  {% if invoice.is_tendered and invoice.can_refund %}
+  <div class="invoice-options">
+    <ul>
+      <li><a class="admin-options" href="{% url 'invoice.refund' invoice.pk %}">{% trans "Refund" %}</a></li>
+    </ul>
+  </div>
+  {% endif %}
+
   <div class="invoice-options">
     <ul>
       {% if invoice.is_tendered and not invoice.is_void %}

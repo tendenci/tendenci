@@ -1,10 +1,33 @@
 import uuid
+
+import stripe
+
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.payments.stripe.utils import stripe_set_app_info
 from tendenci.apps.site_settings.utils import get_setting
+
+
+class PaymentQuerySet(models.QuerySet):
+    def stripe(self):
+        """Filter payments with a Stripe transaction ID"""
+        merchant_account = get_setting("site", "global", "merchantaccount").lower()
+        if merchant_account != 'stripe':
+            return self.none()
+
+        return self.exclude(trans_id='')
+
+    def refundable(self):
+        """Filter Stripe payments with a remaining refundable amount"""
+        return self.stripe().filter(refundable_amount__gt=0, status_detail='approved')
+
+
+class PaymentManager(models.Manager.from_queryset(PaymentQuerySet)):
+    pass
 
 
 class Payment(models.Model):
@@ -26,6 +49,7 @@ class Payment(models.Model):
     auth_code = models.CharField(max_length=10)
     avs_code = models.CharField(max_length=10)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
+    refundable_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     invoice_num = models.CharField(max_length=20, blank=True)
     description = models.CharField(max_length=1600)
     first_name = models.CharField(max_length=100, default='',
@@ -86,10 +110,12 @@ class Payment(models.Model):
     status_detail = models.CharField(max_length=50, default='')
     status = models.BooleanField(default=True)
 
+    objects = PaymentManager()
+
     class Meta:
         app_label = 'payments'
 
-    def save(self, user=None):
+    def save(self, user=None, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid4())
             if user and user.id:
@@ -99,7 +125,12 @@ class Payment(models.Model):
             self.owner = user
             self.owner_username = user.username
 
-        super(Payment, self).save()
+        super(Payment, self).save(*args, **kwargs)
+
+    @property
+    def completed_refunds(self):
+        """All completed refunds associated with this payment"""
+        return self.refund_set.filter(response_status=Refund.Status.SUCCEEDED)
 
     @property
     def is_approved(self):
@@ -108,6 +139,26 @@ class Payment(models.Model):
     def mark_as_paid(self):
         self.status = True
         self.status_detail = 'approved'
+        self.refundable_amount = self.amount
+
+    def refund(self, amount=None, notes=None):
+        """Refund full or partial amount of Payment through Stripe"""
+        merchant_account = get_setting("site", "global", "merchantaccount").lower()
+
+        if not self.trans_id or merchant_account != 'stripe':
+            raise Exception(_("Refund requires a Stripe transaction ID"))
+
+        refundable_amount = amount or self.amount
+        Refund.objects.create(
+            invoice=self.invoice,
+            payment=self,
+            trans_id=self.trans_id,
+            amount=refundable_amount,
+            notes=notes,
+        )
+
+        self.refundable_amount -= refundable_amount
+        self.save(update_fields=['refundable_amount'])
 
     @property
     def is_paid(self):
@@ -240,3 +291,92 @@ class PaymentMethod(models.Model):
         if self.is_online:
             return "%s - Online" % name
         return "%s - Offline" % name
+
+
+class RefundQuerySet(models.QuerySet):
+    def connect_to_stripe(self):
+        """Make sure Stripe has the API Key"""
+        stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+        stripe.api_version = settings.STRIPE_API_VERSION
+        stripe_set_app_info(stripe)
+
+    def create(self, *args, **kwargs):
+        """Refund through Stripe and save record of transaction"""
+        instance = super().create(*args, **kwargs)
+        try:
+            amount_in_cents = int(instance.amount * 100)
+            params = {'charge': instance.trans_id, 'amount': amount_in_cents}
+            stripe_connected_account, scope = instance.invoice.stripe_connected_account()
+
+            if stripe_connected_account:
+                
+                if scope == "express":
+                    params.update({'refund_application_fee':True})
+                    params.update({'reverse_transfer':True})
+                else:
+                    # stripe_account only needs to be specified for standard account,
+                    # not for express account 
+                    params.update({'stripe_account': stripe_connected_account})
+
+            self.connect_to_stripe()
+            response = stripe.Refund.create(**params)
+            instance.update_stripe(response)
+        except Exception as e:
+            instance.response_status = Refund.Status.FAILED
+            instance.error_message = e
+            instance.save(update_fields=['error_message', 'response_status'])
+            raise
+
+
+class RefundManager(models.Manager.from_queryset(RefundQuerySet)):
+    pass
+
+
+class Refund(models.Model):
+    """
+    Track refunds made through Stripe.
+    Refunds will always have a corresponding Payment and Invoice.
+    trans_id is the Stripe charge ID of the related Payment.
+    """
+    class Status:
+        PENDING = 'pending'
+        SUCCEEDED = 'succeeded'
+        FAILED = 'failed'
+
+        CHOICES = (
+            (PENDING, _('Pending')),
+            (SUCCEEDED, _('Succeeded')),
+            (FAILED, _('Failed'))
+        )
+
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
+    response_status = models.CharField(
+        max_length=50, default=Status.PENDING, choices=Status.CHOICES)
+    response_reason_text = models.TextField(default='')
+    error_message = models.TextField(blank=True, null=True)
+    trans_id = models.CharField(max_length=100)
+    refund_id = models.CharField(max_length=100, blank=True, null=True)
+    amount = models.DecimalField(max_digits=15, decimal_places=2)
+    transaction_dt = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True, null=True)
+
+    objects = RefundManager()
+
+    def update_stripe(self, refund_response):
+        """Update to reflect Stripe refund response"""
+        if hasattr(refund_response, 'id'):
+            self.refund_id = refund_response.id
+
+        if hasattr(refund_response, 'status') and refund_response.status == 'succeeded':
+            self.response_status = self.Status.SUCCEEDED
+            self.response_reason_text = 'Refund successfully processed.'
+        else:
+            self.response_status = self.Status.FAILED
+            self.response_reason_text = refund_response
+
+        self.save()
+
+    @property
+    def net_amount(self):
+        return self.amount * -1

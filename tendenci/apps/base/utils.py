@@ -296,7 +296,9 @@ def tcurrency(mymoney):
             fmt = '%s(%s)'
         if allow_commas:
             mymoney = intcomma(mymoney)
-        return fmt % (currency_symbol, mymoney)
+            
+        # Remove redundant '-' if present 
+        return (fmt % (currency_symbol, mymoney)).replace('-', '')
     else:
         return mymoney
 

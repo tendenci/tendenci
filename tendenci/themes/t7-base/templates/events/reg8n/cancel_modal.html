@@ -1,0 +1,43 @@
+<div class="modal-dialog modal-md">
+  <div class="modal-content">
+
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">{% trans "Cancel Event Registration" %}</h4>
+        </div>
+
+        <div class="modal-body">
+            {% blocktrans with event.title as title and event.start_dt as start_dt %}Are you sure you want to cancel your registration to {{ title }} on {{ start_dt }}? {% endblocktrans %}
+            {% if cancellation_fee and allow_refunds %} <br>
+                {% blocktrans %}A cancellation fee of ${{ cancellation_fee }} will be applied to your invoice prior to refunding your registration fee. {% endblocktrans %}
+            {% endif %}
+        </div>
+
+        <div class="modal-footer">
+            <div class="form-wrap">
+                {% if registrant %}
+                    {% if hash %}
+                        <form action="{% url "event.cancel_registrant" event.pk registrant.hash %}" method="post">{% csrf_token %}
+                    {% else %}
+                        <form action="{% url "event.cancel_registrant" event.pk registrant.pk %}" method="post">{% csrf_token %}
+                    {% endif %}
+                {% else %}
+                    {% if hash %}
+                        <form action="{% url "event.cancel_registration" event.pk registration.pk registration.hash %}" method="post">{% csrf_token %}
+                    {% else %}
+                        <form action="{% url "event.cancel_registration" event.pk registration.pk %}" method="post">{% csrf_token %}
+                    {%  endif %}
+                {% endif %}
+                            <div class="grid">
+                                <div class="grid-item" style="margin-right: 10px;">
+                                    <button type="submit" formaction="{% url 'event' event.pk%}">{% blocktrans with event.title as title %} No, take me back to {{ title }} {% endblocktrans %}</button>
+                                </div>
+                                <div class="forms grid-item">
+                                    <input type="submit" value="{% trans "Yes, I'm sure" %}" />
+                                </div>
+                            </div>
+                        </form>
+            </div>
+        </div>
+    </div>
+</div>

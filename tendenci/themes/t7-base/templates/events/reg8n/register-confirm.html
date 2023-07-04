@@ -84,7 +84,7 @@
             {% trans "Registration Number: " %}{{ registration.pk }}
         </h3>
 
-        {% if not registration.canceled %}
+        {% if not registration.canceled and event.can_cancel %}
             <div>
              <a href="{% if hash %}{% url "event.registration_edit" registration.pk hash %}{% else %}{% url "event.registration_edit" registration.pk %}{% endif %}">{% trans "Edit Registrant(s) Info" %}</a>
             {% if registrants_count >= 1 or registration.reg_conf_price.quantity > 1 %}
@@ -147,7 +147,7 @@
                         {% blocktrans with registrant.cancel_dt|date_short as cancel_date %} Canceled on {{ cancel_date }}{% endblocktrans %}
                     </span>
                 {% else %}
-                    {% if not registration.is_table %}
+                    {% if not registration.is_table and event.can_cancel %}
                       {% if user.is_authenticated %}
                           <a href="{% url "event.cancel_registrant" event.pk registrant.pk %}">{% trans "Cancel" %}</a>
                       {% else %}

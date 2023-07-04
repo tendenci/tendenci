@@ -1209,6 +1209,16 @@
 			"description": "Taxes - Foreign Withholding",
 			"type": "E"
 		}
+	},
+	
+	{
+		"model": "accountings.Acct",
+		"pk": 125,
+		"fields": {
+			"account_number": 558000,
+			"description": "Sales Returns and Allowances",
+			"type": "C"
+		}
 	}
 	
 ]

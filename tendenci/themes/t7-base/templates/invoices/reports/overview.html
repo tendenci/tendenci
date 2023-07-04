@@ -51,6 +51,7 @@
 			<th>{% trans "Date Period" %}</th>
 			<th class="text-center">{% trans 'Total Amount Paid' %}</th>
 			<th class="text-center">{% trans 'Total Credit Card Payment' %}</th>
+      <th class="text-center">{% trans 'Total Refunded' %}</th>
 			<th class="text-center">{% trans "Total Amount Not Paid" %}</th>
 			<th class="text-center">{% trans 'Invoice Total' %}</th>
 		</tr>
@@ -62,6 +63,7 @@
 			</td>
 			<td class="text-center total-cell"><a title="View list of invoices paid in this period" href="{% url 'invoice.search' %}?balance=0{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_amount_paid|format_currency }}</a></td>
 			<td class="text-center"><strong>{{ total_cc|format_currency }}</strong></td>
+      <td class="text-center"><strong>{{ total_refunds|format_currency }}</strong></td>
 			<td class="text-center total-cell"><a title="View list of invoices with open balance in this period" href="{% url 'invoice.search' %}?balance=1{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_balance|format_currency }}</a></td>
 			<td class="text-center total-cell"><a title="View list of invoices in this period" href="{% url 'invoice.search' %}?submit=submit{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_amount|format_currency }}</a></td>
 		</tr>
@@ -138,7 +140,6 @@
 	</div>
 	{% endif %}
 </div>
-
 </div>
 
 
@@ -220,9 +221,7 @@
        var chart = new google.visualization.PieChart(document.getElementById('total_balance_pie'));
        chart.draw(total_balance, options);
 	   {% endif %}
- 
       }
-      
   </script>  
 {% endif %}
 

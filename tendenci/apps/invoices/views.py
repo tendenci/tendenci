@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
@@ -26,9 +27,9 @@ from tendenci.apps.perms.decorators import is_enabled, superuser_required
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.notifications.utils import send_notifications
-from tendenci.apps.payments.forms import MarkAsPaidForm
+from tendenci.apps.payments.forms import MarkAsPaidForm, RefundForm
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.payments.models import Payment
+from tendenci.apps.payments.models import (Payment, Refund)
 from tendenci.apps.invoices.forms import ReportsOverviewForm, AdminNotesForm, AdminVoidForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
 from tendenci.apps.invoices.utils import invoice_pdf, iter_invoices
 from tendenci.apps.emails.models import Email
@@ -64,6 +65,13 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
                                           create_dt__date__gte=start_dt,
                                           create_dt__date__lte=end_dt
                                           ).exclude(trans_id='')
+        refunds = Refund.objects.filter(
+            response_status=Refund.Status.SUCCEEDED,
+            transaction_dt__date__gte=start_dt,
+            transaction_dt__date__lte=end_dt,
+            invoice__is_void=False
+        )
+
         if entity:
             invoices = invoices.filter(entity=entity)
             payments = payments.filter(invoice__entity=entity)
@@ -71,11 +79,13 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
         invoice_total_amount_paid = invoices.filter(balance__lte=0).aggregate(Sum('total'))['total__sum'] or 0
         invoice_total_balance = invoices.aggregate(Sum('balance'))['balance__sum'] or 0
         total_cc = payments.aggregate(Sum('amount'))['amount__sum'] or 0
-
+        total_refunds = refunds.aggregate(Sum('amount'))['amount__sum'] * -1 or 0
         total_amount_by_object_type = invoices.values('object_type__app_label').annotate(sum=Sum('total')).order_by('-sum')
-        amount_paid_by_object_type = invoices.filter(balance__lte=0).values('object_type__app_label').annotate(sum=Sum('total')).order_by('-sum')
+        amount_paid_by_object_type = invoices.filter(balance__lte=0).values('object_type__app_label').annotate(sum=Sum('total'), refunds=Sum('refunds')).order_by('-sum')
         total_balance_by_object_type = invoices.filter(balance__gt=0).values('object_type__app_label').annotate(balance_sum=Sum('balance')).order_by('-balance_sum')
         total_cc_by_object_type = payments.filter(invoice__balance__lte=0).values('invoice__object_type__app_label').annotate(sum=Sum('amount')).order_by('-sum')
+
+        invoice_total_amount_paid += total_refunds
 
         total_amount_d = {}
         amount_paid_d = {}
@@ -87,7 +97,8 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
                 total_amount_d[item['object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount)]
         for item in amount_paid_by_object_type:
             if item['sum']:
-                amount_paid_d[item['object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount_paid)]
+                net_amount = item['sum'] - item.get('refunds', 0)
+                amount_paid_d[item['object_type__app_label'] or 'unknown'] = [net_amount, '{0:.2%}'.format(net_amount/invoice_total_amount_paid)]
         for item in total_balance_by_object_type:
             if item['balance_sum']:
                 balance_d[item['object_type__app_label'] or 'unknown'] = [item['balance_sum'], '{0:.2%}'.format(item['balance_sum']/invoice_total_balance)]
@@ -107,7 +118,9 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
                  'invoice_total_amount': invoice_total_amount,
                  'invoice_total_amount_paid': invoice_total_amount_paid,
                  'invoice_total_balance': invoice_total_balance,
-                 'total_cc': total_cc})
+                 'total_cc': total_cc,
+                 'total_refunds': total_refunds,
+                 })
 
 
 @is_enabled('invoices')
@@ -215,6 +228,99 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
         })
 
 
+@superuser_required
+def refund(request, id, template_name='invoices/refund.html'):
+    """
+    Refunds specified amount
+    """
+    invoice = get_object_or_404(Invoice, pk=id)
+
+    if not invoice.allow_edit_by(request.user):
+        raise Http403
+
+    if request.method == 'POST':
+        form = RefundForm(request.POST)
+
+        if form.is_valid():
+            try:
+                message = _(invoice.admin_refund_confirmation_message)
+                amount = form.cleaned_data.get('amount')
+
+                # Adjust cancellation fees if they have changed
+                cancellation_fees = None
+                fees = form.cleaned_data.get('cancellation_fees')
+                if fees != invoice.default_cancellation_fees:
+                    cancellation_fees = fees
+
+                # If adjusting cancellation fees, update validation message
+                # to include both fees and refund amouont
+                cancel = form.cleaned_data.get('cancel_registration')
+                if (cancellation_fees is not None and
+                    (cancel or invoice.total_cancellation_fees) and
+                    fees + amount > invoice.total_less_refunds):
+                    raise ValidationError(
+                        f'The sum of the refunded amount and cancellation fee ' \
+                        f'must be less than or equal to {invoice.total_less_refunds}'
+                    )
+
+                # Cancel registration if indicated. This needs
+                # to happen before refund so that cancellation
+                # fees are deducted.
+                if cancel:
+                    # Cancel registration
+                    invoice.registration.cancel(
+                        request, refund=False, cancellation_fees=cancellation_fees)
+                    invoice.refresh_from_db()
+                    message += _(" Registration has been canceled.")
+
+                elif cancellation_fees is not None and invoice.total_cancellation_fees:
+                    invoice.registration.process_adjusted_cancellation_fees(
+                        cancellation_fees, request.user)
+                    invoice.refresh_from_db()
+
+                # update invoice; make accounting entries
+                notes = form.cleaned_data.get('refund_notes')
+                invoice.refund(amount, request.user, notes=notes)
+
+                EventLog.objects.log(instance=invoice)
+                messages.add_message(request, messages.SUCCESS, message)
+
+                return redirect(invoice)
+
+            except ValidationError as e:
+                form.add_error('amount', e.messages)
+
+            except Exception as e:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    _(invoice.admin_refund_failure_message),
+                )
+
+    else:
+        form = RefundForm(
+            initial={
+                'amount': invoice.refundable_amount,
+                'cancellation_fees': 0,
+                'cancel_registration': False,
+            })
+
+
+    allow_cancel = False
+    is_canceled = False
+    if invoice.registration:
+        allow_cancel = not invoice.registration.canceled
+        is_canceled = invoice.registration.canceled
+
+    return render_to_resp(
+        request=request, template_name=template_name, context={
+            'invoice': invoice,
+            'form': form,
+            'allow_cancel': allow_cancel,
+            'is_canceled': is_canceled,
+        })
+
+
 def mark_as_paid_old(request, id):
     """
     Sets invoice balance to 0 and adds
@@ -251,6 +357,7 @@ def void_payment(request, id):
 
     messages.add_message(request, messages.SUCCESS, _('Successfully voided payment for Invoice %(pk)s.' % {'pk':invoice.id}))
     return redirect(invoice)
+
 
 @superuser_required
 def void_invoice(request, id, form_class=AdminVoidForm, template_name="invoices/void.html"):
@@ -599,8 +706,6 @@ def detail(request, id, template_name="invoices/detail.html"):
             "total": abs(row[2])})
 
     EventLog.objects.log(instance=invoice)
-
-    print('here')
 
     return render_to_resp(request=request, template_name=template_name,
         context={

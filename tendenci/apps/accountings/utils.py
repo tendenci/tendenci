@@ -92,6 +92,33 @@ def make_acct_entries_sale(user, obj, acct_entry, amount, **kwargs):
                                       amount * (-1))
 
 
+def make_acct_entries_refund(user, invoice, amount, **kwargs):
+    """
+        Make account entries for refund
+        
+        DEBIT Sales returns and allowance (C)
+        CREDIT Undeposited Funds (A)
+        
+        Refund is processed only to the paid invoices, 
+        otherwise, it should credit to Account receivable.
+    """
+    acct_entry = AcctEntry.objects.create_acct_entry(user, 'invoice', invoice.id)
+        
+    # debit to Sales Returns and Allowances
+    acct = Acct.objects.get(account_number=558000)
+    AcctTran.objects.create_acct_tran(user,
+                                      acct_entry,
+                                      acct,
+                                      amount)
+
+    # credit to Undeposited Funds
+    acct = Acct.objects.get(account_number=106000)
+    AcctTran.objects.create_acct_tran(user,
+                                      acct_entry,
+                                      acct,
+                                      amount * (-1))
+
+
 def make_acct_entries_discount(user, invoice, acct_entry, d, **kwargs):
     """ Payment has now been received and we want to update
          the accounting entries

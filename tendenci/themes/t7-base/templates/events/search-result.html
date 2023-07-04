@@ -108,8 +108,26 @@
             {% if registered_user %}
             <div class="attend-wrap registered">
                 {% include "events/include/search-result-spots-taken.html" %}
-                <div class="attend"><a href="{% url "event.myevents" %}">{% trans "You are registered" %}</a></div>
-                <div style="clear:both;"></div>
+                <div class="attend">
+                    <a href="{% url "event.myevents" %}">
+                        {% trans "You are registered" %}
+                    </a>
+                </div>
+            <div style="clear:both;"></div>
+            <div align="right">
+                {% if event.can_cancel %}
+                    {% user_registration user event as registration %}
+                    {% if registration %}
+                        <a href="{% url 'event.cancel_registration' event.pk registration.pk %}">
+                            {% trans "Cancel" %}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'profile' user.username %}">
+                            {% trans "Cancel" %}
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
             </div>
             {% else %}
             <div class="attend-wrap">

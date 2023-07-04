@@ -50,6 +50,12 @@
     <td>{% trans "Payments/Credits:" %}</td>
     <td class="td-right">{{ invoice.payments_credits|format_currency }}</td>
   </tr>
+  {% if invoice.refunds %}
+  <tr>
+    <td>{% trans "Refunds:" %}</td>
+    <td class="td-right">{{ invoice.net_refunds|format_currency }}</td>
+  </tr>
+  {% endif %}
   <tr class="invoice-total-balance">
     <td>{% trans "Balance due:" %}</td>
     <td class="td-right">{{ invoice.balance|format_currency }}</td>
