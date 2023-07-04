@@ -1,3 +1,9 @@
+### 14.5.1 [2023-07-04]
+
+* Fixed an issue about reps could be removed from dues reps and member reps groups when they're removed from a corp but still associated with other corps.
+* Merged HL integration.
+ 
+
 ### 14.5 [2023-06-27]
 
 * **New Feature:** Added Trainings module that allows a Tendenci site to offer certificate programs to users. https://tendenci.readthedocs.io/en/latest/topic-guides/trainings.html
