@@ -79,7 +79,10 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
         invoice_total_amount_paid = invoices.filter(balance__lte=0).aggregate(Sum('total'))['total__sum'] or 0
         invoice_total_balance = invoices.aggregate(Sum('balance'))['balance__sum'] or 0
         total_cc = payments.aggregate(Sum('amount'))['amount__sum'] or 0
-        total_refunds = refunds.aggregate(Sum('amount'))['amount__sum'] * -1 or 0
+        if refunds.exists():
+            total_refunds = refunds.aggregate(Sum('amount'))['amount__sum'] * -1
+        else:
+            total_refunds = 0
         total_amount_by_object_type = invoices.values('object_type__app_label').annotate(sum=Sum('total')).order_by('-sum')
         amount_paid_by_object_type = invoices.filter(balance__lte=0).values('object_type__app_label').annotate(sum=Sum('total'), refunds=Sum('refunds')).order_by('-sum')
         total_balance_by_object_type = invoices.filter(balance__gt=0).values('object_type__app_label').annotate(balance_sum=Sum('balance')).order_by('-balance_sum')
