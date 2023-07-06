@@ -178,8 +178,11 @@ class CEUCategory(models.Model):
 class EventCredit(models.Model):
     """Credits configured for an Event"""
     event = models.ManyToManyField('Event', blank=True)
-    ceu_subcategory = models.ForeignKey(CEUCategory, on_delete=models.DO_NOTHING)
-    credit_count = models.PositiveSmallIntegerField(default=0)
+    # When deleting a configuration for a credit, it will remove it from the event
+    # configuration. History of credits earned for a Registrant will be saved
+    # independent so it won't be lost if a CEUCategory is deleted.
+    ceu_subcategory = models.ForeignKey(CEUCategory, on_delete=models.CASCADE)
+    credit_count = models.DecimalField(max_digits=5, decimal_places=1, default=0)
     alternate_ceu_id = models.CharField(max_length=150, blank=True, null=True)
     available = models.BooleanField(default=False)
 

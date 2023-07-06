@@ -715,7 +715,7 @@ def credits_edit(request, id, form_class=EventCreditForm, template_name="events/
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         if "_save" in request.POST:
-            return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+            return HttpResponseRedirect(reverse('event', args=[event.pk]))
         return HttpResponseRedirect(reverse(redirect_url, args=[event.pk]))
 
     no_subcategories = dict()
@@ -751,6 +751,7 @@ def credits_edit(request, id, form_class=EventCreditForm, template_name="events/
     return render_to_resp(request=request, template_name=template_name,
         context={
             'event': event,
+            'user': request.user,
             'credit_forms': credit_forms,
             'multi_event_forms': multi_event_forms,
             'label': "credits"})

@@ -1,14 +1,18 @@
 <style>
   .credits .headings {
-      margin-left: 38%;
+      margin-left: 33%;
       font-size: .8em;
+  }
+  .credits .category {
+      font-size: .85em;
   }
   .credits .headings .col-md-8 {
       float: left;
       width: 33%;
+      margin-left: -15px;
   }
   .credits .subtable {
-      margin-left: 50px;
+      margin-left: 25px;
       margin-bottom: 15px;
   }
   .credits .row {
@@ -22,6 +26,7 @@
   }
   .credits input[type=number] {
       width: 15%;
+      margin-left: -35px;
   }
   .credits input[type=text] {
       width: 25%;
@@ -30,10 +35,12 @@
   .credits input[type=checkbox] {
       width: 40%;      
   }
-  .credits input[readonly="readonly"] {
+  .credits textarea[readonly="readonly"] {
       border: 0px;
-      width: 110px;
-      font-size: .85em;
+      width: 130px;
+      font-size: .8em;
+      float: left;
+      resize: none;
   }
 
   @media screen and (max-width: 1200px) {
@@ -49,12 +56,16 @@
     .credits input[type=checkbox] {
       width: 32%;      
     }
-    .credits input[readonly="readonly"] {
+
+    .credits .category {
+        font-size: .8em;
+    }
+    .credits textarea[readonly="readonly"] {
         width: 105px;
-        font-size: .8em
+        font-size: .8em;
     }
     .credits .subtable {
-        margin-left: 20px;   
+        margin-left: 30px;   
     }
   }
   @media screen and (max-width: 767px) {
@@ -67,24 +78,27 @@
           width: 45%;
       }
   }
-  @media screen and (max-width: 655px) {
+  @media screen and (max-width: 668px) {
     .credits input[type=checkbox] {
       width: 40%;      
     }      
   }
-  @media screen and (max-width: 540px) {
+  @media screen and (max-width: 560px) {
     .credits input[type=text] {
         margin-left: 1px;
     }
     .credits input[type=checkbox] {
       width: 32%;      
     }
-    .credits input[readonly="readonly"] {
+    .credits textarea[readonly="readonly"] {
       width: 105px;
     }
   }
-  @media screen and (max-width: 420px) {
+  @media screen and (max-width: 433px) {
       .credits .headings {
+          font-size: .75em;
+      }
+      .credits .category {
           font-size: .75em;
       }
       .credits .subtable {
@@ -107,7 +121,7 @@
 {% endif %}
 
 {% for category, forms in credit_forms.items %}
-<b>{{category}}</b> <br/>
+<div class="category"><b>{{category}}</b> </div>
 <div class="subtable">
   {% for form in forms %}
   <div class="row">
@@ -116,4 +130,8 @@
   {% endfor %}
 </div>
 {% endfor %}
+
+{% if not credit_forms and user.is_superuser %}
+  <a href='/admin/events/ceucategory/'> {% trans 'Add Credits' %}</a>
+{% endif %}
 </div>

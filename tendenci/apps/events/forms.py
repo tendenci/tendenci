@@ -640,9 +640,9 @@ def _get_price_labels(pricing):
 
 
 class EventCreditForm(forms.Form):
-    ceu_category = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    ceu_category = forms.CharField(widget=forms.Textarea(attrs={'readonly': 'readonly', 'rows': 3}))
     available  = forms.BooleanField(required=False)
-    credit_count = forms.IntegerField(required=False)
+    credit_count = forms.DecimalField(required=False)
     alternate_ceu_id = forms.CharField(required=False)
     event_id = forms.IntegerField(widget=forms.TextInput(attrs={'readonly': 'readonly', 'hidden': True}))
     ceu_category_id = forms.IntegerField(widget=forms.TextInput(attrs={'readonly': 'readonly', 'hidden': True}))

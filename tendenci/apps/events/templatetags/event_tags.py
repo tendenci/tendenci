@@ -24,10 +24,11 @@ register = Library()
 
 
 @register.inclusion_tag("events/credits.html", takes_context=True)
-def credits_form_display(context, event, credit_forms):
+def credits_form_display(context, event, credit_forms, user):
     context.update({
         "event": event,
-        "credit_forms": credit_forms
+        "credit_forms": credit_forms,
+        "user": user,
     })
     return context
 

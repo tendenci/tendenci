@@ -56,7 +56,7 @@
         <form id="event-form" class="form-horizontal"  action="." method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {% if event.use_credits_enabled %}
-              {% credits_form_display event credit_forms %}
+              {% credits_form_display event credit_forms user %}
             {% endif %}
             {{ multi_event_forms|styled_multi_forms }}
             {% if label != "pricing" %}
