@@ -371,9 +371,17 @@ class ProfileForm(TendenciBaseForm):
             # At least MIN_LENGTH long
             # r'^(?=.{8,})(?=.*[0-9=]).*$'
             if not re.match(self.password_regex, password1):
-                raise forms.ValidationError(mark_safe("The password does not meet the requirements"))
+                raise forms.ValidationError(_("The password does not meet the requirements"))
 
         return password1
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not self.user_this:
+            if User.objects.filter(email__iexact=email).exists():
+                raise forms.ValidationError(_("The email address entered already exists in the system."))
+
+        return email
 
     def clean(self):
         """
