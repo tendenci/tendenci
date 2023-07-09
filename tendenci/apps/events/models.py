@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 from django.db.models.aggregates import Sum
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
@@ -153,6 +154,58 @@ class Place(models.Model):
 
     def city_state(self):
         return [s for s in (self.city, self.state) if s]
+
+
+class CEUCategory(models.Model):
+    """
+    Continuing Education Units
+    Can optionally be included in Events
+    """
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=15)
+    parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = _("Continuing Education Unit Category")
+        verbose_name_plural = _("Continuing Education Unit Categories")
+        ordering = ('name',)
+        app_label = 'events'
+
+    def __str__(self):
+        return self.name
+
+
+class EventCredit(models.Model):
+    """Credits configured for an Event"""
+    event = models.ManyToManyField('Event', blank=True)
+    # When deleting a configuration for a credit, it will remove it from the event
+    # configuration. History of credits earned for a Registrant will be saved
+    # independent so it won't be lost if a CEUCategory is deleted.
+    ceu_subcategory = models.ForeignKey(CEUCategory, on_delete=models.CASCADE)
+    credit_count = models.DecimalField(max_digits=5, decimal_places=1, default=0)
+    alternate_ceu_id = models.CharField(max_length=150, blank=True, null=True)
+    available = models.BooleanField(default=False)
+
+    def save(self, apply_changes_to='self', from_event=None, *args, **kwargs):
+        """Update for recurring events after save"""
+        super().save(*args, **kwargs)
+        if apply_changes_to != 'self':
+            if not from_event:
+                raise Exception("Must provide event to update recurring events from")
+
+            recurring_events = from_event.recurring_event.event_set.all()
+
+            if apply_changes_to == 'rest':
+                recurring_events = recurring_events.filter(
+                    start_dt__gte=from_event.start_dt)
+
+            # Update existing configs. Create new ones if needed.
+            for event in recurring_events:
+                credit = event.get_or_create_credit_configuration(self.ceu_subcategory.pk, True)
+                credit.credit_count = self.credit_count
+                credit.alternate_ceu_id = self.alternate_ceu_id
+                credit.available = self.available
+                credit.save()
 
 
 class RegistrationConfiguration(models.Model):
@@ -1622,6 +1675,31 @@ class Event(TendenciBaseModel):
             event=self,
             status=True
             ).exists()
+
+    @property
+    def use_credits_enabled(self):
+        """Indicates if use_credits is enabled"""
+        return get_setting("module", "events", "use_credits")
+
+    @cached_property
+    def credits(self):
+        """Credits configured for this Event"""
+        return self.eventcredit_set.all()
+
+    def get_or_create_credit_configuration(self, ceu_category_id, should_create):
+        """Get or create credit configuration for a given CEUCategory"""
+        category = CEUCategory.objects.get(pk=ceu_category_id)
+        credit = self.get_credit_configuration(category)
+
+        if not credit and should_create:
+            credit = EventCredit.objects.create(ceu_subcategory_id=ceu_category_id)
+            credit.event.add(self)
+
+        return credit
+
+    def get_credit_configuration(self, ceu_category):
+        """Get credit configuration for given CEUCategory"""
+        return self.credits.filter(ceu_subcategory=ceu_category).first()
 
     # this function is to display the event date in a nice way.
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010

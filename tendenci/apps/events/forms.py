@@ -29,7 +29,7 @@ from tendenci.apps.events.models import (
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
-    RecurringEvent, Registrant
+    RecurringEvent, Registrant, EventCredit
 )
 
 from tendenci.libs.form_utils.forms import BetterModelForm
@@ -637,6 +637,54 @@ def _get_price_labels(pricing):
                                       target_display,
                                       end_dt,
                                       description) )
+
+
+class EventCreditForm(forms.Form):
+    ceu_category = forms.CharField(widget=forms.Textarea(attrs={'readonly': 'readonly', 'rows': 3}))
+    available  = forms.BooleanField(required=False)
+    credit_count = forms.DecimalField(required=False)
+    alternate_ceu_id = forms.CharField(required=False)
+    event_id = forms.IntegerField(widget=forms.TextInput(attrs={'readonly': 'readonly', 'hidden': True}))
+    ceu_category_id = forms.IntegerField(widget=forms.TextInput(attrs={'readonly': 'readonly', 'hidden': True}))
+
+    @staticmethod
+    def pre_populate_form(event, category, prefix):
+        """Pre-populate form based on category and event"""
+        initial = {
+            'ceu_category': category.name,
+            'ceu_category_id': category.pk,
+            'event_id': event.pk,
+        }
+
+
+        # If this credit has been configured for this event, add the details as configured.
+        credit = event.get_credit_configuration(category)
+        if credit:
+            initial['credit_count'] = credit.credit_count
+            initial['alternate_ceu_id'] = credit.alternate_ceu_id
+            initial['available'] = credit.available
+
+        return EventCreditForm(
+            prefix=prefix,
+            initial=initial)
+
+    def save(self, apply_changes_to, *args, **kwargs):
+        event = Event.objects.get(pk=self.cleaned_data.get('event_id'))
+        credit_count = self.cleaned_data.get('credit_count')
+
+        # Update if the Event already has this credit configured, or if credit count was set.
+        credit = event.get_or_create_credit_configuration(
+            self.cleaned_data.get('ceu_category_id'), credit_count)
+
+        if credit:
+            try:
+                credit.credit_count = credit_count
+                credit.alternate_ceu_id = self.cleaned_data.get('alternate_ceu_id')
+                credit.available = self.cleaned_data.get('available', False)
+                credit.save(apply_changes_to=apply_changes_to, from_event=event)
+            except Exception:
+                raise ValidationError(f"{credit.ceu_subcategory} not updated, try again.")
+            return credit
 
 
 class EventForm(TendenciBaseForm):

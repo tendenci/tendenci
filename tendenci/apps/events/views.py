@@ -70,6 +70,7 @@ from tendenci.apps.user_groups.models import Group
 
 from tendenci.apps.events.models import (
     Event,
+    CEUCategory,
     Registration,
     Registrant,
     Speaker,
@@ -90,6 +91,7 @@ from tendenci.apps.events.models import (
     RecurringEvent)
 from tendenci.apps.events.forms import (
     EventForm,
+    EventCreditForm,
     Reg8nEditForm,
     PlaceForm,
     SpeakerBaseFormSet,
@@ -671,6 +673,88 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     # response
     return render_to_resp(request=request, template_name=template_name,
         context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "overview"})
+
+
+@is_enabled('events')
+@login_required
+def credits_edit(request, id, form_class=EventCreditForm, template_name="events/edit.html"):
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
+    credit_forms = dict()
+    redirect_url = 'event.location_edit'
+
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http403
+
+    if request.method == "POST":
+        post_data = request.POST
+        if 'apply_changes_to' not in post_data:
+            post_data = {'apply_changes_to':'self'}
+        form_apply_recurring = ApplyRecurringChangesForm(post_data)
+        apply_changes_to = 'self'
+        if form_apply_recurring.is_valid():
+            apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
+
+        form_names = set([f"{key.split('-')[0]}" for key in request.POST if key.startswith('form_')])
+
+        forms = list()
+        for form_name in form_names:
+            forms.append(EventCreditForm(request.POST, prefix=form_name))
+
+        if not all([form.is_valid() for form in forms]):
+            messages.add_message(request, messages.ERROR, forms[0].errors)
+
+        for form in forms:
+            try:
+                config = form.save(apply_changes_to)
+            except Exception as e:
+                messages.set_level(request, messages.ERROR)
+                messages.add_message(request, messages.ERROR, e.args[0])
+                redirect_url = 'event.credits_edit'
+
+        msg_string = 'Successfully updated %s' % str(event)
+        messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+        if "_save" in request.POST:
+            return HttpResponseRedirect(reverse('event', args=[event.pk]))
+        return HttpResponseRedirect(reverse(redirect_url, args=[event.pk]))
+
+    no_subcategories = dict()
+    for category in CEUCategory.objects.all():
+        parent = category.parent
+
+        # Make sure we track all parent categories so we can
+        # handle any that don't have subcategories
+        if not parent and category.name not in credit_forms:
+            no_subcategories[category.pk] = category.name
+
+        # If there's a parent, this is a subcategory, set up an EventCredit form
+        if parent:
+            if parent.pk in no_subcategories:
+                del no_subcategories[parent.pk]
+
+            if parent.name not in credit_forms:
+                credit_forms[parent.name] = list()
+
+            credit_forms[parent.name].append(
+                EventCreditForm.pre_populate_form(event, category, prefix=f"form_{category.pk}")
+            )
+
+    # Create forms for any parents that don't have subcategories
+    for pk, name in no_subcategories.items():
+        category = CEUCategory.objects.get(pk=pk)
+        credit_forms[category.name] = [EventCreditForm.pre_populate_form(
+            event, category, prefix=f"form_{category.pk}")]
+
+    form_apply_recurring = ApplyRecurringChangesForm()
+    multi_event_forms = [form_apply_recurring] if event.is_recurring_event else list()
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+            'event': event,
+            'user': request.user,
+            'credit_forms': credit_forms,
+            'multi_event_forms': multi_event_forms,
+            'label': "credits"})
 
 
 @is_enabled('events')
