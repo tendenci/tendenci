@@ -1498,7 +1498,7 @@ def get_child_events(request):
 
 @is_enabled('events')
 @login_required
-def add(request, year=None, month=None, day=None, is_template=False,
+def add(request, year=None, month=None, day=None, is_template=False, parent_event_id=None,
     form_class=EventForm, template_name="events/add.html"):
     """
     Add event page.  You can preset the start date of
@@ -1753,6 +1753,10 @@ def add(request, year=None, month=None, day=None, is_template=False,
             # default to 30 days from now
             mydate = datetime.now()+timedelta(days=30)
             offset = timedelta(hours=2)
+
+            if parent_event_id:
+                event_init['parent'] = parent_event_id
+                event_init['event_relationship'] = 'child'
 
             if all((year, month, day)):
                 date_str = '-'.join([year,month,day])

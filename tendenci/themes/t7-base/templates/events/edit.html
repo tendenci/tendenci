@@ -20,7 +20,16 @@
   <div class="page-header">
     <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %}{% trans " Edit" %}</h1>
   </div>
-  
+
+    {% if event.nested_events_enabled and not event.parent %}
+    <div>
+        <a href="{% url 'event.add_child' event.pk %}">Add Sub-Event</a>
+    </div>
+    {% endif %}
+    {% if event.nested_events_enabled and event.parent %}
+    <div>
+        <a href="{% url 'event.edit' event.parent.pk %}">View Parent Event</a>
+    {% endif %}
     <div class="event-tabs">
         <ul class="nav nav-tabs">
             <li role="presentation" class="dropdown {% if label == 'overview' %}active{% endif %}">

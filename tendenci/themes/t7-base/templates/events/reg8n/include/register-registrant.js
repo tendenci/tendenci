@@ -72,9 +72,10 @@ function updateFormHeader(this_form, prefix, idx){
 };
 
 function updateAddRegistrantButton(formCount) {
+    var guest_limit = {{ event.registration_configuration.guest_limit }};
+
     if (guest_limit == 0) { return; }
 
-    var guest_limit = {{ event.registration_configuration.guest_limit }};
     if (formCount > guest_limit) {
         $('.add-registrant-box button').hide();
     } else {

@@ -1661,29 +1661,39 @@ class Event(TendenciBaseModel):
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        help_text="Larger symposium this event is a part of",
+        help_text=_("Larger symposium this event is a part of"),
     )
     event_relationship = models.CharField(
         max_length=50,
         choices=EventRelationship.CHOICES,
         default=EventRelationship.PARENT,
-        help_text="Select 'child' if this is a sub-event of a larger symposium",
+        help_text=_("Select 'child' if this is a sub-event of a larger symposium"),
     )
     type = models.ForeignKey(Type, blank=True, null=True, on_delete=models.SET_NULL)
-    event_code = models.CharField(max_length=50, blank=True, null=True)
+    event_code = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=_("Optional code representing this event.")
+    )
     repeat_of = models.ForeignKey(
         'self',
         related_name="repeat_events",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        help_text="Select if this child event is a repeat of another. " \
-                  "Registrants can only register for one instance of this child event."
+        help_text=_("Select if this child event is a repeat of another. "
+                    "Registrants can only register for one instance of this child event.")
     )
     repeat_uuid = models.UUIDField(blank=True, null=True)
     title = models.CharField(max_length=150, blank=True)
     course = models.ForeignKey(Course, blank=True, null=True, on_delete=models.SET_NULL)
-    short_name = models.CharField(max_length=150, blank=True, null=True)
+    short_name = models.CharField(
+        max_length=150,
+        blank=True,
+        null=True,
+        help_text=_("Shorter name to display when space is limited (optional).")
+    )
     delivery_method = models.CharField(max_length=150, blank=True, null=True)
     description = models.TextField(blank=True)
     all_day = models.BooleanField(default=False)

@@ -768,13 +768,13 @@ class EventForm(TendenciBaseForm):
     parent = forms.ModelChoiceField(
         required=False,
         queryset=Event.objects.available_parent_events(),
-        help_text="Larger symposium this event is a part of",
+        help_text=_("Larger symposium this event is a part of"),
     )
 
     repeat_of = forms.ModelChoiceField(
         required=False,
         queryset=Event.objects.none(),
-        help_text="Select child event this is a repeat of",
+        help_text=_("Select child event this is a repeat of"),
     )
 
     class Meta:
@@ -782,8 +782,8 @@ class EventForm(TendenciBaseForm):
         fields = (
             'title',
             'course',
-            'event_code',
             'short_name',
+            'event_code',
             'delivery_method',
             'description',
             'event_relationship',
@@ -818,13 +818,13 @@ class EventForm(TendenciBaseForm):
         }
 
         fieldsets = [(_('Event Information'), {
-                      'fields': ['event_relationship',
+                      'fields': ['title',
+                                 'event_relationship',
                                  'parent',
                                  'repeat_of',
-                                 'event_code',
-                                 'title',
                                  'course',
                                  'short_name',
+                                 'event_code',
                                  'description',
                                  'is_recurring_event',
                                  'frequency',

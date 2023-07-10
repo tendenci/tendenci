@@ -114,9 +114,9 @@
 <div class="credits">
 {% if credit_forms %}
 <div class="headings">
-  <div class="col-md-8" >Available</div>
-  <div class="col-md-8">Credits</div>
-  <div class="col-md-8">Alternate CEU ID</div>
+  <div class="col-md-8">{% trans 'Available' %}</div>
+  <div class="col-md-8">{% trans 'Credits' %}</div>
+  <div class="col-md-8">{% trans 'Alternate CEU ID' %}</div>
 </div>
 {% endif %}
 
@@ -137,8 +137,10 @@
 </div>
 {% if credit_forms and event.allow_credit_configuration_with_warning %}
 <div>
+  {% blocktrans %}
   <b>Note: If creating sub-events for this event,
 credits should be added at the sub-event level in the
     sub-event credits tables.</b>
+  {% endblocktrans %}
 </div>
 {% endif %}

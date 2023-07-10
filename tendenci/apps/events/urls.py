@@ -159,6 +159,9 @@ urlpatterns = [
     re_path(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/enable/$' % urlpath, views.enable_addon, name='event.enable_addon'),
     re_path(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/delete/$' % urlpath, views.delete_addon, name='event.delete_addon'),
 
+    # sub-events
+    re_path(r'^%s/(?P<parent_event_id>\d+)\d+/sub-events/add/$' % urlpath, views.add, name='event.add_child'),
+
     # pending events
     re_path(r'^%s/minimal_add/$' % urlpath, views.minimal_add, name='event.minimal_add'),
     re_path(r'^%s/pending/$' % urlpath, views.pending, name='event.pending'),
