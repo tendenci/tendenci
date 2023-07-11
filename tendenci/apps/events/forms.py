@@ -1326,7 +1326,8 @@ class ImageUploadFormMixin:
         """Remove image if needed"""
         instance = super().save(*args, **kwargs)
         if self.data.get(f'{self.label.lower()}-remove_photo'):
-            instance.image = None
+            if instance.image:
+                instance.image.delete()
         return instance
 
 
