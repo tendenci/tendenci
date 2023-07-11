@@ -2183,6 +2183,12 @@ def register(request, event_id=0,
     params = {'prefix': 'registrant',
               'event': event,
               'user': request.user}
+
+    pricing_dates_map = dict()
+    if event.requires_attendance_dates and pricings:
+        for price in pricings:
+            pricing_dates_map.update({price.pk: price.days_price_covers})
+
     if not is_table:
         # pass the pricings to display the price options
         params.update({'pricings': pricings})
@@ -2281,7 +2287,6 @@ def register(request, event_id=0,
 
             #if not request.user.profile.is_superuser:
             within_available_spots = event.limit==0 or event.spots_available >= int(total_regt_forms)
-
             if all([within_available_spots,
                     reg_form.is_valid(),
                     registrant.is_valid(),
@@ -2289,8 +2294,8 @@ def register(request, event_id=0,
 
                 args = [request, event, reg_form, registrant, addon_formset,
                         pricing, pricing and pricing.price or 0]
-                if 'confirmed' in request.POST and gratuity_form.is_valid():
 
+                if 'confirmed' in request.POST and gratuity_form.is_valid():
                     # graguity
                     if 'gratuity' in gratuity_form.cleaned_data:
                         gratuity = gratuity_form.cleaned_data.get('gratuity')
@@ -2388,7 +2393,9 @@ def register(request, event_id=0,
                                                     ))
                 else:
                     do_confirmation = True
+                    # If an error happens while getting pricing, display to user
                     amount_list, discount_amount, discount_list, tax_list = get_registrants_prices(*args)
+
                     discount_applied = (discount_amount > 0)
 
                     for i, form in enumerate(registrant.forms):
@@ -2456,6 +2463,8 @@ def register(request, event_id=0,
     return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
         'event_price': event_price,
+        'pricing_dates_map': json.dumps(pricing_dates_map),
+        'event_days_count': len(event.days) + 1 if event.days else 0,
         'free_event': event.free_event,
         'price_list':price_list,
         'total_price':total_price,

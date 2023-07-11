@@ -392,7 +392,8 @@ class RegConfPricing(OrderingBaseModel):
                             'Note: this number should not exceed the specified registration limit.'))
     spots_taken = models.IntegerField(default=0)
     groups = models.ManyToManyField(Group, blank=True)
-
+    days_price_covers = models.PositiveSmallIntegerField(
+        blank=True, null=True, help_text=_("Number of days this price covers (optional)."))
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
@@ -431,6 +432,19 @@ class RegConfPricing(OrderingBaseModel):
         if self.title:
             return '%s' % self.title
         return '%s' % self.pk
+
+    @property
+    def requires_attendance_dates(self):
+        """
+        Pricing requires attendance dates if
+        the Event requires attendance dates and
+        days price covers is specified.
+        """
+        return (
+            self.days_price_covers and
+            self.reg_conf and hasattr(self.reg_conf, 'event') and
+            self.reg_conf.event.requires_attendance_dates
+        )
 
     def available(self):
         if not self.reg_conf.enabled or not self.status:
@@ -1062,6 +1076,8 @@ class Registrant(models.Model):
     This is the information that was used while registering
     """
     registration = models.ForeignKey('Registration', on_delete=models.CASCADE)
+    attendance_dates = models.JSONField(
+        blank=True, null=True, help_text=_("The dates this registrant will be attending."))
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
     pricing = models.ForeignKey('RegConfPricing', null=True, on_delete=models.SET_NULL)  # used for dynamic pricing
@@ -1763,6 +1779,14 @@ class Event(TendenciBaseModel):
         return self.use_credits_enabled and not self.has_child_events
 
     @property
+    def requires_attendance_dates(self):
+        """
+        Event registration requires attendance dates if nested events
+        are enabled and this event has child events.
+        """
+        return self.nested_events_enabled and self.has_child_events
+
+    @property
     def allow_credit_configuration_with_warning(self):
         """
         Indicates credit configuration allowed
@@ -2078,6 +2102,29 @@ class Event(TendenciBaseModel):
         if start_dt and not end_dt:
             same_date = start_dt.date() == self.end_dt.date()
             yield {'start_dt':start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
+
+    @property
+    def days(self):
+        """
+        List of each day of event covered by a sub-event.
+        This is used to provide a list of potential attendance dates
+        to filter sub-events by date.
+        """
+        days = set()
+
+        for event in self.child_events:
+            spans = event.date_spans()
+
+            for span in spans:
+                if span['same_date']:
+                    days.add(datetime.date(span['start_dt']))
+                else:
+                    date_range = self.date_range(
+                        span['start_dt'], span['end_dt'] + timedelta(days=1))
+                    date_range = [datetime.date(x) for x in date_range]
+                    days.update(date_range)
+
+        return sorted(days)
 
     def get_spots_status(self):
         """

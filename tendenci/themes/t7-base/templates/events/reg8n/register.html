@@ -269,7 +269,8 @@
                                         {% endif %}
                                     </div>
                                     <div style="clear: both"><!-- IE7 --></div>
-                                    {% else%}
+                                    {% else %}
+                                    {% if field.name != 'attendance_dates' %}
                                     {% if field.errors %}
                                     <div class="error">{{ field.errors }}</div>
                                     {% endif %}
@@ -280,6 +281,27 @@
                                     <div class="help-text">{{ field.help_text }}</div>
                                     {% endif %}
                                 </div>
+                                {% endif %}
+                                {% if field.name == 'attendance_dates' and event.requires_attendance_dates %}
+                                <div class="form-field attendance_dates">
+                                    {% if field.errors %}
+                                    <div class="error">
+                                        {{field.errors}}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-label">
+                                        {% blocktrans %}
+                                        <b>Please select the <span></span> date(s) you will be attending {{field.choices.length}} : </b>
+                                        {% endblocktrans %}
+                                    </div>
+                                    <div class="field">{{ field }}</div>
+                                    {% if field.help_text %}
+                                    <div class="help_text">
+                                        {{ field.help_text }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                                 {% endif %}
                                 {% endif %}
                                 {% endif %}

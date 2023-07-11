@@ -339,6 +339,32 @@ function table_override_update_summary_entry(prefix, override, override_price){
 }
 {% endif %}
 
+// Map to identify  how many days a price covers
+const pricing_dates_map = JSON.parse('{{ pricing_dates_map | safe }}');
+
+// Determine if pricing dates should be displayed/hidden with all options selected.
+// The latter is true if the user has indicated attending all days
+function togglePricingDates(pricing_id, should_display, prefix) {
+    if(should_display) {
+        $(prefix + '-attendance_dates').parent().parent().find('.form-label').find('span').text(daysAttending(pricing_id));
+        $(prefix + '-attendance_dates').parent().parent().show();
+    } else {
+        $(prefix + '-attendance_dates').parent().parent().hide();
+        $(prefix + '-attendance_dates').find('input[type=checkbox]').prop('checked', true);
+    }
+
+}
+
+// Get the number of attendance dates the pricing covers
+function daysAttending(pricing_id) {
+    return pricing_dates_map[pricing_id];
+}
+
+// Determine if user has indicated attending all days (based on number of days the price covers)
+function attendingAllDays(pricing_id) {
+    return daysAttending(pricing_id) < {{ event_days_count }} - 1;
+}
+
 $(document).ready(function(){
     var prefix = 'registrant';
 
@@ -361,7 +387,11 @@ $(document).ready(function(){
     });
 
 
-
+    // Initial check to see if attendance dates should be displayed
+    if (pricing_dates_map != null) {
+        var pricing_id = $('.registrant-pricing').find('input:checked').val();
+        togglePricingDates(pricing_id, attendingAllDays(pricing_id), '#id_registrant-0');
+    }
 
     {% if not event.is_table %}
     $('.registrant-pricing').on("click", function(){
@@ -378,11 +408,17 @@ $(document).ready(function(){
         if (!override_checked || isNaN(override_checked)){
 
             var name_attr = $this.attr('name');
-             var this_price = $this.next('strong').find('span').data('price');
-             //var id_regex = new RegExp('(registrant_(\\d+))');
-             var idx = get_idx(name_regexp, name_attr);
+            var this_price = $this.next('strong').find('span').data('price');
+            //var id_regex = new RegExp('(registrant_(\\d+))');
+            var idx = get_idx(name_regexp, name_attr);
 
-             updateSummaryEntry('registrant', idx, this_price);
+            updateSummaryEntry('registrant', idx, this_price);
+
+            // Determine if current price selection warrents displaying attendance dates
+            if (pricing_dates_map != null) {
+                togglePricingDates($this.val(), attendingAllDays($this.val()), '#id_registrant-' + idx);
+            }
+
         }
 
     });

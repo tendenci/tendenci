@@ -14,6 +14,7 @@ from decimal import Decimal
 import dateutil.parser as dparser
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.conf import settings
 from django.urls import reverse
@@ -25,6 +26,7 @@ from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 import simplejson
 from django.utils.html import strip_tags
+from django.utils.translation import gettext as _
 from pytz import timezone
 from pytz import UnknownTimeZoneError
 
@@ -891,7 +893,6 @@ def get_registrants_prices(*args):
             amount_list.append(amount)
             tax_list.append(amount * price.tax_rate)
             
-
     # apply discount if any
     discount_code = reg_form.cleaned_data.get('discount_code', None)
     discount_amount = Decimal(0)
@@ -1100,6 +1101,7 @@ def create_registrant_from_form(*args, **kwargs):
     registrant.use_free_pass = kwargs.get('use_free_pass', False)
     registrant.memberid = form.cleaned_data.get('memberid', '')
     registrant.reminder = form.cleaned_data.get('reminder', False)
+    registrant.attendance_dates = form.cleaned_data.get('attendance_dates')
 
     if custom_reg_form and isinstance(form, FormForCustomRegForm):
         entry = form.save(event)

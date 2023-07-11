@@ -303,7 +303,33 @@ class CustomRegFormForField(forms.ModelForm):
         return cleaned_data
 
 
-class FormForCustomRegForm(forms.ModelForm):
+class AttendanceDatesMixin:
+    """Mixin for forms that use pricing attendance dates"""
+    def add_attendance_dates(self):
+        """Add attendance dates if required by Event"""
+        if self.event.requires_attendance_dates:
+                self.fields['attendance_dates'] = forms.MultipleChoiceField(
+                    widget=forms.CheckboxSelectMultiple,
+                    choices = [(date, date) for date in self.event.days]
+                )
+
+    def clean_attendance_dates(self):
+        """Validate attendance_dates field in comparison to days pricing covers"""
+        attendance_dates = self.cleaned_data.get('attendance_dates')
+
+        pricing = self.cleaned_data.get('pricing')
+
+        # If we shouldn't be using attenedance dates, return an empty list
+        if (not self.event or not pricing or not pricing.requires_attendance_dates):
+            return list()
+
+        if not attendance_dates or len(attendance_dates) != pricing.days_price_covers:
+            raise forms.ValidationError(_(f'Please select {pricing.days_price_covers} dates.'))
+
+        return attendance_dates
+
+
+class FormForCustomRegForm(AttendanceDatesMixin, forms.ModelForm):
 
     class Meta:
         model = CustomRegFormEntry
@@ -419,6 +445,8 @@ class FormForCustomRegForm(forms.ModelForm):
                     )
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
+
+        self.add_attendance_dates()
 
         # member id
         if hasattr(self.event, 'has_member_price') and not \
@@ -1370,14 +1398,16 @@ class PaymentForm(forms.ModelForm):
 
 class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
     label = "Pricing"
-    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available'))
-    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available'))
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available for registration'))
+    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available for registration'))
     price = PriceField(label=_('Price'), max_digits=21, decimal_places=2, initial=0.00)
     #dates = Reg8nDtField(label=_("Start and End"), required=False)
     groups = forms.ModelMultipleChoiceField(required=False, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
     payment_required = forms.ChoiceField(required=False,
                                          choices=(('True', _('Yes')), ('False', _('No'))),
                                          initial='True')
+    days_price_covers = forms.IntegerField(
+        required=False, help_text=_('Number of days this price covers (Optional).'))
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('reg_form_queryset', None)
@@ -1428,6 +1458,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
             'registration_cap',
             'payment_required',
             'price',
+            'days_price_covers',
             'include_tax',
             'tax_rate',
             'start_dt',
@@ -1446,6 +1477,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
                     'registration_cap',
                     'payment_required',
                     'price',
+                    'days_price_covers',
                     'include_tax',
                     'tax_rate',
                     'start_dt',
@@ -1977,7 +2009,7 @@ class FreePassCheckForm(forms.Form):
     member_number = forms.CharField(max_length=50, required=False)
 
 
-class RegistrantForm(forms.Form):
+class RegistrantForm(AttendanceDatesMixin, forms.Form):
     """
     Registrant form.
     """
@@ -2068,6 +2100,8 @@ class RegistrantForm(forms.Form):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
             self.fields['pricing'].required=True
+
+        self.add_attendance_dates()
 
         # member id
         if hasattr(self.event, 'has_member_price') and \
