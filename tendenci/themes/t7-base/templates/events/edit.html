@@ -29,6 +29,7 @@
     {% if event.nested_events_enabled and event.parent %}
     <div>
         <a href="{% url 'event.edit' event.parent.pk %}">View Parent Event</a>
+    </div>
     {% endif %}
     <div class="event-tabs">
         <ul class="nav nav-tabs">
