@@ -51,6 +51,7 @@ from tendenci.apps.events.settings import FIELD_MAX_LENGTH
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.widgets import PercentWidget
 from tendenci.apps.base.forms import ProhibitNullCharactersValidatorMixin
+from tendenci.apps.files.validators import FileValidator
 
 from .fields import UseCustomRegField
 from .widgets import UseCustomRegWidget
@@ -1298,29 +1299,7 @@ class ImageUploadFormMixin:
         if self.instance.image:
             name = f"{self.label.lower()}-remove_photo"
             self.fields['image_upload'].help_text = f'<input name="{name}" id="id_{name}" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
-
-    def clean_image_upload(self):
-        """Validation image upload"""
-        image_upload = self.cleaned_data['image_upload']
-        if image_upload:
-            extension = splitext(image_upload.name)[1]
-
-            # check the extension
-            if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
-
-            # check the image header
-            image_type = '.%s' % imghdr.what('', image_upload.read())
-            if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
-
-            max_upload_size = get_max_file_upload_size()
-            if image_upload.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(upload_size)s') % {
-                                'max_upload_size': filesizeformat(max_upload_size),
-                                'upload_size': filesizeformat(image_upload.size)})
-
-        return image_upload
+        self.fields['image_upload'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
 
     def save(self, *args, **kwargs):
         """Remove image if needed"""
