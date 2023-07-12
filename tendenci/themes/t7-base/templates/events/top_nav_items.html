@@ -162,7 +162,23 @@
                                 <a href="{{ app_object.get_absolute_url }}">{% trans "View Event" %}</a>
                             </span>
                         </li>
-                        
+
+                        {% if app_object.nested_events_enabled and app_object.parent %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{{ app_object.parent.get_absolute_url }}">{% trans "View Parent Event" %}</a>
+                            </span>
+                        </li>
+                        {% endif %}
+
+                        {% if app_object.nested_events_enabled and not app_object.parent %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.add_child' app_object.pk %}">{% trans "Add Sub-Event" %}</a>
+                            </span>
+                        </li>
+                        {% endif %}
+
 					{% if event.status_detail != 'template' %}
                         {% if app_object.is_recurring_event %}
                             <li class="content-item">

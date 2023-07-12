@@ -1,0 +1,17 @@
+<div class="child-wrap">
+  <div class="child">
+    <h4 class="time-period">{% trans "Sub-Event(s)" %}</h4>
+  </div>
+  <div class="desc-short">
+    {% for child in child_events %}
+    <div class="row">
+      <div class="col-md-4">
+        {{ child.start_dt|date:"m/d/y" }} {{ child.start_dt|time:"g:i A"}}
+      </div>
+      <div class="col-md-8">
+        <a href="{% if edit %}{{child.get_absolute_edit_url}}{% else %}{{ child.get_absolute_url }}{% endif %}">{{ child.title }}</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>

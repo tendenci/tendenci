@@ -29,7 +29,7 @@ from tendenci.apps.events.models import (
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
-    RecurringEvent, Registrant, EventCredit
+    RecurringEvent, Registrant, EventCredit, EventStaff
 )
 
 from tendenci.libs.form_utils.forms import BetterModelForm
@@ -51,6 +51,7 @@ from tendenci.apps.events.settings import FIELD_MAX_LENGTH
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.widgets import PercentWidget
 from tendenci.apps.base.forms import ProhibitNullCharactersValidatorMixin
+from tendenci.apps.files.validators import FileValidator
 
 from .fields import UseCustomRegField
 from .widgets import UseCustomRegWidget
@@ -687,6 +688,29 @@ class EventCreditForm(forms.Form):
             return credit
 
 
+class StaffForm(FormControlWidgetMixin, BetterModelForm):
+    label = _('Staff Member')
+
+    class Meta:
+        model = EventStaff
+
+        fields = (
+            'name',
+            'role',
+            'include_on_certificate',
+        )
+
+        fieldsets = [(_('Staff'), {
+          'fields': ['name',
+                     'role',
+                     'include_on_certificate',
+                    ],
+          'legend': '',
+          'classes': ['boxy-grey'],
+          })
+        ]
+
+
 class EventForm(TendenciBaseForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
@@ -742,12 +766,30 @@ class EventForm(TendenciBaseForm):
                  ('pending',_('Pending')),
                  ('template',_('Template')),))
 
+    parent = forms.ModelChoiceField(
+        required=False,
+        queryset=Event.objects.available_parent_events(),
+        help_text=_("Larger symposium this event is a part of"),
+    )
+
+    repeat_of = forms.ModelChoiceField(
+        required=False,
+        queryset=Event.objects.none(),
+        help_text=_("Select child event this is a repeat of"),
+    )
+
     class Meta:
         model = Event
         fields = (
             'title',
             'course',
+            'short_name',
+            'event_code',
+            'delivery_method',
             'description',
+            'event_relationship',
+            'parent',
+            'repeat_of',
             'start_dt',
             'end_dt',
             'is_recurring_event',
@@ -778,7 +820,12 @@ class EventForm(TendenciBaseForm):
 
         fieldsets = [(_('Event Information'), {
                       'fields': ['title',
+                                 'event_relationship',
+                                 'parent',
+                                 'repeat_of',
                                  'course',
+                                 'short_name',
+                                 'event_code',
                                  'description',
                                  'is_recurring_event',
                                  'frequency',
@@ -797,6 +844,7 @@ class EventForm(TendenciBaseForm):
                        'fields': ['on_weekend',
                                   'timezone',
                                   'priority',
+                                  'delivery_method',
                                   'type',
                                   'groups',
                                   'external_url',
@@ -828,6 +876,12 @@ class EventForm(TendenciBaseForm):
         super(EventForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
+            if self.instance.repeat_of:
+                self.fields['repeat_of'].queryset = Event.objects.filter(
+                    pk=self.instance.repeat_of.pk)
+            self.fields['parent'].queryset = self.fields['parent'].queryset.exclude(
+                pk=self.instance.pk
+            )
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if 'private_slug' in self.fields:
                 self.fields['enable_private_slug'].help_text = self.instance.get_private_slug(absolute_url=True)
@@ -860,6 +914,7 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('frequency')
             self.fields.pop('end_recurring')
             self.fields.pop('recurs_on')
+            self.fields['repeat_of'].widget.attrs.update({'disabled': True})
         else:
             if is_template:
                 # hide recurring event fields when adding a template
@@ -876,6 +931,18 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('start_event_date')
             self.fields.pop('end_event_date')
             self.fields.pop('photo_upload')
+
+        # Set event relationship field to read only if this is a parent
+        # event that already has children, or a child event with a parent
+        # set
+        nested_events = get_setting('module', 'events', 'nested_events')
+        if self.edit_mode and nested_events:
+            has_child_events = self.instance.pk and self.instance.has_child_events
+            if has_child_events or self.instance.parent:
+                self.fields['event_relationship'].widget.attrs.update({'disabled': True})
+
+            if self.instance.parent:
+                self.fields['parent'].widget.attrs.update({'disabled': True})
 
         default_groups = Group.objects.filter(status=True, status_detail="active",
                                               show_for_events=True)
@@ -910,6 +977,11 @@ class EventForm(TendenciBaseForm):
                 location_type='onsite',
                 status_detail='enabled').order_by('name') # onsite courses only
         
+        # If nested events is not enabled, remove it from the form
+        if not nested_events:
+            del self.fields['event_relationship']
+            del self.fields['parent']
+            del self.fields['repeat_of']
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
@@ -1220,12 +1292,31 @@ class SpeakerForm(FormControlWidgetMixin, BetterModelForm):
         return self.cleaned_data
 
 
-class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
+class ImageUploadFormMixin:
+    """Mixin to upload an image"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.image:
+            name = f"{self.label.lower()}-remove_photo"
+            self.fields['image_upload'].help_text = f'<input name="{name}" id="id_{name}" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
+        self.fields['image_upload'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
+
+    def save(self, *args, **kwargs):
+        """Remove image if needed"""
+        instance = super().save(*args, **kwargs)
+        if self.data.get(f'{self.label.lower()}-remove_photo'):
+            if instance.image:
+                instance.image.delete()
+        return instance
+
+
+class OrganizerForm(ImageUploadFormMixin, FormControlWidgetMixin, forms.ModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Organizer._meta.app_label,
         'storme_model':Organizer._meta.model_name.lower()}))
     label = 'Organizer'
+    image_upload = forms.FileField(label=_('Logo'), required=False)
 
     class Meta:
         model = Organizer
@@ -1233,6 +1324,7 @@ class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
         fields = (
             'name',
             'description',
+            'image_upload',
         )
 
     def __init__(self, *args, **kwargs):
@@ -1243,18 +1335,21 @@ class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
 
-class SponsorForm(FormControlWidgetMixin, forms.ModelForm):
+class SponsorForm(ImageUploadFormMixin, FormControlWidgetMixin, forms.ModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Sponsor._meta.app_label,
         'storme_model':Sponsor._meta.model_name.lower()}))
     label = 'Sponsor'
+    image_upload = forms.FileField(label=_('Logo'), required=False)
 
     class Meta:
         model = Sponsor
 
         fields = (
+            'name',
             'description',
+            'image_upload'
         )
 
     def __init__(self, *args, **kwargs):
@@ -1449,6 +1544,8 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'payment_method',
             'payment_required',
             'external_payment_link',
+            'allow_guests',
+            'guest_limit',
             'require_guests_info',
             'discount_eligible',
             'gratuity_enabled',
@@ -1474,6 +1571,8 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     'payment_method',
                     'payment_required',
                     'external_payment_link',
+                    'allow_guests',
+                    'guest_limit',
                     'require_guests_info',
                     'discount_eligible',
                     'gratuity_enabled',

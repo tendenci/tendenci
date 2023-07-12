@@ -18,6 +18,7 @@ urlpatterns = [
     re_path(r'^%s/ics/$' % urlpath, views.icalendar, name="event.ics"),
     re_path(r'^%s/print-view/(?P<id>\d+)/$' % urlpath, views.print_view, name="event.print_view"),
     re_path(r'^%s/add/$' % urlpath, views.add, name="event.add"),
+    re_path(r'^%s/child-events/$' % urlpath, views.get_child_events, name="events.get_child_events"),
     re_path(r'^%s/add/template/$' % urlpath, views.add, {'is_template': True}, name="event.add_template"),
     re_path(r'^%s/import/add/$' % urlpath, views.import_add, name='event.import_add'),
     re_path(r'^%s/import/preview/(?P<import_id>\d+)/$' % urlpath, views.import_preview, name='event.import_preview'),
@@ -37,11 +38,13 @@ urlpatterns = [
     re_path(r'^%s/overview/edit/(?P<id>\d+)/$' % urlpath, views.edit, name="event.edit"),
     re_path(r'^%s/credits/edit/(?P<id>\d+)/$' % urlpath, views.credits_edit, name="event.credits_edit"),
     re_path(r'^%s/location/edit/(?P<id>\d+)/$' % urlpath, views.location_edit, name="event.location_edit"),
+    re_path(r'^%s/staff/edit/(?P<id>\d+)/$' % urlpath, views.staff_edit, name="event.staff_edit"),
     re_path(r'^%s/organizer/edit/(?P<id>\d+)/$' % urlpath, views.organizer_edit, name="event.organizer_edit"),
     re_path(r'^%s/sponsor/edit/(?P<id>\d+)/$' % urlpath, views.sponsor_edit, name="event.sponsor_edit"),
     re_path(r'^%s/speakers/edit/(?P<id>\d+)/$' % urlpath, views.speaker_edit, name="event.speaker_edit"),
     re_path(r'^%s/regconf/edit/(?P<id>\d+)/$' % urlpath, views.regconf_edit, name="event.regconf_edit"),
     re_path(r'^%s/pricing/edit/(?P<id>\d+)/$' % urlpath, views.pricing_edit, name="event.pricing_edit"),
+    re_path(r'^%s/sub-events/edit/(?P<id>\d+)/$' % urlpath, views.display_child_events, name="event.display_child_events"),
 
     re_path(r'^%s/copy/(?P<id>\d+)/$' % urlpath, views.copy, name="event.copy"),
     re_path(r'^%s/add-from-template/(?P<id>\d+)/$' % urlpath, views.add_from_template, name="event.add_from_template"),
@@ -155,6 +158,9 @@ urlpatterns = [
     re_path(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/disable/$' % urlpath, views.disable_addon, name='event.disable_addon'),
     re_path(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/enable/$' % urlpath, views.enable_addon, name='event.enable_addon'),
     re_path(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/delete/$' % urlpath, views.delete_addon, name='event.delete_addon'),
+
+    # sub-events
+    re_path(r'^%s/(?P<parent_event_id>\d+)\d+/sub-events/add/$' % urlpath, views.add, name='event.add_child'),
 
     # pending events
     re_path(r'^%s/minimal_add/$' % urlpath, views.minimal_add, name='event.minimal_add'),

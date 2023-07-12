@@ -20,17 +20,30 @@
   <div class="page-header">
     <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %}{% trans " Edit" %}</h1>
   </div>
-  
+
+    {% if event.nested_events_enabled and not event.parent %}
+    <div>
+        <a href="{% url 'event.add_child' event.pk %}">Add Sub-Event</a>
+    </div>
+    {% endif %}
+    {% if event.nested_events_enabled and event.parent %}
+    <div>
+        <a href="{% url 'event.edit' event.parent.pk %}">View Parent Event</a>
+    </div>
+    {% endif %}
     <div class="event-tabs">
         <ul class="nav nav-tabs">
             <li role="presentation" class="dropdown {% if label == 'overview' %}active{% endif %}">
                 <a href="{% url "event.edit" event.pk %}">{% trans "Overview" %}</a>
             </li>
-            {% if event.use_credits_enabled %}
+            {% if event.can_configure_credits %}
             <li role="presentation" class="dropdown {% if label == 'credits' %}active{% endif %}">
                 <a href="{% url "event.credits_edit" event.pk %}">{% trans "Credits" %}</a>
             </li>
             {% endif %}
+            <li role="presentation"  class="dropdown {% if label == 'staff' %}active{% endif %}">
+                <a href="{% url "event.staff_edit" event.pk %}">{% trans "Event Staff" %}</a>
+            </li>
             <li role="presentation"  class="dropdown {% if label == 'location' %}active{% endif %}">
                 <a href="{% url "event.location_edit" event.pk %}">{% trans "Location" %}</a>
             </li>
@@ -46,6 +59,11 @@
             <li role="presentation"  class="dropdown {% if label == 'regconf' %}active{% endif %}">
                 <a href="{% url "event.regconf_edit" event.pk %}">{% trans "Registration" %}</a>
             </li>
+            {% if event.has_child_events %}
+            <li role="presentation"  class="dropdown {% if label == 'children' %}active{% endif %}">
+                <a href="{% url "event.display_child_events" event.pk %}">{% trans "Sub-Event(s)" %}</a>
+            </li>
+            {% endif %}
             <li role="presentation"  class="dropdown {% if label == 'pricing' %}active{% endif %}">
                 <a href="{% url "event.pricing_edit" event.pk %}">{% trans "Pricing(s)" %}</a>
             </li>
@@ -55,8 +73,11 @@
     <div class="event-wrap">
         <form id="event-form" class="form-horizontal"  action="." method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
-            {% if event.use_credits_enabled %}
+            {% if event.can_configure_credits %}
               {% credits_form_display event credit_forms user %}
+            {% endif %}
+            {% if event.has_child_events and label == "children" %}
+                {% child_events_display event True %}
             {% endif %}
             {{ multi_event_forms|styled_multi_forms }}
             {% if label != "pricing" %}
@@ -105,6 +126,14 @@
             }
         });
         $('#event-form').on("submit", function() {
+            // Enable event_relationship if it's disabled so that POST doesn't fail.
+            // It will use the existing value for the Event.
+            if ($('#id_event_relationship').is(':disabled')) {
+                $('#id_event_relationship').prop('disabled', false);
+                $('#id_parent').prop('disabled', false);
+                $('#id_repeat_of').prop('disabled', false);
+            }
+
             if ($('#id_apply_changes_to_3').is(':checked') && displayConfirmation) {
                 $('#confirm-dialog').dialog('open');
                 return false;
@@ -191,5 +220,13 @@
             $('.regconfpricing_formset .section-description').addClass('well');
         });
     </script>
+
+    <script type="text/javascript">
+        {% include 'events/include/parent_child_events.js' %}
+    </script>
+    <script type="text/javascript">
+        {% include 'events/include/guests.js' %}
+    </script>
+
     {% include 'tags/autocomplete.html' %}
 {% endblock %}

@@ -27,14 +27,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect, Http404, HttpResponse, JsonResponse
 from django.http import QueryDict
 from django.urls import reverse
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
 from django.forms.formsets import formset_factory
-from django.forms.models import modelformset_factory
+from django.forms.models import BaseModelFormSet, modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 from django.db.models import F
@@ -70,6 +70,7 @@ from tendenci.apps.user_groups.models import Group
 
 from tendenci.apps.events.models import (
     Event,
+    EventStaff,
     CEUCategory,
     Registration,
     Registrant,
@@ -96,6 +97,7 @@ from tendenci.apps.events.forms import (
     PlaceForm,
     SpeakerBaseFormSet,
     SpeakerForm,
+    StaffForm,
     OrganizerForm,
     SponsorForm,
     TypeForm,
@@ -372,7 +374,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
             return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('event.search'), query.replace('tag:', '')))
 
     filters = get_query_filters(request.user, 'events.view_event')
-    events = Event.objects.filter(filters).distinct()
+    events = Event.objects.exclude_children().filter(filters).distinct()
     events = events.filter(enable_private_slug=False)
     if request.user.is_authenticated:
         events = events.select_related()
@@ -443,8 +445,9 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         events = events.order_by('start_dt', '-priority')
 
     if with_registration:
-        myevents = Event.objects.filter(registration__registrant__email=request.user.email,
-                                        registration__registrant__cancel_dt=None)
+        myevents = Event.objects.exclude_children().filter(
+            registration__registrant__email=request.user.email,
+            registration__registrant__cancel_dt=None)
         events = [event for event in events if event in myevents]
 
     EventLog.objects.log()
@@ -575,6 +578,18 @@ def print_view(request, id, template_name="events/print-view.html"):
     else:
         raise Http403
 
+@is_enabled('events')
+@login_required
+def display_child_events(request, id, template_name="events/edit.html"):
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
+
+    if request.method == "POST":
+        if "_save" in request.POST:
+            return HttpResponseRedirect(reverse('event', args=[event.pk]))
+        return HttpResponseRedirect(reverse('event.pricing_edit', args=[event.pk]))
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'multi_event_forms': list(), 'label': 'children'})
 
 @is_enabled('events')
 @login_required
@@ -585,6 +600,9 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         raise Http403
 
     if request.method == "POST":
+        # On submit, redirect to credits if they are configurable. Otherwise, redirect to staff
+        redirect = 'event.credits_edit' if event.can_configure_credits else 'event.staff_edit'
+
         eventform_params = {'edit_mode': True}
         form_event = form_class(request.POST, request.FILES, instance=event,
                                 user=request.user, **eventform_params)
@@ -629,7 +647,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
-                return HttpResponseRedirect(reverse('event.location_edit', args=[event.pk]))
+                return HttpResponseRedirect(reverse(redirect, args=[event.pk]))
             else:
                 eventform_params2 = {'edit_mode': True, 'recurring_mode': True}
                 recurring_events = event.recurring_event.event_set.exclude(pk=event.pk)
@@ -654,7 +672,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
-                return HttpResponseRedirect(reverse('event.location_edit', args=[event.pk]))
+                return HttpResponseRedirect(reverse(redirect, args=[event.pk]))
     else:
         eventform_params = {'edit_mode': True}
         form_event = form_class(instance=event, user=request.user, **eventform_params)
@@ -680,7 +698,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 def credits_edit(request, id, form_class=EventCreditForm, template_name="events/edit.html"):
     event = get_object_or_404(Event.objects.get_all(), pk=id)
     credit_forms = dict()
-    redirect_url = 'event.location_edit'
+    redirect_url = 'event.staff_edit'
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http403
@@ -705,7 +723,7 @@ def credits_edit(request, id, form_class=EventCreditForm, template_name="events/
 
         for form in forms:
             try:
-                config = form.save(apply_changes_to)
+                form.save(apply_changes_to)
             except Exception as e:
                 messages.set_level(request, messages.ERROR)
                 messages.add_message(request, messages.ERROR, e.args[0])
@@ -825,6 +843,98 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
         context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "location"})
 
 
+
+@is_enabled('events')
+@login_required
+def staff_edit(request, id, form_class=StaffForm, template_name="events/edit.html"):
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
+
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http403
+
+    StaffFormSet = modelformset_factory(
+        EventStaff,
+        formset=BaseModelFormSet,
+        form=form_class,
+        extra=1,
+        can_delete=True,
+    )
+
+    if request.method == "POST":
+        form_staff = StaffFormSet(
+            request.POST,
+            queryset=event.eventstaff_set.all(),
+            prefix='staff'
+        )
+        post_data = request.POST
+        if 'apply_changes_to' not in post_data:
+            post_data = {'apply_changes_to':'self'}
+        form_apply_recurring = ApplyRecurringChangesForm(post_data)
+
+        forms = [form_staff, form_apply_recurring]
+        if all([form.is_valid() for form in forms]):
+            apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
+
+            staff = form_staff.save(commit=False)
+            EventLog.objects.log(instance=event)
+
+            if apply_changes_to == 'self':
+                for staff_member in staff:
+                    staff_member.save()
+                    staff_member.event.add(event)
+
+                # Only delete when staff has no more events associated to it
+                for del_staff in form_staff.deleted_objects:
+                    del_staff.event.remove(event)
+                    if not del_staff.event.count():
+                        del_staff.delete()
+                msg_string = 'Successfully updated %s' % str(event)
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
+                redirect_url = reverse('event', args=[event.pk])
+            else:
+                recurring_events = event.recurring_event.event_set.all()
+                if apply_changes_to == 'rest':
+                    recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
+
+                for staff_member in staff:
+                    staff_member.save()
+                    staff_member.event.set(recurring_events)
+
+                # Only delete when speaker has no more events associated to it
+                if form_staff.deleted_objects:
+                    for recur_event in recurring_events:
+                        for del_staff in form_staff.deleted_objects:
+                            try:
+                                del_staff.event.remove(recur_event)
+                            except ValueError:
+                                pass
+                            if not del_staff.event.count():
+                                del_staff.delete()
+                msg_string = 'Successfully updated the recurring events for %s' % str(event)
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
+                redirect_url = reverse('event.recurring', args=[event.pk])
+
+            if "_save" in request.POST:
+                return HttpResponseRedirect(redirect_url)
+            return HttpResponseRedirect(reverse('event.location_edit', args=[event.pk]))
+    else:
+        form_staff = StaffFormSet(
+            queryset=event.eventstaff_set.all(),
+            prefix='staff',
+            auto_id='staff_formset'
+        )
+        form_staff.label = "Staff"
+        form_apply_recurring = ApplyRecurringChangesForm()
+
+    multi_event_forms = [form_staff]
+    if event.is_recurring_event:
+        multi_event_forms = multi_event_forms + [form_apply_recurring]
+
+    # response
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "staff"})
+
+
 @is_enabled('events')
 @login_required
 def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/edit.html"):
@@ -843,7 +953,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
         organizer.save()
 
     if request.method == "POST":
-        form_organizer = form_class(request.POST, instance=organizer, prefix='organizer')
+        form_organizer = form_class(request.POST, request.FILES, instance=organizer, prefix='organizer')
         post_data = request.POST
         if 'apply_changes_to' not in post_data:
             post_data = {'apply_changes_to':'self'}
@@ -854,6 +964,10 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
             apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
 
             organizer = form_organizer.save(commit=False)
+            logo = form_organizer.cleaned_data['image_upload']
+            if logo:
+                organizer.upload(logo, request.user, event)
+
             EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
@@ -869,7 +983,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
-                return HttpResponseRedirect(reverse('event.speaker_edit', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.sponsor_edit', args=[event.pk]))
             else:
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
@@ -882,6 +996,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
 
                     if (organizer._original_name != organizer.name) and organizer_in_past_events:
                         organizer.pk = None
+
 
                 organizer.save()
                 for cur_event in recurring_events:
@@ -922,10 +1037,8 @@ def sponsor_edit(request, id, form_class=SponsorForm, template_name="events/edit
         sponsor.event.add(event)
         sponsor.save()
 
-    form_sponsor = form_class(request.POST or None, instance=sponsor, prefix='sponsor')
-
     if request.method == "POST":
-        
+        form_sponsor = form_class(request.POST, request.FILES, instance=sponsor, prefix='sponsor')
         post_data = request.POST
         if 'apply_changes_to' not in post_data:
             post_data = {'apply_changes_to':'self'}
@@ -936,6 +1049,10 @@ def sponsor_edit(request, id, form_class=SponsorForm, template_name="events/edit
             apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
 
             sponsor = form_sponsor.save(commit=False)
+            logo = form_sponsor.cleaned_data['image_upload']
+            if logo:
+                sponsor.upload(logo, request.user, event)
+
             EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
@@ -969,6 +1086,7 @@ def sponsor_edit(request, id, form_class=SponsorForm, template_name="events/edit
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
                 return HttpResponseRedirect(reverse('event.speaker_edit', args=[event.pk]))
     else:
+        form_sponsor = form_class(instance=sponsor, prefix='sponsor')
         form_apply_recurring = ApplyRecurringChangesForm()
 
     multi_event_forms = [form_sponsor]
@@ -1125,6 +1243,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
 @login_required
 def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/edit.html"):
     event = get_object_or_404(Event.objects.get_all(), pk=id)
+    redirect = 'event.display_child_events' if event.has_child_events else 'event.pricing_edit'
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http403
@@ -1162,7 +1281,7 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
-                return HttpResponseRedirect(reverse('event.pricing_edit', args=[event.pk]))
+                return HttpResponseRedirect(reverse(redirect, args=[event.pk]))
             else:
                 recurring_events = event.recurring_event.event_set.exclude(pk=event.pk)
                 if apply_changes_to == 'rest':
@@ -1179,7 +1298,7 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
-                return HttpResponseRedirect(reverse('event.pricing_edit', args=[event.pk]))
+                return HttpResponseRedirect(reverse(redirect, args=[event.pk]))
     else:
         form_regconf = Reg8nEditForm(
             instance=event.registration_configuration,
@@ -1365,10 +1484,21 @@ def get_place(request):
 
     return HttpResponse('Requires POST method.')
 
+@is_enabled('events')
+@login_required
+def get_child_events(request):
+    """Get child events for a parent"""
+    parent_id = request.GET.get('parent')
+    event = get_object_or_404(Event, id=parent_id)
+
+    child_events = event.child_events.order_by('repeat_uuid').distinct('repeat_uuid')
+    options = [{'value': x.pk, 'text': x.title} for x in child_events]
+    default = [{'value': "", 'text': '---------'}]
+    return JsonResponse(default + options, safe=False)
 
 @is_enabled('events')
 @login_required
-def add(request, year=None, month=None, day=None, is_template=False,
+def add(request, year=None, month=None, day=None, is_template=False, parent_event_id=None,
     form_class=EventForm, template_name="events/add.html"):
     """
     Add event page.  You can preset the start date of
@@ -1398,6 +1528,18 @@ def add(request, year=None, month=None, day=None, is_template=False,
 
             # single forms
             form_event = form_class(request.POST, request.FILES, user=request.user, is_template=is_template)
+
+            if request.POST.get('repeat_of'):
+                event = get_object_or_404(Event, id=request.POST.get('repeat_of'))
+
+                new_event = copy_event(event, request.user, set_repeat_of=True)
+
+                EventLog.objects.log(instance=new_event)
+                msg_string = 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % str(new_event)
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
+                return redirect('event.edit', id=new_event.id)
+
+
             form_place = PlaceForm(request.POST, prefix='place')
             form_organizer = OrganizerForm(request.POST, prefix='organizer')
             form_regconf = Reg8nEditForm(request.POST, prefix='regconf',
@@ -1611,6 +1753,10 @@ def add(request, year=None, month=None, day=None, is_template=False,
             # default to 30 days from now
             mydate = datetime.now()+timedelta(days=30)
             offset = timedelta(hours=2)
+
+            if parent_event_id:
+                event_init['parent'] = parent_event_id
+                event_init['event_relationship'] = 'child'
 
             if all((year, month, day)):
                 date_str = '-'.join([year,month,day])

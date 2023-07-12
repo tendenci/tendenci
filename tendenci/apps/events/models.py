@@ -208,6 +208,18 @@ class EventCredit(models.Model):
                 credit.save()
 
 
+class EventStaff(models.Model):
+    """Staff supporting Event"""
+    event = models.ManyToManyField('Event')
+    name = models.CharField(_('Name'), max_length=255)
+    role = models.CharField(_('Role'), max_length=255)
+    include_on_certificate = models.BooleanField(
+        _('Include on Certificate'),
+        default=True,
+        help_text=_("Check to display name and role on certificate")
+    )
+
+
 class RegistrationConfiguration(models.Model):
     """
     Event registration
@@ -240,6 +252,8 @@ class RegistrationConfiguration(models.Model):
                         "the required fields in registration form are also required for guests.  "),
                         default=False)
 
+    allow_guests = models.BooleanField(default=False)
+    guest_limit = models.PositiveSmallIntegerField(default=0)
     is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
     discount_eligible = models.BooleanField(default=True)
     gratuity_enabled = models.BooleanField(default=False)
@@ -1439,14 +1453,51 @@ class PaymentMethod(models.Model):
         return self.label
 
 
-class Sponsor(models.Model):
+class SponserLogo(File):
+    class Meta:
+        app_label = 'events'
+
+
+class ImageUploader:
+    def upload(self, file_obj, user, is_public, save=True):
+        """Upload image"""
+        image = self.upload_class()
+        image.content_type = ContentType.objects.get_for_model(self.__class__)
+        image.creator = user
+        image.creator_username = user.username
+        image.owner = user
+        image.owner_username = user.username
+        filename = "%s" % (file_obj.name)
+        file_obj.file.seek(0)
+        image.file.save(filename, file_obj)
+
+        set_s3_file_permission(image.file, public=is_public)
+
+        # By default, save image. Set save to false if you will be saving
+        # the instance later.
+        self.image = image
+        if save:
+            self.save(update_fields=['image'])
+
+
+class Sponsor(ImageUploader, models.Model):
     """
     Event sponsor
     Event can have multiple sponsors
     Sponsor can contribute to multiple events
     """
+    upload_class = SponserLogo
+
     event = models.ManyToManyField('Event')
     description = models.TextField(blank=True, default='')
+    name = models.CharField(max_length=255, blank=True, null=True)
+    image = models.ForeignKey(
+        SponserLogo,
+        help_text=_('Logo that represents organizer'),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
 
     class Meta:
         app_label = 'events'
@@ -1465,18 +1516,33 @@ class Discount(models.Model):
     class Meta:
         app_label = 'events'
 
-class Organizer(models.Model):
+
+class OrganizerLogo(File):
+    class Meta:
+        app_label = 'events'
+
+
+class Organizer(ImageUploader, models.Model):
     """
     Event organizer
     Event can have multiple organizers
     Organizer can maintain multiple events
     """
+    upload_class = OrganizerLogo
+
     _original_name = None
 
     event = models.ManyToManyField('Event', blank=True)
     user = models.OneToOneField(User, blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=True) # static info.
     description = models.TextField(blank=True) # static info.
+    image = models.ForeignKey(
+        OrganizerLogo,
+        help_text=_('Logo that represents organizer'),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
 
     class Meta:
         app_label = 'events'
@@ -1580,10 +1646,55 @@ class Event(TendenciBaseModel):
     """
     Calendar Event
     """
+    class EventRelationship:
+        PARENT = 'parent'
+        CHILD = 'child'
+
+        CHOICES = (
+            (PARENT, 'Is Parent Event'),
+            (CHILD, 'Is Child Event')
+        )
+
     guid = models.CharField(max_length=40, editable=False)
+    parent = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        help_text=_("Larger symposium this event is a part of"),
+    )
+    event_relationship = models.CharField(
+        max_length=50,
+        choices=EventRelationship.CHOICES,
+        default=EventRelationship.PARENT,
+        help_text=_("Select 'child' if this is a sub-event of a larger symposium"),
+    )
     type = models.ForeignKey(Type, blank=True, null=True, on_delete=models.SET_NULL)
+    event_code = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=_("Optional code representing this event.")
+    )
+    repeat_of = models.ForeignKey(
+        'self',
+        related_name="repeat_events",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text=_("Select if this child event is a repeat of another. "
+                    "Registrants can only register for one instance of this child event.")
+    )
+    repeat_uuid = models.UUIDField(blank=True, null=True)
     title = models.CharField(max_length=150, blank=True)
     course = models.ForeignKey(Course, blank=True, null=True, on_delete=models.SET_NULL)
+    short_name = models.CharField(
+        max_length=150,
+        blank=True,
+        null=True,
+        help_text=_("Shorter name to display when space is limited (optional).")
+    )
+    delivery_method = models.CharField(max_length=150, blank=True, null=True)
     description = models.TextField(blank=True)
     all_day = models.BooleanField(default=False)
     start_dt = models.DateTimeField()
@@ -1622,6 +1733,7 @@ class Event(TendenciBaseModel):
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
+
     objects = EventManager()
 
     class Meta:
@@ -1631,6 +1743,30 @@ class Event(TendenciBaseModel):
     def __init__(self, *args, **kwargs):
         super(Event, self).__init__(*args, **kwargs)
         self.private_slug = self.private_slug or Event.make_slug()
+
+    @property
+    def has_child_events(self):
+        """Indicate whether event has child events"""
+        return self.nested_events_enabled and self.child_events.exists()
+
+    @property
+    def child_events(self):
+        """All child events tied to this event"""
+        return Event.objects.filter(parent_id=self.pk).order_by('start_dt')
+
+    @property
+    def can_configure_credits(self):
+        """Indicates if credits can be configured on this Event"""
+        return self.use_credits_enabled and not self.has_child_events
+
+    @property
+    def allow_credit_configuration_with_warning(self):
+        """
+        Indicates credit configuration allowed
+        with warning that credits should be configured
+        on the child event(s) if added.
+        """
+        return self.can_configure_credits and self.event_relationship == EventRelationship.PARENT
 
     def get_meta(self, name):
         """
@@ -1652,6 +1788,9 @@ class Event(TendenciBaseModel):
     def get_absolute_url(self):
         return reverse('event', args=[self.pk])
 
+    def get_absolute_edit_url(self):
+        return reverse('event.edit', args=[self.pk])
+
     def get_registration_url(self):
         """ This is used to include a sign up url in the event.
         Sample usage in template:
@@ -1660,6 +1799,7 @@ class Event(TendenciBaseModel):
         return reverse('registration_event_register', args=[self.pk])
 
     def save(self, *args, **kwargs):
+        self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
         self.guid = self.guid or str(uuid.uuid4())
         super(Event, self).save(*args, **kwargs)
 
@@ -1675,6 +1815,11 @@ class Event(TendenciBaseModel):
             event=self,
             status=True
             ).exists()
+
+    @property
+    def nested_events_enabled(self):
+        """Indicates if nested_events is enabled"""
+        return get_setting("module", "events", "nested_events")
 
     @property
     def use_credits_enabled(self):
