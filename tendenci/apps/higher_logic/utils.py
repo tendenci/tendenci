@@ -345,6 +345,10 @@ class HigherLogicAPI:
         """
         request_list = []
         for event in events_list:
+            if event.parent:
+                # skip sub events
+                continue
+
             event_dict = {
                 "MeetingId": f'event-{event.id}',
                 "Title": event.title,
