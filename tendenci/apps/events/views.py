@@ -2089,14 +2089,19 @@ def register(request, event_id=0,
         if not pricings:
             raise Http404
 
+        pricing = None
         if len(pricings) > 1:
             if pricing_id:
                 pricing = get_object_or_404(RegConfPricing, pk=pricing_id)
                 if pricing not in pricings:
                     raise Http403
-            else:
+            elif get_setting('module', 'events', 'use_pre_register'):
                 return HttpResponseRedirect(reverse('event.register_pre', args=(event.pk,),))
-        else:
+
+        # If pricing wasn't set, default to the first one.
+        # This can happen if either there's only 1 price available or if no pricing id
+        # was indicated, but the pre-registration page is turned off.
+        if not pricing:
             pricing = pricings[0]
 
         if pricing.quantity == 1:
@@ -2323,10 +2328,10 @@ def register(request, event_id=0,
 
                             else:
                                 registrant.name = ' '.join([registrant.first_name, registrant.last_name])
-                        else:
-                            redirect = handle_registration_payment(event, reg8n, registrants)
-                            if redirect:
-                                return HttpResponseRedirect(redirect)
+
+                        redirect = handle_registration_payment(event, reg8n, registrants)
+                        if redirect:
+                            return HttpResponseRedirect(redirect)
 
                         # log an event
                         EventLog.objects.log(instance=event)

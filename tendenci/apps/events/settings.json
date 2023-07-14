@@ -1409,5 +1409,22 @@
         "scope_category": "events",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "true",
+        "description": "Indicate if the pre-registration priing page should be used.",
+        "data_type": "boolean",
+        "update_dt": "2023-07-14 16:10:00",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "use_pre_register",
+        "value": "true",
+        "label": "Use Pre-Registration Pricing Page?",
+        "input_value": "true, false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]
