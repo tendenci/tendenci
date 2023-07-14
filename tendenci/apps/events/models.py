@@ -1445,6 +1445,16 @@ class Registrant(models.Model):
                                              entry=entry,
                                              field=field)
 
+
+class RegistrantChildEvent(models.Model):
+    child_event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    registrant = models.ForeignKey('Registrant', on_delete=models.CASCADE)
+    checked_in = models.BooleanField(_('Is Checked In?'), default=False)
+    checked_in_dt = models.DateTimeField(null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+
+
 class Payment(models.Model):
     """
     Event registration payment
