@@ -2210,3 +2210,59 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             subject=subject,
             body=body)
         email.send()
+
+
+def handle_registration_payment(event, reg8n, registrants):
+    """
+    Handle registration payment based on method selected
+    Returns redirect URL if applicable.
+    """
+    is_credit_card_payment = reg8n.payment_method and \
+        (reg8n.payment_method.machine_name).lower() == 'credit-card' \
+        and reg8n.invoice.balance > 0
+    reg_conf=event.registration_configuration
+
+    self_reg8n = get_setting('module', 'users', 'selfregistration')
+    if is_credit_card_payment:
+        # online payment
+        # get invoice; redirect to online pay
+        # email the admins as well
+
+        email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+        if reg_conf.external_payment_link:
+            return reg_conf.external_payment_ink
+
+        return reverse('payment.pay_online', args=[reg8n.invoice.id, reg8n.invoice.guid])
+    else:
+        # offline payment:
+        # send email; add message; redirect to confirmation
+        primary_registrant = reg8n.registrant
+
+        if primary_registrant and  primary_registrant.email:
+            site_label = get_setting('site', 'global', 'sitedisplayname')
+            site_url = get_setting('site', 'global', 'siteurl')
+
+            notification.send_emails(
+                [primary_registrant.email],
+                'event_registration_confirmation',
+                {
+                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                    'SITE_GLOBAL_SITEURL': site_url,
+                    'self_reg8n': self_reg8n,
+
+                    'reg8n': reg8n,
+                    'registrants': registrants,
+
+                    'event': event,
+                    'total_amount': reg8n.invoice.total,
+                    'is_paid': reg8n.invoice.balance == 0,
+                    'reply_to': reg_conf.reply_to,
+                },
+                True, # save notice in db
+            )
+            #email the admins as well
+
+            # fix the price
+            email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+
+        return None
