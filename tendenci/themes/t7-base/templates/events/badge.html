@@ -156,7 +156,11 @@
         {{ child.child_event.place.name }}&nbsp;
       </div>
       <div class="col short-name">
-        {{ child.child_event.short_name }}
+        {% if child.child_event.short_name %}
+          {{ child.child_event.short_name }}
+        {% else %}
+          {{ child.child_event.title }}
+        {% endif %}
       </div>
     </div>
   {% endfor %}

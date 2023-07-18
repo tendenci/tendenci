@@ -71,6 +71,9 @@ function updateFormHeader(this_form, prefix, idx){
 
 };
 
+// Map to identify  how many days a price covers
+const pricing_dates_map = JSON.parse('{{ pricing_dates_map | safe }}');
+
 function updateAddRegistrantButton(formCount) {
     var guest_limit = {{ event.registration_configuration.guest_limit }};
 
@@ -151,6 +154,13 @@ function addRegistrant(ele, prefix, price) {
     updateAddRegistrantButton(formCount + 1);
 
     $(row)[0].scrollIntoView();
+
+    var pricing_id = $(row).find('.registrant-pricing:checked').val();
+    // Determine if current price selection warrents displaying attendance dates
+    if (pricing_dates_map != null) {
+        togglePricingDates(pricing_id, attendingAllDays(pricing_id), '#id_registrant-' + formCount);
+    }
+
 
     return false;
 }
@@ -338,9 +348,6 @@ function table_override_update_summary_entry(prefix, override, override_price){
     }
 }
 {% endif %}
-
-// Map to identify  how many days a price covers
-const pricing_dates_map = JSON.parse('{{ pricing_dates_map | safe }}');
 
 // Determine if pricing dates should be displayed/hidden with all options selected.
 // The latter is true if the user has indicated attending all days
