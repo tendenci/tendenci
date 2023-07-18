@@ -147,16 +147,16 @@
 {% else %}
 
   <div class="badge-back badge-section">
-  {% for child in registrant.registration.event.child_events %}
+  {% for child in registrant.child_events %}
     <div class="row">
       <div class="col time">
-        {{ child.start_dt|date:"D" }} {{ child.start_dt|time:"g:i A"}}
+        {{ child.child_event.start_dt|date:"D" }} {{ child.child_event.start_dt|time:"g:i A"}}
       </div>
       <div class="col place">
-        {{ child.place.name }}&nbsp;
+        {{ child.child_event.place.name }}&nbsp;
       </div>
       <div class="col short-name">
-        {{ child.short_name }}
+        {{ child.child_event.short_name }}
       </div>
     </div>
   {% endfor %}
