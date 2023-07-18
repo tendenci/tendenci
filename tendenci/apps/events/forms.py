@@ -1062,6 +1062,14 @@ class EventForm(TendenciBaseForm):
                 errors.append(_(u"This cannot be \
                     earlier than the start date."))
 
+            parent = cleaned_data.get("parent")
+            if parent and (start_dt < parent.start_dt or end_dt > parent.end_dt):
+                if start_dt < parent.start_dt:
+                    errors = self._errors.setdefault("start_dt", ErrorList())
+                if end_dt > parent.end_dt:
+                    errors = self._errors.setdefault("end_dt", ErrorList())
+                errors.append(_(f"Sub-events must happen during parent event - {parent}"))
+
             if start_event_date and end_event_date:
                 if start_event_date > end_event_date:
                     errors = self._errors.setdefault("end_event_date", ErrorList())
