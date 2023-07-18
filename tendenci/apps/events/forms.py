@@ -1864,6 +1864,8 @@ IS_TABLE_CHOICES = (
                     ('0', _('Individual registration(s)')),
                     ('1', _('Table registration')),
                     )
+
+
 class RegistrationPreForm(forms.Form):
     is_table = forms.ChoiceField(
                     widget=forms.RadioSelect(),
@@ -2007,6 +2009,27 @@ class GratuityForm(forms.Form):
 class FreePassCheckForm(forms.Form):
     email = forms.EmailField(label=_("Email"))
     member_number = forms.CharField(max_length=50, required=False)
+
+
+class ChildEventRegistrationForm(forms.Form):
+    """
+    Form for child event registration
+    """
+    def __init__(self, registrant, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        sub_event_datetimes = registrant.sub_event_datetimes
+        for index, start_dt in enumerate(sub_event_datetimes.keys()):
+            child_events = registrant.registration.event.child_events.filter(start_dt=start_dt)
+            choices = [(event.pk, event.title) for event in child_events]
+            choices.append((None, "Not attending"))
+            self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'] = forms.ChoiceField(
+                choices=choices,
+                widget=forms.RadioSelect,
+                required=False,
+                label=f'{start_dt.time().strftime("%I:%M %p")} - {sub_event_datetimes[start_dt].time().strftime("%I:%M %p")}',
+                help_text=f'{start_dt.date()}'
+            )
 
 
 class RegistrantForm(AttendanceDatesMixin, forms.Form):

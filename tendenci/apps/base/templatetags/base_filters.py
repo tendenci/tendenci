@@ -103,6 +103,11 @@ def date(value, arg=None):
 date.is_safe = False
 
 @register.filter_function
+def convert_str_date(value):
+    """Convert a string into a date"""
+    return datetime.strptime(value, '%Y-%m-%d').date()
+
+@register.filter_function
 def order_by(queryset, args):
     args = [x.strip() for x in args.split(',')]
     return queryset.order_by(*args)
@@ -512,3 +517,8 @@ def url_complete(value):
     if 'https://' not in value and 'http://' not in value:
         return 'https://' + value
     return value
+
+@register.filter(name='zip')
+def zip_lists(a, b):
+    """zip lists together"""
+    return zip(a, b)

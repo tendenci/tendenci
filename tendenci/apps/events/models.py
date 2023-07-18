@@ -1164,6 +1164,38 @@ class Registrant(models.Model):
         return self.pricing or self.registration.reg_conf_price
 
     @property
+    def available_child_events(self):
+        """Child events occurring on the dates Registrant is attending"""
+        if not self.event.nested_events_enabled:
+            return Event.objects.none()
+
+        return self.event.child_events.filter(start_dt__date__in=self.attendance_dates)
+
+    @property
+    def sub_event_datetimes(self):
+        """Returns list of start_dt for available sub events"""
+        datetimes = dict()
+        for event in self.available_child_events:
+            if event.start_dt not in datetimes:
+                datetimes[event.start_dt] = event.end_dt
+            else:
+                datetimes[event.start_dt] = max(datetimes[event.start_dt], event.end_dt)
+
+        return datetimes
+
+    def register_child_event(self, child_event_pk):
+        """Register for child event"""
+        RegistrantChildEvent.objects.create(
+            child_event_id=child_event_pk,
+            registrant_id=self.pk,
+        )
+
+    @property
+    def child_events(self):
+        """Child events registered Registrant is attending"""
+        return self.registrantchildevent_set.all()
+
+    @property
     def cancellation_fee(self):
         """Cancellation fee for registrant"""
         return self.registration_configuration.get_cancellation_fee(self.amount)

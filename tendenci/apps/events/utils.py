@@ -2212,15 +2212,17 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
         email.send()
 
 
-def handle_registration_payment(event, reg8n, registrants):
+def handle_registration_payment(reg8n):
     """
     Handle registration payment based on method selected
     Returns redirect URL if applicable.
     """
+    event = reg8n.event
     is_credit_card_payment = reg8n.payment_method and \
         (reg8n.payment_method.machine_name).lower() == 'credit-card' \
         and reg8n.invoice.balance > 0
     reg_conf=event.registration_configuration
+    registrants = reg8n.registrant_set.all().order_by('id')
 
     self_reg8n = get_setting('module', 'users', 'selfregistration')
     if is_credit_card_payment:

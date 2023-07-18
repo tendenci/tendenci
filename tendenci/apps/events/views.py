@@ -94,6 +94,7 @@ from tendenci.apps.events.forms import (
     EventForm,
     EventCreditForm,
     Reg8nEditForm,
+    ChildEventRegistrationForm,
     PlaceForm,
     SpeakerBaseFormSet,
     SpeakerForm,
@@ -2019,6 +2020,32 @@ def member_register(request, event_id,
         'form': form
     })
 
+@is_enabled('events')
+def register_child_events(request, registration_id,  template_name="events/reg8n/register_child_events.html"):
+    registration = get_object_or_404(Registration, pk=registration_id)
+
+    if request.POST:
+        data_by_registrant = []
+        for registrant in registration.registrant_set.all():
+            keys = [key for key in request.POST if f'{registrant.pk}-' in key]
+            for key in keys:
+                child_event_pk = request.POST[key]
+                if child_event_pk:
+                    registrant.register_child_event(child_event_pk)
+
+        redirect = handle_registration_payment(registration)
+        if redirect:
+            return HttpResponseRedirect(redirect)
+
+    forms = list()
+    for registrant in registration.registrant_set.all():
+        forms.append(ChildEventRegistrationForm(registrant))
+
+    return render_to_resp(
+        request=request, template_name=template_name, context={
+            'forms': forms,
+            'registrants': registration.registrant_set.all(),
+        })
 
 @is_enabled('events')
 def register(request, event_id=0,
@@ -2329,7 +2356,10 @@ def register(request, event_id=0,
                             else:
                                 registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 
-                        redirect = handle_registration_payment(event, reg8n, registrants)
+                        if event.nested_events_enabled and event.has_child_events:
+                            return HttpResponseRedirect(reverse('event.register_child_events', args=(reg8n.pk,)))
+
+                        redirect = handle_registration_payment(reg8n)
                         if redirect:
                             return HttpResponseRedirect(redirect)
 
