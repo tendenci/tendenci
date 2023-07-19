@@ -1,6 +1,7 @@
 {% extends "events/base.html" %}
 {% load event_tags %}
 {% load styled_forms %}
+{% load base_filters %}
 
 {% block title %}{{ block.super }}{% trans "Edit Registration" %}{% endblock %}
 
@@ -8,6 +9,12 @@
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'css/events.css' %}">
 <link rel="stylesheet" href="{% static 'css/events-reg8n_edit.css' %}">
+<style>
+    .sub-event {
+        margin-bottom: 10px;
+        font-size: .9em;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -34,13 +41,26 @@
         <form action="" method="post">{% csrf_token %}
         <div class="forms">
             {{ formset.management_form }}
-            {% for form in formset.forms %}
+            {% for form, registrant in formset.forms|zip:registrants %}
                 <div class="registrant-header{% if total_regt_forms == 1 %} hidden{% endif %}">
                     {% trans "Registrant" %} #<span class="item-counter">{{ forloop.counter }}</span>:
                 </div>
 
                 <div class="{% cycle 'odd-registrant' 'even-registrant'%}">
-                {{ form|styled_form }}
+                    {{ form|styled_form }}
+
+                    {% if registrant.child_events %}
+                    <div class="sub-events">
+                        <h4>Sub-Events</h4>
+                        {% for event in registrant.child_events %}
+                        <div class="sub-event">
+                            {{ event.child_event.start_dt.date}} &nbsp;&nbsp;
+                            {{ event.child_event.start_dt.time }} - {{ event.child_event.end_dt.time }}<br/>
+                            <strong>{{ event.child_event.title }}</strong>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
             {% endfor %}
 
@@ -49,4 +69,16 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        // Hide attendance dates so they can't be edited.
+        // Allowing them to be edited would require us to then
+        // have the user edit the child events they are registered for.
+        $('label:contains("Attendance dates")').parent().hide();
+        
+    });
+</script>
 {% endblock %}

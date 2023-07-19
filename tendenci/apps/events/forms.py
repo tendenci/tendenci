@@ -308,10 +308,10 @@ class AttendanceDatesMixin:
     def add_attendance_dates(self):
         """Add attendance dates if required by Event"""
         if self.event.requires_attendance_dates:
-                self.fields['attendance_dates'] = forms.MultipleChoiceField(
-                    widget=forms.CheckboxSelectMultiple,
-                    choices = [(date, date) for date in self.event.days]
-                )
+            self.fields['attendance_dates'] = forms.MultipleChoiceField(
+                widget=forms.CheckboxSelectMultiple,
+                choices = [(date, date) for date in self.event.days]
+            )
 
     def clean_attendance_dates(self):
         """Validate attendance_dates field in comparison to days pricing covers"""

@@ -1662,7 +1662,8 @@ def get_active_days(event):
 def get_custom_registrants_initials(entries, **kwargs):
     initials = []
     check_cert = kwargs.get('check_cert', False)
-    for entry in entries:
+    attendance_dates = kwargs.get('attendance_dates')
+    for index, entry in enumerate(entries):
         fields_d = {}
         field_entries = entry.field_entries.all()
         for field_entry in field_entries:
@@ -1673,6 +1674,8 @@ def get_custom_registrants_initials(entries, **kwargs):
             fields_d[field_key] = field_entry.value
         if check_cert:
             fields_d['certification_track'] = entry.get_certification_track()
+        if attendance_dates:
+            fields_d['attendance_dates'] = attendance_dates[index]
         initials.append(fields_d)
     return initials
 

@@ -2844,6 +2844,17 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         else:
             custom_reg_form = reg8n.reg_conf_price.reg_form
 
+    # The form expects yyyy-mm-dd, but the dates coming back in
+    # are Mmm, d, yyyy... Correct the format to prevent invalid
+    # choice errors.
+    post_data = None
+    if request.POST:
+        post_data = request.POST.copy()
+        keys = [x for x in post_data if 'attendance_dates' in x]
+        for key in keys:
+            attendance_dates = post_data.getlist(key)
+            post_data.setlist(key, [datetime.strptime(x, '%b. %d, %Y').strftime("%Y-%m-%d") for x in attendance_dates])
+
     if custom_reg_form:
         # use formset_factory for custom registration form
         RegistrantFormSet = formset_factory(
@@ -2854,9 +2865,11 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         )
 
         # check and populate for any missing entry
+        attendance_dates = list()
         for registrant in reg8n.registrant_set.filter(cancel_dt__isnull=True):
             if not registrant.custom_reg_form_entry:
                 registrant.populate_custom_form_entry()
+            attendance_dates.append(registrant.attendance_dates)
 
         entry_ids = reg8n.registrant_set.filter(cancel_dt__isnull=True
                                                 ).values_list('custom_reg_form_entry',
@@ -2868,11 +2881,12 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                   'custom_reg_form': custom_reg_form,
                   'entries': entries,
                   'event': reg8n.event}
+
         if request.method != 'POST':
             # build initial
             check_cert = True if reg8n.event.course else False
-            params.update({'initial': get_custom_registrants_initials(entries, check_cert=check_cert),})
-        formset = RegistrantFormSet(request.POST or None, **params)
+            params.update({'initial': get_custom_registrants_initials(entries, check_cert=check_cert, attendance_dates=attendance_dates),})
+        formset = RegistrantFormSet(post_data, **params)
     else:
         fields=('salutation', 'first_name', 'last_name', 'mail_name', 'email',
                     'position_title', 'company_name', 'phone', 'address', 'city',
@@ -2886,7 +2900,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         RegistrantFormSet = modelformset_factory(
             Registrant, extra=0,
             fields=fields)
-        formset = RegistrantFormSet(request.POST or None,
+
+        formset = RegistrantFormSet(post_data,
                                     queryset=Registrant.objects.filter(registration=reg8n,
                                                                        cancel_dt__isnull=True).order_by('id'))
 
@@ -2960,6 +2975,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                                               'formset_errors':formset_errors,
                                               'total_regt_forms':total_regt_forms,
                                               'reg8n': reg8n,
+                                              'registrants': reg8n.registrant_set.filter(cancel_dt__isnull=True)
                                                })
 
 
