@@ -738,20 +738,11 @@ def credits_edit(request, id, form_class=EventCreditForm, template_name="events/
             return HttpResponseRedirect(reverse('event', args=[event.pk]))
         return HttpResponseRedirect(reverse(redirect_url, args=[event.pk]))
 
-    no_subcategories = dict()
     for category in CEUCategory.objects.all():
         parent = category.parent
 
-        # Make sure we track all parent categories so we can
-        # handle any that don't have subcategories
-        if not parent and category.name not in credit_forms:
-            no_subcategories[category.pk] = category.name
-
         # If there's a parent, this is a subcategory, set up an EventCredit form
         if parent:
-            if parent.pk in no_subcategories:
-                del no_subcategories[parent.pk]
-
             if parent.name not in credit_forms:
                 credit_forms[parent.name] = list()
 
@@ -759,12 +750,7 @@ def credits_edit(request, id, form_class=EventCreditForm, template_name="events/
                 EventCreditForm.pre_populate_form(event, category, prefix=f"form_{category.pk}")
             )
 
-    # Create forms for any parents that don't have subcategories
-    for pk, name in no_subcategories.items():
-        category = CEUCategory.objects.get(pk=pk)
-        credit_forms[category.name] = [EventCreditForm.pre_populate_form(
-            event, category, prefix=f"form_{category.pk}")]
-
+    credit_forms = OrderedDict(sorted(credit_forms.items()))
     form_apply_recurring = ApplyRecurringChangesForm()
     multi_event_forms = [form_apply_recurring] if event.is_recurring_event else list()
 
