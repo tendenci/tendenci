@@ -254,6 +254,10 @@ def get_ud_file_instance(demographics, field_name):
     if not data:
         return None
 
+    # data is supposed to be a dict
+    if not ('{' in data and '}' in data):
+        return None
+
     try:
         pk = literal_eval(data).get('pk')
     except ValueError:
