@@ -25,6 +25,12 @@
       font-size: .5em;
       font-weight: normal;
   }
+  .registration_info {
+      font-size: .8em;
+      margin-bottom: 10px;
+  }
+
+  
 </style>
 {% endblock %}
 
@@ -36,7 +42,11 @@
   <form id="sub_event_form" action="" method="post">{% csrf_token %}
     {% for form, registrant in forms|zip:registrants %}
     <div class="{% cycle 'odd-registrant' 'event-registrant' %}">
-        <h4><strong>{{ registrant.first_name }} {{ registrant.last_name }}</strong></h4>
+      <h4><strong>{{ registrant.first_name }} {{ registrant.last_name }}</strong></h4>
+      <div class="registration_info">
+        <div>{% trans "Registration Type: " %}<strong>{{ registrant.pricing.title }}</strong></div>
+        <div>{% trans "Registration Price: " %}<strong>{{ registrant.pricing.price|format_currency }}</strong></div>
+      </div>
         {% for day in registrant.attendance_dates %}
         <strong>{{ day|convert_str_date }}</strong> <br/>
         {% for field in form %}
