@@ -1144,6 +1144,8 @@ class Registrant(models.Model):
 
     checked_in = models.BooleanField(_('Is Checked In?'), default=False)
     checked_in_dt = models.DateTimeField(null=True)
+    checked_out = models.BooleanField(_('Is Checked Out?'), default=False)
+    checked_out_dt = models.DateTimeField(null=True)
 
     reminder = models.BooleanField(_('Receive event reminders'), default=False)
 
@@ -1267,6 +1269,12 @@ class Registrant(models.Model):
         return self.registrantchildevent_set.all().order_by('child_event__start_dt')
 
     @property
+    def check_in_url(self):
+        """URL to check registrant into event"""
+        site_url = get_setting('site', 'global', 'siteurl')
+        return f"{site_url}{reverse('event.digital_check_in', args=[self.pk])}"
+
+    @property
     def cancellation_fee(self):
         """Cancellation fee for registrant"""
         return self.registration_configuration.get_cancellation_fee(self.amount)
@@ -1295,6 +1303,22 @@ class Registrant(models.Model):
         if fn and ln:
             return ', '.join([ln, fn])
         return fn or ln
+
+    def check_in_or_out(self, check_in):
+        """Check in or check out to/of main Event"""
+        check_in_or_out = 'checked_in' if check_in else 'checked_out'
+        datetime_field = 'checked_in_dt' if check_in else 'checked_out_dt'
+        error_message_var = 'in' if check_in else 'out'
+        error_message = \
+            _(f'Registrant was not successfully checked {error_message_var}. Please try again')
+
+        setattr(self, check_in_or_out, True)
+        setattr(self, datetime_field, datetime.now())
+
+        try:
+            self.save(update_fields=[check_in_or_out, datetime_field])
+        except:
+            raise Exception(error_message)
 
     def get_name(self):
         if self.custom_reg_form_entry:
@@ -1347,6 +1371,14 @@ class Registrant(models.Model):
     def invoice(self):
         """Invoice for this registrant"""
         return self.registration.invoice
+
+    @property
+    def check_out_enabled(self):
+        """
+        Check out is enabled if Event doesn't have child events or
+        if nested events are not enabled.
+        """
+        return self.registration.event.check_out_enabled
 
     def cancel(self, request, check_registration_status=True, refund=True, process_cancellation_fee=True):
         """
@@ -1990,6 +2022,17 @@ class Event(TendenciBaseModel):
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010
     def dt_display(self, format_date='%a, %b %d, %Y', format_time='%I:%M %p'):
         return format_datetime_range(self.start_dt, self.end_dt, format_date, format_time)
+
+    @property
+    def check_out_enabled(self):
+        """
+        Check out is enabled if Event doesn't have child events and
+        isn't a child event or if nested events are not enabled.
+        """
+        return (
+            not self.nested_events_enabled or
+            (not self.has_child_events and not self.parent)
+        )
 
     @property
     def can_cancel(self):

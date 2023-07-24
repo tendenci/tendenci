@@ -99,6 +99,7 @@ urlpatterns = [
         name="event.registration_edit"),
     re_path(r'^%s/registration/(?P<reg8n_id>\d+)/edit/(?P<hash>\w+)/$' % urlpath, views.registration_edit,
         name="event.registration_edit"),
+    re_path(r'^%s/registrants/(?P<registrant_id>\d+)/check-in/$' % urlpath, views.digital_check_in, name='event.digital_check_in'),
     re_path(r'^%s/registrant/checkin/' % urlpath, views.registrant_check_in, name='event.registrant_check_in'),
 
     # cancel event registration

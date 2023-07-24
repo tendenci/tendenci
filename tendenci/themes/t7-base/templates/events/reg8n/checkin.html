@@ -1,0 +1,49 @@
+{% extends "events/base.html" %}
+
+{% block title %}{{ block.super }}{% trans "Check-In Registrant" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<style>
+  .checked_in, .error {
+      font-size: 1.5em;
+      margin-top: 25px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="guide">
+  <div>
+    <a href="{% url 'event.registrant.roster' registrant.registration.event.pk %}">&laquo; {% trans "Back to roster" %}
+    </a>
+  </div>
+</div>
+
+<div class="t">
+    <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Check-In" %}</h1>
+</div>
+
+<div class="event-wrap">
+  {% if error %}
+      <div class="error">{{ error }}</div>
+  {% endif %}
+
+  {% if not error and registrant.checked_in and not registrant.checked_out %}
+  <div class="checked_in">
+    {% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name and parent_event.title as event %}
+    {{ first_name }} {{ last_name }} succesfully checked in to <strong>{{ event }}</strong>
+    {% endblocktrans %}
+  </div>
+  {% else %}
+  {% if not error and registrant.checked_out  %}
+  <div class="checked_in">
+    {% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name and parent_event.title as event %}
+    {{ first_name }} {{ last_name }} succesfully checked out of <strong>{{ event }}</strong>
+    {% endblocktrans %}
+  </div>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}
