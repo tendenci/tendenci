@@ -1183,17 +1183,22 @@ class Registrant(models.Model):
 
         return datetimes
 
-    def register_child_event(self, child_event_pk):
+    def register_child_events(self, child_event_pks):
         """Register for child event"""
-        RegistrantChildEvent.objects.create(
-            child_event_id=child_event_pk,
-            registrant_id=self.pk,
-        )
+        # Remove any records that have been updated to 'not attending'
+        self.registrantchildevent_set.exclude(child_event_id__in=child_event_pks).delete()
+
+        # Add child event if it's not already registered
+        for child_event_pk in child_event_pks:
+            RegistrantChildEvent.objects.get_or_create(
+                child_event_id=child_event_pk,
+                registrant_id=self.pk,
+            )
 
     @property
     def child_events(self):
         """Child events registered Registrant is attending"""
-        return self.registrantchildevent_set.all()
+        return self.registrantchildevent_set.all().order_by('child_event__start_dt')
 
     @property
     def cancellation_fee(self):

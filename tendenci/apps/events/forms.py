@@ -2026,6 +2026,8 @@ class ChildEventRegistrationForm(forms.Form):
     def __init__(self, registrant, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # Set the initial values. Add a new control for each session.
+        # A session is determined by date and time of the sub-event.
         sub_event_datetimes = registrant.sub_event_datetimes
         for index, start_dt in enumerate(sub_event_datetimes.keys()):
             child_events = registrant.registration.event.child_events.filter(start_dt=start_dt)
@@ -2038,6 +2040,14 @@ class ChildEventRegistrationForm(forms.Form):
                 label=f'{start_dt.time().strftime("%I:%M %p")} - {sub_event_datetimes[start_dt].time().strftime("%I:%M %p")}',
                 help_text=f'{start_dt.date()}'
             )
+
+            # Load current value (if there is one) to allow editing
+            current_child_event = registrant.child_events.filter(
+                child_event__start_dt=start_dt).first()
+            if current_child_event:
+                selection = (current_child_event.child_event.pk, current_child_event.child_event.title)
+                if selection in choices:
+                    self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'].initial = selection
 
 
 class RegistrantForm(AttendanceDatesMixin, forms.Form):

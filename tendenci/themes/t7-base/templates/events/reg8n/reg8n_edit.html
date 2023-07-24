@@ -10,9 +10,19 @@
 <link rel="stylesheet" href="{% static 'css/events.css' %}">
 <link rel="stylesheet" href="{% static 'css/events-reg8n_edit.css' %}">
 <style>
+    .sub-events {
+        margin-left: 15px;
+    }
     .sub-event {
         margin-bottom: 10px;
         font-size: .9em;
+    }
+    .attendance_dates {
+        margin-top: -15px;
+        margin-bottom: 50px;
+        font-size: .9em;
+        font-weight: bold;
+        margin-left: 15px;
     }
 </style>
 {% endblock %}
@@ -48,7 +58,14 @@
 
                 <div class="{% cycle 'odd-registrant' 'even-registrant'%}">
                     {{ form|styled_form }}
+                    {% if registrant.pricing and registrant.pricing.days_price_covers %}
 
+                    <div class="attendance_dates">
+                      {% blocktrans with registrant.pricing.days_price_covers as days %}
+                        Select {{ days }} attendance date(s)
+                      {% endblocktrans %}
+                    </div>
+                    {% endif %}
                     {% if registrant.child_events %}
                     <div class="sub-events">
                         <h4>Sub-Events</h4>
@@ -62,23 +79,12 @@
                     </div>
                     {% endif %}
                 </div>
-            {% endfor %}
+                {% endfor %}
 
+            </div>
+            <input class="btn btn-primary" type="submit" name="child_events" value="{% trans "Save and Edit Sub-Events" %}" />
             <input class="btn btn-primary" type="submit" value="{% trans "Save Changes" %}" />
-        </div>
         </form>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_body %}
-<script type="text/javascript">
-    $(document).ready(function(){
-        // Hide attendance dates so they can't be edited.
-        // Allowing them to be edited would require us to then
-        // have the user edit the child events they are registered for.
-        $('label:contains("Attendance dates")').parent().hide();
-        
-    });
-</script>
 {% endblock %}

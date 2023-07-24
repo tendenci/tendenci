@@ -2014,14 +2014,21 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
         data_by_registrant = []
         for registrant in registration.registrant_set.all():
             keys = [key for key in request.POST if f'{registrant.pk}-' in key]
+            child_event_pks = list()
             for key in keys:
                 child_event_pk = request.POST[key]
                 if child_event_pk:
-                    registrant.register_child_event(child_event_pk)
+                    child_event_pks.append(child_event_pk)
+            registrant.register_child_events(child_event_pks)
 
         redirect = handle_registration_payment(registration)
         if redirect:
             return HttpResponseRedirect(redirect)
+        else:
+            return HttpResponseRedirect(
+                reverse('event.registration_confirmation',
+                        args=(registration.event.id, registration.registrant.hash)
+                ))
 
     forms = list()
     for registrant in registration.registrant_set.all():
@@ -2819,6 +2826,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         reg8n.registrant.hash == hash,  # has secret hash
     )
 
+    registrants = reg8n.registrant_set.filter(cancel_dt__isnull=True).order_by('id')
+
     if not any(perms):
         raise Http403
 
@@ -2834,12 +2843,15 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
     # are Mmm, d, yyyy... Correct the format to prevent invalid
     # choice errors.
     post_data = None
+    updated_attendance_dates = list()
     if request.POST:
         post_data = request.POST.copy()
         keys = [x for x in post_data if 'attendance_dates' in x]
         for key in keys:
             attendance_dates = post_data.getlist(key)
-            post_data.setlist(key, [datetime.strptime(x, '%b. %d, %Y').strftime("%Y-%m-%d") for x in attendance_dates])
+            formatted_attendance_dates = [datetime.strptime(x, '%b. %d, %Y').strftime("%Y-%m-%d") for x in attendance_dates]
+            post_data.setlist(key, formatted_attendance_dates)
+            updated_attendance_dates.append(formatted_attendance_dates)
 
     if custom_reg_form:
         # use formset_factory for custom registration form
@@ -2852,7 +2864,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
         # check and populate for any missing entry
         attendance_dates = list()
-        for registrant in reg8n.registrant_set.filter(cancel_dt__isnull=True):
+        for registrant in registrants:
             if not registrant.custom_reg_form_entry:
                 registrant.populate_custom_form_entry()
             attendance_dates.append(registrant.attendance_dates)
@@ -2905,6 +2917,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             form.fields['certification_track'].required = False
 
     if request.method == 'POST':
+        redirect = True
         if formset.is_valid():
             updated = False
             if custom_reg_form:
@@ -2928,6 +2941,24 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                 instances = formset.save()
                 if instances: updated = True
 
+
+            attendance_dates_changed = False
+            for index, registrant in enumerate(reg8n.registrant_set.filter(cancel_dt__isnull=True)):
+                pricing = registrant.pricing
+
+                if pricing and pricing.days_price_covers and len(updated_attendance_dates[index]) != pricing.days_price_covers:
+                    message = f'Select { pricing.days_price_covers } dates. for {registrant.first_name } { registrant.last_name}'
+                    messages.set_level(request, messages.ERROR)
+                    messages.add_message(request, messages.ERROR, _(message))
+                    redirect = False
+                    break
+
+                if updated_attendance_dates[index] != registrant.attendance_dates:
+                    registrant.attendance_dates = updated_attendance_dates[index]
+                    registrant.save(update_fields=['attendance_dates'])
+                    attendance_dates_changed = True
+
+
             reg8n_conf_url = reverse(
                                     'event.registration_confirmation',
                                     args=(reg8n.event.id, reg8n.registrant.hash)
@@ -2942,7 +2973,10 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
             messages.add_message(request, messages.INFO, msg)
 
-            return HttpResponseRedirect(reg8n_conf_url)
+            if ('child_events' in request.POST or attendance_dates_changed) and redirect:
+                return HttpResponseRedirect(reverse('event.register_child_events', args=(reg8n.pk,)))
+            if redirect:
+                return HttpResponseRedirect(reg8n_conf_url)
 
     total_regt_forms = Registrant.objects.filter(registration=reg8n).count()
 
@@ -2961,7 +2995,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                                               'formset_errors':formset_errors,
                                               'total_regt_forms':total_regt_forms,
                                               'reg8n': reg8n,
-                                              'registrants': reg8n.registrant_set.filter(cancel_dt__isnull=True)
+                                              'registrants': registrants
                                                })
 
 
