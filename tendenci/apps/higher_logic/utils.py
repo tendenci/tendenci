@@ -174,7 +174,11 @@ class HigherLogicAPI:
         if match:
             return f'{match.group(1)}-{match.group(2)}'
 
-        x = phonenumbers.parse(phone, 'US')
+        try:
+            x = phonenumbers.parse(phone, 'US')
+        except phonenumbers.phonenumberutil.NumberParseException:
+            return phone
+ 
         formatted_phone = phonenumbers.format_number(x, phonenumbers.PhoneNumberFormat.NATIONAL)
         match = p2.search(formatted_phone)
         if match:
