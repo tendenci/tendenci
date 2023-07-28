@@ -1589,6 +1589,11 @@ class RegistrantChildEvent(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        event = self.child_event
+        return f'{event.title} {event.start_dt.time().strftime("%I:%M %p")} - ' \
+               f'{event.end_dt.time().strftime("%I:%M %p")}'
+
 
 class Payment(models.Model):
     """

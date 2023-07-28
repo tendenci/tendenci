@@ -96,6 +96,7 @@ from tendenci.apps.events.forms import (
     EventCreditForm,
     Reg8nEditForm,
     ChildEventRegistrationForm,
+    EventCheckInForm,
     PlaceForm,
     SpeakerBaseFormSet,
     SpeakerForm,
@@ -3897,10 +3898,28 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
             error_message = e.args[0]
             messages.add_message(request, messages.ERROR, error_message)
 
+    form = None
+    if event.nested_events_enabled and registrant.child_events.filter(
+            checked_in=False).exists():
+        form = EventCheckInForm(registrant=registrant)
+
+    confirm_session_check_in = None
+    if request.POST:
+        update_form = EventCheckInForm(registrant, request.POST)
+        if update_form.is_valid():
+            child_event = update_form.cleaned_data.get('event')
+            child_event.checked_in = True
+            child_event.checked_in_dt = datetime.now()
+            child_event.save()
+            form = None
+            confirm_session_check_in = child_event.child_event.title
+
     return render_to_resp(request=request, template_name=template_name, context={
         'registrant': registrant,
         'parent_event': event,
         'error': error_message,
+        'form': form,
+        'confirm_session_check_in': confirm_session_check_in
     })
 
 @csrf_exempt
