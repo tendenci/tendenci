@@ -135,7 +135,7 @@
         </div>
         <div class="row">
           <div class="col-md-6 registration">
-            {% trans "Registration ID:" %} {{ registrant.registration.pk }} <br/>
+            {% trans "Registrant ID:" %} {{ registrant.pk }} <br/>
             {% if registrant.registration.owner and registrant.registration.owner.account_id %}
               {% trans "Account ID:" %} {{ registrant.registration.owner.account_id }}<br/>
             {% endif %}

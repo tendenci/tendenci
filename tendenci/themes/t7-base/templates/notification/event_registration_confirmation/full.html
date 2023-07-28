@@ -44,6 +44,7 @@
                     {% endfor %}
                 </div>
         {% else %}
+            {% include "events/email_badge.html" with registrants=registrants %}
             {% trans "Registration Complete. Enjoy the Event!" %}
         {% endif %}
     </div>
@@ -138,6 +139,7 @@
                 {% endif %}
 
             {% else %}
+                {% include "events/email_badge.html" with registrants=registrants %}
                 {% trans "Registration Complete. Enjoy the Event!" %}
             {% endif %}
         </div>
