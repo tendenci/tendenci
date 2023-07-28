@@ -44,13 +44,14 @@ def save_unpushed_items(sender, **kwargs):
             if not UnPushedItem.objects.filter(**params).exists():
                 UnPushedItem.objects.create(**params)
     elif sender is Event:
-        params = {
-                'event_id': instance.id,
-                'identifier': f'event-{instance.id}',
-                'deleted': deleted
-        }
-        if not UnPushedItem.objects.filter(**params).exists():
-            UnPushedItem.objects.create(**params)
+        if not instance.parent:
+            params = {
+                    'event_id': instance.id,
+                    'identifier': f'event-{instance.id}',
+                    'deleted': deleted
+            }
+            if not UnPushedItem.objects.filter(**params).exists():
+                UnPushedItem.objects.create(**params)
 
 
 def save_unpushed_items_for_delete(sender, **kwargs):
