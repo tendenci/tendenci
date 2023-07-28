@@ -1269,6 +1269,18 @@ class Registrant(models.Model):
         return self.registrantchildevent_set.all().order_by('child_event__start_dt')
 
     @property
+    def child_events_available_for_check_in(self):
+        """
+        Child events available for check in
+        These are child events not yet checked into, and
+        that are upcoming today.
+        """
+        return self.child_events.filter(
+            checked_in=False,
+            child_event__start_dt__date=datetime.today()
+        )
+
+    @property
     def check_in_url(self):
         """URL to check registrant into event"""
         site_url = get_setting('site', 'global', 'siteurl')

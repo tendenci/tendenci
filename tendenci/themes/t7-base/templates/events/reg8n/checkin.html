@@ -38,7 +38,7 @@
     {% endblocktrans %}
   </div>
   {% else %}
-  {% if not error and registrant.checked_out  %}
+  {% if not error and registrant.checked_out and not confirm_session_check_in  %}
   <div class="checked_in">
     {% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name and parent_event.title as event %}
     {{ first_name }} {{ last_name }} succesfully checked out of <strong>{{ event }}</strong>

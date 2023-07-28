@@ -3899,8 +3899,7 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
             messages.add_message(request, messages.ERROR, error_message)
 
     form = None
-    if event.nested_events_enabled and registrant.child_events.filter(
-            checked_in=False).exists():
+    if event.nested_events_enabled and registrant.child_events_available_for_check_in.exists():
         form = EventCheckInForm(registrant=registrant)
 
     confirm_session_check_in = None

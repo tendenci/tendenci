@@ -2054,10 +2054,7 @@ class EventCheckInForm(forms.Form):
         if not registrant.child_events.exists():
             self.fields['event'] = forms.HiddenInput()
         else:
-            queryset = registrant.child_events.filter(
-                checked_in=False,
-                child_event__start_dt__date=datetime.today()
-            )
+            queryset = registrant.child_events_available_for_check_in
             default = queryset.filter(child_event__end_dt__gt=datetime.now()).first()
             self.fields['event'] = forms.ModelChoiceField(
                 queryset=queryset,
