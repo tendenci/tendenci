@@ -2155,11 +2155,11 @@ class Event(TendenciBaseModel):
         """
         List of each day of event covered by a sub-event.
         This is used to provide a list of potential attendance dates
-        to filter sub-events by date.
+        to filter sub-events by date. Includes dates for upcoming sessions only.
         """
         days = set()
 
-        for event in self.child_events:
+        for event in self.child_events.filter(start_dt__date__gt=datetime.now()):
             spans = event.date_spans()
 
             for span in spans:
