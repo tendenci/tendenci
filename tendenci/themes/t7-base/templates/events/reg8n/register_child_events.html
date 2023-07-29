@@ -47,7 +47,7 @@
         <div>{% trans "Registration Type: " %}<strong>{{ registrant.pricing.title }}</strong></div>
         <div>{% trans "Registration Price: " %}<strong>{{ registrant.pricing.price|format_currency }}</strong></div>
       </div>
-        {% for day in registrant.attendance_dates %}
+        {% for day in registrant.upcoming_attendance_dates %}
         <strong>{{ day|convert_str_date }}</strong> <br/>
         {% for field in form %}
         {% if field.help_text == day %}

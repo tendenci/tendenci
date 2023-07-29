@@ -2029,8 +2029,13 @@ class ChildEventRegistrationForm(forms.Form):
         # Set the initial values. Add a new control for each session.
         # A session is determined by date and time of the sub-event.
         sub_event_datetimes = registrant.sub_event_datetimes
+        upcoming_child_events = child_events = registrant.registration.event.child_events.filter(
+            start_dt__date__gt=datetime.now().date())
         for index, start_dt in enumerate(sub_event_datetimes.keys()):
-            child_events = registrant.registration.event.child_events.filter(start_dt=start_dt)
+            child_events = upcoming_child_events.filter(start_dt=start_dt)
+            if not child_events.exists():
+                continue
+
             choices = [(event.pk, event.title) for event in child_events]
             choices.append((None, "Not attending"))
             self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'] = forms.ChoiceField(

@@ -2943,18 +2943,23 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
 
             attendance_dates_changed = False
-            for index, registrant in enumerate(reg8n.registrant_set.filter(cancel_dt__isnull=True)):
+            for index, registrant in enumerate(registrants):
                 pricing = registrant.pricing
 
-                if pricing and pricing.days_price_covers and len(updated_attendance_dates[index]) != pricing.days_price_covers:
-                    message = f'Select { pricing.days_price_covers } dates. for {registrant.first_name } { registrant.last_name}'
+                past_dates = len(registrant.past_attendance_dates)
+                total_attendance_dates = \
+                    len(updated_attendance_dates[index]) + past_dates
+                if pricing and pricing.days_price_covers and total_attendance_dates != pricing.days_price_covers:
+                    message = f'Select { pricing.days_price_covers - past_dates} dates for {registrant.first_name } { registrant.last_name}'
                     messages.set_level(request, messages.ERROR)
                     messages.add_message(request, messages.ERROR, _(message))
                     redirect = False
                     break
 
-                if updated_attendance_dates[index] != registrant.attendance_dates:
-                    registrant.attendance_dates = updated_attendance_dates[index]
+                if updated_attendance_dates[index] != registrant.upcoming_attendance_dates:
+                    updated_dates = registrant.past_attendance_dates
+                    updated_dates.extend(updated_attendance_dates[index])
+                    registrant.attendance_dates = updated_dates
                     registrant.save(update_fields=['attendance_dates'])
                     attendance_dates_changed = True
 

@@ -3,6 +3,7 @@ import uuid
 from hashlib import md5
 import operator
 from datetime import datetime, timedelta
+from dateutil.parser import parse
 from functools import reduce
 from django.conf import settings
 from django.contrib import messages
@@ -1172,6 +1173,16 @@ class Registrant(models.Model):
         return self.event.child_events.filter(start_dt__date__in=self.attendance_dates)
 
     @property
+    def past_attendance_dates(self):
+        """Attendance dates for sessions in the past"""
+        return [x for x in self.attendance_dates if parse(x).date() <= datetime.now().date()]
+
+    @property
+    def upcoming_attendance_dates(self):
+        """Attendance dates for future sessions"""
+        return [x for x in self.attendance_dates if parse(x).date() > datetime.now().date()]
+
+    @property
     def sub_event_datetimes(self):
         """Returns list of start_dt for available sub events"""
         datetimes = dict()
@@ -1185,8 +1196,11 @@ class Registrant(models.Model):
 
     def register_child_events(self, child_event_pks):
         """Register for child event"""
-        # Remove any records that have been updated to 'not attending'
-        self.registrantchildevent_set.exclude(child_event_id__in=child_event_pks).delete()
+        # Remove any upcoming records that have been updated to 'not attending'
+        self.registrantchildevent_set.filter(
+            child_event__start_dt__date__gt=datetime.now().date()).exclude(
+            child_event_id__in=child_event_pks,
+        ).delete()
 
         # Add child event if it's not already registered
         for child_event_pk in child_event_pks:
