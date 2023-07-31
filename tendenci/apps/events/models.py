@@ -1217,6 +1217,19 @@ class Registrant(models.Model):
 
         # Add child event if it's not already registered
         for child_event_pk in child_event_pks:
+            event = Event.objects.get(pk=child_event_pk)
+
+            if self.registrantchildevent_set.filter(
+                child_event__repeat_uuid=event.repeat_uuid
+            ).exclude(child_event_id=event.pk).exists():
+
+                current_event = self.registrantchildevent_set.filter(
+                    child_event__repeat_uuid=event.repeat_uuid).first().child_event
+                error = _(
+                    f'{event.title} on {event.start_dt.date()} is a repeat of event on ' \
+                    f'{current_event.start_dt.date()}. Please select only one.')
+                raise Exception(error)
+
             RegistrantChildEvent.objects.get_or_create(
                 child_event_id=child_event_pk,
                 registrant_id=self.pk,

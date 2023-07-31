@@ -2009,6 +2009,7 @@ def member_register(request, event_id,
 @is_enabled('events')
 def register_child_events(request, registration_id,  template_name="events/reg8n/register_child_events.html"):
     registration = get_object_or_404(Registration, pk=registration_id)
+    has_error = False
 
     if request.POST:
         data_by_registrant = []
@@ -2022,12 +2023,17 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
                 child_event_pk = request.POST[key]
                 if child_event_pk:
                     child_event_pks.append(child_event_pk)
-            registrant.register_child_events(child_event_pks)
+            try:
+                registrant.register_child_events(child_event_pks)
+            except Exception as e:
+                has_error = True
+                messages.set_level(request, messages.ERROR)
+                messages.add_message(request, messages.ERROR, e.args[0])
 
         redirect = handle_registration_payment(registration)
-        if redirect:
+        if redirect and not has_error:
             return HttpResponseRedirect(redirect)
-        else:
+        elif not has_error:
             return HttpResponseRedirect(
                 reverse('event.registration_confirmation',
                         args=(registration.event.id, registration.registrant.hash)
