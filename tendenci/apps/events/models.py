@@ -677,6 +677,14 @@ class Registration(models.Model):
     def hash(self):
         return md5(".".join([str(self.event.pk), str(self.pk)]).encode()).hexdigest()
 
+    @property
+    def can_edit_child_events(self):
+        """If any registrant can edit child events, return True"""
+        for registrant in self.registrant_set.filter(cancel_dt__isnull=True):
+            if registrant.child_events.exists() and not registrant.registration_closed:
+                return True
+        return False
+
     def allow_adjust_invoice_by(self, request_user):
         """
         Returns whether or not the request_user can adjust invoice
@@ -1150,6 +1158,11 @@ class Registrant(models.Model):
             return self.custom_reg_form_entry.get_lastname_firstname()
         else:
             return '%s, %s' % (self.last_name, self.first_name)
+
+    @property
+    def registration_closed(self):
+        """Returns whether registration is closed for this registrant's pricing"""
+        return self.pricing.registration_has_ended
 
     @property
     def event(self):

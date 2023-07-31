@@ -58,7 +58,10 @@
 
                 <div class="{% cycle 'odd-registrant' 'even-registrant'%}">
                     {{ form|styled_form }}
-                    {% if registrant.pricing and registrant.pricing.days_price_covers %}
+                    {% if registrant.registration_closed %}
+                        <input class="registration_closed" type="hidden" />
+                    {% endif %}
+                    {% if registrant.pricing and registrant.pricing.days_price_covers and not registrant.registration_closed %}
 
                     <div class="attendance_dates">
                       {% blocktrans with registrant.pricing.days_price_covers as days %}
@@ -81,10 +84,21 @@
                 </div>
                 {% endfor %}
 
-            </div>
-            <input class="btn btn-primary" type="submit" name="child_events" value="{% trans "Save and Edit Sub-Events" %}" />
+        </div>
+            {% if reg8n.can_edit_child_events %}
+                <input class="btn btn-primary" type="submit" name="child_events" value="{% trans "Save and Edit Sub-Events" %}" />
+            {% endif %}
             <input class="btn btn-primary" type="submit" value="{% trans "Save Changes" %}" />
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        // Hide attendance dates so they can't be edited when registration is closed
+        $('.registration_closed').parent().find('label').filter(function() { return $(this).text() === 'Attendance dates'; }).parent().hide();    
+    });
+</script>
 {% endblock %}

@@ -320,7 +320,11 @@ class AttendanceDatesMixin:
         pricing = self.cleaned_data.get('pricing')
 
         # If we shouldn't be using attenedance dates, return an empty list
-        if (not self.event or not pricing or not pricing.requires_attendance_dates):
+        if (
+                not self.event or not pricing or not
+                pricing.requires_attendance_dates or not
+                pricing.available
+        ):
             return list()
 
         if not attendance_dates or len(attendance_dates) != pricing.days_price_covers:

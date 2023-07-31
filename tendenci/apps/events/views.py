@@ -2013,6 +2013,9 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
     if request.POST:
         data_by_registrant = []
         for registrant in registration.registrant_set.all():
+            if registrant.registration_closed:
+                continue
+
             keys = [key for key in request.POST if f'{registrant.pk}-' in key]
             child_event_pks = list()
             for key in keys:
@@ -2032,7 +2035,16 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
 
     forms = list()
     for registrant in registration.registrant_set.all():
+        if registrant.registration_closed:
+            continue
+
         forms.append(ChildEventRegistrationForm(registrant))
+
+    if not len(forms):
+        return HttpResponseRedirect(
+            reverse('event.registration_confirmation',
+                    args=(registration.event.id, registration.registrant.hash)
+            ))
 
     return render_to_resp(
         request=request, template_name=template_name, context={
@@ -2948,6 +2960,10 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
             attendance_dates_changed = False
             for index, registrant in enumerate(registrants):
+                # Don't updage attendance dates or child events if registration is closed
+                if registrant.registration_closed:
+                    continue
+
                 pricing = registrant.pricing
 
                 past_dates = len(registrant.past_attendance_dates)
