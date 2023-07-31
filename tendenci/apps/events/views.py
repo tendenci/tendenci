@@ -2052,6 +2052,10 @@ def register(request, event_id=0,
     """
     event = get_object_or_404(Event, pk=event_id)
 
+    # If this is a child event, redirect to the parent event's registration
+    if event.nested_events_enabled and event.parent:
+        return HttpResponseRedirect(reverse('event.register', args=[event.parent.pk,]))
+
     if event.course:
         if hasattr(settings, 'EVENTS_CUSTOM_REG8N_URL_NAME') and settings.EVENTS_CUSTOM_REG8N_URL_NAME:
             return HttpResponseRedirect(reverse(
