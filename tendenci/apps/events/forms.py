@@ -2033,14 +2033,24 @@ class ChildEventRegistrationForm(forms.Form):
         # Set the initial values. Add a new control for each session.
         # A session is determined by date and time of the sub-event.
         sub_event_datetimes = registrant.sub_event_datetimes
-        upcoming_child_events = child_events = registrant.registration.event.child_events.filter(
+        upcoming_child_events = registrant.registration.event.child_events.filter(
             start_dt__date__gt=datetime.now().date())
         for index, start_dt in enumerate(sub_event_datetimes.keys()):
             child_events = upcoming_child_events.filter(start_dt=start_dt)
-            if not child_events.exists():
+            choices = [(event.pk, event.title) for event in child_events if not event.at_capacity]
+
+            # Check if registrant already has selection. If so, make sure it's in choices
+            selection = None
+            current_child_event = registrant.child_events.filter(
+                child_event__start_dt=start_dt).first()
+            if current_child_event:
+                selection = (current_child_event.child_event.pk, current_child_event.child_event.title)
+                if selection and selection not in choices:
+                    choices.append(selection)
+
+            if not choices:
                 continue
 
-            choices = [(event.pk, event.title) for event in child_events]
             choices.append((None, "Not attending"))
             self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'] = forms.ChoiceField(
                 choices=choices,
@@ -2051,12 +2061,8 @@ class ChildEventRegistrationForm(forms.Form):
             )
 
             # Load current value (if there is one) to allow editing
-            current_child_event = registrant.child_events.filter(
-                child_event__start_dt=start_dt).first()
-            if current_child_event:
-                selection = (current_child_event.child_event.pk, current_child_event.child_event.title)
-                if selection in choices:
-                    self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'].initial = selection
+            if selection:
+                self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'].initial = selection
 
 
 class RegistrantForm(AttendanceDatesMixin, forms.Form):

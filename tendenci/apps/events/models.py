@@ -2239,6 +2239,25 @@ class Event(TendenciBaseModel):
             limit = self.registration_configuration.limit
         return int(limit)
 
+    @property
+    def total_registered(self):
+        """Total registered for this Event"""
+        # If this is a child event, registration information is in RegistrationChildEvent
+        if self.parent and self.nested_events_enabled:
+            return RegistrantChildEvent.objects.filter(
+                child_event_id=self.pk, registrant__cancel_dt__isnull=True).count()
+
+        return self.registrants_count({'cancel_dt__isnull': True})
+
+    @property
+    def at_capacity(self):
+        """Indicates if Event is at capacity"""
+        limit = self.get_limit()
+        if not limit:
+            return False
+
+        return self.total_registered >= limit
+
     @classmethod
     def make_slug(self, length=7):
         """
