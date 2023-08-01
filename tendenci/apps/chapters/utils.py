@@ -377,6 +377,8 @@ class ImportChapterMembership(object):
         if is_valid:
             is_valid, error_msg = self.clean_membership_type_id(self.memb_data)
         if is_valid:
+            if 'username' in self.memb_data:
+                self.memb_data['username'] = self.memb_data['username'].strip()
             is_valid, error_msg = self.clean_username(self.memb_data)
         if is_valid and not self.mimport.chapter:
             is_valid, error_msg = self.clean_chapter_id(self.memb_data)
