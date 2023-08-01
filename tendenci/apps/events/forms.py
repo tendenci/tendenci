@@ -882,6 +882,14 @@ class EventForm(TendenciBaseForm):
             self.fields['parent'].queryset = self.fields['parent'].queryset.exclude(
                 pk=self.instance.pk
             )
+            # Queryset `available_parent_events` filters out past events so you can't
+            # assign a past event to a new child event. However, if this is an old child
+            # event, we need to make sure it's an option in the drop down. Since we don't
+            # allow changing the parent event once it's set, it is ok for it to be the
+            # only option.
+            if self.instance.parent:
+                self.fields['parent'].queryset = Event.objects.filter(pk=self.instance.parent.pk)
+
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if 'private_slug' in self.fields:
                 self.fields['enable_private_slug'].help_text = self.instance.get_private_slug(absolute_url=True)
