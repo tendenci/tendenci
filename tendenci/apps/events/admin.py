@@ -15,7 +15,8 @@ from django.forms import BaseInlineFormSet
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
-    CustomRegFormEntry, CustomRegFieldEntry, Event, CEUCategory)
+                                         CustomRegFormEntry, CustomRegFieldEntry, Event,
+                                         CEUCategory, SignatureImage)
 from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import delete_settings_cache, get_setting
@@ -329,8 +330,13 @@ class CEUCategoryAdmin(admin.ModelAdmin):
         return qs.filter(parent__isnull=True)
 
 
+class SignatureImageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+
+
 if get_setting('module', 'events', 'use_credits'):
     admin.site.register(CEUCategory, CEUCategoryAdmin)
 
+admin.site.register(SignatureImage, SignatureImageAdmin)
 admin.site.register(StandardRegForm, StandardRegFormAdmin)
 admin.site.register(Event, EventAdmin)

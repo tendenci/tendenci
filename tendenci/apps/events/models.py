@@ -209,6 +209,20 @@ class EventCredit(models.Model):
                 credit.save()
 
 
+class SignatureImage(models.Model):
+    """Images to use as signatures"""
+    image = models.ImageField(
+        _('Image'),
+        upload_to=settings.PHOTOS_DIR + "/signatures",
+        help_text=_("Image of person's signature")
+    )
+    name = models.CharField(_('Name'), max_length=255,
+                            help_text=_('Name of person to whom signature belongs.'))
+
+    def __str__(self):
+        return self.name
+
+
 class EventStaff(models.Model):
     """Staff supporting Event"""
     event = models.ManyToManyField('Event')
@@ -218,6 +232,19 @@ class EventStaff(models.Model):
         _('Include on Certificate'),
         default=True,
         help_text=_("Check to display name and role on certificate")
+    )
+    signature_image = models.ForeignKey(
+        SignatureImage,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text=_("Optional image of staff member's signature"),
+    )
+    use_signature_on_certificate = models.BooleanField(
+        _('Use Signature Image on Certificate'),
+        default=False,
+        help_text=_('Enabling will display signature image on certificate. ' \
+                    'If not enabled, the printed name will be used. (If using certificates)'),
     )
 
 
