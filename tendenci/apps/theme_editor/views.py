@@ -597,7 +597,7 @@ def get_themes(request, template_name="theme_editor/get_themes.html"):
         return HttpResponse(tracker.is_updating)
 
     if request.method == 'POST':
-        subprocess.Popen([python_executable(), "manage.py", "install_theme", "--all"])
+        subprocess.Popen(["django-admin", "install_theme", "--all"])
         return render_to_resp(request=request, template_name=template_name)
 
     raise Http404

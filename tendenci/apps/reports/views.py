@@ -92,7 +92,7 @@ class RunDetailView(DetailView):
         #invalidate('reports_run')
         obj = get_object_or_404(Run, pk=self.kwargs['pk'], report_id=self.kwargs['report_id'])
         if obj.status == "unstarted":
-            subprocess.Popen([python_executable(), "manage.py", "process_report_run", str(obj.pk)])
+            subprocess.Popen(["django-admin", "process_report_run", str(obj.pk)])
         return obj
 
 

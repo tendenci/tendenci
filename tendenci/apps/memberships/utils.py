@@ -290,7 +290,7 @@ def run_membership_export(request,
     default_storage.save(temp_file_path, ContentFile(b''))
     
     # start the process
-    subprocess.Popen([python_executable(), "manage.py",
+    subprocess.Popen(["django-admin",
                   "membership_export_process",
                   '--export_fields=%s' % export_fields,
                   '--export_type=%s' % export_type,

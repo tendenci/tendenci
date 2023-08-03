@@ -435,7 +435,7 @@ class BluevoltExamImportAdmin(admin.ModelAdmin):
             obj.run_by = request.user
             obj.save()
             
-            subprocess.Popen([python_executable(), "manage.py",
+            subprocess.Popen(["django-admin",
                               "import_bluevolt_exams",
                               "--import_id",
                               str(obj.id)])  

@@ -574,7 +574,7 @@ def group_members_export(request, group_slug, export_target='all'):
                                             identifier)
     default_storage.save(temp_export_path, ContentFile(b''))
     # start the process
-    subprocess.Popen([python_executable(), "manage.py",
+    subprocess.Popen(["django-admin",
                   "group_members_export",
                   '--group_id=%d' % group.id,
                   '--export_target=%s' % export_target,

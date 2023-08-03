@@ -759,7 +759,7 @@ def membership_default_import_preview(request, mimport_id,
                                      args=[mimport.id]))
         else:
             if mimport.status == 'not_started':
-                subprocess.Popen([python_executable(), "manage.py",
+                subprocess.Popen(["django-admin",
                               "membership_import_preprocess",
                               str(mimport.pk)])
 
@@ -783,7 +783,7 @@ def membership_default_import_process(request, mimport_id):
         mimport.num_processed = 0
         mimport.save()
         # start the process
-        subprocess.Popen([python_executable(), "manage.py",
+        subprocess.Popen(["django-admin",
                           "import_membership_defaults",
                           str(mimport.pk),
                           str(request.user.pk)])

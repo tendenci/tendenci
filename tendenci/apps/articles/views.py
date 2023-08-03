@@ -426,7 +426,7 @@ def export(request, template_name="articles/export.html"):
         default_storage.save(temp_file_path, ContentFile(b''))
 
         # start the process
-        subprocess.Popen([python_executable(), "manage.py",
+        subprocess.Popen(["django-admin",
                           "articles_export_process",
                           '--identifier=%s' % identifier,
                           '--user=%s' % request.user.id])

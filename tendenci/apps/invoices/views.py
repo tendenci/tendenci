@@ -823,7 +823,7 @@ def export(request, template_name="invoices/export.html"):
         default_storage.save(temp_file_path, ContentFile(b''))
 
         # start the process
-        subprocess.Popen([python_executable(), "manage.py",
+        subprocess.Popen(["django-admin",
                           "invoice_export_process",
                           '--start_dt=%s' % start_dt,
                           '--end_dt=%s' % end_dt,

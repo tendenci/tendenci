@@ -203,7 +203,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
         # Sync pending_group and active_group if needed
         if (self.pending_group and self.pending_group != self._original_pending_group) or \
             (self.active_group and self.active_group != self._original_active_group):
-            subprocess.Popen([python_executable(), "manage.py",
+            subprocess.Popen(["django-admin",
                               "sync_corp_reps_groups", '--corp_mem_type_id',
                               str(self.id)])
 

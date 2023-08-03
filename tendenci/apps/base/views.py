@@ -411,14 +411,14 @@ def addon_upload_preview(request, sid, template_name="base/addon_upload_preview.
     addon_name = addon_zip.namelist()[0]
     addon_name = addon_name.strip('/')
     if not os.path.isdir(os.path.join(settings.SITE_ADDONS_PATH, addon_name)):
-        subprocess.Popen([python_executable(), "manage.py",
+        subprocess.Popen(["django-admin",
                           "upload_addon",
                           '--zip_path=%s' % path])
         return redirect('addon.upload.process', sid)
 
     if request.method == "POST":
         shutil.rmtree(os.path.join(settings.SITE_ADDONS_PATH, addon_name))
-        subprocess.Popen([python_executable(), "manage.py",
+        subprocess.Popen(["django-admin",
                           "upload_addon",
                           '--zip_path=%s' % path])
         return redirect('addon.upload.process', sid)
@@ -465,7 +465,7 @@ def update_tendenci(request, template_name="base/update.html"):
         tos = request.POST.get('tos')
 
         if tos:
-            subprocess.Popen([python_executable(), "manage.py", "auto_update",
+            subprocess.Popen(["django-admin", "auto_update",
                              "--user_id=%s" % request.user.id])
             return redirect('update_tendenci.confirmation')
 

@@ -277,7 +277,7 @@ def transcripts(request, user_id=None, corp_profile_id=None,
                 creator=request.user,)
             ctzf.save()
             # start a subprocess to generate a zip file
-            subprocess.Popen([python_executable(), "manage.py",
+            subprocess.Popen(["django-admin",
                               "generate_transcript_pdfs",
                               str(ctzf.pk) ])
             # redirect to the status page

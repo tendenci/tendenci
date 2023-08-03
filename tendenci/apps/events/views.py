@@ -4976,7 +4976,7 @@ def reports_financial(request, template_name="events/financial_reports.html"):
             temp_file_path = 'export/events/%s_temp.csv' % identifier
             default_storage.save(temp_file_path, ContentFile(b''))
             # start the process
-            subprocess.Popen([python_executable(), "manage.py",
+            subprocess.Popen(["django-admin",
                               "events_financial_export_process",
                               '--identifier=%s' % identifier,
                               '--start_dt={}'.format(start_dt),
