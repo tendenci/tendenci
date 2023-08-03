@@ -150,7 +150,14 @@ class Chapter(BasePage):
                     while str(num) in t_list:
                         num += 1
                     group.slug = f'{group.slug}{str(num)}'
-                    # group name is also a unique field
+            # group name is also a unique field
+            if Group.objects.filter(name=group.name).exists():
+                tmp_groups = Group.objects.filter(name__istartswith=group.name)
+                if tmp_groups:
+                    t_list = [g.name[len(group.name):] for g in tmp_groups]
+                    num = 1
+                    while str(num) in t_list:
+                        num += 1                    
                     group.name = f'{group.name}{str(num)}'
 
             group.label = self.title

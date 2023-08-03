@@ -80,7 +80,7 @@ def date_long(value, arg=None):
             return ''
 date_long.is_safe = False
 
-@register.filter_function
+@register.filter(expects_localtime=True, is_safe=False)
 def date(value, arg=None):
     """Formats a date according to the given format."""
     from django.utils.dateformat import format
@@ -100,7 +100,6 @@ def date(value, arg=None):
             return format(value, arg)
         except AttributeError:
             return ''
-date.is_safe = False
 
 @register.filter_function
 def convert_str_date(value):
