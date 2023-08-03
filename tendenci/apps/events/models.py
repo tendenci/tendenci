@@ -1359,6 +1359,9 @@ class Registrant(models.Model):
         except:
             raise Exception(error_message)
 
+        if check_in_or_out == 'checked_out' and not self.event.eventcredit_set.exists():
+            self.event.assign_credits(self)
+
     def get_name(self):
         if self.custom_reg_form_entry:
             return self.custom_reg_form_entry.get_name()
@@ -1632,6 +1635,30 @@ class RegistrantChildEvent(models.Model):
         event = self.child_event
         return f'{event.title} {event.start_dt.time().strftime("%I:%M %p")} - ' \
                f'{event.end_dt.time().strftime("%I:%M %p")}'
+
+
+class RegistrantCredits(models.Model):
+    """Credits a registrant is rewarded"""
+    registrant = models.ForeignKey(Registrant, on_delete=models.CASCADE)
+    event_credit = models.ForeignKey(EventCredit, blank=True, null=True, on_delete=models.SET_NULL)
+    credits = models.DecimalField(
+        max_digits=5,
+        decimal_places=1,
+        default=0,
+        help_text=_("Defaults to value set in EventCredit, but can be overridden.")
+    )
+    released = models.BooleanField(
+        default=False,
+        help_text=_("Indicates credits can be displayed on a certificate.")
+    )
+
+    @property
+    def event(self):
+        return self.event_credit.event.first()
+
+    @property
+    def credit_name(self):
+        return self.event_credit.ceu_subcategory.name
 
 
 class Payment(models.Model):
@@ -1963,6 +1990,16 @@ class Event(TendenciBaseModel):
         return Event.objects.filter(parent_id=self.pk).order_by('start_dt')
 
     @property
+    def events_with_credits(self):
+        """Return events that have credits assigned"""
+        events = self.child_events if self.nested_events_enabled and self.child_events else [self]
+
+        pks = RegistrantCredits.objects.filter(
+            event_credit__event__in=events).order_by(
+            'event_credit__event').distinct().values_list('event_credit__event', flat=True)
+        return Event.objects.filter(pk__in=pks)
+
+    @property
     def can_configure_credits(self):
         """Indicates if credits can be configured on this Event"""
         return self.use_credits_enabled and not self.has_child_events
@@ -1992,6 +2029,18 @@ class Event(TendenciBaseModel):
         """
         return EventMeta().get_meta(self, name)
 
+    def assign_credits(self, registrant):
+        """
+        Assign credits from Event to Registrant.
+        Credits default to un-released, so they can be overridden.
+        """
+        for credit in self.eventcredit_set.all():
+           RegistrantCredits.objects.get_or_create(
+               registrant_id=registrant.pk,
+               event_credit_id=credit.pk,
+               credits=credit.credit_count,
+           )
+
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
 
@@ -2006,6 +2055,10 @@ class Event(TendenciBaseModel):
 
     def get_absolute_edit_url(self):
         return reverse('event.edit', args=[self.pk])
+
+    def review_credits_url(self):
+        site_url = get_setting('site', 'global', 'siteurl')
+        return f'{site_url}/admin/events/registrantcredits/?q={self.title}'
 
     def get_registration_url(self):
         """ This is used to include a sign up url in the event.

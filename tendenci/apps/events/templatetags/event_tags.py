@@ -50,6 +50,15 @@ def child_events_display(context, event, edit=False):
     return context
 
 
+@register.inclusion_tag("events/credits_review.html", takes_context=True)
+def review_and_edit_credits(context, event):
+    context.update({
+        "parent_event": event,
+        "events": event.events_with_credits,
+    })
+    return context
+
+
 @register.inclusion_tag("events/options.html", takes_context=True)
 def event_options(context, user, event):
     context.update({

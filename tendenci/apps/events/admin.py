@@ -16,8 +16,9 @@ from django.forms import BaseInlineFormSet
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
                                          CustomRegFormEntry, CustomRegFieldEntry, Event,
-                                         CEUCategory, SignatureImage)
-from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
+                                         CEUCategory, SignatureImage, RegistrantCredits)
+from tendenci.apps.events.forms import (CustomRegFormAdminForm, CustomRegFormForField, TypeForm,
+                                        StandardRegAdminForm)
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import delete_settings_cache, get_setting
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -334,9 +335,28 @@ class SignatureImageAdmin(admin.ModelAdmin):
     list_display = ('id', 'name',)
 
 
+class RegistrantCreditsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'registrant', 'event', 'credit_name', 'credits', 'released')
+    list_editable = ('credits', 'released')
+    verbose_name = _("Registrant Credit")
+    verbose_name_plural = _("Registrant Credits")
+    search_fields = ('event_credit__event__title', )
+    actions = ["release"]
+
+    def release(self, request, queryset):
+        """Release all credits"""
+        queryset.update(released=True)
+    release.short_description=_("Release all credits")
+
+    def has_add_permission(self, request):
+        return False
+
+
 if get_setting('module', 'events', 'use_credits'):
     admin.site.register(CEUCategory, CEUCategoryAdmin)
 
+
+admin.site.register(RegistrantCredits, RegistrantCreditsAdmin)
 admin.site.register(SignatureImage, SignatureImageAdmin)
 admin.site.register(StandardRegForm, StandardRegFormAdmin)
 admin.site.register(Event, EventAdmin)
