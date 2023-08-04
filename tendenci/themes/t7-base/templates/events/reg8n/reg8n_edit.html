@@ -61,7 +61,7 @@
                     {% if registrant.registration_closed %}
                         <input class="registration_closed" type="hidden" />
                     {% endif %}
-                    {% if registrant.pricing and registrant.pricing.days_price_covers and not registrant.registration_closed %}
+                    {% if reg8n.event.nested_events_enabled and registrant.pricing and registrant.pricing.days_price_covers and not registrant.registration_closed %}
 
                     <div class="attendance_dates">
                       {% blocktrans with registrant.upcoming_event_days as days %}
@@ -69,7 +69,7 @@
                       {% endblocktrans %}
                     </div>
                     {% endif %}
-                    {% if registrant.child_events %}
+                    {% if reg8n.event.nested_events_enabled and registrant.child_events %}
                     <div class="sub-events">
                         <h4>Sub-Events</h4>
                         {% for event in registrant.child_events %}

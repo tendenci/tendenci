@@ -680,6 +680,9 @@ class Registration(models.Model):
     @property
     def can_edit_child_events(self):
         """If any registrant can edit child events, return True"""
+        if not self.event.nested_events_enabled:
+            return False
+
         for registrant in self.registrant_set.filter(cancel_dt__isnull=True):
             if registrant.child_events.exists() and not registrant.registration_closed:
                 return True
