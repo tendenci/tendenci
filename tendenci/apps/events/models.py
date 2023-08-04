@@ -1178,6 +1178,13 @@ class Registrant(models.Model):
         return self.pricing or self.registration.reg_conf_price
 
     @property
+    def upcoming_event_days(self):
+        """Number of days upcoming covered by pricing"""
+        if self.pricing and self.pricing.days_price_covers:
+            return self.pricing.days_price_covers - len(self.past_attendance_dates)
+        return 0
+
+    @property
     def available_child_events(self):
         """Child events occurring on the dates Registrant is attending"""
         if not self.event.nested_events_enabled:

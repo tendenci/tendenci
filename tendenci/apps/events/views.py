@@ -2973,8 +2973,11 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                 pricing = registrant.pricing
 
                 past_dates = len(registrant.past_attendance_dates)
-                total_attendance_dates = \
-                    len(updated_attendance_dates[index]) + past_dates
+                registrants_updated_dates = list()
+                if len(updated_attendance_dates):
+                    registrants_updated_dates = updated_attendance_dates[index]
+
+                total_attendance_dates = len(registrants_updated_dates) + past_dates
                 if pricing and pricing.days_price_covers and total_attendance_dates != pricing.days_price_covers:
                     message = f'Select { pricing.days_price_covers - past_dates} dates for {registrant.first_name } { registrant.last_name}'
                     messages.set_level(request, messages.ERROR)
@@ -2982,9 +2985,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                     redirect = False
                     break
 
-                if updated_attendance_dates[index] != registrant.upcoming_attendance_dates:
+                if registrants_updated_dates != registrant.upcoming_attendance_dates:
                     updated_dates = registrant.past_attendance_dates
-                    updated_dates.extend(updated_attendance_dates[index])
+                    updated_dates.extend(registrants_updated_dates)
                     registrant.attendance_dates = updated_dates
                     registrant.save(update_fields=['attendance_dates'])
                     attendance_dates_changed = True

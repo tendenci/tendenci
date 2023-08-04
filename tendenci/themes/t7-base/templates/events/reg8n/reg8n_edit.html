@@ -64,7 +64,7 @@
                     {% if registrant.pricing and registrant.pricing.days_price_covers and not registrant.registration_closed %}
 
                     <div class="attendance_dates">
-                      {% blocktrans with registrant.pricing.days_price_covers as days %}
+                      {% blocktrans with registrant.upcoming_event_days as days %}
                         Select {{ days }} attendance date(s)
                       {% endblocktrans %}
                     </div>
