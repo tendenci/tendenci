@@ -2967,7 +2967,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             attendance_dates_changed = False
             for index, registrant in enumerate(registrants):
                 # Don't updage attendance dates or child events if registration is closed
-                if registrant.registration_closed:
+                # or if nested events is not enabled, or event has no child events
+                if not registrant.can_edit_attendance_dates:
                     continue
 
                 pricing = registrant.pricing
