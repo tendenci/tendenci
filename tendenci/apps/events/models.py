@@ -1195,12 +1195,28 @@ class Registrant(models.Model):
     @property
     def past_attendance_dates(self):
         """Attendance dates for sessions in the past"""
-        return [x for x in self.attendance_dates if parse(x).date() <= datetime.now().date()]
+        if self.attendance_dates:
+            return [x for x in self.attendance_dates if parse(x).date() <= datetime.now().date()]
+        return list()
 
     @property
     def upcoming_attendance_dates(self):
         """Attendance dates for future sessions"""
-        return [x for x in self.attendance_dates if parse(x).date() > datetime.now().date()]
+        if self.attendance_dates:
+            return [x for x in self.attendance_dates if parse(x).date() > datetime.now().date()]
+        return list()
+
+    @property
+    def can_edit_attendance_dates(self):
+        """
+        Attendance dates are editable if registration is not closed,
+        nested events are enabled, event has child events
+        """
+        return (
+            not self.registration_closed and
+            self.event.nested_events_enabled and
+            self.event.has_child_events
+        )
 
     @property
     def sub_event_datetimes(self):
