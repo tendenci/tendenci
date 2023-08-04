@@ -383,6 +383,17 @@ class ProfileForm(TendenciBaseForm):
 
         return email
 
+    def clean_account_id(self):
+        account_id = self.cleaned_data.get('account_id')
+        if account_id:
+            profiles = Profile.objects.filter(account_id=account_id)
+            if self.instance and self.instance.account_id:
+                profiles = profiles.exclude(id=self.instance.id)
+            if profiles.exists():
+                raise forms.ValidationError(
+                _(f"Account id '{account_id}' is already taken. Please choose a different number."))
+        return self.cleaned_data['account_id']
+
     def clean(self):
         """
         Verifiy that the values entered into the two password fields
