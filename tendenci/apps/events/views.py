@@ -2871,7 +2871,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         keys = [x for x in post_data if 'attendance_dates' in x]
         for key in keys:
             attendance_dates = post_data.getlist(key)
-            formatted_attendance_dates = [datetime.strptime(x, '%b. %d, %Y').strftime("%Y-%m-%d") for x in attendance_dates]
+            formatted_attendance_dates = [dparser.parse(x).strftime("%Y-%m-%d") for x in attendance_dates]
             post_data.setlist(key, formatted_attendance_dates)
             updated_attendance_dates.append(formatted_attendance_dates)
 
