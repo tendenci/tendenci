@@ -91,6 +91,7 @@ from tendenci.apps.events.models import (
     Place,
     RecurringEvent)
 from tendenci.apps.events.forms import (
+    attendance_dates_callback,
     EventForm,
     EventCreditForm,
     Reg8nEditForm,
@@ -2914,11 +2915,16 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         fields = [field_name for field_name in fields 
                      if ((get_setting('module', 'events', 'regform_%s_visible' % field_name) and field_name != 'zip')\
                         or (field_name == 'zip' and get_setting('module', 'events', 'regform_zip_code_visible')))]
+
+        if reg8n.event.requires_attendance_dates:
+            fields.append('attendance_dates')
+
         if reg8n.event.course:
             fields.append('certification_track')
         # use modelformset_factory for regular registration form
         RegistrantFormSet = modelformset_factory(
             Registrant, extra=0,
+            formfield_callback=lambda field: attendance_dates_callback(field, reg8n.event),
             fields=fields)
 
         formset = RegistrantFormSet(post_data,
@@ -2993,6 +2999,20 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                     registrant.save(update_fields=['attendance_dates'])
                     attendance_dates_changed = True
 
+                # If using a non custom form, attendance dates were already saved
+                # Compare with child events to see if attendance dates were udpated
+                if not custom_reg_form and not attendance_dates_changed and not 'child_events' in request.POST:
+                    has_child_events_on_other_days = registrant.child_events.exclude(
+                        child_event__start_dt__date__in=registrant.attendance_dates,
+                    ).exists()
+                    if has_child_events_on_other_days:
+                        attendance_dates_changed = True
+                    else:
+                        for date in registrant.upcoming_attendance_dates:
+                            if not registrant.child_events.filter(child_event__start_dt__date=dparser.parse(date)).exists():
+                                attendance_dates_changed = True
+                            if attendance_dates_changed:
+                                break
 
             reg8n_conf_url = reverse(
                                     'event.registration_confirmation',

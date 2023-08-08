@@ -333,6 +333,16 @@ class AttendanceDatesMixin:
         return attendance_dates
 
 
+def attendance_dates_callback(field, event):
+    """Add attendance_dates when using modelformset_factory if applicable"""
+    if field.name == 'attendance_dates' and event.requires_attendance_dates:
+        return forms.MultipleChoiceField(
+                widget=forms.CheckboxSelectMultiple,
+                choices = [(date, date) for date in event.days]
+            )
+    return field.formfield()
+
+
 class FormForCustomRegForm(AttendanceDatesMixin, forms.ModelForm):
 
     class Meta:
