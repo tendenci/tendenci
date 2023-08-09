@@ -230,7 +230,7 @@ class EventStaff(models.Model):
     role = models.CharField(_('Role'), max_length=255)
     include_on_certificate = models.BooleanField(
         _('Include on Certificate'),
-        default=True,
+        default=False,
         help_text=_("Check to display name and role on certificate")
     )
     signature_image = models.ForeignKey(
