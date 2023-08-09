@@ -2,6 +2,8 @@ from csv import writer
 from datetime import datetime
 
 from django.contrib import admin, messages
+from django.db import models
+from django.db.models import Count
 from django.urls import reverse
 from django.urls import path, re_path
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -335,18 +337,50 @@ class SignatureImageAdmin(admin.ModelAdmin):
     list_display = ('id', 'name',)
 
 
+class RegistrantCreditsEventFilter(admin.SimpleListFilter):
+    """Filter Events that have credits assigned to registrants"""
+    title = _('Event')
+    parameter_name = 'event'
+
+    def lookups(self, request, model_admin):
+        events = []
+        events_pk = RegistrantCredits.objects.all().values_list('event_credit__event', flat=True)
+
+        for event in Event.objects.filter(pk__in=events_pk).order_by('-start_dt'):
+            events.append((str(event.id), str(event)))
+        return events
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(event_credit__event__id__exact=self.value())
+        else:
+            return queryset
+
+
 class RegistrantCreditsAdmin(admin.ModelAdmin):
     list_display = ('id', 'registrant', 'event', 'credit_name', 'credits', 'released')
     list_editable = ('credits', 'released')
-    verbose_name = _("Registrant Credit")
-    verbose_name_plural = _("Registrant Credits")
     search_fields = ('event_credit__event__title', )
+    readonly_fields = ('registrant', 'event_credit')
+    list_filter = ('released', RegistrantCreditsEventFilter)
     actions = ["release"]
 
     def release(self, request, queryset):
         """Release all credits"""
         queryset.update(released=True)
     release.short_description=_("Release all credits")
+
+    def has_delete_permission(self, request, obj=None):
+        """Don't allow deleting released credits"""
+        result = super().has_delete_permission(request, obj=obj)
+
+        if obj and obj.released:
+            self.message_user(
+                request,
+                _(f"Credits for {obj.registrant} in {obj.credit_name} have already been released.")
+            )
+            return False
+        return result
 
     def has_add_permission(self, request):
         return False

@@ -1652,6 +1652,18 @@ class RegistrantCredits(models.Model):
         help_text=_("Indicates credits can be displayed on a certificate.")
     )
 
+    class Meta:
+        verbose_name_plural = _("Registrant Credits")
+
+    def delete(self, *args, **kwargs):
+        """
+        Don't allow deleting credits that have been released
+        NOTE: Bulk delete will ignore this code
+        """
+        if self.released:
+            raise Exception(_("Deleting released credits is not allowed."))
+        super().delete(*args, **kwargs)
+
     @property
     def event(self):
         return self.event_credit.event.first()
