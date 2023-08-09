@@ -169,6 +169,13 @@
                                 <a href="{{ app_object.parent.get_absolute_url }}">{% trans "View Parent Event" %}</a>
                             </span>
                         </li>
+                        {% if app_object.events_with_credits %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{{ app_object.review_credits_url }}">{% trans "Review Credits" %}</a>
+                            </span>
+                        </li>
+                        {% endif %}
                         {% endif %}
 
                         {% if app_object.nested_events_enabled and not app_object.parent %}
