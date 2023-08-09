@@ -2003,6 +2003,9 @@ def member_register(request, event_id,
                                                is_strict=False,
                                                spots_available=spots_available)
     pricings = pricings.filter(quantity=1)
+    if pricings.count() == 0:
+        msg_string = f'No pricing is available or registration limit has reached for event {event.title}'
+        messages.add_message(request, messages.ERROR, _(msg_string))
 
     form = MemberRegistrationForm(event, pricings, request.POST or None)
 
