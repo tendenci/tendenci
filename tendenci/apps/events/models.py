@@ -3,6 +3,7 @@ import uuid
 from hashlib import md5
 import operator
 from datetime import datetime, timedelta
+from dateutil.parser import parse
 from functools import reduce
 from django.conf import settings
 from django.contrib import messages
@@ -392,7 +393,8 @@ class RegConfPricing(OrderingBaseModel):
                             'Note: this number should not exceed the specified registration limit.'))
     spots_taken = models.IntegerField(default=0)
     groups = models.ManyToManyField(Group, blank=True)
-
+    days_price_covers = models.PositiveSmallIntegerField(
+        blank=True, null=True, help_text=_("Number of days this price covers (optional)."))
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
@@ -431,6 +433,19 @@ class RegConfPricing(OrderingBaseModel):
         if self.title:
             return '%s' % self.title
         return '%s' % self.pk
+
+    @property
+    def requires_attendance_dates(self):
+        """
+        Pricing requires attendance dates if
+        the Event requires attendance dates and
+        days price covers is specified.
+        """
+        return (
+            self.days_price_covers and
+            self.reg_conf and hasattr(self.reg_conf, 'event') and
+            self.reg_conf.event.requires_attendance_dates
+        )
 
     def available(self):
         if not self.reg_conf.enabled or not self.status:
@@ -531,6 +546,9 @@ class RegConfPricing(OrderingBaseModel):
         if user.profile.is_superuser: return None, None
         now = datetime.now()
         filter_and, filter_or = None, None
+
+        # Hide non-member pricing if setting turned on
+        is_strict = is_strict or get_setting('module', 'events', 'hide_member_pricing')
 
         if is_strict:
             if user.is_anonymous:
@@ -658,6 +676,17 @@ class Registration(models.Model):
     @property
     def hash(self):
         return md5(".".join([str(self.event.pk), str(self.pk)]).encode()).hexdigest()
+
+    @property
+    def can_edit_child_events(self):
+        """If any registrant can edit child events, return True"""
+        if not self.event.nested_events_enabled:
+            return False
+
+        for registrant in self.registrant_set.filter(cancel_dt__isnull=True):
+            if registrant.child_events.exists() and not registrant.registration_closed:
+                return True
+        return False
 
     def allow_adjust_invoice_by(self, request_user):
         """
@@ -1059,6 +1088,8 @@ class Registrant(models.Model):
     This is the information that was used while registering
     """
     registration = models.ForeignKey('Registration', on_delete=models.CASCADE)
+    attendance_dates = models.JSONField(
+        blank=True, null=True, help_text=_("The dates this registrant will be attending."))
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
     pricing = models.ForeignKey('RegConfPricing', null=True, on_delete=models.SET_NULL)  # used for dynamic pricing
@@ -1132,6 +1163,11 @@ class Registrant(models.Model):
             return '%s, %s' % (self.last_name, self.first_name)
 
     @property
+    def registration_closed(self):
+        """Returns whether registration is closed for this registrant's pricing"""
+        return self.pricing.registration_has_ended
+
+    @property
     def event(self):
         return self.registration.event
 
@@ -1143,6 +1179,92 @@ class Registrant(models.Model):
         # The pricing is a field recently added. The previous registrations
         # store the pricing in registration.
         return self.pricing or self.registration.reg_conf_price
+
+    @property
+    def upcoming_event_days(self):
+        """Number of days upcoming covered by pricing"""
+        if self.pricing and self.pricing.days_price_covers:
+            return self.pricing.days_price_covers - len(self.past_attendance_dates)
+        return 0
+
+    @property
+    def available_child_events(self):
+        """Child events occurring on the dates Registrant is attending"""
+        if not self.event.nested_events_enabled:
+            return Event.objects.none()
+
+        return self.event.child_events.filter(start_dt__date__in=self.attendance_dates)
+
+    @property
+    def past_attendance_dates(self):
+        """Attendance dates for sessions in the past"""
+        if self.attendance_dates:
+            return [x for x in self.attendance_dates if parse(x).date() <= datetime.now().date()]
+        return list()
+
+    @property
+    def upcoming_attendance_dates(self):
+        """Attendance dates for future sessions"""
+        if self.attendance_dates:
+            return [x for x in self.attendance_dates if parse(x).date() > datetime.now().date()]
+        return list()
+
+    @property
+    def can_edit_attendance_dates(self):
+        """
+        Attendance dates are editable if registration is not closed,
+        nested events are enabled, event has child events
+        """
+        return (
+            not self.registration_closed and
+            self.event.nested_events_enabled and
+            self.event.has_child_events
+        )
+
+    @property
+    def sub_event_datetimes(self):
+        """Returns list of start_dt for available sub events"""
+        datetimes = dict()
+        for event in self.available_child_events:
+            if event.start_dt not in datetimes:
+                datetimes[event.start_dt] = event.end_dt
+            else:
+                datetimes[event.start_dt] = max(datetimes[event.start_dt], event.end_dt)
+
+        return datetimes
+
+    def register_child_events(self, child_event_pks):
+        """Register for child event"""
+        # Remove any upcoming records that have been updated to 'not attending'
+        self.registrantchildevent_set.filter(
+            child_event__start_dt__date__gt=datetime.now().date()).exclude(
+            child_event_id__in=child_event_pks,
+        ).delete()
+
+        # Add child event if it's not already registered
+        for child_event_pk in child_event_pks:
+            event = Event.objects.get(pk=child_event_pk)
+
+            if self.registrantchildevent_set.filter(
+                child_event__repeat_uuid=event.repeat_uuid
+            ).exclude(child_event_id=event.pk).exists():
+
+                current_event = self.registrantchildevent_set.filter(
+                    child_event__repeat_uuid=event.repeat_uuid).first().child_event
+                error = _(
+                    f'{event.title} on {event.start_dt.date()} is a repeat of event on ' \
+                    f'{current_event.start_dt.date()}. Please select only one.')
+                raise Exception(error)
+
+            RegistrantChildEvent.objects.get_or_create(
+                child_event_id=child_event_pk,
+                registrant_id=self.pk,
+            )
+
+    @property
+    def child_events(self):
+        """Child events registered Registrant is attending"""
+        return self.registrantchildevent_set.all().order_by('child_event__start_dt')
 
     @property
     def cancellation_fee(self):
@@ -1425,6 +1547,16 @@ class Registrant(models.Model):
                                              value=value,
                                              entry=entry,
                                              field=field)
+
+
+class RegistrantChildEvent(models.Model):
+    child_event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    registrant = models.ForeignKey('Registrant', on_delete=models.CASCADE)
+    checked_in = models.BooleanField(_('Is Checked In?'), default=False)
+    checked_in_dt = models.DateTimeField(null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+
 
 class Payment(models.Model):
     """
@@ -1760,6 +1892,14 @@ class Event(TendenciBaseModel):
         return self.use_credits_enabled and not self.has_child_events
 
     @property
+    def requires_attendance_dates(self):
+        """
+        Event registration requires attendance dates if nested events
+        are enabled and this event has child events.
+        """
+        return self.nested_events_enabled and self.has_child_events
+
+    @property
     def allow_credit_configuration_with_warning(self):
         """
         Indicates credit configuration allowed
@@ -2076,6 +2216,29 @@ class Event(TendenciBaseModel):
             same_date = start_dt.date() == self.end_dt.date()
             yield {'start_dt':start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
 
+    @property
+    def days(self):
+        """
+        List of each day of event covered by a sub-event.
+        This is used to provide a list of potential attendance dates
+        to filter sub-events by date. Includes dates for upcoming sessions only.
+        """
+        days = set()
+
+        for event in self.child_events.filter(start_dt__date__gt=datetime.now()):
+            spans = event.date_spans()
+
+            for span in spans:
+                if span['same_date']:
+                    days.add(datetime.date(span['start_dt']))
+                else:
+                    date_range = self.date_range(
+                        span['start_dt'], span['end_dt'] + timedelta(days=1))
+                    date_range = [datetime.date(x) for x in date_range]
+                    days.update(date_range)
+
+        return sorted(days)
+
     def get_spots_status(self):
         """
         Return a tuple of (spots_taken, spots_available) for this event.
@@ -2114,6 +2277,25 @@ class Event(TendenciBaseModel):
         if self.registration_configuration:
             limit = self.registration_configuration.limit
         return int(limit)
+
+    @property
+    def total_registered(self):
+        """Total registered for this Event"""
+        # If this is a child event, registration information is in RegistrationChildEvent
+        if self.parent and self.nested_events_enabled:
+            return RegistrantChildEvent.objects.filter(
+                child_event_id=self.pk, registrant__cancel_dt__isnull=True).count()
+
+        return self.registrants_count({'cancel_dt__isnull': True})
+
+    @property
+    def at_capacity(self):
+        """Indicates if Event is at capacity"""
+        limit = self.get_limit()
+        if not limit:
+            return False
+
+        return self.total_registered >= limit
 
     @classmethod
     def make_slug(self, length=7):
@@ -2474,7 +2656,14 @@ class Addon(models.Model):
 
 class AddonOption(models.Model):
     addon = models.ForeignKey(Addon, related_name="options", on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
+    title = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text='If only one option, please use the first "Title" field ' \
+                  'at the top of the form instead. Radio buttons will not ' \
+                  'be displayed if more than one option is not offered.'
+    )
     # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
     # choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
 

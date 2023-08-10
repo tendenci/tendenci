@@ -62,6 +62,9 @@ urlpatterns = [
     re_path(r'^%s/export/status/(?P<identifier>\d+)/$' % urlpath, views.export_status, name="event.export_status"),
     re_path(r'^%s/export/download/(?P<identifier>\d+)/$' % urlpath, views.export_download, name="event.export_download"),
 
+    # event badges
+    re_path(r'^%s/(?P<event_id>\d+)/badges/$' % urlpath, views.event_badges, name='event.badges'),
+
     # speakers_list view does not exist
     re_path(r'^%s/(?P<event_id>\d+)/speakers/$' % urlpath, views.speaker_list, name="event.speakers"),
     re_path(r'^%s/(?P<event_id>\d+)/attendees/$' % urlpath, views.view_attendees, name="event.attendees"),
@@ -87,6 +90,7 @@ urlpatterns = [
     # register for event
     re_path(r'^%s/member-register/(?P<event_id>\d+)/$' % urlpath, views.member_register, name='event.member_register'),
     re_path(r'^%s/register/(?P<event_id>\d+)/$' % urlpath, views.register, name='event.register'),
+    re_path(r'^%s/register/(?P<registration_id>\d+)/sub-events/$' % urlpath, views.register_child_events, name='event.register_child_events'),
     re_path(r'^%s/register/(?P<event_id>\d+)/pre/$' % urlpath, views.register_pre, name='event.register_pre'),
     re_path(r'^%s/register/(?P<event_id>\d+)/individual/(?P<pricing_id>\d+)/$' % urlpath, views.register, {'individual': True}, name='event.register_individual'),
     re_path(r'^%s/register/(?P<event_id>\d+)/table/(?P<pricing_id>\d+)/$' % urlpath, views.register, {'is_table': True}, name='event.register_table'),
@@ -110,6 +114,9 @@ urlpatterns = [
 
     re_path(r'^%s/types/$' % urlpath, views.types, name='event.types'),
     re_path(r'^%s/reassign_type/(?P<type_id>\d+)$' % urlpath, views.reassign_type, name='event.reassign_type'),
+
+    # registrant badge
+    re_path(r'^%s/registrants/(?P<registrant_id>\d+)/badge/$' % urlpath, views.registrant_badge, name='registrant.badge'),
 
     # registrants (search/view); admin-only
     re_path(r'^%s/registrants/search/$' % urlpath, views.global_registrant_search, name="event.global.registrant.search"),

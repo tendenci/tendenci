@@ -23,6 +23,14 @@ from tendenci.apps.site_settings.utils import get_setting
 register = Library()
 
 
+@register.inclusion_tag("events/badge.html", takes_context=True)
+def badge(context, registrant, display='front'):
+    context.update({
+        "registrant": registrant,
+        "display": display,
+    })
+    return context
+
 @register.inclusion_tag("events/credits.html", takes_context=True)
 def credits_form_display(context, event, credit_forms, user):
     context.update({

@@ -95,6 +95,7 @@
                 {% endif %}
                 <th width="8%" title="{% trans "Balance" %}">{% trans "Balance" %}</th>
                 <th width="6%" class='attended' title="{% trans "Attendance Checkbox" %}">{% trans "Attend" %}</th>
+                <th>&nbsp;&nbsp;</th>
             </tr>
             <tr class='row-spacer'>
                 <td colspan="9"></td>
@@ -173,6 +174,11 @@
                 <input type="checkbox" name="checked_in" data-reg="{{ registrant.id }}"
                        value="1" {% if registrant.checked_in %}checked{% endif %}/>
             </td>
+            <td class="print-badge-cell">
+                <a class="t-meta-print-link" href="{% url "registrant.badge" registrant.pk %}">
+                    {% trans "Print Badge" %}
+                </a>
+            </td>
             </tr>
 
                 {% if registrant.invoice_dict.balance > 0 %}
@@ -233,6 +239,7 @@
             {% endif %}
             <td class="attended-checkedin-text">{% if registrant.checked_in and registrant.checked_in_dt %}
                 {{ registrant.checked_in_dt|date:'m/d h:iA' }}{% endif %}</td>
+            <td></td>
             </tr>
 
 
@@ -277,7 +284,8 @@
 
                 </td>
                 <td>&nbsp;</td>
-
+                <td></td>
+                <td></td>
                 </tr>
 
                 {% endwith %}
@@ -347,7 +355,18 @@
                 <strong>total</strong>{% endblocktrans %}</a>
         </div>
     </div>
-
+    {% if use_badges %}
+    <div class="print-badges">
+        <ul class="list-unstyled t-meta-data">
+            <li class="pull-right">
+                <a class="t-meta-print-link" href="{% url "event.badges" event.pk %}">
+                    <span class="glyphicon glyphicon-print"></span>
+                    {% trans "Print Badges" %}
+                </a>
+            </li>
+        </ul>
+    </div>
+    {% endif %}
     <div style="clear:both; height:10px;"></div>
 
 {% endblock %}

@@ -94,7 +94,7 @@ class EventManager(TendenciBaseManager):
     def available_parent_events(self):
         """Returns all available upcoming parent events"""
         return self.filter(
-            start_dt__gt=datetime.now(),
+            end_dt__gt=datetime.now(),
             event_relationship=self.model.EventRelationship.PARENT,
         )
 

@@ -14,6 +14,7 @@ from decimal import Decimal
 import dateutil.parser as dparser
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.conf import settings
 from django.urls import reverse
@@ -25,6 +26,7 @@ from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 import simplejson
 from django.utils.html import strip_tags
+from django.utils.translation import gettext as _
 from pytz import timezone
 from pytz import UnknownTimeZoneError
 
@@ -891,7 +893,6 @@ def get_registrants_prices(*args):
             amount_list.append(amount)
             tax_list.append(amount * price.tax_rate)
             
-
     # apply discount if any
     discount_code = reg_form.cleaned_data.get('discount_code', None)
     discount_amount = Decimal(0)
@@ -1100,6 +1101,7 @@ def create_registrant_from_form(*args, **kwargs):
     registrant.use_free_pass = kwargs.get('use_free_pass', False)
     registrant.memberid = form.cleaned_data.get('memberid', '')
     registrant.reminder = form.cleaned_data.get('reminder', False)
+    registrant.attendance_dates = form.cleaned_data.get('attendance_dates')
 
     if custom_reg_form and isinstance(form, FormForCustomRegForm):
         entry = form.save(event)
@@ -1660,7 +1662,8 @@ def get_active_days(event):
 def get_custom_registrants_initials(entries, **kwargs):
     initials = []
     check_cert = kwargs.get('check_cert', False)
-    for entry in entries:
+    attendance_dates = kwargs.get('attendance_dates')
+    for index, entry in enumerate(entries):
         fields_d = {}
         field_entries = entry.field_entries.all()
         for field_entry in field_entries:
@@ -1671,6 +1674,8 @@ def get_custom_registrants_initials(entries, **kwargs):
             fields_d[field_key] = field_entry.value
         if check_cert:
             fields_d['certification_track'] = entry.get_certification_track()
+        if attendance_dates:
+            fields_d['attendance_dates'] = attendance_dates[index]
         initials.append(fields_d)
     return initials
 
@@ -2208,3 +2213,61 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             subject=subject,
             body=body)
         email.send()
+
+
+def handle_registration_payment(reg8n):
+    """
+    Handle registration payment based on method selected
+    Returns redirect URL if applicable.
+    """
+    event = reg8n.event
+    is_credit_card_payment = reg8n.payment_method and \
+        (reg8n.payment_method.machine_name).lower() == 'credit-card' \
+        and reg8n.invoice.balance > 0
+    reg_conf=event.registration_configuration
+    registrants = reg8n.registrant_set.all().order_by('id')
+
+    self_reg8n = get_setting('module', 'users', 'selfregistration')
+    if is_credit_card_payment:
+        # online payment
+        # get invoice; redirect to online pay
+        # email the admins as well
+
+        email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+        if reg_conf.external_payment_link:
+            return reg_conf.external_payment_ink
+
+        return reverse('payment.pay_online', args=[reg8n.invoice.id, reg8n.invoice.guid])
+    else:
+        # offline payment:
+        # send email; add message; redirect to confirmation
+        primary_registrant = reg8n.registrant
+
+        if primary_registrant and  primary_registrant.email:
+            site_label = get_setting('site', 'global', 'sitedisplayname')
+            site_url = get_setting('site', 'global', 'siteurl')
+
+            notification.send_emails(
+                [primary_registrant.email],
+                'event_registration_confirmation',
+                {
+                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                    'SITE_GLOBAL_SITEURL': site_url,
+                    'self_reg8n': self_reg8n,
+
+                    'reg8n': reg8n,
+                    'registrants': registrants,
+
+                    'event': event,
+                    'total_amount': reg8n.invoice.total,
+                    'is_paid': reg8n.invoice.balance == 0,
+                    'reply_to': reg_conf.reply_to,
+                },
+                True, # save notice in db
+            )
+            #email the admins as well
+
+            # fix the price
+            email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+
+        return None

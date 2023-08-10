@@ -84,7 +84,14 @@ function addAddon(prefix, addon, container){
         }
     });
     var addon_input = $(row).find(".addon-input");
-    addon_input.parent().parent().find('label').html(addon['title'] + ': ' + addon['option_title'] + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + addon['price']  + ')');
+
+    // Set option_title_display if title is not None
+    var option_title_display = '';
+    var option_title = addon['option_title'];
+    if (option_title != 'None') {
+            option_title_display = ': ' + option_title;
+        }
+    addon_input.parent().parent().find('label').html(addon['title'] + ': ' + option_title_display + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + addon['price']  + ')');
 	addon_input.hide();
     // insert as last element into form list
     $(container).append(row);
@@ -98,6 +105,9 @@ function addAddon(prefix, addon, container){
 
 //ADDON CONTROLS
 $(document).ready(function(){
+    // Hide addon options with a title of None. (in the case there's addons with only 1 option)
+    $('input[title="None"]').parent('li').hide();
+
     var container = $('.addon-forms');
     container.find('.addon-form').each(function(){
         var addon_pk = $(this).find('.addon-input').val();
@@ -148,7 +158,17 @@ $(document).ready(function(){
         var choice = $("input[value="+addon.val() + ']', addon_choices);
         var option = $('div.addon-forms').find('.option-hidden').eq(i);
         var addon_option = $(addon_choices).find('#addon-options').find('input[value="' + $(option).val()  + '"]');
-        addon.parent().parent().find('label').html(choice.attr('title') + ': ' + addon_option.attr('title') + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + choice.attr('price')  + ' Addon)');
+
+        // Set option_title_display if title is not None
+        var option_title_display = '';
+        var option_title = addon_option.attr('title');
+        print(option_title)
+        if (option_title != 'None') {
+            alert('it is none!');
+            option_title_display = ': ' + option_title;
+        }
+
+        addon.parent().parent().find('label').html(choice.attr('title') + option_title_display + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + choice.attr('price')  + ' Addon)');
         addon.hide();
     }
 

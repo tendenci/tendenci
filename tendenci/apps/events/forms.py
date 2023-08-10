@@ -303,7 +303,47 @@ class CustomRegFormForField(forms.ModelForm):
         return cleaned_data
 
 
-class FormForCustomRegForm(forms.ModelForm):
+class AttendanceDatesMixin:
+    """Mixin for forms that use pricing attendance dates"""
+    def add_attendance_dates(self):
+        """Add attendance dates if required by Event"""
+        if self.event and self.event.requires_attendance_dates:
+            self.fields['attendance_dates'] = forms.MultipleChoiceField(
+                widget=forms.CheckboxSelectMultiple,
+                choices = [(date, date) for date in self.event.days]
+            )
+
+    def clean_attendance_dates(self):
+        """Validate attendance_dates field in comparison to days pricing covers"""
+        attendance_dates = self.cleaned_data.get('attendance_dates')
+
+        pricing = self.cleaned_data.get('pricing')
+
+        # If we shouldn't be using attenedance dates, return an empty list
+        if (
+                not self.event or not pricing or not
+                pricing.requires_attendance_dates or not
+                pricing.available
+        ):
+            return list()
+
+        if not attendance_dates or len(attendance_dates) != pricing.days_price_covers:
+            raise forms.ValidationError(_(f'Please select {pricing.days_price_covers} dates.'))
+
+        return attendance_dates
+
+
+def attendance_dates_callback(field, event):
+    """Add attendance_dates when using modelformset_factory if applicable"""
+    if field.name == 'attendance_dates' and event.requires_attendance_dates:
+        return forms.MultipleChoiceField(
+                widget=forms.CheckboxSelectMultiple,
+                choices = [(date, date) for date in event.days]
+            )
+    return field.formfield()
+
+
+class FormForCustomRegForm(AttendanceDatesMixin, forms.ModelForm):
 
     class Meta:
         model = CustomRegFormEntry
@@ -420,8 +460,11 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
 
+        self.add_attendance_dates()
+
         # member id
-        if hasattr(self.event, 'has_member_price') and \
+        if hasattr(self.event, 'has_member_price') and not \
+                    get_setting('module', 'events', 'hide_member_pricing') and \
                     get_setting('module', 'events', 'requiresmemberid') and \
                     self.event.has_member_price:
             self.fields['memberid'] = forms.CharField(label=_('Member ID'), max_length=50, required=False,
@@ -1041,6 +1084,14 @@ class EventForm(TendenciBaseForm):
                 errors.append(_(u"This cannot be \
                     earlier than the start date."))
 
+            parent = cleaned_data.get("parent")
+            if parent and (start_dt < parent.start_dt or end_dt > parent.end_dt):
+                if start_dt < parent.start_dt:
+                    errors = self._errors.setdefault("start_dt", ErrorList())
+                if end_dt > parent.end_dt:
+                    errors = self._errors.setdefault("end_dt", ErrorList())
+                errors.append(_(f"Sub-events must happen during parent event - {parent}"))
+
             if start_event_date and end_event_date:
                 if start_event_date > end_event_date:
                     errors = self._errors.setdefault("end_event_date", ErrorList())
@@ -1377,14 +1428,16 @@ class PaymentForm(forms.ModelForm):
 
 class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
     label = "Pricing"
-    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available'))
-    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available'))
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available for registration'))
+    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available for registration'))
     price = PriceField(label=_('Price'), max_digits=21, decimal_places=2, initial=0.00)
     #dates = Reg8nDtField(label=_("Start and End"), required=False)
     groups = forms.ModelMultipleChoiceField(required=False, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
     payment_required = forms.ChoiceField(required=False,
                                          choices=(('True', _('Yes')), ('False', _('No'))),
                                          initial='True')
+    days_price_covers = forms.IntegerField(
+        required=False, help_text=_('Number of days this price covers (Optional).'))
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('reg_form_queryset', None)
@@ -1403,6 +1456,9 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
         if not self.user or not self.user.profile.is_superuser:
             filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
             default_groups = default_groups.filter(filters).distinct()
+
+        if not get_setting("module", "events", "nested_events_enabled"):
+            self.fields['days_price_covers'].widget = forms.HiddenInput()
 
         self.fields['groups'].queryset = default_groups
 
@@ -1435,6 +1491,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
             'registration_cap',
             'payment_required',
             'price',
+            'days_price_covers',
             'include_tax',
             'tax_rate',
             'start_dt',
@@ -1453,6 +1510,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
                     'registration_cap',
                     'payment_required',
                     'price',
+                    'days_price_covers',
                     'include_tax',
                     'tax_rate',
                     'start_dt',
@@ -1839,6 +1897,8 @@ IS_TABLE_CHOICES = (
                     ('0', _('Individual registration(s)')),
                     ('1', _('Table registration')),
                     )
+
+
 class RegistrationPreForm(forms.Form):
     is_table = forms.ChoiceField(
                     widget=forms.RadioSelect(),
@@ -1984,7 +2044,49 @@ class FreePassCheckForm(forms.Form):
     member_number = forms.CharField(max_length=50, required=False)
 
 
-class RegistrantForm(forms.Form):
+class ChildEventRegistrationForm(forms.Form):
+    """
+    Form for child event registration
+    """
+    def __init__(self, registrant, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Set the initial values. Add a new control for each session.
+        # A session is determined by date and time of the sub-event.
+        sub_event_datetimes = registrant.sub_event_datetimes
+        upcoming_child_events = registrant.registration.event.child_events.filter(
+            start_dt__date__gt=datetime.now().date())
+        for index, start_dt in enumerate(sub_event_datetimes.keys()):
+            child_events = upcoming_child_events.filter(start_dt=start_dt)
+            choices = [(event.pk, event.title) for event in child_events if not event.at_capacity]
+
+            # Check if registrant already has selection. If so, make sure it's in choices
+            selection = None
+            current_child_event = registrant.child_events.filter(
+                child_event__start_dt=start_dt).first()
+            if current_child_event:
+                selection = (current_child_event.child_event.pk, current_child_event.child_event.title)
+                if selection and selection not in choices:
+                    choices.append(selection)
+
+            if not choices:
+                continue
+
+            choices.append((None, "Not attending"))
+            self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'] = forms.ChoiceField(
+                choices=choices,
+                widget=forms.RadioSelect,
+                required=False,
+                label=f'{start_dt.time().strftime("%I:%M %p")} - {sub_event_datetimes[start_dt].time().strftime("%I:%M %p")}',
+                help_text=f'{start_dt.date()}'
+            )
+
+            # Load current value (if there is one) to allow editing
+            if selection:
+                self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'].initial = selection
+
+
+class RegistrantForm(AttendanceDatesMixin, forms.Form):
     """
     Registrant form.
     """
@@ -2075,6 +2177,8 @@ class RegistrantForm(forms.Form):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
             self.fields['pricing'].required=True
+
+        self.add_attendance_dates()
 
         # member id
         if hasattr(self.event, 'has_member_price') and \

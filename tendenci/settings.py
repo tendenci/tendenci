@@ -189,7 +189,8 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_email',
     'django_otp.plugins.otp_static',
     'two_factor',
-    'two_factor.plugins.email', 
+    'two_factor.plugins.email',
+    'qr_code',
 
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',
@@ -687,6 +688,10 @@ TINYMCE_DEFAULT_CONFIG = {
                                 style|title|width|html|head|title|meta|body|style]"
 }
 
+# ---------------------------------------------------------------------------- #
+# Enable/Disable Features
+# ---------------------------------------------------------------------------- #
+USE_BADGES=False
 
 # ---------------------------------------------------------------------------- #
 # Payment Gateways
