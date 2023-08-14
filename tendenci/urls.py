@@ -133,6 +133,7 @@ urlpatterns += [
 
     re_path(r'^explorer/', include('explorer.urls')),
     re_path(r'^explorer/', include('tendenci.apps.explorer_extensions.urls')),
+    path('qr_code/', include('qr_code.urls', namespace="qr_code")),
 ]
 
 if not settings.USE_S3_STORAGE:
