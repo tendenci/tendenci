@@ -3878,6 +3878,9 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
     """
     Check in a registrant (To be used with QR code scan).
     """
+    if not has_perm(request.user, 'events.view_registrant'):
+        raise Http403
+
     registrant = get_object_or_404(Registrant, pk=registrant_id)
     error_message = None
     event = registrant.registration.event
