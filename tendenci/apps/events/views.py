@@ -96,6 +96,7 @@ from tendenci.apps.events.forms import (
     EventCreditForm,
     Reg8nEditForm,
     ChildEventRegistrationForm,
+    EventCheckInForm,
     PlaceForm,
     SpeakerBaseFormSet,
     SpeakerForm,
@@ -3871,6 +3872,58 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         'total_checked_in': total_checked_in})
 
 
+@is_enabled('events')
+@login_required
+def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin.html'):
+    """
+    Check in a registrant (To be used with QR code scan).
+    """
+    if not has_perm(request.user, 'events.view_registrant'):
+        raise Http403
+
+    registrant = get_object_or_404(Registrant, pk=registrant_id)
+    error_message = None
+    event = registrant.registration.event
+
+    # If not yet checked into parent event, check in.
+    # This also applies to single meeting events.
+    check_in = not error_message and not registrant.checked_in
+
+    # If this event doesn't have child events,
+    # or nested events is not enabled and the
+    # registrant is already checked in, check out.
+    check_out = registrant.checked_in and registrant.check_out_enabled
+
+    if check_in or check_out:
+        try:
+            registrant.check_in_or_out(check_in)
+        except Exception as e:
+            error_message = e.args[0]
+            messages.add_message(request, messages.ERROR, error_message)
+
+    form = None
+    if event.nested_events_enabled and registrant.child_events_available_for_check_in.exists():
+        form = EventCheckInForm(registrant=registrant)
+
+    confirm_session_check_in = None
+    if request.POST:
+        update_form = EventCheckInForm(registrant, request.POST)
+        if update_form.is_valid():
+            child_event = update_form.cleaned_data.get('event')
+            child_event.checked_in = True
+            child_event.checked_in_dt = datetime.now()
+            child_event.save()
+            form = None
+            confirm_session_check_in = child_event.child_event.title
+
+    return render_to_resp(request=request, template_name=template_name, context={
+        'registrant': registrant,
+        'parent_event': event,
+        'error': error_message,
+        'form': form,
+        'confirm_session_check_in': confirm_session_check_in
+    })
+
 @csrf_exempt
 @login_required
 def registrant_check_in(request):
@@ -3880,11 +3933,12 @@ def registrant_check_in(request):
     response_d = {'error': True}
     if request.method == 'POST':
         registrant_id = request.POST.get('id', None)
-        action = request.POST.get('action', None)
-        if registrant_id and action:
+        checked_in = request.POST.get('checked_in', None)
+        checked_out = request.POST.get('checked_out', None)
+        if registrant_id:
             [registrant] = Registrant.objects.filter(id=registrant_id)[:1] or [None]
             if registrant:
-                if action == 'checked_in':
+                if checked_in == 'true':
                     if not registrant.checked_in:
                         registrant.checked_in = True
                         registrant.checked_in_dt = datetime.now()
@@ -3892,11 +3946,26 @@ def registrant_check_in(request):
                     response_d['checked_in_dt'] = registrant.checked_in_dt
                     if isinstance(response_d['checked_in_dt'], datetime):
                         response_d['checked_in_dt'] = response_d['checked_in_dt'].strftime('%m/%d %I:%M%p')
-                elif action == 'not_checked_in':
+                elif checked_in == 'false':
                     if registrant.checked_in:
                         registrant.checked_in = False
                         registrant.save()
                     response_d['checked_in_dt'] = ''
+
+                if checked_out == 'true':
+                    if registrant.checked_in and not registrant.checked_out:
+                        registrant.checked_out = True
+                        registrant.checked_out_dt = datetime.now()
+                        registrant.save()
+                    response_d['checked_out_dt'] = registrant.checked_out_dt
+                    if isinstance(response_d['checked_out_dt'], datetime):
+                        response_d['checked_out_dt'] = response_d['checked_out_dt'].strftime('%m/%d %I:%M%p')
+                elif checked_out == 'false':
+                    if registrant.checked_out:
+                        registrant.checked_out = False
+                        registrant.save()
+                    response_d['checked_out_dt'] = ''
+
                 response_d['error'] = False
 
     return HttpResponse(json.dumps(response_d), content_type="text/plain")
