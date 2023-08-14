@@ -4066,6 +4066,68 @@ def registrant_badge(request, registrant_id=0, template_name='events/badges.html
 
 
 @is_enabled('events')
+@login_required
+def sample_certificate(request, event_id=0, template_name='events/registrants/certificate-symposium.html'):
+    """Sample certificate for Event"""
+    event = get_object_or_404(Event, pk=event_id)
+
+    if not request.user.is_superuser or not has_perm(request.user,'events.view_event', event):
+        raise Http403
+
+    credits_by_sub_events = {datetime.now().date().strftime('%B %d, %Y'): [{
+        'event_code': event.event_code,
+        'title': event.title,
+        'credits': event.possible_cpe_credits,
+        'irs_credits': 5.0,
+        'alternate_ceu': '123423423487'
+    }]}
+
+    registrant = {
+        'event': event,
+        'first_name': get_setting('site', 'global', 'admincontactname') + ' Sample Certificate',
+        'license_number': 123456789,
+        'license_state': 'TX',
+        'ptin': 987654321,
+        'event_dates_display': datetime.now().date().strftime('%b %d, %Y'),
+        'possible_cpe_credits': event.possible_cpe_credits,
+        'credits_earned': event.possible_cpe_credits,
+        'irs_credits_earned': 5.0,
+        'credits_by_sub_event': credits_by_sub_events,
+        'possible_credits_by_code': event.possible_credits_by_code,
+        'credits_earned_by_code': event.possible_credits_by_code
+    }
+    if not event.has_child_events:
+        template_name = 'events/registrants/certificate-single-event.html'
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+            'registrant': registrant,
+            'site_name': get_setting('site', 'global', 'sitedisplayname'),
+            'address': get_setting('site', 'global', 'sitemailingaddress'),
+            'phone': get_setting('site', 'global', 'sitephonenumber'),
+        })
+
+@is_enabled('events')
+@login_required
+def registrant_certificate(request, registrant_id=0, template_name='events/registrants/certificate-symposium.html'):
+    registrant = get_object_or_404(Registrant, pk=registrant_id)
+
+    if not has_perm(request.user,'registrants.view_registrant', registrant):
+        raise Http403
+
+    if not registrant.event.has_child_events:
+        template_name = 'events/registrants/certificate-single-event.html'
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+            'registrant': registrant,
+            'site_name': get_setting('site', 'global', 'sitedisplayname'),
+            'address': get_setting('site', 'global', 'sitemailingaddress'),
+            'phone': get_setting('site', 'global', 'sitephonenumber'),
+        })
+
+
+@is_enabled('events')
 def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     template_name='events/reg8n/register-confirm.html'):
     """
