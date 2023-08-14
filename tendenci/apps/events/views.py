@@ -3990,7 +3990,11 @@ def registrant_details(request, id=0, hash='', template_name='events/registrants
 def event_badges(request, event_id=0, template_name='events/badges.html'):
     event = get_object_or_404(Event, pk=event_id)
 
-    if not has_perm(request.user,'events.view_event', event) and settings.USE_BADGES:
+    if not settings.USE_BADGES:
+        raise Http404
+        
+    if not (has_perm(request.user, 'events.view_registrant') or \
+            has_perm(request.user,'events.change_event', event)):
         raise Http403
 
     registrations = event.registration_set.all()
@@ -4024,7 +4028,10 @@ def event_badges(request, event_id=0, template_name='events/badges.html'):
 def registrant_badge(request, registrant_id=0, template_name='events/badges.html'):
     registrant = get_object_or_404(Registrant, pk=registrant_id)
 
-    if not has_perm(request.user,'registrants.view_registrant', registrant) and settings.USE_BADGES:
+    if not settings.USE_BADGES:
+        raise Http404
+
+    if not has_perm(request.user,'registrants.view_registrant', registrant):
         if registrant.user != request.user:
             raise Http403
 
