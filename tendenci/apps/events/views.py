@@ -4025,7 +4025,8 @@ def registrant_badge(request, registrant_id=0, template_name='events/badges.html
     registrant = get_object_or_404(Registrant, pk=registrant_id)
 
     if not has_perm(request.user,'registrants.view_registrant', registrant) and settings.USE_BADGES:
-        raise Http403
+        if registrant.user != request.user:
+            raise Http403
 
 
     registrants = [
