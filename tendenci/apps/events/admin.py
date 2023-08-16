@@ -344,7 +344,7 @@ class RegistrantCreditsEventFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         events = []
-        events_pk = RegistrantCredits.objects.all().values_list('event_credit__event', flat=True)
+        events_pk = RegistrantCredits.objects.all().values_list('event', flat=True)
 
         for event in Event.objects.filter(pk__in=events_pk).order_by('-start_dt'):
             events.append((str(event.id), str(event)))
@@ -352,7 +352,7 @@ class RegistrantCreditsEventFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(event_credit__event__id__exact=self.value())
+            return queryset.filter(event__id__exact=self.value())
         else:
             return queryset
 
@@ -360,8 +360,8 @@ class RegistrantCreditsEventFilter(admin.SimpleListFilter):
 class RegistrantCreditsAdmin(admin.ModelAdmin):
     list_display = ('id', 'registrant', 'event', 'credit_name', 'credits', 'released')
     list_editable = ('credits', 'released')
-    search_fields = ('event_credit__event__title', )
-    readonly_fields = ('registrant', 'event_credit')
+    search_fields = ('event__title', )
+    readonly_fields = ('registrant', 'event_credit', 'event')
     list_filter = ('released', RegistrantCreditsEventFilter)
     actions = ["release"]
 

@@ -1651,6 +1651,8 @@ class RegistrantCredits(models.Model):
         default=False,
         help_text=_("Indicates credits can be displayed on a certificate.")
     )
+    event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    credit_dt = models.DateTimeField(db_index=True)
 
     class Meta:
         verbose_name_plural = _("Registrant Credits")
@@ -1663,10 +1665,6 @@ class RegistrantCredits(models.Model):
         if self.released:
             raise Exception(_("Deleting released credits is not allowed."))
         super().delete(*args, **kwargs)
-
-    @property
-    def event(self):
-        return self.event_credit.event.first()
 
     @property
     def credit_name(self):
@@ -2006,9 +2004,8 @@ class Event(TendenciBaseModel):
         """Return events that have credits assigned"""
         events = self.child_events if self.nested_events_enabled and self.child_events else [self]
 
-        pks = RegistrantCredits.objects.filter(
-            event_credit__event__in=events).order_by(
-            'event_credit__event').distinct().values_list('event_credit__event', flat=True)
+        pks = RegistrantCredits.objects.filter(event__in=events).order_by(
+            'event').distinct().values_list('event', flat=True)
         return Event.objects.filter(pk__in=pks)
 
     @property
@@ -2046,9 +2043,12 @@ class Event(TendenciBaseModel):
         Assign credits from Event to Registrant.
         Credits default to un-released, so they can be overridden.
         """
+        event = registrant.event
         for credit in self.eventcredit_set.all():
            RegistrantCredits.objects.get_or_create(
                registrant_id=registrant.pk,
+               event=event,
+               credit_dt=event.start_dt,
                event_credit_id=credit.pk,
                credits=credit.credit_count,
            )
