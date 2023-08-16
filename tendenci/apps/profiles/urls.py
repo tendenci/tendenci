@@ -20,6 +20,9 @@ urlpatterns = [
     re_path(r'^%s/edit_perms/(?P<id>\d+)/$' % urlpath, views.edit_user_perms, name="profile.edit_perms"),
     re_path(r'^%s/delete/(?P<id>\d+)/$' % urlpath, views.delete, name="profile.delete"),
 
+    # Credits
+    re_path(r'^%s/(?P<username>[+-.\w\d@\s]+)/credits/$' % urlpath, views.credits, name="profile.credits"),
+
     # export profiles
     re_path(r"^%s/export/$" % urlpath, views.profile_export, name="profile.export"),
     re_path(r"^%s/export/status/(?P<identifier>\d+)/$" % urlpath,
