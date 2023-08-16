@@ -73,7 +73,6 @@
       margin-top: 10px;
       text-align: center;
   }
-
   .certificate .row.credits.small-font {      
       width: 100%;
       text-align: left;
@@ -87,6 +86,11 @@
       display: flex;
       align-items: center;
       justify-content: space-evenly;
+  }
+  .certificate .row.address {
+      text-align: center;
+      margin-top: 120px;
+      font-size: .9em;
   }
   .certificate .row.staff img {
       height: 2in;
@@ -232,7 +236,11 @@
           </div>
          {% endif %}
       {% endfor %}
-    </div>
+  </div>
+  <div class="row address">
+    {{ registrant.event.group_location.location_name }} <br />
+    {{ registrant.event.group_location.address }} <br />
+    {{ registrant.event.group_location.city }}, {{ registrant.event.group_location.state }} {{ registrant.event.group_location.zipcode }}
   </div>
 </div>
 {% endblock %}

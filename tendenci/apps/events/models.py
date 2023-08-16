@@ -1317,7 +1317,7 @@ class Registrant(models.Model):
     def credits_earned_by_code(self):
         """Credits earned by code"""
         credits = dict()
-        for credit in self.credits_earned:
+        for credit in self.released_cpe_credits:
             code = credit.event_credit.ceu_subcategory.code
             if code not in credits:
                 credits[code] = 0
@@ -2174,6 +2174,11 @@ class Event(TendenciBaseModel):
             credits[code] += credit.credit_count
 
         return '; '.join([f'{key}:{value}' for key, value in credits.items()])
+
+    @property
+    def group_location(self):
+        """Location tied to group"""
+        return self.groups.first().entity.locations_location_entity.first()
 
     @property
     def can_configure_credits(self):
