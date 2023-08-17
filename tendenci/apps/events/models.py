@@ -209,6 +209,20 @@ class EventCredit(models.Model):
                 credit.save()
 
 
+class SignatureImage(models.Model):
+    """Images to use as signatures"""
+    image = models.ImageField(
+        _('Image'),
+        upload_to=settings.PHOTOS_DIR + "/signatures",
+        help_text=_("Image of person's signature")
+    )
+    name = models.CharField(_('Name'), max_length=255,
+                            help_text=_('Name of person to whom signature belongs.'))
+
+    def __str__(self):
+        return self.name
+
+
 class EventStaff(models.Model):
     """Staff supporting Event"""
     event = models.ManyToManyField('Event')
@@ -216,8 +230,21 @@ class EventStaff(models.Model):
     role = models.CharField(_('Role'), max_length=255)
     include_on_certificate = models.BooleanField(
         _('Include on Certificate'),
-        default=True,
+        default=False,
         help_text=_("Check to display name and role on certificate")
+    )
+    signature_image = models.ForeignKey(
+        SignatureImage,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text=_("Optional image of staff member's signature"),
+    )
+    use_signature_on_certificate = models.BooleanField(
+        _('Use Signature Image on Certificate'),
+        default=False,
+        help_text=_('Enabling will display signature image on certificate. ' \
+                    'If not enabled, the printed name will be used. (If using certificates)'),
     )
 
 
@@ -1332,6 +1359,9 @@ class Registrant(models.Model):
         except:
             raise Exception(error_message)
 
+        if check_in_or_out == 'checked_out' and not self.event.eventcredit_set.exists():
+            self.event.assign_credits(self)
+
     def get_name(self):
         if self.custom_reg_form_entry:
             return self.custom_reg_form_entry.get_name()
@@ -1605,6 +1635,40 @@ class RegistrantChildEvent(models.Model):
         event = self.child_event
         return f'{event.title} {event.start_dt.time().strftime("%I:%M %p")} - ' \
                f'{event.end_dt.time().strftime("%I:%M %p")}'
+
+
+class RegistrantCredits(models.Model):
+    """Credits a registrant is rewarded"""
+    registrant = models.ForeignKey(Registrant, on_delete=models.CASCADE)
+    event_credit = models.ForeignKey(EventCredit, blank=True, null=True, on_delete=models.SET_NULL)
+    credits = models.DecimalField(
+        max_digits=5,
+        decimal_places=1,
+        default=0,
+        help_text=_("Defaults to value set in EventCredit, but can be overridden.")
+    )
+    released = models.BooleanField(
+        default=False,
+        help_text=_("Indicates credits can be displayed on a certificate.")
+    )
+    event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    credit_dt = models.DateTimeField(db_index=True)
+
+    class Meta:
+        verbose_name_plural = _("Registrant Credits")
+
+    def delete(self, *args, **kwargs):
+        """
+        Don't allow deleting credits that have been released
+        NOTE: Bulk delete will ignore this code
+        """
+        if self.released:
+            raise Exception(_("Deleting released credits is not allowed."))
+        super().delete(*args, **kwargs)
+
+    @property
+    def credit_name(self):
+        return self.event_credit.ceu_subcategory.name
 
 
 class Payment(models.Model):
@@ -1936,6 +2000,15 @@ class Event(TendenciBaseModel):
         return Event.objects.filter(parent_id=self.pk).order_by('start_dt')
 
     @property
+    def events_with_credits(self):
+        """Return events that have credits assigned"""
+        events = self.child_events if self.nested_events_enabled and self.child_events else [self]
+
+        pks = RegistrantCredits.objects.filter(event__in=events).order_by(
+            'event').distinct().values_list('event', flat=True)
+        return Event.objects.filter(pk__in=pks)
+
+    @property
     def can_configure_credits(self):
         """Indicates if credits can be configured on this Event"""
         return self.use_credits_enabled and not self.has_child_events
@@ -1965,6 +2038,21 @@ class Event(TendenciBaseModel):
         """
         return EventMeta().get_meta(self, name)
 
+    def assign_credits(self, registrant):
+        """
+        Assign credits from Event to Registrant.
+        Credits default to un-released, so they can be overridden.
+        """
+        event = registrant.event
+        for credit in self.eventcredit_set.all():
+           RegistrantCredits.objects.get_or_create(
+               registrant_id=registrant.pk,
+               event=event,
+               credit_dt=event.start_dt,
+               event_credit_id=credit.pk,
+               credits=credit.credit_count,
+           )
+
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
 
@@ -1979,6 +2067,10 @@ class Event(TendenciBaseModel):
 
     def get_absolute_edit_url(self):
         return reverse('event.edit', args=[self.pk])
+
+    def review_credits_url(self):
+        site_url = get_setting('site', 'global', 'siteurl')
+        return f'{site_url}/admin/events/registrantcredits/?q={self.title}'
 
     def get_registration_url(self):
         """ This is used to include a sign up url in the event.

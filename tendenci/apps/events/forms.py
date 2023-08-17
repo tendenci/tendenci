@@ -740,12 +740,16 @@ class StaffForm(FormControlWidgetMixin, BetterModelForm):
         fields = (
             'name',
             'role',
+            'signature_image',
+            'use_signature_on_certificate',
             'include_on_certificate',
         )
 
         fieldsets = [(_('Staff'), {
           'fields': ['name',
                      'role',
+                     'signature_image',
+                     'use_signature_on_certificate',
                      'include_on_certificate',
                     ],
           'legend': '',

@@ -45,6 +45,7 @@ urlpatterns = [
     re_path(r'^%s/regconf/edit/(?P<id>\d+)/$' % urlpath, views.regconf_edit, name="event.regconf_edit"),
     re_path(r'^%s/pricing/edit/(?P<id>\d+)/$' % urlpath, views.pricing_edit, name="event.pricing_edit"),
     re_path(r'^%s/sub-events/edit/(?P<id>\d+)/$' % urlpath, views.display_child_events, name="event.display_child_events"),
+    re_path(r'^%s/credits/review/(?P<id>\d+)/$' % urlpath, views.review_credits, name="event.review_credits"),
 
     re_path(r'^%s/copy/(?P<id>\d+)/$' % urlpath, views.copy, name="event.copy"),
     re_path(r'^%s/add-from-template/(?P<id>\d+)/$' % urlpath, views.add_from_template, name="event.add_from_template"),

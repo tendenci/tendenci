@@ -582,18 +582,34 @@ def print_view(request, id, template_name="events/print-view.html"):
     else:
         raise Http403
 
+
 @is_enabled('events')
 @login_required
 def display_child_events(request, id, template_name="events/edit.html"):
     event = get_object_or_404(Event.objects.get_all(), pk=id)
+    redirect = 'event.review_credits' if event.use_credits_enabled else 'event.pricing_edit'
 
+    if request.method == "POST":
+        if "_save" in request.POST:
+            return HttpResponseRedirect(reverse('event', args=[event.pk]))
+        return HttpResponseRedirect(reverse(redirect, args=[event.pk]))
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'multi_event_forms': list(), 'label': 'children'})
+
+
+@is_enabled('events')
+@login_required
+def review_credits(request, id, template_name="events/edit.html"):
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
     if request.method == "POST":
         if "_save" in request.POST:
             return HttpResponseRedirect(reverse('event', args=[event.pk]))
         return HttpResponseRedirect(reverse('event.pricing_edit', args=[event.pk]))
 
     return render_to_resp(request=request, template_name=template_name,
-        context={'event': event, 'multi_event_forms': list(), 'label': 'children'})
+        context={'event': event, 'multi_event_forms': list(), 'label': 'review_credits'})
+
 
 @is_enabled('events')
 @login_required
@@ -3913,6 +3929,7 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
             child_event.checked_in = True
             child_event.checked_in_dt = datetime.now()
             child_event.save()
+            child_event.child_event.assign_credits(child_event.registrant)
             form = None
             confirm_session_check_in = child_event.child_event.title
 
