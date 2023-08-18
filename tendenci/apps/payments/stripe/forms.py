@@ -1,7 +1,21 @@
 from django import forms
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.entities.models import Entity
+from .models import StripeAccount
 #from form_utils.forms import BetterModelForm
+
+
+class StripeAccountForm(forms.ModelForm):
+    entity = forms.ModelChoiceField(queryset=Entity.objects.order_by('entity_name'))
+
+    class Meta:
+        model = StripeAccount
+        fields = ('stripe_user_id', 'scope',
+                  'account_name', 'email', 
+                  'entity',
+                'default_currency',
+                'status_detail')
 
 
 class StripeCardForm(forms.Form):
