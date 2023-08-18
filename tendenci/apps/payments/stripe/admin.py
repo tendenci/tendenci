@@ -6,7 +6,9 @@ from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from .models import StripeAccount, Charge
+from .forms import StripeAccountForm
 
+       
 class StripeAccountAdmin(TendenciBaseModelAdmin):
     list_display = ('stripe_user_id', 'account_name',
                     'show_entity', 
@@ -21,6 +23,7 @@ class StripeAccountAdmin(TendenciBaseModelAdmin):
             'default_currency',
             'status_detail')
     ordering = ['-update_dt']
+    form = StripeAccountForm
 
     def add_view(self, request, form_url='', extra_context=None):
         return HttpResponseRedirect(reverse('stripe_connect.authorize'))
