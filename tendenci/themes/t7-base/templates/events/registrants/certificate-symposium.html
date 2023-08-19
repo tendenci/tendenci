@@ -202,7 +202,9 @@
       </div>
       <div class="right">
         <div class="logo align-right">
+          {% if registrant.event.sponsor and registrant.event.sponsor.image %}
           <img src="{% image_url registrant.event.sponsor.image %}" title="{{ registrant.event.organizer.name }}" alt="{{ registrant.event.sponsor.name }}"/>
+		  {% endif %}
         </div>
         <div class="formatted-text align-right">
           {% if registrant.event.organizer %}
