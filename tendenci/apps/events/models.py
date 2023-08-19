@@ -1296,12 +1296,12 @@ class Registrant(models.Model):
     @property
     def released_cpe_credits(self):
         """All released CPE credits (non IRS)"""
-        return self.released_credits.exclude(event_credit__ceu_subcategory__code="IRS CE")
+        return self.released_credits.exclude(event_credit__ceu_subcategory__code="CE")
 
     @property
     def released_irs_credits(self):
         """All released IRS credits"""
-        return self.released_credits.filter(event_credit__ceu_subcategory__code="IRS CE")
+        return self.released_credits.filter(event_credit__ceu_subcategory__code="CE")
 
     @property
     def credits_earned(self):
@@ -2157,7 +2157,7 @@ class Event(TendenciBaseModel):
     @property
     def possible_cpe_credits_queryset(self):
         """Possible CPE credits (queryset)"""
-        return self.eventcredit_set.exclude(ceu_subcategory__code="IRS CE")
+        return self.eventcredit_set.exclude(ceu_subcategory__code="CE")
 
     @property
     def possible_cpe_credits(self):
