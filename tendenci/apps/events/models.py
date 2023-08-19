@@ -1339,8 +1339,9 @@ class Registrant(models.Model):
 
     def get_alternate_ceu(self, event):
         """Alternate CEU for event"""
-        credit = RegistrantCredits.objects.filter(
-            event_credit__alternate_ceu_id__isnull=False
+        credit = RegistrantCredits.objects.exclude(
+            Q(event_credit__alternate_ceu_id='') |
+            Q(event_credit__alternate_ceu_id__isnull=True)
         ).first()
         if credit:
             return credit.event_credit.alternate_ceu_id
