@@ -1351,7 +1351,7 @@ class Registrant(models.Model):
     def credits_by_sub_event(self):
         """Credits by sub-event"""
         credits = dict()
-        for credit in RegistrantCredits.objects.all().distinct('event_credit__event'):
+        for credit in RegistrantCredits.objects.filter(registrant=self).distinct('event_credit__event'):
             event = credit.event
             date = event.start_dt.date().strftime('%B %d, %Y')
 
