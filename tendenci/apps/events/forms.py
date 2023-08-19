@@ -853,6 +853,7 @@ class EventForm(TendenciBaseForm):
             'groups',
             'external_url',
             'photo_upload',
+            'certificate_image',
             'tags',
             'allow_anonymous_view',
             'user_perms',
@@ -896,6 +897,7 @@ class EventForm(TendenciBaseForm):
                                   'groups',
                                   'external_url',
                                   'photo_upload',
+                                  'certificate_image',
                                   'tags',
                                  ],
                       'legend': ''

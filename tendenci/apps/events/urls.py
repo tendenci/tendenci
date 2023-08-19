@@ -120,6 +120,12 @@ urlpatterns = [
     # registrant badge
     re_path(r'^%s/registrants/(?P<registrant_id>\d+)/badge/$' % urlpath, views.registrant_badge, name='registrant.badge'),
 
+    # registrant certificate
+    re_path(r'^%s/registrants/(?P<registrant_id>\d+)/certificate/$' % urlpath, views.registrant_certificate, name='registrant.certificate'),
+
+    # sample certificate
+    re_path(r'^%s/(?P<event_id>\d+)/certificate/$' % urlpath, views.sample_certificate, name='event.certificate'),
+
     # registrants (search/view); admin-only
     re_path(r'^%s/registrants/search/$' % urlpath, views.global_registrant_search, name="event.global.registrant.search"),
     re_path(r'^%s/(?P<event_id>\d+)/registrants/search/$' % urlpath, views.registrant_search, name="event.registrant.search"),

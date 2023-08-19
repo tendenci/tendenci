@@ -18,7 +18,8 @@ from django.forms import BaseInlineFormSet
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
                                          CustomRegFormEntry, CustomRegFieldEntry, Event,
-                                         CEUCategory, SignatureImage, RegistrantCredits)
+                                         CEUCategory, SignatureImage, CertificateImage,
+                                         RegistrantCredits)
 from tendenci.apps.events.forms import (CustomRegFormAdminForm, CustomRegFormForField, TypeForm,
                                         StandardRegAdminForm)
 from tendenci.apps.event_logs.models import EventLog
@@ -337,6 +338,10 @@ class SignatureImageAdmin(admin.ModelAdmin):
     list_display = ('id', 'name',)
 
 
+class CertificateImageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+
+
 class RegistrantCreditsEventFilter(admin.SimpleListFilter):
     """Filter Events that have credits assigned to registrants"""
     title = _('Event')
@@ -392,5 +397,6 @@ if get_setting('module', 'events', 'use_credits'):
 
 admin.site.register(RegistrantCredits, RegistrantCreditsAdmin)
 admin.site.register(SignatureImage, SignatureImageAdmin)
+admin.site.register(CertificateImage, CertificateImageAdmin)
 admin.site.register(StandardRegForm, StandardRegFormAdmin)
 admin.site.register(Event, EventAdmin)

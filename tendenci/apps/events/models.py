@@ -209,7 +209,13 @@ class EventCredit(models.Model):
                 credit.save()
 
 
-class SignatureImage(models.Model):
+class ImageMixin:
+    @property
+    def url(self):
+        site_url = get_setting('site', 'global', 'siteurl')
+        return f'{site_url}{self.image.url}'
+
+class SignatureImage(ImageMixin, models.Model):
     """Images to use as signatures"""
     image = models.ImageField(
         _('Image'),
@@ -218,6 +224,20 @@ class SignatureImage(models.Model):
     )
     name = models.CharField(_('Name'), max_length=255,
                             help_text=_('Name of person to whom signature belongs.'))
+
+    def __str__(self):
+        return self.name
+
+
+class CertificateImage(ImageMixin, models.Model):
+    """Additional image to display on certificate"""
+    image = models.ImageField(
+        _('Image'),
+        upload_to=settings.PHOTOS_DIR + "/certificates",
+        help_text=_("Additional image to display on certificate")
+    )
+    name = models.CharField(_('Name'), max_length=255,
+                            help_text=_('Enter name to easily identify image'))
 
     def __str__(self):
         return self.name
@@ -1210,6 +1230,12 @@ class Registrant(models.Model):
         return self.pricing or self.registration.reg_conf_price
 
     @property
+    def event_dates_display(self):
+        if self.attendance_dates:
+            return  ', '.join([parse(x).date().strftime('%b %d, %Y') for x in self.attendance_dates])
+        return ', '.join([x.strftime('%b %d, %Y') for x in self.event.days])
+
+    @property
     def upcoming_event_days(self):
         """Number of days upcoming covered by pricing"""
         if self.pricing and self.pricing.days_price_covers:
@@ -1261,6 +1287,123 @@ class Registrant(models.Model):
                 datetimes[event.start_dt] = max(datetimes[event.start_dt], event.end_dt)
 
         return datetimes
+
+    @property
+    def released_credits(self):
+        """All released credits for registrant"""
+        return self.registrantcredits_set.filter(released=True)
+
+    @property
+    def released_cpe_credits(self):
+        """All released CPE credits (non IRS)"""
+        return self.released_credits.exclude(event_credit__ceu_subcategory__code="IRS CE")
+
+    @property
+    def released_irs_credits(self):
+        """All released IRS credits"""
+        return self.released_credits.filter(event_credit__ceu_subcategory__code="IRS CE")
+
+    @property
+    def credits_earned(self):
+        """Total credits earned (non IRS)"""
+        return self.released_cpe_credits.aggregate(Sum('credits')).get('credits__sum') or 0
+
+    @property
+    def irs_credits_earned(self):
+        """total IRS credits earned"""
+        return self.released_irs_credits.aggregate(Sum('credits')).get('credits__sum') or 0
+
+    @property
+    def credits_earned_by_code(self):
+        """Credits earned by code"""
+        credits = dict()
+        for credit in self.released_cpe_credits:
+            code = credit.event_credit.ceu_subcategory.code
+            if code not in credits:
+                credits[code] = 0
+            credits[code] += credit.credits
+
+        return '; '.join([f'{key}:{value}' for key, value in credits.items()])
+
+    def get_cpe_credits_by_event(self, event):
+        """Total CPE credits by event"""
+        return self.released_cpe_credits.filter(
+            event_credit__event=event,
+        ).aggregate(Sum('credits')).get('credits__sum') or 0
+
+    def get_irs_credits_by_event(self, event):
+        """Total IRS credits by event"""
+        return self.released_irs_credits.filter(
+            event_credit__event=event,
+        ).aggregate(Sum('credits')).get('credits__sum') or 0
+
+    def get_alternate_ceu(self, event):
+        """Alternate CEU for event"""
+        credit = RegistrantCredits.objects.filter(
+            event_credit__alternate_ceu_id__isnull=False
+        ).first()
+        if credit:
+            return credit.event_credit.alternate_ceu_id
+        return None
+
+    @property
+    def credits_by_sub_event(self):
+        """Credits by sub-event"""
+        credits = dict()
+        for credit in RegistrantCredits.objects.all().distinct('event_credit__event'):
+            event = credit.event
+            date = event.start_dt.date().strftime('%B %d, %Y')
+
+            cpe_credits = self.get_cpe_credits_by_event(event)
+            irs_credits = self.get_irs_credits_by_event(event)
+            if not cpe_credits and not irs_credits:
+                continue
+
+            if date not in credits:
+                credits[date] = list()
+
+            credits[date].append({
+                'event_code': event.event_code,
+                'title': event.title,
+                'credits': cpe_credits,
+                'irs_credits': irs_credits,
+                'alternate_ceu': self.get_alternate_ceu(event),
+            })
+        return credits
+
+    @property
+    def membership(self):
+        """User's Membership record"""
+        if not self.user:
+            return None
+
+        return self.user.membershipdefault_set.first()
+
+    @property
+    def ptin(self):
+        """PTIN entered in registration (if applicable)"""
+        if not self.custom_reg_form_entry:
+            return None
+
+        if self.custom_reg_form_entry.field_entries.filter(field__label="PTIN").exists():
+            return self.custom_reg_form_entry.field_entries.filter(
+                field__label="PTIN").first().value
+
+    @property
+    def license_state(self):
+        """License State (if entered on membership)"""
+        if not self.membership:
+            return None
+
+        return self.membership.license_state
+
+    @property
+    def license_number(self):
+        """License Number (if entered on membership)"""
+        if not self.membership:
+            return None
+
+        return self.membership.license_number
 
     def register_child_events(self, child_event_pks):
         """Register for child event"""
@@ -1955,6 +2098,8 @@ class Event(TendenciBaseModel):
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey(EventPhoto,
         help_text=_('Photo that represents this event.'), null=True, blank=True, on_delete=models.SET_NULL)
+    certificate_image = models.ForeignKey(CertificateImage,
+        help_text=_('Optional photo to display on certificate.'), null=True, blank=True, on_delete=models.SET_NULL)
     groups = models.ManyToManyField(Group, default=get_default_group, related_name='events')
     tags = TagField(blank=True)
     priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the event calendar day list and single day list. They will be featured with a star icon on the monthly calendar and the list view."))
@@ -2009,6 +2154,33 @@ class Event(TendenciBaseModel):
         return Event.objects.filter(pk__in=pks)
 
     @property
+    def possible_cpe_credits_queryset(self):
+        """Possible CPE credits (queryset)"""
+        return self.eventcredit_set.exclude(ceu_subcategory__code="IRS CE")
+
+    @property
+    def possible_cpe_credits(self):
+        """Total possible CPE credits"""
+        return self.possible_cpe_credits_queryset.aggregate(Sum('credit_count')).get('credit_count__sum') or 0
+
+    @property
+    def possible_credits_by_code(self):
+        """Possible credits by code"""
+        credits = dict()
+        for credit in self.possible_cpe_credits_queryset:
+            code = credit.ceu_subcategory.code
+            if code not in credits:
+                credits[code] = 0
+            credits[code] += credit.credit_count
+
+        return '; '.join([f'{key}:{value}' for key, value in credits.items()])
+
+    @property
+    def group_location(self):
+        """Location tied to group"""
+        return self.groups.first().entity.locations_location_entity.first()
+
+    @property
     def can_configure_credits(self):
         """Indicates if credits can be configured on this Event"""
         return self.use_credits_enabled and not self.has_child_events
@@ -2029,6 +2201,16 @@ class Event(TendenciBaseModel):
         on the child event(s) if added.
         """
         return self.can_configure_credits and self.event_relationship == EventRelationship.PARENT
+
+    @property
+    def sponsor(self):
+        """Access Sponsor for this Event"""
+        return self.sponsor_set.first()
+
+    @property
+    def organizer(self):
+        """Access Organizer for this Event"""
+        return self.organizer_set.first()
 
     def get_meta(self, name):
         """
