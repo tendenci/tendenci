@@ -252,6 +252,29 @@ def index(request, username='', template_name="profiles/index.html"):
         })
 
 
+@login_required
+def credits(request, username, template_name="profiles/credits.html"):
+    """
+    Show profile of username passed.  If no username is passed
+    then redirect to username of person logged in.
+    """
+    user_this = get_object_or_404(User, username=username)
+
+    try:
+        profile = user_this.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create_profile(user=user_this)
+
+    if not profile.allow_view_by(request.user):
+        raise Http403
+
+    credits_grid, credits_categories = profile.credits_grid
+    return render_to_resp(
+        request=request,
+        template_name=template_name,
+        context={'credits_grid': credits_grid, 'credits_categories': credits_categories})
+
+
 def search(request, memberships_search=False, template_name="profiles/search.html"):
     # check if allow anonymous user search
     allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')

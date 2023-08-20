@@ -270,8 +270,9 @@
             
           </div>
           <!-- END INVOICE BTN -->
-          
-          
+          {% if profile.has_released_credits %}
+<h3><a href="{% url 'profile.credits' user_this.username %}">CEU Credits</a></h3>
+          {% endif %}
           <!-- MEMBERSHIPS -->
           {% if MODULE_MEMBERSHIPS_ENABLED %}
           

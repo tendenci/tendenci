@@ -1358,7 +1358,7 @@ class Registrant(models.Model):
             if event.id in events_visited:
                 continue
             events_visited.append(event.id)
-            
+
             date = event.start_dt.date().strftime('%B %d, %Y')
 
             cpe_credits = self.get_cpe_credits_by_event(event)
@@ -1374,6 +1374,7 @@ class Registrant(models.Model):
                 'title': event.title,
                 'credits': cpe_credits,
                 'irs_credits': irs_credits,
+
                 'alternate_ceu': self.get_irs_alternate_ceu(event),
             })
         events_visited = None

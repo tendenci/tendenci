@@ -187,6 +187,60 @@ class Profile(Person):
             self.save()
         return self.language
 
+    @property
+    def has_released_credits(self):
+        return self.released_credits.exists()
+
+    @property
+    def released_credits(self):
+        """All released credits for this user"""
+        from tendenci.apps.events.models import RegistrantCredits
+
+        return RegistrantCredits.objects.filter(
+            registrant__user=self.user, released=True).order_by('credit_dt')
+
+    @property
+    def credits_grid(self):
+        credits = dict()
+        credit_names_by_category = dict()
+        for credit in self.released_credits:
+            category = credit.event_credit.ceu_subcategory.parent.name
+            year = credit.credit_dt.year
+            if category not in credits:
+                credits[category] = dict()
+
+            if year not in credits[category]:
+                credits[category][year] = {'total': 0, 'events': dict()}
+
+            credit_name = credit.event_credit.ceu_subcategory.name
+            if category not in credit_names_by_category:
+                credit_names_by_category[category] = set()
+
+            if credit_name not in credit_names_by_category[category]:
+                for key in credits[category]:
+                    credits[category][key][credit_name] = 0
+            credit_names_by_category[category].add(credit_name)
+
+            credits[category][year]['total'] += credit.credits
+            if credit_name not in credits[category][year]:
+                credits[category][year][credit_name] = credit.credits
+            else:
+                credits[category][year][credit_name] += credit.credits
+
+            event = credit.event
+            if event.pk not in credits[category][year]['events']:
+                credits[category][year]['events'][event.pk] = {
+                    'start_dt': event.start_dt.strftime('%m-%d-%y'),
+                    'credits': 0,
+                    'type': category,
+                    'meeting_name': event.parent.title if event.parent else event.title,
+                    'registrant_id': credit.registrant.pk,
+                    'event': event.title if event.parent else None,
+                }
+            credits[category][year]['events'][event.pk]['credits'] += credit.credits
+
+        return credits, credit_names_by_category
+
     def first_name(self):
         return self.user.first_name
 
