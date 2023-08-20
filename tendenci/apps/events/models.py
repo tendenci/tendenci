@@ -1338,12 +1338,12 @@ class Registrant(models.Model):
             event_credit__event=event,
         ).aggregate(Sum('credits')).get('credits__sum') or 0
 
-    def get_alternate_ceu(self, event):
+    def get_irs_alternate_ceu(self, event):
         """Alternate CEU for event"""
         credit = RegistrantCredits.objects.filter(event=event).exclude(
             Q(event_credit__alternate_ceu_id='') |
             Q(event_credit__alternate_ceu_id__isnull=True)
-        ).first()
+        ).filter(event_credit__ceu_subcategory__parent__code="GOV").first()
         if credit:
             return credit.event_credit.alternate_ceu_id
         return ''
@@ -1374,7 +1374,7 @@ class Registrant(models.Model):
                 'title': event.title,
                 'credits': cpe_credits,
                 'irs_credits': irs_credits,
-                'alternate_ceu': self.get_alternate_ceu(event),
+                'alternate_ceu': self.get_irs_alternate_ceu(event),
             })
         events_visited = None
         return credits
