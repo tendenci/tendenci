@@ -203,7 +203,6 @@ class Profile(Person):
     def credits_grid(self):
         credits = dict()
         credit_names_by_category = dict()
-
         for credit in self.released_credits:
             category = credit.event_credit.ceu_subcategory.parent.name
             year = credit.credit_dt.year
@@ -223,7 +222,10 @@ class Profile(Person):
             credit_names_by_category[category].add(credit_name)
 
             credits[category][year]['total'] += credit.credits
-            credits[category][year][credit_name] += credit.credits
+            if credit_name not in credits[category][year]:
+                credits[category][year][credit_name] = credit.credits
+            else:
+                credits[category][year][credit_name] += credit.credits
 
             event = credit.event
             if event.pk not in credits[category][year]['events']:
