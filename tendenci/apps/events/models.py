@@ -1233,16 +1233,18 @@ class Registrant(models.Model):
     def events_days(self):
         days = set()
 
-        spans = self.event.date_spans()
+        for event in self.event.child_events.filter(start_dt__date__gte=self.event.start_dt.date(),
+                                                    end_dt__date__lte=self.event.end_dt.date()):
+            spans = event.date_spans()
 
-        for span in spans:
-            if span['same_date']:
-                days.add(datetime.date(span['start_dt']))
-            else:
-                date_range = self.event.date_range(
-                    span['start_dt'], span['end_dt'] + timedelta(days=1))
-                date_range = [datetime.date(x) for x in date_range]
-                days.update(date_range)
+            for span in spans:
+                if span['same_date']:
+                    days.add(datetime.date(span['start_dt']))
+                else:
+                    date_range = self.event.date_range(
+                        span['start_dt'], span['end_dt'] + timedelta(days=1))
+                    date_range = [datetime.date(x) for x in date_range]
+                    days.update(date_range)
     
         return sorted(days)
                 
