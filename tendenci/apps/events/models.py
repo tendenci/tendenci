@@ -1409,6 +1409,12 @@ class Registrant(models.Model):
     @property
     def ptin(self):
         """PTIN entered in registration (if applicable)"""
+        # first check user profile member_number_2
+        if self.user:
+            if hasattr(self.user, 'profile'): 
+                if self.user.profile.member_number_2:
+                    return self.user.profile.member_number_2
+
         if not self.custom_reg_form_entry:
             return None
 
