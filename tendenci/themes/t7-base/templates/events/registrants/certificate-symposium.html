@@ -11,7 +11,7 @@
       padding: 2px;
   }
   .certificate img {
-      height: 1in;
+      max-height: 1in;
   }
   .certificate .grid {
       width: 100%;
@@ -176,6 +176,13 @@
   .certificate.credits .col-90px {
       width: 93px;
   }
+  .certificate.credits .col-47px {
+      width: 47px;
+  }
+  .certificate.credits .col-166px {
+      width: 166px; 
+      text-align: left;
+  }
   
 </style>
 {% endblock %}
@@ -202,7 +209,9 @@
       </div>
       <div class="right">
         <div class="logo align-right">
-          <img src="{% image_url registrant.event.sponsor.image %}" title="{{ registrant.event.organizer.name }}" alt="{{ registrant.event.sponsor.name }}"/>
+          {% if registrant.event.organizer and registrant.event.organizer.image %}
+          <img src="{% image_url registrant.event.organizer.image %}" title="{{ registrant.event.organizer.name }}" alt="{{ registrant.event.organizer.name }}"/>
+		  {% endif %}
         </div>
         <div class="formatted-text align-right">
           {% if registrant.event.organizer %}
@@ -293,9 +302,9 @@
         <div class="col-100px">{{ event.event_code }}</div>
         <div class="col-md-12">{{ event.title }}</div>
         <div class="col-md-4">
-            <div class="col-90px">{{ event.credits }}</div>
-            <div class="col-100px">{{ event.alternate_ceu }}&nbsp;</div>
-            <div class="col-90px">{{ event.irs_credits }}</div>
+            <div class="col-47px">{{ event.credits }}</div>
+            <div class="col-166px">{{ event.alternate_ceu }}&nbsp;</div>
+            <div class="col-47px">{{ event.irs_credits }}</div>
         </div>
       </div>
     {% endfor %}
@@ -303,3 +312,4 @@
 </div>
 {% endif %}
 {% endblock %}
+

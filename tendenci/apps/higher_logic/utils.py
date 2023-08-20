@@ -98,11 +98,12 @@ class HigherLogicAPI:
             # chapter - unique identifier is: chapter-[id] (where [id] is the value of the chapter id field
             [chapter] = group.chapter_set.filter(status_detail='active', status=True)[:1] or [None]
             if chapter:
-                [officer] = chapter.officer_set.filter(user=user).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gt=now))[:1] or [None]
-                community_groups.append({"GroupId": f'chapter-{chapter.id}',
-                    "GroupName": chapter.title,
-                    "GroupType": "Chapter",
-                    "Role": officer and officer.position.title or ''})
+                pass
+                # [officer] = chapter.officer_set.filter(user=user).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gt=now))[:1] or [None]
+                # community_groups.append({"GroupId": f'chapter-{chapter.id}',
+                #     "GroupName": chapter.title,
+                #     "GroupType": "Chapter",
+                #     "Role": officer and officer.position.title or ''})
 
             else:
                 # committee - unique identifier is: committee-[id] (where [id] is the value of the committee id field
