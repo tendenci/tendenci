@@ -1230,10 +1230,28 @@ class Registrant(models.Model):
         return self.pricing or self.registration.reg_conf_price
 
     @property
+    def events_days(self):
+        days = set()
+
+        spans = self.event.date_spans()
+
+        for span in spans:
+            if span['same_date']:
+                days.add(datetime.date(span['start_dt']))
+            else:
+                date_range = self.event.date_range(
+                    span['start_dt'], span['end_dt'] + timedelta(days=1))
+                date_range = [datetime.date(x) for x in date_range]
+                days.update(date_range)
+    
+        return sorted(days)
+                
+    @property
     def event_dates_display(self):
         if self.attendance_dates:
             return  ', '.join([parse(x).date().strftime('%b %d, %Y') for x in self.attendance_dates])
-        return ', '.join([x.strftime('%b %d, %Y') for x in self.event.days])
+     
+        return ', '.join([x.strftime('%b %d, %Y') for x in self.events_days])
 
     @property
     def upcoming_event_days(self):
