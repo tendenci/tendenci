@@ -1296,12 +1296,13 @@ class Registrant(models.Model):
     @property
     def released_cpe_credits(self):
         """All released CPE credits (non IRS)"""
-        return self.released_credits.exclude(event_credit__ceu_subcategory__code="CE")
+        # Continuing Professional Education
+        return self.released_credits.filter(event_credit__ceu_subcategory__parent__code="CPE")
 
     @property
     def released_irs_credits(self):
         """All released IRS credits"""
-        return self.released_credits.filter(event_credit__ceu_subcategory__code="CE")
+        return self.released_credits.filter(event_credit__ceu_subcategory__parent__code="GOV")
 
     @property
     def credits_earned(self):
@@ -1339,20 +1340,25 @@ class Registrant(models.Model):
 
     def get_alternate_ceu(self, event):
         """Alternate CEU for event"""
-        credit = RegistrantCredits.objects.exclude(
+        credit = RegistrantCredits.objects.filter(event=event).exclude(
             Q(event_credit__alternate_ceu_id='') |
             Q(event_credit__alternate_ceu_id__isnull=True)
         ).first()
         if credit:
             return credit.event_credit.alternate_ceu_id
-        return None
+        return ''
 
     @property
     def credits_by_sub_event(self):
         """Credits by sub-event"""
         credits = dict()
-        for credit in RegistrantCredits.objects.filter(registrant=self).distinct('event_credit__event'):
-            event = credit.event
+        events_visited = []
+        for r_credit in RegistrantCredits.objects.filter(registrant=self).order_by('credit_dt', 'event__event_code'):
+            event = r_credit.event
+            if event.id in events_visited:
+                continue
+            events_visited.append(event.id)
+            
             date = event.start_dt.date().strftime('%B %d, %Y')
 
             cpe_credits = self.get_cpe_credits_by_event(event)
@@ -1370,6 +1376,7 @@ class Registrant(models.Model):
                 'irs_credits': irs_credits,
                 'alternate_ceu': self.get_alternate_ceu(event),
             })
+        events_visited = None
         return credits
 
     @property
