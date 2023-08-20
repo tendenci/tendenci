@@ -204,6 +204,8 @@ class Profile(Person):
         credits = dict()
         credit_names_by_category = dict()
         for credit in self.released_credits:
+            if not credit.event_credit:
+                continue
             category = credit.event_credit.ceu_subcategory.parent.name
             year = credit.credit_dt.year
             if category not in credits:
