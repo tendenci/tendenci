@@ -1230,30 +1230,8 @@ class Registrant(models.Model):
         return self.pricing or self.registration.reg_conf_price
 
     @property
-    def events_days(self):
-        days = set()
-
-        for event in self.event.child_events.filter(start_dt__date__gte=self.event.start_dt.date(),
-                                                    end_dt__date__lte=self.event.end_dt.date()):
-            spans = event.date_spans()
-
-            for span in spans:
-                if span['same_date']:
-                    days.add(datetime.date(span['start_dt']))
-                else:
-                    date_range = self.event.date_range(
-                        span['start_dt'], span['end_dt'] + timedelta(days=1))
-                    date_range = [datetime.date(x) for x in date_range]
-                    days.update(date_range)
-    
-        return sorted(days)
-                
-    @property
     def event_dates_display(self):
-        if self.attendance_dates:
-            return  ', '.join([parse(x).date().strftime('%b %d, %Y') for x in self.attendance_dates])
-     
-        return ', '.join([x.strftime('%b %d, %Y') for x in self.events_days])
+        return self.event.event_dates_display
 
     @property
     def upcoming_event_days(self):
@@ -2585,6 +2563,27 @@ class Event(TendenciBaseModel):
             same_date = start_dt.date() == self.end_dt.date()
             yield {'start_dt':start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
 
+    def get_child_events_days(self, params):
+        """
+        Returns each day of event covered by a sub-event given
+        specificed parameters.
+        """
+        days = set()
+
+        for event in self.child_events.filter(**params):
+            spans = event.date_spans()
+
+            for span in spans:
+                if span['same_date']:
+                    days.add(datetime.date(span['start_dt']))
+                else:
+                    date_range = self.event.date_range(
+                        span['start_dt'], span['end_dt'] + timedelta(days=1))
+                    date_range = [datetime.date(x) for x in date_range]
+                    days.update(date_range)
+
+        return sorted(days)
+
     @property
     def days(self):
         """
@@ -2592,21 +2591,26 @@ class Event(TendenciBaseModel):
         This is used to provide a list of potential attendance dates
         to filter sub-events by date. Includes dates for upcoming sessions only.
         """
+        params = {'start_dt__date__gt': datetime.now()}
+        return self.get_child_events_days(params)
+
+    @property
+    def full_event_days(self):
+        """
+        List of each day of event covered by a sub-event.
+        Includes all dates, not restricted to upcoming dates.
+        """
         days = set()
 
-        for event in self.child_events.filter(start_dt__date__gt=datetime.now()):
-            spans = event.date_spans()
+        params = {
+            'start_dt__date__gte': self.start_dt.date(),
+            'end_dt__date__lte': self.end_dt.date()
+        }
+        return self.get_child_events_days(params)
 
-            for span in spans:
-                if span['same_date']:
-                    days.add(datetime.date(span['start_dt']))
-                else:
-                    date_range = self.date_range(
-                        span['start_dt'], span['end_dt'] + timedelta(days=1))
-                    date_range = [datetime.date(x) for x in date_range]
-                    days.update(date_range)
-
-        return sorted(days)
+    @property
+    def event_dates_display(self):
+        return ', '.join([x.strftime('%b %d, %Y') for x in self.full_event_days])
 
     def get_spots_status(self):
         """

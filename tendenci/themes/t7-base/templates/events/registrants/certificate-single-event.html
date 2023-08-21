@@ -205,7 +205,7 @@
             {% endif %}
             <div class="row">
               <div class="left">{% trans "Date:" %}</div>
-              <div class="right"> {{ registrant.event_dates_display }}</div>
+              <div class="right"> {{ registrant.event.start_dt|date:"F j, Y" }}</div>
             </div>
             <div class="row">
               <div class="left">{% trans "Location: "%}</div>
