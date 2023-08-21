@@ -2247,6 +2247,11 @@ class Event(TendenciBaseModel):
         """Access Organizer for this Event"""
         return self.organizer_set.first()
 
+    @property
+    def certificate_signatures(self):
+        """Signatures to display on certificate"""
+        return self.eventstaff_set.filter(include_on_certificate=True).order_by('pk')
+
     def get_meta(self, name):
         """
         This method is standard across all models that are
