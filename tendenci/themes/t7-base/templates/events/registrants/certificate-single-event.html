@@ -163,16 +163,16 @@
     </div>
     <div class="row logos">
     {% with registrant.event.groups.all.0 as event_group %}
-      <div>
       {% if event_group %}
-      {% if event_group.logo %}
-      <img src="{{ event_group.logo.url }}" title="{{ event_group.name }}" alt="{{ event_group.name }}"/>
-      {% endif %}
-      </div>
-      <div class="formatted-text">
-        <div class="name">{{ event_group.name }}</div>
-          {{ event_group.description|safe }}
-      </div>
+	      {% if event_group.logo %}
+	      <div>
+	      <img src="{{ event_group.logo.url }}" title="{{ event_group.name }}" alt="{{ event_group.name }}"/>
+	      </div>
+	      {% endif %}
+	      <div class="formatted-text">
+	        <div class="name">{{ event_group.name }}</div>
+	          {{ event_group.description|safe }}
+	      </div>
       {% else %}
           &nbsp;
       {% endif %}
