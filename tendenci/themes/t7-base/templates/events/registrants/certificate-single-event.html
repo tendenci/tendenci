@@ -163,15 +163,17 @@
     </div>
     <div class="row logos">
       <div>
-      {% if registrant.event.sponsor %}
-      <img src="{% image_url registrant.event.sponsor.image %}" title="{{ registrant.event.sponsor.name }}" alt="{{ registrant.event.sponsor.name }}"/>
+      {% with registrant.event.groups.all.0 as event_group %}
+      {% if event_group and event_group.logo %}
+      <img src="{{ event_group.logo.url }}" title="{{ event_group.name }}" alt="{{ event_group.name }}"/>
       </div>
       <div class="formatted-text">
-        <div class="name">{{ registrant.event.sponsor.name }}</div>
-          {{ registrant.event.sponsor.description|safe }}
+        <div class="name">{{ event_group.name }}</div>
+          {{ event_group.description|safe }}
       {% else %}
           &nbsp;
       {% endif %}
+      {% endwith %}
       </div>
     </div>
     <div class="row heading">
