@@ -4096,7 +4096,8 @@ def sample_certificate(request, event_id=0, template_name='events/registrants/ce
         'possible_credits_by_code': event.possible_credits_by_code,
         'credits_earned_by_code': event.possible_credits_by_code
     }
-    if not event.has_child_events:
+    # TODO: remove hard-coded symposiums later
+    if not (event.has_child_events and (event.type and event.type.name.lower() == 'symposiums')):
         template_name = 'events/registrants/certificate-single-event.html'
 
     return render_to_resp(request=request, template_name=template_name,
@@ -4115,7 +4116,8 @@ def registrant_certificate(request, registrant_id=0, template_name='events/regis
     if not has_perm(request.user,'registrants.view_registrant', registrant):
         raise Http403
 
-    if not registrant.event.has_child_events:
+    # TODO: remove hard-coded symposiums later
+    if not (registrant.event.has_child_events and (registrant.event.type and registrant.event.type.name.lower() == 'symposiums')):
         template_name = 'events/registrants/certificate-single-event.html'
 
     return render_to_resp(request=request, template_name=template_name,
