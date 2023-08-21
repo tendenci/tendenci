@@ -2252,6 +2252,9 @@ def register(request, event_id=0,
     params = {'prefix': 'registrant',
               'event': event,
               'user': request.user}
+    # allow superuser to use admin-only pricings
+    if request.user.is_superuser:
+        params.update({'validate_pricing': False})
 
     pricing_dates_map = dict()
     if event.requires_attendance_dates and pricings:

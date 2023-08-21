@@ -2376,6 +2376,7 @@ class RegistrantBaseFormSet(BaseFormSet):
                  initial=None, error_class=ErrorList, **kwargs):
         self.event = kwargs.pop('event', None)
         self.user = kwargs.pop('user', None)
+        self.validate_pricing = kwargs.pop('validate_pricing', True)
         custom_reg_form = kwargs.pop('custom_reg_form', None)
         if custom_reg_form:
             self.custom_reg_form = custom_reg_form
@@ -2399,6 +2400,7 @@ class RegistrantBaseFormSet(BaseFormSet):
 
         defaults['event'] = self.event
         defaults['user'] = self.user
+        defaults['validate_pricing'] = self.validate_pricing
         defaults['form_index'] = i
         if hasattr(self, 'custom_reg_form'):
             defaults['custom_reg_form'] = self.custom_reg_form
