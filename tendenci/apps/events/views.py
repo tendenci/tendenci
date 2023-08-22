@@ -2032,6 +2032,15 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
     registration = get_object_or_404(Registration, pk=registration_id)
     has_error = False
 
+    redirect_url = handle_registration_payment(registration)
+    default_redirect_response = redirect_response = HttpResponseRedirect(
+                reverse('event.registration_confirmation',
+                        args=(registration.event.id, registration.registrant.hash)
+                ))
+
+    if redirect_url:
+            redirect_response = HttpResponseRedirect(redirect_url)
+
     if request.POST:
         data_by_registrant = []
         for registrant in registration.registrant_set.all():
@@ -2051,27 +2060,19 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
                 messages.set_level(request, messages.ERROR)
                 messages.add_message(request, messages.ERROR, e.args[0])
 
-        redirect = handle_registration_payment(registration)
-        if redirect and not has_error:
-            return HttpResponseRedirect(redirect)
-        elif not has_error:
-            return HttpResponseRedirect(
-                reverse('event.registration_confirmation',
-                        args=(registration.event.id, registration.registrant.hash)
-                ))
+        return redirect_response if not has_error else default_redirect_response
 
     forms = list()
     for registrant in registration.registrant_set.all():
         if registrant.registration_closed:
             continue
 
-        forms.append(ChildEventRegistrationForm(registrant))
+        form = ChildEventRegistrationForm(registrant)
+        if form.fields:
+            forms.append(form)
 
     if not len(forms):
-        return HttpResponseRedirect(
-            reverse('event.registration_confirmation',
-                    args=(registration.event.id, registration.registrant.hash)
-            ))
+        return redirect_response if not has_error else default_redirect_response
 
     return render_to_resp(
         request=request, template_name=template_name, context={

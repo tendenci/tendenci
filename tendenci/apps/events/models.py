@@ -731,8 +731,11 @@ class Registration(models.Model):
             return False
 
         for registrant in self.registrant_set.filter(cancel_dt__isnull=True):
-            if registrant.child_events.exists() and not registrant.registration_closed:
-                return True
+            return (
+                not registrant.registration_closed and
+                registrant.event.upcoming_child_events.exists()
+            )
+
         return False
 
     def allow_adjust_invoice_by(self, request_user):
@@ -2178,6 +2181,14 @@ class Event(TendenciBaseModel):
     def child_events(self):
         """All child events tied to this event"""
         return Event.objects.filter(parent_id=self.pk).order_by('start_dt')
+
+    @property
+    def upcoming_child_events(self):
+        """All upcoming child events available for registration"""
+        return self.child_events.filter(
+            start_dt__date__gt=datetime.now().date(),
+            registration_configuration__enabled=True
+        )
 
     @property
     def events_with_credits(self):
