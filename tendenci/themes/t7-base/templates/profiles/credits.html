@@ -61,12 +61,8 @@
       <div class="col-md-2">
         {{ data.total }}
       </div>
-      {% for key, value in data.items %}
-        {% if key != 'events' %}
-          {% if key != 'total' %}
-            <div class="col-md-2">{{ value }}</div>
-          {% endif %}
-        {% endif %}
+      {% for key, value in data.credits.items %}
+          <div class="col-md-2">{{ value }}</div>
       {% endfor %}
       </div>
       <div class="event-details">
