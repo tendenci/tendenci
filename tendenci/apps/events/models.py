@@ -2582,7 +2582,7 @@ class Event(TendenciBaseModel):
                 if span['same_date']:
                     days.add(datetime.date(span['start_dt']))
                 else:
-                    date_range = self.event.date_range(
+                    date_range = self.date_range(
                         span['start_dt'], span['end_dt'] + timedelta(days=1))
                     date_range = [datetime.date(x) for x in date_range]
                     days.update(date_range)
