@@ -4091,7 +4091,7 @@ def sample_certificate(request, event_id=0, template_name='events/registrants/ce
         'license_number': 123456789,
         'license_state': 'TX',
         'ptin': 987654321,
-        'event_dates_display': datetime.now().date().strftime('%b %d, %Y'),
+        'event_dates_display': event.event_dates_display,
         'possible_cpe_credits': event.possible_cpe_credits,
         'credits_earned': event.possible_cpe_credits,
         'irs_credits_earned': 5.0,
