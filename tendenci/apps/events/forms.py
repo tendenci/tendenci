@@ -1463,7 +1463,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
             filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
             default_groups = default_groups.filter(filters).distinct()
 
-        if not get_setting("module", "events", "nested_events_enabled"):
+        if not get_setting("module", "events", "nested_events"):
             self.fields['days_price_covers'].widget = forms.HiddenInput()
 
         self.fields['groups'].queryset = default_groups
