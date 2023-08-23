@@ -47,6 +47,20 @@
         <div>{% trans "Registration Type: " %}<strong>{{ registrant.pricing.title }}</strong></div>
         <div>{% trans "Registration Price: " %}<strong>{{ registrant.pricing.price|format_currency }}</strong></div>
       </div>
+      {% if use_full_dates %}
+        {% for day in registrant.past_attendance_dates %}
+        <strong>{{ day|convert_str_date }}</strong> <br/>
+        {% for field in form %}
+        {% if field.help_text == day %}
+        <div class="session">
+          <div class="time">{{ field.label }}</div>
+          <div class="event-options">{{ field }}</div>
+        </div>
+        <div class="clear"></div>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+      {% endif %}
         {% for day in registrant.upcoming_attendance_dates %}
         <strong>{{ day|convert_str_date }}</strong> <br/>
         {% for field in form %}

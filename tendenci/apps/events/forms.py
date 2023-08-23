@@ -307,10 +307,12 @@ class AttendanceDatesMixin:
     """Mixin for forms that use pricing attendance dates"""
     def add_attendance_dates(self):
         """Add attendance dates if required by Event"""
+        days = self.event.full_event_days if self.user and self.user.is_superuser else self.event.days
+
         if self.event and self.event.requires_attendance_dates:
             self.fields['attendance_dates'] = forms.MultipleChoiceField(
                 widget=forms.CheckboxSelectMultiple,
-                choices = [(date, date) for date in self.event.days]
+                choices = [(date, date) for date in days]
             )
 
     def clean_attendance_dates(self):
@@ -333,9 +335,10 @@ class AttendanceDatesMixin:
         return attendance_dates
 
 
-def attendance_dates_callback(field, event):
+def attendance_dates_callback(field, event, is_admin):
     """Add attendance_dates when using modelformset_factory if applicable"""
     if field.name == 'attendance_dates' and event.requires_attendance_dates:
+        days = event.full_event_days if  is_admin else event.days
         return forms.MultipleChoiceField(
                 widget=forms.CheckboxSelectMultiple,
                 choices = [(date, date) for date in event.days]
@@ -2088,20 +2091,26 @@ class ChildEventRegistrationForm(forms.Form):
     """
     Form for child event registration
     """
-    def __init__(self, registrant, *args, **kwargs):
+    def __init__(self, registrant, is_admin, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if not registrant.registration.event.upcoming_child_events.exists():
+        upcoming_child_events = registrant.registration.event.upcoming_child_events
+        # Override constraint to only provide upcoming events if is_admin
+        if is_admin:
+            upcoming_child_events = registrant.registration.event.child_events.filter(
+                registration_configuration__enabled=True
+            )
+
+        if not upcoming_child_events.exists():
             return
 
         # Set the initial values. Add a new control for each session.
         # A session is determined by date and time of the sub-event.
-        sub_event_datetimes = registrant.sub_event_datetimes
-        upcoming_child_events = registrant.registration.event.upcoming_child_events
+        sub_event_datetimes = registrant.sub_event_datetimes(is_admin)
+
         for index, start_dt in enumerate(sub_event_datetimes.keys()):
             child_events = upcoming_child_events.filter(start_dt=start_dt)
             choices = [(event.pk, event.title) for event in child_events if not event.at_capacity]
-
             # Check if registrant already has selection. If so, make sure it's in choices
             selection = None
             current_child_event = registrant.child_events.filter(

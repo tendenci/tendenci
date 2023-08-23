@@ -2117,7 +2117,7 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
                 if child_event_pk:
                     child_event_pks.append(child_event_pk)
             try:
-                registrant.register_child_events(child_event_pks)
+                registrant.register_child_events(child_event_pks, request.user.is_superuser)
             except Exception as e:
                 has_error = True
                 messages.set_level(request, messages.ERROR)
@@ -2130,7 +2130,7 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
         if registrant.registration_closed:
             continue
 
-        form = ChildEventRegistrationForm(registrant)
+        form = ChildEventRegistrationForm(registrant, request.user.is_superuser)
         if form.fields:
             forms.append(form)
 
@@ -2141,6 +2141,7 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
         request=request, template_name=template_name, context={
             'forms': forms,
             'registrants': registration.registrant_set.all(),
+            'use_full_dates': request.user.is_superuser
         })
 
 @is_enabled('events')
@@ -2997,6 +2998,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         params = {'prefix': 'registrant',
                   'custom_reg_form': custom_reg_form,
                   'entries': entries,
+                  'user': request.user,
                   'event': reg8n.event}
 
         if request.method != 'POST':
@@ -3020,7 +3022,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         # use modelformset_factory for regular registration form
         RegistrantFormSet = modelformset_factory(
             Registrant, extra=0,
-            formfield_callback=lambda field: attendance_dates_callback(field, reg8n.event),
+            formfield_callback=lambda field: attendance_dates_callback(field, reg8n.event, request.user.is_superuser),
             fields=fields)
 
         formset = RegistrantFormSet(post_data,
@@ -3081,6 +3083,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                     registrants_updated_dates = updated_attendance_dates[index]
 
                 total_attendance_dates = len(registrants_updated_dates) + past_dates
+                if request.user.is_superuser:
+                    total_attendance_dates = len(registrants_updated_dates)
+
                 if pricing and pricing.days_price_covers and total_attendance_dates != pricing.days_price_covers:
                     message = f'Select { pricing.days_price_covers - past_dates} dates for {registrant.first_name } { registrant.last_name}'
                     messages.set_level(request, messages.ERROR)
@@ -3088,8 +3093,11 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                     redirect = False
                     break
 
-                if registrants_updated_dates != registrant.upcoming_attendance_dates:
-                    updated_dates = registrant.past_attendance_dates
+                original_dates = registrant.attendance_dates if request.user.is_superuser else registrant.upcoming_attendance_dates
+                if registrants_updated_dates != original_dates:
+                    updated_dates = list()
+                    if not request.user.is_superuser:
+                        updated_dates = registrant.past_attendance_dates
                     updated_dates.extend(registrants_updated_dates)
                     registrant.attendance_dates = updated_dates
                     registrant.save(update_fields=['attendance_dates'])
