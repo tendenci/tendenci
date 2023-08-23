@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import os
 import uuid
 import hashlib
@@ -197,38 +198,59 @@ class Profile(Person):
         from tendenci.apps.events.models import RegistrantCredits
 
         return RegistrantCredits.objects.filter(
-            registrant__user=self.user, released=True).order_by('credit_dt')
+            registrant__user=self.user, released=True).order_by('-credit_dt')
 
     @property
     def credits_grid(self):
-        credits = dict()
-        credit_names_by_category = dict()
+        """
+        Returns grid with credits by category -> by year -> by Event
+        Also returns all credit names by category
+        """
+        credits = OrderedDict()
+        credit_names_by_category = OrderedDict()
+
         for credit in self.released_credits:
             if not credit.event_credit:
                 continue
+
+            # Add category to grid
             category = credit.event_credit.ceu_subcategory.parent.name
             year = credit.credit_dt.year
             if category not in credits:
-                credits[category] = dict()
+                credits[category] = OrderedDict()
 
-            if year not in credits[category]:
-                credits[category][year] = {'total': 0, 'events': dict()}
-
+            # Track credit names for this category across years
             credit_name = credit.event_credit.ceu_subcategory.name
             if category not in credit_names_by_category:
-                credit_names_by_category[category] = set()
+                credit_names_by_category[category] = list()
 
+            # Add year to grid under current category
+            if year not in credits[category]:
+                credits[category][year] = {'total': 0, 'events': dict(), 'credits': OrderedDict()}
+
+                # Add any credits from previous years in this category, initialize to 0
+                for previous_years_credit in credit_names_by_category[category]:
+                    credits[category][year]['credits'][previous_years_credit] = 0
+
+            # If this is a new credit we've just seen this year, update previous years
+            # with 0 credits
             if credit_name not in credit_names_by_category[category]:
                 for key in credits[category]:
-                    credits[category][key][credit_name] = 0
-            credit_names_by_category[category].add(credit_name)
+                    credits[category][key]['credits'][credit_name] = 0
+                    credits[category][key]['credits'] = \
+                        OrderedDict(sorted(credits[category][key]['credits'].items()))
+                credit_names_by_category[category].append(credit_name)
+                credit_names_by_category[category] = sorted(credit_names_by_category[category])
 
+            # Update total credits for the year, and totals by credit
             credits[category][year]['total'] += credit.credits
-            if credit_name not in credits[category][year]:
-                credits[category][year][credit_name] = credit.credits
-            else:
-                credits[category][year][credit_name] += credit.credits
+            if credit_name not in credits[category][year]['credits']:
+                credits[category][year]['credits'][credit_name] = 0
+                credits[category][year]['credits'] = \
+                    OrderedDict(sorted(credits[category][year]['credits'].items()))
+            credits[category][year]['credits'][credit_name] += credit.credits
 
+            # Add Event details for this year in this category
             event = credit.event
             if event.pk not in credits[category][year]['events']:
                 credits[category][year]['events'][event.pk] = {
@@ -239,6 +261,8 @@ class Profile(Person):
                     'registrant_id': credit.registrant.pk,
                     'event': event.title if event.parent else None,
                 }
+
+            # Update total credits for this event (by pk)
             credits[category][year]['events'][event.pk]['credits'] += credit.credits
 
         return credits, credit_names_by_category

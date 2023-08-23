@@ -1,5 +1,5 @@
 
-{% extends "events/base.html" %}
+{% extends "events/base-wide.html" %}
 
 {% block title %}{{ block.super }}{% trans "CEU Credits" %}{% endblock %}
 
@@ -25,7 +25,9 @@
   }
   .credits-grid .event-details {
       margin-left: 34px;
+      padding: 2px;
       display: none;
+      border: 1px solid black;
   }
 </style>
 
@@ -61,23 +63,19 @@
       <div class="col-md-2">
         {{ data.total }}
       </div>
-      {% for key, value in data.items %}
-        {% if key != 'events' %}
-          {% if key != 'total' %}
-            <div class="col-md-2">{{ value }}</div>
-          {% endif %}
-        {% endif %}
+      {% for key, value in data.credits.items %}
+          <div class="col-md-2">{{ value }}</div>
       {% endfor %}
       </div>
       <div class="event-details">
       {% for event_id, event in data.events.items %}
       <div class= "row headings">
-        <div class="col-md-2">
+        <div class="col-md-1">
           Date
         </div>
         <div class="col-md-1">
           Credits</div>
-        <div class="col-md-1">
+        <div class="col-md-2">
           Type
         </div>
         <div class="col-md-4">
@@ -88,13 +86,13 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-1">
           {{ event.start_dt }}
         </div>
         <div class="col-md-1">
           {{ event.credits}}
         </div>
-        <div class="col-md-1">
+        <div class="col-md-2">
           {{ event.type }}
         </div>
         <div class="col-md-4">
