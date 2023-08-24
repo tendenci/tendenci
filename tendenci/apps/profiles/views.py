@@ -253,22 +253,26 @@ def index(request, username='', template_name="profiles/index.html"):
 
 
 @login_required
-def credits(request, username, template_name="profiles/credits.html"):
+def credits(request, username=None, template_name="profiles/credits.html"):
     """
     Show profile of username passed.  If no username is passed
     then redirect to username of person logged in.
     """
-    user_this = get_object_or_404(User, username=username)
+    if username:
+        user_this = get_object_or_404(User, username=username)
+    else:
+        user_this = request.user
 
     try:
         profile = user_this.profile
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
 
-    if not profile.allow_view_by(request.user):
+    if not profile.allow_edit_by(request.user):
         raise Http403
 
     credits_grid, credits_categories = profile.credits_grid
+
     return render_to_resp(
         request=request,
         template_name=template_name,
