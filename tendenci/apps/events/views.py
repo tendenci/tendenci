@@ -4117,7 +4117,8 @@ def registrant_certificate(request, registrant_id=0, template_name='events/regis
     registrant = get_object_or_404(Registrant, pk=registrant_id)
 
     if not has_perm(request.user,'registrants.view_registrant', registrant):
-        raise Http403
+        if not (registrant.user and registrant.user == request.user):
+            raise Http403
 
     # TODO: remove hard-coded symposiums later
     if not (registrant.event.has_child_events and (registrant.event.type and registrant.event.type.name.lower() == 'symposiums')):
