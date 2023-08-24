@@ -2244,8 +2244,9 @@ class Event(TendenciBaseModel):
         Credits default to un-released, so they can be overridden.
         """
         event = registrant.event
-        for credit in self.eventcredit_set.all():
-           RegistrantCredits.objects.get_or_create(
+        # only assign those credits that are available
+        for credit in self.eventcredit_set.filter(available=True):
+            RegistrantCredits.objects.get_or_create(
                registrant_id=registrant.pk,
                event=event,
                credit_dt=event.start_dt,
