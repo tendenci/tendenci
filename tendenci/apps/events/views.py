@@ -3950,6 +3950,9 @@ def registrant_check_in(request):
     """
     Check in or uncheck in a registrant.
     """
+    if not has_perm(request.user, 'events.view_registrant'):
+        raise Http403
+    
     response_d = {'error': True}
     if request.method == 'POST':
         registrant_id = request.POST.get('id', None)
@@ -3977,6 +3980,9 @@ def registrant_check_in(request):
                         registrant.checked_out = True
                         registrant.checked_out_dt = datetime.now()
                         registrant.save()
+                        # single event has checked_out enabled
+                        # if single_event has credits configured, assign credits
+                        registrant.event.assign_credits(registrant)
                     response_d['checked_out_dt'] = registrant.checked_out_dt
                     if isinstance(response_d['checked_out_dt'], datetime):
                         response_d['checked_out_dt'] = response_d['checked_out_dt'].strftime('%m/%d %I:%M%p')
