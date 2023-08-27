@@ -58,12 +58,18 @@ def acct_onboarding(request, template_name='payments/stripe/connect/acct_onboard
             # create a stripe account on stripe
             # TODO: need to track errors
             stripe.api_key = settings.STRIPE_SECRET_KEY
-            acct = stripe.Account.create(
-                  type=scope,
-                  email=email,
-                  capabilities={"card_payments": {"requested": True},
-                                "transfers": {"requested": True}},
-                )
+            if scope == 'express':
+                acct = stripe.Account.create(
+                      type=scope,
+                      email=email,
+                      capabilities={"card_payments": {"requested": True},
+                                    "transfers": {"requested": True}},
+                    )
+            else: # standard type
+                acct = stripe.Account.create(
+                      type=scope,
+                      email=email,
+                    )
             # save the stripe account to db
             sa = onboarding_form.save(commit=False)
             sa.stripe_user_id = acct.stripe_id
@@ -181,6 +187,7 @@ class DeauthorizeView(View):
 
         return HttpResponseRedirect(reverse('stripe_connect.authorize'))
 
+
 class WebhooksView(View):
     @method_decorator(csrf_exempt)
     @method_decorator(require_POST)
@@ -192,17 +199,20 @@ class WebhooksView(View):
         sig_header = request.META['HTTP_STRIPE_SIGNATURE']
         event = None
         stripe.api_key = settings.STRIPE_SECRET_KEY
-        stripe.api_version = settings.STRIPE_API_VERSION
-        stripe_set_app_info(stripe)
+        #stripe.api_version = settings.STRIPE_API_VERSION
+        #stripe_set_app_info(stripe)
 
+        # Verify webhook signature and extract the event.
         try:
             event = stripe.Webhook.construct_event(
               payload, sig_header, getattr(settings, 'STRIPE_WEBHOOK_SECRET', '')
          )
         except ValueError as e:
             # Invalid payload
+            print(e)
             return HttpResponse(status=400)
         except stripe.error.SignatureVerificationError as e:
+            print(e)
             # Invalid signature
             return HttpResponse(status=400)
 
@@ -212,6 +222,18 @@ class WebhooksView(View):
             account = event_dict.get('account', None)
             if account:
                 StripeAccount.objects.filter(stripe_user_id=account).update(status_detail=REVOKED_STATUS_DETAIL)
+        elif event.type == 'account.updated':
+            event_dict = json.loads(payload)
+            account = event_dict.get('account', None)
+            [sa] = StripeAccount.objects.filter(stripe_user_id=account)[:1] or [None]
+            if sa and sa.status_detail == 'not completed':
+                acct = stripe.Account.retrieve(account)
+                if all([acct.charges_enabled,
+                        acct.capabilities.platform_payments == 'active',
+                        acct.capabilities.card_payments == 'active']):
+                    # completed
+                    sa.status_detail = 'active'
+                    sa.save()
 
         return HttpResponse(status=200)
 
