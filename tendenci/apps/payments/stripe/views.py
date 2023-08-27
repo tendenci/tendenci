@@ -28,7 +28,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from tendenci.apps.payments.models import Payment
-from .forms import StripeCardForm, BillingInfoForm
+from .forms import StripeCardForm, BillingInfoForm, AccountOnBoardingForm
 from .utils import payment_update_stripe
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.recurring_payments.models import RecurringPayment
@@ -41,6 +41,102 @@ from .utils import stripe_set_app_info
 STRIPE_TOKEN_URL = 'https://connect.stripe.com/oauth/token'
 STRIPE_DEAUTHORIZE_URL = 'https://connect.stripe.com/oauth/deauthorize'
 REVOKED_STATUS_DETAIL =  'revoked'
+
+
+@login_required
+def acct_onboarding(request, template_name='payments/stripe/connect/acct_onboarding.html'):
+    # superuser only
+    if not request.user.is_superuser:
+        raise Http403
+
+    onboarding_form = AccountOnBoardingForm(request.POST or None)
+    if request.method == "POST":
+        if onboarding_form.is_valid():
+            email = onboarding_form.cleaned_data['email']
+            account_name = onboarding_form.cleaned_data['account_name']
+            scope = onboarding_form.cleaned_data['scope']
+            # create a stripe account on stripe
+            # TODO: need to track errors
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+            acct = stripe.Account.create(
+                  type=scope,
+                  email=email,
+                  capabilities={"card_payments": {"requested": True},
+                                "transfers": {"requested": True}},
+                )
+            # save the stripe account to db
+            sa = onboarding_form.save(commit=False)
+            sa.stripe_user_id = acct.stripe_id
+            sa.status_detail = 'not completed'
+            sa.creator = sa.owner = request.user
+            sa.creator_username = sa.owner_username = request.user.username
+            sa.save()
+            
+            # generate an account link
+            # TODO: need to track errors
+            site_url = get_setting('site', 'global', 'siteurl')
+            acct_link = stripe.AccountLink.create(
+                      account=sa.stripe_user_id,
+                      refresh_url=site_url+reverse('stripe_connect.acct_onboarding_refresh', args=[sa.id]),
+                      return_url=site_url+reverse('stripe_connect.acct_onboarding_done', args=[sa.id]),
+                      type="account_onboarding",
+                    )
+            
+            # redirect user to the account link URL
+            return HttpResponseRedirect(acct_link.url)
+   
+    return render_to_resp(request=request,
+                          template_name=template_name,
+                        context={'onboarding_form': onboarding_form})
+
+
+@login_required
+def acct_onboarding_refresh(request, sa_id):
+    # superuser only
+    if not request.user.is_superuser:
+        raise Http403
+    
+    sa = get_object_or_404(StripeAccount, pk=sa_id)
+    site_url = get_setting('site', 'global', 'siteurl')
+    if sa.status_detail == 'not completed':
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        acct_link = stripe.AccountLink.create(
+                      account=sa.stripe_user_id,
+                      refresh_url=site_url+reverse('stripe_connect.acct_onboarding_refresh', args=[sa.id]),
+                      return_url=site_url+reverse('stripe_connect.acct_onboarding_done', args=[sa.id]),
+                      type="account_onboarding",
+                    )
+            
+        # redirect user to the account link URL
+        return HttpResponseRedirect(acct_link.url)
+    return HttpResponseRedirect(reverse('stripe_connect.acct_onboarding_done', args=[sa.id]))
+
+
+@login_required
+def acct_onboarding_done(request, sa_id, template_name='payments/stripe/connect/acct_onboarding_done.html'):
+    if not request.user.is_superuser:
+        raise Http403
+    
+    sa = get_object_or_404(StripeAccount, pk=sa_id)
+    
+    # retriever the stripe account
+    stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+    acct = stripe.Account.retrieve(sa.stripe_user_id)
+    if all([acct.charges_enabled,
+            acct.capabilities.platform_payments == 'active',
+            acct.capabilities.card_payments == 'active']):
+        # completed
+        sa.status_detail = 'active'
+        sa.save()
+        msg_string = 'Congratulations, your stripe account is set up.'
+        messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+    site_url = get_setting('site', 'global', 'siteurl')
+    refresh_url= site_url + reverse('stripe_connect.acct_onboarding_refresh', args=[sa.id])   
+    return render_to_resp(request=request,
+                          template_name=template_name,
+                        context={'sa': sa, 
+                                 'refresh_url': refresh_url})
 
 
 class AuthorizeView(TemplateView):

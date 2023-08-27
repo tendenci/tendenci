@@ -26,7 +26,7 @@ class StripeAccountAdmin(TendenciBaseModelAdmin):
     form = StripeAccountForm
 
     def add_view(self, request, form_url='', extra_context=None):
-        return HttpResponseRedirect(reverse('stripe_connect.authorize'))
+        return HttpResponseRedirect(reverse('stripe_connect.acct_onboarding'))
 
     @mark_safe
     def show_entity(self, instance):
