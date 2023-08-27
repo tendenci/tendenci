@@ -10,10 +10,10 @@
 	{% if sa.status_detail == 'active' %}
 		<p class="text-success">{% trans 'Congratulations, your stripe account is set up!' %}</p>
 		{% if not sa.entity %}
-		<p>{% trans 'Please connect your account with an eitity.' %} 
+		<p>{% trans 'Please connect your account with an eitity' %} 
 		<a class="btn btn-primary" href="{% url 'admin:stripe_stripeaccount_change' sa.id %}">{% trans 'Edit' %}</a></p>
 		{% endif %}
-		<div><a href="{% url 'admin:stripe_stripeaccount_changelist' %}">{% trans 'View Stripe Accounts List' %}</a></div>
+		<div><a href="{% url 'admin:stripe_stripeaccount_changelist' %}">{% trans 'Back to Stripe Accounts Admin Backend' %}</a></div>
 	{% else %}
 		{% if sa.status_detail == 'not completed' %}
 			<p>{% trans 'Your stripe onboarding process is not completed yet.' %}</p>

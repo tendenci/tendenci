@@ -49,6 +49,7 @@ def acct_onboarding(request, template_name='payments/stripe/connect/acct_onboard
     if not request.user.is_superuser:
         raise Http403
 
+    err_msg = ''
     onboarding_form = AccountOnBoardingForm(request.POST or None)
     if request.method == "POST":
         if onboarding_form.is_valid():
@@ -56,40 +57,49 @@ def acct_onboarding(request, template_name='payments/stripe/connect/acct_onboard
             account_name = onboarding_form.cleaned_data['account_name']
             scope = onboarding_form.cleaned_data['scope']
             # create a stripe account on stripe
-            # TODO: need to track errors
             stripe.api_key = settings.STRIPE_SECRET_KEY
-            if scope == 'express':
-                acct = stripe.Account.create(
-                      type=scope,
-                      email=email,
-                      capabilities={"card_payments": {"requested": True},
-                                    "transfers": {"requested": True}},
-                    )
-            else: # standard type
-                acct = stripe.Account.create(
-                      type=scope,
-                      email=email,
-                    )
-            # save the stripe account to db
-            sa = onboarding_form.save(commit=False)
-            sa.stripe_user_id = acct.stripe_id
-            sa.status_detail = 'not completed'
-            sa.creator = sa.owner = request.user
-            sa.creator_username = sa.owner_username = request.user.username
-            sa.save()
+            try:
+                if scope == 'express':
+                    acct = stripe.Account.create(
+                          type=scope,
+                          email=email,
+                          capabilities={"card_payments": {"requested": True},
+                                        "transfers": {"requested": True}},
+                        )
+                else: # standard type
+                    acct = stripe.Account.create(
+                          type=scope,
+                          email=email,
+                        )
+            except stripe.error.InvalidRequestError as e:
+                err_msg += str(e)
+            except Exception as e:
+                err_msg += str(e)
             
-            # generate an account link
-            # TODO: need to track errors
-            site_url = get_setting('site', 'global', 'siteurl')
-            acct_link = stripe.AccountLink.create(
-                      account=sa.stripe_user_id,
-                      refresh_url=site_url+reverse('stripe_connect.acct_onboarding_refresh', args=[sa.id]),
-                      return_url=site_url+reverse('stripe_connect.acct_onboarding_done', args=[sa.id]),
-                      type="account_onboarding",
-                    )
-            
-            # redirect user to the account link URL
-            return HttpResponseRedirect(acct_link.url)
+            if not err_msg:
+                # save the stripe account to db
+                sa = onboarding_form.save(commit=False)
+                sa.stripe_user_id = acct.stripe_id
+                sa.status_detail = 'not completed'
+                sa.creator = sa.owner = request.user
+                sa.creator_username = sa.owner_username = request.user.username
+                sa.save()
+                
+                # generate an account link
+                # TODO: need to track errors
+                site_url = get_setting('site', 'global', 'siteurl')
+                acct_link = stripe.AccountLink.create(
+                          account=sa.stripe_user_id,
+                          refresh_url=site_url+reverse('stripe_connect.acct_onboarding_refresh', args=[sa.id]),
+                          return_url=site_url+reverse('stripe_connect.acct_onboarding_done', args=[sa.id]),
+                          type="account_onboarding",
+                        )
+                
+                # redirect user to the account link URL
+                return HttpResponseRedirect(acct_link.url)
+    
+    if err_msg:
+        messages.add_message(request, messages.ERROR, err_msg)
    
     return render_to_resp(request=request,
                           template_name=template_name,
