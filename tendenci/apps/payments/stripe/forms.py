@@ -6,6 +6,14 @@ from .models import StripeAccount
 #from form_utils.forms import BetterModelForm
 
 
+class AccountOnBoardingForm(FormControlWidgetMixin, forms.ModelForm):
+    class Meta:
+        model = StripeAccount
+        fields = ('account_name',
+                  'email',
+                  'scope' )
+
+
 class StripeAccountForm(forms.ModelForm):
     entity = forms.ModelChoiceField(queryset=Entity.objects.order_by('entity_name'))
 
