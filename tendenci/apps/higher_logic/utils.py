@@ -65,7 +65,8 @@ class HigherLogicAPI:
                     member_group['BeginDate'] = self.dt_isoformat(membership.renew_dt)
                 else:
                     # join
-                    member_group['BeginDate'] = member_group['InitialJoinDate']
+                    if 'InitialJoinDate' in member_group:
+                        member_group['BeginDate'] = member_group['InitialJoinDate']
                 if membership.expire_dt:
                     member_group['EndDate'] = self.dt_isoformat(membership.expire_dt)
         return member_group
@@ -373,7 +374,10 @@ class HigherLogicAPI:
                 if reg_end_dt:
                     event_dict['RegistrationCloseDate'] = self.dt_isoformat(reg_end_dt)
             
-            prices_list = reg_conf.regconfpricing_set.values_list('price', flat=True)
+            prices_list = reg_conf.regconfpricing_set.filter(
+                    Q(allow_anonymous=True) | \
+                    Q(allow_user=True) | \
+                    Q(allow_member=True)).values_list('price', flat=True)
             if prices_list:
                 prices_list = [str(price) for price in prices_list]
                 event_dict['Price'] = ', '.join(prices_list)
