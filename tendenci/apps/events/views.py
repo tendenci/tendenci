@@ -2181,9 +2181,15 @@ def register(request, event_id=0,
 
     event.require_guests_info = reg_conf.require_guests_info
 
+    pricing = None
+    default_pricing = None
     if is_table and pricing_id:
         pricing = get_object_or_404(RegConfPricing, pk=pricing_id)
+        pricings = RegConfPricing.objects.filter(id=pricing_id)
         event.free_event = pricing.price <=0
+        if pricing.allow_member and not (pricing.allow_user or pricing.allow_anonymous):
+            event.has_member_price = True
+        default_pricing = pricing
     else:
         # get all available pricing for the Price Options to select
         if not pricings:
@@ -2251,7 +2257,10 @@ def register(request, event_id=0,
 
     params = {'prefix': 'registrant',
               'event': event,
-              'user': request.user}
+              'user': request.user,
+              'is_table': is_table, # for table reg
+              'default_pricing': default_pricing
+              }
     # allow superuser to use admin-only pricings
     if request.user.is_superuser:
         params.update({'validate_pricing': False})
@@ -2261,9 +2270,9 @@ def register(request, event_id=0,
         for price in pricings:
             pricing_dates_map.update({price.pk: price.days_price_covers})
 
-    if not is_table:
-        # pass the pricings to display the price options
-        params.update({'pricings': pricings})
+    #if not is_table:
+    # pass the pricings to display the price options
+    params.update({'pricings': pricings})
 
     if custom_reg_form:
         params.update({"custom_reg_form": custom_reg_form})

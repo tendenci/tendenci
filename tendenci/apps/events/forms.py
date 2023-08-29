@@ -363,7 +363,9 @@ class FormForCustomRegForm(AttendanceDatesMixin, forms.ModelForm):
         self.form_fields = self.custom_reg_form.fields.filter(visible=True).order_by('position')
 
         self.pricings = kwargs.pop('pricings', None)
-        if self.event:
+        self.is_table = kwargs.pop('is_table', False)
+        self.default_pricing = kwargs.pop('default_pricing', False)
+        if self.event and not self.default_pricing:
             self.default_pricing = getattr(self.event, 'default_pricing', None)
 
         super(FormForCustomRegForm, self).__init__(*args, **kwargs)
@@ -2127,8 +2129,10 @@ class RegistrantForm(AttendanceDatesMixin, forms.Form):
         self.form_index = kwargs.pop('form_index', None)
         self.pricings = kwargs.pop('pricings', None)
         self.validate_pricing = kwargs.pop('validate_pricing', True)
+        self.is_table = kwargs.pop('is_table', False)
+        self.default_pricing = kwargs.pop('default_pricing', False)
 
-        if self.event:
+        if self.event and not self.default_pricing:
             self.default_pricing = getattr(self.event, 'default_pricing', None)
 
         super(RegistrantForm, self).__init__(*args, **kwargs)
@@ -2376,6 +2380,8 @@ class RegistrantBaseFormSet(BaseFormSet):
                  initial=None, error_class=ErrorList, **kwargs):
         self.event = kwargs.pop('event', None)
         self.user = kwargs.pop('user', None)
+        self.is_table = kwargs.pop('is_table', None)
+        self.default_pricing = kwargs.pop('default_pricing', None)
         self.validate_pricing = kwargs.pop('validate_pricing', True)
         custom_reg_form = kwargs.pop('custom_reg_form', None)
         if custom_reg_form:
@@ -2400,6 +2406,9 @@ class RegistrantBaseFormSet(BaseFormSet):
 
         defaults['event'] = self.event
         defaults['user'] = self.user
+        defaults['is_table'] = self.is_table
+        #if self.default_pricing:
+        defaults['default_pricing'] =self.default_pricing
         defaults['validate_pricing'] = self.validate_pricing
         defaults['form_index'] = i
         if hasattr(self, 'custom_reg_form'):
