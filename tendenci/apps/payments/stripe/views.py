@@ -114,17 +114,25 @@ def acct_onboarding_refresh(request, sa_id):
     
     sa = get_object_or_404(StripeAccount, pk=sa_id)
     site_url = get_setting('site', 'global', 'siteurl')
+    err_msg = ''
     if sa.status_detail == 'not completed':
         stripe.api_key = settings.STRIPE_SECRET_KEY
-        acct_link = stripe.AccountLink.create(
-                      account=sa.stripe_user_id,
-                      refresh_url=site_url+reverse('stripe_connect.acct_onboarding_refresh', args=[sa.id]),
-                      return_url=site_url+reverse('stripe_connect.acct_onboarding_done', args=[sa.id]),
-                      type="account_onboarding",
-                    )
-            
-        # redirect user to the account link URL
-        return HttpResponseRedirect(acct_link.url)
+        try:
+            acct_link = stripe.AccountLink.create(
+                          account=sa.stripe_user_id,
+                          refresh_url=site_url+reverse('stripe_connect.acct_onboarding_refresh', args=[sa.id]),
+                          return_url=site_url+reverse('stripe_connect.acct_onboarding_done', args=[sa.id]),
+                          type="account_onboarding",
+                        )
+                
+            # redirect user to the account link URL
+            return HttpResponseRedirect(acct_link.url)
+        except stripe.error.InvalidRequestError as e:
+            err_msg += str(e)
+        except Exception as e:
+            err_msg += str(e)
+    if err_msg:
+        messages.add_message(request, messages.ERROR, err_msg)
     return HttpResponseRedirect(reverse('stripe_connect.acct_onboarding_done', args=[sa.id]))
 
 
@@ -139,7 +147,6 @@ def acct_onboarding_done(request, sa_id, template_name='payments/stripe/connect/
     stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
     acct = stripe.Account.retrieve(sa.stripe_user_id)
     if all([acct.charges_enabled,
-            acct.capabilities.platform_payments == 'active',
             acct.capabilities.card_payments == 'active']):
         # completed
         sa.status_detail = 'active'

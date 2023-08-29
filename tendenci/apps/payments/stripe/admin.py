@@ -16,7 +16,7 @@ class StripeAccountAdmin(TendenciBaseModelAdmin):
                      'status_detail', 'action')
     list_filter = ('status_detail',)
     search_fields = ('account_name', 'email')
-    readonly_fields=('stripe_user_id', 'scope')
+    readonly_fields=('stripe_user_id', 'scope', 'status_detail')
     fields = ('stripe_user_id', 'scope',
               'account_name', 'email', 
               'entity',
