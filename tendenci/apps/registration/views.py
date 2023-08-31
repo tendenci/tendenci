@@ -68,6 +68,8 @@ def activate(request, activation_key,
     """
     next_url = get_next_url(request)
     from_memberships = next_url and next_url.startswith('/memberships/')
+    if not next_url and 'next_url' in request.session:
+        next_url = request.session.pop('next_url')
     activation_key = activation_key.lower() # Normalize before trying anything with it.
     account = RegistrationProfile.objects.activate_user(activation_key,
                                                         from_memberships=from_memberships)

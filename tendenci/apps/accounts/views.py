@@ -22,6 +22,16 @@ from tendenci.apps.base.http import Http403
 def login(request, form_class=LoginForm, template_name="account/login.html"):
 
     next_url = get_next_url(request)
+    if next_url:
+        if next_url.startswith('/events/register/'):
+            request.session['next_url'] = next_url
+    else:# no next_url passed
+        if 'next_url' in request.session:
+            next_url = request.session.pop('next_url')
+        elif 'membership-referer-url' in request.session:
+            if request.session['membership-referer-url'].startswith('/events/'):
+                next_url = request.session.pop('membership-referer-url')
+            
     if settings.USE_TWO_FACTOR_AUTH:
         if not request.user.is_authenticated:
             # redirect to two factor login
