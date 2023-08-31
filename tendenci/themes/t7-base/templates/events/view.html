@@ -51,6 +51,30 @@ div.pricing-list-wrap li{
     padding: 3px 0;
     margin-left: 3px;
 }
+
+#meetingSDKElement {
+    z-index: 999999;
+    position: absolute;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#transition-popper {
+    z-index: 9999999;
+    position: relative;
+}
+
+[role="dialog"], [role="menu"] {
+    z-index: 9999999 !important;
+}
+
+.zmwebsdk-MuiTypography-subtitle1 {
+    font-size: .9rem !important;
+}
+
 </style>
 {{ block.super }}
 {% endblock %}
@@ -65,6 +89,10 @@ div.pricing-list-wrap li{
     
     <!-- TOP -->
     <br />
+      <div id="meetingSDKElement">
+        <!-- Zoom Meeting SDK Rendered Here -->
+      </div>
+
     {% if event.status_detail == 'template' %}
     <div class="alert alert-info" role="alert">{% trans 'This is a event template.' %} 
     <a href="{% url 'event.add_from_template' event.pk %}" class="alert-link">{% trans 'Add an event using this template.' %}</a>
@@ -122,7 +150,10 @@ div.pricing-list-wrap li{
 			{% endif %}
 			{% if event.place.national %}
 				{% include 'events/include/display_national.html' %}
-			{% endif %}
+			      {% endif %}
+          {% if registrant_user and event.enable_zoom_meeting %}
+            <button onClick="startMeeting()">{% trans "Join Meeting" %}</button>
+          {% endif %}
           </p>
         </div>
         <div class="col-xs-5">
@@ -427,9 +458,11 @@ div.pricing-list-wrap li{
 {{ block.super }}
 <script type="text/javascript" src="{% static 'js/jquery.tipsy.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/social_media_icons.js' %}"></script>
+{% include "events/include/zoom.js" %}
+
 <script type="text/javascript">
   $(document).ready(function(){
-  
+
   $('td.price-disabled').tipsy({
   gravity: 'e',
   live: true

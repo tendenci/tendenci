@@ -1,6 +1,8 @@
 from builtins import str
 import uuid
 from hashlib import md5
+import jwt
+import json
 import operator
 from datetime import datetime, timedelta
 from dateutil.parser import parse
@@ -128,6 +130,24 @@ class Place(models.Model):
     virtual = models.BooleanField(default=False, help_text=_('Is it a virtual event?'))
     name = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
+
+    # Zoom integration
+    use_zoom_integration = models.BooleanField(
+        default=False,
+        help_text=_('Use Zoom integration to allow launching Zoom meeting from Event.')
+    )
+    zoom_meeting_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=_('Zoom meeting ID for this Event. If none is set, will use Personal Zoom Meeting ID in Events Settings.')
+    )
+    zoom_meeting_passcode = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=_('Zoom meeting passcode for this Event. If none is set, will use Personal Zoom Meeting Passcode in Events Settings.')
+    )
 
     # offline location
     address = models.CharField(max_length=150, blank=True)
@@ -2273,6 +2293,74 @@ class Event(TendenciBaseModel):
     def certificate_signatures(self):
         """Signatures to display on certificate"""
         return self.eventstaff_set.filter(include_on_certificate=True).order_by('pk')
+
+    @property
+    def enable_zoom_meeting(self):
+        """
+        Indicates Zoom meeting should be enabled.
+        This should be enabled if use_zoom_integration is turned on,
+        and if there is a meeting number and passcode configured.
+        Meeting will not be enabled until 10 minutes before
+        event starts. Meeting will be available to join up until
+        the end_dt (allows participants to re-join if they lose connection)
+        """
+        ten_minutes_prior = datetime.now() >= self.start_dt - timedelta(minutes=10)
+
+        return (
+            ten_minutes_prior and
+            datetime.now() < self.end_dt and
+            get_setting("module", "events", "enable_zoom") and
+            self.place.use_zoom_integration and
+            self.zoom_meeting_number and
+            self.zoom_meeting_passcode
+        )
+
+    @property
+    def zoom_meeting_number(self):
+        """
+        Zoom meeting number for this event.
+        Defaults to Event Settings if none setup.
+        """
+        return (
+            self.place.zoom_meeting_id or
+            get_setting("module", "events", "zoom_meeting_id")
+        )
+
+    @property
+    def zoom_meeting_passcode(self):
+        """
+        Zoom meeting passcode for this event.
+        Defaults to Event Settings if none setup.
+        """
+        return (
+            self.place.zoom_meeting_passcode or
+            get_setting("module", "events", "zoom_meeting_passcode")
+        )
+
+    @property
+    def zoom_meeting_config(self):
+        return json.dumps({
+            'signature': self.zoom_jwt_token,
+            'sdkKey': settings.ZOOM_CLIENT_ID,
+            'meetingNumber':  self.zoom_meeting_number,
+            'password': self.zoom_meeting_passcode,
+            'tk': '',
+            'zak': ''
+        })
+
+    @property
+    def zoom_jwt_token(self):
+        """Generate token for Zoom meeting"""
+        payload = {
+            'sdkKey': settings.ZOOM_CLIENT_ID,
+            'mn': self.zoom_meeting_number,
+            'pc': self.zoom_meeting_passcode,
+            'role': 0, # 0 is regular attendee, 1 is the host
+            'exp': datetime.utcnow() + timedelta(seconds=3600)
+        }
+
+        return jwt.encode(payload, settings.ZOOM_CLIENT_SECRET, algorithm="HS256")
+
 
     def get_meta(self, name):
         """

@@ -75,6 +75,7 @@ from tendenci.apps.events.models import (
     CEUCategory,
     Registration,
     Registrant,
+    RegistrantChildEvent,
     Speaker,
     Organizer,
     Sponsor,
@@ -282,6 +283,23 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         free_event = not bool([p for p in pricing if p.price > 0])
     can_view_attendees = event.can_view_registrants(request.user)
 
+    registrant_user = None
+    if not event.parent or not event.nested_events_enabled:
+        registrant = Registrant.objects.filter(
+            registration__event=event,
+            user=request.user,
+            cancel_dt__isnull=True,
+        ).first()
+        registrant_user = registrant.user if registrant else None
+    elif event.parent and event.nested_events_enabled:
+        registrant_child_event = RegistrantChildEvent.objects.filter(
+            child_event=event,
+            registrant__user=request.user,
+            registrant__cancel_dt__isnull=True,
+        ).first()
+        registrant_user = registrant_child_event.registrant.user if registrant_child_event else None
+
+
     return render_to_resp(request=request, template_name=template_name, context={
         'days': days,
         'event': event,
@@ -297,7 +315,8 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'place_files': place_files,
         'free_event': free_event,
         'can_view_attendees': can_view_attendees,
-        'is_admin': request.user.profile.is_superuser
+        'is_admin': request.user.profile.is_superuser,
+        'registrant_user': registrant_user
     })
 
 
