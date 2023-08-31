@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='stripeaccount',
             name='email',
-            field=models.CharField(default='', max_length=200),
+            field=models.EmailField(default='', max_length=200),
         ),
         migrations.AlterField(
             model_name='stripeaccount',
@@ -41,5 +41,10 @@ class Migration(migrations.Migration):
             model_name='stripeaccount',
             name='status_detail',
             field=models.CharField(default='active', max_length=50),
+        ),
+        migrations.AlterField(
+            model_name='stripeaccount',
+            name='scope',
+            field=models.CharField(choices=[('standard', 'Standard'), ('express', 'Express')], max_length=20, verbose_name='Account Type'),
         ),
     ]

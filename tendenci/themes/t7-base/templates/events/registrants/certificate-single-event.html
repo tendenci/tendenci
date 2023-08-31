@@ -205,7 +205,7 @@
             {% endif %}
             <div class="row">
               <div class="left">{% trans "Date:" %}</div>
-              <div class="right"> {{ registrant.event_dates_display }}</div>
+              <div class="right"> {{ registrant.event.start_dt|date:"F j, Y" }}</div>
             </div>
             <div class="row">
               <div class="left">{% trans "Location: "%}</div>
@@ -226,8 +226,7 @@
     <div class="row small-font">{% trans "In accordance with the standards of the National Registry of CPE Sponsors, CPE Credits have been granted based on a 50-minute hour." %}</div>
   </div>
       <div class="row staff">
-        {% for staff in registrant.event.eventstaff_set.all %}
-          {% if staff.include_on_certificate %}
+        {% for staff in registrant.event.certificate_signatures %}
           <div class="col-md-3 staff">
             {% if staff.use_signature_on_certificate %}
               <img  src="{{ staff.signature_image.url }}" title="{{ staff.name }}" alt="{{ staff.name }}"/> <br />
@@ -238,7 +237,6 @@
               <span class="role">{{ staff.role }}</span>
             {% endif %}
           </div>
-         {% endif %}
       {% endfor %}
   </div>
   <div class="row address">

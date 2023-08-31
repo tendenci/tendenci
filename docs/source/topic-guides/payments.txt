@@ -62,10 +62,10 @@ How to Use Stripe Connect?
 
 We have integrated stripe connect for both standard and express accounts. For the standard accounts, the payments are made directly on the connected accounts. The connected accounts are responsible for the Stripe fees, etc. For the express accounts, payments are made to the main account and transfered to the express accounts. The main account is responsible for the Stripe fees, but will retain the application fee that taken from the express accounts. 
 
-To set up stripe connect, please following these steps:
+1) Before you continue, please make sure stripe connect is enabled in your stripe account. Also, you must update your *Connect branding settings* with business name, icon, brand color in order to create an account link in the onboarding process. You can set these up at https://dashboard.stripe.com/settings/connect. 
 
-1) Get the Stripe Connect Client ID from your stripe account, enter it to the site setting "Stripe Connect Client ID" at https://www.example.com/settings/module/payments/#id_stripe_connect_client_id.
+2) Get the Stripe Connect Client ID from your stripe account, enter it to the site setting "Stripe Connect Client ID" at https://www.example.com/settings/module/payments/#id_stripe_connect_client_id.
 
-2) Add the redirect url https://www.example.com/payments/stripe/connect/fetch-access-token/ to your stripe application settings at https://dashboard.stripe.com/test/settings/connect under Integration.
+3) Register a Webhook. In your stripe account, go to Developers -> Webhooks, add a Webhook endpoint: https://www.example.com/payments/stripe/connect/webhooks/. Under "Listen to", select "Events on connected accounts". Click "Select events to send" to expand the list of events, then check "account.updated" under Account, and click "Add events". Finally, click "Add endpoint" button. Once done, copy the "Signing secret" to the setting `STRIPE_WEBHOOK_SECRET` in your conf/setting.py . 
 
-3) Add connected accounts at admin backend https://www.example.com/admin/stripe/stripeaccount/, and associate an entity to each stripe account. Now payment will be paid to the connected stripe account with the same entity tied to the invoice. 
+4) To add a connected account, go to admin backend https://www.example.com/admin/stripe/stripeaccount/, click "Add stripe account" to start the onboarding process. After your connected account is successfully added, you should assign an entity to it. Now payment will be paid to the connected stripe account with the same entity tied to the invoice. 

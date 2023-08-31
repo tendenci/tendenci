@@ -21,6 +21,7 @@ urlpatterns = [
     re_path(r'^%s/delete/(?P<id>\d+)/$' % urlpath, views.delete, name="profile.delete"),
 
     # Credits
+    re_path(r'^%s/my-credits/$' % urlpath, views.credits, name="profile.my-credits"),
     re_path(r'^%s/(?P<username>[+-.\w\d@\s]+)/credits/$' % urlpath, views.credits, name="profile.credits"),
 
     # export profiles

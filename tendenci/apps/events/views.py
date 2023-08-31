@@ -2182,9 +2182,15 @@ def register(request, event_id=0,
 
     event.require_guests_info = reg_conf.require_guests_info
 
+    pricing = None
+    default_pricing = None
     if is_table and pricing_id:
         pricing = get_object_or_404(RegConfPricing, pk=pricing_id)
+        pricings = RegConfPricing.objects.filter(id=pricing_id)
         event.free_event = pricing.price <=0
+        if pricing.allow_member and not (pricing.allow_user or pricing.allow_anonymous):
+            event.has_member_price = True
+        default_pricing = pricing
     else:
         # get all available pricing for the Price Options to select
         if not pricings:
@@ -2252,7 +2258,10 @@ def register(request, event_id=0,
 
     params = {'prefix': 'registrant',
               'event': event,
-              'user': request.user}
+              'user': request.user,
+              'is_table': is_table, # for table reg
+              'default_pricing': default_pricing
+              }
     # allow superuser to use admin-only pricings
     if request.user.is_superuser:
         params.update({'validate_pricing': False})
@@ -2262,9 +2271,9 @@ def register(request, event_id=0,
         for price in pricings:
             pricing_dates_map.update({price.pk: price.days_price_covers})
 
-    if not is_table:
-        # pass the pricings to display the price options
-        params.update({'pricings': pricings})
+    #if not is_table:
+    # pass the pricings to display the price options
+    params.update({'pricings': pricings})
 
     if custom_reg_form:
         params.update({"custom_reg_form": custom_reg_form})
@@ -3951,6 +3960,9 @@ def registrant_check_in(request):
     """
     Check in or uncheck in a registrant.
     """
+    if not has_perm(request.user, 'events.view_registrant'):
+        raise Http403
+    
     response_d = {'error': True}
     if request.method == 'POST':
         registrant_id = request.POST.get('id', None)
@@ -3978,6 +3990,9 @@ def registrant_check_in(request):
                         registrant.checked_out = True
                         registrant.checked_out_dt = datetime.now()
                         registrant.save()
+                        # single event has checked_out enabled
+                        # if single_event has credits configured, assign credits
+                        registrant.event.assign_credits(registrant)
                     response_d['checked_out_dt'] = registrant.checked_out_dt
                     if isinstance(response_d['checked_out_dt'], datetime):
                         response_d['checked_out_dt'] = response_d['checked_out_dt'].strftime('%m/%d %I:%M%p')
@@ -4092,7 +4107,7 @@ def sample_certificate(request, event_id=0, template_name='events/registrants/ce
         'license_number': 123456789,
         'license_state': 'TX',
         'ptin': 987654321,
-        'event_dates_display': datetime.now().date().strftime('%b %d, %Y'),
+        'event_dates_display': event.event_dates_display,
         'possible_cpe_credits': event.possible_cpe_credits,
         'credits_earned': event.possible_cpe_credits,
         'irs_credits_earned': 5.0,
@@ -4118,7 +4133,8 @@ def registrant_certificate(request, registrant_id=0, template_name='events/regis
     registrant = get_object_or_404(Registrant, pk=registrant_id)
 
     if not has_perm(request.user,'registrants.view_registrant', registrant):
-        raise Http403
+        if not (registrant.user and registrant.user == request.user):
+            raise Http403
 
     # TODO: remove hard-coded symposiums later
     if not (registrant.event.has_child_events and (registrant.event.type and registrant.event.type.name.lower() == 'symposiums')):

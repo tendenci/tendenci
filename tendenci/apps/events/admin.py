@@ -363,9 +363,9 @@ class RegistrantCreditsEventFilter(admin.SimpleListFilter):
 
 
 class RegistrantCreditsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'registrant', 'event', 'credit_name', 'credits', 'released')
+    list_display = ('id', 'registrant', 'event_code', 'event', 'credit_name', 'credits', 'released')
     list_editable = ('credits', 'released')
-    search_fields = ('event__title', )
+    search_fields = ('event__title', 'event__event_code',)
     readonly_fields = ('registrant', 'event_credit', 'event')
     list_filter = ('released', RegistrantCreditsEventFilter)
     actions = ["release"]
@@ -390,6 +390,9 @@ class RegistrantCreditsAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
+    def event_code(self, obj):
+        return obj.event.event_code
+    event_code.short_description = _('Event Code')
 
 if get_setting('module', 'events', 'use_credits'):
     admin.site.register(CEUCategory, CEUCategoryAdmin)

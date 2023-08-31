@@ -33,7 +33,7 @@ from tendenci.apps.perms.utils import update_perms_and_save
 
 
 class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
-    list_display = ['name', 'id', 'price', 'renewal_price', 'membership_type', 'apply_cap',
+    list_display = ['name', 'id', 'price', 'renewal_price', 'get_membership_type', 'apply_cap',
                      'membership_cap', 'allow_above_cap', 'above_cap_price', 'reps_groups', 'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
     list_editable = ['position']
@@ -78,6 +78,15 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
 
         return instance
 
+    @mark_safe
+    def get_membership_type(self, instance):
+        return '<a href="%s">%s</a>' % (
+              reverse('admin:memberships_membershiptype_change',
+                      args=[instance.membership_type.id]),
+              instance.membership_type.name,)
+    get_membership_type.short_description = _('Membership Type (Individual)')
+    get_membership_type.admin_order_field = 'membership_type'
+    
     @mark_safe
     def reps_groups(self, instance):
         reps_groups_links = ''
