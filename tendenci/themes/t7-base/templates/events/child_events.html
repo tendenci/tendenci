@@ -12,7 +12,12 @@
       </td>
       <td width="20%">
         {{ child.event_code }}      
-     </td>
+      </td>
+      {% if is_admin %}
+      <td width="20%">
+        {% if child.registration_configuration.enabled %}registration enabled{% else %}{% endif %}
+      </td>
+      {% endif %}
       <td width="50%">
         <a href="{% if edit %}{{child.get_absolute_edit_url}}{% else %}{{ child.get_absolute_url }}{% endif %}">{{ child.title }}</a>
       </td>

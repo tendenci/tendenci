@@ -295,7 +295,8 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'organizer_files': organizer_files,
         'place_files': place_files,
         'free_event': free_event,
-        'can_view_attendees': can_view_attendees
+        'can_view_attendees': can_view_attendees,
+        'is_admin': request.user.profile.is_superuser
     })
 
 
@@ -595,7 +596,11 @@ def display_child_events(request, id, template_name="events/edit.html"):
         return HttpResponseRedirect(reverse(redirect, args=[event.pk]))
 
     return render_to_resp(request=request, template_name=template_name,
-        context={'event': event, 'multi_event_forms': list(), 'label': 'children'})
+        context={
+            'event': event,
+            'is_admin': request.user.profile.is_superuser,
+            'multi_event_forms': list(),
+            'label': 'children'})
 
 
 @is_enabled('events')
