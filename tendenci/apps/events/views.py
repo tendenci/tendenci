@@ -747,7 +747,11 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
     # response
     return render_to_resp(request=request, template_name=template_name,
-        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "overview"})
+        context={
+            'event': event,
+            'use_zoom_integration': get_setting("module", "events", "enable_zoom"),
+            'multi_event_forms': multi_event_forms,
+            'label': "overview"})
 
 
 @is_enabled('events')
@@ -1854,6 +1858,7 @@ def add(request, year=None, month=None, day=None, is_template=False, parent_even
         return render_to_resp(request=request, template_name=template_name,
             context={
             'is_template': is_template,
+            'use_zoom_integration': get_setting("module", "events", "enable_zoom"),
             'multi_event_forms':[
                 form_event,
                 form_place,
