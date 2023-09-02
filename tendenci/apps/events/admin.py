@@ -19,7 +19,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
                                          CustomRegFormEntry, CustomRegFieldEntry, Event,
                                          CEUCategory, SignatureImage, CertificateImage,
-                                         RegistrantCredits)
+                                         RegistrantCredits, VirtualEventCreditsLogicConfiguration)
 from tendenci.apps.events.forms import (CustomRegFormAdminForm, CustomRegFormForField, TypeForm,
                                         StandardRegAdminForm)
 from tendenci.apps.event_logs.models import EventLog
@@ -394,8 +394,34 @@ class RegistrantCreditsAdmin(admin.ModelAdmin):
         return obj.event.event_code
     event_code.short_description = _('Event Code')
 
+
+class VirtualEventCreditsLogicConfigurationAdmin(admin.ModelAdmin):
+    list_display = (
+        'edit',
+        'credit_period',
+        'full_credit_percent',
+        'full_credit_questions',
+        'half_credits_allowed',
+        'half_credit_periods',
+    )
+
+    def edit(self, obj):
+        return 'Edit'
+
+    def has_add_permission(self, request):
+        return not VirtualEventCreditsLogicConfiguration.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    #def changelist_view(self, request, extra_context=None):
+    #    return redirect(reverse('admin:virtualeventcreditslogicconfiguration_edit'))
+
 if get_setting('module', 'events', 'use_credits'):
     admin.site.register(CEUCategory, CEUCategoryAdmin)
+
+    if get_setting('module', 'events', 'enable_zoom'):
+        admin.site.register(VirtualEventCreditsLogicConfiguration, VirtualEventCreditsLogicConfigurationAdmin)
 
 
 admin.site.register(RegistrantCredits, RegistrantCreditsAdmin)

@@ -177,6 +177,40 @@ class Place(models.Model):
         return [s for s in (self.city, self.state) if s]
 
 
+class VirtualEventCreditsLogicConfiguration(models.Model):
+    credit_period = models.PositiveSmallIntegerField(
+        _('Period (Number of Minutes per Credits Earned)'),
+        default=50,
+        help_text=_('Number of minutes to earn 1 full credit.')
+    )
+    full_credit_percent = models.DecimalField(
+        _('Percent of Questions Correct for Full Credit'),
+        blank=True,
+        null=True,
+        max_digits=2,
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        help_text=(_('Per period. Leave blank if using number of questions.'))
+    )
+    full_credit_questions = models.PositiveSmallIntegerField(
+        _('Number of Questions for Full Credit'),
+        blank=True,
+        null=True,
+        help_text=(_('Per period. Leave blank if using percentage.'))
+    )
+    half_credits_allowed = models.BooleanField(_('Half Credits Allowed'), default=True)
+    half_credit_periods = models.PositiveSmallIntegerField(
+        _('Number of Periods after which Half Credits Can be Earned'),
+        blank=True,
+        null=True,
+        help_text=(_('Leave blank if allowed for entirety of event'))
+    )
+
+    class Meta:
+        verbose_name =_('Virtual Event Credits Logic Configuration')
+        verbose_name_plural =_('Virtual Event Credits Logic Configuration')
+
+
 class CEUCategory(models.Model):
     """
     Continuing Education Units
