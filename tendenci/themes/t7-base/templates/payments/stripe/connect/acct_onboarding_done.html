@@ -1,0 +1,32 @@
+{% extends "payments/stripe/connect/base.html" %}
+{% load styled_forms %}
+
+{% block content %}
+
+<h1>{% trans 'Connect with Stripe' %}</h1>
+
+
+{% if MODULE_PAYMENTS_STRIPE_CONNECT_CLIENT_ID %}
+	{% if sa.status_detail == 'active' %}
+		<p class="text-success">{% trans 'Congratulations, your stripe account is set up!' %}</p>
+		{% if not sa.entity %}
+		<p>{% trans 'Please connect your account with an eitity' %} 
+		<a class="btn btn-primary" href="{% url 'admin:stripe_stripeaccount_change' sa.id %}">{% trans 'Edit' %}</a></p>
+		{% endif %}
+		<div><a href="{% url 'admin:stripe_stripeaccount_changelist' %}">{% trans 'Back to Stripe Accounts Admin Backend' %}</a></div>
+	{% else %}
+		{% if sa.status_detail == 'not completed' %}
+			<p>{% trans 'Your stripe onboarding process is not completed yet.' %}</p>
+			<p>
+			<a class="btn btn-info" href="{{ refresh_url }}">Continue to set up your payments on Stripe</a>
+			<p>
+		{% else %}
+			<p>{% trans 'Your stripe account is:' %} <span class="text-danger">{{ sa.status_detail }}</span></p>
+		{% endif %}
+	{% endif %}
+<br />
+{% else %}
+{% trans 'The Stripe connect is not enabled.' %}
+{% endif %}
+
+{% endblock %}

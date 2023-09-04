@@ -59,8 +59,8 @@ unicodecsv
 django-bootstrap-form>=3.1,<4
 email-reply-parser
 django-markdown-deux
-xhtml2pdf==0.2.5
-reportlab==3.6.6
+xhtml2pdf==0.2.11
+reportlab==3.6.13
 python-magic
 XlsxWriter==1.4.4
 nameparser

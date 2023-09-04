@@ -295,7 +295,8 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'organizer_files': organizer_files,
         'place_files': place_files,
         'free_event': free_event,
-        'can_view_attendees': can_view_attendees
+        'can_view_attendees': can_view_attendees,
+        'is_admin': request.user.profile.is_superuser
     })
 
 
@@ -595,7 +596,11 @@ def display_child_events(request, id, template_name="events/edit.html"):
         return HttpResponseRedirect(reverse(redirect, args=[event.pk]))
 
     return render_to_resp(request=request, template_name=template_name,
-        context={'event': event, 'multi_event_forms': list(), 'label': 'children'})
+        context={
+            'event': event,
+            'is_admin': request.user.profile.is_superuser,
+            'multi_event_forms': list(),
+            'label': 'children'})
 
 
 @is_enabled('events')
@@ -2032,6 +2037,15 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
     registration = get_object_or_404(Registration, pk=registration_id)
     has_error = False
 
+    redirect_url = handle_registration_payment(registration)
+    default_redirect_response = redirect_response = HttpResponseRedirect(
+                reverse('event.registration_confirmation',
+                        args=(registration.event.id, registration.registrant.hash)
+                ))
+
+    if redirect_url:
+            redirect_response = HttpResponseRedirect(redirect_url)
+
     if request.POST:
         data_by_registrant = []
         for registrant in registration.registrant_set.all():
@@ -2051,27 +2065,19 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
                 messages.set_level(request, messages.ERROR)
                 messages.add_message(request, messages.ERROR, e.args[0])
 
-        redirect = handle_registration_payment(registration)
-        if redirect and not has_error:
-            return HttpResponseRedirect(redirect)
-        elif not has_error:
-            return HttpResponseRedirect(
-                reverse('event.registration_confirmation',
-                        args=(registration.event.id, registration.registrant.hash)
-                ))
+        return redirect_response if not has_error else default_redirect_response
 
     forms = list()
     for registrant in registration.registrant_set.all():
         if registrant.registration_closed:
             continue
 
-        forms.append(ChildEventRegistrationForm(registrant))
+        form = ChildEventRegistrationForm(registrant)
+        if form.fields:
+            forms.append(form)
 
     if not len(forms):
-        return HttpResponseRedirect(
-            reverse('event.registration_confirmation',
-                    args=(registration.event.id, registration.registrant.hash)
-            ))
+        return redirect_response if not has_error else default_redirect_response
 
     return render_to_resp(
         request=request, template_name=template_name, context={
@@ -2181,9 +2187,15 @@ def register(request, event_id=0,
 
     event.require_guests_info = reg_conf.require_guests_info
 
+    pricing = None
+    default_pricing = None
     if is_table and pricing_id:
         pricing = get_object_or_404(RegConfPricing, pk=pricing_id)
+        pricings = RegConfPricing.objects.filter(id=pricing_id)
         event.free_event = pricing.price <=0
+        if pricing.allow_member and not (pricing.allow_user or pricing.allow_anonymous):
+            event.has_member_price = True
+        default_pricing = pricing
     else:
         # get all available pricing for the Price Options to select
         if not pricings:
@@ -2251,7 +2263,10 @@ def register(request, event_id=0,
 
     params = {'prefix': 'registrant',
               'event': event,
-              'user': request.user}
+              'user': request.user,
+              'is_table': is_table, # for table reg
+              'default_pricing': default_pricing
+              }
     # allow superuser to use admin-only pricings
     if request.user.is_superuser:
         params.update({'validate_pricing': False})
@@ -2261,9 +2276,9 @@ def register(request, event_id=0,
         for price in pricings:
             pricing_dates_map.update({price.pk: price.days_price_covers})
 
-    if not is_table:
-        # pass the pricings to display the price options
-        params.update({'pricings': pricings})
+    #if not is_table:
+    # pass the pricings to display the price options
+    params.update({'pricings': pricings})
 
     if custom_reg_form:
         params.update({"custom_reg_form": custom_reg_form})
@@ -3950,6 +3965,9 @@ def registrant_check_in(request):
     """
     Check in or uncheck in a registrant.
     """
+    if not has_perm(request.user, 'events.view_registrant'):
+        raise Http403
+    
     response_d = {'error': True}
     if request.method == 'POST':
         registrant_id = request.POST.get('id', None)
@@ -3977,6 +3995,9 @@ def registrant_check_in(request):
                         registrant.checked_out = True
                         registrant.checked_out_dt = datetime.now()
                         registrant.save()
+                        # single event has checked_out enabled
+                        # if single_event has credits configured, assign credits
+                        registrant.event.assign_credits(registrant)
                     response_d['checked_out_dt'] = registrant.checked_out_dt
                     if isinstance(response_d['checked_out_dt'], datetime):
                         response_d['checked_out_dt'] = response_d['checked_out_dt'].strftime('%m/%d %I:%M%p')

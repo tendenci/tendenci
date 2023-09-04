@@ -37,6 +37,13 @@
                             </span>
                         </li>
                     {% endif %}
+                     {% if user.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:app_list' 'events' %}">{% trans 'Admin Backend' %}</a>
+                            </span>
+                        </li>
+                     {% endif %}
 
                     <li class="content-item">
                         <span class="app-name">
