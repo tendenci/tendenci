@@ -40,16 +40,16 @@
     {% for category, year_data in credits_grid.items %}
   <div class="category">
   <div class="row">
-    <div class="col-md-2">
+    <div class="col-md-1">
       {{ category }}
     </div>
-    <div class="col-md-2">
+    <div class="col-md-1">
       Total
     </div>
     {% for cat, credit_names in credits_categories.items %}
       {% if cat == category %}
         {% for credit_name in credit_names %}
-          <div class="col-md-2">{{ credit_name }}</div>
+          <div class="col-md-1">{{ credit_name }}</div>
         {% endfor %}
       {% endif %}
     {% endfor %}
@@ -57,14 +57,14 @@
   {% for year, data in year_data.items %}
   <div class="year-data">
     <div class="row">
-      <div class="col-md-2">
+      <div class="col-md-1">
         <a href="#" class="year">+ {{ year }}</a>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-1">
         {{ data.total }}
       </div>
       {% for key, value in data.credits.items %}
-          <div class="col-md-2">{{ value }}</div>
+          <div class="col-md-1">{{ value }}</div>
       {% endfor %}
       </div>
       <div class="event-details">
