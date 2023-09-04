@@ -1,0 +1,40 @@
+{% extends "payments/stripe/connect/base.html" %}
+{% load styled_forms %}
+
+{% block content %}
+
+<h1>{% trans 'Connect with Stripe' %}</h1>
+
+<style>
+.stripe-info{
+/*     background: url({% static 'images/stripe-logo-blurple-101x48.png' %}) right 25px center no-repeat;
+ */
+
+}
+
+</style>
+
+{% if MODULE_PAYMENTS_STRIPE_CONNECT_CLIENT_ID %}
+<p class="well">
+{% trans 'Please fill out the fields below and continue with the onboarding process. You can choose either "Standard" or "Express" account type.  For more on stripe account types, please check out' %}
+<a target="_blank" href="https://stripe.com/docs/connect/accounts">{% trans 'choose your account type' %}</a>
+</p>
+ <form class="form-horizontal" action="" method="post">{% csrf_token %}
+        {{ onboarding_form|styled_form }}
+        
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+            	<div class="well stripe-info">{% trans "Click Save and continue to set up your payments on Stripe." %}</div>
+                <button type="submit" class="btn btn-primary text-capitalize">
+                   {% trans "SAVE AND CONTINUE" %}
+                </button>
+            </div>
+        </div>
+        
+ </form>
+<br />
+{% else %}
+{% trans 'The Stripe connect is not enabled.' %}
+{% endif %}
+
+{% endblock %}

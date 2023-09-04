@@ -731,8 +731,11 @@ class Registration(models.Model):
             return False
 
         for registrant in self.registrant_set.filter(cancel_dt__isnull=True):
-            if registrant.child_events.exists() and not registrant.registration_closed:
-                return True
+            return (
+                not registrant.registration_closed and
+                registrant.event.upcoming_child_events.exists()
+            )
+
         return False
 
     def allow_adjust_invoice_by(self, request_user):
@@ -2158,6 +2161,14 @@ class Event(TendenciBaseModel):
         return Event.objects.filter(parent_id=self.pk).order_by('start_dt')
 
     @property
+    def upcoming_child_events(self):
+        """All upcoming child events available for registration"""
+        return self.child_events.filter(
+            start_dt__date__gt=datetime.now().date(),
+            registration_configuration__enabled=True
+        )
+
+    @property
     def events_with_credits(self):
         """Return events that have credits assigned"""
         events = self.child_events if self.nested_events_enabled and self.child_events else [self]
@@ -2244,8 +2255,9 @@ class Event(TendenciBaseModel):
         Credits default to un-released, so they can be overridden.
         """
         event = registrant.event
-        for credit in self.eventcredit_set.all():
-           RegistrantCredits.objects.get_or_create(
+        # only assign those credits that are available
+        for credit in self.eventcredit_set.filter(available=True):
+            RegistrantCredits.objects.get_or_create(
                registrant_id=registrant.pk,
                event=event,
                credit_dt=event.start_dt,
