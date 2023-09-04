@@ -2158,7 +2158,7 @@ class Event(TendenciBaseModel):
     @property
     def child_events(self):
         """All child events tied to this event"""
-        return Event.objects.filter(parent_id=self.pk).order_by('start_dt')
+        return Event.objects.filter(parent_id=self.pk).order_by('start_dt', 'event_code')
 
     @property
     def upcoming_child_events(self):
