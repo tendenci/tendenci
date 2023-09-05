@@ -4,6 +4,7 @@ from hashlib import md5
 import jwt
 import json
 import operator
+import pytz
 from datetime import datetime, timedelta
 from dateutil.parser import parse
 from functools import reduce
@@ -2385,12 +2386,15 @@ class Event(TendenciBaseModel):
     @property
     def zoom_jwt_token(self):
         """Generate token for Zoom meeting"""
+        max_exp = datetime.now().astimezone(pytz.UTC) + timedelta(hours=24)
+        end_dt = self.end_dt.astimezone(pytz.UTC)
+
         payload = {
             'sdkKey': settings.ZOOM_CLIENT_ID,
             'mn': self.zoom_meeting_number,
             'pc': self.zoom_meeting_passcode,
             'role': 0, # 0 is regular attendee, 1 is the host
-            'exp': datetime.utcnow() + timedelta(seconds=3600)
+            'exp': min(end_dt, max_exp)
         }
 
         return jwt.encode(payload, settings.ZOOM_CLIENT_SECRET, algorithm="HS256")
