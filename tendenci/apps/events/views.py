@@ -747,11 +747,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
     # response
     return render_to_resp(request=request, template_name=template_name,
-        context={
-            'event': event,
-            'use_zoom_integration': get_setting("module", "events", "enable_zoom"),
-            'multi_event_forms': multi_event_forms,
-            'label': "overview"})
+        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "overview"})
 
 
 @is_enabled('events')
@@ -887,7 +883,12 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
 
     # response
     return render_to_resp(request=request, template_name=template_name,
-        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "location"})
+        context={
+            'event': event,
+            'use_zoom_integration': get_setting("module", "events", "enable_zoom"),
+            'multi_event_forms': multi_event_forms,
+            'label': "location"
+        })
 
 
 
