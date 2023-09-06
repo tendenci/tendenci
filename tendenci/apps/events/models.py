@@ -745,8 +745,11 @@ class Registration(models.Model):
 
         for registrant in self.registrant_set.filter(cancel_dt__isnull=True):
             return (
-                not registrant.registration_closed and
-                registrant.event.upcoming_child_events.exists()
+                not registrant.registration_closed and (
+                    (registrant.user and registrant.user.profile.is_superuser and
+                    registrant.event.child_events.exists()) or
+                    registrant.event.upcoming_child_events.exists()
+                )
             )
 
         return False
@@ -1253,7 +1256,10 @@ class Registrant(models.Model):
     def upcoming_event_days(self):
         """Number of days upcoming covered by pricing"""
         if self.pricing and self.pricing.days_price_covers:
-            return self.pricing.days_price_covers - len(self.past_attendance_dates)
+            past_dates_count = len(self.past_attendance_dates)
+            if self.user and self.user.profile.is_superuser:
+                past_dates_count = 0
+            return self.pricing.days_price_covers - past_dates_count
         return 0
 
     @property

@@ -2130,7 +2130,7 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
         if registrant.registration_closed:
             continue
 
-        form = ChildEventRegistrationForm(registrant, request.user.is_superuser)
+        form = ChildEventRegistrationForm(registrant, request.user.profile.is_superuser)
         if form.fields:
             forms.append(form)
 
@@ -2557,11 +2557,12 @@ def register(request, event_id=0,
         if has_registrant_form_errors:
             break
 
+    event_days = event.full_event_days if request.user.profile.is_superuser else event.days
     return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
         'event_price': event_price,
         'pricing_dates_map': json.dumps(pricing_dates_map),
-        'event_days_count': len(event.days) + 1 if event.days else 0,
+        'event_days_count': len(event_days) + 1 if event_days else 0,
         'free_event': event.free_event,
         'price_list':price_list,
         'total_price':total_price,

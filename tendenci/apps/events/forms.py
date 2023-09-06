@@ -307,7 +307,7 @@ class AttendanceDatesMixin:
     """Mixin for forms that use pricing attendance dates"""
     def add_attendance_dates(self):
         """Add attendance dates if required by Event"""
-        days = self.event.full_event_days if self.user and self.user.is_superuser else self.event.days
+        days = self.event.full_event_days if self.user and self.user.profile.is_superuser else self.event.days
 
         if self.event and self.event.requires_attendance_dates:
             self.fields['attendance_dates'] = forms.MultipleChoiceField(
@@ -339,9 +339,10 @@ def attendance_dates_callback(field, event, is_admin):
     """Add attendance_dates when using modelformset_factory if applicable"""
     if field.name == 'attendance_dates' and event.requires_attendance_dates:
         days = event.full_event_days if  is_admin else event.days
+
         return forms.MultipleChoiceField(
                 widget=forms.CheckboxSelectMultiple,
-                choices = [(date, date) for date in event.days]
+                choices = [(date, date) for date in days]
             )
     return field.formfield()
 
