@@ -1,55 +1,41 @@
 {% block extra_body %}
-<!-- For Component and Client View -->
-<script src="https://source.zoom.us/2.15.2/lib/vendor/react.min.js"></script>
-<script src="https://source.zoom.us/2.15.2/lib/vendor/react-dom.min.js"></script>
-<script src="https://source.zoom.us/2.15.2/lib/vendor/redux.min.js"></script>
-<script src="https://source.zoom.us/2.15.2/lib/vendor/redux-thunk.min.js"></script>
-<script src="https://source.zoom.us/2.15.2/lib/vendor/lodash.min.js"></script>
-
-<!-- For Component View -->
-<script src="https://source.zoom.us/2.15.2/zoom-meeting-embedded-2.15.2.min.js"></script>
 
 <script type="text/javascript">
-    function startMeeting() {
-        console.log("starting...")
-    const client = ZoomMtgEmbedded.createClient()
-        console.log("client created...")
+    ZoomMtg.setZoomJSLib('https://source.zoom.us/2.15.2/lib', '/av')
+
+    ZoomMtg.preLoadWasm()
+    ZoomMtg.prepareWebSDK()
+    // loads language files, also passes any error messages to the ui
+    ZoomMtg.i18n.load('en-US')
+    ZoomMtg.i18n.reload('en-US')
+
+
+    // const client = ZoomMtgEmbedded.createClient()
     let meetingSDKElement = document.getElementById('meetingSDKElement')
+    document.getElementById('zmmtg-root').style.display = 'block';
+    let meetingConfig = JSON.parse('{{ event.zoom_meeting_config|safe }}');
 
-        console.log("init....")
-    client.init({
-        zoomAppRoot: meetingSDKElement,
-        language: 'en-US',
-        customize: {
-            video: {
-                popper: {
-                    placement: 'top'
+    ZoomMtg.init({
+        leaveUrl: '/events/2',
+        disablePreview: true,
+        success: (success) => {
+            ZoomMtg.join({
+                ...meetingConfig,
+                userName: '{{ registrant_user.username }}',
+                userEmail: '{{ registrant_user.email }}',
+                success: (success) => {
+                    console.log(success);
+                    console.log('joined meeting!');
                 },
-                isResizable: true,
-                viewSizes: {
-                    default: {
-                        width: 1000,
-                        height: 600
-                    },
-                    ribbon: {
-                        width: 300,
-                        height: 700
-                    }
-                }
-            }
+                error: (error) => {
+                    console.log(error);
+                },
+            })
+        },
+        error: (error) => {
+            console.log(error);
         }
-    })
-
-        console.log("joining....")
-
-        let meetingConfig = JSON.parse('{{ event.zoom_meeting_config|safe }}');
-        client.join({
-            ...meetingConfig,
-            userName:  '{{ registrant_user.username }}',
-            userEmail: '{{ registrant_user.email }}'
-      });
-        console.log("joined!")
-}
+    });
 
 </script>
 {% endblock %}

@@ -2378,7 +2378,7 @@ class Event(TendenciBaseModel):
             'signature': self.zoom_jwt_token,
             'sdkKey': settings.ZOOM_CLIENT_ID,
             'meetingNumber':  self.zoom_meeting_number,
-            'password': self.zoom_meeting_passcode,
+            'passWord': self.zoom_meeting_passcode,
             'tk': '',
             'zak': ''
         })
@@ -2392,9 +2392,9 @@ class Event(TendenciBaseModel):
         payload = {
             'sdkKey': settings.ZOOM_CLIENT_ID,
             'mn': self.zoom_meeting_number,
-            'pc': self.zoom_meeting_passcode,
             'role': 0, # 0 is regular attendee, 1 is the host
-            'exp': min(end_dt, max_exp)
+            'exp': min(end_dt, max_exp),
+            'appKey': settings.ZOOM_CLIENT_ID,
         }
 
         return jwt.encode(payload, settings.ZOOM_CLIENT_SECRET, algorithm="HS256")

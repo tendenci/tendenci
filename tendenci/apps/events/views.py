@@ -217,6 +217,33 @@ def event_custom_reg_form_list(request, event_id, template_name="events/event_cu
 
 
 @is_enabled('events')
+@login_required
+def zoom(request, event_id, template_name="events/zoom.html"):
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
+    registrant_user = None
+
+    if not event.parent or not event.nested_events_enabled:
+        registrant = Registrant.objects.filter(
+            registration__event=event,
+            user=request.user,
+            cancel_dt__isnull=True,
+        ).first()
+        registrant_user = registrant.user if registrant else None
+    elif event.parent and event.nested_events_enabled:
+        registrant_child_event = RegistrantChildEvent.objects.filter(
+            child_event=event,
+            registrant__user=request.user,
+            registrant__cancel_dt__isnull=True,
+        ).first()
+        registrant_user = registrant_child_event.registrant.user if registrant_child_event else None
+
+
+    return render_to_resp(request=request, template_name=template_name, context={
+        'event': event,
+        'registrant_user': registrant_user
+    })
+
+@is_enabled('events')
 def details(request, id=None, private_slug=u'', template_name="events/view.html"):
     if not id and not private_slug:
         return HttpResponseRedirect(reverse('event.month'))
