@@ -82,7 +82,7 @@
               {% credits_form_display event credit_forms user %}
             {% endif %}
             {% if event.has_child_events and label == "children" %}
-                {% child_events_display event True %}
+                {% child_events_display event user True %}
             {% endif %}
             {% if event.use_credits_enabled and label == "review_credits" %}
                 {% review_and_edit_credits event %}

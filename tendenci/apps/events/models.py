@@ -2164,13 +2164,54 @@ class Event(TendenciBaseModel):
         return self.nested_events_enabled and self.child_events.exists()
 
     @property
+    def all_child_events(self):
+        """All child events, including those outside of Event timeframe"""
+        return Event.objects.filter(parent_id=self.pk).order_by('start_dt', 'event_code')
+
+    @property
     def child_events(self):
         """All child events tied to this event"""
-        return Event.objects.filter(
-            parent_id=self.pk,
+        return self.all_child_events.filter(
             start_dt__gte=self.start_dt,
             end_dt__lte=self.end_dt,
-        ).order_by('start_dt', 'event_code')
+        )
+
+    def get_child_events_by_permission(self, user=None, edit=False):
+        action = 'edit' if edit else 'view'
+
+        # If superuser, return everything - including sub events outside
+        # main event's window
+        if user and user.profile.is_superuser:
+            return self.all_child_events
+
+        # Everyone can view anonymous events
+        anonymous_events = self.child_events.filter(allow_anonymous_view=True)
+        child_events = Event.objects.none() if edit else anonymous_events
+
+        # Return events that allow anonymous view if user is anonymous or if
+        # there aren't any other events
+        if not user or not self.child_events.filter(allow_anonymous_view=False).exists():
+            return child_events
+
+        # Add sub events with group permissions belonging to user
+        user_groups = user.groups.all().values_list('pk', flat=True)
+        if user_groups:
+            child_events |= self.child_events.filter(
+                perms__group__in=user_groups,
+                codename='change_event' if edit else 'view_event',
+            )
+
+        # Add all sub events that have user level permissions
+        params = {r'allow_user_{action}': True}
+        child_events |= self.child_events.filter(**params)
+
+        # If not a member, return events (anonymous, group level, user level)
+        if not user.profile.is_member:
+            return child_events
+
+        # Add member level sub events and return  events (anonymous, group, user, memeber)
+        params = {f'allow_member_{action}': True}
+        return child_events | self.child_events.filter(**params)
 
     @property
     def upcoming_child_events(self):

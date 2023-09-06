@@ -42,9 +42,9 @@ def credits_form_display(context, event, credit_forms, user):
 
 
 @register.inclusion_tag("events/child_events.html", takes_context=True)
-def child_events_display(context, event, edit=False):
+def child_events_display(context, event, user=None, edit=False):
     context.update({
-        "child_events": event.child_events,
+        "child_events": event.get_child_events_by_permission(user, edit),
         "edit": edit,
     })
     return context
