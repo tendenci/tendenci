@@ -2711,7 +2711,22 @@ class EventRegistrantSearchForm(forms.Form):
                                         required=False)
 
 
-class MemberRegistrationForm(forms.Form):
+class UserMemberRegBaseForm(FormControlWidgetMixin, forms.Form):
+    """
+    User or member Registration base form.
+    """
+
+    def __init__(self, pricings, *args, **kwargs):
+        super(UserMemberRegBaseForm, self).__init__(*args, **kwargs)
+
+        self.fields['pricing'] = forms.ModelChoiceField(
+            queryset=pricings,
+            widget=forms.RadioSelect(),)
+        self.fields['pricing'].label_from_instance = _get_price_labels
+        self.fields['pricing'].empty_label = None
+
+
+class MemberRegistrationForm(UserMemberRegBaseForm):
     """
     Member Registration form.
     """
@@ -2719,13 +2734,7 @@ class MemberRegistrationForm(forms.Form):
                                  help_text=_("comma separated if multiple"))
 
     def __init__(self, event, pricings, *args, **kwargs):
-        super(MemberRegistrationForm, self).__init__(*args, **kwargs)
-
-        self.fields['pricing'] = forms.ModelChoiceField(
-            queryset=pricings,
-            widget=forms.RadioSelect(),)
-        self.fields['pricing'].label_from_instance = _get_price_labels
-        self.fields['pricing'].empty_label = None
+        super(MemberRegistrationForm, self).__init__(pricings, *args, **kwargs)
 
     def clean_member_ids(self):
         member_ids = self.cleaned_data['member_ids'].split(',')
@@ -2736,6 +2745,35 @@ class MemberRegistrationForm(forms.Form):
                 raise forms.ValidationError(_('Member #%s does not exists!' % mem_id.strip()))
 
         return self.cleaned_data['member_ids']
+
+
+class UserRegistrationForm(UserMemberRegBaseForm):
+    """
+    User Registration form.
+    """
+    user_display = forms.CharField(max_length=80,
+                        label=_('User'),
+                        required=False,
+                        help_text=_('Type name or username or email, then press the down arrow key to select a suggestion'))
+    user = forms.IntegerField(widget=forms.HiddenInput())
+
+    def __init__(self, event, pricings, *args, **kwargs):
+        self.event = event
+        super(UserRegistrationForm, self).__init__(pricings, *args, **kwargs)
+
+        self.fields['user'].error_messages['required'
+                                ] = _('Please enter a valid user.')
+
+    def clean_user(self):
+        user = int(self.cleaned_data['user'])
+        if not User.objects.filter(id=user).exists():
+            raise forms.ValidationError(_('User does not exists!'))
+        if self.event.registrants().filter(user=user):
+            user = User.objects.get(id=user)
+            raise forms.ValidationError(_(f'{user.first_name} {user.last_name} ({user.email}) already registered for event "{self.event}"!'))
+
+        return self.cleaned_data['user']
+
 
 class EventExportForm(FormControlWidgetMixin, forms.Form):
     start_dt = forms.DateField(

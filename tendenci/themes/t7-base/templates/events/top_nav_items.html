@@ -313,6 +313,12 @@
                                         <a href="{% url 'event.member_register' app_object.pk %}">{% trans "Register Members" %}</a>
                                     </span>
                                 </li>
+                                
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.user_register' app_object.pk %}">{% trans "Register A User" %}</a>
+                                    </span>
+                                </li>
                             {% endif %}
                             
                             <li class="content-item">

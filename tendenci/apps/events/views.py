@@ -38,6 +38,7 @@ from django.forms.models import BaseModelFormSet, modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 from django.db.models import F
+from django.contrib.auth.models import User
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.decorators import password_required
@@ -1996,8 +1997,11 @@ def multi_register_redirect(request, event, msg):
 
 @is_enabled('events')
 @superuser_required
-def member_register(request, event_id,
+def member_register(request, event_id, form_class=MemberRegistrationForm,
                     template_name="events/reg8n/member-register.html"):
+    """
+    Admin only tool to register a user or one or more members
+    """
 
     event = get_object_or_404(Event, pk=event_id)
 
@@ -2018,19 +2022,58 @@ def member_register(request, event_id,
         msg_string = f'No pricing is available or registration limit has reached for event {event.title}'
         messages.add_message(request, messages.ERROR, _(msg_string))
 
-    form = MemberRegistrationForm(event, pricings, request.POST or None)
+    user_initial = None
+    if 'user' in request.GET:
+        user_id = request.GET['user']
+        [u] = User.objects.filter(id=user_id)[:1] or [None]
+        if u:
+            user_initial = {'user': user_id,
+                        'user_display': f'{u.last_name}, {u.first_name} ({u.username}) - {u.email}'}
+    form = form_class(event, pricings, request.POST or None, initial=user_initial)
+    for_member = 'member_ids' in form.fields
 
     if request.method == "POST":
         if form.is_valid():
-            create_member_registration(request.user, event, form)
-            msg_string = 'Successfully registered members for event %s' % str(event)
+            registration_ids = create_member_registration(request.user, event, form, for_member=for_member)
+            if for_member:
+                msg_string = f'Successfully registered members for event {str(event)}. '
+            else:
+                user_id = int(form.cleaned_data['user'])
+                user = User.objects.get(id=user_id)
+                msg_string = f'Successfully registered user {user} for event {str(event)}. '
+            details = ', '.join([f'<a style="color: inherit;" href="{reverse("event.registration_confirmation", args=[event.pk, reg_id])}">R-{reg_id}</a>' for reg_id in registration_ids])
+            msg_string += f'View details: {details}'
+            msg_string += f'<br /><br />'
+            msg_string += f'<a style="color: inherit;" href="{reverse("event.user_register", args=[event.pk])}">Register More Users</a>'
             messages.add_message(request, messages.SUCCESS, _(msg_string))
             return HttpResponseRedirect(reverse('event', args=[event_id]))
 
+    
     return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
-        'form': form
+        'form': form,
+        'for_member': for_member
     })
+
+
+@is_enabled('events')
+@superuser_required
+def register_user_lookup(request):
+    q = request.GET['term']
+
+    users = User.objects.filter(
+             Q(first_name__istartswith=q)
+           | Q(last_name__istartswith=q)
+           | Q(username__istartswith=q)
+           | Q(email__istartswith=q)).order_by('last_name')[:10]
+
+    results = []
+    for u in users:
+        value = f'{u.last_name}, {u.first_name} ({u.username}) - {u.email}'
+        u_dict = {'id': u.id, 'label': value, 'value': value}
+        results.append(u_dict)
+    return JsonResponse(results, safe=False)
+
 
 @is_enabled('events')
 def register_child_events(request, registration_id,  template_name="events/reg8n/register_child_events.html"):

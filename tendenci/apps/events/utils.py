@@ -1924,7 +1924,7 @@ def add_sf_attendance(registrant, event):
                     'EndDateTime':event.end_dt.isoformat()})
 
 
-def create_member_registration(user, event, form):
+def create_member_registration(user, event, form, for_member=False):
 
     from tendenci.apps.profiles.models import Profile
 
@@ -1935,24 +1935,33 @@ def create_member_registration(user, event, form):
                  'creator': user,
                  'owner': user}
 
-    for mem_id in form.cleaned_data['member_ids'].split(','):
-        mem_id = mem_id.strip()
-        [member] = Profile.objects.filter(member_number=mem_id,
-                                          status_detail='active')[:1] or [None]
-        if member:
-            exists = event.registrants().filter(user=member.user)
+    if for_member:
+        member_ids = [mem_id.strip() for mem_id in form.cleaned_data['member_ids'].split(',')]
+        user_ids = Profile.objects.filter(member_number__in=member_ids,
+                                          status_detail='active').values_list('user_id', flat=True)
+    else:
+        user_ids = [int(form.cleaned_data['user'])]
+    
+    registration_ids = []                                   
+    for user_id in user_ids: 
+        [user] = User.objects.filter(id=user_id)[:1] or [None]                                   
+
+        if user:
+            exists = event.registrants().filter(user=user)
             if not exists:
                 registration = Registration.objects.create(**reg_attrs)
                 registrant_attrs = {'registration': registration,
-                                    'user': member.user,
-                                    'first_name': member.user.first_name,
-                                    'last_name': member.user.last_name,
-                                    'email': member.user.email,
+                                    'user': user,
+                                    'first_name': user.first_name,
+                                    'last_name': user.last_name,
+                                    'email': user.email,
                                     'is_primary': True,
                                     'amount': pricing.price,
                                     'pricing': pricing}
                 Registrant.objects.create(**registrant_attrs)
                 registration.save_invoice()
+                registration_ids.append(registration.id)
+    return registration_ids
 
 
 def get_week_days(tgtdate, cal):

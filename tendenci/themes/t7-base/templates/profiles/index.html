@@ -421,9 +421,41 @@
           {% else %}
           {% trans "No upcoming event registrations." %}
           {% endif %}
+          
+          
+           {% if request.user.is_superuser and upcoming_events %}
+           <div style="margin: 1em;">
+            <div>				
+				<a class="big" id="toggle-upcoming-events-box"  data-toggle="collapse" href="#upcoming-events-box" aria-expanded="false" aria-controls="upcoming-events-box">
+				  {% if registrations %}{% trans "Register this User for more Events" %}
+				  {% else %}{% trans "Register this User" %}  
+				  <span class="glyphicon glyphicon-collapse-down"></span>
+				  {% endif %}
+				</a>
+			</div>
+		
+        	<div id="upcoming-events-box" class="table-responsive collapse">
+            <table class="table">
+              {% for event in upcoming_events %}
+              <tr>
+                <td>{{ event.date }}</td>
+                <td>
+                  <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
+                </td>
+                <td>
+                  <a class="btn btn-info btn-sm" href="{% url 'event.user_register' event.id %}?user={{ profile.user.id }}">{% trans "Register this user" %}</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </table>
+           </div>
+          </div>
+       	   {% endif %}
+          
+          
         </div>
-
         {% endif %}
+        
 
         {% if recurring_payments %}
 		 {% if request.user.is_superuser or request.user == profile.user %}
