@@ -409,7 +409,7 @@
                   {% endif %}
                 </td>
                 <td>
-                  <a href="{{ reg.registration.event.get_absolute_url }}">{{ reg.registration.event }}</a>
+                  <a href="{{ reg.registration.event.get_absolute_url }}">{{ reg.registration.event.title }}</a>
                 </td>
                 <td>
                   {{ reg.registration.event.start_dt }} - {{ reg.registration.event.end_dt }}
@@ -426,7 +426,7 @@
            {% if request.user.is_superuser and upcoming_events %}
            <div style="margin: 1em;">
             <div>				
-				<a class="big" id="toggle-upcoming-events-box"  data-toggle="collapse" href="#upcoming-events-box" aria-expanded="false" aria-controls="upcoming-events-box">
+				<a title="toggle expand/collapse" class="big" id="toggle-upcoming-events-box"  data-toggle="collapse" href="#upcoming-events-box" aria-expanded="false" aria-controls="upcoming-events-box">
 				  {% if registrations %}{% trans "Register this User for more Events" %}
 				  {% else %}{% trans "Register this User" %}  
 				  <span class="glyphicon glyphicon-collapse-down"></span>
@@ -435,7 +435,7 @@
 			</div>
 		
         	<div id="upcoming-events-box" class="table-responsive collapse">
-            <table class="table">
+            <table class="table table-striped table-condensed">
               {% for event in upcoming_events %}
               <tr>
                 <td>{{ event.date }}</td>

@@ -2024,9 +2024,12 @@ def member_register(request, event_id, form_class=MemberRegistrationForm,
 
     user_initial = None
     if 'user' in request.GET:
-        user_id = request.GET['user']
-        [u] = User.objects.filter(id=user_id)[:1] or [None]
-        if u:
+        try:
+            user_id = int(request.GET['user'])
+        except:
+            user_id = None
+        if user_id and User.objects.filter(id=user_id).exists():
+            u = User.objects.get(id=user_id)
             user_initial = {'user': user_id,
                         'user_display': f'{u.last_name}, {u.first_name} ({u.username}) - {u.email}'}
     form = form_class(event, pricings, request.POST or None, initial=user_initial)
