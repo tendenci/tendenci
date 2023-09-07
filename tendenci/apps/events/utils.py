@@ -719,6 +719,13 @@ def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
         if clean_recipient and (clean_recipient not in email_list):
             email_list.append(clean_recipient)
 
+    # check and send to the reply_to addr specified for this event reg
+    reg_conf = event.registration_configuration
+    if reg_conf.reply_to and reg_conf.reply_to_receive_notices:
+        email_addr = reg_conf.reply_to.strip()
+        if email_addr not in email_list:
+            email_list.append(email_addr)
+
     notification.send_emails(
         email_list,
         'event_registration_confirmation',

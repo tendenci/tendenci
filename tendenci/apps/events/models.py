@@ -343,6 +343,8 @@ class RegistrationConfiguration(models.Model):
     registration_email_text = models.TextField(_('Registration Email Text'), blank=True)
     reply_to = models.EmailField(_('Registration email reply to'), max_length=120, null=True, blank=True,
                                  help_text=_('The email address that receives the reply message when registrants reply their registration confirmation emails.'))
+    reply_to_receive_notices = models.BooleanField(_('Reply-to receives notices'), default=False,
+                                                   help_text=_('Make the above reply-to address also receives the event-specific admin notices.'))
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
