@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Extensible permission system for pybbm
 """

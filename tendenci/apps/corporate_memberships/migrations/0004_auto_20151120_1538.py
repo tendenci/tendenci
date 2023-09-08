@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.db import migrations
 
 def threshold_copyto_cap(apps, schema_editor):
