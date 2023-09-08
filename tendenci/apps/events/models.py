@@ -1576,6 +1576,27 @@ class Registrant(models.Model):
             return ', '.join([ln, fn])
         return fn or ln
 
+    def zoom_check_in(self, event):
+        """
+        Check in through Zoom. Will check in only if not
+        already checked in (if connection is lost then reconnected
+        check in datetime will reflect the initial check in).
+        Child event will be checked in if applicable. However,
+        credits will not be assigned (they will be generated from
+        Zoom poll results)
+        """
+        # Check in to parent Event
+        if not self.checked_in:
+            self.check_in_or_out(check_in)
+
+        # Check in to child Event (if this is a child event)
+        child_event = self.child_events.filter(child_event=event).first()
+        if child_event and not child_event.checked_in:
+            child_event.checked_in = True
+            child_event.checked_in_dt = datetime.now()
+            child_event.save()
+
+
     def check_in_or_out(self, check_in):
         """Check in or check out to/of main Event"""
         check_in_or_out = 'checked_in' if check_in else 'checked_out'

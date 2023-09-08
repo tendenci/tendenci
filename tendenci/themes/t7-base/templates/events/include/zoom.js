@@ -1,3 +1,4 @@
+{% load base_tags %}
 {% block extra_body %}
 
 <script type="text/javascript">
@@ -21,11 +22,10 @@
         success: (success) => {
             ZoomMtg.join({
                 ...meetingConfig,
-                userName: '{{ registrant_user.username }}',
-                userEmail: '{{ registrant_user.email }}',
+                userName: '{{ registrant.user.username }}',
+                userEmail: '{{ registrant.user.email }}',
                 success: (success) => {
-                    console.log(success);
-                    console.log('joined meeting!');
+                    '{% execute_method registrant "zoom_check_in" event %}'
                 },
                 error: (error) => {
                     console.log(error);

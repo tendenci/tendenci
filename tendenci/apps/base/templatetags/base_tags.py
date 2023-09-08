@@ -855,3 +855,13 @@ def all_tags_list():
     tags = Tag.objects.all()
     tag_list = ",".join(['"%s"' % t.name for t in tags])
     return mark_safe(tag_list)
+
+
+@register.simple_tag
+def execute_method(obj, method_name, *args):
+    """
+    Execute a given method on an givent object
+    with specified args
+    """
+    method = getattr(obj, method_name)
+    return method(*args)
