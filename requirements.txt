@@ -76,3 +76,5 @@ django-two-factor-auth>=1.14.0
 phonenumbers>=8.12.51
 # QR code generator
 django-qr-code>=3.1.1
+# Zoom SDK
+pyzoom>=1.0.3
