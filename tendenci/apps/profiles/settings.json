@@ -372,5 +372,22 @@
         "scope_category": "users",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, account ID field will show on profiles and memberships search. Also, it will be auto-populated with the next available ID on user add and edit.",
+        "data_type": "boolean",
+        "update_dt": "2023-09-07 16:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "useaccountid",
+        "value": "false",
+        "label": "Use Account ID",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "users",
+        "store": true,
+        "updated_by": ""
     }
 ]

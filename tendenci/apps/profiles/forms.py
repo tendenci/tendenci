@@ -39,12 +39,13 @@ PASSWORD_REGEX_DEFAULT = r'^(?=.*(\d|[!@#\$%\^&\*_\-\+])).{8,}$'
 PASSWORD_HELP_TEXT_DEFAULT = _('Password must contain at least 1 number or 1 special character. Password must be 8 or more characters long.')
 
 class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
-    SEARCH_CRITERIA_CHOICES = (
+    SEARCH_CRITERIA_CHOICES = [
                         ('', _('SELECT ONE')),
                         ('first_name', _('First Name')),
                         ('last_name', _('Last Name')),
                         ('email', _('Email')),
                         ('username', _('Username')),
+                        ('account_id', _('Account ID')),
                         ('member_number', _('Member Number')),
                         ('company', _('Company')),
                         ('department', _('Department')),
@@ -57,7 +58,10 @@ class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
                         ('zipcode', _('Zip Code')),
                         ('country', _('Country')),
                         ('spouse', _('Spouse'))
-                        )
+                        ]
+    if not get_setting('module', 'users', 'useaccountid'):
+        SEARCH_CRITERIA_CHOICES.remove(('account_id', _('Account ID'),))
+
     SEARCH_METHOD_CHOICES = (
                              ('starts_with', _('Starts With')),
                              ('contains', _('Contains')),
@@ -115,6 +119,7 @@ class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
             self.fields['industry'].widget.attrs.update({'class': 'form-control'})
         else:
             del self.fields['industry']
+            
 #         for field in self.fields:
 #             if field not in ['search_criteria', 'search_text', 'search_method', 'member_only']:
 #                 self.fields[field].widget.attrs.update({'class': 'form-control'})
