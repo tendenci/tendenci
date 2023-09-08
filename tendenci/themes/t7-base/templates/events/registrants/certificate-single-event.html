@@ -212,15 +212,11 @@
               <div class="left">{% trans "Location: "%}</div>
               <div class="right">{{ registrant.event.place.name }}</div>
             </div>
-            <div class="row">
-              <div class="left">{% trans "CPE Credits: " %}</div>
-              <div class="right">{{ registrant.possible_cpe_credits }} </div>
-            </div>
-            <div class="row credits small-font">{{ registrant.possible_credits_by_code }}
-            </div>
+       
             <div class="row">
               <div class="left">{% trans "CPE Credits Earned: " %}</div>
-              <div class="right">{{ registrant.credits_earned }}</div>    </div>
+              <div class="right">{{ registrant.credits_earned }}</div>   
+            </div>
             <div class="row credits small-font">{{ registrant.credits_earned_by_code }}</div>
         </div>
       </div>
