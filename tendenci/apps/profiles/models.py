@@ -334,6 +334,12 @@ class Profile(Person):
         if not self.id:
             self.guid = str(uuid.uuid4())
 
+            # check and assign account id
+            if not self.account_id and self.is_active:
+                if get_setting('module', 'users', 'useaccountid'):
+                    self.account_id = self.get_next_account_id()
+                    self.save()
+
         # match allow_anonymous_view with opposite of hide_in_search
         if self.hide_in_search:
             self.allow_anonymous_view = False
@@ -345,10 +351,6 @@ class Profile(Person):
             self.allow_member_view = False
         else:
             self.allow_member_view = True
-
-        if not self.account_id:
-            if get_setting('module', 'users', 'useaccountid'):
-                self.account_id = self.get_next_account_id()
 
         super(Profile, self).save(*args, **kwargs)
 
