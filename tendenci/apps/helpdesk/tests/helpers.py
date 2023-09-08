@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import sys
 try:
     from django.contrib.auth import get_user_model

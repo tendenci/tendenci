@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Tendenci documentation build configuration file, created by
 # sphinx-quickstart on Thu Apr  5 08:47:04 2012.

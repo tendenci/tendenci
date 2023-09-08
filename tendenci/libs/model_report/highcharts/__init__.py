@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from builtins import str
 from decimal import Decimal
 from django.utils.encoding import force_str
