@@ -224,7 +224,7 @@ def approve_selected(modeladmin, request, queryset):
                                 **{'create_new': True,
                               'assign_to_user': None})
 
-approve_selected.short_description = u'Approve selected'
+approve_selected.short_description = 'Approve selected'
 
 class CorpMembershipAdmin(TendenciBaseModelAdmin):
     list_display = ['profile',
@@ -698,12 +698,12 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
                 instance.user.get_full_name() or instance.user.username,
 
             )
-    rep_name.short_description = u'Rep Name'
+    rep_name.short_description = 'Rep Name'
     rep_name.admin_order_field = 'user__first_name'
 
     def rep_email(self, instance):
         return instance.user.email
-    rep_email.short_description = u'Rep Email'
+    rep_email.short_description = 'Rep Email'
     rep_email.admin_order_field = 'user__email'
 
 

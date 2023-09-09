@@ -2,7 +2,6 @@
 # anonymous registration impementation of events in the registration
 # module.
 
-from builtins import str
 
 import re
 import calendar
@@ -216,7 +215,7 @@ def event_custom_reg_form_list(request, event_id, template_name="events/event_cu
 
 
 @is_enabled('events')
-def details(request, id=None, private_slug=u'', template_name="events/view.html"):
+def details(request, id=None, private_slug='', template_name="events/view.html"):
     if not id and not private_slug:
         return HttpResponseRedirect(reverse('event.month'))
 
@@ -3320,14 +3319,14 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         if not Event.objects.filter(start_dt__gte=current_date, start_dt__lte=next_date, type=current_type[0]).exists():
             latest_event = Event.objects.filter(start_dt__gte=current_date, type=current_type[0]).order_by('start_dt').first()
             if latest_event is None:
-                msg_string = u'No more %s Events were found.' % (str(current_type[0]))
+                msg_string = 'No more %s Events were found.' % (str(current_type[0]))
                 messages.add_message(request, messages.INFO, _(msg_string))
             else:
                 latest_month = latest_event.start_dt.month
                 latest_year = latest_event.start_dt.year
                 current_date = current_date.strftime('%b %Y')
                 latest_date = latest_event.start_dt.strftime('%b %Y')
-                msg_string = u'No %s Events were found for %s. The next %s event is on %s, shown below.' % (str(current_type[0]), current_date, str(current_type[0]), latest_date)
+                msg_string = 'No %s Events were found for %s. The next %s event is on %s, shown below.' % (str(current_type[0]), current_date, str(current_type[0]), latest_date)
                 messages.add_message(request, messages.INFO, _(msg_string))
                 return HttpResponseRedirect(reverse('event.month', args=[latest_year, latest_month, current_type[0].slug]))
 
@@ -3428,7 +3427,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
         if not Event.objects.filter(start_dt__gte=current_date, start_dt__lte=next_date, type=current_type[0]).exists():
             latest_event = Event.objects.filter(start_dt__gte=current_date, type=current_type[0]).order_by('start_dt').first()
             if latest_event is None:
-                msg_string = u'No more %s Events were found.' % (str(current_type[0]))
+                msg_string = 'No more %s Events were found.' % (str(current_type[0]))
                 messages.add_message(request, messages.INFO, _(msg_string))
             else:
                 latest_day = latest_event.start_dt.day
@@ -3436,7 +3435,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
                 latest_year = latest_event.start_dt.year
                 current_date = current_date.strftime('%x')
                 latest_date = latest_event.start_dt.strftime('%x')
-                msg_string = u'No %s Events were found for %s. The next %s event is on %s, shown below.' % (str(current_type[0]), current_date, str(current_type[0]), latest_date)
+                msg_string = 'No %s Events were found for %s. The next %s event is on %s, shown below.' % (str(current_type[0]), current_date, str(current_type[0]), latest_date)
                 messages.add_message(request, messages.INFO, _(msg_string))
                 return HttpResponseRedirect(reverse('event.week', args=[latest_year, latest_month, latest_day, current_type[0].slug]))
 
@@ -4601,7 +4600,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         for registrant_dict in non_custom_registrants:
 
             is_paid = False
-            primary_registrant = u'-- N/A ---'
+            primary_registrant = '-- N/A ---'
 
             # update registrant values
             if not registrant_dict['is_primary']:

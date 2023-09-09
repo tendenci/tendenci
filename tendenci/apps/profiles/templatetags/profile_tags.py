@@ -1,4 +1,3 @@
-from builtins import str
 from django.template import Library
 from django.conf import settings
 from django.template.loader import render_to_string

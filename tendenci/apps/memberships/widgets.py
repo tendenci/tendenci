@@ -544,7 +544,7 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
         has_id = attrs and 'id' in attrs
         attrs = attrs.copy()
         attrs['name'] = name
-        output = [u'<div>']
+        output = ['<div>']
         # Normalize to strings
         str_values = set([force_str(v) for v in value])
 
@@ -572,11 +572,11 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
                                                         option_value,
                                                         option_label))
         for key in self.all_fields:
-            output.append(u'<div style="clear: both;"></div>')
-            output.append(u'<h3>')
+            output.append('<div style="clear: both;"></div>')
+            output.append('<h3>')
             output.append(self.all_fields[key]['title'])
-            output.append(u'</h3>')
-            output.append(u'<div class="fields-section">')
+            output.append('</h3>')
+            output.append('<div class="fields-section">')
             for i, option_value, option_label in \
                     self.all_fields[key]['options']:
                 # If an ID attribute was given, add a numeric index as a
@@ -585,7 +585,7 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
                 if has_id:
                     final_attrs = dict(attrs, id='%s_%s' % (attrs['id'],
                                                                   i))
-                    label_for = u' for="%s"' % final_attrs['id']
+                    label_for = ' for="%s"' % final_attrs['id']
                 else:
                     label_for = ''
 
@@ -594,9 +594,9 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
                 option_value = force_str(option_value)
                 rendered_cb = cb.render(name, option_value)
                 option_label = conditional_escape(force_str(option_label))
-                output.append(u'<div class="field-box select-field"><label%s>%s %s</label></div>' % (label_for,
+                output.append('<div class="field-box select-field"><label%s>%s %s</label></div>' % (label_for,
                                                                     rendered_cb,
                                                                     option_label))
-            output.append(u'</div>')
-        output.append(u'</div>')
-        return mark_safe(u'\n'.join(output))
+            output.append('</div>')
+        output.append('</div>')
+        return mark_safe('\n'.join(output))

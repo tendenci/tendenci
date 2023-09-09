@@ -2,7 +2,6 @@
 templatetags for django-form-utils
 
 """
-from __future__ import unicode_literals
 
 from django import forms
 from django import template
@@ -59,7 +58,7 @@ def value_text(boundfield):
     """Return the value for given boundfield as human-readable text."""
     val = boundfield.value()
     # If choices is set, use the display label
-    return six.text_type(
+    return str(
         dict(getattr(boundfield.field, "choices", [])).get(val, val))
 
 
@@ -69,7 +68,7 @@ def selected_values(boundfield):
     val = boundfield.value()
     # If choices is set, use the display label
     choice_dict = dict(getattr(boundfield.field, "choices", []))
-    return [six.text_type(choice_dict.get(v, v)) for v in val]
+    return [str(choice_dict.get(v, v)) for v in val]
 
 
 @register.filter

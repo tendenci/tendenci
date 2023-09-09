@@ -1,4 +1,3 @@
-from builtins import str
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 import celery

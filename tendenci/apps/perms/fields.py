@@ -119,8 +119,8 @@ class UserPermissionWidget(CheckboxSelectMultiple):
         attrs['name'] = name
 
         # set up output attributes
-        html = u''
-        table_rows = u''
+        html = ''
+        table_rows = ''
 
         # Normalize to strings
         str_values = set([force_str(v) for v in value])
@@ -129,7 +129,7 @@ class UserPermissionWidget(CheckboxSelectMultiple):
         if has_id:
             id = attrs['id']
         else:
-            id = u''
+            id = ''
 
         # set up the html for output
         html += """
@@ -204,8 +204,8 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
         attrs['name'] = name
 
         # set up output attributes
-        html = u''
-        table_rows = u''
+        html = ''
+        table_rows = ''
 
         # Normalize to strings
         str_values = set([force_str(v) for v in value])
@@ -214,7 +214,7 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
         if has_id:
             id = attrs['id']
         else:
-            id = u''
+            id = ''
 
         # set up the html for output
         html += """
@@ -289,8 +289,8 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
         attrs['name'] = name
 
         # set up output attributes
-        html = u''
-        table_rows = u''
+        html = ''
+        table_rows = ''
 
         # Normalize to strings
         str_values = set([force_str(v) for v in value])
@@ -299,7 +299,7 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
         if has_id:
             id = attrs['id']
         else:
-            id = u''
+            id = ''
 
         # set up the html for output
         html += """

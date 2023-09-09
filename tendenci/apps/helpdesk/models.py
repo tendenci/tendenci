@@ -234,9 +234,9 @@ class Queue(models.Model):
         in the sender name field, so hopefully the admin can see and fix it.
         """
         if not self.email_address:
-            return u'NO QUEUE EMAIL ADDRESS DEFINED <%s>' % settings.DEFAULT_FROM_EMAIL
+            return 'NO QUEUE EMAIL ADDRESS DEFINED <%s>' % settings.DEFAULT_FROM_EMAIL
         else:
-            return u'%s <%s>' % (self.title, self.email_address)
+            return '%s <%s>' % (self.title, self.email_address)
     from_address = property(_from_address)
 
     def save(self, *args, **kwargs):
@@ -418,18 +418,18 @@ class Ticket(models.Model):
         """ A user-friendly ticket ID, which is a combination of ticket ID
         and queue slug. This is generally used in e-mail subjects. """
 
-        return u"[%s]" % (self.ticket_for_url)
+        return "[%s]" % (self.ticket_for_url)
     ticket = property(_get_ticket)
 
     def _get_ticket_for_url(self):
         """ A URL-friendly ticket ID, used in links. """
-        return u"%s-%s" % (self.queue.slug, self.id)
+        return "%s-%s" % (self.queue.slug, self.id)
     ticket_for_url = property(_get_ticket_for_url)
 
     def _get_priority_img(self):
         """ Image-based representation of the priority """
         from django.conf import settings
-        return u"%shelpdesk/priorities/priority%s.png" % (settings.MEDIA_URL, self.priority)
+        return "%shelpdesk/priorities/priority%s.png" % (settings.MEDIA_URL, self.priority)
     get_priority_img = property(_get_priority_img)
 
     def _get_priority_css_class(self):
@@ -452,7 +452,7 @@ class Ticket(models.Model):
         if self.on_hold: held_msg = _(' - On Hold')
         dep_msg = ''
         if not self.can_be_resolved: dep_msg = _(' - Open dependencies')
-        return u'%s%s%s' % (self.get_status_display(), held_msg, dep_msg)
+        return '%s%s%s' % (self.get_status_display(), held_msg, dep_msg)
     get_status = property(_get_status)
 
     def _get_ticket_url(self):
@@ -460,7 +460,7 @@ class Ticket(models.Model):
         Returns a publicly-viewable URL for this ticket, used when giving
         a URL to the submitter of a ticket.
         """
-        return u"%s%s?ticket=%s&email=%s" % (
+        return "%s%s?ticket=%s&email=%s" % (
             get_setting('site', 'global', 'siteurl'),
             reverse('helpdesk_public_view'),
             self.ticket_for_url,
@@ -473,7 +473,7 @@ class Ticket(models.Model):
         Returns a staff-only URL for this ticket, used when giving a URL to
         a staff member (in emails etc)
         """
-        return u"%s%s" % (
+        return "%s%s" % (
             get_setting('site', 'global', 'siteurl'),
             reverse('helpdesk_view',
             args=[self.id])
@@ -605,7 +605,7 @@ class FollowUp(models.Model):
         return '%s' % self.title
 
     def get_absolute_url(self):
-        return u"%s#followup%s" % (self.ticket.get_absolute_url(), self.id)
+        return "%s#followup%s" % (self.ticket.get_absolute_url(), self.id)
 
     def save(self, *args, **kwargs):
         t = self.ticket
@@ -713,8 +713,8 @@ class Attachment(models.Model):
     def get_upload_to(self, field_attname):
         """ Get upload_to path specific to this item """
         if not self.id:
-            return u''
-        return u'helpdesk/attachments/%s/%s' % (
+            return ''
+        return 'helpdesk/attachments/%s/%s' % (
             self.followup.ticket.ticket_for_url,
             self.followup.id
             )

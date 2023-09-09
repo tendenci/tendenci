@@ -1,4 +1,3 @@
-from builtins import str, isinstance
 from datetime import datetime
 from os.path import join
 from uuid import uuid4
@@ -195,7 +194,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                         pricing_options.append(
                             (pricing.pk, mark_safe(
                                 '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' %
-                                (pricing.pk, form.data.get('custom_price_%s' %pricing.pk, str()), pricing.label, pricing.description)))
+                                (pricing.pk, form.data.get('custom_price_%s' %pricing.pk, ''), pricing.label, pricing.description)))
                         )
                     else:
                         if formforform.recurring_payment:
@@ -690,8 +689,8 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['billing_cycle'].initial = [self.instance.billing_frequency,
                                                     self.instance.billing_period]
         else:
-            self.fields['billing_dt_select'].initial = [0, u'start']
-            self.fields['billing_cycle'].initial = [1, u'month']
+            self.fields['billing_dt_select'].initial = [0, 'start']
+            self.fields['billing_cycle'].initial = [1, 'month']
 
         # Add class for recurring payment fields
         recurring_payment_fields = [

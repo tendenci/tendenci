@@ -10,10 +10,10 @@ from tendenci.apps.site_settings.utils import get_setting
 
 class DatabaseDumpFile(models.Model):
     STATUS_CHOICES = (
-        ("completed", _(u"Completed")),
-        ("pending", _(u"Pending")),
-        ("failed", _(u"Failed")),
-        ("expired", _(u"Expired")),
+        ("completed", _("Completed")),
+        ("pending", _("Pending")),
+        ("failed", _("Failed")),
+        ("expired", _("Expired")),
     )
     FORMAT_CHOICES = (
         ("json", "json"),

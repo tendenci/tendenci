@@ -1,4 +1,3 @@
-from builtins import str
 import decimal
 from datetime import datetime
 import requests
@@ -743,7 +742,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         if 'password' in self_fields_keys:
             passwd = app_field_objs.filter(field_name='password')[0]
             self.fields['password'] = forms.CharField(
-                initial=u'',
+                initial='',
                 label=passwd.label,
                 widget=forms.PasswordInput,
                 required=False,
@@ -752,7 +751,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['password'].widget.attrs.update({'size': 28})
 
             self.fields['confirm_password'] = forms.CharField(
-                initial=u'',
+                initial='',
                 label=_("Confirm password"),
                 widget=forms.PasswordInput,
                 required=False,
@@ -1141,7 +1140,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                 if self.demographics and field_name in self.fields:
                     ud_field = MembershipAppField.objects.get(field_name=field_name,
                         membership_app=self.app, display=True)
-                    if ud_field.field_type == u'FileField':
+                    if ud_field.field_type == 'FileField':
                         self.fields[field_name] = forms.FileField(label=ud_field.label, required=False, validators=[FileValidator()])
                         file_instance = get_ud_file_instance(self.demographics, field_name)
 
@@ -1190,7 +1189,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                     file_instance = get_ud_file_instance(self.demographics, key)
                     if file_instance:
                         file_instance.delete()
-                        data = u''
+                        data = ''
                         pks.update({ key : data })
 
                 if new_file:
@@ -1205,7 +1204,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
 
                     file_instance.save()
                     data = {
-                        'type' : u'file',
+                        'type' : 'file',
                         'pk' : str(file_instance.pk),
                         'html' : '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
                     }
@@ -1521,7 +1520,7 @@ class MembershipExportForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(MembershipExportForm, self).__init__(*args, **kwargs)
-        EXPORT_TYPE_CHOICES = [(u'all', _('Export All Types'))] + \
+        EXPORT_TYPE_CHOICES = [('all', _('Export All Types'))] + \
                 list(MembershipType.objects.values_list('pk', 'name'))
         self.fields['export_type'].choices = EXPORT_TYPE_CHOICES
 
@@ -1660,32 +1659,32 @@ class MembershipDefaultForm(TendenciBaseForm):
     """
 
     salutation = forms.CharField(required=False)
-    first_name = forms.CharField(initial=u'')
-    last_name = forms.CharField(initial=u'')
+    first_name = forms.CharField(initial='')
+    last_name = forms.CharField(initial='')
     account_id = forms.IntegerField(required=False)
-    email = forms.CharField(initial=u'')
-    email2 = forms.CharField(initial=u'', required=False)
-    display_name = forms.CharField(initial=u'', required=False)
-    company = forms.CharField(initial=u'', required=False)
-    position_title = forms.CharField(initial=u'', required=False)
-    education = forms.CharField(label=_('Highest Level of Education'), initial=u'', required=False)
-    department = forms.CharField(initial=u'', required=False)
-    address = forms.CharField(initial=u'', required=False)
-    address2 = forms.CharField(initial=u'', required=False)
-    address_type = forms.CharField(initial=u'', required=False)
-    city = forms.CharField(initial=u'', required=False)
-    state = forms.CharField(initial=u'', required=False)
-    zipcode = forms.CharField(initial=u'', required=False)
+    email = forms.CharField(initial='')
+    email2 = forms.CharField(initial='', required=False)
+    display_name = forms.CharField(initial='', required=False)
+    company = forms.CharField(initial='', required=False)
+    position_title = forms.CharField(initial='', required=False)
+    education = forms.CharField(label=_('Highest Level of Education'), initial='', required=False)
+    department = forms.CharField(initial='', required=False)
+    address = forms.CharField(initial='', required=False)
+    address2 = forms.CharField(initial='', required=False)
+    address_type = forms.CharField(initial='', required=False)
+    city = forms.CharField(initial='', required=False)
+    state = forms.CharField(initial='', required=False)
+    zipcode = forms.CharField(initial='', required=False)
     country = CountrySelectField(label=_('Country'), required=False)
-    phone = forms.CharField(initial=u'', required=False)
-    phone2 = forms.CharField(initial=u'', required=False)
-    work_phone = forms.CharField(initial=u'', required=False)
-    home_phone = forms.CharField(initial=u'', required=False)
-    mobile_phone = forms.CharField(initial=u'', required=False)
-    pager = forms.CharField(initial=u'', required=False)
-    fax = forms.CharField(initial=u'', required=False)
-    url = forms.CharField(initial=u'', required=False)
-    url2 = forms.CharField(initial=u'', required=False)
+    phone = forms.CharField(initial='', required=False)
+    phone2 = forms.CharField(initial='', required=False)
+    work_phone = forms.CharField(initial='', required=False)
+    home_phone = forms.CharField(initial='', required=False)
+    mobile_phone = forms.CharField(initial='', required=False)
+    pager = forms.CharField(initial='', required=False)
+    fax = forms.CharField(initial='', required=False)
+    url = forms.CharField(initial='', required=False)
+    url2 = forms.CharField(initial='', required=False)
 
     hide_in_search = forms.BooleanField(required=False)
     hide_address = forms.BooleanField(required=False)
@@ -1693,11 +1692,11 @@ class MembershipDefaultForm(TendenciBaseForm):
     hide_phone = forms.BooleanField(required=False)
 
     # alternate address goes here
-    address_2 = forms.CharField(initial=u'', required=False, max_length=64)
-    address2_2 = forms.CharField(initial=u'', required=False, max_length=64)
-    city_2 = forms.CharField(initial=u'', required=False, max_length=35)
-    state_2 = forms.CharField(initial=u'', required=False, max_length=35)
-    zipcode_2 = forms.CharField(initial=u'', required=False, max_length=16)
+    address_2 = forms.CharField(initial='', required=False, max_length=64)
+    address2_2 = forms.CharField(initial='', required=False, max_length=64)
+    city_2 = forms.CharField(initial='', required=False, max_length=35)
+    state_2 = forms.CharField(initial='', required=False, max_length=35)
+    zipcode_2 = forms.CharField(initial='', required=False, max_length=16)
     country_2 = CountrySelectField(label=_('Country'), required=False)
 
     dob = forms.DateTimeField(required=False)
@@ -1705,46 +1704,46 @@ class MembershipDefaultForm(TendenciBaseForm):
     career_start_dt = forms.DateTimeField(required=False)
     career_end_dt = forms.DateTimeField(required=False)
 
-    sex = forms.CharField(label=_('Gender'), initial=u'', required=False)
-    spouse = forms.CharField(initial=u'', required=False)
-    profession = forms.CharField(initial=u'', required=False)
-    custom1 = forms.CharField(initial=u'', required=False)
-    custom2 = forms.CharField(initial=u'', required=False)
-    custom3 = forms.CharField(initial=u'', required=False)
-    custom4 = forms.CharField(initial=u'', required=False)
+    sex = forms.CharField(label=_('Gender'), initial='', required=False)
+    spouse = forms.CharField(initial='', required=False)
+    profession = forms.CharField(initial='', required=False)
+    custom1 = forms.CharField(initial='', required=False)
+    custom2 = forms.CharField(initial='', required=False)
+    custom3 = forms.CharField(initial='', required=False)
+    custom4 = forms.CharField(initial='', required=False)
 
-    username = forms.CharField(initial=u'', required=False)
-    password = forms.CharField(initial=u'', widget=forms.PasswordInput, required=False)
-    confirm_password = forms.CharField(initial=u'', widget=forms.PasswordInput, required=False)
+    username = forms.CharField(initial='', required=False)
+    password = forms.CharField(initial='', widget=forms.PasswordInput, required=False)
+    confirm_password = forms.CharField(initial='', widget=forms.PasswordInput, required=False)
 
     same_as_primary = forms.BooleanField(required=False)
-    extra_address = forms.CharField(initial=u'', required=False)
-    extra_address2 = forms.CharField(initial=u'', required=False)
-    extra_city = forms.CharField(initial=u'', required=False)
-    extra_state = forms.CharField(initial=u'', required=False)
-    extra_zip_code = forms.CharField(initial=u'', required=False)
-    extra_country = forms.CharField(initial=u'', required=False)
-    extra_address_type = forms.CharField(initial=u'', required=False)
+    extra_address = forms.CharField(initial='', required=False)
+    extra_address2 = forms.CharField(initial='', required=False)
+    extra_city = forms.CharField(initial='', required=False)
+    extra_state = forms.CharField(initial='', required=False)
+    extra_zip_code = forms.CharField(initial='', required=False)
+    extra_country = forms.CharField(initial='', required=False)
+    extra_address_type = forms.CharField(initial='', required=False)
 
     #education fields here
-    school1 = forms.CharField(initial=u'', required=False)
-    major1 = forms.CharField(initial=u'', required=False)
-    degree1 = forms.CharField(initial=u'', required=False)
+    school1 = forms.CharField(initial='', required=False)
+    major1 = forms.CharField(initial='', required=False)
+    degree1 = forms.CharField(initial='', required=False)
     graduation_dt1 = forms.ChoiceField(label=_('Graduation Year1'),
                                        required=False, choices=YEAR_CHOICES)
-    school2 = forms.CharField(initial=u'', required=False)
-    major2 = forms.CharField(initial=u'', required=False)
-    degree2 = forms.CharField(initial=u'', required=False)
+    school2 = forms.CharField(initial='', required=False)
+    major2 = forms.CharField(initial='', required=False)
+    degree2 = forms.CharField(initial='', required=False)
     graduation_dt2 = forms.ChoiceField(label=_('Graduation Year2'),
                                        required=False, choices=YEAR_CHOICES)
-    school3 = forms.CharField(initial=u'', required=False)
-    major3 = forms.CharField(initial=u'', required=False)
-    degree3 = forms.CharField(initial=u'', required=False)
+    school3 = forms.CharField(initial='', required=False)
+    major3 = forms.CharField(initial='', required=False)
+    degree3 = forms.CharField(initial='', required=False)
     graduation_dt3 = forms.ChoiceField(label=_('Graduation Year3'),
                                        required=False, choices=YEAR_CHOICES)
-    school4 = forms.CharField(initial=u'', required=False)
-    major4 = forms.CharField(initial=u'', required=False)
-    degree4 = forms.CharField(initial=u'', required=False)
+    school4 = forms.CharField(initial='', required=False)
+    major4 = forms.CharField(initial='', required=False)
+    degree4 = forms.CharField(initial='', required=False)
     graduation_dt4 = forms.ChoiceField(label=_('Graduation Year4'),
                                        required=False, choices=YEAR_CHOICES)
 
@@ -2004,7 +2003,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             if demographics:
                 ud_field = MembershipAppField.objects.get(field_name=field_name,
                     membership_app=app, display=True)
-                if ud_field.field_type == u'FileField':
+                if ud_field.field_type == 'FileField':
                     self.fields[field_name] = forms.FileField(label=ud_field.label, required=False)
                     file_instance = get_ud_file_instance(demographics, field_name)
 
@@ -2029,9 +2028,9 @@ class MembershipDefaultForm(TendenciBaseForm):
 
         data = self.cleaned_data
 
-        un = data.get('username', u'').strip()
-        pw = data.get('password', u'').strip()
-        pw_confirm = data.get('confirm_password', u'').strip()
+        un = data.get('username', '').strip()
+        pw = data.get('password', '').strip()
+        pw_confirm = data.get('confirm_password', '').strip()
 
         if un and pw:
             # assert passwords match
@@ -2259,7 +2258,7 @@ class MembershipDefaultForm(TendenciBaseForm):
         ]
 
         for i in user_attrs:
-            setattr(membership.user, i, self.cleaned_data.get(i, u''))
+            setattr(membership.user, i, self.cleaned_data.get(i, ''))
         membership.user.save()
         # -----------------------------------------------------------
 
@@ -2309,7 +2308,7 @@ class MembershipDefaultForm(TendenciBaseForm):
         ]
 
         for i in profile_attrs:
-            setattr(membership.user.profile, i, self.cleaned_data.get(i, u''))
+            setattr(membership.user.profile, i, self.cleaned_data.get(i, ''))
         membership.user.profile.save()
         # -----------------------------------------------------------------
 
@@ -2322,7 +2321,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             for field_name in self.demographic_field_names:
                 ud_field = MembershipAppField.objects.get(field_name=field_name,
                      membership_app=self._app, display=True)
-                if ud_field.field_type == u'FileField':
+                if ud_field.field_type == 'FileField':
                     # get the file instance
                     new_file = self.cleaned_data.get(field_name, None)
                     # check if cleared:
@@ -2344,7 +2343,7 @@ class MembershipDefaultForm(TendenciBaseForm):
 
                         file_instance.save()
                         data = {
-                            'type' : u'file',
+                            'type' : 'file',
                             'pk' : str(file_instance.pk),
                             'html' : '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
                         }

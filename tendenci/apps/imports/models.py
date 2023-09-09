@@ -14,14 +14,14 @@ def file_directory(instance, filename):
 
 class Import(models.Model):
     STATUS_CHOICES = (
-        ("pending", _(u"Pending")),
-        ("processing", _(u"Processing")),
-        ("completed", _(u"Completed")),
-        ("failed", _(u"Failed")),
+        ("pending", _("Pending")),
+        ("processing", _("Processing")),
+        ("completed", _("Completed")),
+        ("failed", _("Failed")),
     )
     app_label = models.CharField(max_length=50)
     model_name = models.CharField(max_length=50)
-    status = models.CharField(_(u"status"), max_length=50,
+    status = models.CharField(_("status"), max_length=50,
             default="pending", choices=STATUS_CHOICES)
     failure_reason = models.CharField(max_length=250, blank=True, default="")
     file = models.FileField("", max_length=260, upload_to=file_directory)

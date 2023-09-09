@@ -183,7 +183,7 @@ class ProfileForm(TendenciBaseForm):
     username = forms.RegexField(regex=r'^[\w.@+-]+$',
                                 max_length=150,
                                 widget=forms.TextInput(attrs=attrs_dict),
-                                label=_(u'Username'),
+                                label=_('Username'),
                                 help_text = _("Required. Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_)."),
                                 error_messages={
                                     'invalid': _('Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).')
@@ -368,7 +368,7 @@ class ProfileForm(TendenciBaseForm):
                 return self.cleaned_data['username']
         except User.DoesNotExist:
             return self.cleaned_data['username']
-        raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+        raise forms.ValidationError(_('This username is already taken. Please choose another.'))
 
     def clean_password1(self):
         password1 = self.cleaned_data.get('password1')
@@ -410,7 +410,7 @@ class ProfileForm(TendenciBaseForm):
         if not self.user_this:
             if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
                 if self.cleaned_data['password1'] != self.cleaned_data['password2']:
-                    raise forms.ValidationError(_(u'You must type the same password each time'))
+                    raise forms.ValidationError(_('You must type the same password each time'))
         return self.cleaned_data
 
     def save(self, request, user_edit, *args, **kwargs):
@@ -457,7 +457,7 @@ class ProfileAdminForm(TendenciBaseForm):
     username = forms.RegexField(regex=r'^[\w.@+-]+$',
                                 max_length=150,
                                 widget=forms.TextInput(attrs=attrs_dict),
-                                label=_(u'Username'),
+                                label=_('Username'),
                                 help_text = _("Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."))
     password1 = forms.CharField(label=_("Password"), widget=forms.PasswordInput(attrs=attrs_dict))
     password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput(attrs=attrs_dict),
@@ -570,7 +570,7 @@ class ProfileAdminForm(TendenciBaseForm):
                 return self.cleaned_data['username']
         except User.DoesNotExist:
             return self.cleaned_data['username']
-        raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+        raise forms.ValidationError(_('This username is already taken. Please choose another.'))
 
     def clean(self):
         """
@@ -583,7 +583,7 @@ class ProfileAdminForm(TendenciBaseForm):
         if not self.instance.id:
             if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
                 if self.cleaned_data['password1'] != self.cleaned_data['password2']:
-                    raise forms.ValidationError(_(u'You must type the same password each time'))
+                    raise forms.ValidationError(_('You must type the same password each time'))
         return self.cleaned_data
 
     def save(self, *args, **kwargs):

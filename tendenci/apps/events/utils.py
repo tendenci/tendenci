@@ -1,6 +1,5 @@
 # NOTE: When updating the registration scheme be sure to check with the
 # anonymous registration impementation of events in the registration module.
-from builtins import str
 import ast
 import re
 import os.path
@@ -1984,7 +1983,7 @@ def get_week_days(tgtdate, cal):
 
 
 def process_event_export(start_dt=None, end_dt=None, event_type=None,
-                         identifier=u'', user_id=0):
+                         identifier='', user_id=0):
     """
     This exports all events data and registration configuration.
     This export needs to be able to handle additional columns for each

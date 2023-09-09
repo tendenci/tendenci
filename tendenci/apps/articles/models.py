@@ -102,7 +102,7 @@ class Article(TendenciBaseModel):
 
     def get_thumbnail_url(self):
         if not self.thumbnail:
-            return u''
+            return ''
 
         return reverse('file', args=[self.thumbnail.pk])
 

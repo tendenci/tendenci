@@ -1,4 +1,3 @@
-from builtins import str
 import random
 from operator import or_
 from functools import reduce
@@ -82,16 +81,16 @@ class ListNode(Node):
         return None
     
     def render(self, context):
-        tags = u''
-        query = u''
+        tags = ''
+        query = ''
         user = AnonymousUser()
         limit = 3
-        order = u''
-        exclude = u''
+        order = ''
+        exclude = ''
         randomize = False
-        group = u''
-        status_detail = u'active'
-        user_filter = u''
+        group = ''
+        status_detail = 'active'
+        user_filter = ''
 
         if 'random' in self.kwargs:
             randomize = bool(self.kwargs['random'])
@@ -184,7 +183,7 @@ class ListNode(Node):
                 status_detail = self.kwargs['status_detail']
 
         # get the list of items
-        self.perms = getattr(self, 'perms', str())
+        self.perms = getattr(self, 'perms', '')
 
         # Only use the search index if there is a query passed
         if query:

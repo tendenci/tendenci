@@ -151,14 +151,14 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
         else:
             form = form_class(initial={'admin_notes': invoice.admin_notes})
 
-    notify = request.GET.get('notify', u'')
-    guid = guid or u''
+    notify = request.GET.get('notify', '')
+    guid = guid or ''
 
     # boolean value
     merchant_login = get_setting("site", "global", "merchantaccount") != 'asdf asdf asdf'
 
     obj = invoice.get_object()
-    obj_name = u''
+    obj_name = ''
 
     if obj:
         obj_name = obj._meta.verbose_name
@@ -435,7 +435,7 @@ def search(request, template_name="invoices/search.html"):
     search_criteria = None
     search_text = None
     search_method = None
-    invoice_type = u''
+    invoice_type = ''
     event = None
     event_id = None
     object_type_id = None

@@ -1,4 +1,3 @@
-from builtins import str
 from django.template import Library, TemplateSyntaxError, Variable, Node
 from django.utils.translation import gettext_lazy as _
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
@@ -278,7 +277,7 @@ class GetNavNode(Node):
         except:
             pass
 
-        return str()
+        return ''
 
 
 @register.tag

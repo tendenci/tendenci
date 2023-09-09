@@ -1,4 +1,3 @@
-from builtins import str
 import re
 import os
 import pytz
@@ -42,7 +41,7 @@ def date_short(value, arg=None):
     from django.utils.dateformat import format
     from tendenci.apps.site_settings.utils import get_setting
     if not value:
-        return u''
+        return ''
     if arg is None:
         s_date_format = get_setting('site', 'global', 'dateformat')
         if s_date_format:
@@ -64,7 +63,7 @@ def date_long(value, arg=None):
     from django.utils.dateformat import format
     from tendenci.apps.site_settings.utils import get_setting
     if not value:
-        return u''
+        return ''
     if arg is None:
         s_date_format = get_setting('site', 'global', 'dateformatlong')
         if s_date_format:
@@ -85,7 +84,7 @@ def date(value, arg=None):
     """Formats a date according to the given format."""
     from django.utils.dateformat import format
     if not value:
-        return u''
+        return ''
     if arg is None:
         arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT 
     else:
@@ -243,7 +242,7 @@ def rss_date(value, arg=None):
     from datetime import datetime
 
     if not value:
-        return u''
+        return ''
     else:
         value = datetime(*value[:-3])
     if arg is None:
@@ -370,7 +369,7 @@ def thumbnail(file, size='200x200'):
     if not thumbnail_exist:
 
         if not default_storage.exists(filename):
-            return u''
+            return ''
 
         image = Image.open(default_storage.open(filename))
         image.thumbnail([x, y], Image.ANTIALIAS)

@@ -1193,7 +1193,7 @@ def membership_default_add(request, slug='', membership_id=None,
             raise Http403
         is_renewal = True
 
-    membership_type_id = request.GET.get('membership_type_id', u'')
+    membership_type_id = request.GET.get('membership_type_id', '')
     if membership_type_id.isdigit():
         membership_type_id = int(membership_type_id)
     else:
@@ -2114,10 +2114,10 @@ def membership_join_report(request):
     TODAY = date.today()
     memberships = MembershipDefault.objects.filter(status=True,
                                                    status_detail__in=["active", 'archive'])
-    membership_type = u''
-    membership_status = u''
-    start_date = u''
-    end_date = u''
+    membership_type = ''
+    membership_status = ''
+    start_date = ''
+    end_date = ''
 
     start_date = TODAY - relativedelta(months=1)
     end_date = TODAY
@@ -2127,10 +2127,10 @@ def membership_join_report(request):
 
         if form.is_valid():
 
-            membership_type = form.cleaned_data.get('membership_type', u'')
-            membership_status = form.cleaned_data.get('membership_status', u'')
-            start_date = form.cleaned_data.get('start_date', u'')
-            end_date = form.cleaned_data.get('end_date', u'')
+            membership_type = form.cleaned_data.get('membership_type', '')
+            membership_status = form.cleaned_data.get('membership_status', '')
+            start_date = form.cleaned_data.get('start_date', '')
+            end_date = form.cleaned_data.get('end_date', '')
 
             if membership_type:
                 memberships = memberships.filter(membership_type=membership_type)
@@ -2433,9 +2433,9 @@ def report_expired_members(request, template_name='reports/membership_list.html'
         table_data = []
         for mem in mems:
 
-            invoice_pk = u''
+            invoice_pk = ''
             if mem.get_invoice():
-                invoice_pk = u'%i' % mem.get_invoice().pk
+                invoice_pk = '%i' % mem.get_invoice().pk
 
             table_data.append([
                 mem.user.username,

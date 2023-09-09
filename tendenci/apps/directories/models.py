@@ -203,7 +203,7 @@ class Directory(TendenciBaseModel):
 
     def get_logo_url(self):
         if not self.logo_file:
-            return u''
+            return ''
 
         return reverse('file', args=[self.logo_file.pk])
 

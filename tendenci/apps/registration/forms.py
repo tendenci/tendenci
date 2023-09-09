@@ -38,12 +38,12 @@ class RegistrationForm(forms.Form):
                                 widget=forms.TextInput(attrs=attrs_dict),
                                 help_text=_('150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
                                 validators=[UnicodeUsernameValidator()],)
-    email = EmailVerificationField(label=_(u'Email Address'), attrs=attrs_dict)
+    email = EmailVerificationField(label=_('Email Address'), attrs=attrs_dict)
     password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=_(u'Password'),
+                                label=_('Password'),
                                 help_text=_("Use at least 8 characters and 1 number or special character"))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=_(u'Password (confirm)'))
+                                label=_('Password (confirm)'))
 
     def clean_username(self):
         """
@@ -53,7 +53,7 @@ class RegistrationForm(forms.Form):
         """
         value = self.cleaned_data['username']
         if User.objects.filter(username__iexact=value).count() > 0:
-            raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+            raise forms.ValidationError(_('This username is already taken. Please choose another.'))
         return value
 
     def clean(self):
@@ -66,7 +66,7 @@ class RegistrationForm(forms.Form):
         """
         if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
-                raise forms.ValidationError(_(u'You must type the same password each time'))
+                raise forms.ValidationError(_('You must type the same password each time'))
         return self.cleaned_data
 
     def save(self, profile_callback=None):
@@ -95,8 +95,8 @@ class RegistrationFormTermsOfService(RegistrationForm):
 
     """
     tos = forms.BooleanField(widget=forms.CheckboxInput(attrs=attrs_dict),
-                             label=_(u'I have read and agree to the Terms of Service'),
-                             error_messages={ 'required': u"You must agree to the terms to register" })
+                             label=_('I have read and agree to the Terms of Service'),
+                             error_messages={ 'required': "You must agree to the terms to register" })
 
 
 class RegistrationFormUniqueEmail(RegistrationForm):
@@ -112,7 +112,7 @@ class RegistrationFormUniqueEmail(RegistrationForm):
 
         """
         if User.objects.filter(email__iexact=self.cleaned_data['email']):
-            raise forms.ValidationError(_(u'This email address is already in use. Please supply a different email address.'))
+            raise forms.ValidationError(_('This email address is already in use. Please supply a different email address.'))
         return self.cleaned_data['email']
 
 
@@ -138,5 +138,5 @@ class RegistrationFormNoFreeEmail(RegistrationForm):
         """
         email_domain = self.cleaned_data['email'].split('@')[1]
         if email_domain in self.bad_domains:
-            raise forms.ValidationError(_(u'Registration using free email addresses is prohibited. Please supply a different email address.'))
+            raise forms.ValidationError(_('Registration using free email addresses is prohibited. Please supply a different email address.'))
         return self.cleaned_data['email']

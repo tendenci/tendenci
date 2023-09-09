@@ -273,7 +273,7 @@ class Chapter(BasePage):
 
 
 class Position(models.Model):
-    title = models.CharField(_(u'title'), max_length=200)
+    title = models.CharField(_('title'), max_length=200)
 
     class Meta:
         app_label = 'chapters'

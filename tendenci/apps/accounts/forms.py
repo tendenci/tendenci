@@ -208,7 +208,7 @@ class LoginForm(ProhibitNullCharactersValidatorMixin, forms.Form):
 
             messages.add_message(
                 request, messages.SUCCESS,
-                _(u"Hello %(first_name)s %(last_name)s, you've successfully logged in." % {
+                _("Hello %(first_name)s %(last_name)s, you've successfully logged in." % {
                     'first_name' : self.user.first_name or self.user.username,
                     'last_name' : self.user.last_name }))
             if settings.SHOW_UPDATE_ALERT and request.user.is_superuser:

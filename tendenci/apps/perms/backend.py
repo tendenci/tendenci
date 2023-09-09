@@ -84,7 +84,7 @@ class ObjectPermBackend(ModelBackend):
                'object_id': obj.pk
             }
             group_object_perms = ObjectPermission.objects.filter(**filters)
-            user_obj._group_object_perm_cache = set([u"%s.%s.%s" % (p.object_id, p.content_type.app_label, p.codename) for p in group_object_perms])
+            user_obj._group_object_perm_cache = set(["%s.%s.%s" % (p.object_id, p.content_type.app_label, p.codename) for p in group_object_perms])
         return user_obj._group_object_perm_cache
 
     def get_all_object_permissions(self, user_obj, obj):
@@ -103,7 +103,7 @@ class ObjectPermBackend(ModelBackend):
                 'user': user_obj
             }
             perms = ObjectPermission.objects.filter(**filters)
-            user_obj._object_perm_cache = set([u"%s.%s.%s" % (p.object_id, p.content_type.app_label, p.codename) for p in perms])
+            user_obj._object_perm_cache = set(["%s.%s.%s" % (p.object_id, p.content_type.app_label, p.codename) for p in perms])
             user_obj._object_perm_cache.update(self.get_group_object_permissions(user_obj, obj))
         return user_obj._object_perm_cache
 

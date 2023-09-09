@@ -58,8 +58,8 @@ class Profile(Person):
     )
 
     SEX_CHOICES = (
-        ('male', _(u'Male')),
-        ('female', _(u'Female'))
+        ('male', _('Male')),
+        ('female', _('Female'))
     )
 
     # relations
@@ -137,7 +137,7 @@ class Profile(Person):
         if hasattr(self, 'user'):
             return self.user.username
         else:
-            return u''
+            return ''
 
     def __init__(self, *args, **kwargs):
         super(Profile, self).__init__(*args, **kwargs)
@@ -546,7 +546,7 @@ class Profile(Person):
             status=True, status_detail__iexact='active'
         )
 
-        self.member_number = u''
+        self.member_number = ''
         if membership:
             if not membership.member_number:
                 membership.set_member_number()
@@ -609,11 +609,11 @@ class Profile(Person):
         create a new user account.
         """
 
-        un = kwargs.get('username', u'')
-        pw = kwargs.get('password', u'')
-        fn = kwargs.get('first_name', u'')
-        ln = kwargs.get('last_name', u'')
-        em = kwargs.get('email', u'')
+        un = kwargs.get('username', '')
+        pw = kwargs.get('password', '')
+        fn = kwargs.get('first_name', '')
+        ln = kwargs.get('last_name', '')
+        em = kwargs.get('email', '')
 
         user = None
         created = False

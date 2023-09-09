@@ -1,5 +1,3 @@
-
-from builtins import str
 import os
 import re
 import random
@@ -118,7 +116,7 @@ def sync_templates(request=None):
             else:
                 zip_url = str("%s%s"%(site_url, template.get_zip_url()))
         else:
-            zip_url = str()
+            zip_url = ''
 
         #sync with campaign monitor
         try:

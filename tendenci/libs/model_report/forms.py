@@ -1,5 +1,3 @@
-# coding=utf-8
-from builtins import str
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
@@ -72,7 +70,7 @@ class GroupByForm(forms.Form):
     def get_cleaned_data(self):
         cleaned_data = getattr(self, 'cleaned_data', {})
         if 'groupby' in cleaned_data:
-            if str(cleaned_data['groupby']) == u'None':
+            if str(cleaned_data['groupby']) == 'None':
                 cleaned_data['groupby'] = None
         return cleaned_data
 
@@ -104,7 +102,7 @@ class FilterForm(forms.BaseForm):
             elif hasattr(self.fields[k], 'as_boolean'):
                 if v:
                     filter_kwargs.pop(k)
-                    filter_kwargs[k] = (str(v) == u'True')
+                    filter_kwargs[k] = (str(v) == 'True')
         return filter_kwargs
 
     def get_cleaned_data(self):

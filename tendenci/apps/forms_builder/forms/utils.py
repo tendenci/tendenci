@@ -172,9 +172,9 @@ def form_entries_to_csv_writer(csv_writer, form):
             if field.field_type == "FileField":
                 file_field_ids.append(field.id)
     if form.custom_payment:
-        columns.append(str("Pricing"))
-        columns.append(str("Price"))
-        columns.append(str("Payment Method"))
+        columns.append("Pricing")
+        columns.append("Price")
+        columns.append("Payment Method")
     csv_writer.writerow(columns)
     # Loop through each field value order by entry, building up each
     # entry as a row.
@@ -231,9 +231,9 @@ def iter_form_entries(form):
             if field.field_type == "FileField":
                 file_field_ids.append(field.id)
     if form.custom_payment:
-        columns.append(str("Pricing"))
-        columns.append(str("Price"))
-        columns.append(str("Payment Method"))
+        columns.append("Pricing")
+        columns.append("Price")
+        columns.append("Payment Method")
 
     field_indexes[0] = 0
     writer = csv.DictWriter(Echo(), fieldnames=field_indexes)

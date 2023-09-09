@@ -1,4 +1,3 @@
-from builtins import str
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required

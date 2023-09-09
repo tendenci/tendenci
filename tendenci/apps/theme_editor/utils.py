@@ -56,13 +56,13 @@ class ThemeInfo(object):
 
         self.orig_name = theme
         self.name = theme
-        self.description = u''
-        self.tags = u''
-        self.screenshot = u''
-        self.screenshot_thumbnail = u''
-        self.author = u''
-        self.author_uri = u''
-        self.version = u''
+        self.description = ''
+        self.tags = ''
+        self.screenshot = ''
+        self.screenshot_thumbnail = ''
+        self.author = ''
+        self.author_uri = ''
+        self.version = ''
         self.create_dt = datetime.now()
 
         for label, value in get_theme_info(theme).get('General', {}).items():

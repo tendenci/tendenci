@@ -103,7 +103,7 @@ def approve_selected(modeladmin, request, queryset):
             # notify corp reps
             membership.email_corp_reps(request)
 
-approve_selected.short_description = u'Approve selected'
+approve_selected.short_description = 'Approve selected'
 
 
 def renew_selected(modeladmin, request, queryset):
@@ -121,10 +121,10 @@ def renew_selected(modeladmin, request, queryset):
         membership.send_email(request, 'renewal')
 
     member_names = [m.user.profile.get_name() for m in memberships]
-    msg_string = 'Successfully renewed: %s' % u', '.join(member_names)
+    msg_string = 'Successfully renewed: %s' % ', '.join(member_names)
     messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-renew_selected.short_description = u'Renew selected'
+renew_selected.short_description = 'Renew selected'
 
 
 def disapprove_selected(modeladmin, request, queryset):
@@ -143,7 +143,7 @@ def disapprove_selected(modeladmin, request, queryset):
         membership.disapprove(request_user=request.user)
         membership.send_email(request, ('disapprove_renewal' if is_renewal else 'disapprove'))
 
-disapprove_selected.short_description = u'Disapprove selected'
+disapprove_selected.short_description = 'Disapprove selected'
 
 
 def expire_selected(modeladmin, request, queryset):
@@ -163,7 +163,7 @@ def expire_selected(modeladmin, request, queryset):
         # but not being marked as expired yet (maybe due to a failed cron job).
         membership.expire(request_user=request.user)
 
-expire_selected.short_description = u'Expire selected'
+expire_selected.short_description = 'Expire selected'
 
 
 def export_selected(modeladmin, request, queryset, export_fields='main_fields'):
@@ -416,7 +416,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
     def get_status(self, instance):
         return instance.get_status().capitalize()
-    get_status.short_description = u'Status'
+    get_status.short_description = 'Status'
     get_status.admin_order_field = 'status_detail'
 
     @mark_safe
@@ -435,19 +435,19 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
                     inv.pk
                 )
         return ""
-    get_invoice.short_description = u'Invoice'
+    get_invoice.short_description = 'Invoice'
 
     def get_create_dt(self, instance):
         return instance.create_dt.strftime('%b %d, %Y, %I:%M %p')
-    get_create_dt.short_description = u'Created On'
+    get_create_dt.short_description = 'Created On'
 
     def get_approve_dt(self, instance):
         dt = instance.application_approved_dt
 
         if dt:
             return dt.strftime('%b %d, %Y, %I:%M %p')
-        return u''
-    get_approve_dt.short_description = u'Approved On'
+        return ''
+    get_approve_dt.short_description = 'Approved On'
     get_approve_dt.admin_order_field = 'application_approved_dt'
 
     def get_expire_dt(self, instance):
@@ -455,8 +455,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
         if dt:
             return dt.strftime('%m/%d/%Y')
-        return u''
-    get_expire_dt.short_description = u'Expire Date'
+        return ''
+    get_expire_dt.short_description = 'Expire Date'
 
     def get_actions(self, request):
         actions = super(MembershipDefaultAdmin, self).get_actions(request)
@@ -757,7 +757,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
                     instance.group.id,
                 )
         return ""
-    show_group.short_description = u'Group'
+    show_group.short_description = 'Group'
     show_group.admin_order_field = 'group'
 
     def save_model(self, request, object, form, change):

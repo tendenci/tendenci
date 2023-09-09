@@ -1,6 +1,5 @@
 """ANONYMOUS EVENT REGISTRATION VIEWS"""
 
-from builtins import str
 
 from django.contrib import messages
 from django.contrib.auth.models import User, AnonymousUser

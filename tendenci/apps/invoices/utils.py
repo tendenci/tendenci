@@ -73,7 +73,7 @@ def invoice_pdf(request, invoice):
     return result
 
 def process_invoice_export(start_dt=None, end_dt=None,
-                           identifier=u'', user_id=0):
+                           identifier='', user_id=0):
 
     fields = ['id',
               'guid',

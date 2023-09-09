@@ -1,5 +1,3 @@
-from builtins import str
-
 from django.db.models import FloatField
 
 from tendenci.apps.imports.utils import extract_from_excel

@@ -1,4 +1,3 @@
-from builtins import str
 from datetime import datetime
 
 from django.db.models.fields import DateTimeField

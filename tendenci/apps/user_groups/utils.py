@@ -1,4 +1,3 @@
-from builtins import str
 from collections import OrderedDict
 import time
 from datetime import datetime, date
@@ -49,7 +48,7 @@ def get_default_group():
 def process_export(
         group_id,
         export_target='all',
-        identifier=u'', user_id=0):
+        identifier='', user_id=0):
     """
     Process export for group members and/or group subscribers.
     """

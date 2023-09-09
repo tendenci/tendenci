@@ -95,7 +95,7 @@ class RelatedListNode(Node):
 
     def render(self, context):
         limit = 3
-        order = u''
+        order = ''
 
         # Check if video exists in context
         try:

@@ -1,4 +1,3 @@
-from builtins import str
 import random
 from datetime import datetime
 from operator import or_, and_
@@ -85,13 +84,13 @@ class ListStoriesNode(ListNode):
             raise AttributeError(_('Model.objects does not have a search method'))
 
     def render(self, context):
-        tags = u''
-        query = u''
+        tags = ''
+        query = ''
         user = AnonymousUser()
         limit = 3
-        order = u''
+        order = ''
         randomize = False
-        group = u''
+        group = ''
 
         if 'random' in self.kwargs:
             randomize = bool(self.kwargs['random'])

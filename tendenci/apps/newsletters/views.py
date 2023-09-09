@@ -1,4 +1,3 @@
-from builtins import str
 import datetime
 
 from django.conf import settings
@@ -343,19 +342,19 @@ def generate(request):
 
             html_url = [
                 reverse('newsletter.template_render', args=[template.template_id]),
-                u'?jump_links=%s' % form.cleaned_data.get('jump_links'),
+                '?jump_links=%s' % form.cleaned_data.get('jump_links'),
                 '&events=%s' % form.cleaned_data.get('events'),
                 '&events_type=%s' % form.cleaned_data.get('events_type'),
-                '&event_start_dt=%s' % form.cleaned_data.get('event_start_dt', u''),
-                '&event_end_dt=%s' % form.cleaned_data.get('event_end_dt', u''),
-                '&articles=%s' % form.cleaned_data.get('articles', u''),
-                '&articles_days=%s' % form.cleaned_data.get('articles_days', u''),
-                '&news=%s' % form.cleaned_data.get('news', u''),
-                '&news_days=%s' % form.cleaned_data.get('news_days', u''),
-                '&jobs=%s' % form.cleaned_data.get('jobs', u''),
-                '&jobs_days=%s' % form.cleaned_data.get('jobs_days', u''),
-                '&pages=%s' % form.cleaned_data.get('pages', u''),
-                '&pages_days=%s' % form.cleaned_data.get('pages_days', u''),
+                '&event_start_dt=%s' % form.cleaned_data.get('event_start_dt', ''),
+                '&event_end_dt=%s' % form.cleaned_data.get('event_end_dt', ''),
+                '&articles=%s' % form.cleaned_data.get('articles', ''),
+                '&articles_days=%s' % form.cleaned_data.get('articles_days', ''),
+                '&news=%s' % form.cleaned_data.get('news', ''),
+                '&news_days=%s' % form.cleaned_data.get('news_days', ''),
+                '&jobs=%s' % form.cleaned_data.get('jobs', ''),
+                '&jobs_days=%s' % form.cleaned_data.get('jobs_days', ''),
+                '&pages=%s' % form.cleaned_data.get('pages', ''),
+                '&pages_days=%s' % form.cleaned_data.get('pages_days', ''),
                 ]
 
             return redirect(''.join(html_url))

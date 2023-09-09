@@ -1,4 +1,3 @@
-from builtins import str
 import subprocess
 import datetime
 import csv

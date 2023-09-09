@@ -243,11 +243,11 @@ class GroupMembershipEditForm(forms.ModelForm):
 
 class MessageForm(forms.Form):
     """Handles Message Form"""
-    to_addr = forms.CharField(label=_(u'To'))
-    from_addr = forms.CharField(label=_(u'From'))
+    to_addr = forms.CharField(label=_('To'))
+    from_addr = forms.CharField(label=_('From'))
     subject = forms.CharField()
     body = forms.CharField(widget=forms.Textarea)
-    is_test = forms.BooleanField(label=_(u'Send test email to me only'), required=False, initial=True)
+    is_test = forms.BooleanField(label=_('Send test email to me only'), required=False, initial=True)
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('request')

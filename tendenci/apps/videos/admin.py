@@ -44,7 +44,7 @@ class VideoAdmin(TendenciBaseModelAdmin):
 
         if dt:
             return dt.strftime('%x')
-        return u''
+        return ''
     get_release_dt.short_description = _('Release Date')
     list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt', 'show_group', 'status_detail']
     list_editable = ['category', 'video_type']

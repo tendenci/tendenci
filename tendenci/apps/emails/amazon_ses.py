@@ -19,7 +19,6 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
-from builtins import str
 from http import client as http_client
 from urllib.parse import urlencode
 import hashlib

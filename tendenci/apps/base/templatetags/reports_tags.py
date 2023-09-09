@@ -1,4 +1,3 @@
-from builtins import str
 from datetime import datetime
 from django import template
 from django.utils.translation import gettext_lazy as _

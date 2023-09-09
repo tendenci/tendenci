@@ -1,5 +1,3 @@
-from builtins import str
-
 from django.http import HttpResponse
 from django.conf import settings
 from django.core.cache import cache

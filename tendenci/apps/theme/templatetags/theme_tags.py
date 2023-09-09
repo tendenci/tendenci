@@ -1,4 +1,3 @@
-from builtins import str
 import os
 
 from django.template import TemplateSyntaxError, VariableDoesNotExist

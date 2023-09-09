@@ -1,5 +1,3 @@
-from builtins import str
-
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -56,7 +54,7 @@ class StudyGroup(BasePage):
 
 
 class Position(models.Model):
-    title = models.CharField(_(u'title'), max_length=200)
+    title = models.CharField(_('title'), max_length=200)
     group = models.ForeignKey(Group, help_text='Group with associated permissions for this officer position.', null=True, on_delete=models.CASCADE)
 
     class Meta:

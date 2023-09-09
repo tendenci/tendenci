@@ -1,4 +1,3 @@
-from builtins import str
 import uuid
 from hashlib import md5
 import operator
@@ -2110,10 +2109,10 @@ class Event(TendenciBaseModel):
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False, on_delete=models.CASCADE)
     mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
     enable_private_slug = models.BooleanField(_('Enable Private URL'), blank=True, default=False) # hide from lists
-    private_slug = models.CharField(max_length=500, blank=True, default=u'')
+    private_slug = models.CharField(max_length=500, blank=True, default='')
     password = models.CharField(max_length=50, blank=True)
     on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
-    external_url = models.URLField(_('External URL'), default=u'', blank=True)
+    external_url = models.URLField(_('External URL'), default='', blank=True)
     image = models.ForeignKey(EventPhoto,
         help_text=_('Photo that represents this event.'), null=True, blank=True, on_delete=models.SET_NULL)
     certificate_image = models.ForeignKey(CertificateImage,

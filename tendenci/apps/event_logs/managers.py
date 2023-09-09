@@ -1,4 +1,3 @@
-from builtins import str
 import inspect
 from datetime import datetime, timedelta
 from operator import and_

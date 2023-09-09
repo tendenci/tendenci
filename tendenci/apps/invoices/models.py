@@ -208,7 +208,7 @@ class Invoice(models.Model):
     def split_title(self):
         if ": " in self.title:
             split_title = ': '.join(self.title.split(': ')[1:])
-            return u'%s' % split_title
+            return '%s' % split_title
         return self.title
 
     def get_absolute_url(self):
@@ -321,7 +321,7 @@ class Invoice(models.Model):
         Use status_detail and is_voide attribute
         """
         if self.is_void:
-            return u'void'
+            return 'void'
 
         return self.status_detail
 
