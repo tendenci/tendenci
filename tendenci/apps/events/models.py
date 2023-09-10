@@ -1329,6 +1329,12 @@ class Registrant(models.Model):
 
         return '; '.join([f'{key}:{value}' for key, value in credits.items()])
 
+    @property
+    def credits_earned_by_name(self):
+        """Credits earned by name"""
+        return '; '.join(self.released_cpe_credits.values_list(
+            'event_credit__ceu_subcategory__name', flat=True))
+
     def get_cpe_credits_by_event(self, event):
         """Total CPE credits by event"""
         return self.released_cpe_credits.filter(
