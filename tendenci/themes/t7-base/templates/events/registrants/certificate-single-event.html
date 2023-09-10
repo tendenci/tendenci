@@ -166,7 +166,7 @@
     {% with registrant.event.groups.all.0 as event_group %}
       {% if event_group %}
 	      {% if event_group.logo %}
-	      <div>
+	      <div style="margin-bottom: 1em;">
 	      <img src="{{ event_group.logo.url }}" title="{{ event_group.name }}" alt="{{ event_group.name }}"/>
 	      </div>
 	      {% endif %}
@@ -194,7 +194,7 @@
       </div>
     </div>
     <div class="row event">
-      <div class="col-md-3 event">
+      <div class="col-md-3 event" style="width: 55%;">
         <strong>{% trans "Topic: " %} <br />
           <strong>{{ registrant.event.title }}</strong> <br />
           <div class="details">
