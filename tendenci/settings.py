@@ -96,6 +96,7 @@ MIDDLEWARE = [
     'tendenci.apps.forums.middleware.PybbMiddleware',
     'tendenci.apps.profiles.middleware.ProfileLanguageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django_auto_logout.middleware.auto_logout',
 ]
 if os.path.exists(os.path.join(PROJECT_ROOT, 'addons/impersonation/')):
     MIDDLEWARE += ['addons.impersonation.middleware.ImpersonationMiddleware']
@@ -292,6 +293,12 @@ INSTALLED_APPS = [
 #LOGIN_URL = 'two_factor:login'
 # set it to True in your conf/settings.py to enable two factor authentication.
 USE_TWO_FACTOR_AUTH = False
+
+# django auto logout
+AUTO_LOGOUT = {
+    'IDLE_TIME': 3600, # logout after 1 hour of idle time
+    'MESSAGE': 'The session has expired. Please login again to continue.',
+}
 
 LOGIN_REDIRECT_URL = '/dashboard'
 AUTHENTICATION_BACKENDS = [
