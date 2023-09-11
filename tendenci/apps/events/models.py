@@ -2178,6 +2178,20 @@ class Event(TendenciBaseModel):
         return Event.objects.filter(pk__in=pks)
 
     @property
+    def enable_certificate_preview(self):
+        """
+        Indicates if certificate preview should be enabled.
+        It should be enabled when credits are configured.
+        """
+        # Don't preview certificate on child events
+        if self.parent and self.nested_events_enabled:
+            return False
+
+        events = self.child_events if self.nested_events_enabled and self.child_events else [self]
+
+        return EventCredit.objects.filter(event__in=events).exists()
+
+    @property
     def possible_cpe_credits_queryset(self):
         """Possible CPE credits (queryset)"""
         return self.eventcredit_set.exclude(ceu_subcategory__code="CE")
