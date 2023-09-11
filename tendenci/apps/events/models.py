@@ -1835,7 +1835,7 @@ class RegistrantCredits(models.Model):
 
     @property
     def credit_name(self):
-        return self.event_credit.ceu_subcategory.name
+        return self.event_credit and self.event_credit.ceu_subcategory.name
 
 
 class Payment(models.Model):
