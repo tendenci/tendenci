@@ -1496,7 +1496,7 @@ def copy_event(event, user, reuse_rel=False, set_repeat_of=False):
         new_event.save(update_fields=['parent', 'repeat_of', 'repeat_uuid'])
 
     # Copy credit configuration
-    for config in event.eventcredit_set.all():
+    for config in event.eventcredit_set.available():
         credit = EventCredit.objects.create(
             ceu_subcategory=config.ceu_subcategory,
             credit_count=config.credit_count,

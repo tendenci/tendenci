@@ -176,6 +176,15 @@ class CEUCategory(models.Model):
         return self.name
 
 
+class EventCreditQuerySet(models.QuerySet):
+    def available(self):
+        return self.filter(available=True, credit_count__gt=0)
+
+
+class EventCreditManager(models.Manager.from_queryset(EventCreditQuerySet)):
+    pass
+
+
 class EventCredit(models.Model):
     """Credits configured for an Event"""
     event = models.ManyToManyField('Event', blank=True)
@@ -186,6 +195,8 @@ class EventCredit(models.Model):
     credit_count = models.DecimalField(max_digits=5, decimal_places=1, default=0)
     alternate_ceu_id = models.CharField(max_length=150, blank=True, null=True)
     available = models.BooleanField(default=False)
+
+    objects = EventCreditManager()
 
     def save(self, apply_changes_to='self', from_event=None, *args, **kwargs):
         """Update for recurring events after save"""
@@ -1526,7 +1537,7 @@ class Registrant(models.Model):
         except:
             raise Exception(error_message)
 
-        if check_in_or_out == 'checked_out' and not self.event.eventcredit_set.exists():
+        if check_in_or_out == 'checked_out' and not self.event.eventcredit_set.available().exists():
             self.event.assign_credits(self)
 
     def get_name(self):
@@ -2188,7 +2199,7 @@ class Event(TendenciBaseModel):
     @property
     def possible_cpe_credits_queryset(self):
         """Possible CPE credits (queryset)"""
-        return self.eventcredit_set.exclude(ceu_subcategory__code="CE")
+        return self.eventcredit_set.available().exclude(ceu_subcategory__code="CE")
 
     @property
     def possible_cpe_credits(self):
@@ -2264,7 +2275,7 @@ class Event(TendenciBaseModel):
         """
         event = registrant.event
         # only assign those credits that are available
-        for credit in self.eventcredit_set.filter(available=True):
+        for credit in self.eventcredit_set.available():
             RegistrantCredits.objects.get_or_create(
                registrant_id=registrant.pk,
                event=event,
@@ -2330,7 +2341,7 @@ class Event(TendenciBaseModel):
     @cached_property
     def credits(self):
         """Credits configured for this Event"""
-        return self.eventcredit_set.all()
+        return self.eventcredit_set.available()
 
     def get_or_create_credit_configuration(self, ceu_category_id, should_create):
         """Get or create credit configuration for a given CEUCategory"""
@@ -2345,7 +2356,7 @@ class Event(TendenciBaseModel):
 
     def get_credit_configuration(self, ceu_category):
         """Get credit configuration for given CEUCategory"""
-        return self.credits.filter(ceu_subcategory=ceu_category).first()
+        return self.eventcredit_set.filter(ceu_subcategory=ceu_category).first()
 
     # this function is to display the event date in a nice way.
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010

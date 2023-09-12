@@ -308,7 +308,7 @@ class CEUSubCategoryFormSet(BaseInlineFormSet):
 
             data = form.cleaned_data
 
-            if (data.get('DELETE') and form.instance.eventcredit_set.exists()):
+            if (data.get('DELETE') and form.instance.eventcredit_set.available().exists()):
                 raise ValidationError(_(f'You cannot delete this sub-category "{form.instance}" - It is being used by events.'))
 
 
