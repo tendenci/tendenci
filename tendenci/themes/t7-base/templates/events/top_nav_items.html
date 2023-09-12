@@ -176,6 +176,13 @@
                                 <a href="{{ app_object.parent.get_absolute_url }}">{% trans "View Parent Event" %}</a>
                             </span>
                         </li>
+                        {% if app_object.zoom_credits_ready %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.generate_zoom_credits' app_object.pk %}">{% trans "Generate Zoom Credits" %}</a>
+                            </span>
+                        </li>
+                        {% endif %}
                         {% if app_object.events_with_credits %}
                         <li class="content-item">
                             <span class="app-name">

@@ -52,6 +52,7 @@ from tendenci.apps.emails.models import Email
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.trainings.models import Course, Certification
+from tendenci.apps.zoom import ZoomClient
 
 # from south.modelsinspector import add_introspection_rules
 # add_introspection_rules([], [r'^timezone_field\.TimeZoneField'])
@@ -184,6 +185,11 @@ class VirtualEventCreditsLogicConfiguration(models.Model):
         default=50,
         help_text=_('Number of minutes to earn 1 full credit.')
     )
+    credit_period_questions = models.PositiveSmallIntegerField(
+        _('Number of Questions for each credit period'),
+        default=4,
+        help_text=(_('Total number of questions per credit period.'))
+    )
     full_credit_percent = models.DecimalField(
         _('Percent of Questions Correct for Full Credit'),
         blank=True,
@@ -202,9 +208,13 @@ class VirtualEventCreditsLogicConfiguration(models.Model):
     half_credits_allowed = models.BooleanField(_('Half Credits Allowed'), default=True)
     half_credit_periods = models.PositiveSmallIntegerField(
         _('Number of Periods after which Half Credits Can be Earned'),
-        blank=True,
-        null=True,
-        help_text=(_('Leave blank if allowed for entirety of event'))
+        default=0,
+        help_text=(_('Leave 0 if allowed for entirety of event'))
+    )
+    half_credit_credits = models.PositiveIntegerField(
+        _('Number of full credits required before half credits can be earned.'),
+        default=0,
+        help_text=(_('Leave 0 if there is no requirement.'))
     )
 
     class Meta:
@@ -1587,7 +1597,7 @@ class Registrant(models.Model):
         """
         # Check in to parent Event
         if not self.checked_in:
-            self.check_in_or_out(check_in)
+            self.check_in_or_out(True)
 
         # Check in to child Event (if this is a child event)
         child_event = self.child_events.filter(child_event=event).first()
@@ -2351,6 +2361,16 @@ class Event(TendenciBaseModel):
         return self.eventstaff_set.filter(include_on_certificate=True).order_by('pk')
 
     @property
+    def zoom_integration_setup(self):
+        """Indicates Zoom integration is enabled and setup."""
+        return (
+            get_setting("module", "events", "enable_zoom") and
+            self.place.use_zoom_integration and
+            self.zoom_meeting_number and
+            self.zoom_meeting_passcode
+        )
+
+    @property
     def enable_zoom_meeting(self):
         """
         Indicates Zoom meeting should be enabled.
@@ -2365,10 +2385,7 @@ class Event(TendenciBaseModel):
         return (
             ten_minutes_prior and
             datetime.now() < self.end_dt and
-            get_setting("module", "events", "enable_zoom") and
-            self.place.use_zoom_integration and
-            self.zoom_meeting_number and
-            self.zoom_meeting_passcode
+            self.zoom_integration_setup
         )
 
     @property
@@ -2420,6 +2437,200 @@ class Event(TendenciBaseModel):
 
         return jwt.encode(payload, settings.ZOOM_CLIENT_SECRET, algorithm="HS256")
 
+    @property
+    def zoom_credits_ready(self):
+        """Zoom credits are ready to generate"""
+        return (
+            self.zoom_integration_setup and
+            datetime.now() >= self.end_dt
+        )
+
+    def get_zoom_poll_results(self, client):
+        """Get Zoom poll responses"""
+        response = client.get_meeting_poll_results(self.zoom_meeting_number)
+        if not response.status_code == 200:
+            raise Exception(_('Failed to get poll results, check meeting ID and try again'))
+
+        questions = response.json().get('questions')
+
+        if not questions:
+            raise Warning(_('No questions were answered.'))
+
+        return questions
+
+    def get_registrant_by_user_name(self, user_name):
+        """Get registrant tied to this Event by user_name"""
+        event = self.parent if self.parent and self.nested_events_enabled else self
+
+        return Registrant.objects.filter(
+            registration__event_id=event.pk,
+            user__username=user_name
+        ).first()
+
+    @cached_property
+    def virtual_event_credits_config(self):
+        config = VirtualEventCreditsLogicConfiguration.objects.first()
+
+        if not config:
+            raise Exception(_("Must setup Virtual Events Credits Configuration "))
+
+        return config
+
+    @property
+    def full_credit_questions(self):
+        """
+        Get the number of questions per credit period that
+        will earn a full credit. This is eitehr full_credit_questions
+        in the config, or full_credit_percent * credit_period_questions
+        (also in the config)
+        """
+        config = self.virtual_event_credits_config
+
+        return config.full_credit_questions or (
+            config.full_credit_percent * config.credit_period_questions)
+
+    @property
+    def half_credit_questions(self):
+        """
+        Half credit questions represents the point where a
+        half credit should be earned in a Zoom event
+        """
+        config = self.virtual_event_credits_config
+
+        return config.credit_period_questions / 2
+
+    def generate_zoom_credits(self):
+        """Generate credits earned from Zoom event"""
+        client = ZoomClient()
+
+        questions_answered = self.get_zoom_poll_results(client)
+        questions_by_user = dict()
+
+        # Get configuration for credit period.
+        config = self.virtual_event_credits_config
+
+        # Get credit_period timedelta to calculate elapsed time
+        # to determine what credit period a question is in.
+        credit_period_minutes = timedelta(minutes=config.credit_period, seconds=1)
+
+        # For each user that answered questions, count the number
+        # of questions answered within a credit period
+        for question in questions_answered:
+            # Get registrant by username
+            user_name = question.get('name')
+            registrant = self.get_registrant_by_user_name(user_name)
+            if not registrant:
+                continue
+
+            question_details = list(reversed(question.get('question_details', list())))
+
+            if user_name not in questions_by_user:
+                questions_by_user[user_name] = dict()
+
+            # Calculate elasped time since first answered question.
+            # From that, determine what credit period each question
+            # is in and count answered questions by the credit period
+            # for the user. Readjust start time if credits not earned in
+            # previous credit period
+            previous_index = 0  # Index of previous credit period
+            previous_question_index = 0  # Index (credit period) of previous question
+            previous_answers = None  # answers in previous credit period
+            index_offset = 0  # Offset to use when resetting start_dt
+            last_dt = list()  # Track datetimes of questions answered
+            credits_earned_list = list() # List of credit periods where credits were earned
+            should_reset_start_dt = False  # indicate start date should be reset
+            previous_answer_dt = None  # datetime of previous question's answer
+            start_dt = self.start_dt  # start datetime used to calculate time elasped
+
+            for detail in question_details:
+                if detail.get('answer'):
+                    answered_dt = datetime.strptime(detail.get('date_time'), '%Y-%m-%d %H:%M:%S')
+
+                    # Calculate what credit period this is based on elasped time since start.
+                    # Add index_offset to accomodate start datetime adjustments
+                    index = int((answered_dt - start_dt)/credit_period_minutes) + index_offset
+                    # Total questions answered so far in this credit period
+                    answered = questions_by_user[user_name].get(index, 0)
+
+                    # If answered is 0, this is the first answer in this credit period
+                    # Set preiouvs_index to the index of the previous question as the previous
+                    # was in the previous credit period. Get the previous answers so we can
+                    # determine if start datetime should be reset (if full credit was not earned).
+                    if not answered:
+                        previous_index = previous_question_index
+                        previous_answers = questions_by_user[user_name].get(previous_index)
+
+                    # If this isn't the first answer, the gap between this answer and the previous is
+                    # greater than credit_period_minutes or this is a new credit period and no credit
+                    # was earned in the previous credit period.
+                    if (
+                            (previous_answer_dt and
+                            (answered_dt - previous_answer_dt) >= credit_period_minutes) or
+                            not answered and previous_answers and previous_answers < self.full_credit_questions
+                    ):
+                        should_reset_start_dt = True
+
+                    # If this is at least the 2nd calculated credit period, there were answers in
+                    # the previous credit period, there were fewer answers than needed to get a credit:
+                    # Try the next available start date if not currently earning a credit (based on questions answered) and adjust counts.
+                    if (should_reset_start_dt):
+                        new_offset = 0  # value to add to index_offset
+
+                        # While there are datetimes to move start to and while we
+                        # haven't found a full credit period, keep moving start time
+                        # up
+                        while last_dt and not new_offset:
+                            # Move start date to answered question
+                            start_dt_data = last_dt.pop()
+                            new_start_dt = list(start_dt_data.keys())[0]
+                            start_dt_index = start_dt_data[new_start_dt]
+                            # If the new start date is prior to the old one,
+                            # if it's in the same credit period as current, or
+                            # if it's in a credit period that earned a credit, skip it
+                            if (
+                                    start_dt_index in credits_earned_list or
+                                    new_start_dt <= start_dt or
+                                    start_dt_index == index
+                            ):
+                                continue
+
+                            # Reset start datetime, and check elasped time to see
+                            # if we've found a full credit period. If so, increment
+                            # 'answered' to pull in the answer of the new start time
+                            # to the current period, and remove it from the previous.
+                            start_dt = new_start_dt
+                            new_offset = int((answered_dt - start_dt)/credit_period_minutes)
+                            if not new_offset:
+                                answered += 1
+                                questions_by_user[user_name][start_dt_index] -= 1
+
+                            index_offset = index  # Set index_offset to stay in correct credit period
+
+                    # Increment questions answers for current credit period for current answer
+                    # (includes answers pulled from previous credit period if start time reset)
+                    questions_by_user[user_name][index] = answered + 1
+
+                    # If credits have been earned, turn off switch to reset start time
+                    if questions_by_user[user_name][index] >= self.full_credit_questions:
+                        should_reset_start_dt = False
+
+                        # Since enough credits were earned in this credit period, we can't
+                        # go back here to reset start time.
+                        credits_earned_list.append(index)
+
+                    # Keep track of last question answered and the credit period it's in,
+                    # so we can reset start time if needed (if credits not earned)
+                    if questions_by_user[user_name][index] < self.full_credit_questions:
+                        last_dt.append({answered_dt: index})
+                    # Keep track of previous question's answered time so we can track time
+                    # between questions answered
+                    previous_answer_dt = answered_dt
+                    # Keep track of previous question's index, so we can deteremine
+                    # previous credit period
+                    previous_question_index = index
+
+            # Assign credits to registrant based on questions answered
+            self.assign_zoom_credits(registrant, questions_by_user[user_name])
 
     def get_meta(self, name):
         """
@@ -2429,20 +2640,61 @@ class Event(TendenciBaseModel):
         """
         return EventMeta().get_meta(self, name)
 
-    def assign_credits(self, registrant):
+    def assign_zoom_credits(self, registrant, questions_answered):
+        """
+        Assign credits from Event to Registrant for Zoom event,
+        based on questions answered and VirtualEventCreditsLogicConfiguration.
+        questions_answered is a dict with number of questions answered
+        for each credit period (calculated based on credit_period in configuration)
+        """
+        config = self.virtual_event_credits_config
+
+        total_credits = 0
+
+        # Get the number of questions per credit period that
+        # will earn a full credit. This is eitehr full_credit_questions
+        # in the config, or full_credit_percent * credit_period_questions
+        # (also in the config)
+        full_credit_questions = self.full_credit_questions
+
+        # For each credit period, calculate how many credits should be
+        # earned based on configuration.
+        for credit_period in questions_answered:
+            # Half credits are allowed if enabled in the
+            # configuration, if total_credits has reached the
+            # amount indicated in the configuration, and question is
+            # in or after period where half credits are allowed per config.
+            half_credits_allowed = (
+                config.half_credits_allowed and
+                total_credits >= config.half_credit_credits and
+                credit_period >= config.half_credit_periods
+            )
+            # If registrant answered at or above full_credit_questions,
+            # award a full credit. If half credits are allowed, and registrant
+            # answered at least 1/2 the questions in a credit period, award
+            # a half credit
+            if questions_answered[credit_period] >= full_credit_questions:
+                total_credits += 1
+            elif half_credits_allowed and \
+                 questions_answered[credit_period] >= self.half_credit_questions:
+                total_credits += .5
+
+        self.assign_credits(registrant, total_credits)
+
+
+    def assign_credits(self, registrant, calculated_credits=0):
         """
         Assign credits from Event to Registrant.
         Credits default to un-released, so they can be overridden.
         """
-        event = registrant.event
         # only assign those credits that are available
         for credit in self.eventcredit_set.available():
             RegistrantCredits.objects.get_or_create(
                registrant_id=registrant.pk,
-               event=event,
-               credit_dt=event.start_dt,
+               event_id=self.pk,
+               credit_dt=self.start_dt,
                event_credit_id=credit.pk,
-               credits=credit.credit_count,
+               credits=calculated_credits or credit.credit_count,
            )
 
     def is_registrant(self, user):

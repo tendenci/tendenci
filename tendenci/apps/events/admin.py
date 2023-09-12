@@ -363,12 +363,20 @@ class RegistrantCreditsEventFilter(admin.SimpleListFilter):
 
 
 class RegistrantCreditsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'registrant', 'event_code', 'event', 'credit_name', 'credits', 'released')
+    list_display = ('id', 'registrant', 'event_code', 'event_link', 'credit_name', 'credits', 'released')
     list_editable = ('credits', 'released')
     search_fields = ('event__title', 'event__event_code',)
-    readonly_fields = ('registrant', 'event_credit', 'event')
+    readonly_fields = ('registrant', 'event_credit', 'event_link')
     list_filter = ('released', RegistrantCreditsEventFilter)
     actions = ["release"]
+
+
+    def event_link(self, obj):
+        return mark_safe('<a href="{}">{}</a>'.format(
+            obj.event.get_absolute_url(),
+            obj.event
+        ))
+    event_link.short_description = 'event'
 
     def release(self, request, queryset):
         """Release all credits"""
@@ -399,10 +407,12 @@ class VirtualEventCreditsLogicConfigurationAdmin(admin.ModelAdmin):
     list_display = (
         'edit',
         'credit_period',
+        'credit_period_questions',
         'full_credit_percent',
         'full_credit_questions',
         'half_credits_allowed',
         'half_credit_periods',
+        'half_credit_credits',
     )
 
     def edit(self, obj):

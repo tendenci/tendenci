@@ -52,7 +52,24 @@ class ZoomSession(requests.Session):
 
 
 class ZoomClient(ZoomSession):
+    """Access endpoints to pull Zoom meeting information"""
     MEETINGS = "/meetings/{meeting_id}"
+    MEETING_POLLS = "/meetings/{meeting_id}/polls"
+    MEETING_POLL_RESULTS = "/past_meetings/{meeting_id}/polls"
+    WEBINAR_POLL_RESULTS = "/past_webinars/{webinar_id}/polls"
+    WEBINAR_POLLS = "/webinars/{webinar_id}/polls"
 
     def get_meeting(self, meeting_id):
         return self.get(self.MEETINGS.format(meeting_id=meeting_id))
+
+    def get_meeting_polls(self, meeting_id):
+        return self.get(self.MEETING_POLLS.format(meeting_id=meeting_id))
+
+    def get_meeting_poll_results(self, meeting_id):
+        return self.get(self.MEETING_POLL_RESULTS.format(meeting_id=meeting_id))
+
+    def get_webinar_polls(self, webinar_id):
+        return self.get(self.WEBINAR_POLLS.format(webinar_id=webinar_id))
+
+    def get_webinar_poll_results(self, webinar_id):
+        return self.get(self.WEBINAR_POLL_RESULTS.format(webinar_id=webinar_id))

@@ -243,6 +243,23 @@ def zoom(request, event_id, template_name="events/zoom.html"):
     })
 
 @is_enabled('events')
+@login_required
+def generate_zoom_credits(request, event_id):
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
+
+    if not request.user.profile.is_superuser:
+        return Http403
+
+    try:
+        event.generate_zoom_credits()
+        messages.add_message(request, messages.SUCCESS, _(f"Credits generated for {event.title}"))
+        return redirect(event.review_credits_url())
+    except Exception as e:
+        messages.add_message(request, messages.ERROR, _(e.args[0]))
+
+    return redirect(event.get_absolute_url())
+
+@is_enabled('events')
 def details(request, id=None, private_slug=u'', template_name="events/view.html"):
     if not id and not private_slug:
         return HttpResponseRedirect(reverse('event.month'))

@@ -13,7 +13,7 @@
     let meetingConfig = JSON.parse('{{ event.zoom_meeting_config|safe }}');
 
     ZoomMtg.init({
-        leaveUrl: '/events/2',
+        leaveUrl: '{{ event.get_absolute_url }}',
         disablePreview: true,
         success: (success) => {
             ZoomMtg.join({
