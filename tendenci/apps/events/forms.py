@@ -2441,12 +2441,26 @@ class RegistrantBaseFormSet(BaseFormSet):
         form = self.form(**defaults)
         self.add_fields(form, i)
         return form
-    
+
+    def _clean_form(self, form):
+        email = form.cleaned_data.get('email', None)
+
+        if email:
+            if not get_setting('module', 'events', 'canregisteragain'):
+                # check if this email address is already used
+                if Registrant.objects.filter(user__email__iexact=email,
+                                             registration__event=self.event,
+                                             cancel_dt__isnull=True).exists():
+                    if self.user.is_authenticated and email == self.user.email:
+                        raise forms.ValidationError(_('You have already registered.'))
+                    raise forms.ValidationError(_(f'User {email} has already registered.'))
+  
     def clean(self):
         return_data = super(RegistrantBaseFormSet, self).clean()
         # check if we have enough available spaces for price options
         pricings = {}
         for form in self.forms:
+            self._clean_form(form)
             pricing = form.cleaned_data.get('pricing', None)
             if pricing and pricing.registration_cap:
                 if pricing not in pricings:
