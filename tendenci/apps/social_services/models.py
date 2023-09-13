@@ -88,7 +88,7 @@ class SkillSet(models.Model):
                   'country': self.user.profile.country}
         url = 'http://nominatim.openstreetmap.org/search'
         result = requests.get(url, params=params).json()
-        if result:
+        if result and not 'error' in result:
             lat = result[0]['lat']
             lng = result[0]['lon']
             self.loc = "POINT(%s %s)" % (lng, lat)
