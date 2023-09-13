@@ -924,6 +924,7 @@ class EventForm(TendenciBaseForm):
         self.edit_mode = kwargs.pop('edit_mode', False)
         self.recurring_mode = kwargs.pop('recurring_mode', False)
         is_template = kwargs.pop('is_template', False)
+        parent_event_id = kwargs.pop('parent_event_id', None)
         super(EventForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
@@ -954,6 +955,10 @@ class EventForm(TendenciBaseForm):
 
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
             #self.fields['groups'].initial = Group.objects.get_or_create_default()
+            
+            if 'repeat_of' in self.fields and 'parent' in self.fields and parent_event_id:
+                parent_event = Event.objects.get(id=parent_event_id)
+                self.fields['repeat_of'].queryset = parent_event.child_events.order_by('repeat_uuid').distinct('repeat_uuid')
 
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
@@ -2441,12 +2446,26 @@ class RegistrantBaseFormSet(BaseFormSet):
         form = self.form(**defaults)
         self.add_fields(form, i)
         return form
-    
+
+    def _clean_form(self, form):
+        email = form.cleaned_data.get('email', None)
+
+        if email:
+            if not get_setting('module', 'events', 'canregisteragain'):
+                # check if this email address is already used
+                if Registrant.objects.filter(user__email__iexact=email,
+                                             registration__event=self.event,
+                                             cancel_dt__isnull=True).exists():
+                    if self.user.is_authenticated and email == self.user.email:
+                        raise forms.ValidationError(_('You have already registered.'))
+                    raise forms.ValidationError(_(f'User {email} has already registered.'))
+  
     def clean(self):
         return_data = super(RegistrantBaseFormSet, self).clean()
         # check if we have enough available spaces for price options
         pricings = {}
         for form in self.forms:
+            self._clean_form(form)
             pricing = form.cleaned_data.get('pricing', None)
             if pricing and pricing.registration_cap:
                 if pricing not in pricings:

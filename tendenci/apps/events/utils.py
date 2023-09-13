@@ -1136,9 +1136,12 @@ def create_registrant_from_form(*args, **kwargs):
         registrant.comments = form.cleaned_data.get('comments', '') or ''
 
         if registrant.email:
-            users = User.objects.filter(email=registrant.email)
-            if users:
-                registrant.user = users[0]
+            if reg8n.creator and reg8n.creator.email == registrant.email:
+                registrant.user = reg8n.creator
+            else:
+                users = User.objects.filter(email__iexact=registrant.email)
+                if users:
+                    registrant.user = users[0]
 
     if event and event.course:
         # certification_track

@@ -1794,7 +1794,7 @@ def add(request, year=None, month=None, day=None, is_template=False, parent_even
             }
 
             # single forms
-            form_event = form_class(user=request.user, initial=event_init, is_template=is_template)
+            form_event = form_class(user=request.user, initial=event_init, parent_event_id=parent_event_id, is_template=is_template)
             form_place = PlaceForm(prefix='place')
             form_organizer = OrganizerForm(prefix='organizer')
             form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf',

@@ -199,12 +199,15 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                         )
                     else:
                         if formforform.recurring_payment:
+                            pricing_display = tcurrency(pricing.price) + ' per '
+                            if pricing.billing_frequency > 1:
+                                pricing_display += f' {pricing.billing_frequency} {pricing.billing_period}s'
+                            else:
+                                pricing_display += f'{pricing.billing_period}'
+                            pricing_display += f' - {pricing.label}'
+                            pricing_display = f'<strong>{pricing_display}</strong><br>{pricing.description}'
                             pricing_options.append(
-                                (pricing.pk, mark_safe('<strong>%s per %s %s - %s</strong><br>%s' %
-                                                        (tcurrency(pricing.price),
-                                                         pricing.billing_frequency, pricing.billing_period,
-                                                         pricing.label, pricing.description)))
-                            )
+                                (pricing.pk, mark_safe(pricing_display)))
                         else:
                             pricing_options.append(
                                 (pricing.pk, mark_safe('<strong>%s %s</strong><br>%s' %
