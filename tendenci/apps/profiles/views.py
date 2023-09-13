@@ -61,6 +61,7 @@ from tendenci.apps.events.models import Registrant
 from tendenci.apps.memberships.models import MembershipType
 from tendenci.apps.memberships.forms import EducationForm
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.events.models import Event
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -187,6 +188,16 @@ def index(request, username='', template_name="profiles/index.html"):
             auto_renew_is_set = True
 
     registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=datetime.now())
+    
+    if request.user.is_superuser:
+        # a list of upcoming events (up to 10) that this user has not registered yet
+        upcoming_events = Event.objects.exclude_children().filter(start_dt__gt=datetime.now())
+        registered_event_ids = registrations.values_list('registration__event_id', flat=True)
+        if registered_event_ids:
+            upcoming_events = upcoming_events.exclude(id__in=registered_event_ids)
+        upcoming_events = upcoming_events.order_by('start_dt')[:10]
+    else:
+        upcoming_events = None
 
     EventLog.objects.log(instance=profile)
 
@@ -248,7 +259,8 @@ def index(request, username='', template_name="profiles/index.html"):
         'membership_reminders': membership_reminders,
         'can_auto_renew': can_auto_renew,
         'auto_renew_is_set': auto_renew_is_set,
-        'recurring_payments': recurring_payments
+        'recurring_payments': recurring_payments,
+        'upcoming_events': upcoming_events
         })
 
 

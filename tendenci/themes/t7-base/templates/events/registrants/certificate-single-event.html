@@ -81,7 +81,7 @@
       line-height: .75em;
   }
   .certificate .row.staff {
-      margin-top: 250px;
+      margin-top: 240px;
       display: flex;
       align-items: center;
       justify-content: space-evenly;
@@ -166,7 +166,7 @@
     {% with registrant.event.groups.all.0 as event_group %}
       {% if event_group %}
 	      {% if event_group.logo %}
-	      <div>
+	      <div style="margin-bottom: 1em;">
 	      <img src="{{ event_group.logo.url }}" title="{{ event_group.name }}" alt="{{ event_group.name }}"/>
 	      </div>
 	      {% endif %}
@@ -194,7 +194,7 @@
       </div>
     </div>
     <div class="row event">
-      <div class="col-md-3 event">
+      <div class="col-md-3 event" style="width: 55%;">
         <strong>{% trans "Topic: " %} <br />
           <strong>{{ registrant.event.title }}</strong> <br />
           <div class="details">
@@ -212,16 +212,12 @@
               <div class="left">{% trans "Location: "%}</div>
               <div class="right">{{ registrant.event.place.name }}</div>
             </div>
-            <div class="row">
-              <div class="left">{% trans "CPE Credits: " %}</div>
-              <div class="right">{{ registrant.possible_cpe_credits }} </div>
-            </div>
-            <div class="row credits small-font">{{ registrant.possible_credits_by_code }}
-            </div>
+       
             <div class="row">
               <div class="left">{% trans "CPE Credits Earned: " %}</div>
-              <div class="right">{{ registrant.credits_earned }}</div>    </div>
-            <div class="row credits small-font">{{ registrant.credits_earned_by_code }}</div>
+              <div class="right">{{ registrant.credits_earned }}</div>   
+            </div>
+            <div class="row credits small-font" style="text-align: center">({{ registrant.credits_earned_by_code }})</div>
         </div>
       </div>
     <div class="row small-font">{% trans "In accordance with the standards of the National Registry of CPE Sponsors, CPE Credits have been granted based on a 50-minute hour." %}</div>

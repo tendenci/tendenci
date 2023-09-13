@@ -283,10 +283,10 @@
     </div>
     <div class="row small-font">{% trans "In accordance with the standards of the National Registry of CPE Sponsors, CPE Credits have been granted based on a 50-minute hour." %}</div>
     <div class="row credits">
-      <div class="total-credits">{% trans "CPE CREDITS EARNED: " %} {{ registrant.credits_earned }} {{ registrant.credits_earned_by_code }}</div>
+      <div class="total-credits"><strong>{% trans "CPE CREDITS EARNED: " %} {{ registrant.credits_earned }}</strong> ({{ registrant.credits_earned_by_code }})</div>
     </div>
     <div class="row credits">
-      <div class="total-credits">{% trans "IRS CE CREDITS EARNED " %} - See Reverse: {{ registrant.irs_credits_earned }} {% if registrant.ptin %} {% trans "PTIN: "%} {{ registrant.ptin }}{% endif %} {% if registrant.license_number %} {% trans "LICENSE NUMBER: " %}{{ registrant.license_state}} {{ registrant.license_number }} {% endif %}</div>
+      <div class="total-credits"><strong>{% trans "IRS CE CREDITS EARNED " %}</strong> - See Reverse: <strong>{{ registrant.irs_credits_earned }} {% if registrant.ptin %} {% trans "PTIN: "%} {{ registrant.ptin }}{% endif %} {% if registrant.license_number %} {% trans "LICENSE NUMBER: " %}{{ registrant.license_state}} {{ registrant.license_number }} {% endif %}</strong></div>
     </div>
     <div class="row address small-font">
       <strong>{{ address }} {{ phone }}</phone>

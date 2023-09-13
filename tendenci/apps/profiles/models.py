@@ -15,6 +15,7 @@ from django.core.files.storage import default_storage
 from django.core.files import File
 from django.conf import settings
 from django.db import connection, ProgrammingError
+from django.db.models import Max
 
 from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
@@ -322,9 +323,22 @@ class Profile(Person):
                 if default_storage.exists(size_path):
                     default_storage.delete(size_path)
 
+    def get_next_account_id(self):
+        """
+        Get the next available account_id.
+        """
+        account_id_max = Profile.objects.all().aggregate(Max('account_id'))['account_id__max']
+        return account_id_max and account_id_max + 1 or 0
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid4())
+
+            # check and assign account id
+            if not self.account_id and self.is_active:
+                if get_setting('module', 'users', 'useaccountid'):
+                    self.account_id = self.get_next_account_id()
+                    self.save()
 
         # match allow_anonymous_view with opposite of hide_in_search
         if self.hide_in_search:

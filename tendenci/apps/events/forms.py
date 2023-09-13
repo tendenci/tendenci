@@ -924,6 +924,7 @@ class EventForm(TendenciBaseForm):
         self.edit_mode = kwargs.pop('edit_mode', False)
         self.recurring_mode = kwargs.pop('recurring_mode', False)
         is_template = kwargs.pop('is_template', False)
+        parent_event_id = kwargs.pop('parent_event_id', None)
         super(EventForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
@@ -954,6 +955,10 @@ class EventForm(TendenciBaseForm):
 
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
             #self.fields['groups'].initial = Group.objects.get_or_create_default()
+            
+            if 'repeat_of' in self.fields and 'parent' in self.fields and parent_event_id:
+                parent_event = Event.objects.get(id=parent_event_id)
+                self.fields['repeat_of'].queryset = parent_event.child_events.order_by('repeat_uuid').distinct('repeat_uuid')
 
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
@@ -1030,7 +1035,8 @@ class EventForm(TendenciBaseForm):
 
         # check if course field is needed
         if not get_setting('module', 'events', 'usewithtrainings'):
-            del self.fields['course']
+            if 'course' in self.fields:
+                del self.fields['course']
         else:
             self.fields['course'].queryset = self.fields['course'].queryset.filter(
                 location_type='onsite',
@@ -1633,6 +1639,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'registration_email_type',
             'registration_email_text',
             'reply_to',
+            'reply_to_receive_notices',
             'cancel_by_dt',
             'cancellation_fee',
             'cancellation_percent',
@@ -1660,6 +1667,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     'registration_email_type',
                     'registration_email_text',
                     'reply_to',
+                    'reply_to_receive_notices',
                     'cancellation_fee',
                     'cancellation_percent',
                     'cancel_by_dt',
@@ -2438,12 +2446,26 @@ class RegistrantBaseFormSet(BaseFormSet):
         form = self.form(**defaults)
         self.add_fields(form, i)
         return form
-    
+
+    def _clean_form(self, form):
+        email = form.cleaned_data.get('email', None)
+
+        if email:
+            if not get_setting('module', 'events', 'canregisteragain'):
+                # check if this email address is already used
+                if Registrant.objects.filter(user__email__iexact=email,
+                                             registration__event=self.event,
+                                             cancel_dt__isnull=True).exists():
+                    if self.user.is_authenticated and email == self.user.email:
+                        raise forms.ValidationError(_('You have already registered.'))
+                    raise forms.ValidationError(_(f'User {email} has already registered.'))
+  
     def clean(self):
         return_data = super(RegistrantBaseFormSet, self).clean()
         # check if we have enough available spaces for price options
         pricings = {}
         for form in self.forms:
+            self._clean_form(form)
             pricing = form.cleaned_data.get('pricing', None)
             if pricing and pricing.registration_cap:
                 if pricing not in pricings:
@@ -2711,7 +2733,22 @@ class EventRegistrantSearchForm(forms.Form):
                                         required=False)
 
 
-class MemberRegistrationForm(forms.Form):
+class UserMemberRegBaseForm(FormControlWidgetMixin, forms.Form):
+    """
+    User or member Registration base form.
+    """
+
+    def __init__(self, pricings, *args, **kwargs):
+        super(UserMemberRegBaseForm, self).__init__(*args, **kwargs)
+
+        self.fields['pricing'] = forms.ModelChoiceField(
+            queryset=pricings,
+            widget=forms.RadioSelect(),)
+        self.fields['pricing'].label_from_instance = _get_price_labels
+        self.fields['pricing'].empty_label = None
+
+
+class MemberRegistrationForm(UserMemberRegBaseForm):
     """
     Member Registration form.
     """
@@ -2719,13 +2756,7 @@ class MemberRegistrationForm(forms.Form):
                                  help_text=_("comma separated if multiple"))
 
     def __init__(self, event, pricings, *args, **kwargs):
-        super(MemberRegistrationForm, self).__init__(*args, **kwargs)
-
-        self.fields['pricing'] = forms.ModelChoiceField(
-            queryset=pricings,
-            widget=forms.RadioSelect(),)
-        self.fields['pricing'].label_from_instance = _get_price_labels
-        self.fields['pricing'].empty_label = None
+        super(MemberRegistrationForm, self).__init__(pricings, *args, **kwargs)
 
     def clean_member_ids(self):
         member_ids = self.cleaned_data['member_ids'].split(',')
@@ -2736,6 +2767,35 @@ class MemberRegistrationForm(forms.Form):
                 raise forms.ValidationError(_('Member #%s does not exists!' % mem_id.strip()))
 
         return self.cleaned_data['member_ids']
+
+
+class UserRegistrationForm(UserMemberRegBaseForm):
+    """
+    User Registration form.
+    """
+    user_display = forms.CharField(max_length=80,
+                        label=_('User'),
+                        required=False,
+                        help_text=_('Type name or username or email, then press the down arrow key to select a suggestion'))
+    user = forms.IntegerField(widget=forms.HiddenInput())
+
+    def __init__(self, event, pricings, *args, **kwargs):
+        self.event = event
+        super(UserRegistrationForm, self).__init__(pricings, *args, **kwargs)
+
+        self.fields['user'].error_messages['required'
+                                ] = _('Please enter a valid user.')
+
+    def clean_user(self):
+        user = int(self.cleaned_data['user'])
+        if not User.objects.filter(id=user).exists():
+            raise forms.ValidationError(_('User does not exists!'))
+        if self.event.registrants().filter(user=user):
+            user = User.objects.get(id=user)
+            raise forms.ValidationError(_(f'{user.first_name} {user.last_name} ({user.email}) already registered for event "{self.event}"!'))
+
+        return self.cleaned_data['user']
+
 
 class EventExportForm(FormControlWidgetMixin, forms.Form):
     start_dt = forms.DateField(

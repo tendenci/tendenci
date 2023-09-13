@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.db import migrations
 
 def add_parent_entity_to_existing_apps(apps, schema_editor):

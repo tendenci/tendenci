@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.db import models, migrations
 import timezone_field.fields
 import tendenci.libs.tinymce.models

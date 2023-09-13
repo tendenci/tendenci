@@ -719,6 +719,13 @@ def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
         if clean_recipient and (clean_recipient not in email_list):
             email_list.append(clean_recipient)
 
+    # check and send to the reply_to addr specified for this event reg
+    reg_conf = event.registration_configuration
+    if reg_conf.reply_to and reg_conf.reply_to_receive_notices:
+        email_addr = reg_conf.reply_to.strip()
+        if email_addr not in email_list:
+            email_list.append(email_addr)
+
     notification.send_emails(
         email_list,
         'event_registration_confirmation',
@@ -1129,9 +1136,12 @@ def create_registrant_from_form(*args, **kwargs):
         registrant.comments = form.cleaned_data.get('comments', '') or ''
 
         if registrant.email:
-            users = User.objects.filter(email=registrant.email)
-            if users:
-                registrant.user = users[0]
+            if reg8n.creator and reg8n.creator.email == registrant.email:
+                registrant.user = reg8n.creator
+            else:
+                users = User.objects.filter(email__iexact=registrant.email)
+                if users:
+                    registrant.user = users[0]
 
     if event and event.course:
         # certification_track
@@ -1924,7 +1934,7 @@ def add_sf_attendance(registrant, event):
                     'EndDateTime':event.end_dt.isoformat()})
 
 
-def create_member_registration(user, event, form):
+def create_member_registration(user, event, form, for_member=False):
 
     from tendenci.apps.profiles.models import Profile
 
@@ -1935,24 +1945,33 @@ def create_member_registration(user, event, form):
                  'creator': user,
                  'owner': user}
 
-    for mem_id in form.cleaned_data['member_ids'].split(','):
-        mem_id = mem_id.strip()
-        [member] = Profile.objects.filter(member_number=mem_id,
-                                          status_detail='active')[:1] or [None]
-        if member:
-            exists = event.registrants().filter(user=member.user)
+    if for_member:
+        member_ids = [mem_id.strip() for mem_id in form.cleaned_data['member_ids'].split(',')]
+        user_ids = Profile.objects.filter(member_number__in=member_ids,
+                                          status_detail='active').values_list('user_id', flat=True)
+    else:
+        user_ids = [int(form.cleaned_data['user'])]
+    
+    registration_ids = []                                   
+    for user_id in user_ids: 
+        [user] = User.objects.filter(id=user_id)[:1] or [None]                                   
+
+        if user:
+            exists = event.registrants().filter(user=user)
             if not exists:
                 registration = Registration.objects.create(**reg_attrs)
                 registrant_attrs = {'registration': registration,
-                                    'user': member.user,
-                                    'first_name': member.user.first_name,
-                                    'last_name': member.user.last_name,
-                                    'email': member.user.email,
+                                    'user': user,
+                                    'first_name': user.first_name,
+                                    'last_name': user.last_name,
+                                    'email': user.email,
                                     'is_primary': True,
                                     'amount': pricing.price,
                                     'pricing': pricing}
                 Registrant.objects.create(**registrant_attrs)
                 registration.save_invoice()
+                registration_ids.append(registration.id)
+    return registration_ids
 
 
 def get_week_days(tgtdate, cal):
