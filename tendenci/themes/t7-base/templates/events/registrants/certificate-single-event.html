@@ -81,7 +81,7 @@
       line-height: .75em;
   }
   .certificate .row.staff {
-      margin-top: 250px;
+      margin-top: 240px;
       display: flex;
       align-items: center;
       justify-content: space-evenly;
@@ -217,7 +217,7 @@
               <div class="left">{% trans "CPE Credits Earned: " %}</div>
               <div class="right">{{ registrant.credits_earned }}</div>   
             </div>
-            <div class="row credits small-font" style="text-align: center">{{ registrant.credits_earned_by_name }}</div>
+            <div class="row credits small-font" style="text-align: center">({{ registrant.credits_earned_by_code }})</div>
         </div>
       </div>
     <div class="row small-font">{% trans "In accordance with the standards of the National Registry of CPE Sponsors, CPE Credits have been granted based on a 50-minute hour." %}</div>
