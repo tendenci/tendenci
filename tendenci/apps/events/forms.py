@@ -928,9 +928,6 @@ class EventForm(TendenciBaseForm):
         super(EventForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
-            if self.instance.repeat_of:
-                self.fields['repeat_of'].queryset = Event.objects.filter(
-                    pk=self.instance.repeat_of.pk)
             self.fields['parent'].queryset = self.fields['parent'].queryset.exclude(
                 pk=self.instance.pk
             )
@@ -956,7 +953,14 @@ class EventForm(TendenciBaseForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
             #self.fields['groups'].initial = Group.objects.get_or_create_default()
             
-            if 'repeat_of' in self.fields and 'parent' in self.fields and parent_event_id:
+        if 'repeat_of' in self.fields:
+            if self.instance.pk and self.instance.parent: # on event edit
+                if self.instance.repeat_of: # repeat_of already set
+                    self.fields['repeat_of'].queryset = Event.objects.filter(
+                        pk=self.instance.repeat_of.pk)
+                else:
+                    self.fields['repeat_of'].queryset = Event.objects.filter(parent_id=self.instance.parent.id).order_by('repeat_uuid').distinct('repeat_uuid')
+            elif 'parent' in self.fields and parent_event_id: # on sub-event add
                 parent_event = Event.objects.get(id=parent_event_id)
                 self.fields['repeat_of'].queryset = parent_event.child_events.order_by('repeat_uuid').distinct('repeat_uuid')
 
@@ -978,7 +982,7 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('frequency')
             self.fields.pop('end_recurring')
             self.fields.pop('recurs_on')
-            self.fields['repeat_of'].widget.attrs.update({'disabled': True})
+            #self.fields['repeat_of'].widget.attrs.update({'disabled': True})
         else:
             if is_template:
                 # hide recurring event fields when adding a template

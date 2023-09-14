@@ -627,11 +627,23 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
     if request.method == "POST":
         # On submit, redirect to credits if they are configurable. Otherwise, redirect to staff
-        redirect = 'event.credits_edit' if event.can_configure_credits else 'event.staff_edit'
+        redirect_url = 'event.credits_edit' if event.can_configure_credits else 'event.staff_edit'
 
         eventform_params = {'edit_mode': True}
         form_event = form_class(request.POST, request.FILES, instance=event,
                                 user=request.user, **eventform_params)
+
+        if request.POST.get('repeat_of'):
+            copy_from_id = request.POST.get('repeat_of')
+            copy_from_event = Event.objects.get(id=copy_from_id)
+            if event.repeat_of != copy_from_event:
+                event = copy_event(copy_from_event, request.user, set_repeat_of=True, copy_to=event)
+    
+                EventLog.objects.log(instance=event)
+                msg_string = 'Sucessfully copied Event: %s.<br />Edit this event now.' % str(event)
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
+            return redirect('event.edit', id=event.id)
+
         form_attendees = DisplayAttendeesForm(request.POST)
         post_data = request.POST
         if 'apply_changes_to' not in post_data:
@@ -673,7 +685,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
-                return HttpResponseRedirect(reverse(redirect, args=[event.pk]))
+                return HttpResponseRedirect(reverse(redirect_url, args=[event.pk]))
             else:
                 eventform_params2 = {'edit_mode': True, 'recurring_mode': True}
                 recurring_events = event.recurring_event.event_set.exclude(pk=event.pk)
@@ -698,7 +710,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
-                return HttpResponseRedirect(reverse(redirect, args=[event.pk]))
+                return HttpResponseRedirect(reverse(redirect_url, args=[event.pk]))
     else:
         eventform_params = {'edit_mode': True}
         form_event = form_class(instance=event, user=request.user, **eventform_params)

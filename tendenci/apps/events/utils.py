@@ -1453,44 +1453,50 @@ def clean_price(price, user):
 
     return price, price_pk, amount
 
-def copy_event(event, user, reuse_rel=False, set_repeat_of=False):
+def copy_event(event, user, reuse_rel=False, set_repeat_of=False, copy_to=None):
     #copy event
-    new_event = Event.objects.create(
-        title = event.title,
-        entity = event.entity,
-        event_relationship=event.event_relationship,
-        event_code=event.event_code,
-        short_name=event.short_name,
-        delivery_method=event.delivery_method,
-        description = event.description,
-        timezone = event.timezone,
-        type = event.type,
-        image = event.image,
-        start_dt = event.start_dt,
-        end_dt = event.end_dt,
-        all_day = event.all_day,
-        on_weekend = event.on_weekend,
-        mark_registration_ended = event.mark_registration_ended,
-        private_slug = event.private_slug,
-        password = event.password,
-        tags = event.tags,
-        external_url = event.external_url,
-        priority = event.priority,
-        display_event_registrants = event.display_event_registrants,
-        display_registrants_to = event.display_registrants_to,
-        allow_anonymous_view = False,
-        allow_user_view = event.allow_user_view,
-        allow_member_view = event.allow_member_view,
-        allow_user_edit = event.allow_user_edit,
-        allow_member_edit = event.allow_member_edit,
-        creator = user,
-        creator_username = user.username,
-        owner = user,
-        owner_username = user.username,
-        status = event.status,
-        status_detail = event.status_detail,
-    )
-    new_event.groups.add(*list(event.groups.all()))
+    if not copy_to:
+        new_event = Event()
+    else:
+        new_event = copy_to
+
+    new_event.title = event.title
+    new_event.entity = event.entity
+    new_event.event_relationship=event.event_relationship
+    new_event.event_code=event.event_code
+    new_event.short_name=event.short_name
+    new_event.delivery_method=event.delivery_method
+    new_event.description = event.description
+    new_event.timezone = event.timezone
+    new_event.type = event.type
+    new_event.image = event.image
+    new_event.start_dt = event.start_dt
+    new_event.end_dt = event.end_dt
+    new_event.all_day = event.all_day
+    new_event.on_weekend = event.on_weekend
+    new_event.mark_registration_ended = event.mark_registration_ended
+    new_event.private_slug = event.private_slug
+    new_event.password = event.password
+    new_event.tags = event.tags
+    new_event.external_url = event.external_url
+    new_event.priority = event.priority
+    new_event.display_event_registrants = event.display_event_registrants
+    new_event.display_registrants_to = event.display_registrants_to
+    new_event.allow_anonymous_view = False
+    new_event.allow_user_view = event.allow_user_view
+    new_event.allow_member_view = event.allow_member_view
+    new_event.allow_user_edit = event.allow_user_edit
+    new_event.allow_member_edit = event.allow_member_edit
+    new_event.creator = user
+    new_event.creator_username = user.username
+    new_event.owner = user
+    new_event.owner_username = user.username
+    new_event.status = event.status
+    new_event.status_detail = event.status_detail
+    new_event.save()
+
+    if not new_event.groups.all().exists():
+        new_event.groups.add(*list(event.groups.all()))
 
     if set_repeat_of:
         new_event.parent = event.parent
@@ -1499,18 +1505,19 @@ def copy_event(event, user, reuse_rel=False, set_repeat_of=False):
         new_event.save(update_fields=['parent', 'repeat_of', 'repeat_uuid'])
 
     # Copy credit configuration
-    for config in event.eventcredit_set.available():
-        credit = EventCredit.objects.create(
-            ceu_subcategory=config.ceu_subcategory,
-            credit_count=config.credit_count,
-            alternate_ceu_id=config.alternate_ceu_id,
-            available=config.available,
-        )
-        credit.event.add(new_event)
+    if not new_event.eventcredit_set.available().exists():
+        for config in event.eventcredit_set.available():
+            credit = EventCredit.objects.create(
+                ceu_subcategory=config.ceu_subcategory,
+                credit_count=config.credit_count,
+                alternate_ceu_id=config.alternate_ceu_id,
+                available=config.available,
+            )
+            credit.event.add(new_event)
 
     #copy place
     place = event.place
-    if place:
+    if place and not new_event.place:
         if reuse_rel:
             new_event.place = place
         else:
@@ -1527,116 +1534,122 @@ def copy_event(event, user, reuse_rel=False, set_repeat_of=False):
             new_event.place = new_place
         new_event.save()
 
-    #copy speakers
-    for staff in event.eventstaff_set.all():
-        if reuse_rel:
-            staff.event.add(new_event)
-        else:
-            new_staff = EventStaff.objects.create(
-                name=staff.name,
-                role=staff.role,
-                include_on_certificate=staff.include_on_certificate,
-            )
-            new_staff.event.add(new_event)
+    #copy staff
+    if not new_event.eventstaff_set.all().exists():
+        for staff in event.eventstaff_set.all():
+            if reuse_rel:
+                staff.event.add(new_event)
+            else:
+                new_staff = EventStaff.objects.create(
+                    name=staff.name,
+                    role=staff.role,
+                    include_on_certificate=staff.include_on_certificate,
+                )
+                new_staff.event.add(new_event)
 
 
     #copy speakers
-    for speaker in event.speaker_set.all():
-        if reuse_rel:
-            speaker.event.add(new_event)
-        else:
-            new_speaker = Speaker.objects.create(
-                user = speaker.user,
-                name = speaker.name,
-                description = speaker.description,
-            )
-            new_speaker.event.add(new_event)
+    if not new_event.speaker_set.all().exists():
+        for speaker in event.speaker_set.all():
+            if reuse_rel:
+                speaker.event.add(new_event)
+            else:
+                new_speaker = Speaker.objects.create(
+                    user = speaker.user,
+                    name = speaker.name,
+                    description = speaker.description,
+                )
+                new_speaker.event.add(new_event)
 
     #copy organizers
-    for organizer in event.organizer_set.all():
-        if reuse_rel:
-            organizer.event.add(new_event)
-        else:
-            new_organizer = Organizer.objects.create(
-                user = organizer.user,
-                name = organizer.name,
-                image = organizer.image,
-                description = organizer.description,
-            )
-            new_organizer.event.add(new_event)
+    if not new_event.organizer_set.all().exists():
+        for organizer in event.organizer_set.all():
+            if reuse_rel:
+                organizer.event.add(new_event)
+            else:
+                new_organizer = Organizer.objects.create(
+                    user = organizer.user,
+                    name = organizer.name,
+                    image = organizer.image,
+                    description = organizer.description,
+                )
+                new_organizer.event.add(new_event)
 
     #copy sponsor
-    for sponsor in event.sponsor_set.all():
-        if reuse_rel:
-            sponsor.event.add(new_event)
-        else:
-            new_sponsor = Sponsor.objects.create(
-                name = sponsor.name,
-                description = sponsor.description,
-                image = sponsor.image,
-            )
-            new_sponsor.event.add(new_event)
+    if not new_event.sponsor_set.all().exists():
+        for sponsor in event.sponsor_set.all():
+            if reuse_rel:
+                sponsor.event.add(new_event)
+            else:
+                new_sponsor = Sponsor.objects.create(
+                    name = sponsor.name,
+                    description = sponsor.description,
+                    image = sponsor.image,
+                )
+                new_sponsor.event.add(new_event)
 
     #copy registration configuration
-    old_regconf = event.registration_configuration
-    if old_regconf:
-        new_regconf = RegistrationConfiguration.objects.create(
-            payment_required = old_regconf.payment_required,
-            limit = old_regconf.limit,
-            enabled = old_regconf.enabled,
-            require_guests_info = old_regconf.require_guests_info,
-            allow_guests=old_regconf.allow_guests,
-            guest_limit=old_regconf.guest_limit,
-            is_guest_price = old_regconf.is_guest_price,
-            discount_eligible = old_regconf.discount_eligible,
-            display_registration_stats = old_regconf.display_registration_stats,
-            use_custom_reg_form = old_regconf.use_custom_reg_form,
-            reg_form = old_regconf.reg_form,
-            bind_reg_form_to_conf_only = old_regconf.bind_reg_form_to_conf_only,
-            send_reminder = old_regconf.send_reminder,
-            reminder_days = old_regconf.reminder_days,
-            registration_email_text = old_regconf.registration_email_text,
-        )
-        new_regconf.payment_method.set(old_regconf.payment_method.all())
-        new_regconf.save()
-        new_event.registration_configuration = new_regconf
-        new_event.save()
-
-        #copy regconf pricings
-        for pricing in old_regconf.regconfpricing_set.filter(status=True):
-            new_pricing = RegConfPricing.objects.create(
-                reg_conf = new_regconf,
-                title = pricing.title,
-                quantity = pricing.quantity,
-                price = pricing.price,
-                reg_form = pricing.reg_form,
-                start_dt = pricing.start_dt,
-                end_dt = pricing.end_dt,
-                allow_anonymous = pricing.allow_anonymous,
-                allow_user = pricing.allow_user,
-                allow_member = pricing.allow_member,
+    if not new_event.registration_configuration:
+        old_regconf = event.registration_configuration
+        if old_regconf:
+            new_regconf = RegistrationConfiguration.objects.create(
+                payment_required = old_regconf.payment_required,
+                limit = old_regconf.limit,
+                enabled = old_regconf.enabled,
+                require_guests_info = old_regconf.require_guests_info,
+                allow_guests=old_regconf.allow_guests,
+                guest_limit=old_regconf.guest_limit,
+                is_guest_price = old_regconf.is_guest_price,
+                discount_eligible = old_regconf.discount_eligible,
+                display_registration_stats = old_regconf.display_registration_stats,
+                use_custom_reg_form = old_regconf.use_custom_reg_form,
+                reg_form = old_regconf.reg_form,
+                bind_reg_form_to_conf_only = old_regconf.bind_reg_form_to_conf_only,
+                send_reminder = old_regconf.send_reminder,
+                reminder_days = old_regconf.reminder_days,
+                registration_email_text = old_regconf.registration_email_text,
             )
-            new_pricing.groups.set(pricing.groups.all())
+            new_regconf.payment_method.set(old_regconf.payment_method.all())
+            new_regconf.save()
+            new_event.registration_configuration = new_regconf
+            new_event.save()
+    
+            #copy regconf pricings
+            for pricing in old_regconf.regconfpricing_set.filter(status=True):
+                new_pricing = RegConfPricing.objects.create(
+                    reg_conf = new_regconf,
+                    title = pricing.title,
+                    quantity = pricing.quantity,
+                    price = pricing.price,
+                    reg_form = pricing.reg_form,
+                    start_dt = pricing.start_dt,
+                    end_dt = pricing.end_dt,
+                    allow_anonymous = pricing.allow_anonymous,
+                    allow_user = pricing.allow_user,
+                    allow_member = pricing.allow_member,
+                )
+                new_pricing.groups.set(pricing.groups.all())
 
     #copy addons
-    for addon in event.addon_set.all():
-        new_addon = Addon.objects.create(
-            event = new_event,
-            title = addon.title,
-            price = addon.price,
-            group = addon.group,
-            default_yes = addon.default_yes,
-            allow_anonymous = addon.allow_anonymous,
-            allow_user = addon.allow_user,
-            allow_member = addon.allow_member,
-            status = addon.status,
-        )
-        # copy addon options
-        for option in addon.options.all():
-            AddonOption.objects.create(
-                addon = new_addon,
-                title = option.title,
+    if not new_event.addon_set.all().exists():
+        for addon in event.addon_set.all():
+            new_addon = Addon.objects.create(
+                event = new_event,
+                title = addon.title,
+                price = addon.price,
+                group = addon.group,
+                default_yes = addon.default_yes,
+                allow_anonymous = addon.allow_anonymous,
+                allow_user = addon.allow_user,
+                allow_member = addon.allow_member,
+                status = addon.status,
             )
+            # copy addon options
+            for option in addon.options.all():
+                AddonOption.objects.create(
+                    addon = new_addon,
+                    title = option.title,
+                )
 
     return new_event
 
