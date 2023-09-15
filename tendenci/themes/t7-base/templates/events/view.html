@@ -51,6 +51,9 @@ div.pricing-list-wrap li{
     padding: 3px 0;
     margin-left: 3px;
 }
+div.small-font {
+    font-size: .8em;
+}
 </style>
 {{ block.super }}
 {% endblock %}
@@ -128,7 +131,16 @@ div.pricing-list-wrap li{
             <div class="btn btn-success">
               <a href="{% url 'event.zoom' event.pk %}" style="color:white;">{% trans "Join Meeting" %}</a>
             </div>
-          {% endif %}
+            {% else %}
+            <div class="small-font">
+              {% if registrant_user and event.zoom_integration_setup %}
+              {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
+              Zoom meeting available from 10 minutes prior to <strong>{{ start_dt }}</strong> through <strong>{{ end_dt }}</strong>
+              {% endblocktrans %}
+            {% endif %}
+            </div>
+            {% endif %}
+
           </p>
         </div>
         <div class="col-xs-5">
