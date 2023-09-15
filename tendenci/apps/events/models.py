@@ -2443,10 +2443,17 @@ class Event(TendenciBaseModel):
 
     @property
     def zoom_credits_ready(self):
-        """Zoom credits are ready to generate"""
+        """
+        Zoom credits are ready to generate.
+        They either have not been generated, or have not been released.
+        """
         return (
             self.zoom_integration_setup and
-            datetime.now() >= self.end_dt
+            datetime.now() >= self.end_dt and
+            (
+                not self.registrantcredits_set.exists() or
+                self.registrantcredits_set.filter(released=False).exists()
+            )
         )
 
     def get_zoom_poll_results(self, client):
@@ -2694,13 +2701,20 @@ class Event(TendenciBaseModel):
         """
         # only assign those credits that are available
         for credit in self.eventcredit_set.available():
-            RegistrantCredits.objects.get_or_create(
+            credits = calculated_credits or credit.credit_count
+
+            r_credit, _ = RegistrantCredits.objects.get_or_create(
                registrant_id=registrant.pk,
                event_id=self.pk,
                credit_dt=self.start_dt,
                event_credit_id=credit.pk,
-               credits=calculated_credits or credit.credit_count,
-           )
+               defaults={'credits': credits},
+            )
+            # If registrant credit was found, but hasn't been released, allow
+            # it to update the credit count
+            if not r_credit.released and r_credit.credits != credits:
+               r_credit.credits = credits
+               r_credit.save(update_fields=['credits'])
 
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
