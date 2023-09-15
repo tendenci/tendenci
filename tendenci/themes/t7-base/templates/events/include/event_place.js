@@ -38,9 +38,11 @@ function toggleZoomMeetingInfo(show_zoom_options) {
     if (show_zoom_options && '{{ use_zoom_integration }}' == 'True') {
         $('#id_place-zoom_meeting_id').parent().parent().show();
         $('#id_place-zoom_meeting_passcode').parent().parent().show();
+        $('#id_place-is_zoom_webinar').parent().parent().show();
     } else {
         $('#id_place-zoom_meeting_id').parent().parent().hide();
         $('#id_place-zoom_meeting_passcode').parent().parent().hide();
+        $('#id_place-is_zoom_webinar').parent().parent().hide();
     }
 }
 

@@ -150,6 +150,10 @@ class Place(models.Model):
         null=True,
         help_text=_('Zoom meeting passcode for this Event. If none is set, will use Personal Zoom Meeting Passcode in Events Settings.')
     )
+    is_zoom_webinar = models.BooleanField(
+        default=False,
+        help_text=_('Check if the Zoom meeting is a webinar.')
+    )
 
     # offline location
     address = models.CharField(max_length=150, blank=True)
@@ -2447,7 +2451,8 @@ class Event(TendenciBaseModel):
 
     def get_zoom_poll_results(self, client):
         """Get Zoom poll responses"""
-        response = client.get_meeting_poll_results(self.zoom_meeting_number)
+        response = client.get_meeting_poll_results(
+            self.zoom_meeting_number, self.place.is_zoom_webinar)
         if not response.status_code == 200:
             raise Exception(_('Failed to get poll results, check meeting ID and try again'))
 

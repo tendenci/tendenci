@@ -62,10 +62,14 @@ class ZoomClient(ZoomSession):
     def get_meeting(self, meeting_id):
         return self.get(self.MEETINGS.format(meeting_id=meeting_id))
 
-    def get_meeting_polls(self, meeting_id):
+    def get_meeting_polls(self, meeting_id, is_webinar=False):
+        if is_webinar:
+            return self.get_webinar_poll_results(meeting_id)
         return self.get(self.MEETING_POLLS.format(meeting_id=meeting_id))
 
-    def get_meeting_poll_results(self, meeting_id):
+    def get_meeting_poll_results(self, meeting_id, is_webinar=False):
+        if is_webinar:
+            return self.get_webinar_poll_results(meeting_id)
         return self.get(self.MEETING_POLL_RESULTS.format(meeting_id=meeting_id))
 
     def get_webinar_polls(self, webinar_id):

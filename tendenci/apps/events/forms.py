@@ -1226,6 +1226,7 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
                 'use_zoom_integration',
                 'zoom_meeting_id',
                 'zoom_meeting_passcode',
+                'is_zoom_webinar',
                 'place',
                 'name',
                 'description',
