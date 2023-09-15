@@ -76,4 +76,3 @@ django-two-factor-auth>=1.14.0
 phonenumbers>=8.12.51
 # QR code generator
 django-qr-code>=3.1.1
-django-auto-logout>=0.5.1
