@@ -2093,7 +2093,18 @@ def register_user_lookup(request):
 @is_enabled('events')
 def register_child_events(request, registration_id,  template_name="events/reg8n/register_child_events.html"):
     registration = get_object_or_404(Registration, pk=registration_id)
+
+    perms = (
+        has_perm(request.user, 'events.change_registration', registration),  # has perm
+        request.user == registration.registrant.user,  # main registrant
+        registration.registrant.hash == hash,  # has secret hash
+    )
+
+    if not any(perms):
+        raise Http403
+
     has_error = False
+    is_admin = request.profile.is_superuser()
 
     redirect_url = handle_registration_payment(registration)
     default_redirect_response = redirect_response = HttpResponseRedirect(
@@ -2107,7 +2118,7 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
     if request.POST:
         data_by_registrant = []
         for registrant in registration.registrant_set.all():
-            if registrant.registration_closed:
+            if registrant.registration_closed and not is_admin:
                 continue
 
             keys = [key for key in request.POST if f'{registrant.pk}-' in key]
@@ -2127,7 +2138,7 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
 
     forms = list()
     for registrant in registration.registrant_set.all():
-        if registrant.registration_closed:
+        if registrant.registration_closed and not is_admin:
             continue
 
         form = ChildEventRegistrationForm(registrant, request.user.profile.is_superuser)
