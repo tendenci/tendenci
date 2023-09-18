@@ -29,7 +29,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.perms.utils import get_notice_recipients, get_query_filters
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
@@ -2175,9 +2175,31 @@ class Event(TendenciBaseModel):
         return self.nested_events_enabled and self.child_events.exists()
 
     @property
+    def all_child_events(self):
+        """All child events, including those outside of Event timeframe"""
+        return Event.objects.filter(parent_id=self.pk).order_by('start_dt', 'event_code')
+
+    @property
     def child_events(self):
         """All child events tied to this event"""
-        return Event.objects.filter(parent_id=self.pk).order_by('start_dt', 'event_code')
+        return self.all_child_events.filter(
+            start_dt__gte=self.start_dt,
+            end_dt__lte=self.end_dt,
+        )
+
+    def get_child_events_by_permission(self, user=None, edit=False):
+        action = 'edit' if edit else 'view'
+
+        # If superuser, return everything - including sub events outside
+        # main event's window
+        if user and user.profile.is_superuser:
+            return self.all_child_events
+
+        if action == 'view':
+            filters = get_query_filters(user, 'events.view_event')
+        else:
+            filters = get_query_filters(user, 'events.change_event')
+        return self.child_events.filter(filters).distinct()
 
     @property
     def upcoming_child_events(self):

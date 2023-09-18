@@ -223,7 +223,7 @@ div.pricing-list-wrap li{
 
         {% if event.has_child_events %}
           <br /><br />
-          {% child_events_display event %}
+          {% child_events_display event request.user %}
           <br/><br/>
         {% endif %}
 
