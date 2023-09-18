@@ -464,61 +464,7 @@ def referer_url(request):
     try:
         return redirect(next_url)
     except NoReverseMatch:
-        raise Http404 
-
-
-def application_detail_default(request, **kwargs):
-    """
-    Returns default membership application response
-    """
-
-    if request.method == 'POST':
-        form = MembershipDefaultForm(request.POST)
-
-        if form.is_valid():
-            membership = form.save(request=request, commit=False)
-
-            if membership.get_invoice():
-
-                # is online payment
-                online_payment_requirements = (
-                    membership.get_invoice().total > 0,
-                    membership.payment_method,
-                    membership.payment_method.is_online,
-                )
-
-                # online payment
-                if all(online_payment_requirements):
-                    return HttpResponseRedirect(reverse(
-                        'payment.pay_online',
-                        args=[membership.get_invoice().pk,
-                            membership.get_invoice().guid]
-                    ))
-
-            # show membership edit page
-            if request.user.profile.is_superuser:
-                return HttpResponseRedirect(reverse(
-                'admin:memberships_membershipdefault_change',
-                args=[membership.pk]
-                ))
-
-            # show confirmation page
-            return HttpResponseRedirect(reverse(
-                'membership.application_confirmation_default',
-                args=[membership.guid]
-            ))
-
-    else:
-
-        # create default form
-        form = MembershipDefaultForm(request=request)
-
-    # show application
-    return render_to_resp(
-        request=request, template_name='memberships/applications/detail_default.html', context={
-        'form': form,
-        }
-    )
+        raise Http404
 
 
 def application_confirmation_default(request, hash):
