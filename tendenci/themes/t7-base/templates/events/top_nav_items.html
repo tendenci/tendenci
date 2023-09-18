@@ -191,7 +191,7 @@
                                 <a href="{% url 'event.add_child' app_object.pk %}">{% trans "Add Sub-Event" %}</a>
                             </span>
                         </li>
-                        {% if app_object.events_with_credits %}
+                        {% if app_object.enable_certificate_preview %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'event.certificate' app_object.pk %}">{% trans "Preview Sample Certificate" %}</a>

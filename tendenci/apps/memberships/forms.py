@@ -2065,7 +2065,7 @@ class MembershipDefaultForm(TendenciBaseForm):
 
     def save(self, *args, **kwargs):
         """
-        Create membership record.
+        Save changes for membership record.
         Handle all objects:
             Membership
             Membership.user
@@ -2084,21 +2084,14 @@ class MembershipDefaultForm(TendenciBaseForm):
         membership = super(MembershipDefaultForm, self).save(*args, **kwargs)
 
         if request_user:
-            membership.creator = request_user
-            membership.creator_username = request_user.username
+            # this form is just on membership edit
+            # membership.creator = request_user
+            # membership.creator_username = request_user.username
             membership.owner = request_user
             membership.owner_username = request_user.username
 
-        membership.entity = Entity.objects.first()
-
-        # get or create user
-        membership.user, created = membership.get_or_create_user(**{
-            'username': self.cleaned_data.get('username'),
-            'password': self.cleaned_data.get('password'),
-            'first_name': self.cleaned_data.get('first_name'),
-            'last_name': self.cleaned_data.get('last_name'),
-            'email': self.cleaned_data.get('email')
-        })
+        if not membership.entity:
+            membership.entity = Entity.objects.first()
 
         # assign corp_profile_id
         if membership.corporate_membership_id:
@@ -2112,45 +2105,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             membership.set_member_number()
             membership.user.profile.member_number = membership.member_number
             membership.user.profile.save()
-        else:
-            # adding membership record
-            membership.renewal = membership.user.profile.can_renew()
-
-            # create record in database
-            # helps with associating invoice record
-            membership.save()
-
-            NOW = datetime.now()
-
-            if not membership.approval_required():  # approval not required
-
-                # save invoice tendered
-                membership.save_invoice(status_detail='tendered')
-
-                # auto approve -------------------------
-                membership.application_approved = True
-                membership.application_approved_user = \
-                    request_user or membership.user
-                membership.application_approved_dt = NOW
-
-                membership.application_approved_denied_user = \
-                    request_user or membership.user
-
-                membership.set_join_dt()
-                membership.set_renew_dt()
-                membership.set_expire_dt()
-
-                membership.archive_old_memberships()
-                membership.send_email(request, ('approve_renewal' if membership.is_renewal() else 'approve'))
-
-            else:  # approval required
-                # save invoice estimate
-                membership.save_invoice(status_detail='estimate')
-
-            # application complete
-            membership.application_complete_dt = NOW
-            membership.application_complete_user = membership.user
-
+    
             # save application fields
             # save join, renew, and expire dt
             membership.save()
@@ -2239,16 +2194,16 @@ class MembershipDefaultForm(TendenciBaseForm):
                     )
             # --------------------------------------------------
 
-            # send welcome email; if required
-            if created:
-                send_welcome_email(membership.user)
+            # # send welcome email; if required
+            # if created:
+            #     send_welcome_email(membership.user)
 
         # [un]subscribe to group
         membership.group_refresh()
 
         if membership.application_approved:
             membership.archive_old_memberships()
-            membership.save_invoice(status_detail='tendered')
+            #membership.save_invoice(status_detail='tendered')
 
         # loop through & set these user attributes
         # user.first_name = self.cleaned_data.get('first_name', u'')

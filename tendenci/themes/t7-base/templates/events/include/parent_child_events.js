@@ -64,18 +64,32 @@ $('#id_parent').on('change', function() {
     });
 });
 
+var repeat_of_selected = false;
 // If 'repeat_of' selected, disable everything else
 $('#id_repeat_of').on('change', function() {
     if ($(this).val()) {
-        $('form :input:not(#id_repeat_of, button, [name=csrfmiddlewaretoken])').prop('disabled', true);
+        $('form :input:not(#id_repeat_of, button, [name=csrfmiddlewaretoken], [type=submit])').prop('disabled', true);
         $('.form-group').hide();
         $('legend').hide();
         $('.speaker_formset').hide();
         $('.formset-add').hide();
         toggle_repeat(true);
         $('button').parent().parent().show();
+        repeat_of_selected = true;
     } else {
         $('form :input:not(#id_repeat_of, button)').prop('disabled', false);
         $('.form-group').show();
     }
 });
+
+
+$('form#event-form').submit(function(event) {
+	var repeat_of_val = $("#id_repeat_of").val();
+	if (repeat_of_selected == true && repeat_of_val != ""){
+		var repeat_of_text = $( "#id_repeat_of option:selected" ).text();
+		if (!confirm('Are you sure you want to overwrite this event by copying an event from: ' + repeat_of_text)){
+			event.preventDefault();
+		}
+	}	
+});
+
