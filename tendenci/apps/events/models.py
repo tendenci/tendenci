@@ -2616,7 +2616,7 @@ class Event(TendenciBaseModel):
                                 answered += 1
                                 questions_by_user[user_name][start_dt_index] -= 1
 
-                            index_offset = index  # Set index_offset to stay in correct credit period
+                        index_offset = index  # Set index_offset to stay in correct credit period
 
                     # Increment questions answers for current credit period for current answer
                     # (includes answers pulled from previous credit period if start time reset)
