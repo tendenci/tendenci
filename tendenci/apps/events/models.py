@@ -29,7 +29,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.perms.utils import get_notice_recipients, get_query_filters
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
@@ -2184,34 +2184,11 @@ class Event(TendenciBaseModel):
         if user and user.profile.is_superuser:
             return self.all_child_events
 
-        # Everyone can view anonymous events
-        anonymous_events = self.child_events.filter(allow_anonymous_view=True)
-        child_events = Event.objects.none() if edit else anonymous_events
-
-        # Return events that allow anonymous view if user is anonymous or if
-        # there aren't any other events
-        if not user or not self.child_events.filter(allow_anonymous_view=False).exists():
-            return child_events
-
-        # Add sub events with group permissions belonging to user
-        user_groups = user.groups.all().values_list('pk', flat=True)
-        if user_groups:
-            child_events |= self.child_events.filter(
-                perms__group__in=user_groups,
-                codename='change_event' if edit else 'view_event',
-            )
-
-        # Add all sub events that have user level permissions
-        params = {r'allow_user_{action}': True}
-        child_events |= self.child_events.filter(**params)
-
-        # If not a member, return events (anonymous, group level, user level)
-        if not user.profile.is_member:
-            return child_events
-
-        # Add member level sub events and return  events (anonymous, group, user, memeber)
-        params = {f'allow_member_{action}': True}
-        return child_events | self.child_events.filter(**params)
+        if action == 'view':
+            filters = get_query_filters(user, 'events.view_event')
+        else:
+            filters = get_query_filters(user, 'events.change_event')
+        return self.child_events.filter(filters).distinct()
 
     @property
     def upcoming_child_events(self):
