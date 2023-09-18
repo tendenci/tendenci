@@ -192,7 +192,7 @@ class VirtualEventCreditsLogicConfiguration(models.Model):
     credit_period_questions = models.PositiveSmallIntegerField(
         _('Number of Questions for each credit period'),
         default=4,
-        help_text=(_('Total number of questions per credit period.'))
+        help_text=_('Total number of questions per credit period.')
     )
     full_credit_percent = models.DecimalField(
         _('Percent of Questions Correct for Full Credit'),
@@ -201,24 +201,24 @@ class VirtualEventCreditsLogicConfiguration(models.Model):
         max_digits=2,
         decimal_places=2,
         validators=[MinValueValidator(0), MaxValueValidator(1)],
-        help_text=(_('Per period. Leave blank if using number of questions.'))
+        help_text=_('Per period. Leave blank if using number of questions.')
     )
     full_credit_questions = models.PositiveSmallIntegerField(
         _('Number of Questions for Full Credit'),
         blank=True,
         null=True,
-        help_text=(_('Per period. Leave blank if using percentage.'))
+        help_text=_('Per period. Leave blank if using percentage.')
     )
     half_credits_allowed = models.BooleanField(_('Half Credits Allowed'), default=True)
     half_credit_periods = models.PositiveSmallIntegerField(
         _('Number of Periods after which Half Credits Can be Earned'),
         default=0,
-        help_text=(_('Leave 0 if allowed for entirety of event'))
+        help_text=_('Leave 0 if allowed for entirety of event')
     )
     half_credit_credits = models.PositiveIntegerField(
         _('Number of full credits required before half credits can be earned.'),
         default=0,
-        help_text=(_('Leave 0 if there is no requirement.'))
+        help_text=_('Leave 0 if there is no requirement.')
     )
 
     class Meta:
