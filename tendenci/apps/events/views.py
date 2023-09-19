@@ -2091,13 +2091,13 @@ def register_user_lookup(request):
 
 
 @is_enabled('events')
-def register_child_events(request, registration_id,  template_name="events/reg8n/register_child_events.html"):
+def register_child_events(request, registration_id, guid=None,  template_name="events/reg8n/register_child_events.html"):
     registration = get_object_or_404(Registration, pk=registration_id)
 
     perms = (
         has_perm(request.user, 'events.change_registration', registration),  # has perm
         request.user == registration.registrant.user,  # main registrant
-        registration.registrant.hash == hash,  # has secret hash
+        registration.registrant.hash == guid,  # has secret hash
     )
 
     if not any(perms):
