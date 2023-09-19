@@ -24,15 +24,16 @@
    {% elif invoice.bill_to %}
    		{{ invoice.bill_to }}
    {% endif %}
+   ({{ invoice.bill_to_email }})
   </td>
 
   <!-- Item -->
   <td>
 	{% if obj %}
     {% if obj.get_absolute_url %}
-    <a href="{{ obj.get_absolute_url }}">{{ obj }}</a>
+    <a href="{{ obj.get_absolute_url }}">{{ object_display }}</a>
     {% else %}
-    {{ obj }}
+    {{ object_display }}
     {% endif %}
  	{% endif %}
   </td>

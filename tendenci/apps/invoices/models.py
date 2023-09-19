@@ -707,6 +707,18 @@ class Invoice(models.Model):
             return 0
 
         return self.registration.registrant_set.filter(cancel_dt__isnull=True).count()
+    
+    def object_display(self, obj=None):
+        if not obj:
+            obj = self.get_object()
+        class_name = obj.__class__.__name__
+        if class_name == 'Registration':
+            return obj.event.title
+        elif class_name == 'MembershipDefault':
+            return obj.membership_type.name
+        elif class_name == 'MembershipSet':
+            return obj.membership_type
+        return obj
 
     def cancel_registration(self, request, refund=False):
         """Cancel registration for this invoice"""
