@@ -543,7 +543,7 @@ def search(request, template_name="invoices/search.html"):
     if get_setting("module", "invoices", "hidefreememinvoices"):
         invoices = invoices.exclude(total=0,
                     object_type__in=ContentType.objects.filter(
-                        app_label__in=['corporate_memberships', 'memberships']))
+                        app_label__in=['corporate_memberships', 'memberships', 'chapters']))
 
     if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
         invoices = invoices.order_by('-create_dt')
