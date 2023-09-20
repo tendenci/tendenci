@@ -2091,9 +2091,20 @@ def register_user_lookup(request):
 
 
 @is_enabled('events')
-def register_child_events(request, registration_id,  template_name="events/reg8n/register_child_events.html"):
+def register_child_events(request, registration_id, guid=None,  template_name="events/reg8n/register_child_events.html"):
     registration = get_object_or_404(Registration, pk=registration_id)
+
+    perms = (
+        has_perm(request.user, 'events.change_registration', registration),  # has perm
+        request.user.is_authenticated and request.user == registration.registrant.user,  # main registrant
+        guid and registration.guid == guid,  # has secret hash
+    )
+
+    if not any(perms):
+        raise Http403
+
     has_error = False
+    is_admin = request.user.profile.is_superuser
 
     redirect_url = handle_registration_payment(registration)
     default_redirect_response = redirect_response = HttpResponseRedirect(
@@ -2107,7 +2118,7 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
     if request.POST:
         data_by_registrant = []
         for registrant in registration.registrant_set.all():
-            if registrant.registration_closed:
+            if registrant.registration_closed and not is_admin:
                 continue
 
             keys = [key for key in request.POST if f'{registrant.pk}-' in key]
@@ -2117,7 +2128,7 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
                 if child_event_pk:
                     child_event_pks.append(child_event_pk)
             try:
-                registrant.register_child_events(child_event_pks)
+                registrant.register_child_events(child_event_pks, request.user.is_superuser)
             except Exception as e:
                 has_error = True
                 messages.set_level(request, messages.ERROR)
@@ -2127,10 +2138,10 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
 
     forms = list()
     for registrant in registration.registrant_set.all():
-        if registrant.registration_closed:
+        if registrant.registration_closed and not is_admin:
             continue
 
-        form = ChildEventRegistrationForm(registrant)
+        form = ChildEventRegistrationForm(registrant, request.user.profile.is_superuser)
         if form.fields:
             forms.append(form)
 
@@ -2141,6 +2152,7 @@ def register_child_events(request, registration_id,  template_name="events/reg8n
         request=request, template_name=template_name, context={
             'forms': forms,
             'registrants': registration.registrant_set.all(),
+            'use_full_dates': request.user.is_superuser
         })
 
 @is_enabled('events')
@@ -2469,7 +2481,11 @@ def register(request, event_id=0,
                                 registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 
                         if event.nested_events_enabled and event.has_child_events:
-                            return HttpResponseRedirect(reverse('event.register_child_events', args=(reg8n.pk,)))
+                            if request.user.is_authenticated:
+                                args=(reg8n.pk,)
+                            else:
+                                args=(reg8n.pk, reg8n.guid)
+                            return HttpResponseRedirect(reverse('event.register_child_events', args=args))
 
                         redirect = handle_registration_payment(reg8n)
                         if redirect:
@@ -2556,11 +2572,12 @@ def register(request, event_id=0,
         if has_registrant_form_errors:
             break
 
+    event_days = event.full_event_days if request.user.profile.is_superuser else event.days
     return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
         'event_price': event_price,
         'pricing_dates_map': json.dumps(pricing_dates_map),
-        'event_days_count': len(event.days) + 1 if event.days else 0,
+        'event_days_count': len(event_days) + 1 if event_days else 0,
         'free_event': event.free_event,
         'price_list':price_list,
         'total_price':total_price,
@@ -2997,6 +3014,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         params = {'prefix': 'registrant',
                   'custom_reg_form': custom_reg_form,
                   'entries': entries,
+                  'user': request.user,
                   'event': reg8n.event}
 
         if request.method != 'POST':
@@ -3020,7 +3038,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         # use modelformset_factory for regular registration form
         RegistrantFormSet = modelformset_factory(
             Registrant, extra=0,
-            formfield_callback=lambda field: attendance_dates_callback(field, reg8n.event),
+            formfield_callback=lambda field: attendance_dates_callback(field, reg8n.event, request.user.is_superuser),
             fields=fields)
 
         formset = RegistrantFormSet(post_data,
@@ -3081,6 +3099,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                     registrants_updated_dates = updated_attendance_dates[index]
 
                 total_attendance_dates = len(registrants_updated_dates) + past_dates
+                if request.user.is_superuser:
+                    total_attendance_dates = len(registrants_updated_dates)
+
                 if pricing and pricing.days_price_covers and total_attendance_dates != pricing.days_price_covers:
                     message = f'Select { pricing.days_price_covers - past_dates} dates for {registrant.first_name } { registrant.last_name}'
                     messages.set_level(request, messages.ERROR)
@@ -3088,8 +3109,11 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                     redirect = False
                     break
 
-                if registrants_updated_dates != registrant.upcoming_attendance_dates:
-                    updated_dates = registrant.past_attendance_dates
+                original_dates = registrant.attendance_dates if request.user.is_superuser else registrant.upcoming_attendance_dates
+                if registrants_updated_dates != original_dates:
+                    updated_dates = list()
+                    if not request.user.is_superuser:
+                        updated_dates = registrant.past_attendance_dates
                     updated_dates.extend(registrants_updated_dates)
                     registrant.attendance_dates = updated_dates
                     registrant.save(update_fields=['attendance_dates'])
@@ -3125,7 +3149,11 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             messages.add_message(request, messages.INFO, msg)
 
             if ('child_events' in request.POST or attendance_dates_changed) and redirect:
-                return HttpResponseRedirect(reverse('event.register_child_events', args=(reg8n.pk,)))
+                if request.user.is_authenticated:
+                    args=(reg8n.pk,)
+                else:
+                    args=(reg8n.pk, reg8n.guid)
+                return HttpResponseRedirect(reverse('event.register_child_events', args=args))
             if redirect:
                 return HttpResponseRedirect(reg8n_conf_url)
 

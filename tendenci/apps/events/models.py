@@ -745,8 +745,11 @@ class Registration(models.Model):
 
         for registrant in self.registrant_set.filter(cancel_dt__isnull=True):
             return (
-                not registrant.registration_closed and
-                registrant.event.upcoming_child_events.exists()
+                not registrant.registration_closed and (
+                    (registrant.user and registrant.user.profile.is_superuser and
+                    registrant.event.child_events.exists()) or
+                    registrant.event.upcoming_child_events.exists()
+                )
             )
 
         return False
@@ -1253,7 +1256,10 @@ class Registrant(models.Model):
     def upcoming_event_days(self):
         """Number of days upcoming covered by pricing"""
         if self.pricing and self.pricing.days_price_covers:
-            return self.pricing.days_price_covers - len(self.past_attendance_dates)
+            past_dates_count = len(self.past_attendance_dates)
+            if self.user and self.user.profile.is_superuser:
+                past_dates_count = 0
+            return self.pricing.days_price_covers - past_dates_count
         return 0
 
     @property
@@ -1290,11 +1296,12 @@ class Registrant(models.Model):
             self.event.has_child_events
         )
 
-    @property
-    def sub_event_datetimes(self):
+    def sub_event_datetimes(self, is_admin=False):
         """Returns list of start_dt for available sub events"""
         datetimes = dict()
-        for event in self.available_child_events:
+        child_events = self.event.child_events if is_admin else self.available_child_events
+
+        for event in child_events:
             if event.start_dt not in datetimes:
                 datetimes[event.start_dt] = event.end_dt
             else:
@@ -1440,11 +1447,14 @@ class Registrant(models.Model):
 
         return self.membership.license_number
 
-    def register_child_events(self, child_event_pks):
+    def register_child_events(self, child_event_pks, is_admin=False):
         """Register for child event"""
+        params = dict()
+        if not is_admin:
+            # Remove past events from deletion list if not an admin
+            params = {'child_event__start_dt__date__gt': datetime.now().date()}
         # Remove any upcoming records that have been updated to 'not attending'
-        self.registrantchildevent_set.filter(
-            child_event__start_dt__date__gt=datetime.now().date()).exclude(
+        self.registrantchildevent_set.filter(**params).exclude(
             child_event_id__in=child_event_pks,
         ).delete()
 
