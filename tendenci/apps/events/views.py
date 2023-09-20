@@ -2096,15 +2096,15 @@ def register_child_events(request, registration_id, guid=None,  template_name="e
 
     perms = (
         has_perm(request.user, 'events.change_registration', registration),  # has perm
-        request.user == registration.registrant.user,  # main registrant
-        registration.registrant.hash == guid,  # has secret hash
+        request.user.is_authenticated and request.user == registration.registrant.user,  # main registrant
+        guid and registration.guid == guid,  # has secret hash
     )
 
     if not any(perms):
         raise Http403
 
     has_error = False
-    is_admin = request.profile.is_superuser()
+    is_admin = request.user.profile.is_superuser
 
     redirect_url = handle_registration_payment(registration)
     default_redirect_response = redirect_response = HttpResponseRedirect(
@@ -2481,7 +2481,11 @@ def register(request, event_id=0,
                                 registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 
                         if event.nested_events_enabled and event.has_child_events:
-                            return HttpResponseRedirect(reverse('event.register_child_events', args=(reg8n.pk,)))
+                            if request.user.is_authenticated:
+                                args=(reg8n.pk,)
+                            else:
+                                args=(reg8n.pk, reg8n.guid)
+                            return HttpResponseRedirect(reverse('event.register_child_events', args=args))
 
                         redirect = handle_registration_payment(reg8n)
                         if redirect:
@@ -3145,7 +3149,11 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             messages.add_message(request, messages.INFO, msg)
 
             if ('child_events' in request.POST or attendance_dates_changed) and redirect:
-                return HttpResponseRedirect(reverse('event.register_child_events', args=(reg8n.pk,)))
+                if request.user.is_authenticated:
+                    args=(reg8n.pk,)
+                else:
+                    args=(reg8n.pk, reg8n.guid)
+                return HttpResponseRedirect(reverse('event.register_child_events', args=args))
             if redirect:
                 return HttpResponseRedirect(reg8n_conf_url)
 
