@@ -78,3 +78,7 @@ phonenumbers>=8.12.51
 django-qr-code>=3.1.1
 # Zoom SDK
 pyzoom>=1.0.3
+# Python JWT
+PyJWT>=2.8.0
+# Django model utils (FieldTracker)
+django-model-utils>=4.3.1

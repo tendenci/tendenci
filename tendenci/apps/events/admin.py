@@ -1,6 +1,7 @@
 from csv import writer
 from datetime import datetime
 
+from django import forms
 from django.contrib import admin, messages
 from django.db import models
 from django.db.models import Count
@@ -19,7 +20,8 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
                                          CustomRegFormEntry, CustomRegFieldEntry, Event,
                                          CEUCategory, SignatureImage, CertificateImage,
-                                         RegistrantCredits, VirtualEventCreditsLogicConfiguration)
+                                         RegistrantCredits, VirtualEventCreditsLogicConfiguration,
+                                         ZoomAPIConfiguration)
 from tendenci.apps.events.forms import (CustomRegFormAdminForm, CustomRegFormForField, TypeForm,
                                         StandardRegAdminForm)
 from tendenci.apps.event_logs.models import EventLog
@@ -424,8 +426,25 @@ class VirtualEventCreditsLogicConfigurationAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    #def changelist_view(self, request, extra_context=None):
-    #    return redirect(reverse('admin:virtualeventcreditslogicconfiguration_edit'))
+
+class ZoomAPIConfigurationForm(forms.ModelForm):
+    class Meta:
+        model = ZoomAPIConfiguration
+        fields = '__all__'
+        widgets = {
+            'sdk_client_secret': forms.PasswordInput(render_value = True),
+            'oauth_client_secret': forms.PasswordInput(render_value = True)
+        }
+
+
+class ZoomAPIConfigurationAdmin(admin.ModelAdmin):
+    """Configure Zoom API credentials"""
+    form = ZoomAPIConfigurationForm
+    list_display=('account_name',)
+
+
+if get_setting('module', 'events', 'enable_zoom'):
+    admin.site.register(ZoomAPIConfiguration, ZoomAPIConfigurationAdmin)
 
 if get_setting('module', 'events', 'use_credits'):
     admin.site.register(CEUCategory, CEUCategoryAdmin)

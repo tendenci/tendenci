@@ -5,6 +5,7 @@ import jwt
 import json
 import operator
 import pytz
+from model_utils import FieldTracker
 from datetime import datetime, timedelta
 from dateutil.parser import parse
 from functools import reduce
@@ -41,6 +42,7 @@ from tendenci.apps.user_groups.models import GroupMembership
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.files.models import File
+from tendenci.apps.site_settings.crypt import encrypt, decrypt
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import PaymentMethod as GlobalPaymentMethod
 
@@ -138,6 +140,12 @@ class Place(models.Model):
         default=False,
         help_text=_('Use Zoom integration to allow launching Zoom meeting from Event.')
     )
+    zoom_api_configuration = models.ForeignKey(
+        'ZoomAPIConfiguration',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
     zoom_meeting_id = models.CharField(
         max_length=50,
         blank=True,
@@ -224,6 +232,62 @@ class VirtualEventCreditsLogicConfiguration(models.Model):
     class Meta:
         verbose_name =_('Virtual Event Credits Logic Configuration')
         verbose_name_plural =_('Virtual Event Credits Logic Configuration')
+
+
+class ZoomAPIConfiguration(models.Model):
+    """API Configuration to use for Zoom Events"""
+    account_name = models.CharField(
+        max_length=255,
+        help_text=_('Used to easily identify this Zoom account.')
+    )
+    sdk_client_id = models.CharField(
+        max_length=100,
+        help_text=_('Client ID for Zoom SDK app (to launch Zoom from Event).')
+    )
+    sdk_client_secret = models.CharField(
+        max_length=255,
+        help_text=_('Client secret for Zoom SDK app (to launch Zoom from Event).')
+    )
+    oauth_account_id = models.CharField(
+        max_length=100,
+        help_text=_('Account ID for Zoom Server to Server OAuth app (get meeting/webinar info).')
+    )
+    oauth_client_id = models.CharField(
+        max_length=100,
+        help_text=_('Client ID for Zoom Server to Server OAuth app (get meeting/webinar info).')
+    )
+    oauth_client_secret = models.CharField(
+        max_length=255,
+        help_text=_('Client secret for Zoom Server to Server Oauth app (get meeting/webinar info).')
+    )
+
+    tracker = FieldTracker(fields=['sdk_client_secret', 'oauth_client_secret'])
+
+    class Meta:
+        verbose_name =_('Zoom API Configuration')
+        verbose_name_plural =_('Zoom API Configurations')
+
+    def __str__(self):
+        return self.account_name
+
+    def get_sdk_secret(self):
+        return decrypt(self.sdk_client_secret)
+
+    def get_oauth_secret(self):
+        return decrypt(self.oauth_client_secret)
+
+    def save(self, *args, **kwargs):
+        """
+        Encode API secret before storing in database.
+        """
+        if self.tracker.has_changed("sdk_client_secret"):
+            self.sdk_client_secret = encrypt(self.sdk_client_secret)
+
+        if self.tracker.has_changed("oauth_client_secret"):
+            self.oauth_client_secret = encrypt(self.oauth_client_secret)
+
+        return super().save(*args, **kwargs)
+
 
 
 class CEUCategory(models.Model):
@@ -2416,9 +2480,12 @@ class Event(TendenciBaseModel):
 
     @property
     def zoom_meeting_config(self):
+        if not self.place.zoom_api_configuration:
+            raise Exception(_("Zoom API not configured"))
+
         return json.dumps({
             'signature': self.zoom_jwt_token,
-            'sdkKey': settings.ZOOM_CLIENT_ID,
+            'sdkKey': self.place.zoom_api_configuration.sdk_client_id,
             'meetingNumber':  self.zoom_meeting_number,
             'passWord': self.zoom_meeting_passcode,
             'tk': '',
@@ -2428,18 +2495,22 @@ class Event(TendenciBaseModel):
     @property
     def zoom_jwt_token(self):
         """Generate token for Zoom meeting"""
+        if not self.place.zoom_api_configuration:
+            raise Exception(_("Zoom API not configured"))
+
         max_exp = datetime.now().astimezone(pytz.UTC) + timedelta(hours=24)
         end_dt = self.end_dt.astimezone(pytz.UTC)
 
         payload = {
-            'sdkKey': settings.ZOOM_CLIENT_ID,
+            'sdkKey': self.place.zoom_api_configuration.sdk_client_id,
             'mn': self.zoom_meeting_number,
             'role': 0, # 0 is regular attendee, 1 is the host
             'exp': min(end_dt, max_exp),
-            'appKey': settings.ZOOM_CLIENT_ID,
+            'appKey': self.place.zoom_api_configuration.sdk_client_id,
         }
 
-        return jwt.encode(payload, settings.ZOOM_CLIENT_SECRET, algorithm="HS256")
+        return jwt.encode(
+            payload, self.place.zoom_api_configuration.get_sdk_secret(), algorithm="HS256")
 
     @property
     def zoom_credits_ready(self):
@@ -2513,7 +2584,14 @@ class Event(TendenciBaseModel):
 
     def generate_zoom_credits(self):
         """Generate credits earned from Zoom event"""
-        client = ZoomClient()
+        if not self.place.zoom_api_configuration:
+            raise Exception(_("Zoom API not configured"))
+
+        client = ZoomClient(
+            client_id=self.place.zoom_api_configuration.oauth_client_id,
+            client_secret=self.place.zoom_api_configuration.get_oauth_secret(),
+            account_id=self.place.zoom_api_configuration.oauth_account_id
+        )
 
         questions_answered = self.get_zoom_poll_results(client)
         questions_by_user = dict()
@@ -2706,9 +2784,11 @@ class Event(TendenciBaseModel):
             r_credit, _ = RegistrantCredits.objects.get_or_create(
                registrant_id=registrant.pk,
                event_id=self.pk,
-               credit_dt=self.start_dt,
                event_credit_id=credit.pk,
-               defaults={'credits': credits},
+               defaults={
+                   'credits': credits,
+                   'credit_dt': self.start_dt
+               },
             )
             # If registrant credit was found, but hasn't been released, allow
             # it to update the credit count

@@ -1224,6 +1224,7 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
     field_order = [
                 'virtual',
                 'use_zoom_integration',
+                'zoom_api_configuration',
                 'zoom_meeting_id',
                 'zoom_meeting_passcode',
                 'is_zoom_webinar',

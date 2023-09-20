@@ -16,9 +16,9 @@ class ZoomSession(requests.Session):
 
     def __init__(
             self,
-            client_id=settings.ZOOM_API_ID,
-            client_secret=settings.ZOOM_API_SECRET,
-            account_id=settings.ZOOM_ACCOUNT_ID,
+            client_id,
+            client_secret,
+            account_id,
             base_url=DEFAULT_BASE_URL,
             token_url=TOKEN_URL
     ):
