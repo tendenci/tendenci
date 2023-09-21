@@ -2237,11 +2237,19 @@ def register(request, event_id=0,
             elif get_setting('module', 'events', 'use_pre_register'):
                 return HttpResponseRedirect(reverse('event.register_pre', args=(event.pk,),))
 
-        # If pricing wasn't set, default to the first one.
+        # Set default pricing
+        # If pricing wasn't set, for members, default to a member pricing, for logged in
+        # users, default to a user pricing, ...
         # This can happen if either there's only 1 price available or if no pricing id
         # was indicated, but the pre-registration page is turned off.
         if not pricing:
-            pricing = pricings[0]
+            if request.user.profile.is_member: # member
+                [pricing] = pricings.filter(allow_member=True)[:1] or [None]
+            if not pricing:  
+                if request.user.is_authenticated: # user
+                    [pricing] = pricings.filter(allow_user=True)[:1] or [None]
+            if not pricing:
+                pricing = pricings[0]  
 
         if pricing.quantity == 1:
             individual = True
