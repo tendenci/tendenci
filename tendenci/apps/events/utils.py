@@ -2271,6 +2271,8 @@ def handle_registration_payment(reg8n):
 
         return reverse('payment.pay_online', args=[reg8n.invoice.id, reg8n.invoice.guid])
     else:
+        if not reg8n.invoice:
+            return None
         # offline payment:
         # send email; add message; redirect to confirmation
         primary_registrant = reg8n.registrant
