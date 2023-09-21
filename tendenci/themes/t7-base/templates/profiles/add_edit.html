@@ -856,6 +856,23 @@
 		      {% endif %}
 		    </div>
 	   </div>
+	   
+	   {% if form.member_number_2 %}
+	   <div class="form-group">
+		    <label for="id_member_number_2" class="col-sm-3 control-label">{{ form.member_number_2.label }}</label>
+		    <div class="col-sm-5">
+		      {% if form.member_number_2.errors %}
+		         <div class="text-danger">{{ form.member_number_2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.member_number_2 }}
+		      
+		      {% if form.member_number_2.help_text %}
+		      <div class="help-block">{{ form.member_number_2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   {% endif %}
     	
     </fieldset>
 	
