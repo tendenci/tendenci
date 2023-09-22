@@ -432,8 +432,10 @@ class ZoomAPIConfigurationForm(forms.ModelForm):
         model = ZoomAPIConfiguration
         fields = '__all__'
         widgets = {
-            'sdk_client_secret': forms.PasswordInput(render_value = True),
-            'oauth_client_secret': forms.PasswordInput(render_value = True)
+            'sdk_client_secret': forms.PasswordInput(
+                render_value = True, attrs={'autocomplete': 'new-password'}),
+            'oauth_client_secret': forms.PasswordInput(
+                render_value = True, attrs={'autocomplete': 'new-password'})
         }
 
 
