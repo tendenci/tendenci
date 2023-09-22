@@ -122,12 +122,12 @@ class HigherLogicAPI:
             reg8n = registrant.registration 
             event = reg8n.event
             # skip the past events
-            if event.start_dt > now - timedelta(days=1): 
-                if event.registration_configuration.enabled:
-                    community_groups.append({"GroupId": f'event-{event.id}',
-                        "GroupName": event.title,
-                        "GroupType": "Event",
-                        "Role": ''})
+            #if event.start_dt > now - timedelta(days=1): 
+            if event.registration_configuration.enabled:
+                community_groups.append({"GroupId": f'event-{event.id}',
+                    "GroupName": event.title,
+                    "GroupType": "Event",
+                    "Role": ''})
         return community_groups
 
     def get_user_address_list(self, profile):
