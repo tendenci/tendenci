@@ -442,7 +442,19 @@ class ZoomAPIConfigurationForm(forms.ModelForm):
 class ZoomAPIConfigurationAdmin(admin.ModelAdmin):
     """Configure Zoom API credentials"""
     form = ZoomAPIConfigurationForm
-    list_display=('account_name',)
+    list_display=('account_name', 'use_as_default')
+    list_editable=('use_as_default',)
+
+    def save_model(self, request, obj, form, change):
+        if obj.use_as_default:
+            ZoomAPIConfiguration.objects.update(use_as_default=False)
+        super().save_model(request, obj, form, change)
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and not obj.use_as_default and ZoomAPIConfiguration.objects.filter(
+                use_as_default=True).exists():
+            return ['use_as_default']
+        return super().get_readonly_fields(request, obj)
 
 
 if get_setting('module', 'events', 'enable_zoom'):

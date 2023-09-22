@@ -260,6 +260,13 @@ class ZoomAPIConfiguration(models.Model):
         max_length=255,
         help_text=_('Client secret for Zoom Server to Server Oauth app (get meeting/webinar info).')
     )
+    use_as_default = models.BooleanField(
+        default=False,
+        help_text=_(
+            'Check to use this as the default option when selecting a Zoom API Configuration. ' \
+            'Only one configuration can be used as default.'
+        )
+    )
 
     tracker = FieldTracker(fields=['sdk_client_secret', 'oauth_client_secret'])
 

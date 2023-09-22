@@ -47,6 +47,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.events.models import ZoomAPIConfiguration
 from tendenci.apps.events.settings import FIELD_MAX_LENGTH
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.widgets import PercentWidget
@@ -1266,6 +1267,10 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
         if get_setting('module', 'events', 'stateusedropdown'):
             self.fields['state'] = StateSelectField(label=_('State'), required=False)
             self.add_form_control_class()
+
+        default_zoom_config = ZoomAPIConfiguration.objects.filter(use_as_default=True).first()
+        if default_zoom_config:
+            self.fields['zoom_api_configuration'].initial = default_zoom_config
 
     def save(self, *args, **kwargs):
         commit = kwargs.pop('commit', True)
