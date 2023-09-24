@@ -62,8 +62,12 @@
         </li>
         {% endfor %}
       </ul>
+      {% if not MODULE_EVENTS_CANREGISTERAGAIN and registrant and not user.is_superuser %}
+      <a class="btn btn-success" href="{% url 'event.registration_confirmation' event.id registrant.registration.id %}">{% trans "View/Update My Registration" %}</a>
+      {% else %}
       <meta itemprop="availability" content="Register now!">
       <input class="btn btn-success" {% if event.status_detail == "template" %}disabled="disabled"{% endif %} type="submit" name="submit" value="{% trans 'Register' %}" />
+	 {% endif %}
       {% endif %}
       
       {% if event.registration_configuration.has_member_price %}

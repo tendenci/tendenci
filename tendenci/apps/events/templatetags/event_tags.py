@@ -167,7 +167,7 @@ def registration_pricing_and_button(context, event, user):
     # check if user has already registered
     if hasattr(user, 'registrant_set'):
         registrants = user.registrant_set.filter(
-            registration__event=event)
+            registration__event=event).filter(cancel_dt__isnull=True)
         registrant_count = registrants.count()
 
         is_registrant = registrant_count > 0

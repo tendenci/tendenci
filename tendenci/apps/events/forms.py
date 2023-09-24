@@ -2466,6 +2466,11 @@ class RegistrantBaseFormSet(BaseFormSet):
 
         if email:
             if not get_setting('module', 'events', 'canregisteragain'):
+                # check if this user can register
+                if not self.user.is_superuser:
+                    if self.user.email.lower() != email.lower():
+                        raise forms.ValidationError(_(f"{email} is NOT your email address."))       
+                
                 # check if this email address is already used
                 if Registrant.objects.filter(user__email__iexact=email,
                                              registration__event=self.event,
