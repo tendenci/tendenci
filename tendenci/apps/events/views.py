@@ -2180,6 +2180,7 @@ def register(request, event_id=0,
     anony_setting = get_setting('module', 'events', 'anonymousregistration')
     event.anony_setting = anony_setting
     is_strict = anony_setting == 'strict'
+    is_double_strict = is_strict and not get_setting('module', 'events', 'canregisteragain')
 
     flat_registrants = []
     discount_applied = False
@@ -2223,7 +2224,7 @@ def register(request, event_id=0,
         # If so, redirect them to the intermediate page to choose individual
         # or table.
         pricings = reg_conf.get_available_pricings(request.user,
-                                                   is_strict=False,
+                                                   is_strict=is_double_strict,
                                                    spots_available=spots_available)
         if not pricings:
             raise Http404
@@ -2278,7 +2279,7 @@ def register(request, event_id=0,
         # get all available pricing for the Price Options to select
         if not pricings:
             pricings = reg_conf.get_available_pricings(request.user,
-                                                       is_strict=False,
+                                                       is_strict=is_double_strict,
                                                        spots_available=spots_available)
         pricings = pricings.filter(quantity=1)
         pricings = pricings.filter(Q(registration_cap=0) | Q(registration_cap__gt=0, spots_taken__lt=F('registration_cap')))
