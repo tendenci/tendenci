@@ -2592,9 +2592,7 @@ class Event(TendenciBaseModel):
         Speakers with no name are excluded in the list.
         """
 
-        speakers = self.speaker_set.exclude(name="").order_by('pk')
-
-        return speakers
+        return self.speaker_set.exclude(name="").order_by('position', 'pk')
 
     def number_of_days(self):
         delta = self.end_dt - self.start_dt

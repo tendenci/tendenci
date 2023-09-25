@@ -73,6 +73,7 @@ from tendenci.apps.events.models import (
     Event,
     EventStaff,
     CEUCategory,
+    RegistrantChildEvent,
     Registration,
     Registrant,
     Speaker,
@@ -2088,6 +2089,33 @@ def register_user_lookup(request):
         u_dict = {'id': u.id, 'label': value, 'value': value}
         results.append(u_dict)
     return JsonResponse(results, safe=False)
+
+
+@is_enabled('events')
+@login_required
+def sessions_list(request, registrant_id, template_name="events/registrants/sessions_list.html"):
+    registrant = get_object_or_404(Registrant, pk=registrant_id)
+    event = registrant.registration.event
+
+    perms = (
+        has_perm(request.user, 'events.change_registrant', registrant),
+        request.user == registrant.user,
+    )
+
+    if not any(perms):
+        raise Http403
+    
+    reg_child_events = RegistrantChildEvent.objects.filter(registrant=registrant)
+    reg_child_events = reg_child_events.order_by('child_event__start_dt')
+    attend_dates = sorted(set(reg_child_events.values_list('child_event__start_dt__date', flat=True)))
+
+    return render_to_resp(
+        request=request, template_name=template_name, context={
+            'event': event,
+            'registrant': registrant,
+            'attend_dates': attend_dates,
+            'reg_child_events': reg_child_events
+        })
 
 
 @is_enabled('events')
