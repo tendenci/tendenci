@@ -150,13 +150,13 @@ class Place(models.Model):
         max_length=50,
         blank=True,
         null=True,
-        help_text=_('Zoom meeting ID for this Event. If none is set, will use Personal Zoom Meeting ID in Events Settings.')
+        help_text=_('Zoom meeting ID for this Event.')
     )
     zoom_meeting_passcode = models.CharField(
         max_length=50,
         blank=True,
         null=True,
-        help_text=_('Zoom meeting passcode for this Event. If none is set, will use Personal Zoom Meeting Passcode in Events Settings.')
+        help_text=_('Zoom meeting passcode for this Event.')
     )
     is_zoom_webinar = models.BooleanField(
         default=False,
@@ -2440,7 +2440,7 @@ class Event(TendenciBaseModel):
         """Indicates Zoom integration is enabled and setup."""
         return (
             get_setting("module", "events", "enable_zoom") and
-            self.place.use_zoom_integration and
+            self.use_zoom_integration and
             self.zoom_meeting_number and
             self.zoom_meeting_passcode
         )
@@ -2465,34 +2465,32 @@ class Event(TendenciBaseModel):
 
     @property
     def zoom_meeting_number(self):
-        """
-        Zoom meeting number for this event.
-        Defaults to Event Settings if none setup.
-        """
-        return (
-            self.place.zoom_meeting_id or
-            get_setting("module", "events", "zoom_meeting_id")
-        )
+        """Zoom meeting number for this event."""
+        return self.place.zoom_meeting_id if self.place else None
 
     @property
     def zoom_meeting_passcode(self):
-        """
-        Zoom meeting passcode for this event.
-        Defaults to Event Settings if none setup.
-        """
-        return (
-            self.place.zoom_meeting_passcode or
-            get_setting("module", "events", "zoom_meeting_passcode")
-        )
+        """Zoom meeting passcode for this event."""
+        return self.place.zoom_meeting_passcode if self.place else None
+
+    @property
+    def use_zoom_integration(self):
+        """Use Zoom for this Event"""
+        return self.place.use_zoom_integration if self.place else None
+
+    @property
+    def zoom_api_configuration(self):
+        """Zoom API Configuration for this Event"""
+        return self.place.zoom_api_configuration if self.place else None
 
     @property
     def zoom_meeting_config(self):
-        if not self.place.zoom_api_configuration:
+        if not self.zoom_api_configuration:
             raise Exception(_("Zoom API not configured"))
 
         return json.dumps({
             'signature': self.zoom_jwt_token,
-            'sdkKey': self.place.zoom_api_configuration.sdk_client_id,
+            'sdkKey': self.zoom_api_configuration.sdk_client_id,
             'meetingNumber':  self.zoom_meeting_number,
             'passWord': self.zoom_meeting_passcode,
             'tk': '',
@@ -2502,22 +2500,22 @@ class Event(TendenciBaseModel):
     @property
     def zoom_jwt_token(self):
         """Generate token for Zoom meeting"""
-        if not self.place.zoom_api_configuration:
+        if not self.zoom_api_configuration:
             raise Exception(_("Zoom API not configured"))
 
         max_exp = datetime.now().astimezone(pytz.UTC) + timedelta(hours=24)
         end_dt = self.end_dt.astimezone(pytz.UTC)
 
         payload = {
-            'sdkKey': self.place.zoom_api_configuration.sdk_client_id,
+            'sdkKey': self.zoom_api_configuration.sdk_client_id,
             'mn': self.zoom_meeting_number,
             'role': 0, # 0 is regular attendee, 1 is the host
             'exp': min(end_dt, max_exp),
-            'appKey': self.place.zoom_api_configuration.sdk_client_id,
+            'appKey': self.zoom_api_configuration.sdk_client_id,
         }
 
         return jwt.encode(
-            payload, self.place.zoom_api_configuration.get_sdk_secret(), algorithm="HS256")
+            payload, self.zoom_api_configuration.get_sdk_secret(), algorithm="HS256")
 
     @property
     def zoom_credits_ready(self):
@@ -2591,13 +2589,13 @@ class Event(TendenciBaseModel):
 
     def generate_zoom_credits(self):
         """Generate credits earned from Zoom event"""
-        if not self.place.zoom_api_configuration:
+        if not self.zoom_api_configuration:
             raise Exception(_("Zoom API not configured"))
 
         client = ZoomClient(
-            client_id=self.place.zoom_api_configuration.oauth_client_id,
-            client_secret=self.place.zoom_api_configuration.get_oauth_secret(),
-            account_id=self.place.zoom_api_configuration.oauth_account_id
+            client_id=self.zoom_api_configuration.oauth_client_id,
+            client_secret=self.zoom_api_configuration.get_oauth_secret(),
+            account_id=self.zoom_api_configuration.oauth_account_id
         )
 
         questions_answered = self.get_zoom_poll_results(client)
