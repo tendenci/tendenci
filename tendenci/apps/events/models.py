@@ -2555,6 +2555,32 @@ class Event(TendenciBaseModel):
             user__username=user_name
         ).first()
 
+    def get_registrant_by_user(self, user):
+        """
+        Get registrant by user. If this is for a child event,
+        verify registrant is currently registered.
+        """
+        event = self.parent if self.parent and self.nested_events_enabled else self
+
+        # If no parent event is set, this is the parent event. Or if
+        # nested events are not enabled, this should function as a parent or
+        # standalone event
+        if not self.parent or not self.nested_events_enabled:
+            return Registrant.objects.filter(
+                registration__event_id=event.pk,
+                user_id=user.pk,
+                cancel_dt__isnull=True,
+            ).first()
+
+        # Return registrant tied to child event
+        registrant_child_event = RegistrantChildEvent.objects.filter(
+            child_event_id=self.pk,
+            registrant__user_id=user.pk,
+            registrant__cancel_dt__isnull=True
+        ).first()
+
+        return registrant_child_event.registrant if registrant_child_event else None
+
     @cached_property
     def virtual_event_credits_config(self):
         config = VirtualEventCreditsLogicConfiguration.objects.first()

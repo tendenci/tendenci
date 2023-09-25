@@ -860,7 +860,7 @@ def all_tags_list():
 @register.simple_tag
 def execute_method(obj, method_name, *args):
     """
-    Execute a given method on an givent object
+    Execute a given method on an given object
     with specified args
     """
     method = getattr(obj, method_name)
