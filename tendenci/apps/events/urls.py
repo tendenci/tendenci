@@ -96,6 +96,7 @@ urlpatterns = [
     re_path(r'^%s/register/(?P<registration_id>\d+)/sub-events/$' % urlpath, views.register_child_events, name='event.register_child_events'),
     re_path(r'^%s/register/(?P<registration_id>\d+)/sub-events/(?P<guid>[\d\w-]+)/$' % urlpath, views.register_child_events, name='event.register_child_events'),
     re_path(r'^%s/sessions/(?P<registrant_id>\d+)/$' % urlpath, views.sessions_list, name="event.sessions"),
+    re_path(r'^%s/sessions/(?P<registrant_id>\d+)/edit/$' % urlpath, views.sessions_edit, name="event.sessions_edit"),
     re_path(r'^%s/register/(?P<event_id>\d+)/pre/$' % urlpath, views.register_pre, name='event.register_pre'),
     re_path(r'^%s/register/(?P<event_id>\d+)/individual/(?P<pricing_id>\d+)/$' % urlpath, views.register, {'individual': True}, name='event.register_individual'),
     re_path(r'^%s/register/(?P<event_id>\d+)/table/(?P<pricing_id>\d+)/$' % urlpath, views.register, {'is_table': True}, name='event.register_table'),

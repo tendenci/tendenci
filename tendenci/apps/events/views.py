@@ -2119,6 +2119,63 @@ def sessions_list(request, registrant_id, template_name="events/registrants/sess
 
 
 @is_enabled('events')
+@login_required
+def sessions_edit(request, registrant_id, template_name="events/reg8n/register_child_events.html"):
+    registrant = get_object_or_404(Registrant, pk=registrant_id)
+
+    perms = (
+        has_perm(request.user, 'events.change_registrant', registrant),  # has perm
+        request.user == registrant.user,
+    )
+
+    if not any(perms):
+        raise Http403
+    
+    event = registrant.registration.event
+    redirect_url = reverse('event.sessions', args=(registrant_id,))
+
+    if (event.is_over or registrant.registration_closed) and not request.user.is_superuser:
+        # event is over, sessions shouldn't be edited
+        return HttpResponseRedirect(redirect_url)
+
+    has_error = False
+
+    if request.POST:
+        keys = [key for key in request.POST if f'{registrant.pk}-' in key]
+        child_event_pks = list()
+        for key in keys:
+            child_event_pk = request.POST[key]
+            if child_event_pk:
+                child_event_pks.append(child_event_pk)
+        try:
+            registrant.register_child_events(child_event_pks, request.user.is_superuser)
+            msg_string = 'Successfully updated sessions'
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
+        except Exception as e:
+            has_error = True
+            messages.set_level(request, messages.ERROR)
+            messages.add_message(request, messages.ERROR, e.args[0])
+
+        if not has_error:
+            return HttpResponseRedirect(redirect_url)
+
+    forms = []
+    form = ChildEventRegistrationForm(registrant, request.user.profile.is_superuser)
+    if form.fields:
+        forms.append(form)
+
+    if not forms:
+        return HttpResponseRedirect(redirect_url)
+
+    return render_to_resp(
+        request=request, template_name=template_name, context={
+            'forms': forms,
+            'registrants': [registrant],
+            'use_full_dates': request.user.is_superuser
+        })
+
+
+@is_enabled('events')
 def register_child_events(request, registration_id, guid=None,  template_name="events/reg8n/register_child_events.html"):
     registration = get_object_or_404(Registration, pk=registration_id)
 
@@ -2157,6 +2214,8 @@ def register_child_events(request, registration_id, guid=None,  template_name="e
                     child_event_pks.append(child_event_pk)
             try:
                 registrant.register_child_events(child_event_pks, request.user.is_superuser)
+                msg_string = 'Successfully saved sub-events'
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
             except Exception as e:
                 has_error = True
                 messages.set_level(request, messages.ERROR)
