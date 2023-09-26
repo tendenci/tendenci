@@ -400,6 +400,10 @@
                 </td>
                 <td>
                   {{ reg.reg8n_status }}
+                  {% if reg.reg8n_status != "cancelled" and reg.event.has_child_events and reg.user %}
+                  	<br />
+                  	<a href="{% url "event.sessions" reg.pk %}">{% if request.user == reg.user %}{% trans "View my Schedule" %}{% else %}{% trans "View Schedule" %}{% endif %}</a>
+                  {% endif %}
                 </td>
                 <td>
                   {% if reg.event.can_cancel and reg.reg8n_status != "cancelled" %}

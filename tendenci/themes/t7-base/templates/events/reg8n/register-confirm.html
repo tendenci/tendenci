@@ -198,9 +198,21 @@
 
         </table>
 
+		{% if not MODULE_EVENTS_CANREGISTERAGAIN and not registrant.cancel_dt %}
+			{% if event.has_child_events %}
+				<div>
+		            <a href="{% url "event.sessions" registrant.pk %}">{% if request.user.is_authenticated and request.user == registrant.user %}{% trans "View/Update my Schedule" %}{% else %}{% trans "View/Update Schedule" %}{% endif %}</a>
+		        </div>
+			{% else %}
+				<div>
+		            <a href="{% url "event.registration_edit" registration.id %}">{% trans "Update Registration" %}</a>
+		        </div>
+	        {% endif %}
+		{% else %}
         <div class="register-more">
             <a href="{% url "event" event.pk %}">{% trans "Register More People" %}</a>
         </div>
+        {% endif %}
 
         <div style="font-weight: bold;">{% trans "Addons" %} ... ({{ addons.count }})</div>
         <table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
