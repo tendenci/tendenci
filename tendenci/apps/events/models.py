@@ -1263,9 +1263,9 @@ class Registrant(models.Model):
     @property
     def available_child_events(self):
         """Child events occurring on the dates Registrant is attending"""
-        if not self.event.nested_events_enabled:
+        if not self.event.nested_events_enabled or not self.attendance_dates:
             return Event.objects.none()
-
+            
         return self.event.child_events.filter(start_dt__date__in=self.attendance_dates)
 
     @property
