@@ -2104,10 +2104,16 @@ def sessions_list(request, registrant_id, template_name="events/registrants/sess
 
     if not any(perms):
         raise Http403
+
+    if registrant.cancel_dt:
+        return HttpResponseRedirect(reverse('event.registration_confirmation', args=(event.id, registrant.registration.id,)))
     
     reg_child_events = RegistrantChildEvent.objects.filter(registrant=registrant)
     reg_child_events = reg_child_events.order_by('child_event__start_dt')
     attend_dates = sorted(set(reg_child_events.values_list('child_event__start_dt__date', flat=True)))
+    
+    if reg_child_events.count() == 0:
+        return HttpResponseRedirect(reverse('event.registration_edit', args=(registrant.registration.id,)))
 
     return render_to_resp(
         request=request, template_name=template_name, context={
@@ -2132,6 +2138,10 @@ def sessions_edit(request, registrant_id, template_name="events/reg8n/register_c
         raise Http403
     
     event = registrant.registration.event
+    
+    if registrant.cancel_dt:
+        return HttpResponseRedirect(reverse('event.registration_confirmation', args=(event.id, registrant.registration.id,)))
+    
     redirect_url = reverse('event.sessions', args=(registrant_id,))
 
     if (event.is_over or registrant.registration_closed) and not request.user.is_superuser:
