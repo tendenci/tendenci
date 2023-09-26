@@ -45,3 +45,87 @@ Different pricing options can be set for different levels of registration. For e
 - At-the-door Rate
 
 All of these pricing options (and any others you might think up), can be configured to have a start and end time, and can be made only available members of your site or possibly only people in certain groups.
+
+
+Zoom Integration
+~~~~~~~~~~~~~~~~
+You can setup your Event to integrate with Zoom. It will launch a meeting from the Event's page. This can be used for calculating credits (if you are using credits) or from just simply providing an easy to find location for the link to your Zoom meeting. The 'Join Meeting' button will appear on the Event's page
+10 minutes prior to the Event's start date and time and will remain available until the end date and time configured in the 'Overview' section of Event edit.
+
+To integrate with Zoom:
+   1. Edit the Event and select the Location tab
+   2. Click Virtual
+   3. Click Use Zoom integration
+   4. Select the configuration for your Zoom API (see setup for Zoom API Configuration)
+   5. Enter the Meeting ID and meeting passcode for the meeting you want to launch for that Event.
+
+
+If you are using credits, once Zoom meeting has finished, and it is past the Event’s end date and time, an option to Generate Zoom Credits will appear in the Event dropdown menu. Credits will be generated (if applicable) and you will be redirected to the Credit Override page in the admin.
+
+
+Zoom API Configuration
+----------------------
+From the Admin Backend for Events, you will find Zoom API Configuration. This will allow you to integrate your Zoom account(s). Multiple accounts
+can be used, but only one default can be set. The default integration will be selected on Event creation. You will be able to use another configured
+account by changing your selection on Event add or on Event edit.
+
+Use 'Account name' to give a set of Zoom credentials a name that will allow you to easily recognize it. You will need to enter the client id and secret
+for your SDK app (see SDK app configuration) and your account id, client id and secret for your Server-to-Server OAuth app (see Server-to-Server OAuth app configuration)
+
+
+Zoom App Creation
+----------------------
+Follow these steps from your Zoom account to:
+   1. Create an app that will allow you to launch your Zoom meeting from an Event (SDK App Configuration)
+   2. Create an app that will allow you to pull meeting information such as poll results (Server-to-Server App Configuration)
+
+After configuring these apps, you will be able to see them if you:
+    1. Select Advanced on the left side pane
+    2. Select App Marketplace
+    3. Select Manage (at the tope of the window, next to Develop)
+
+SDK App Configuration
+~~~~~~~~~~~~~~~~~~~~~
+1. Select Advanced on the left side pane
+2. Select App Marketplace
+3. Select Develop (at the top of the window)
+4. Select Build App
+5. Select Meeting SDK
+6. Name your app something that you will recognize.
+7. Toggle off the option to publish to Marketplace, then click Create
+8. Enter a short description and long description (can be very simple since we aren’t publishing the app).
+9. Enter Company Name (you can skip the fields not mentioned in the documentation)
+10. Add developer (Tendenci) information
+    a. Name: Tendenci
+    b. Email: communications@tendenci.com
+11. Add links to your privacy policy, terms of use, and support site, then click Continue
+12. On the Download page, no action is needed, just click Continue
+13. Get your Client ID and Client Secret. (See Zoom API Configuration)
+14. Enter a URL in Redirect URL for OAuth. This can just be the URL for your site,
+    it doesn't need to be a working OAuth site for this implementation.
+15. Enter the same site you used for Redirect URL for OAuth into Add Allow List, then Continue
+16. No action is needed on the Features page, just click Continue
+17. Click Add Scopes
+18. Select all options for viewing and managing meetings
+19. Select all options for viewing and managing webinars, then click Done. When back on the Scopes page, click Continue
+20. Click Add
+
+
+Server-to-Server App Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Select Advanced on the left side pane
+2. Select App Marketplace
+3. Select Develop (at the top of the window)
+4. Select Build App
+5. Select Server-to-Server OAuth
+6 Name your app something you will recognize, then click Create
+7. Get your Account ID, Client ID, and Client Secret. (See Zoom API Configuration)
+8. Enter a short description and your Company Name
+9. Add developer (Tendenci) information (then click Continue)
+    a. Name: Tendenci
+    b. Email: communications@tendenci.com
+10. No action is needed on the Features page, just click Continue
+11. Click Add Scopes
+12. Select all options for viewing and managing meetings
+13. Select all options for viewing and managing webinars, then click Done. When back on the Scopes page, click Continue
+14. Click Activate your app
