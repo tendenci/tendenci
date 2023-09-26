@@ -145,6 +145,7 @@ class Place(models.Model):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
+        help_text=_("Zoom API credentials for the account you want to use for this Event's meeting.")
     )
     zoom_meeting_id = models.CharField(
         max_length=50,
@@ -294,7 +295,6 @@ class ZoomAPIConfiguration(models.Model):
             self.oauth_client_secret = encrypt(self.oauth_client_secret)
 
         return super().save(*args, **kwargs)
-
 
 
 class CEUCategory(models.Model):
@@ -2479,6 +2479,11 @@ class Event(TendenciBaseModel):
         return self.place.use_zoom_integration if self.place else None
 
     @property
+    def is_zoom_webinar(self):
+        """Zoom meeting is a webinar"""
+        return self.place.is_zoom_webinar if self.place else False
+
+    @property
     def zoom_api_configuration(self):
         """Zoom API Configuration for this Event"""
         return self.place.zoom_api_configuration if self.place else None
@@ -2534,8 +2539,8 @@ class Event(TendenciBaseModel):
 
     def get_zoom_poll_results(self, client):
         """Get Zoom poll responses"""
-        response = client.get_meeting_poll_results(
-            self.zoom_meeting_number, self.place.is_zoom_webinar)
+        response = client.get_meeting_poll_results(self.zoom_meeting_number, self.is_zoom_webinar)
+
         if not response.status_code == 200:
             raise Exception(_('Failed to get poll results, check meeting ID and try again'))
 
@@ -2583,6 +2588,7 @@ class Event(TendenciBaseModel):
 
     @cached_property
     def virtual_event_credits_config(self):
+        """Configuration of rules for virtual event credit generation"""
         config = VirtualEventCreditsLogicConfiguration.objects.first()
 
         if not config:
@@ -2594,7 +2600,7 @@ class Event(TendenciBaseModel):
     def full_credit_questions(self):
         """
         Get the number of questions per credit period that
-        will earn a full credit. This is eitehr full_credit_questions
+        will earn a full credit. This is either full_credit_questions
         in the config, or full_credit_percent * credit_period_questions
         (also in the config)
         """
@@ -2653,7 +2659,6 @@ class Event(TendenciBaseModel):
             # is in and count answered questions by the credit period
             # for the user. Readjust start time if credits not earned in
             # previous credit period
-            previous_index = 0  # Index of previous credit period
             previous_question_index = 0  # Index (credit period) of previous question
             previous_answers = None  # answers in previous credit period
             index_offset = 0  # Offset to use when resetting start_dt
@@ -2674,12 +2679,10 @@ class Event(TendenciBaseModel):
                     answered = questions_by_user[user_name].get(index, 0)
 
                     # If answered is 0, this is the first answer in this credit period
-                    # Set preiouvs_index to the index of the previous question as the previous
-                    # was in the previous credit period. Get the previous answers so we can
+                    # Get the previous credit period's count of answers so we can
                     # determine if start datetime should be reset (if full credit was not earned).
                     if not answered:
-                        previous_index = previous_question_index
-                        previous_answers = questions_by_user[user_name].get(previous_index)
+                        previous_answers = questions_by_user[user_name].get(previous_question_index)
 
                     # If this isn't the first answer, the gap between this answer and the previous is
                     # greater than credit_period_minutes or this is a new credit period and no credit
@@ -2753,6 +2756,7 @@ class Event(TendenciBaseModel):
             # Assign credits to registrant based on questions answered
             self.assign_zoom_credits(registrant, questions_by_user[user_name])
 
+
     def get_meta(self, name):
         """
         This method is standard across all models that are
@@ -2760,6 +2764,7 @@ class Event(TendenciBaseModel):
         methods coupled to this instance.
         """
         return EventMeta().get_meta(self, name)
+
 
     def assign_zoom_credits(self, registrant, questions_answered):
         """
@@ -2773,7 +2778,7 @@ class Event(TendenciBaseModel):
         total_credits = 0
 
         # Get the number of questions per credit period that
-        # will earn a full credit. This is eitehr full_credit_questions
+        # will earn a full credit. This is either full_credit_questions
         # in the config, or full_credit_percent * credit_period_questions
         # (also in the config)
         full_credit_questions = self.full_credit_questions
