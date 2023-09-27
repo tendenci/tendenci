@@ -2264,8 +2264,8 @@ def handle_registration_payment(reg8n):
         # online payment
         # get invoice; redirect to online pay
         # email the admins as well
-
-        email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+        if not reg_conf.payment_required:
+            email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
         if reg_conf.external_payment_link:
             return reg_conf.external_payment_ink
 

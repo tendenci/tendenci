@@ -2201,15 +2201,6 @@ def register_child_events(request, registration_id, guid=None,  template_name="e
     has_error = False
     is_admin = request.user.profile.is_superuser
 
-    redirect_url = handle_registration_payment(registration)
-    default_redirect_response = redirect_response = HttpResponseRedirect(
-                reverse('event.registration_confirmation',
-                        args=(registration.event.id, registration.registrant.hash)
-                ))
-
-    if redirect_url:
-            redirect_response = HttpResponseRedirect(redirect_url)
-
     if request.POST:
         data_by_registrant = []
         for registrant in registration.registrant_set.all():
@@ -2231,6 +2222,14 @@ def register_child_events(request, registration_id, guid=None,  template_name="e
                 messages.set_level(request, messages.ERROR)
                 messages.add_message(request, messages.ERROR, e.args[0])
 
+        redirect_url = handle_registration_payment(registration)
+        default_redirect_response = redirect_response = HttpResponseRedirect(
+                    reverse('event.registration_confirmation',
+                            args=(registration.event.id, registration.registrant.hash)
+                    ))
+    
+        if redirect_url:
+                redirect_response = HttpResponseRedirect(redirect_url)
         return redirect_response if not has_error else default_redirect_response
 
     forms = list()
