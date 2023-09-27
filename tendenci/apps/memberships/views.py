@@ -113,6 +113,7 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
         form = MemberSearchForm(request.POST, app_fields=app_fields, user=request.user)
     else:
         form = MemberSearchForm(request.GET, app_fields=app_fields, user=request.user)
+
     if form.is_valid():
         user_fieldnames = [field.name for field in User._meta.fields if \
                            field.get_internal_type() in ['CharField', 'TextField']]
@@ -122,8 +123,13 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
                            field.get_internal_type() in ['CharField', 'TextField']]
         demographic_fieldnames = [field.name for field in MembershipDemographic._meta.fields if \
                            field.get_internal_type() in ['CharField', 'TextField']]
+        status_detail = form.cleaned_data.get('status_detail')
+        if status_detail:
+            memberships = memberships.filter(status_detail__iexact=status_detail)
 
         for field_name, field_value in form.cleaned_data.items():
+            if field_name == 'status_detail':
+                continue
             if field_value:
                 if isinstance(field_value, list):
                     if field_name in user_fieldnames:

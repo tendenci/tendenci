@@ -141,6 +141,16 @@ class MemberSearchForm(FormControlWidgetMixin, forms.Form):
         app_fields = kwargs.pop('app_fields')
         user = kwargs.pop('user')
         super(MemberSearchForm, self).__init__(*args, **kwargs)
+
+        # status_detail
+        self.fields['status_detail'] = forms.ChoiceField(
+                    required=False,
+                    widget=forms.RadioSelect,
+                    choices=(('', _('All')),
+                            ('active', _('Active')),
+                            ('pending', _('Pending')),
+                            ('expired', _('Expired'))))
+
         assign_search_fields(self, app_fields)
         self.add_form_control_class()
 
