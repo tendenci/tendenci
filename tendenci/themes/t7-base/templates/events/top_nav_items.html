@@ -1,4 +1,5 @@
 {% load base_tags %}
+{% load event_tags %}
 {% load perm_tags %}
 {% load site_setting_tags %}
 
@@ -272,8 +273,16 @@
                             {% if can_add_event %}
                                 <li class="content-item">
                                     <span class="app-name">
+                                        {% if event.has_any_child_events and event.nested_events_enabled %}
+                                        <a href="#" data-toggle="modal" data-target="#cloneModal">{% trans "Clone Event" %}</a>
+                                        {% else %}
                                         <a href="{% url 'event.copy' app_object.pk %}">{% trans "Clone Event" %}</a>
+                                        {% endif %}
                                     </span>
+                                    <!-- Clone Modal  -->
+                                    <div id="cloneModal" class="modal fade" role="dialog">
+                                        {% event_clone_modal event %}
+                                    </div>
                                 </li>
                             {% endif %}
 

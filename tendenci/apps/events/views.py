@@ -4803,11 +4803,15 @@ def copy(request, id):
     if not has_perm(request.user, 'events.add_event'):
         raise Http403
 
+    copy_child_events = request.GET.get('include_sub-events', 'false').lower() == 'true'
     event = get_object_or_404(Event, id=id)
-    new_event = copy_event(event, request.user)
+    new_event = copy_event(event, request.user, should_copy_child_events=copy_child_events)
 
     EventLog.objects.log(instance=new_event)
     msg_string = 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % str(new_event)
+    if copy_child_events:
+        msg_string += f'<br />Sub-events copied can be accessed through the Sub-Event(s) tab when editing the event.'
+
     messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     return redirect('event.edit', id=new_event.id)

@@ -1453,7 +1453,37 @@ def clean_price(price, user):
 
     return price, price_pk, amount
 
-def copy_event(event, user, reuse_rel=False, set_repeat_of=False, copy_to=None):
+def copy_child_events(event, new_event, user, reuse_rel):
+    """Copy child events for a given Event"""
+    new_event_pks = set()
+
+    # Copy all child events. Start with events that are not repeats of another.
+    # This will make it so we can later tie copies of the repeated event with the
+    # correct newly copied event it is a repeat of.
+    for child_event in event.all_child_events.filter(repeat_of__isnull=True):
+        new_child_event = copy_event(child_event, user, reuse_rel=reuse_rel)
+        new_event_pks.add(new_child_event.pk)
+
+        # If there are repeat events for this child event, copy them as well.
+        for repeat_event in event.all_child_events.filter(repeat_of_id=child_event.pk):
+            new_repeat_event = copy_event(repeat_event, user, reuse_rel=reuse_rel)
+
+            # Set the repeat_of fields for this repeat event
+            new_repeat_event.repeat_of = new_child_event
+            new_repeat_event.repeat_uuid = new_child_event.repeat_uuid
+            # Go ahead and set the parent here since we're doing a save anyway.
+            new_repeat_event.parent = new_event
+            new_repeat_event.save(update_fields=['parent', 'repeat_of', 'repeat_uuid'])
+
+    Event.objects.filter(pk__in=new_event_pks).update(parent_id=new_event.pk)
+
+def copy_event(
+        event,
+        user,
+        reuse_rel=False,
+        set_repeat_of=False,
+        copy_to=None,
+        should_copy_child_events=False):
     #copy event
     if not copy_to:
         new_event = Event()
@@ -1650,6 +1680,10 @@ def copy_event(event, user, reuse_rel=False, set_repeat_of=False, copy_to=None):
                     addon = new_addon,
                     title = option.title,
                 )
+
+    # Copy all child events associated with this Event
+    if should_copy_child_events and event.has_any_child_events:
+        copy_child_events(event, new_event, user, reuse_rel)
 
     return new_event
 
