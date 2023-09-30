@@ -283,6 +283,11 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         free_event = not bool([p for p in pricing if p.price > 0])
     can_view_attendees = event.can_view_registrants(request.user)
 
+    my_registrants = None
+    if request.user.is_authenticated:
+        my_registrants = request.user.registrant_set.filter(
+            registration__event=event).filter(cancel_dt__isnull=True)
+
     return render_to_resp(request=request, template_name=template_name, context={
         'days': days,
         'event': event,
@@ -298,7 +303,8 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'place_files': place_files,
         'free_event': free_event,
         'can_view_attendees': can_view_attendees,
-        'is_admin': request.user.profile.is_superuser
+        'is_admin': request.user.profile.is_superuser,
+        'my_registrants': my_registrants,
     })
 
 
