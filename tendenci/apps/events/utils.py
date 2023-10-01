@@ -2247,7 +2247,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
         email.send()
 
 
-def handle_registration_payment(reg8n):
+def handle_registration_payment(reg8n, redirect_url_only=False):
     """
     Handle registration payment based on method selected
     Returns redirect URL if applicable.
@@ -2264,13 +2264,18 @@ def handle_registration_payment(reg8n):
         # online payment
         # get invoice; redirect to online pay
         # email the admins as well
-        if not reg_conf.payment_required:
-            email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+        if not redirect_url_only:
+            if not reg_conf.payment_required or reg_conf.external_payment_link:
+                email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+
         if reg_conf.external_payment_link:
             return reg_conf.external_payment_ink
 
         return reverse('payment.pay_online', args=[reg8n.invoice.id, reg8n.invoice.guid])
     else:
+        if redirect_url_only:
+            return None
+
         if not reg8n.invoice:
             return None
         # offline payment:
