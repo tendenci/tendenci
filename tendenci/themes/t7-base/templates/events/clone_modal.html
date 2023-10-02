@@ -20,11 +20,11 @@
                 <form action="{% url 'event.copy' event.pk %}" method="post">
                     {% csrf_token %}
                     <div class="grid">
-                        <div class="grid-item" style="margin-right: 10px;">
-                            <button type="submit" formaction="{% url 'event.copy' event.pk %}">{% trans "No" %}</button>
-                        </div>
                         <div class="forms grid-item">
                             <button type="submit" formaction="{% url 'event.copy' event.pk %}?include_sub-events=true" > {% trans "Yes" %}
+                        </div>
+                        <div class="grid-item" style="margin-right: 10px;">
+                            <button type="submit" formaction="{% url 'event.copy' event.pk %}">{% trans "No" %}</button>
                         </div>
                     </div>
                 </form>
