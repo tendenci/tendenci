@@ -2567,7 +2567,7 @@ class MessageAddForm(forms.ModelForm):
 
     class Meta:
         model = Email
-        fields = ('subject', 'body',)
+        fields = ('subject', 'body', 'sender_display', 'reply_to')
 
     def __init__(self, event_id=None, *args, **kwargs):
         super(MessageAddForm, self).__init__(*args, **kwargs)
@@ -2575,6 +2575,7 @@ class MessageAddForm(forms.ModelForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+
 
 class EmailForm(forms.ModelForm):
     #events = forms.CharField()

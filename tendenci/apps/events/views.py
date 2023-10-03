@@ -4440,8 +4440,8 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
 
             email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
 
-            email.sender_display = request.user.get_full_name()
-            email.reply_to = request.user.email
+            email.sender_display = email.sender_display or request.user.get_full_name()
+            email.reply_to =  email.reply_to or request.user.email
             email.recipient = request.user.email
             email.content_type = "html"
             email.save(request.user)
@@ -4487,7 +4487,9 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             request=request)
         openingtext = render_to_string(template_name='events/message/opening-text.txt', context={'event': event},
             request=request)
-        form = form_class(event.id, initial={'subject':defaultsubject, 'body': openingtext})
+        form = form_class(event.id, initial={'subject':defaultsubject, 'body': openingtext,
+                                             'reply_to': request.user.email,
+                                             'sender_display': get_setting('site', 'global', 'sitedisplayname')})
 
     return render_to_resp(request=request, template_name=template_name,context={
         'event':event,
