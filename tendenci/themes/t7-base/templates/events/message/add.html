@@ -28,11 +28,6 @@
                 <p><strong>{{ form.subject.label }}:</strong></p>
                 {{ form.subject }}
             </div>
-
-            <div class="message-item">
-                <p><strong>{{ form.body.label }}:</strong></p>
-                {{ form.body }}
-            </div>
             
             <div class="message-item">
                 <p><strong>{{ form.sender_display.label }}:</strong></p>
@@ -45,6 +40,11 @@
             </div>
 
             <div class="message-item">
+                <p><strong>{{ form.body.label }}:</strong></p>
+                {{ form.body }}
+            </div>
+
+            <div class="message-item">
                 <em><strong>
         {% trans "For security a footer will be automatically appended indicating the sender (you!) as well as logging a security event to prevent abuse of the system" %}</strong></em>.
             </div>
@@ -53,7 +53,7 @@
                 <em><strong><font color="red">{% trans "This message will be sent IMMEDIATELY. DO NOT HIT REFRESH!" %}</font></strong></em>.
             </div>
 
-            <input type="submit" value="{% trans "Send Email" %}" />
+            <input class="btn btn-primary" type="submit" value="{% trans "Send Email" %}" />
         </div>
         </form>
     </div>
