@@ -357,11 +357,16 @@ div.pricing-list-wrap li{
       {% if event.registration_configuration.enabled %}
       <div class="vitals">
       {% if not MODULE_EVENTS_CANREGISTERAGAIN and my_registrants and not request.user.is_superuser %}
+      	{% if my_registrants and my_registrants.0.reg8n_status == 'payment-required' and event.registration_configuration.can_pay_online %}
+       	<a class="btn btn-lg btn-warning" href="{% url "payment.pay_online" my_registrants.0.registration.invoice.pk my_registrants.0.registration.invoice.guid %}">
+              {% trans "Complete my registration!" %}</a>
+       	{% else %}
           {% if my_registrants.count == 1 %}
 	        <a class="btn btn-success" href="{% url 'event.registration_confirmation' event.id my_registrants.0.registration.id %}">{% trans "View/Update My Registration" %}</a>
 	 		{% else %}
 	 		<a class="btn btn-success" href="{% url 'profile' request.user.username %}">{% trans "View My Registration" %}</a>
 	 		{% endif %}
+	 	{% endif %}
 	   {% else %}
         <h4 class="time-period">
           {% if not free_event %}

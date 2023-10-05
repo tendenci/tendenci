@@ -411,7 +411,7 @@
                     <div class="field">{{ reg_form.captcha }}</div>
                 </div>
             {% endif %}
-            <input class="btn btn-primary" type="submit" name="commit" id="register-form-button" class="registration-green-button" value="{% if event.free_event %}{% trans 'Submit' %}{% else %}{% trans 'Register'%}{% endif %}" />
+            <input class="btn btn-primary" type="submit" name="commit" id="register-form-button" class="registration-green-button" value="{% if event.free_event %}{% trans 'Submit' %}{% else %}{% trans 'Continue'%}{% endif %}" />
 
             <div class="clear"></div>
         </div>
@@ -419,7 +419,11 @@
         <div class="forms" id="confirm-div">
             <div>
                 <p><strong>{% trans "Please review the following." %}</strong></p>
-                <p class="cls-paragraph-warning"><strong>{% trans 'Your registration will not be completed until you click "Confirm My Registration" at the bottom of this page.' %}</strong></p>
+                {% if not reg_conf.payment_required %}
+                <p class="cls-paragraph-warning"><strong>{% trans 'Your registration will not be completed until you click "Confirm My Details" at the bottom of this page.' %}</strong></p>
+                {% else %}
+                <p class="cls-paragraph-warning"><strong>{% trans 'Note: Your registration will not be completed until payment is received.' %}</strong></p>
+                {% endif %}
                 {% for registrant in flat_registrants %}
                     {% include "events/reg8n/registrant_summary_preview.html" %}
                 {% endfor %}
@@ -495,7 +499,7 @@
              <br /><br />
              {% endif %}
             <div class="clear"></div>
-            <input class="btn btn-success" type="submit" name="commit" value="{% trans 'Confirm My Registration' %}" />
+            <input class="btn btn-success" type="submit" name="commit" value="{% if not reg_conf.payment_required %}{% trans 'Confirm My Details' %}{% else %}{% trans 'Save & Continue' %}{% endif %}" />
            <br /><br />
             <div class="clear"></div>
         </div>

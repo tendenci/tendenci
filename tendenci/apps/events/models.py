@@ -783,6 +783,13 @@ class Registration(models.Model):
                 return True
         return False
 
+    def not_paid(self):
+        return self.invoice and self.invoice.balance > 0
+    
+    def is_credit_card_payment(self):
+        return self.payment_method and \
+            (self.payment_method.machine_name).lower() == 'credit-card'
+
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """
@@ -1731,10 +1738,7 @@ class Registrant(models.Model):
         else:
             balance = 0
 
-        if self.pricing is None or self.pricing.payment_required is None:
-            payment_required = config.payment_required
-        else:
-            payment_required = self.pricing.payment_required
+        payment_required = self.pricing and self.pricing.payment_required  or config.payment_required
 
         if self.cancel_dt:
             return 'cancelled'
@@ -2334,7 +2338,7 @@ class Event(TendenciBaseModel):
     def is_registrant_user(self, user):
         if hasattr(user, 'registrant_set'):
             return user.registrant_set.filter(
-                registration__event=self).exists()
+                registration__event=self, cancel_dt__isnull=True).exists()
         return False
 
     def get_absolute_url(self):

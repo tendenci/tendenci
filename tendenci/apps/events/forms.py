@@ -347,7 +347,7 @@ def attendance_dates_callback(field, event, is_admin):
     return field.formfield()
 
 
-class FormForCustomRegForm(AttendanceDatesMixin, forms.ModelForm):
+class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.ModelForm):
 
     class Meta:
         model = CustomRegFormEntry
@@ -497,6 +497,8 @@ class FormForCustomRegForm(AttendanceDatesMixin, forms.ModelForm):
         self.price = Decimal('0.00')
         self.saved_data = {}
         # -------------------------
+        
+        self.add_form_control_class()
 
     def get_user(self, email=None):
         user = None
@@ -2138,7 +2140,7 @@ class ChildEventRegistrationForm(forms.Form):
                 self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'].initial = selection
 
 
-class RegistrantForm(AttendanceDatesMixin, forms.Form):
+class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
     """
     Registrant form.
     """
@@ -2253,6 +2255,7 @@ class RegistrantForm(AttendanceDatesMixin, forms.Form):
         if not self.event.is_table and reg_conf.allow_free_pass:
             self.fields['use_free_pass'] = forms.BooleanField(label=_("Use Free Pass"),
                                                              required=False)
+        self.add_form_control_class()
 
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
