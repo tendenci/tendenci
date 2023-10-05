@@ -2,6 +2,7 @@ from builtins import str
 import uuid
 from hashlib import md5
 import operator
+from collections import OrderedDict
 from datetime import datetime, timedelta
 from dateutil.parser import parse
 from functools import reduce
@@ -1296,16 +1297,9 @@ class Registrant(models.Model):
 
     def sub_event_datetimes(self, is_admin=False):
         """Returns list of start_dt for available sub events"""
-        datetimes = dict()
         child_events = self.event.child_events if is_admin else self.available_child_events
 
-        for event in child_events:
-            if event.start_dt not in datetimes:
-                datetimes[event.start_dt] = event.end_dt
-            else:
-                datetimes[event.start_dt] = max(datetimes[event.start_dt], event.end_dt)
-
-        return datetimes
+        return self.event.sub_event_datetimes(child_events)
 
     @property
     def released_credits(self):
@@ -2195,6 +2189,42 @@ class Event(TendenciBaseModel):
             end_dt__lte=self.end_dt,
         )
 
+    def sub_event_datetimes(self, child_events=None):
+        """Returns list of start_dt for available sub events"""
+        datetimes = dict()
+        child_events = child_events or self.child_events
+
+        for event in child_events:
+            if event.start_dt not in datetimes:
+                datetimes[event.start_dt] = event.end_dt
+            else:
+                datetimes[event.start_dt] = max(datetimes[event.start_dt], event.end_dt)
+
+        return datetimes
+
+    @property
+    def sub_events_by_datetime(self):
+        """Used to create grid of sub events by datetime"""
+        sub_events_by_datetime = OrderedDict()
+        sub_event_datetimes = self.sub_event_datetimes()
+
+        for start_dt in sub_event_datetimes.keys():
+            child_events = self.child_events.filter(start_dt=start_dt)
+            if not child_events.exists():
+                continue
+
+            day = start_dt.date()
+            start_time = start_dt.strftime("%-I:%M %p")
+            end_time = sub_event_datetimes[start_dt].strftime("%-I:%M %p")
+            time_slot = f'{start_time} - {end_time}'
+
+            if day not in sub_events_by_datetime:
+                sub_events_by_datetime[day] = OrderedDict()
+
+            sub_events_by_datetime[day][time_slot] = child_events
+
+        return sub_events_by_datetime
+
     def get_child_events_by_permission(self, user=None, edit=False):
         action = 'edit' if edit else 'view'
 
@@ -2705,7 +2735,11 @@ class Event(TendenciBaseModel):
         if payment_required:
             params['registration__invoice__balance'] = 0
 
-        spots_taken = Registrant.objects.filter(**params).count()
+        if self.parent and self.nested_events_enabled:
+            spots_taken = RegistrantChildEvent.objects.filter(
+                child_event_id=self.pk, registrant__cancel_dt__isnull=True).count()
+        else:
+            spots_taken = Registrant.objects.filter(**params).count()
 
         if limit == 0:  # no limit
             return (spots_taken, -1)
@@ -2730,6 +2764,15 @@ class Event(TendenciBaseModel):
         return int(limit)
 
     @property
+    def total_spots(self):
+        """Total spots alloted for Event"""
+        limit = self.get_limit()
+        if not limit:
+            return ' _'
+
+        return limit
+
+    @property
     def total_registered(self):
         """Total registered for this Event"""
         # If this is a child event, registration information is in RegistrationChildEvent
@@ -2737,7 +2780,21 @@ class Event(TendenciBaseModel):
             return RegistrantChildEvent.objects.filter(
                 child_event_id=self.pk, registrant__cancel_dt__isnull=True).count()
 
-        return self.registrants_count({'cancel_dt__isnull': True})
+        payment_required = self.registration_configuration.payment_required
+        params = {'cancel_dt__isnull': True}
+        if payment_required:
+            params['registration__invoice__balance'] = 0
+
+        return self.registrants_count(params)
+
+    @property
+    def spots_remaining(self):
+        """Spots available for registration (display unlimited as '_')"""
+        _, spots_remaining = self.get_spots_status()
+        if spots_remaining < 0:
+            return ' _'
+
+        return spots_remaining
 
     @property
     def at_capacity(self):
@@ -2747,6 +2804,23 @@ class Event(TendenciBaseModel):
             return False
 
         return self.total_registered >= limit
+
+    @property
+    def total_checked_in(self):
+        """Total registrants checked into an Event"""
+        if self.parent and self.nested_events_enabled:
+            return RegistrantChildEvent.objects.filter(
+                child_event_id=self.pk, checked_in=True).count()
+
+        return self.registrants_count({'checked_in': True})
+
+    @property
+    def total_checked_out(self):
+        total_registered = self.total_registered
+        if not total_registered:
+            return 0
+
+        return total_registered - self.total_checked_in
 
     @classmethod
     def make_slug(self, length=7):
