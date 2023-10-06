@@ -15,9 +15,17 @@
     <link rel="stylesheet" href="{% static 'css/events-roster.css' %}">
     <link rel="stylesheet" media="screen" href="{% static 'css/events-roster-screen.css' %}">
     <link rel="stylesheet" media="print" href="{% static 'css/events-roster-print.css' %}">
+
+    <style>
+        .t-print .hide-this {
+            width: 100%;
+        }
+    </style>
     {% endblock %}
 
     {% block content %}
+    <div class="t-print">
+        <div class="hide-this">
     <div class='back-button'>
         <a href="{% url 'event.sub_event_check_in' event.parent.pk %}">&laquo; {% trans "Back to sub-events" %}</a>
     </div>
@@ -30,8 +38,18 @@
             {% if not event.all_day %}
                 {{ event.start_dt|date:"fA" }} - {{ event.end_dt|date:"fA" }}{% endif %}</div>
     </div>
-
+    <div class="print-badges">
+        <ul class="list-unstyled t-meta-data">
+            <li class="pull-right">
+                <a class="t-meta-print-link" href="#">
+                    <span class="glyphicon glyphicon-print"></span>
+                    {% trans "Print" %}
+                </a>
+            </li>
+        </ul>
+    </div>
     <div class="hr"></div>
+    </div>
 
     <center>
         <table id="registrant-table">
@@ -42,7 +60,7 @@
                 <th width="8%" title="{% trans "Registrant ID" %}">{% trans "Registrant" %}</th>
                 <th width="8%" title="{% trans "Registration ID" %}">{% trans "Registration" %}</th>
                 <th width="12%" title="{% trans "Meeting Check In Date/Time" %}">{% trans "Meeting Check In Date/Time" %}</th>
-                <th width="12%" title="{% trans "Check In Date/Time" %}">{% trans "Check In Date/Time" %}</th>
+                <th width="12%" title="{% trans "Session Check In Date/Time" %}">{% trans "Session Check In Date/Time" %}</th>
                 <th width="6%" class='attended' title="{% trans "Check In" %}">{% trans "Check In" %}</th>
                 <th>&nbsp;&nbsp;</th>
             </tr>
@@ -94,8 +112,8 @@
                      {{ registrant.checked_in_dt|date:'m/d h:iA' }}
                 </div>
             </td>
-            <td> <!-- Check In datetime -->
-                <div class="attended-checkedin-text" title="Check In Datetime">
+            <td> <!-- Session Check In datetime -->
+                <div class="attended-checkedin-text" title="Session Check In Datetime">
                      {{ child_event.checked_in_dt|date:'m/d h:iA' }}
                 </div>
 
@@ -138,19 +156,24 @@
             <tr class="bottom-row">
                 <td></td>
                 <td>{% trans "Total Registrants: " %}{{ registrants.count }}</td>
+                <td>{{ event.title }}</td>
             </tr>
         </table>
     </center>
     </div>
 
     <div style="clear:both; height:10px;"></div>
-
+ </div>
 {% endblock %}
 
 {% block extra_body %}
     {{ block.super }}
     <script>
         $(document).ready(function () {
+            $('.t-meta-print-link').on("click", function() {
+                window.print();
+            });
+            
             $('.attended-checkbox input[type=checkbox]').on("change", function () {
                 var $this = $(this);
                 var id = $this.data('reg');

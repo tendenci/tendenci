@@ -56,7 +56,8 @@
         {% for event in events %}
         <div class="col-md-4">
           <a href="{% url 'event.edit' event.pk %}">{{ event.title }}</a> <br />
-          {% trans "Location:" %} {{ event.location.name }} <br />
+          {% if event.event_code %}<b>Session {{ event.event_code }}</b><br />{% endif %}
+          {% trans "Location:" %} {{ event.place.name }} <br />
           {% trans "Available:" %} {{ event.total_spots }} <br />
           {% trans "Registered:" %} <a href="{% url 'event.registrant.sub_event.roster'  event.pk %}">{{ event.total_registered }}</a> <br />
           {% trans "Remaining:" %} {{ event.spots_remaining }} <br />
