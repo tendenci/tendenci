@@ -2113,7 +2113,7 @@ class ChildEventRegistrationForm(forms.Form):
 
         for index, start_dt in enumerate(sub_event_datetimes.keys()):
             child_events = upcoming_child_events.filter(start_dt=start_dt)
-            choices = [(event.pk, event.title) for event in child_events if not event.at_capacity]
+            choices = [(event.pk, f'{event.event_code} - {event.title}' if event.event_code else event.title) for event in child_events if not event.at_capacity]
             # Check if registrant already has selection. If so, make sure it's in choices
             selection = None
             current_child_event = registrant.child_events.filter(
