@@ -382,10 +382,9 @@ class RegistrationConfiguration(models.Model):
         Return boolean.
         """
         has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
-        has_account = get_setting('site', 'global', 'merchantaccount') != ''
-        has_api = any([settings.MERCHANT_LOGIN, settings.PAYPAL_MERCHANT_LOGIN])
+        has_account = get_setting('site', 'global', 'merchantaccount') not in ('asdf asdf asdf', '')
 
-        return all([has_method, has_account, has_api])
+        return all([has_method, has_account])
 
     def get_cancellation_fee(self, amount):
         """Get cancellation fee"""
@@ -968,7 +967,10 @@ class Registration(models.Model):
         """
         config = self.event.registration_configuration
 
-        balance = self.invoice.balance
+        if self.invoice:
+            balance = self.invoice.balance
+        else:
+            balance = 0
         if self.reg_conf_price is None or self.reg_conf_price.payment_required is None:
             payment_required = config.payment_required
         else:
