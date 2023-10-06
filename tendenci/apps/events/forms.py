@@ -2769,6 +2769,20 @@ class UserMemberRegBaseForm(FormControlWidgetMixin, forms.Form):
             widget=forms.RadioSelect(),)
         self.fields['pricing'].label_from_instance = _get_price_labels
         self.fields['pricing'].empty_label = None
+        self.fields['override'] = forms.BooleanField(label=_("Admin Price Override?"),
+                                  required=False)
+        self.fields['override_price'] = forms.DecimalField(label=_("Override Price"),
+                                            max_digits=10,
+                                            decimal_places=2,
+                                            required=False)
+
+    def clean_override_price(self):
+        override = self.cleaned_data['override']
+        override_price = self.cleaned_data['override_price']
+        if override:
+            if (override_price is None) or override_price < 0:
+                raise forms.ValidationError(_('Override price must be a positive number.'))
+        return override_price
 
 
 class MemberRegistrationForm(UserMemberRegBaseForm):
