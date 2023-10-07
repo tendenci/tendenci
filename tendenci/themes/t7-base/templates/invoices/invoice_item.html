@@ -14,8 +14,8 @@
     {% endif %}
   </td>
   <!-- No. -->
-  <td>
-    <a href="{% url "invoice.view" invoice.pk %}" class="links">{{ invoice.pk }}</a>
+  <td nowrap>
+    <a href="{% url "invoice.view" invoice.pk %}" class="links">{{ invoice.pk }}4567</a>
   </td>
   <!-- User -->
   <td>
@@ -24,6 +24,8 @@
    {% elif invoice.bill_to %}
    		{{ invoice.bill_to }}
    {% endif %}
+  </td>
+  <td>
    ({{ invoice.bill_to_email }})
   </td>
 
