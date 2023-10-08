@@ -90,12 +90,13 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
     """
     app = get_object_or_404(MembershipApp, pk=app_id)
 
+    can_change_app = has_perm(request.user, 'memberships.change_membershipapp', app)
     if not (has_perm(request.user, 'memberships.view_membershipdefault') or \
-            has_perm(request.user, 'memberships.change_membershipapp', app)):
+            can_change_app):
         raise Http403
 
     # check if you has the change perm
-    has_change_perm = has_perm(request.user, 'memberships.change_membershipdefault')
+    has_change_perm = has_perm(request.user, 'memberships.change_membershipdefault') or can_change_app
 
     memberships = MembershipDefault.objects.filter(app_id=app.id
                                     ).exclude(status_detail='archive')
