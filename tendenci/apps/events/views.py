@@ -4210,7 +4210,7 @@ def registrant_check_in(request):
             if not child_event:
                 [registrant] = Registrant.objects.filter(id=registrant_id)[:1] or [None]
             else:
-                 registrant = RegistrantChildEvent.objects.filter(pk=child_event).first()
+                registrant = RegistrantChildEvent.objects.filter(pk=child_event).first()
 
             if registrant:
                 if checked_in == 'true':
