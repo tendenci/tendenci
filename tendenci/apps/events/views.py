@@ -2238,11 +2238,17 @@ def register_child_events(request, registration_id, guid=None,  template_name="e
     if not any(perms):
         raise Http403
 
+    # if not paid and payment is required, redirect to payment
+    if registration.status() == 'payment-required' and registration.event.registration_configuration.can_pay_online:
+        return HttpResponseRedirect(reverse('payment.pay_online', args=(registration.invoice.id, registration.invoice.guid)))
+    
+    
+    redirect_url = reverse('event.registration_confirmation',
+                                       args=(registration.event.id,
+                                             registration.registrant.hash))
+
     has_error = False
     is_admin = request.user.profile.is_superuser
-    default_redirect_url = reverse('event.registration_confirmation',
-                                       args=(registration.event.id, registration.registrant.hash)
-                                       )
 
     if request.POST:
         for registrant in registration.registrant_set.all():
@@ -2264,11 +2270,7 @@ def register_child_events(request, registration_id, guid=None,  template_name="e
                 messages.set_level(request, messages.ERROR)
                 messages.add_message(request, messages.ERROR, e.args[0])
 
-        redirect_url = handle_registration_payment(registration)
-    
         if not has_error:
-            if not redirect_url:
-                redirect_url = default_redirect_url
             return HttpResponseRedirect(redirect_url)
 
     forms = list()
@@ -2281,15 +2283,17 @@ def register_child_events(request, registration_id, guid=None,  template_name="e
             forms.append(form)
 
     if not len(forms):
-        redirect_url = handle_registration_payment(registration, redirect_url_only=False)
-        if redirect_url:
-            return HttpResponseRedirect(redirect_url)
+        return HttpResponseRedirect(redirect_url)
 
+    payment_required = registration.event.registration_configuration.payment_required and registration.not_paid
     return render_to_resp(
         request=request, template_name=template_name, context={
             'forms': forms,
             'registrants': registration.registrant_set.all(),
-            'use_full_dates': request.user.is_superuser
+            'use_full_dates': request.user.is_superuser,
+            'registration': registration,
+            'payment_required': payment_required,
+            'event': registration.event
         })
 
 @is_enabled('events')
@@ -2507,19 +2511,19 @@ def register(request, event_id=0,
         initial = {}
         if request.user.is_authenticated:
             profile = request.user.profile
-
-            initial = {'first_name':request.user.first_name,
-                        'last_name':request.user.last_name,
-                        'email':request.user.email,}
-            if profile:
-                initial.update({'company_name': profile.company,
-                                'phone':profile.phone,
-                                'address': profile.address,
-                                'city': profile.city,
-                                'state': profile.state,
-                                'zip': profile.zipcode,
-                                'country': profile.country,
-                                'position_title': profile.position_title})
+            if not event.is_registrant_user(request.user):
+                initial = {'first_name':request.user.first_name,
+                            'last_name':request.user.last_name,
+                            'email':request.user.email,}
+                if profile:
+                    initial.update({'company_name': profile.company,
+                                    'phone':profile.phone,
+                                    'address': profile.address,
+                                    'city': profile.city,
+                                    'state': profile.state,
+                                    'zip': profile.zipcode,
+                                    'country': profile.country,
+                                    'position_title': profile.position_title})
 
         params.update({"initial": [initial]})
 
@@ -2626,19 +2630,21 @@ def register(request, event_id=0,
                             else:
                                 registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 
+                        # log an event
+                        EventLog.objects.log(instance=event)
+
+                        redirect = handle_registration_payment(reg8n)
+                        if redirect:
+                            # redirect to online payment
+                            return HttpResponseRedirect(redirect)
+                        
                         if event.nested_events_enabled and event.has_child_events:
                             if request.user.is_authenticated:
                                 args=(reg8n.pk,)
                             else:
                                 args=(reg8n.pk, reg8n.guid)
+                            # redirect to child events registration
                             return HttpResponseRedirect(reverse('event.register_child_events', args=args))
-
-                        redirect = handle_registration_payment(reg8n)
-                        if redirect:
-                            return HttpResponseRedirect(redirect)
-
-                        # log an event
-                        EventLog.objects.log(instance=event)
 
                     else:
                         msg_string = 'You were already registered on %s' % date_filter(reg8n.create_dt)
@@ -2721,6 +2727,7 @@ def register(request, event_id=0,
     event_days = event.full_event_days if request.user.profile.is_superuser else event.days
     return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
+        'reg_conf': reg_conf,
         'event_price': event_price,
         'pricing_dates_map': json.dumps(pricing_dates_map),
         'event_days_count': len(event_days) + 1 if event_days else 0,
@@ -3939,14 +3946,19 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     if sort_type == 'desc':
         sort_field = '-%s' % sort_field
 
-    if not roster_view:  # default to total page
-        roster_view = 'total'
+    payment_required = event.registration_configuration.payment_required
+    if payment_required:
+        # if payment is requird, they don't want to see those not paid
+        roster_view = 'paid'
+    else:
+        if not roster_view:  # default to total page
+            roster_view = 'total'
 
     # paid or non-paid or total
     registrations = Registration.objects.filter(event=event, canceled=False)
 
     if roster_view == 'paid':
-        registrations = registrations.filter(invoice__balance__lte=0)
+        registrations = registrations.filter(Q(invoice__balance__lte=0) | Q(invoice__isnull=True))
     elif roster_view == 'non-paid':
         registrations = registrations.filter(invoice__balance__gt=0)
 
@@ -4135,7 +4147,8 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         'has_addons': has_addons,
         'discount_available': discount_available,
         'addon_total_sum': addon_total_sum,
-        'total_checked_in': total_checked_in})
+        'total_checked_in': total_checked_in,
+        'payment_required': payment_required})
 
 
 @is_enabled('events')
@@ -4279,9 +4292,14 @@ def event_badges(request, event_id=0, template_name='events/badges.html'):
     registrations = event.registration_set.all()
     registrants = list()
     current_batch = list()
+    payment_required = event.registration_configuration.payment_required 
 
     for registration in registrations:
         for registrant in registration.registrant_set.filter(cancel_dt__isnull=True):
+            if payment_required and registration.not_paid():
+                # they're not paid, skip
+                continue
+            
             has_max_badges_per_page = len(current_batch) == 6
 
             if not has_max_badges_per_page:
@@ -4309,6 +4327,14 @@ def registrant_badge(request, registrant_id=0, template_name='events/badges.html
 
     if not settings.USE_BADGES:
         raise Http404
+    
+    if registrant.cancel_dt:
+        raise Http404
+    
+    event = registrant.registration.event
+
+    if event.registration_configuration.payment_required and registrant.registration.not_paid():
+        raise Http404
 
     if not has_perm(request.user,'registrants.view_registrant', registrant):
         if registrant.user != request.user:
@@ -4323,7 +4349,7 @@ def registrant_badge(request, registrant_id=0, template_name='events/badges.html
     return render_to_resp(request=request, template_name=template_name,
         context={
             'registrants': registrants,
-            'event': registrant.registration.event,
+            'event': event,
         })
 
 

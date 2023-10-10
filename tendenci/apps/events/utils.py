@@ -1952,9 +1952,11 @@ def create_member_registration(user, event, form, for_member=False):
     from tendenci.apps.profiles.models import Profile
 
     pricing = form.cleaned_data['pricing']
+    override = form.cleaned_data.get('override', False)
+    override_price = form.cleaned_data.get('override_price')
     reg_attrs = {'event': event,
                  'reg_conf_price': pricing,
-                 'amount_paid': pricing.price,
+                 'amount_paid': pricing.price if not override else override_price,
                  'creator': user,
                  'owner': user}
 
@@ -1973,14 +1975,18 @@ def create_member_registration(user, event, form, for_member=False):
             exists = event.registrants().filter(user=user)
             if not exists:
                 registration = Registration.objects.create(**reg_attrs)
+                if not override_price:
+                    override_price = Decimal(0)
                 registrant_attrs = {'registration': registration,
                                     'user': user,
                                     'first_name': user.first_name,
                                     'last_name': user.last_name,
                                     'email': user.email,
                                     'is_primary': True,
-                                    'amount': pricing.price,
-                                    'pricing': pricing}
+                                    'amount': pricing.price if not override else override_price,
+                                    'pricing': pricing,
+                                    'override': override,
+                                    'override_price': override_price}
                 Registrant.objects.create(**registrant_attrs)
                 registration.save_invoice()
                 registration_ids.append(registration.id)
