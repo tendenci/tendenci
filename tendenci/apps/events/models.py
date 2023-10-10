@@ -2205,10 +2205,8 @@ class Event(TendenciBaseModel):
     @property
     def sub_events_by_datetime(self):
         """Used to create grid of sub events by datetime"""
-        from pprint import pprint
         sub_events_by_datetime = OrderedDict()
         sub_event_datetimes = self.sub_event_datetimes()
-        pprint(sub_event_datetimes)
 
         for start_dt in sub_event_datetimes.keys():
             child_events = self.child_events.filter(start_dt=start_dt)
@@ -2225,7 +2223,6 @@ class Event(TendenciBaseModel):
 
             sub_events_by_datetime[day][time_slot] = child_events
         
-        #pprint(sub_events_by_datetime)
         return sub_events_by_datetime
 
     def get_child_events_by_permission(self, user=None, edit=False):
