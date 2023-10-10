@@ -617,7 +617,7 @@ def sub_event_check_in(request, parent_event_id, template_name="events/sub-event
     event = get_object_or_404(Event.objects.get_all(), pk=parent_event_id)
 
     if not request.user.profile.is_superuser:
-        return Http403
+        raise Http403
 
     return render_to_resp(request=request, template_name=template_name,
                           context={'parent': event, 'sub_events': event.sub_events_by_datetime})
@@ -629,7 +629,7 @@ def sub_event_roster(request, event_id, template_name="events/registrants/sub-ev
     event = get_object_or_404(Event.objects.get_all(), pk=event_id)
 
     if not request.user.profile.is_superuser:
-        return Http403
+        raise Http403
 
     checked_in_or_out = request.GET.get('q', None)
     params = {
