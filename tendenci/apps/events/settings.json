@@ -1429,7 +1429,7 @@
     },
     {
         "default_value": "true",
-        "description": "If true, it allows users who have already registered to register an event again.",
+        "description": "If true, it allows users who have already registered to register an event again. Otherwise, they can only register once for themselves.",
         "data_type": "boolean",
         "update_dt": "2023-09-11 14:00:00",
         "input_type": "select",

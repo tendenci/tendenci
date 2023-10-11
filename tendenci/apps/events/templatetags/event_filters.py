@@ -22,5 +22,5 @@ def is_registrant(event, user):
     """
     if hasattr(user, 'registrant_set'):
         return user.registrant_set.filter(
-            registration__event=event).exists()
+            registration__event=event, cancel_dt__isnull=True).exists()
     return False

@@ -176,6 +176,7 @@
                                 <a href="{{ app_object.parent.get_absolute_url }}">{% trans "View Parent Event" %}</a>
                             </span>
                         </li>
+
                         {% if app_object.zoom_credits_ready %}
                         <li class="content-item">
                             <span class="app-name">
@@ -183,6 +184,13 @@
                             </span>
                         </li>
                         {% endif %}
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.sub_event_check_in' app_object.parent.pk %}">{% trans "Sesssion Check In Grid" %}</a>
+                            </span>
+                        </li>
+
                         {% if app_object.events_with_credits %}
                         <li class="content-item">
                             <span class="app-name">
@@ -193,6 +201,13 @@
                         {% endif %}
 
                         {% if app_object.nested_events_enabled and not app_object.parent %}
+                        {% if app_object.has_child_events %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.sub_event_check_in' app_object.pk %}">{% trans "Sesssion Check In Grid" %}</a>
+                            </span>
+                        </li>
+                        {% endif %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'event.add_child' app_object.pk %}">{% trans "Add Sub-Event" %}</a>

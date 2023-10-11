@@ -724,6 +724,25 @@ class ChapterMembership(TendenciBaseModel):
             return self.chapter.external_payment_link
         return ''
 
+    @property
+    def national_membership(self):
+        [membership] = self.user.membershipdefault_set.exclude(
+                    status_detail='archive').order_by('-create_dt')[:1] or [None]
+        return membership
+
+    @property
+    def national_membership_type(self):
+        membership = self.national_membership
+        if membership:
+            return membership.membership_type.name
+        return ''
+    
+    @property
+    def national_membership_invoice(self):
+        membership = self.national_membership
+        if membership:
+            return membership.get_invoice()
+
     def create_member_number(self):
         #TODO: Decide how member numbers should be generated for chapter members
         return str(self.id)

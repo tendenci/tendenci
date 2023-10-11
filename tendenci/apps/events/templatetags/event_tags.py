@@ -42,9 +42,9 @@ def credits_form_display(context, event, credit_forms, user):
 
 
 @register.inclusion_tag("events/child_events.html", takes_context=True)
-def child_events_display(context, event, edit=False):
+def child_events_display(context, event, user=None, edit=False):
     context.update({
-        "child_events": event.child_events,
+        "child_events": event.get_child_events_by_permission(user, edit),
         "edit": edit,
     })
     return context
@@ -167,7 +167,7 @@ def registration_pricing_and_button(context, event, user):
     # check if user has already registered
     if hasattr(user, 'registrant_set'):
         registrants = user.registrant_set.filter(
-            registration__event=event)
+            registration__event=event).filter(cancel_dt__isnull=True)
         registrant_count = registrants.count()
 
         is_registrant = registrant_count > 0

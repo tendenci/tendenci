@@ -389,5 +389,39 @@
         "scope_category": "users",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, the member_number_2 field will show on profile add, edit and view.",
+        "data_type": "boolean",
+        "update_dt": "2023-09-20 21:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "showmembernumber2",
+        "value": "false",
+        "label": "Show Member Number 2",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "users",
+        "store": true,
+        "updated_by": ""
+    },
+    {
+        "default_value": "",
+        "description": "The label for the member_number_2 field.",
+        "data_type": "string",
+        "update_dt": "2023-09-20 21:00:00",
+        "input_type": "text",
+        "client_editable": false,
+        "name": "membernumber2label",
+        "value": "Member Number 2",
+        "label": "Member Number 2 Label",
+        "input_value": " ",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "users",
+        "store": true,
+        "updated_by": ""
     }
 ]

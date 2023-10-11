@@ -77,6 +77,8 @@ h3{
 					<th><input type="checkbox" id="select_members_all" class="action-select"></th>
 					<th>View</th>
 					<th>Edit</th>
+					<th>{% trans "Total Amount" %}</th>
+					<th nowrap>{% trans "Dues/Balance" %}</th>
 					{% endif %}
 					{% for app_field in app_fields %}
 						<th nowrap>{{ app_field.label }}</th>
@@ -86,6 +88,9 @@ h3{
 					<th nowrap>{% trans "Renew Date" %}</th>
 					<th nowrap>{% trans "Expire Date" %}</th>
 					<th nowrap>{% trans "Status Detail" %}</th>
+					{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+					<th>{% trans "Member of chapters" %}</th>
+					{% endif %}
 					</tr>
 			
 					{% for membership in memberships %}
@@ -94,6 +99,19 @@ h3{
 						<td><input type="checkbox" name="selected_members" value="{{ membership.id }}" class="action-select"></td>
 						<td><a href="{% url "membership.details" membership.id  %}"><img src="{% static 'images/icons/external_16x16.png' %}" alt="View membership: {{ membership }}"></a></td>
 						<td><a href="{% url "membership_default.edit" membership.id  %}">{% trans "Edit" %}</a></td>
+						{% with membership.get_invoice as invoice %}
+						{% if invoice and not invoice.is_void %}
+						<td nowrap>
+                        {{ invoice.total|format_currency }}
+                    	</td>
+						<td nowrap>
+                        {{ invoice.balance|format_currency }}
+                    	</td>
+						{% else %}
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						{% endif %}
+                    	{% endwith %}
 						{% endif %}
 						{% render_member_row membership app_fields %}
 						<td nowrap>{{ membership.create_dt|date:"N j, Y" }}</td>
@@ -101,6 +119,11 @@ h3{
 						<td nowrap>{% if membership.renew_dt %}{{ membership.renew_dt|date:"N j, Y" }}{% endif %}</td>
 						<td nowrap>{% if membership.expire_dt %}{{ membership.expire_dt|date:"N j, Y" }}{% endif %}</td>
 						<td nowrap>{{ membership.status_detail }}</td>
+						{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+						{% with membership.user.profile.names_of_chapters as chapter_names %}
+						<td>{{ chapter_names }}</td>
+						{% endwith %}
+						{% endif %}
 					</tr>
 					{% endfor %}
 				</table>

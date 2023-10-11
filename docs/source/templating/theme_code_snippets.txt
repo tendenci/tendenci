@@ -18,7 +18,7 @@ Then add the following code snippet where you want to place your event feed:
     {% list_events as events_list limit=3 %}
         <ul class="list-unstyled">
            {% for event in events_list %}
-           <li><a href="{{ event.get_absolute_url }}"><strong>{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</strong><br>
+           <li><a href="{{ event.get_absolute_url }}"><strong>{{ event.title }}</strong><br>
              <em>{{ event.start_dt|date:"F j, Y - P" }}</em>
           </a></li>
            {% empty %}

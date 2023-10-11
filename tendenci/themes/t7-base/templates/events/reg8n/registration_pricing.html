@@ -62,8 +62,17 @@
         </li>
         {% endfor %}
       </ul>
+      {% if not MODULE_EVENTS_CANREGISTERAGAIN and registrant and not user.is_superuser %}
+       	{% if registrant.reg8n_status == 'payment-required' and event.registration_configuration.can_pay_online %}
+       	<a class="btn btn-lg btn-warning" href="{% url "payment.pay_online" registrant.registration.invoice.pk registrant.registration.invoice.guid %}">
+              {% trans "Complete registration!" %}</a>
+       	{% else %}
+      	<a class="btn btn-success" href="{% url 'event.registration_confirmation' event.id registrant.registration.id %}">{% trans "View/Update My Registration" %}</a>
+      	{% endif %}
+      {% else %}
       <meta itemprop="availability" content="Register now!">
       <input class="btn btn-success" {% if event.status_detail == "template" %}disabled="disabled"{% endif %} type="submit" name="submit" value="{% trans 'Register' %}" />
+	 {% endif %}
       {% endif %}
       
       {% if event.registration_configuration.has_member_price %}
@@ -75,20 +84,16 @@
     </form>
     
     {% if is_registrant %}
-    <div id="is-registrant"><a href="{% url "event.registrant.search" event.pk %}?q={{ user.email }}">
+    <div id="is-registrant"><a href="{% url "profile" user.username %}">
         {% trans "You have already registered" %}</a>
+        {% if request.user.is_superuser %}
+    	<br />{% trans "Admin: the Register button above allow you to register somebody else." %}
+    	{% endif %}
+        {% if not MODULE_EVENTS_CANREGISTERAGAIN and registrant and user.is_superuser %}
+	     <br /> <a href="{% url 'event.registration_confirmation' event.id registrant.registration.id %}">{% trans "View/Update My Registration" %}</a>
+	    {% endif %}
     </div>
-    {% if event.can_cancel%}
-        {% if registrant %}
-            <div>
-              <a href="{% url 'event.cancel_registrant' event.pk registrant.pk %}">
-                {% trans "Cancel" %}
-              </a>
-            </div>
-        {% else %}
-            <div> <a href="{% url 'profile' user.username %}">{% trans "Cancel" %}</a></div>
-        {% endif %}
-    {% endif %}
+    
     {% endif %}
     
   </div>

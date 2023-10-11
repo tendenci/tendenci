@@ -1,0 +1,76 @@
+{% extends "events/base-wide.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{{ event.title }} {{ event.start_dt|date:"M j, Y" }} - {% trans "Sessions and Times" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+ <link rel="stylesheet" media="print" href="{% static 'css/events-sessions-list-print.css' %}">
+<style>
+ #sessions-wrap .sub-event-row{
+ 	padding-bottom: 5px;
+ 	border-bottom: 1px solid #dfdfdf;
+ 	margin-bottom: 1em;
+ }
+ .glyphicon-ok-sign, .glyphicon-ok{
+		color: #42AD3F !important;
+ }
+ .sub-event-time{
+ 	font-weight: bold;
+ }
+ #sessions-wrap a, .t a{
+  text-decoration: none !important;
+ }
+ 
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t"> 
+  <h1><a href="{% url 'event' event.id %}">{{ event.title }}</a></h1>
+</div>
+
+<div>
+{% if request.user == registrant.user %}
+	{% trans "My Schedule" %}
+{% else %}
+	{% trans "Schedule for: " %}<strong>{{ registrant.user.get_full_name }}</strong>
+{% endif %}
+&nbsp;&nbsp;<a class="edit-btn" href="{% url "event.sessions_edit" registrant.pk %}"><span class="glyphicon glyphicon-pencil"></span>{% trans 'Edit' %}</a>
+<div onclick="window.print()" class="pull-right print-link" style="cursor: pointer;"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</div>
+</div>
+<div id="sessions-wrap">
+ {% for attend_dt in attend_dates %}
+ 	<h3>{{ attend_dt }}</h3>
+	 {% for reg_child_event in reg_child_events %}
+	 	{% if attend_dt == reg_child_event.child_event.start_dt.date %}
+	 	<div class="sub-event-row">
+	 		<h4><a href="{% url 'event' reg_child_event.child_event.id %}">{{ reg_child_event.child_event.title }}</a></h4>
+	 		{% with reg_child_event.child_event.speakers as speakers %}
+	 		{% if speakers %}
+	 			{% trans "Speaker(s):" %} 
+	 			{% for speaker in speakers %}{{ speaker.name }}{% if forloop.parentloop and not forloop.last %}, {% endif %}{% endfor %}
+	 		{% endif %}
+	 		{% endwith %}
+	 		<div>
+	 		<span class="sub-event-time">{{ reg_child_event.child_event.start_dt|date:'h:i A' }} - {{ reg_child_event.child_event.end_dt|date:'h:i A' }}</span> {{ event.timezone.zone }}
+			&nbsp;&nbsp;{% if reg_child_event.checked_in %}<span title="checked in" class="glyphicon glyphicon-ok-sign"></span>{% endif %}
+	 		</div>
+	 	</div>
+	 	{% endif %}
+	 {% endfor %}
+ {% endfor %}
+</div>
+
+{% if event.image %}
+     <div>
+       <div class="photo">
+         <img class="img-responsive" itemprop="image" src="{% image_url event.image %}" title="{{ event.title|truncatechars:123 }}" alt="{{ event.title|truncatechars:123 }}" />
+       </div>
+     </div>
+ {% endif %}   
+  
+{% endblock %}

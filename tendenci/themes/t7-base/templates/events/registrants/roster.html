@@ -356,6 +356,7 @@
             <div>{% trans "Showing paid and non-paid registrants." %}</div>
         {% endif %}
 
+		{% if not payment_required %}
         <div>
             <a href="{% url "event.registrant.roster.paid" event.pk %}">{% blocktrans %}Show only
                 <strong>paid</strong>{% endblocktrans %}</a>
@@ -364,6 +365,7 @@
             <a href="{% url "event.registrant.roster.total" event.pk %}">{% blocktrans %}Show
                 <strong>total</strong>{% endblocktrans %}</a>
         </div>
+        {% endif %}
     </div>
     {% if use_badges %}
     <div class="print-badges">

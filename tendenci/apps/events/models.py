@@ -6,6 +6,7 @@ import json
 import operator
 import pytz
 from model_utils import FieldTracker
+from collections import OrderedDict
 from datetime import datetime, timedelta
 from dateutil.parser import parse
 from functools import reduce
@@ -33,7 +34,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.perms.utils import get_notice_recipients, get_query_filters
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
@@ -522,10 +523,9 @@ class RegistrationConfiguration(models.Model):
         Return boolean.
         """
         has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
-        has_account = get_setting('site', 'global', 'merchantaccount') != ''
-        has_api = any([settings.MERCHANT_LOGIN, settings.PAYPAL_MERCHANT_LOGIN])
+        has_account = get_setting('site', 'global', 'merchantaccount') not in ('asdf asdf asdf', '')
 
-        return all([has_method, has_account, has_api])
+        return all([has_method, has_account])
 
     def get_cancellation_fee(self, amount):
         """Get cancellation fee"""
@@ -759,9 +759,7 @@ class RegConfPricing(OrderingBaseModel):
                             }
             else:
                 # user is a member
-                filter_or = {'allow_anonymous': True,
-                             'allow_user': True,
-                             'allow_member': True}
+                filter_or = {'allow_member': True}
 
         else:
             filter_or = {'allow_anonymous': True,
@@ -885,8 +883,11 @@ class Registration(models.Model):
 
         for registrant in self.registrant_set.filter(cancel_dt__isnull=True):
             return (
-                not registrant.registration_closed and
-                registrant.event.upcoming_child_events.exists()
+                not registrant.registration_closed and (
+                    (registrant.user and registrant.user.profile.is_superuser and
+                    registrant.event.child_events.exists()) or
+                    registrant.event.upcoming_child_events.exists()
+                )
             )
 
         return False
@@ -921,6 +922,13 @@ class Registration(models.Model):
             if self.invoice.create_dt + timedelta(days=1) < datetime.now():
                 return True
         return False
+
+    def not_paid(self):
+        return self.invoice and self.invoice.balance > 0
+    
+    def is_credit_card_payment(self):
+        return self.payment_method and \
+            (self.payment_method.machine_name).lower() == 'credit-card'
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
@@ -1100,7 +1108,10 @@ class Registration(models.Model):
         """
         config = self.event.registration_configuration
 
-        balance = self.invoice.balance
+        if self.invoice:
+            balance = self.invoice.balance
+        else:
+            balance = 0
         if self.reg_conf_price is None or self.reg_conf_price.payment_required is None:
             payment_required = config.payment_required
         else:
@@ -1393,15 +1404,18 @@ class Registrant(models.Model):
     def upcoming_event_days(self):
         """Number of days upcoming covered by pricing"""
         if self.pricing and self.pricing.days_price_covers:
-            return self.pricing.days_price_covers - len(self.past_attendance_dates)
+            past_dates_count = len(self.past_attendance_dates)
+            if self.user and self.user.profile.is_superuser:
+                past_dates_count = 0
+            return self.pricing.days_price_covers - past_dates_count
         return 0
 
     @property
     def available_child_events(self):
         """Child events occurring on the dates Registrant is attending"""
-        if not self.event.nested_events_enabled:
+        if not self.event.nested_events_enabled or not self.attendance_dates:
             return Event.objects.none()
-
+            
         return self.event.child_events.filter(start_dt__date__in=self.attendance_dates)
 
     @property
@@ -1430,17 +1444,11 @@ class Registrant(models.Model):
             self.event.has_child_events
         )
 
-    @property
-    def sub_event_datetimes(self):
+    def sub_event_datetimes(self, is_admin=False):
         """Returns list of start_dt for available sub events"""
-        datetimes = dict()
-        for event in self.available_child_events:
-            if event.start_dt not in datetimes:
-                datetimes[event.start_dt] = event.end_dt
-            else:
-                datetimes[event.start_dt] = max(datetimes[event.start_dt], event.end_dt)
+        child_events = self.event.child_events if is_admin else self.available_child_events
 
-        return datetimes
+        return self.event.sub_event_datetimes(child_events)
 
     @property
     def released_credits(self):
@@ -1580,11 +1588,14 @@ class Registrant(models.Model):
 
         return self.membership.license_number
 
-    def register_child_events(self, child_event_pks):
+    def register_child_events(self, child_event_pks, is_admin=False):
         """Register for child event"""
+        params = dict()
+        if not is_admin:
+            # Remove past events from deletion list if not an admin
+            params = {'child_event__start_dt__date__gt': datetime.now().date()}
         # Remove any upcoming records that have been updated to 'not attending'
-        self.registrantchildevent_set.filter(
-            child_event__start_dt__date__gt=datetime.now().date()).exclude(
+        self.registrantchildevent_set.filter(**params).exclude(
             child_event_id__in=child_event_pks,
         ).delete()
 
@@ -1884,10 +1895,7 @@ class Registrant(models.Model):
         else:
             balance = 0
 
-        if self.pricing is None or self.pricing.payment_required is None:
-            payment_required = config.payment_required
-        else:
-            payment_required = self.pricing.payment_required
+        payment_required = self.pricing and self.pricing.payment_required  or config.payment_required
 
         if self.cancel_dt:
             return 'cancelled'
@@ -2336,9 +2344,67 @@ class Event(TendenciBaseModel):
         return self.nested_events_enabled and self.child_events.exists()
 
     @property
+    def all_child_events(self):
+        """All child events, including those outside of Event timeframe"""
+        return Event.objects.filter(parent_id=self.pk).order_by('start_dt', 'event_code')
+
+    @property
     def child_events(self):
         """All child events tied to this event"""
-        return Event.objects.filter(parent_id=self.pk).order_by('start_dt', 'event_code')
+        return self.all_child_events.filter(
+            start_dt__gte=self.start_dt,
+            end_dt__lte=self.end_dt,
+        )
+
+    def sub_event_datetimes(self, child_events=None):
+        """Returns list of start_dt for available sub events"""
+        datetimes = dict()
+        child_events = child_events or self.child_events
+
+        for event in child_events:
+            if event.start_dt not in datetimes:
+                datetimes[event.start_dt] = event.end_dt
+            else:
+                datetimes[event.start_dt] = max(datetimes[event.start_dt], event.end_dt)
+
+        return datetimes
+
+    @property
+    def sub_events_by_datetime(self):
+        """Used to create grid of sub events by datetime"""
+        sub_events_by_datetime = OrderedDict()
+        sub_event_datetimes = self.sub_event_datetimes()
+
+        for start_dt in sub_event_datetimes.keys():
+            child_events = self.child_events.filter(start_dt=start_dt)
+            if not child_events.exists():
+                continue
+
+            day = start_dt.date()
+            start_time = start_dt.strftime("%-I:%M %p")
+            end_time = sub_event_datetimes[start_dt].strftime("%-I:%M %p")
+            time_slot = f'{start_time} - {end_time}'
+
+            if day not in sub_events_by_datetime:
+                sub_events_by_datetime[day] = OrderedDict()
+
+            sub_events_by_datetime[day][time_slot] = child_events
+        
+        return sub_events_by_datetime
+
+    def get_child_events_by_permission(self, user=None, edit=False):
+        action = 'edit' if edit else 'view'
+
+        # If superuser, return everything - including sub events outside
+        # main event's window
+        if user and user.profile.is_superuser:
+            return self.all_child_events
+
+        if action == 'view':
+            filters = get_query_filters(user, 'events.view_event')
+        else:
+            filters = get_query_filters(user, 'events.change_event')
+        return self.child_events.filter(filters).distinct()
 
     @property
     def upcoming_child_events(self):
@@ -2838,7 +2904,7 @@ class Event(TendenciBaseModel):
     def is_registrant_user(self, user):
         if hasattr(user, 'registrant_set'):
             return user.registrant_set.filter(
-                registration__event=self).exists()
+                registration__event=self, cancel_dt__isnull=True).exists()
         return False
 
     def get_absolute_url(self):
@@ -3094,9 +3160,7 @@ class Event(TendenciBaseModel):
         Speakers with no name are excluded in the list.
         """
 
-        speakers = self.speaker_set.exclude(name="").order_by('pk')
-
-        return speakers
+        return self.speaker_set.exclude(name="").order_by('position', 'pk')
 
     def number_of_days(self):
         delta = self.end_dt - self.start_dt
@@ -3211,7 +3275,11 @@ class Event(TendenciBaseModel):
         if payment_required:
             params['registration__invoice__balance'] = 0
 
-        spots_taken = Registrant.objects.filter(**params).count()
+        if self.parent and self.nested_events_enabled:
+            spots_taken = RegistrantChildEvent.objects.filter(
+                child_event_id=self.pk, registrant__cancel_dt__isnull=True).count()
+        else:
+            spots_taken = Registrant.objects.filter(**params).count()
 
         if limit == 0:  # no limit
             return (spots_taken, -1)
@@ -3236,6 +3304,15 @@ class Event(TendenciBaseModel):
         return int(limit)
 
     @property
+    def total_spots(self):
+        """Total spots alloted for Event"""
+        limit = self.get_limit()
+        if not limit:
+            return ' _'
+
+        return limit
+
+    @property
     def total_registered(self):
         """Total registered for this Event"""
         # If this is a child event, registration information is in RegistrationChildEvent
@@ -3243,7 +3320,21 @@ class Event(TendenciBaseModel):
             return RegistrantChildEvent.objects.filter(
                 child_event_id=self.pk, registrant__cancel_dt__isnull=True).count()
 
-        return self.registrants_count({'cancel_dt__isnull': True})
+        payment_required = self.registration_configuration.payment_required
+        params = {'cancel_dt__isnull': True}
+        if payment_required:
+            params['registration__invoice__balance'] = 0
+
+        return self.registrants_count(params)
+
+    @property
+    def spots_remaining(self):
+        """Spots available for registration (display unlimited as '_')"""
+        _, spots_remaining = self.get_spots_status()
+        if spots_remaining < 0:
+            return ' _'
+
+        return spots_remaining
 
     @property
     def at_capacity(self):
@@ -3253,6 +3344,23 @@ class Event(TendenciBaseModel):
             return False
 
         return self.total_registered >= limit
+
+    @property
+    def total_checked_in(self):
+        """Total registrants checked into an Event"""
+        if self.parent and self.nested_events_enabled:
+            return RegistrantChildEvent.objects.filter(
+                child_event_id=self.pk, checked_in=True).count()
+
+        return self.registrants_count({'checked_in': True})
+
+    @property
+    def total_checked_out(self):
+        total_registered = self.total_registered
+        if not total_registered:
+            return 0
+
+        return total_registered - self.total_checked_in
 
     @classmethod
     def make_slug(self, length=7):

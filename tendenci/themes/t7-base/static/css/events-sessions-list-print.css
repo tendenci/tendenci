@@ -1,0 +1,14 @@
+@media print {
+  a[href]:after {
+    content: none !important;
+  }
+  
+  .edit-btn, footer, img.nav-logo, .print-link, button, .t-credits {
+	display: none !important;
+  }
+  
+  footer:after {
+    content: none !important;
+  }
+}
+ 
