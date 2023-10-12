@@ -1,0 +1,143 @@
+Sometimes its useful to have a system which disconnects long running processes ("hard work") from your Tendenci site to improve responsiveness during high intensity activites.
+
+Tendenci ships with integration with the Celery task processing system which can be used to help detach some hard tasks from the administrators browsing experience when using the following applications:
+
+ * WordPress importer (wp_importer)
+ * Invoice exporting (invoices)
+ * Forms Builder (forms_builder)
+ * Navigation export (navs)
+ * Resume export (exports)
+ * Location importer (locations)
+ * Pages export (pages)
+ * Photo collection export (photos)
+ * Profiles (profiles)
+ * WordPress exporter (wp_export)
+ * And possibly others....
+
+
+Background
+==========
+
+Celery and Django-celery (Djcelery) are already included as part of a standard Tendenci install.
+
+Tendenci's default configuration `uses the Django database`_ via ``BROKER_URL = 'django://`` but this method is `no longer supported`_ in current releases so its suggested you use an external broker instead. The main question is between Redis or RabbitMQ, `upstreams recommendation`_ is RabbitMQ, however `in some circumstances`_ it may be worth considering Redis instead.
+
+.. _`uses the Django database`: https://docs.celeryproject.org/en/3.1/getting-started/brokers/django.html
+.. _`no longer supported`: https://docs.celeryproject.org/en/latest/getting-started/brokers/index.html
+.. _`upstreams recommendation`: https://docs.celeryproject.org/en/stable/faq.html#brokers
+.. _`in some circumstances`: https://stackoverflow.com/questions/43264838/celery-when-should-you-choose-redis-as-a-message-broker-over-rabbitmq
+
+Setup
+=====
+
+Installing RabbitMQ
+-------------------
+
+To `install RabbitMQ`_ use apt
+
+::
+
+	apt-get install rabbitmq-server
+
+.. _`install RabbitMQ`: https://docs.celeryproject.org/en/3.1/getting-started/first-steps-with-celery.html#rabbitmq
+
+Status of RabbitMQ can be checked with the following commands
+
+::
+
+	rabbitmqctl -n rabbit cluster_status
+	rabbitmqctl -n rabbit status
+
+
+Run Celery
+----------
+
+For Tendenci to offload work, celery must be configured to run as a daemon.
+
+To do this manually run the following from a root prompt or via sudo
+
+::
+
+  python manage.py celeryd --uid www-data --gid www-data --loglevel info --beat
+
+To run as a service a systemd service file should be considered.
+
+Systemd Unit files should be created in ``/etc/systemd/system/`` with a name
+which bares some relationship to your Tendenci install (eg
+``mysite-celery.service``). The contents of your unit file should look like
+this:
+
+::
+
+    [Unit]
+    Description=Start Celery instance
+
+    [Service]
+    WorkingDirectory=/var/www/mysite
+    PIDFile=/run/mysite-celery.pid
+    Type=forking
+    KillMode=process
+    Restart=on-failure
+    ExecStart=/srv/mysite/bin/python manage.py celeryd \
+              --uid www-data                           \
+              --gid www-data                           \
+              --pidfile=/run/mysite-celery.pid         \
+              --pythonpath=/var/www/mysite             \
+              --logfile=/var/log/mysite-celery.log
+
+    [Install]
+    WantedBy=multi-user.target
+
+
+You'll need to issue the `start` and `enable` commands to start the service and make it run automatically on boot.
+
+To start the service manually:
+::
+
+    sudo systemctl start mysite-celery
+
+To start the service automatically on boot:
+::
+
+    sudo systemctl enable mysite-celery
+
+
+Configuring Tendenci
+--------------------
+
+Add settings to your Tendenci project ``conf/settings.py``
+
+::
+
+	BROKER_URL = 'amqp://guest:guest@localhost:5672/'
+	CELERY_IS_ACTIVE = True
+
+The example above uses the default settings for RabbitMQ; user and password
+both 'guest' and listening on localhost. In some cases it will be necesary to
+change the configuration - the commands below will help to `configure rabbit`_.
+
+::
+
+	rabbitmqctl add_user tendenci some_password
+	rabbitmqctl add_vhost website
+	rabbitmqctl set_user_tags tendenci tendenci_tag
+	rabbitmqctl set_permissions -p website tendenci ".*" ".*" ".*"
+
+.. _`configure rabbit`: https://docs.celeryproject.org/en/3.1/getting-started/brokers/rabbitmq.html#broker-rabbitmq]
+
+For more information see the RabbitMQ `access and auth`_ documentation.
+
+.. _`access and auth`: https://www.rabbitmq.com/access-control.html
+
+Restart tendenci then keep an eye on logs
+
+::
+
+	service tendenci restart
+	tail -F /var/log/rabbitmq/*log /path/to/tendenci/logs/*.log
+
+Got photos? Visit a photo set to see if the Celery enablement worked. The 'zip'
+export function is not linked from the admin UI, so browse to a suitable photo
+set and add /zip/ to the end. Example:
+``https://example.com/photos/set/8/zip/``
+
