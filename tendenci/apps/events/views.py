@@ -339,7 +339,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'free_event': free_event,
         'can_view_attendees': can_view_attendees,
         'is_admin': request.user.profile.is_superuser,
-        'registrant_user': registrant.user if my_registrants else None
+        'registrant_user': request.user if my_registrants and my_registrants[0].reg8n_status() != 'payment-required' else None,
         'my_registrants': my_registrants,
     })
 
