@@ -223,9 +223,9 @@ def zoom(request, event_id, template_name="events/zoom.html"):
     event = get_object_or_404(Event.objects.get_all(), pk=event_id)
     registrant = event.get_registrant_by_user(request.user)
 
-    # If the user is not a registrant of this event, don't connect to Zoom
-    if not registrant:
-        return Http403
+    # If the user is not a registrant of this event or not paid, don't connect to Zoom
+    if not registrant or registrant.reg8n_status() == 'payment-required':
+        raise Http403
 
     return render_to_resp(request=request, template_name=template_name, context={
         'event': event,
@@ -239,7 +239,7 @@ def generate_zoom_credits(request, event_id):
     event = get_object_or_404(Event.objects.get_all(), pk=event_id)
 
     if not request.user.profile.is_superuser:
-        return Http403
+        raise Http403
 
     try:
         event.generate_zoom_credits()
