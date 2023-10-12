@@ -2914,8 +2914,7 @@ class Event(TendenciBaseModel):
         return reverse('event.edit', args=[self.pk])
 
     def review_credits_url(self):
-        site_url = get_setting('site', 'global', 'siteurl')
-        return f'{site_url}/admin/events/registrantcredits/?q={self.title}'
+        return f'/admin/events/registrantcredits/?event={self.id}'
 
     def get_registration_url(self):
         """ This is used to include a sign up url in the event.
