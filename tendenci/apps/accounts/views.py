@@ -215,7 +215,7 @@ def register(request, success_url=None,
         elif form.similar_email_found:
             messages.add_message(
                 request, messages.INFO,
-                _(u"An account already exists for the email %(email)s." % {
+                _("An account already exists for the email %(email)s." % {
                     'email': request.POST.get('email_0') or request.POST.get('email_1')}))
 
             querystring = 'registration=True'

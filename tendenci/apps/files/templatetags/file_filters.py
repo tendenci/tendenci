@@ -1,4 +1,3 @@
-from builtins import str
 from django.template import Library
 register = Library()
 

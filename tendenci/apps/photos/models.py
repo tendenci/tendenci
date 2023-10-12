@@ -143,10 +143,10 @@ class ImageModel(models.Model):
             return _('An "admin_thumbnail" photo size has not been defined.')
         else:
             if hasattr(self, 'get_absolute_url'):
-                return u'<a href="%s"><img src="%s"></a>' % \
+                return '<a href="%s"><img src="%s"></a>' % \
                     (self.get_absolute_url(), func())
             else:
-                return u'<a href="%s"><img src="%s"></a>' % \
+                return '<a href="%s"><img src="%s"></a>' % \
                     (self.image.url, func())
     admin_thumbnail.short_description = _('Thumbnail')
 
@@ -389,7 +389,7 @@ class BaseEffect(models.Model):
 
     @mark_safe
     def admin_sample(self):
-        return u'<img src="%s">' % self.sample_url()
+        return '<img src="%s">' % self.sample_url()
     admin_sample.short_description = 'Sample'
 
     def pre_process(self, im):

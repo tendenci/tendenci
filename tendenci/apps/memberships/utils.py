@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import csv
 import re
@@ -309,8 +308,8 @@ def get_membership_rows(
         membership_field_list,
         invoice_field_list,
         foreign_keys,
-        export_type=u'all',
-        export_status_detail=u'',
+        export_type='all',
+        export_status_detail='',
         cp_id=0,
         ids=''):
 
@@ -396,7 +395,7 @@ def process_export(
         export_fields='all_fields',
         export_type='all',
         export_status_detail='active',
-        identifier=u'', user_id=0, cp_id=0, ids=''):
+        identifier='', user_id=0, cp_id=0, ids=''):
     from tendenci.apps.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':
@@ -1426,7 +1425,7 @@ class ImportMembDefault(object):
         user = None
         memb = None
         user_display = {
-            'error': u'',
+            'error': '',
             'user': None,
             'action': ''
         }
@@ -1545,14 +1544,14 @@ class ImportMembDefault(object):
                 return
 
         user_display.update({
-            'first_name': self.memb_data.get('first_name', u''),
-            'last_name': self.memb_data.get('last_name', u''),
-            'account_id': self.memb_data.get('account_id', u''),
-            'email': self.memb_data.get('email', u''),
-            'username': self.memb_data.get('username', u''),
-            'member_number': self.memb_data.get('member_number', u''),
-            'phone': self.memb_data.get('phone', u''),
-            'company': self.memb_data.get('company', u'').strip(),
+            'first_name': self.memb_data.get('first_name', ''),
+            'last_name': self.memb_data.get('last_name', ''),
+            'account_id': self.memb_data.get('account_id', ''),
+            'email': self.memb_data.get('email', ''),
+            'username': self.memb_data.get('username', ''),
+            'member_number': self.memb_data.get('member_number', ''),
+            'phone': self.memb_data.get('phone', ''),
+            'company': self.memb_data.get('company', '').strip(),
         })
 
         return user_display
@@ -1604,12 +1603,12 @@ class ImportMembDefault(object):
         self.assign_import_values_from_dict(user, action_info['user_action'])
 
         user.username = user.username or spawn_username(
-            fn=memb_data.get('first_name', u''),
-            ln=memb_data.get('last_name', u''),
-            em=memb_data.get('email', u''))
+            fn=memb_data.get('first_name', ''),
+            ln=memb_data.get('last_name', ''),
+            em=memb_data.get('email', ''))
 
         # clean username
-        user.username = re.sub(r'[^\w+-.@]', u'', user.username)
+        user.username = re.sub(r'[^\w+-.@]', '', user.username)
 
         # make sure username is unique.
         if action_info['user_action'] == 'insert':

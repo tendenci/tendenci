@@ -26,7 +26,7 @@ class Command(BaseCommand):
         broken_links = []
         for link in links:
 
-            url = link.get('href', u'')
+            url = link.get('href', '')
 
             try:
                 if url.startswith('/'):

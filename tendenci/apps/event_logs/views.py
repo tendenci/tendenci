@@ -1,4 +1,3 @@
-from builtins import str
 from datetime import datetime, timedelta
 from os.path import join, isdir
 from os import mkdir

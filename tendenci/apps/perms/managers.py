@@ -1,4 +1,3 @@
-from builtins import str
 from haystack.query import SearchQuerySet
 from haystack.backends import SQ
 

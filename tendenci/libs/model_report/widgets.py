@@ -32,8 +32,8 @@ class RangeField(forms.MultiValueField):
     Field to filter date values by range.
     """
     default_error_messages = {
-        'invalid_start': _(u'Enter a valid start value.'),
-        'invalid_end': _(u'Enter a valid end value.'),
+        'invalid_start': _('Enter a valid start value.'),
+        'invalid_end': _('Enter a valid end value.'),
     }
 
     def __init__(self, field_class, widget=forms.TextInput, *args, **kwargs):

@@ -1,4 +1,3 @@
-from builtins import str
 import re
 import time as ttime
 from datetime import datetime, date, time
@@ -135,7 +134,7 @@ def make_username_unique(un):
     return un
 
 
-def spawn_username(fn=u'', ln=u'', em=u''):
+def spawn_username(fn='', ln='', em=''):
     """
     Uses a first name, last name and email to
     spawn a typical username.  All usernames are
@@ -200,7 +199,7 @@ def get_member_reminders(user, view_self=False):
         else:
             my_msg = 'Your membership'
 
-        renew_link = u''
+        renew_link = ''
         if hasattr(membership, 'app') and membership.app:
             renew_link = '%s%s?username=%s&membership_type_id=%s' % (
                 get_setting('site', 'global', 'siteurl'),
@@ -245,7 +244,7 @@ def clean_username(username):
     return username
 
 
-def process_export(export_fields='all_fields', identifier=u'', user_id=0):
+def process_export(export_fields='all_fields', identifier='', user_id=0):
     from tendenci.apps.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':
@@ -551,7 +550,7 @@ class ImportUsers(object):
         self.user_data = idata.row_data
         user = None
         user_display = {
-            'error': u'',
+            'error': '',
             'user': None,
             'action': ''
         }
@@ -612,13 +611,13 @@ class ImportUsers(object):
                 return
 
         user_display.update({
-            'first_name': self.user_data.get('first_name', u''),
-            'last_name': self.user_data.get('last_name', u''),
-            'account_id': self.user_data.get('account_id', u''),
-            'email': self.user_data.get('email', u''),
-            'username': self.user_data.get('username', u''),
-            'phone': self.user_data.get('phone', u''),
-            'company': self.user_data.get('company', u''),
+            'first_name': self.user_data.get('first_name', ''),
+            'last_name': self.user_data.get('last_name', ''),
+            'account_id': self.user_data.get('account_id', ''),
+            'email': self.user_data.get('email', ''),
+            'username': self.user_data.get('username', ''),
+            'phone': self.user_data.get('phone', ''),
+            'company': self.user_data.get('company', ''),
         })
 
         return user_display
@@ -668,12 +667,12 @@ class ImportUsers(object):
         self.assign_import_values_from_dict(user, action_info['action'])
 
         user.username = user.username or spawn_username(
-            fn=user_data.get('first_name', u''),
-            ln=user_data.get('last_name', u''),
-            em=user_data.get('email', u''))
+            fn=user_data.get('first_name', ''),
+            ln=user_data.get('last_name', ''),
+            em=user_data.get('email', ''))
 
         # clean username
-        user.username = re.sub(r'[^\w+-.@]', u'', user.username)
+        user.username = re.sub(r'[^\w+-.@]', '', user.username)
 
         # make sure username is unique.
         if action_info['action'] == 'insert':

@@ -15,7 +15,7 @@ register = Library()
 @register.inclusion_tag("meta/og_image.html")
 def meta_og_image(obj, field_name):
     base_url = get_setting('site', 'global', 'siteurl')
-    keys = [u"meta_og_image", obj._meta.app_label, str(obj.id),
+    keys = ["meta_og_image", obj._meta.app_label, str(obj.id),
             field_name, obj.update_dt.strftime('%m%d%Y%H%M%S')]
     cache_key = "_".join(keys)
     cached_value = cache.get(cache_key)

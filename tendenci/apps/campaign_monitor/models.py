@@ -374,7 +374,7 @@ if cm_api_key and cm_client_id:
         cm_fields = cm_list.custom_fields()
         custom_fields = [cf.Key for cf in cm_fields]
         for field in profile_fields:
-            if (u'[%s]' % field) not in custom_fields:
+            if ('[%s]' % field) not in custom_fields:
                 cm_list.create_custom_field(field, "Text")
 
     def get_name_email(instance):

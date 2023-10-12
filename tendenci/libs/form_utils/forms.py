@@ -23,7 +23,7 @@ def with_metaclass(meta, *bases):
     and the new version doesn't work here.
 
     """
-    return meta(str("NewBase"), bases, {})
+    return meta("NewBase", bases, {})
 
 
 class Fieldset(object):

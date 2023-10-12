@@ -59,7 +59,7 @@ class CategoryItemAdmin(admin.ModelAdmin):
                         instance.object,
                     )
         return ""
-    show_object.short_description = u'Object'
+    show_object.short_description = 'Object'
 
 
 admin.site.register(Category, CategoryAdmin)

@@ -1,4 +1,3 @@
-from builtins import str
 import copy
 from itertools import groupby
 from itertools import chain
@@ -380,8 +379,8 @@ class ReportAdmin(object):
         except:
             model_field = None
         value = self.get_grouper_text(value, groupby_field, model_field)
-        if value is None or str(value) == u'None':
-            if groupby_field is None or str(groupby_field) == u'None':
+        if value is None or str(value) == 'None':
+            if groupby_field is None or str(groupby_field) == 'None':
                 value = force_str(_('Results'))
             else:
                 value = force_str(_('Nothing'))
@@ -394,7 +393,7 @@ class ReportAdmin(object):
             model_field = None
 
         value = self.get_value_text(value, index, model_field)
-        if value is None or str(value) == u'None':
+        if value is None or str(value) == 'None':
             value = ''
         if value == [None]:
             value = []

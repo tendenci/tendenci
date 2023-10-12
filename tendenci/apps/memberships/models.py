@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import hashlib
 import uuid
@@ -97,9 +96,9 @@ VALID_MEMBERSHIP_STATUS_DETAIL = ['active', 'pending', 'expired', 'archive', 'di
 
 
 class MembershipType(OrderingBaseModel, TendenciBaseModel):
-    PRICE_FORMAT = u'%s - %s'
-    ADMIN_FEE_FORMAT = u' (+%s admin fee)'
-    RENEW_FORMAT = u' Renewal'
+    PRICE_FORMAT = '%s - %s'
+    ADMIN_FEE_FORMAT = ' (+%s admin fee)'
+    RENEW_FORMAT = ' Renewal'
 
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
@@ -486,14 +485,14 @@ class MembershipDefault(TendenciBaseModel):
     referer_url = models.CharField(max_length=500, blank=True, editable=False)
     referral_source = models.CharField(max_length=150, blank=True)
     referral_source_other = models.CharField(max_length=150, blank=True)
-    referral_source_member_name = models.CharField(max_length=50, blank=True, default=u'')
-    referral_source_member_number = models.CharField(max_length=50, blank=True, default=u'')
+    referral_source_member_name = models.CharField(max_length=50, blank=True, default='')
+    referral_source_member_number = models.CharField(max_length=50, blank=True, default='')
     affiliation_member_number = models.CharField(max_length=50, blank=True)
     join_dt = models.DateTimeField(_('Join Date'), blank=True, null=True)
     expire_dt = models.DateTimeField(_('Expire Date'), blank=True, null=True)
     renew_dt = models.DateTimeField(_('Renew Date'), blank=True, null=True)
-    primary_practice = models.CharField(max_length=100, blank=True, default=u'')
-    how_long_in_practice = models.CharField(max_length=50, blank=True, default=u'')
+    primary_practice = models.CharField(max_length=100, blank=True, default='')
+    how_long_in_practice = models.CharField(max_length=50, blank=True, default='')
     notes = models.TextField(blank=True)
     admin_notes = models.TextField(blank=True)
     newsletter_type = models.CharField(max_length=50, blank=True)
@@ -545,18 +544,18 @@ class MembershipDefault(TendenciBaseModel):
     corp_profile_id = models.IntegerField(blank=True, default=0)
     corporate_membership_id = models.IntegerField(
         _('Corporate Membership'), blank=True, null=True)
-    home_state = models.CharField(max_length=50, blank=True, default=u'')
+    home_state = models.CharField(max_length=50, blank=True, default='')
     year_left_native_country = models.IntegerField(blank=True, null=True)
-    network_sectors = models.CharField(max_length=250, blank=True, default=u'')
-    networking = models.CharField(max_length=250, blank=True, default=u'')
+    network_sectors = models.CharField(max_length=250, blank=True, default='')
+    networking = models.CharField(max_length=250, blank=True, default='')
     government_worker = models.BooleanField(default=False)
-    government_agency = models.CharField(max_length=250, blank=True, default=u'')
-    license_number = models.CharField(max_length=50, blank=True, default=u'')
-    license_state = models.CharField(max_length=50, blank=True, default=u'')
+    government_agency = models.CharField(max_length=250, blank=True, default='')
+    license_number = models.CharField(max_length=50, blank=True, default='')
+    license_state = models.CharField(max_length=50, blank=True, default='')
     industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.SET_NULL)
     region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
-    company_size = models.CharField(max_length=50, blank=True, default=u'')
-    promotion_code = models.CharField(max_length=50, blank=True, default=u'')
+    company_size = models.CharField(max_length=50, blank=True, default='')
+    promotion_code = models.CharField(max_length=50, blank=True, default='')
     directory = models.ForeignKey(Directory, blank=True, null=True, on_delete=models.SET_NULL)
     groups = models.ManyToManyField(Group)
 
@@ -566,8 +565,8 @@ class MembershipDefault(TendenciBaseModel):
     objects = MembershipDefaultManager()
 
     class Meta:
-        verbose_name = _(u'Membership')
-        verbose_name_plural = _(u'Memberships')
+        verbose_name = _('Membership')
+        verbose_name_plural = _('Memberships')
         permissions = (("approve_membershipdefault", _("Can approve memberships")),)
         app_label = 'memberships'
 
@@ -649,7 +648,7 @@ class MembershipDefault(TendenciBaseModel):
         Returns the key to sort on when
         using the list.sort method.
         """
-        digit = field_name.replace('ud', u'')
+        digit = field_name.replace('ud', '')
         return int(digit) if digit.isdigit() else 0
 
     def get_demographics(self):
@@ -1341,11 +1340,11 @@ class MembershipDefault(TendenciBaseModel):
         """
         from tendenci.apps.memberships.utils import spawn_username
 
-        un = kwargs.get('username', u'')
-        pw = kwargs.get('password', u'')
-        fn = kwargs.get('first_name', u'')
-        ln = kwargs.get('last_name', u'')
-        em = kwargs.get('email', u'')
+        un = kwargs.get('username', '')
+        pw = kwargs.get('password', '')
+        fn = kwargs.get('first_name', '')
+        ln = kwargs.get('last_name', '')
+        em = kwargs.get('email', '')
 
         user = None
         created = False
@@ -1503,7 +1502,7 @@ class MembershipDefault(TendenciBaseModel):
 
         is_superuser = kwargs.get('is_superuser', False)
 
-        form_link = u''
+        form_link = ''
         if self.app:
             form_link = '%s?username=%s&membership_type=%s' % (
                 reverse('membership_default.renew', kwargs={'slug': self.app.slug, 'membership_id': self.id}),
@@ -1515,9 +1514,9 @@ class MembershipDefault(TendenciBaseModel):
         expire_link = '%s?expire' % reverse('membership.details', args=[self.pk])
 
         if self.can_renew() and form_link:
-            renew = {form_link: u'Renew Membership'}
+            renew = {form_link: 'Renew Membership'}
         elif is_superuser and form_link:
-            renew = {form_link: u'Admin: Renew Membership'}
+            renew = {form_link: 'Admin: Renew Membership'}
         else:
             renew = {}
 
@@ -1525,7 +1524,7 @@ class MembershipDefault(TendenciBaseModel):
             actions.update(renew)
             actions.update({
                 # '?action=pend': u'Make Pending',
-                expire_link: u'Expire Membership'})
+                expire_link: 'Expire Membership'})
         elif status == 'disapproved':
             pass
             # actions.update({
@@ -1533,12 +1532,12 @@ class MembershipDefault(TendenciBaseModel):
             #     expire_link: u'Expire Membership'})
         elif status == 'pending':
             actions.update({
-                approve_link: u'Approve',
-                disapprove_link: u'Disapprove',
-                expire_link: u'Expire Membership'})
+                approve_link: 'Approve',
+                disapprove_link: 'Disapprove',
+                expire_link: 'Expire Membership'})
         elif status == 'expired':
             actions.update({
-                approve_link: u'Approve Membership'})
+                approve_link: 'Approve Membership'})
 
         return actions
 
@@ -1815,7 +1814,7 @@ class MembershipDefault(TendenciBaseModel):
             return self.member_number
 
         memberships = self.qs_memberships().exclude(
-            member_number__exact=u'').order_by('-pk')
+            member_number__exact='').order_by('-pk')
 
         if memberships:
             self.member_number = memberships[0].member_number
@@ -1898,7 +1897,7 @@ class MembershipDefault(TendenciBaseModel):
                             args=[self.corporate_membership_id]),
                     corp_member.status_detail)
         return link
-    membership_type_link.short_description = u'Membership Type'
+    membership_type_link.short_description = 'Membership Type'
 
     def auto_update_paid_object(self, request, payment):
         """
@@ -2317,7 +2316,7 @@ class Notice(models.Model):
         Returns a dictionary with default context items.
         """
         global_setting = partial(get_setting, 'site', 'global')
-        corporate_msg = u''
+        corporate_msg = ''
 
         context = {}
 
@@ -2819,36 +2818,36 @@ class MembershipAppField(OrderingBaseModel):
 class MembershipDemographic(models.Model):
     user = models.OneToOneField(User, related_name="demographics", verbose_name=_('user'), on_delete=models.CASCADE)
 
-    ud1 = models.TextField(blank=True, default=u'', null=True)
-    ud2 = models.TextField(blank=True, default=u'', null=True)
-    ud3 = models.TextField(blank=True, default=u'', null=True)
-    ud4 = models.TextField(blank=True, default=u'', null=True)
-    ud5 = models.TextField(blank=True, default=u'', null=True)
-    ud6 = models.TextField(blank=True, default=u'', null=True)
-    ud7 = models.TextField(blank=True, default=u'', null=True)
-    ud8 = models.TextField(blank=True, default=u'', null=True)
-    ud9 = models.TextField(blank=True, default=u'', null=True)
-    ud10 = models.TextField(blank=True, default=u'', null=True)
-    ud11 = models.TextField(blank=True, default=u'', null=True)
-    ud12 = models.TextField(blank=True, default=u'', null=True)
-    ud13 = models.TextField(blank=True, default=u'', null=True)
-    ud14 = models.TextField(blank=True, default=u'', null=True)
-    ud15 = models.TextField(blank=True, default=u'', null=True)
-    ud16 = models.TextField(blank=True, default=u'', null=True)
-    ud17 = models.TextField(blank=True, default=u'', null=True)
-    ud18 = models.TextField(blank=True, default=u'', null=True)
-    ud19 = models.TextField(blank=True, default=u'', null=True)
-    ud20 = models.TextField(blank=True, default=u'', null=True)
-    ud21 = models.TextField(blank=True, default=u'', null=True)
-    ud22 = models.TextField(blank=True, default=u'', null=True)
-    ud23 = models.TextField(blank=True, default=u'', null=True)
-    ud24 = models.TextField(blank=True, default=u'', null=True)
-    ud25 = models.TextField(blank=True, default=u'', null=True)
-    ud26 = models.TextField(blank=True, default=u'', null=True)
-    ud27 = models.TextField(blank=True, default=u'', null=True)
-    ud28 = models.TextField(blank=True, default=u'', null=True)
-    ud29 = models.TextField(blank=True, default=u'', null=True)
-    ud30 = models.TextField(blank=True, default=u'', null=True)
+    ud1 = models.TextField(blank=True, default='', null=True)
+    ud2 = models.TextField(blank=True, default='', null=True)
+    ud3 = models.TextField(blank=True, default='', null=True)
+    ud4 = models.TextField(blank=True, default='', null=True)
+    ud5 = models.TextField(blank=True, default='', null=True)
+    ud6 = models.TextField(blank=True, default='', null=True)
+    ud7 = models.TextField(blank=True, default='', null=True)
+    ud8 = models.TextField(blank=True, default='', null=True)
+    ud9 = models.TextField(blank=True, default='', null=True)
+    ud10 = models.TextField(blank=True, default='', null=True)
+    ud11 = models.TextField(blank=True, default='', null=True)
+    ud12 = models.TextField(blank=True, default='', null=True)
+    ud13 = models.TextField(blank=True, default='', null=True)
+    ud14 = models.TextField(blank=True, default='', null=True)
+    ud15 = models.TextField(blank=True, default='', null=True)
+    ud16 = models.TextField(blank=True, default='', null=True)
+    ud17 = models.TextField(blank=True, default='', null=True)
+    ud18 = models.TextField(blank=True, default='', null=True)
+    ud19 = models.TextField(blank=True, default='', null=True)
+    ud20 = models.TextField(blank=True, default='', null=True)
+    ud21 = models.TextField(blank=True, default='', null=True)
+    ud22 = models.TextField(blank=True, default='', null=True)
+    ud23 = models.TextField(blank=True, default='', null=True)
+    ud24 = models.TextField(blank=True, default='', null=True)
+    ud25 = models.TextField(blank=True, default='', null=True)
+    ud26 = models.TextField(blank=True, default='', null=True)
+    ud27 = models.TextField(blank=True, default='', null=True)
+    ud28 = models.TextField(blank=True, default='', null=True)
+    ud29 = models.TextField(blank=True, default='', null=True)
+    ud30 = models.TextField(blank=True, default='', null=True)
 
     class Meta:
         app_label = 'memberships'

@@ -1,4 +1,3 @@
-from builtins import str
 from decimal import Decimal
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _

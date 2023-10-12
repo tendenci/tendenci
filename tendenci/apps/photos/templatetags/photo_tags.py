@@ -1,4 +1,3 @@
-from builtins import str
 import re
 
 from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
@@ -19,7 +18,7 @@ class PrintExifNode(Node):
         try:
             exif = str(self.exif.resolve(context, True))
         except VariableDoesNotExist:
-            exif = u''
+            exif = ''
 
         EXPR = r"'(?P<key>[^:]*)':(?P<value>[^,]*),"
         expr = re.compile(EXPR)
@@ -29,7 +28,7 @@ class PrintExifNode(Node):
 
         msg += "</table>"
 
-        return u'<div id="exif">%s</div>' % (msg)
+        return '<div id="exif">%s</div>' % (msg)
 
 
 @register.tag(name="print_exif")

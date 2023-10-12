@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import re
 import shutil
@@ -16,7 +15,7 @@ from tendenci.apps.theme.utils import get_theme_search_order, get_theme_root
 
 
 def get_type_choices():
-    types_list = [(u'',_(u'All'))]
+    types_list = [('',_('All'))]
     types = Type.objects.all()
     for type in types:
         types_list.append((int(type.pk),type.name))
@@ -169,7 +168,7 @@ def newsletter_jobs_list(request, jobs_days, simplified):
 
 def newsletter_events_list(request, start_dt, end_dt, simplified):
     events = []
-    event_content = u''
+    event_content = ''
     try:
         from tendenci.apps.events.models import Event
 

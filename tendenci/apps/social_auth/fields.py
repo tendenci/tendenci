@@ -1,4 +1,3 @@
-from builtins import str
 from django.core.exceptions import ValidationError
 from django.db import models
 import simplejson

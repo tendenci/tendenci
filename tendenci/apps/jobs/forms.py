@@ -272,7 +272,7 @@ class JobForm(TendenciBaseForm):
             post_data = None
         if post_data:
             cat = post_data.get('cat', '0')
-            if cat and cat != '0' and cat != u'':
+            if cat and cat != '0' and cat != '':
                 cat = JobCategory.objects.get(pk=int(cat))
                 self.fields['sub_cat'].queryset = JobCategory.objects.filter(parent=cat)
 

@@ -19,7 +19,7 @@ try:
     def thumbnail(image_path, width, height):
         geometry_string = 'x'.join([str(width), str(height)])
         t = get_thumbnail(image_path, geometry_string)
-        return u'<img src="%s" alt="%s" />' % (t.url, image_path)
+        return '<img src="%s" alt="%s" />' % (t.url, image_path)
 except ImportError:
     try:
         from easy_thumbnails.files import get_thumbnailer
@@ -28,11 +28,11 @@ except ImportError:
             thumbnail_options = dict(size=(width, height), crop=True)
             thumbnail = get_thumbnailer(image_path).get_thumbnail(
                 thumbnail_options)
-            return u'<img src="%s" alt="%s" />' % (thumbnail.url, image_path)
+            return '<img src="%s" alt="%s" />' % (thumbnail.url, image_path)
     except ImportError:
         def thumbnail(image_path, width, height):
             absolute_url = posixpath.join(settings.MEDIA_URL, image_path)
-            return u'<img src="%s" alt="%s" />' % (absolute_url, image_path)
+            return '<img src="%s" alt="%s" />' % (absolute_url, image_path)
 
 
 class ImageWidget(forms.FileInput):

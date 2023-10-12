@@ -1,4 +1,3 @@
-from builtins import str
 import random
 from datetime import datetime, timedelta
 from operator import or_
@@ -437,14 +436,14 @@ class ListEventsNode(ListNode):
             raise AttributeError(_('Model.objects does not have a search method'))
 
     def render(self, context):
-        tags = u''
-        query = u''
+        tags = ''
+        query = ''
         user = AnonymousUser()
         limit = 3
         order = 'next_upcoming'
         event_type = ''
-        group = u''
-        start_dt = u''
+        group = ''
+        start_dt = ''
         registered_only = False
 
         randomize = False

@@ -1,5 +1,3 @@
-# coding=utf-8
-from builtins import str
 from urllib.parse import urlencode
 import hashlib
 from django.conf import settings

@@ -72,7 +72,7 @@ class HiddenCodeBlock(CodeBlock):
 
     def run(self):
         # Body of the method is more or less copied from CodeBlock
-        code = u'\n'.join(self.content)
+        code = '\n'.join(self.content)
         hcb = hidden_code_block(code, code)
         hcb['language'] = self.arguments[0]
         hcb['linenos'] = 'linenos' in self.options

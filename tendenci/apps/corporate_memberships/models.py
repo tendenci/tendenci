@@ -479,7 +479,7 @@ class CorpProfile(TendenciBaseModel):
 
     def get_logo_url(self):
         if not self.logo:
-            return u''
+            return ''
 
         return reverse('file', args=[self.logo.pk])
 

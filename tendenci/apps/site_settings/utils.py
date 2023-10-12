@@ -106,7 +106,7 @@ def get_setting(scope, scope_category, name):
             # test is get_value will work
             value = setting.get_value().strip()
         except AttributeError:
-            return u''
+            return ''
         # convert data types
         if setting.data_type == 'boolean':
             value = value[0].lower() == 't'
@@ -129,7 +129,7 @@ def get_setting(scope, scope_category, name):
             value = tfile
         return value
 
-    return u''
+    return ''
 
 
 def get_global_setting(name):

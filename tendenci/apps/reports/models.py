@@ -1,4 +1,3 @@
-from builtins import str
 from collections import OrderedDict
 
 from django.db import models
@@ -80,7 +79,7 @@ class Report(TendenciBaseModel):
     def config_options_dict(self):
         if self.config:
             return json.loads(self.config)
-        return u''
+        return ''
 
     def config_options(self):
         if self.config:
@@ -116,12 +115,12 @@ class Report(TendenciBaseModel):
                         pass
 
             return output
-        return u''
+        return ''
 
     def config_options_string(self):
         if self.config_options():
             return '; '.join([i['value'] for i in self.config_options()])
-        return u''
+        return ''
 
 RUN_STATUS_CHOICES = (
     ('unstarted', 'Unstarted'),

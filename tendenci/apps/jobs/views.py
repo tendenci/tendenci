@@ -1,4 +1,3 @@
-from builtins import str
 from datetime import timedelta, datetime
 import json
 import time
@@ -228,7 +227,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
             #save relationships
             job.save()
-            msg_string = u'Successfully added %s' % str(job)
+            msg_string = 'Successfully added %s' % str(job)
             messages.add_message(request, messages.SUCCESS,_(msg_string))
 
             # send notification to administrators
@@ -318,7 +317,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
             job = update_perms_and_save(request, form, job)
             form.save_header_image(request, job)
 
-            msg_string = u'Successfully updated {}'.format(str(job))
+            msg_string = 'Successfully updated {}'.format(str(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(
@@ -372,7 +371,7 @@ def edit_meta(request, id, form_class=MetaForm,
         if form.is_valid():
             job.meta = form.save()  # save meta
             job.save()  # save relationship
-            msg_string = u'Successfully updated meta for {}'.format(str(job))
+            msg_string = 'Successfully updated meta for {}'.format(str(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('job', args=[job.slug]))
@@ -390,7 +389,7 @@ def delete(request, id, template_name="jobs/delete.html"):
 
     if has_perm(request.user, 'jobs.delete_job', job):
         if request.method == "POST":
-            msg_string = u'Successfully deleted {}'.format(str(job))
+            msg_string = 'Successfully deleted {}'.format(str(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
@@ -570,7 +569,7 @@ def approve(request, id, template_name="jobs/approve.html"):
                 'job_approved_user_notice', recipients, extra_context)
             #except:
             #    pass
-        msg_string = u'Successfully approved {}'.format(str(job))
+        msg_string = 'Successfully approved {}'.format(str(job))
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return HttpResponseRedirect(reverse('job', args=[job.slug]))

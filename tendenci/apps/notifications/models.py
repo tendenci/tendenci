@@ -1,4 +1,3 @@
-from builtins import str
 from os.path import splitext
 import datetime
 import logging
@@ -362,7 +361,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
     current_site = Site.objects.get_current()
 
-    notices_url = u"%s://%s%s" % (
+    notices_url = "%s://%s%s" % (
         protocol,
         str(current_site),
         reverse("notification_notices"),
@@ -453,7 +452,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     to = ','.join(emails)
     bcc = ','.join(recipient_bcc)
-    reply_to = reply_to or str()
+    reply_to = reply_to or ''
 
     NoticeEmail.objects.create(
         emails=to,
@@ -497,7 +496,7 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
         current_site = Site.objects.get_current()
 
-        notices_url = u"%s://%s%s" % (
+        notices_url = "%s://%s%s" % (
             protocol,
             str(current_site),
             reverse("notification_notices"),

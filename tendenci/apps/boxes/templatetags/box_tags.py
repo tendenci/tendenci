@@ -1,5 +1,3 @@
-from builtins import str
-
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser, User
 from django.utils.translation import gettext_lazy as _
@@ -43,7 +41,7 @@ class GetBoxNode(Node):
             )
             return output
         except:
-            return str()
+            return ''
 
 
 @register.tag
@@ -92,7 +90,7 @@ class GetBoxTitleNode(Node):
             box = box[0]
             return box.title
         except:
-            return str()
+            return ''
 @register.tag
 def box_title(parser, token):
     """

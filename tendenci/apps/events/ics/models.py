@@ -9,14 +9,14 @@ class ICS(models.Model):
         verbose_name_plural = 'ics'
 
     STATUS_CHOICES = (
-        ("completed", _(u"Completed")),
-        ("pending", _(u"Pending")),
-        ("failed", _(u"Failed")),
+        ("completed", _("Completed")),
+        ("pending", _("Pending")),
+        ("failed", _("Failed")),
     )
     app_label = models.CharField(max_length=50)
     model_name = models.CharField(max_length=50)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(_(u"status"), max_length=50,
+    status = models.CharField(_("status"), max_length=50,
             default="pending", choices=STATUS_CHOICES)
     result = PickledObjectField(null=True, default=None)
     date_created = models.DateTimeField(auto_now_add=True)

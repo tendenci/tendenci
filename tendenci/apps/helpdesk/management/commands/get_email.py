@@ -10,7 +10,6 @@ scripts/get_email.py - Designed to be run from cron, this script checks the
                        adding to existing tickets if needed)
 """
 
-from builtins import str
 
 import email
 import imaplib
@@ -166,7 +165,7 @@ def decodeUnknown(charset, string):
 
 def decode_mail_headers(string):
     decoded = email.header.decode_header(string)
-    return u' '.join([str(msg, encoding=charset, errors='replace') if charset else str(msg) for msg, charset in decoded])
+    return ' '.join([str(msg, encoding=charset, errors='replace') if charset else str(msg) for msg, charset in decoded])
 
 
 def is_no_reply_address(email_addr):

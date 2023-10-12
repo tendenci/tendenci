@@ -18,12 +18,12 @@ class CategoryField(forms.ChoiceField):
 category_defaults = {
     'label':_('Category'),
     'choices': [],
-    'help_text': format_html(u'{0}{1}{2}',
+    'help_text': format_html('{0}{1}{2}',
         mark_safe('''
             <span id="t-categories-add-category-help-text" class="help-block">
                 <button type="button" class="btn btn-link" data-toggle="modal" data-target="#t-categories-add-category-modal">
         '''),
-        _(u'Add Category'),
+        _('Add Category'),
         mark_safe('''
                 </button>
             </span>
@@ -34,12 +34,12 @@ category_defaults = {
 sub_category_defaults = {
     'label':_('Subcategory'),
     'choices': [],
-    'help_text': format_html(u'{0}{1}{2}',
+    'help_text': format_html('{0}{1}{2}',
         mark_safe('''
             <span id="t-categories-add-subcategory-help-text" class="help-block">
                 <button type="button" class="btn btn-link" data-toggle="modal" data-target="#t-categories-add-subcategory-modal">
         '''),
-        _(u'Add Subcategory'),
+        _('Add Subcategory'),
         mark_safe('''
                 </button>
             </span>

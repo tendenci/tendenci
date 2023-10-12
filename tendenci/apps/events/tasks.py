@@ -1,4 +1,3 @@
-from builtins import str
 import os
 from django.db.models import Max, Count
 from django.http import HttpResponse

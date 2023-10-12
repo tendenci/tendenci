@@ -1,4 +1,3 @@
-from builtins import str
 from django.template import Library, Node, TemplateSyntaxError, Variable, VariableDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from tendenci.apps.files.models import File
@@ -119,9 +118,9 @@ def size(file, size):
     from django.urls import reverse
 
     if not isinstance(file, File):
-        return u''
+        return ''
 
-    options = u''
+    options = ''
 
     if '/' in size:
         size, options = size.split('/')

@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import datetime
 import re
@@ -55,11 +54,11 @@ def get_user_import_settings(request, id):
     if id not in request.session:
         return d
 
-    d['file_name'] = (request.session[id]).get('file_name', u'')
+    d['file_name'] = (request.session[id]).get('file_name', '')
     d['interactive'] = request.session[id].get('interactive', False)
     d['override'] = request.session[id].get('override', False)
-    d['key'] = request.session[id].get('key', u'')
-    d['group'] = request.session[id].get('group', u'')
+    d['key'] = request.session[id].get('key', '')
+    d['group'] = request.session[id].get('group', '')
     d['clear_group_membership'] = request.session[id].get(
                                 'clear_group_membership', False
                                 )

@@ -208,7 +208,7 @@ class RegistrationProfile(models.Model):
     ``RegistrationManager``.
 
     """
-    ACTIVATED = u"ALREADY_ACTIVATED"
+    ACTIVATED = "ALREADY_ACTIVATED"
 
     user = models.OneToOneField(User, verbose_name=_('user'), on_delete=models.CASCADE)
     activation_key = models.CharField(_('activation key'), max_length=40)

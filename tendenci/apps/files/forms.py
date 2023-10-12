@@ -268,7 +268,7 @@ class FilewithCategoryForm(TendenciBaseForm):
 
         if post_data:
             file_cat = post_data.get('file_cat', '0')
-            if file_cat and file_cat != '0' and file_cat != u'':
+            if file_cat and file_cat != '0' and file_cat != '':
                 file_cat = FilesCategory.objects.get(pk=int(file_cat))
                 self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
 
@@ -295,7 +295,7 @@ class FilewithCategoryForm(TendenciBaseForm):
 
         ## update the category of the file
         category_removed = False
-        category = file.file_cat.name if file.file_cat else u''
+        category = file.file_cat.name if file.file_cat else ''
 
         if category:
             Category.objects.update(file, category, 'category')
@@ -306,7 +306,7 @@ class FilewithCategoryForm(TendenciBaseForm):
 
         if not category_removed:
             # update the sub category of the article
-            sub_category = file.file_sub_cat.name if file.file_sub_cat else u''
+            sub_category = file.file_sub_cat.name if file.file_sub_cat else ''
             if sub_category:
                 Category.objects.update(file, sub_category, 'sub_category')
             else:  # remove
@@ -387,7 +387,7 @@ class MultiFileForm(BetterForm):
         # set up the sub category choices
         if post_data:
             file_cat = post_data.get('file_cat', '0')
-            if file_cat and file_cat != '0' and file_cat != u'':
+            if file_cat and file_cat != '0' and file_cat != '':
                 [file_cat] = FilesCategory.objects.filter(pk=int(file_cat))[:1] or [None]
                 if file_cat:
                     self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
@@ -478,7 +478,7 @@ class MultiFileForm(BetterForm):
 
             ## update the category of the file
             category_removed = False
-            category = file.file_cat.name if file.file_cat else u''
+            category = file.file_cat.name if file.file_cat else ''
 
             if category:
                 Category.objects.update(file, category, 'category')
@@ -489,7 +489,7 @@ class MultiFileForm(BetterForm):
 
             if not category_removed:
                 # update the sub category of the file
-                sub_category = file.file_sub_cat.name if file.file_sub_cat else u''
+                sub_category = file.file_sub_cat.name if file.file_sub_cat else ''
                 if sub_category:
                     Category.objects.update(file, sub_category, 'sub_category')
                 else:  # remove
@@ -526,7 +526,7 @@ class FileCategoryForm(forms.Form):
 
         if post_data:
             file_cat = post_data.get('file_cat', '0')
-            if file_cat and file_cat != '0' and file_cat != u'':
+            if file_cat and file_cat != '0' and file_cat != '':
                 file_cat = FilesCategory.objects.get(pk=int(file_cat))
                 self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
 
@@ -545,7 +545,7 @@ class FileCategoryForm(forms.Form):
 
         ## update the category of the file
         category_removed = False
-        category = file.file_cat.name if file.file_cat else u''
+        category = file.file_cat.name if file.file_cat else ''
 
         if category:
             Category.objects.update(file, category, 'category')
@@ -556,7 +556,7 @@ class FileCategoryForm(forms.Form):
 
         if not category_removed:
             # update the sub category of the file
-            sub_category = file.file_sub_cat.name if file.file_sub_cat else u''
+            sub_category = file.file_sub_cat.name if file.file_sub_cat else ''
             if sub_category:
                 Category.objects.update(file, sub_category, 'sub_category')
             else:  # remove

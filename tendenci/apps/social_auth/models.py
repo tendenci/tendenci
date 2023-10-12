@@ -1,5 +1,4 @@
 """Social auth models"""
-from builtins import str
 import warnings
 from datetime import timedelta
 

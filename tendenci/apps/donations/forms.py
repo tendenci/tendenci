@@ -68,9 +68,9 @@ class DonationAdminForm(forms.ModelForm):
     def clean_donation_amount(self):
         try:
             if float(self.cleaned_data['donation_amount']) <= 0:
-                raise forms.ValidationError(_(u'Please enter a positive number'))
+                raise forms.ValidationError(_('Please enter a positive number'))
         except:
-            raise forms.ValidationError(_(u'Please enter a numeric positive number'))
+            raise forms.ValidationError(_('Please enter a numeric positive number'))
         return self.cleaned_data['donation_amount']
 
 class DonationForm(forms.ModelForm):
@@ -164,7 +164,7 @@ class DonationForm(forms.ModelForm):
         #raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
         try:
             if float(self.cleaned_data['donation_amount']) <= 0:
-                raise forms.ValidationError(_(u'Please enter a positive number'))
+                raise forms.ValidationError(_('Please enter a positive number'))
         except:
-            raise forms.ValidationError(_(u'Please enter a numeric positive number'))
+            raise forms.ValidationError(_('Please enter a numeric positive number'))
         return self.cleaned_data['donation_amount']

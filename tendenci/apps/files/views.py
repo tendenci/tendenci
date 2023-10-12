@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import simplejson as json
 from urllib.request import urlopen
@@ -95,7 +94,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         raise Http404
 
     if download:  # log download
-        attachment = u'attachment;'
+        attachment = 'attachment;'
         EventLog.objects.log(**{
             'event_id': 185000,
             'event_data': '%s %s (%d) dowloaded by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
@@ -105,7 +104,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             'instance': file,
         })
     else:  # log view
-        attachment = u''
+        attachment = ''
         if file.type() != 'image':
             EventLog.objects.log(**{
                 'event_id': 186000,
@@ -199,7 +198,7 @@ def search(request, template_name="files/search.html"):
     If a search index is available, this page will also
     have the option to search through files.
     """
-    query = u''
+    query = ''
     category = None
     sub_category = None
     group = None
@@ -477,9 +476,9 @@ def bulk_add(request, template_name="files/bulk-add.html"):
         return response
     else:
         file_formset = FileFormSet({
-            'form-TOTAL_FORMS': u'0',
-            'form-INITIAL_FORMS': u'0',
-            'form-MAX_NUM_FORMS': u'',
+            'form-TOTAL_FORMS': '0',
+            'form-INITIAL_FORMS': '0',
+            'form-MAX_NUM_FORMS': '',
         })
 
     return render_to_resp(
@@ -516,7 +515,7 @@ def add(request, form_class=FileForm,template_name="files/add.html"):
 
             ## update the category of the file
             category_removed = False
-            category = file.file_cat.name if file.file_cat else u''
+            category = file.file_cat.name if file.file_cat else ''
             if category:
                 Category.objects.update(file, category, 'category')
             else:  # remove
@@ -526,7 +525,7 @@ def add(request, form_class=FileForm,template_name="files/add.html"):
 
             if not category_removed:
                 # update the sub category of the article
-                sub_category = file.file_sub_cat.name if file.file_sub_cat else u''
+                sub_category = file.file_sub_cat.name if file.file_sub_cat else ''
                 if sub_category:
                     Category.objects.update(file, sub_category, 'sub_category')
                 else:  # remove
@@ -587,7 +586,7 @@ def tinymce_fb(request, template_name="files/templates/tinymce_fb.html"):
     """
     Get a list of files (images) for tinymce file browser.
     """
-    query = u''
+    query = ''
     try:
         page_num = int(request.GET.get('page', 1))
     except:

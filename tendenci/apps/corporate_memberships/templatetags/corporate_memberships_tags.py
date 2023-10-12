@@ -201,7 +201,7 @@ class ListCorpMembershipNode(Node):
         return items
 
     def render(self, context):
-        query = u''
+        query = ''
         user = AnonymousUser()
         limit = None
         order = '-join_dt'

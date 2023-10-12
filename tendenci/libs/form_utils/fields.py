@@ -27,7 +27,7 @@ class FakeEmptyFieldFile(object):
 
     """
     def __str__(self):
-        return str('')
+        return ''
     _committed = True
 
 

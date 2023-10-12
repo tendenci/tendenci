@@ -1,4 +1,3 @@
-from builtins import str
 import datetime
 from datetime import timedelta
 
@@ -414,7 +413,7 @@ def template_update(request, template_id):
         else:
             zip_url = str("%s%s"%(site_url, template.get_zip_url()))
     else:
-        zip_url = str()
+        zip_url = ''
 
     #sync with campaign monitor
     try:
@@ -547,7 +546,7 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
                 else:
                     zip_url = str("%s%s"%(site_url, template.get_zip_url()))
             else:
-               zip_url = str()
+               zip_url = ''
 
             #sync with campaign monitor
             try:

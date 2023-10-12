@@ -18,7 +18,7 @@ SIMPLE_ANSWER = 22
 SIMPLE_QUESTION = _('What is 9 + 13? (security question -just so we know you\'re not a bot)')
 
 slug_re = compile(r'^[-\w\/]+$')
-validate_slug = RegexValidator(slug_re, _(u"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."), 'invalid')
+validate_slug = RegexValidator(slug_re, _("Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."), 'invalid')
 
 
 class NextURLForm(forms.Form):
@@ -84,8 +84,8 @@ class SlugField(CharField):
         Straight copy from django with modifications
     """
     default_error_messages = {
-        'invalid': _(u"Enter a valid 'slug' consisting of letters, numbers,"
-                    u" underscores (_), front-slashes (/) or hyphens."),
+        'invalid': _("Enter a valid 'slug' consisting of letters, numbers,"
+                    " underscores (_), front-slashes (/) or hyphens."),
     }
     default_validators = [validate_slug]
 
@@ -158,7 +158,7 @@ class CaptchaForm(FormControlWidgetMixin, forms.Form):
 
 
 class AddonUploadForm(forms.Form):
-    addon = forms.FileField(label=_(u'File'),
+    addon = forms.FileField(label=_('File'),
                            help_text=_("Enter the zip file of the module."))
 
     def clean_addon(self):

@@ -1,4 +1,3 @@
-from builtins import str
 import hashlib
 import os
 import mimetypes
@@ -315,7 +314,7 @@ class File(TendenciBaseModel):
 
         if not settings.USE_S3_STORAGE:
             if not os.path.exists(self.file.path):
-                return str()
+                return ''
 
         if settings.INDEX_FILE_CONTENT:
             if self.type() == 'pdf':
@@ -323,9 +322,9 @@ class File(TendenciBaseModel):
                 try:
                     return extract_pdf(self.file.file)
                 except:
-                    return str()
+                    return ''
 
-        return str()
+        return ''
 
     def is_public_file(self):
         return all([

@@ -95,7 +95,7 @@ class DiscountForm(TendenciBaseForm):
         if start_dt and end_dt:
             if start_dt > end_dt:
                 errors = self._errors.setdefault("end_dt", ErrorList())
-                errors.append(_(u"This cannot be earlier than the start date."))
+                errors.append(_("This cannot be earlier than the start date."))
 
         # Always return the full collection of cleaned data.
         return cleaned_data

@@ -69,7 +69,7 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
     search_category = forms.ChoiceField(
         choices=SEARCH_CATEGORIES_ADMIN,
         required=False,
-        label=_(u'Search by')
+        label=_('Search by')
     )
     q = forms.CharField(required=False)
     category = CategoryField(label=_('All Categories'), choices=[], required=False)

@@ -488,7 +488,7 @@ EXTRA_LANG_INFO = {
         'bidi': False, # right-to-left
         'code': 'tl',
         'name': 'Tagalog',
-        'name_local': u'Tagalog', #unicode codepoints here
+        'name_local': 'Tagalog', #unicode codepoints here
     },
 #     'tl_PH': {
 #         'bidi': False, # right-to-left
@@ -500,7 +500,7 @@ EXTRA_LANG_INFO = {
         'bidi': True, # right-to-left
         'code': 'he',
         'name': 'Hebrew',
-        'name_local': u'Hebrew', #unicode codepoints here
+        'name_local': 'Hebrew', #unicode codepoints here
     },
 }
 

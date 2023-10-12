@@ -1,4 +1,3 @@
-from builtins import str
 import uuid
 import copy
 from django.db import models

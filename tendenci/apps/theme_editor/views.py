@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import shutil
 import subprocess

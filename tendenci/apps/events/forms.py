@@ -1,4 +1,3 @@
-from builtins import str
 import re
 import imghdr
 import calendar
@@ -531,7 +530,7 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
             if self.event.anony_setting != 'open':
 
                 # check if user is eligiable for this pricing
-                email = self.cleaned_data.get('email', u'')
+                email = self.cleaned_data.get('email', '')
                 registrant_user = self.get_user(email)
 
                 if not registrant_user.is_anonymous:

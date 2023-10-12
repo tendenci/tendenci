@@ -1,4 +1,3 @@
-from builtins import str
 from xlwt import Workbook, easyxf
 
 from django.http import HttpResponse
@@ -53,12 +52,12 @@ class ExcelExporter(Exporter):
         stylevalue = easyxf('alignment: horizontal left, vertical top;')
         row_index = 0
         for index, x in enumerate(column_labels):
-            sheet1.write(row_index, index, u'%s' % x, stylebold)
+            sheet1.write(row_index, index, '%s' % x, stylebold)
         row_index += 1
 
         for g, rows in report_rows:
             if g:
-                sheet1.write(row_index, 0, u'%s' % g, stylebold)
+                sheet1.write(row_index, 0, '%s' % g, stylebold)
                 row_index += 1
             for row in list(rows):
                 if row.is_value():

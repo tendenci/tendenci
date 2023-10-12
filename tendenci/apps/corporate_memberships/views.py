@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import math
 from decimal import Decimal
@@ -2159,9 +2158,9 @@ def report_active_corp_members_by_type(request,
         table_data = []
         for corp_mem in corp_mems:
             corp_profile = corp_mem.corp_profile
-            invoice_pk = u''
+            invoice_pk = ''
             if corp_mem.invoice:
-                invoice_pk = u'%i' % corp_mem.invoice.pk
+                invoice_pk = '%i' % corp_mem.invoice.pk
             member_rep = corp_profile.get_member_rep()
             if member_rep:
                 member_rep_name = member_rep.user.get_full_name()

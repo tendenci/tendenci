@@ -52,21 +52,21 @@ class ProjectForm(TendenciBaseForm):
         widget=TinyMCE(
             attrs={'style':'width:100%'},
             mce_attrs={
-                'storme_app_label':u'projects',
+                'storme_app_label':'projects',
                 'storme_model':Project._meta.model_name.lower()
             }))
     video_description = forms.CharField(required=False,
         widget=TinyMCE(
             attrs={'style':'width:100%'},
             mce_attrs={
-                'storme_app_label':u'projects',
+                'storme_app_label':'projects',
                 'storme_model':Project._meta.model_name.lower()
             }))
     resolution = forms.CharField(required=False,
         widget=TinyMCE(
             attrs={'style':'width:100%'},
             mce_attrs={
-                'storme_app_label':u'projects',
+                'storme_app_label':'projects',
                 'storme_model':Project._meta.model_name.lower()
             }))
 

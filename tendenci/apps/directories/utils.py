@@ -148,7 +148,7 @@ def is_free_listing(user, pricing_id, list_type):
 
 
 def process_export(export_fields='all_fields', export_status_detail='',
-                   identifier=u'', user_id=0):
+                   identifier='', user_id=0):
     from tendenci.apps.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':
