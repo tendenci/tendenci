@@ -4,6 +4,7 @@
 
 {% block extra_head %}
 {{ block.super }}
+ <link rel="stylesheet" media="print" href="{% static 'css/events-sessions-list-print.css' %}">
 <style>
   .sub-events-grid .grid {
     -moz-column-width: 100em;
