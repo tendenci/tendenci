@@ -46,21 +46,23 @@
  {% for attend_dt in attend_dates %}
  	<h3>{{ attend_dt }}</h3>
 	 {% for reg_child_event in reg_child_events %}
-	 	{% if attend_dt == reg_child_event.child_event.start_dt.date %}
+	 	{% with reg_child_event.child_event as child_event %}
+	 	{% if attend_dt == child_event.start_dt.date %}
 	 	<div class="sub-event-row">
-	 		<h4><a href="{% url 'event' reg_child_event.child_event.id %}">{{ reg_child_event.child_event.title }}</a></h4>
-	 		{% with reg_child_event.child_event.speakers as speakers %}
+	 		<h4><a href="{% url 'event' child_event.id %}">{% if child_event.event_code %}{{ child_event.event_code }} - {% endif %}{{ child_event.title }}</a></h4>
+	 		{% with child_event.speakers as speakers %}
 	 		{% if speakers %}
 	 			{% trans "Speaker(s):" %} 
 	 			{% for speaker in speakers %}{{ speaker.name }}{% if forloop.parentloop and not forloop.last %}, {% endif %}{% endfor %}
 	 		{% endif %}
 	 		{% endwith %}
 	 		<div>
-	 		<span class="sub-event-time">{{ reg_child_event.child_event.start_dt|date:'h:i A' }} - {{ reg_child_event.child_event.end_dt|date:'h:i A' }}</span> {{ event.timezone.zone }}
+	 		<span class="sub-event-time">{{ child_event.start_dt|date:'h:i A' }} - {{ child_event.end_dt|date:'h:i A' }}</span> {{ event.timezone.zone }}
 			&nbsp;&nbsp;{% if reg_child_event.checked_in %}<span title="checked in" class="glyphicon glyphicon-ok-sign"></span>{% endif %}
 	 		</div>
 	 	</div>
 	 	{% endif %}
+	 	{% endwith %}
 	 {% endfor %}
  {% endfor %}
 </div>
