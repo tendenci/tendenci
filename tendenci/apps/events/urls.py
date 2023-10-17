@@ -63,6 +63,10 @@ urlpatterns = [
     re_path(r'^%s/export/status/(?P<identifier>\d+)/$' % urlpath, views.export_status, name="event.export_status"),
     re_path(r'^%s/export/download/(?P<identifier>\d+)/$' % urlpath, views.export_download, name="event.export_download"),
 
+    # Zoom urls
+    re_path(r'^%s/(?P<event_id>\d+)/zoom/$' % urlpath, views.zoom, name='event.zoom'),
+    re_path(r'^%s/(?P<event_id>\d+)/generate_zoom_credits/$' % urlpath, views.generate_zoom_credits, name='event.generate_zoom_credits'),
+
     # event badges
     re_path(r'^%s/(?P<event_id>\d+)/badges/$' % urlpath, views.event_badges, name='event.badges'),
 

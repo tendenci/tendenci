@@ -51,6 +51,9 @@ div.pricing-list-wrap li{
     padding: 3px 0;
     margin-left: 3px;
 }
+div.small-font {
+    font-size: .8em;
+}
 </style>
 {{ block.super }}
 {% endblock %}
@@ -65,6 +68,7 @@ div.pricing-list-wrap li{
     
     <!-- TOP -->
     <br />
+
     {% if event.status_detail == 'template' %}
     <div class="alert alert-info" role="alert">{% trans 'This is a event template.' %} 
     <a href="{% url 'event.add_from_template' event.pk %}" class="alert-link">{% trans 'Add an event using this template.' %}</a>
@@ -122,7 +126,21 @@ div.pricing-list-wrap li{
 			{% endif %}
 			{% if event.place.national %}
 				{% include 'events/include/display_national.html' %}
-			{% endif %}
+			      {% endif %}
+            {% if registrant_user and event.enable_zoom_meeting %}
+            <div class="btn btn-success">
+              <a href="{% url 'event.zoom' event.pk %}" style="color:white;">{% trans "Join Meeting" %}</a>
+            </div>
+            {% else %}
+            <div class="small-font">
+              {% if registrant_user and event.zoom_integration_setup %}
+              {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
+              Zoom meeting available from 10 minutes prior to <strong>{{ start_dt }}</strong> through <strong>{{ end_dt }}</strong>
+              {% endblocktrans %}
+            {% endif %}
+            </div>
+            {% endif %}
+
           </p>
         </div>
         <div class="col-xs-5">
@@ -442,9 +460,10 @@ div.pricing-list-wrap li{
 {{ block.super }}
 <script type="text/javascript" src="{% static 'js/jquery.tipsy.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/social_media_icons.js' %}"></script>
+
 <script type="text/javascript">
   $(document).ready(function(){
-  
+
   $('td.price-disabled').tipsy({
   gravity: 'e',
   live: true

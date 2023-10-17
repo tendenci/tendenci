@@ -76,6 +76,7 @@ from tendenci.apps.events.models import (
     RegistrantChildEvent,
     Registration,
     Registrant,
+    RegistrantChildEvent,
     Speaker,
     Organizer,
     Sponsor,
@@ -217,6 +218,40 @@ def event_custom_reg_form_list(request, event_id, template_name="events/event_cu
 
 
 @is_enabled('events')
+@login_required
+def zoom(request, event_id, template_name="events/zoom.html"):
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
+    registrant = event.get_registrant_by_user(request.user)
+
+    # If the user is not a registrant of this event or not paid, don't connect to Zoom
+    if not registrant or registrant.reg8n_status() == 'payment-required':
+        raise Http403
+
+    return render_to_resp(request=request, template_name=template_name, context={
+        'event': event,
+        'registrant': registrant
+    })
+
+
+@is_enabled('events')
+@login_required
+def generate_zoom_credits(request, event_id):
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
+
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    try:
+        event.generate_zoom_credits()
+        messages.add_message(request, messages.SUCCESS, _(f"Credits generated for {event.title}"))
+        return redirect(event.review_credits_url())
+    except Exception as e:
+        messages.add_message(request, messages.ERROR, _(e.args[0]))
+
+    return redirect(event.get_absolute_url())
+
+
+@is_enabled('events')
 def details(request, id=None, private_slug=u'', template_name="events/view.html"):
     if not id and not private_slug:
         return HttpResponseRedirect(reverse('event.month'))
@@ -304,6 +339,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'free_event': free_event,
         'can_view_attendees': can_view_attendees,
         'is_admin': request.user.profile.is_superuser,
+        'registrant_user': request.user if my_registrants and my_registrants[0].reg8n_status() != 'payment-required' else None,
         'my_registrants': my_registrants,
     })
 
@@ -905,7 +941,12 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
 
     # response
     return render_to_resp(request=request, template_name=template_name,
-        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "location"})
+        context={
+            'event': event,
+            'use_zoom_integration': get_setting("module", "events", "enable_zoom"),
+            'multi_event_forms': multi_event_forms,
+            'label': "location"
+        })
 
 
 
@@ -1876,6 +1917,7 @@ def add(request, year=None, month=None, day=None, is_template=False, parent_even
         return render_to_resp(request=request, template_name=template_name,
             context={
             'is_template': is_template,
+            'use_zoom_integration': get_setting("module", "events", "enable_zoom"),
             'multi_event_forms':[
                 form_event,
                 form_place,

@@ -1,6 +1,7 @@
 from csv import writer
 from datetime import datetime
 
+from django import forms
 from django.contrib import admin, messages
 from django.db import models
 from django.db.models import Count
@@ -19,7 +20,8 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
                                          CustomRegFormEntry, CustomRegFieldEntry, Event,
                                          CEUCategory, SignatureImage, CertificateImage,
-                                         RegistrantCredits)
+                                         RegistrantCredits, VirtualEventCreditsLogicConfiguration,
+                                         ZoomAPIConfiguration)
 from tendenci.apps.events.forms import (CustomRegFormAdminForm, CustomRegFormForField, TypeForm,
                                         StandardRegAdminForm)
 from tendenci.apps.event_logs.models import EventLog
@@ -363,12 +365,20 @@ class RegistrantCreditsEventFilter(admin.SimpleListFilter):
 
 
 class RegistrantCreditsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'registrant', 'event_code', 'event', 'credit_name', 'credits', 'released')
+    list_display = ('id', 'registrant', 'event_code', 'event_link', 'credit_name', 'credits', 'released')
     list_editable = ('credits', 'released')
     search_fields = ('event__title', 'event__event_code',)
-    readonly_fields = ('registrant', 'event_credit', 'event')
+    readonly_fields = ('registrant', 'event_credit', 'event_link')
     list_filter = ('released', RegistrantCreditsEventFilter)
     actions = ["release"]
+
+
+    def event_link(self, obj):
+        return mark_safe('<a href="{}">{}</a>'.format(
+            obj.event.get_absolute_url(),
+            obj.event
+        ))
+    event_link.short_description = 'event'
 
     def release(self, request, queryset):
         """Release all credits"""
@@ -394,8 +404,67 @@ class RegistrantCreditsAdmin(admin.ModelAdmin):
         return obj.event.event_code
     event_code.short_description = _('Event Code')
 
+
+class VirtualEventCreditsLogicConfigurationAdmin(admin.ModelAdmin):
+    list_display = (
+        'edit',
+        'credit_period',
+        'credit_period_questions',
+        'full_credit_percent',
+        'full_credit_questions',
+        'half_credits_allowed',
+        'half_credit_periods',
+        'half_credit_credits',
+    )
+
+    def edit(self, obj):
+        return 'Edit'
+
+    def has_add_permission(self, request):
+        return not VirtualEventCreditsLogicConfiguration.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+class ZoomAPIConfigurationForm(forms.ModelForm):
+    class Meta:
+        model = ZoomAPIConfiguration
+        fields = '__all__'
+        widgets = {
+            'sdk_client_secret': forms.PasswordInput(
+                render_value = True, attrs={'autocomplete': 'new-password'}),
+            'oauth_client_secret': forms.PasswordInput(
+                render_value = True, attrs={'autocomplete': 'new-password'})
+        }
+
+
+class ZoomAPIConfigurationAdmin(admin.ModelAdmin):
+    """Configure Zoom API credentials"""
+    form = ZoomAPIConfigurationForm
+    list_display=('account_name', 'use_as_default')
+    list_editable=('use_as_default',)
+
+    def save_model(self, request, obj, form, change):
+        if obj.use_as_default:
+            ZoomAPIConfiguration.objects.update(use_as_default=False)
+        super().save_model(request, obj, form, change)
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and not obj.use_as_default and ZoomAPIConfiguration.objects.filter(
+                use_as_default=True).exists():
+            return ['use_as_default']
+        return super().get_readonly_fields(request, obj)
+
+
+if get_setting('module', 'events', 'enable_zoom'):
+    admin.site.register(ZoomAPIConfiguration, ZoomAPIConfigurationAdmin)
+
 if get_setting('module', 'events', 'use_credits'):
     admin.site.register(CEUCategory, CEUCategoryAdmin)
+
+    if get_setting('module', 'events', 'enable_zoom'):
+        admin.site.register(VirtualEventCreditsLogicConfiguration, VirtualEventCreditsLogicConfigurationAdmin)
 
 
 admin.site.register(RegistrantCredits, RegistrantCreditsAdmin)
