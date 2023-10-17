@@ -719,7 +719,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 EventLog.objects.log(instance=event)
                 msg_string = 'Sucessfully copied Event: %s.<br />Edit this event now.' % str(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
-            return redirect('event.edit', id=event.id)
+                return redirect('event.edit', id=event.id)
 
         form_attendees = DisplayAttendeesForm(request.POST)
         post_data = request.POST
