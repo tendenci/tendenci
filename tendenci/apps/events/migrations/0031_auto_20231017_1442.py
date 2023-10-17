@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='place',
             name='use_zoom_integration',
-            field=models.BooleanField(default=False, help_text='Use Zoom integration to allow launching Zoom meeting from Event.'),
+            field=models.BooleanField(default=False, help_text='Use Zoom integration to allow launching Zoom meeting from Event.<br />Note: The credits generated via Zoom meeting can override those specified under the Credits tab.'),
         ),
         migrations.AddField(
             model_name='place',

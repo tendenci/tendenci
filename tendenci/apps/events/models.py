@@ -139,7 +139,7 @@ class Place(models.Model):
     # Zoom integration
     use_zoom_integration = models.BooleanField(
         default=False,
-        help_text=_('Use Zoom integration to allow launching Zoom meeting from Event.')
+        help_text=_('Use Zoom integration to allow launching Zoom meeting from Event.<br />Note: The credits generated via Zoom meeting can override those specified under the Credits tab.')
     )
     zoom_api_configuration = models.ForeignKey(
         'ZoomAPIConfiguration',
