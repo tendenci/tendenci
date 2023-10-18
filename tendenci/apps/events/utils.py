@@ -1455,14 +1455,11 @@ def clean_price(price, user):
 
 def copy_child_events(event, new_event, user, reuse_rel):
     """Copy child events for a given Event"""
-    new_event_pks = set()
-
     # Copy all child events. Start with events that are not repeats of another.
     # This will make it so we can later tie copies of the repeated event with the
     # correct newly copied event it is a repeat of.
     for child_event in event.all_child_events.filter(repeat_of__isnull=True):
-        new_child_event = copy_event(child_event, user, reuse_rel=reuse_rel)
-        new_event_pks.add(new_child_event.pk)
+        new_child_event = copy_event(child_event, user, reuse_rel=reuse_rel, new_parent_id=new_event.pk)
 
         # If there are repeat events for this child event, copy them as well.
         for repeat_event in event.all_child_events.filter(repeat_of_id=child_event.pk):
@@ -1475,7 +1472,6 @@ def copy_child_events(event, new_event, user, reuse_rel):
             new_repeat_event.parent = new_event
             new_repeat_event.save(update_fields=['parent', 'repeat_of', 'repeat_uuid'])
 
-    Event.objects.filter(pk__in=new_event_pks).update(parent_id=new_event.pk)
 
 def copy_event(
         event,
@@ -1483,7 +1479,8 @@ def copy_event(
         reuse_rel=False,
         set_repeat_of=False,
         copy_to=None,
-        should_copy_child_events=False):
+        should_copy_child_events=False,
+        new_parent_id=None):
     #copy event
     if not copy_to:
         new_event = Event()
@@ -1523,6 +1520,8 @@ def copy_event(
     new_event.owner_username = user.username
     new_event.status = event.status
     new_event.status_detail = event.status_detail
+    if new_parent_id:
+        new_event.parent_id = new_parent_id
     new_event.save()
 
     if not new_event.groups.all().exists():
