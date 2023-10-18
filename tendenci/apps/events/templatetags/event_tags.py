@@ -96,6 +96,12 @@ def event_current_app(context, user, event=None):
     return context
 
 
+@register.inclusion_tag("events/clone_modal.html", takes_context=True)
+def event_clone_modal(context, event):
+    context.update({"event": event})
+    return context
+
+
 @register.inclusion_tag("events/reg8n/cancel_modal.html", takes_context=True)
 def event_cancel_modal(
         context, event, hash=None, registrant=None, registrants=[], registration=None):

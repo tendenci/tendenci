@@ -2339,6 +2339,11 @@ class Event(TendenciBaseModel):
         self.private_slug = self.private_slug or Event.make_slug()
 
     @property
+    def has_any_child_events(self):
+        """Indicate whether event has child events, whether or not they are in the Event window"""
+        return self.nested_events_enabled and self.all_child_events.exists()
+
+    @property
     def has_child_events(self):
         """Indicate whether event has child events"""
         return self.nested_events_enabled and self.child_events.exists()
