@@ -190,9 +190,9 @@ def index(request, username='', template_name="profiles/index.html"):
     registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=datetime.now())
     
     if request.user.is_superuser:
-        # a list of upcoming events (up to 10) that this user has not registered yet
+        # a list of upcoming events (up to 10) that this user has not registered yet (or canceled)
         upcoming_events = Event.objects.exclude_children().filter(start_dt__gt=datetime.now())
-        registered_event_ids = registrations.values_list('registration__event_id', flat=True)
+        registered_event_ids = registrations.filter(cancel_dt__isnull=True).values_list('registration__event_id', flat=True)
         if registered_event_ids:
             upcoming_events = upcoming_events.exclude(id__in=registered_event_ids)
         upcoming_events = upcoming_events.order_by('start_dt')[:10]

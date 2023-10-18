@@ -255,6 +255,7 @@ class ProfileForm(TendenciBaseForm):
                   'is_billing_address_2',
                   'url',
                   'dob',
+                  'member_number_2',
                   'ssn',
                   'spouse',
                   'time_zone',
@@ -355,7 +356,9 @@ class ProfileForm(TendenciBaseForm):
                                                     required=self.fields['state_2'].required)
             self.fields['state'].widget.attrs.update({'class': 'form-control'})
             self.fields['state_2'].widget.attrs.update({'class': 'form-control'})
-            
+        if get_setting('module', 'users', 'showmembernumber2'):
+            self.fields['member_number_2'].label = get_setting('module', 'users', 'membernumber2label')
+            self.fields['member_number_2'].required = False
 
     def clean_username(self):
         """

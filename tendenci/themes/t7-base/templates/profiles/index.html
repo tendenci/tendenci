@@ -394,15 +394,26 @@
           <div class="table-responsive">
             <table class="table">
               {% for reg in registrations %}
+              {% with reg.reg8n_status as reg8n_status %}
               <tr>
                 <td>
                   <a href="{{ reg.get_absolute_url }}">{% trans "Registration" %} #{{ reg.registration.pk }}</a>
                 </td>
                 <td>
-                  {{ reg.reg8n_status }}
+                  <span class="{%if reg8n_status == "cancelled" %}text-muted{% else %}{%if reg8n_status == "payment-required" %}text-danger{% else %}text-info{% endif %}{% endif %}">{{ reg8n_status }}</span>
+                  {% if reg.event.has_child_events and reg.user %}
+	                  {% if reg8n_status != "cancelled" and reg8n_status != "payment-required" %}
+	                  	<div><a href="{% url "event.sessions" reg.pk %}">{% if request.user == reg.user %}{% trans "View my Schedule" %}{% else %}{% trans "View Schedule" %}{% endif %}</a></div>
+	                  {% endif %}
+                  {% endif %}
+                  {% if reg8n_status == "payment-required" %}
+                  		{% with reg.invoice as invoice %}
+	                  	<div><a href="{% url 'payment.pay_online' invoice.pk guid %}">{% trans "Pay Online" %}</a></div>
+	                  	{% endwith %}
+	               {% endif %}
                 </td>
                 <td>
-                  {% if reg.event.can_cancel and reg.reg8n_status != "cancelled" %}
+                  {% if reg.event.can_cancel and reg8n_status != "cancelled" %}
                   <a href="{% url 'event.cancel_registration' reg.event.pk reg.registration.pk %}">
                     {% trans "Cancel" %}
                   </a>
@@ -415,6 +426,7 @@
                   {{ reg.registration.event.start_dt }} - {{ reg.registration.event.end_dt }}
                 </td>
               </tr>
+              {% endwith %}
               {% endfor %}
             </table>
           </div>

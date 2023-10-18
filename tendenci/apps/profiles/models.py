@@ -527,6 +527,12 @@ class Profile(Person):
         return self.user.chaptermembership_set.exclude(
                status_detail='archive').order_by('chapter', '-create_dt')
 
+    def names_of_chapters(self):
+        """
+        Names of chapters that this user is a member of.
+        """
+        return ', '.join([m.chapter.title for m in self.chapter_memberships()]) 
+
     def get_chapters(self):
         """
         Get a list of chapters that this user is a member of.

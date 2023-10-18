@@ -1986,9 +1986,11 @@ def create_member_registration(user, event, form, for_member=False):
     from tendenci.apps.profiles.models import Profile
 
     pricing = form.cleaned_data['pricing']
+    override = form.cleaned_data.get('override', False)
+    override_price = form.cleaned_data.get('override_price')
     reg_attrs = {'event': event,
                  'reg_conf_price': pricing,
-                 'amount_paid': pricing.price,
+                 'amount_paid': pricing.price if not override else override_price,
                  'creator': user,
                  'owner': user}
 
@@ -2007,14 +2009,18 @@ def create_member_registration(user, event, form, for_member=False):
             exists = event.registrants().filter(user=user)
             if not exists:
                 registration = Registration.objects.create(**reg_attrs)
+                if not override_price:
+                    override_price = Decimal(0)
                 registrant_attrs = {'registration': registration,
                                     'user': user,
                                     'first_name': user.first_name,
                                     'last_name': user.last_name,
                                     'email': user.email,
                                     'is_primary': True,
-                                    'amount': pricing.price,
-                                    'pricing': pricing}
+                                    'amount': pricing.price if not override else override_price,
+                                    'pricing': pricing,
+                                    'override': override,
+                                    'override_price': override_price}
                 Registrant.objects.create(**registrant_attrs)
                 registration.save_invoice()
                 registration_ids.append(registration.id)
@@ -2281,7 +2287,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
         email.send()
 
 
-def handle_registration_payment(reg8n):
+def handle_registration_payment(reg8n, redirect_url_only=False):
     """
     Handle registration payment based on method selected
     Returns redirect URL if applicable.
@@ -2298,13 +2304,20 @@ def handle_registration_payment(reg8n):
         # online payment
         # get invoice; redirect to online pay
         # email the admins as well
+        if not redirect_url_only:
+            if not reg_conf.payment_required or reg_conf.external_payment_link:
+                email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
 
-        email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
         if reg_conf.external_payment_link:
             return reg_conf.external_payment_ink
 
         return reverse('payment.pay_online', args=[reg8n.invoice.id, reg8n.invoice.guid])
     else:
+        if redirect_url_only:
+            return None
+
+        if not reg8n.invoice:
+            return None
         # offline payment:
         # send email; add message; redirect to confirmation
         primary_registrant = reg8n.registrant
