@@ -15,26 +15,15 @@
       height: 3in;
       float: left;
   }
-  .col-badge.back {
-      float: right;
-  }
 
   @media print {
       @page {
           size: portrait;
-          margin-right: .2in !important;
-          margin-left: .2in !important;
-          margin-top: .95in !important;
+          margin-right: .25in !important;
+          margin-left: .25in !important;
+          margin-top: 1.05in !important;
           margin-bottom: .8in !important;
           size: letter;
-          duplex: duplex;
-      }
-      .badge-row.front {
-          margin-left: 4px;
-      }
-      .badge-row.back {
-          margin-right: 4px;
-          margin-top: 4px;
       }
       .col-badge {
           width: 4in;
@@ -66,10 +55,13 @@
   <div class="badge-wrap">
     {% for registrant_data in registrants %}
     {% if not forloop.parentloop.first %}<div class="page-break" style="clear:both;"></div>{% endif %}
-    <div class="badge-row {{registrant_data.display }}">
+    <div class="badge-row">
       {% for registrant in registrant_data.registrants %}
-      <div class="col-badge {{ registrant_data.display }}">
-        {% badge registrant registrant_data.display %}
+      <div class="col-badge">
+        {% badge registrant 'front' %}
+      </div>
+      <div class="col-badge">
+        {% badge registrant 'back' %}
       </div>
       {% endfor %}
     </div>

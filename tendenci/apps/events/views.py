@@ -4338,22 +4338,19 @@ def event_badges(request, event_id=0, template_name='events/badges.html'):
 
     for registration in registrations:
         for registrant in registration.registrant_set.filter(cancel_dt__isnull=True):
+            has_max_badges_per_page = len(current_batch) == 3
             if payment_required and registration.not_paid():
                 # they're not paid, skip
                 continue
-            
-            has_max_badges_per_page = len(current_batch) == 6
 
             if not has_max_badges_per_page:
                 current_batch.append(registrant)
             if has_max_badges_per_page:
-                registrants.append({'display': 'front', 'registrants': current_batch.copy()})
-                registrants.append({'display': 'back', 'registrants': current_batch.copy()})
+                registrants.append({'registrants': current_batch.copy()})
                 current_batch = list()
 
     if current_batch:
-        registrants.append({'display': 'front', 'registrants': current_batch.copy()})
-        registrants.append({'display': 'back', 'registrants': current_batch.copy()})
+        registrants.append({'registrants': current_batch.copy()})
 
     return render_to_resp(request=request, template_name=template_name,
         context={
@@ -4384,8 +4381,7 @@ def registrant_badge(request, registrant_id=0, template_name='events/badges.html
 
 
     registrants = [
-        {'display': 'front', 'registrants': [registrant]},
-        {'display': 'back', 'registrants': [registrant]},
+        {'registrants': [registrant]},
     ]
 
     return render_to_resp(request=request, template_name=template_name,
