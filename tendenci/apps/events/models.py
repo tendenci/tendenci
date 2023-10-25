@@ -174,9 +174,6 @@ class Place(models.Model):
     country = models.CharField(max_length=150, blank=True)
     national = models.BooleanField(default=False, help_text=_('Is it a national event?'))
 
-    use_zoom_integration = models.BooleanField(default=False)
-    is_zoom_webinar = models.BooleanField(default=False)
-
     # online location
     url = models.URLField(blank=True)
 
