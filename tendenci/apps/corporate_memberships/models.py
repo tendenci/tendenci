@@ -1285,7 +1285,12 @@ class CorpMembership(TendenciBaseModel):
                 assign_to_user.save()
 
                 # create a profile for this new user
-                Profile.objects.create_profile(assign_to_user)
+                profile = Profile(user=assign_to_user,
+                                  creator_id=assign_to_user.id,
+                                  owner_id=assign_to_user.id,
+                                  creator_username=assign_to_user.username,
+                                  owner_username=assign_to_user.username)
+                profile.save()
 
             self.creator = assign_to_user
             self.creator_username = assign_to_user.username

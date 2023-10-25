@@ -47,6 +47,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.events.models import ZoomAPIConfiguration
 from tendenci.apps.events.settings import FIELD_MAX_LENGTH
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.widgets import PercentWidget
@@ -347,7 +348,7 @@ def attendance_dates_callback(field, event, is_admin):
     return field.formfield()
 
 
-class FormForCustomRegForm(AttendanceDatesMixin, forms.ModelForm):
+class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.ModelForm):
 
     class Meta:
         model = CustomRegFormEntry
@@ -497,6 +498,8 @@ class FormForCustomRegForm(AttendanceDatesMixin, forms.ModelForm):
         self.price = Decimal('0.00')
         self.saved_data = {}
         # -------------------------
+        
+        self.add_form_control_class()
 
     def get_user(self, email=None):
         user = None
@@ -1227,6 +1230,11 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
 
     field_order = [
                 'virtual',
+                'use_zoom_integration',
+                'zoom_api_configuration',
+                'zoom_meeting_id',
+                'zoom_meeting_passcode',
+                'is_zoom_webinar',
                 'place',
                 'name',
                 'description',
@@ -1265,6 +1273,10 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
         if get_setting('module', 'events', 'stateusedropdown'):
             self.fields['state'] = StateSelectField(label=_('State'), required=False)
             self.add_form_control_class()
+
+        default_zoom_config = ZoomAPIConfiguration.objects.filter(use_as_default=True).first()
+        if default_zoom_config:
+            self.fields['zoom_api_configuration'].initial = default_zoom_config
 
     def save(self, *args, **kwargs):
         commit = kwargs.pop('commit', True)
@@ -2111,7 +2123,7 @@ class ChildEventRegistrationForm(forms.Form):
 
         for index, start_dt in enumerate(sub_event_datetimes.keys()):
             child_events = upcoming_child_events.filter(start_dt=start_dt)
-            choices = [(event.pk, event.title) for event in child_events if not event.at_capacity]
+            choices = [(event.pk, f'{event.event_code} - {event.title}' if event.event_code else event.title) for event in child_events if not event.at_capacity]
             # Check if registrant already has selection. If so, make sure it's in choices
             selection = None
             current_child_event = registrant.child_events.filter(
@@ -2138,7 +2150,7 @@ class ChildEventRegistrationForm(forms.Form):
                 self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'].initial = selection
 
 
-class RegistrantForm(AttendanceDatesMixin, forms.Form):
+class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
     """
     Registrant form.
     """
@@ -2253,6 +2265,7 @@ class RegistrantForm(AttendanceDatesMixin, forms.Form):
         if not self.event.is_table and reg_conf.allow_free_pass:
             self.fields['use_free_pass'] = forms.BooleanField(label=_("Use Free Pass"),
                                                              required=False)
+        self.add_form_control_class()
 
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
@@ -2567,7 +2580,7 @@ class MessageAddForm(forms.ModelForm):
 
     class Meta:
         model = Email
-        fields = ('subject', 'body',)
+        fields = ('subject', 'body', 'sender_display', 'reply_to')
 
     def __init__(self, event_id=None, *args, **kwargs):
         super(MessageAddForm, self).__init__(*args, **kwargs)
@@ -2575,6 +2588,7 @@ class MessageAddForm(forms.ModelForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+
 
 class EmailForm(forms.ModelForm):
     #events = forms.CharField()
@@ -2765,6 +2779,20 @@ class UserMemberRegBaseForm(FormControlWidgetMixin, forms.Form):
             widget=forms.RadioSelect(),)
         self.fields['pricing'].label_from_instance = _get_price_labels
         self.fields['pricing'].empty_label = None
+        self.fields['override'] = forms.BooleanField(label=_("Admin Price Override?"),
+                                  required=False)
+        self.fields['override_price'] = forms.DecimalField(label=_("Override Price"),
+                                            max_digits=10,
+                                            decimal_places=2,
+                                            required=False)
+
+    def clean_override_price(self):
+        override = self.cleaned_data['override']
+        override_price = self.cleaned_data['override_price']
+        if override:
+            if (override_price is None) or override_price < 0:
+                raise forms.ValidationError(_('Override price must be a positive number.'))
+        return override_price
 
 
 class MemberRegistrationForm(UserMemberRegBaseForm):

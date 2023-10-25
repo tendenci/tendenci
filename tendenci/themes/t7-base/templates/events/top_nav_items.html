@@ -1,4 +1,5 @@
 {% load base_tags %}
+{% load event_tags %}
 {% load perm_tags %}
 {% load site_setting_tags %}
 
@@ -176,6 +177,13 @@
                                 <a href="{{ app_object.parent.get_absolute_url }}">{% trans "View Parent Event" %}</a>
                             </span>
                         </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.sub_event_check_in' app_object.parent.pk %}">{% trans "Session Check In Grid" %}</a>
+                            </span>
+                        </li>
+
                         {% if app_object.events_with_credits %}
                         <li class="content-item">
                             <span class="app-name">
@@ -184,8 +192,23 @@
                         </li>
                         {% endif %}
                         {% endif %}
+                        
+                        {% if app_object.zoom_credits_ready and request.user.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.generate_zoom_credits' app_object.pk %}">{% trans "Generate Zoom Credits" %}</a>
+                            </span>
+                        </li>
+                        {% endif %}
 
                         {% if app_object.nested_events_enabled and not app_object.parent %}
+                        {% if app_object.has_child_events %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.sub_event_check_in' app_object.pk %}">{% trans "Sesssion Check In Grid" %}</a>
+                            </span>
+                        </li>
+                        {% endif %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'event.add_child' app_object.pk %}">{% trans "Add Sub-Event" %}</a>
@@ -272,8 +295,16 @@
                             {% if can_add_event %}
                                 <li class="content-item">
                                     <span class="app-name">
+                                        {% if event.has_any_child_events and event.nested_events_enabled %}
+                                        <a href="#" data-toggle="modal" data-target="#cloneModal">{% trans "Clone Event" %}</a>
+                                        {% else %}
                                         <a href="{% url 'event.copy' app_object.pk %}">{% trans "Clone Event" %}</a>
+                                        {% endif %}
                                     </span>
+                                    <!-- Clone Modal  -->
+                                    <div id="cloneModal" class="modal fade" role="dialog">
+                                        {% event_clone_modal event %}
+                                    </div>
                                 </li>
                             {% endif %}
 

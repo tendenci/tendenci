@@ -1,7 +1,12 @@
 from builtins import str
 import uuid
 from hashlib import md5
+import jwt
+import json
 import operator
+import pytz
+from model_utils import FieldTracker
+from collections import OrderedDict
 from datetime import datetime, timedelta
 from dateutil.parser import parse
 from functools import reduce
@@ -38,6 +43,7 @@ from tendenci.apps.user_groups.models import GroupMembership
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.files.models import File
+from tendenci.apps.site_settings.crypt import encrypt, decrypt
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import PaymentMethod as GlobalPaymentMethod
 
@@ -49,6 +55,7 @@ from tendenci.apps.emails.models import Email
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.trainings.models import Course, Certification
+from tendenci.apps.zoom import ZoomClient
 
 # from south.modelsinspector import add_introspection_rules
 # add_introspection_rules([], [r'^timezone_field\.TimeZoneField'])
@@ -129,6 +136,35 @@ class Place(models.Model):
     name = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
 
+    # Zoom integration
+    use_zoom_integration = models.BooleanField(
+        default=False,
+        help_text=_('Use Zoom integration to allow launching Zoom meeting from Event.<br />Note: The credits generated via Zoom meeting can override those specified under the Credits tab.')
+    )
+    zoom_api_configuration = models.ForeignKey(
+        'ZoomAPIConfiguration',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text=_("Zoom API credentials for the account you want to use for this Event's meeting.")
+    )
+    zoom_meeting_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=_('Zoom meeting ID for this Event.')
+    )
+    zoom_meeting_passcode = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=_('Zoom meeting passcode for this Event.')
+    )
+    is_zoom_webinar = models.BooleanField(
+        default=False,
+        help_text=_('Check if the Zoom meeting is a webinar.')
+    )
+
     # offline location
     address = models.CharField(max_length=150, blank=True)
     city = models.CharField(max_length=150, blank=True)
@@ -158,6 +194,111 @@ class Place(models.Model):
 
     def city_state(self):
         return [s for s in (self.city, self.state) if s]
+
+
+class VirtualEventCreditsLogicConfiguration(models.Model):
+    credit_period = models.PositiveSmallIntegerField(
+        _('Period (Number of Minutes per Credits Earned)'),
+        default=50,
+        help_text=_('Number of minutes to earn 1 full credit.')
+    )
+    credit_period_questions = models.PositiveSmallIntegerField(
+        _('Number of Questions for each credit period'),
+        default=4,
+        help_text=_('Total number of questions per credit period.')
+    )
+    full_credit_percent = models.DecimalField(
+        _('Percent of Questions Correct for Full Credit'),
+        blank=True,
+        null=True,
+        max_digits=2,
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        help_text=_('Per period. Leave blank if using number of questions.')
+    )
+    full_credit_questions = models.PositiveSmallIntegerField(
+        _('Number of Questions for Full Credit'),
+        blank=True,
+        null=True,
+        help_text=_('Per period. Leave blank if using percentage.')
+    )
+    half_credits_allowed = models.BooleanField(_('Half Credits Allowed'), default=True)
+    half_credit_periods = models.PositiveSmallIntegerField(
+        _('Number of Periods after which Half Credits Can be Earned'),
+        default=0,
+        help_text=_('Leave 0 if allowed for entirety of event')
+    )
+    half_credit_credits = models.PositiveIntegerField(
+        _('Number of full credits required before half credits can be earned.'),
+        default=0,
+        help_text=_('Leave 0 if there is no requirement.')
+    )
+
+    class Meta:
+        verbose_name =_('Virtual Event Credits Logic Configuration')
+        verbose_name_plural =_('Virtual Event Credits Logic Configuration')
+
+
+class ZoomAPIConfiguration(models.Model):
+    """API Configuration to use for Zoom Events"""
+    account_name = models.CharField(
+        max_length=255,
+        help_text=_('Used to easily identify this Zoom account.')
+    )
+    sdk_client_id = models.CharField(
+        max_length=100,
+        help_text=_('Client ID for Zoom SDK app (to launch Zoom from Event).')
+    )
+    sdk_client_secret = models.CharField(
+        max_length=255,
+        help_text=_('Client secret for Zoom SDK app (to launch Zoom from Event).')
+    )
+    oauth_account_id = models.CharField(
+        max_length=100,
+        help_text=_('Account ID for Zoom Server to Server OAuth app (get meeting/webinar info).')
+    )
+    oauth_client_id = models.CharField(
+        max_length=100,
+        help_text=_('Client ID for Zoom Server to Server OAuth app (get meeting/webinar info).')
+    )
+    oauth_client_secret = models.CharField(
+        max_length=255,
+        help_text=_('Client secret for Zoom Server to Server Oauth app (get meeting/webinar info).')
+    )
+    use_as_default = models.BooleanField(
+        default=False,
+        help_text=_(
+            'Check to use this as the default option when selecting a Zoom API Configuration. ' \
+            'Only one configuration can be used as default.'
+        )
+    )
+
+    tracker = FieldTracker(fields=['sdk_client_secret', 'oauth_client_secret'])
+
+    class Meta:
+        verbose_name =_('Zoom API Configuration')
+        verbose_name_plural =_('Zoom API Configurations')
+
+    def __str__(self):
+        return self.account_name
+
+    def get_sdk_secret(self):
+        return decrypt(self.sdk_client_secret)
+
+    def get_oauth_secret(self):
+        return decrypt(self.oauth_client_secret)
+
+    def save(self, *args, **kwargs):
+        """
+        Encode API secret before storing in database.
+        """
+        if self.tracker.has_changed("sdk_client_secret"):
+            self.sdk_client_secret = encrypt(self.sdk_client_secret)
+
+        if self.tracker.has_changed("oauth_client_secret"):
+            self.oauth_client_secret = encrypt(self.oauth_client_secret)
+
+        return super().save(*args, **kwargs)
 
 
 class CEUCategory(models.Model):
@@ -385,10 +526,9 @@ class RegistrationConfiguration(models.Model):
         Return boolean.
         """
         has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
-        has_account = get_setting('site', 'global', 'merchantaccount') != ''
-        has_api = any([settings.MERCHANT_LOGIN, settings.PAYPAL_MERCHANT_LOGIN])
+        has_account = get_setting('site', 'global', 'merchantaccount') not in ('asdf asdf asdf', '')
 
-        return all([has_method, has_account, has_api])
+        return all([has_method, has_account])
 
     def get_cancellation_fee(self, amount):
         """Get cancellation fee"""
@@ -786,6 +926,13 @@ class Registration(models.Model):
                 return True
         return False
 
+    def not_paid(self):
+        return self.invoice and self.invoice.balance > 0
+    
+    def is_credit_card_payment(self):
+        return self.payment_method and \
+            (self.payment_method.machine_name).lower() == 'credit-card'
+
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """
@@ -964,7 +1111,10 @@ class Registration(models.Model):
         """
         config = self.event.registration_configuration
 
-        balance = self.invoice.balance
+        if self.invoice:
+            balance = self.invoice.balance
+        else:
+            balance = 0
         if self.reg_conf_price is None or self.reg_conf_price.payment_required is None:
             payment_required = config.payment_required
         else:
@@ -1299,16 +1449,9 @@ class Registrant(models.Model):
 
     def sub_event_datetimes(self, is_admin=False):
         """Returns list of start_dt for available sub events"""
-        datetimes = dict()
         child_events = self.event.child_events if is_admin else self.available_child_events
 
-        for event in child_events:
-            if event.start_dt not in datetimes:
-                datetimes[event.start_dt] = event.end_dt
-            else:
-                datetimes[event.start_dt] = max(datetimes[event.start_dt], event.end_dt)
-
-        return datetimes
+        return self.event.sub_event_datetimes(child_events)
 
     @property
     def released_credits(self):
@@ -1532,6 +1675,27 @@ class Registrant(models.Model):
             return ', '.join([ln, fn])
         return fn or ln
 
+    def zoom_check_in(self, event):
+        """
+        Check in through Zoom. Will check in only if not
+        already checked in (if connection is lost then reconnected
+        check in datetime will reflect the initial check in).
+        Child event will be checked in if applicable. However,
+        credits will not be assigned (they will be generated from
+        Zoom poll results)
+        """
+        # Check in to parent Event
+        if not self.checked_in:
+            self.check_in_or_out(True)
+
+        # Check in to child Event (if this is a child event)
+        child_event = self.child_events.filter(child_event=event).first()
+        if child_event and not child_event.checked_in:
+            child_event.checked_in = True
+            child_event.checked_in_dt = datetime.now()
+            child_event.save()
+
+
     def check_in_or_out(self, check_in):
         """Check in or check out to/of main Event"""
         check_in_or_out = 'checked_in' if check_in else 'checked_out'
@@ -1734,10 +1898,7 @@ class Registrant(models.Model):
         else:
             balance = 0
 
-        if self.pricing is None or self.pricing.payment_required is None:
-            payment_required = config.payment_required
-        else:
-            payment_required = self.pricing.payment_required
+        payment_required = self.pricing and self.pricing.payment_required  or config.payment_required
 
         if self.cancel_dt:
             return 'cancelled'
@@ -2181,6 +2342,11 @@ class Event(TendenciBaseModel):
         self.private_slug = self.private_slug or Event.make_slug()
 
     @property
+    def has_any_child_events(self):
+        """Indicate whether event has child events, whether or not they are in the Event window"""
+        return self.nested_events_enabled and self.all_child_events.exists()
+
+    @property
     def has_child_events(self):
         """Indicate whether event has child events"""
         return self.nested_events_enabled and self.child_events.exists()
@@ -2197,6 +2363,42 @@ class Event(TendenciBaseModel):
             start_dt__gte=self.start_dt,
             end_dt__lte=self.end_dt,
         )
+
+    def sub_event_datetimes(self, child_events=None):
+        """Returns list of start_dt for available sub events"""
+        datetimes = dict()
+        child_events = child_events or self.child_events
+
+        for event in child_events:
+            if event.start_dt not in datetimes:
+                datetimes[event.start_dt] = event.end_dt
+            else:
+                datetimes[event.start_dt] = max(datetimes[event.start_dt], event.end_dt)
+
+        return datetimes
+
+    @property
+    def sub_events_by_datetime(self):
+        """Used to create grid of sub events by datetime"""
+        sub_events_by_datetime = OrderedDict()
+        sub_event_datetimes = self.sub_event_datetimes()
+
+        for start_dt in sub_event_datetimes.keys():
+            child_events = self.child_events.filter(start_dt=start_dt)
+            if not child_events.exists():
+                continue
+
+            day = start_dt.date()
+            start_time = start_dt.strftime("%-I:%M %p")
+            end_time = sub_event_datetimes[start_dt].strftime("%-I:%M %p")
+            time_slot = f'{start_time} - {end_time}'
+
+            if day not in sub_events_by_datetime:
+                sub_events_by_datetime[day] = OrderedDict()
+
+            sub_events_by_datetime[day][time_slot] = child_events
+        
+        return sub_events_by_datetime
 
     def get_child_events_by_permission(self, user=None, edit=False):
         action = 'edit' if edit else 'view'
@@ -2307,6 +2509,328 @@ class Event(TendenciBaseModel):
         """Signatures to display on certificate"""
         return self.eventstaff_set.filter(include_on_certificate=True).order_by('pk')
 
+    @property
+    def zoom_integration_setup(self):
+        """Indicates Zoom integration is enabled and setup."""
+        return (
+            get_setting("module", "events", "enable_zoom") and
+            self.use_zoom_integration and
+            self.zoom_meeting_number and
+            self.zoom_meeting_passcode
+        )
+
+    @property
+    def enable_zoom_meeting(self):
+        """
+        Indicates Zoom meeting should be enabled.
+        This should be enabled if use_zoom_integration is turned on,
+        and if there is a meeting number and passcode configured.
+        Meeting will not be enabled until 10 minutes before
+        event starts. Meeting will be available to join up until
+        the end_dt (allows participants to re-join if they lose connection)
+        """
+        ten_minutes_prior = datetime.now() >= self.start_dt - timedelta(minutes=10)
+
+        return (
+            ten_minutes_prior and
+            datetime.now() < self.end_dt and
+            self.zoom_integration_setup
+        )
+
+    @property
+    def zoom_meeting_number(self):
+        """Zoom meeting number for this event."""
+        return self.place.zoom_meeting_id if self.place else None
+
+    @property
+    def zoom_meeting_passcode(self):
+        """Zoom meeting passcode for this event."""
+        return self.place.zoom_meeting_passcode if self.place else None
+
+    @property
+    def use_zoom_integration(self):
+        """Use Zoom for this Event"""
+        return self.place.use_zoom_integration if self.place else None
+
+    @property
+    def is_zoom_webinar(self):
+        """Zoom meeting is a webinar"""
+        return self.place.is_zoom_webinar if self.place else False
+
+    @property
+    def zoom_api_configuration(self):
+        """Zoom API Configuration for this Event"""
+        return self.place.zoom_api_configuration if self.place else None
+
+    @property
+    def zoom_meeting_config(self):
+        if not self.zoom_api_configuration:
+            raise Exception(_("Zoom API not configured"))
+
+        return json.dumps({
+            'signature': self.zoom_jwt_token,
+            'sdkKey': self.zoom_api_configuration.sdk_client_id,
+            'meetingNumber':  self.zoom_meeting_number,
+            'passWord': self.zoom_meeting_passcode,
+            'tk': '',
+            'zak': ''
+        })
+
+    @property
+    def zoom_jwt_token(self):
+        """Generate token for Zoom meeting"""
+        if not self.zoom_api_configuration:
+            raise Exception(_("Zoom API not configured"))
+
+        max_exp = datetime.now().astimezone(pytz.UTC) + timedelta(hours=24)
+        end_dt = self.end_dt.astimezone(pytz.UTC)
+
+        payload = {
+            'sdkKey': self.zoom_api_configuration.sdk_client_id,
+            'mn': self.zoom_meeting_number,
+            'role': 0, # 0 is regular attendee, 1 is the host
+            'exp': min(end_dt, max_exp),
+            'appKey': self.zoom_api_configuration.sdk_client_id,
+        }
+
+        return jwt.encode(
+            payload, self.zoom_api_configuration.get_sdk_secret(), algorithm="HS256")
+
+    @property
+    def zoom_credits_ready(self):
+        """
+        Zoom credits are ready to generate.
+        They either have not been generated, or have not been released.
+        """
+        return (
+            self.zoom_integration_setup and
+            datetime.now() >= self.end_dt and
+            (
+                not self.registrantcredits_set.exists() or
+                self.registrantcredits_set.filter(released=False).exists()
+            )
+        )
+
+    def get_zoom_poll_results(self, client):
+        """Get Zoom poll responses"""
+        response = client.get_meeting_poll_results(self.zoom_meeting_number, self.is_zoom_webinar)
+
+        if not response.status_code == 200:
+            raise Exception(_('Failed to get poll results, check meeting ID and try again'))
+
+        questions = response.json().get('questions')
+
+        if not questions:
+            raise Warning(_('No questions were answered.'))
+
+        return questions
+
+    def get_registrant_by_user_name(self, user_name):
+        """Get registrant tied to this Event by user_name"""
+        event = self.parent if self.parent and self.nested_events_enabled else self
+
+        return Registrant.objects.filter(
+            registration__event_id=event.pk,
+            user__username=user_name
+        ).first()
+
+    def get_registrant_by_user(self, user):
+        """
+        Get registrant by user. If this is for a child event,
+        verify registrant is currently registered.
+        """
+        event = self.parent if self.parent and self.nested_events_enabled else self
+
+        # If no parent event is set, this is the parent event. Or if
+        # nested events are not enabled, this should function as a parent or
+        # standalone event
+        if not self.parent or not self.nested_events_enabled:
+            return Registrant.objects.filter(
+                registration__event_id=event.pk,
+                user_id=user.pk,
+                cancel_dt__isnull=True,
+            ).first()
+
+        # Return registrant tied to child event
+        registrant_child_event = RegistrantChildEvent.objects.filter(
+            child_event_id=self.pk,
+            registrant__user_id=user.pk,
+            registrant__cancel_dt__isnull=True
+        ).first()
+
+        return registrant_child_event.registrant if registrant_child_event else None
+
+    @cached_property
+    def virtual_event_credits_config(self):
+        """Configuration of rules for virtual event credit generation"""
+        config = VirtualEventCreditsLogicConfiguration.objects.first()
+
+        if not config:
+            raise Exception(_("Must setup Virtual Events Credits Configuration "))
+
+        return config
+
+    @property
+    def full_credit_questions(self):
+        """
+        Get the number of questions per credit period that
+        will earn a full credit. This is either full_credit_questions
+        in the config, or full_credit_percent * credit_period_questions
+        (also in the config)
+        """
+        config = self.virtual_event_credits_config
+
+        return config.full_credit_questions or (
+            config.full_credit_percent * config.credit_period_questions)
+
+    @property
+    def half_credit_questions(self):
+        """
+        Half credit questions represents the point where a
+        half credit should be earned in a Zoom event
+        """
+        config = self.virtual_event_credits_config
+
+        return config.credit_period_questions / 2
+
+    def generate_zoom_credits(self):
+        """Generate credits earned from Zoom event"""
+        if not self.zoom_api_configuration:
+            raise Exception(_("Zoom API not configured"))
+
+        client = ZoomClient(
+            client_id=self.zoom_api_configuration.oauth_client_id,
+            client_secret=self.zoom_api_configuration.get_oauth_secret(),
+            account_id=self.zoom_api_configuration.oauth_account_id
+        )
+
+        questions_answered = self.get_zoom_poll_results(client)
+        questions_by_user = dict()
+
+        # Get configuration for credit period.
+        config = self.virtual_event_credits_config
+
+        # Get credit_period timedelta to calculate elapsed time
+        # to determine what credit period a question is in.
+        credit_period_minutes = timedelta(minutes=config.credit_period, seconds=1)
+
+        # For each user that answered questions, count the number
+        # of questions answered within a credit period
+        for question in questions_answered:
+            # Get registrant by username
+            user_name = question.get('name')
+            registrant = self.get_registrant_by_user_name(user_name)
+            if not registrant:
+                continue
+
+            question_details = list(reversed(question.get('question_details', list())))
+
+            if user_name not in questions_by_user:
+                questions_by_user[user_name] = dict()
+
+            # Calculate elasped time since first answered question.
+            # From that, determine what credit period each question
+            # is in and count answered questions by the credit period
+            # for the user. Readjust start time if credits not earned in
+            # previous credit period
+            previous_question_index = 0  # Index (credit period) of previous question
+            previous_answers = None  # answers in previous credit period
+            index_offset = 0  # Offset to use when resetting start_dt
+            last_dt = list()  # Track datetimes of questions answered
+            credits_earned_list = list() # List of credit periods where credits were earned
+            should_reset_start_dt = False  # indicate start date should be reset
+            previous_answer_dt = None  # datetime of previous question's answer
+            start_dt = self.start_dt  # start datetime used to calculate time elasped
+
+            for detail in question_details:
+                if detail.get('answer'):
+                    answered_dt = datetime.strptime(detail.get('date_time'), '%Y-%m-%d %H:%M:%S')
+
+                    # Calculate what credit period this is based on elasped time since start.
+                    # Add index_offset to accomodate start datetime adjustments
+                    index = int((answered_dt - start_dt)/credit_period_minutes) + index_offset
+                    # Total questions answered so far in this credit period
+                    answered = questions_by_user[user_name].get(index, 0)
+
+                    # If answered is 0, this is the first answer in this credit period
+                    # Get the previous credit period's count of answers so we can
+                    # determine if start datetime should be reset (if full credit was not earned).
+                    if not answered:
+                        previous_answers = questions_by_user[user_name].get(previous_question_index)
+
+                    # If this isn't the first answer, the gap between this answer and the previous is
+                    # greater than credit_period_minutes or this is a new credit period and no credit
+                    # was earned in the previous credit period.
+                    if (
+                            (previous_answer_dt and
+                            (answered_dt - previous_answer_dt) >= credit_period_minutes) or
+                            not answered and previous_answers and previous_answers < self.full_credit_questions
+                    ):
+                        should_reset_start_dt = True
+
+                    # If this is at least the 2nd calculated credit period, there were answers in
+                    # the previous credit period, there were fewer answers than needed to get a credit:
+                    # Try the next available start date if not currently earning a credit (based on questions answered) and adjust counts.
+                    if (should_reset_start_dt):
+                        new_offset = 0  # value to add to index_offset
+
+                        # While there are datetimes to move start to and while we
+                        # haven't found a full credit period, keep moving start time
+                        # up
+                        while last_dt and not new_offset:
+                            # Move start date to answered question
+                            start_dt_data = last_dt.pop()
+                            new_start_dt = list(start_dt_data.keys())[0]
+                            start_dt_index = start_dt_data[new_start_dt]
+                            # If the new start date is prior to the old one,
+                            # if it's in the same credit period as current, or
+                            # if it's in a credit period that earned a credit, skip it
+                            if (
+                                    start_dt_index in credits_earned_list or
+                                    new_start_dt <= start_dt or
+                                    start_dt_index == index
+                            ):
+                                continue
+
+                            # Reset start datetime, and check elasped time to see
+                            # if we've found a full credit period. If so, increment
+                            # 'answered' to pull in the answer of the new start time
+                            # to the current period, and remove it from the previous.
+                            start_dt = new_start_dt
+                            new_offset = int((answered_dt - start_dt)/credit_period_minutes)
+                            if not new_offset:
+                                answered += 1
+                                questions_by_user[user_name][start_dt_index] -= 1
+
+                        index_offset = index  # Set index_offset to stay in correct credit period
+
+                    # Increment questions answers for current credit period for current answer
+                    # (includes answers pulled from previous credit period if start time reset)
+                    questions_by_user[user_name][index] = answered + 1
+
+                    # If credits have been earned, turn off switch to reset start time
+                    if questions_by_user[user_name][index] >= self.full_credit_questions:
+                        should_reset_start_dt = False
+
+                        # Since enough credits were earned in this credit period, we can't
+                        # go back here to reset start time.
+                        credits_earned_list.append(index)
+
+                    # Keep track of last question answered and the credit period it's in,
+                    # so we can reset start time if needed (if credits not earned)
+                    if questions_by_user[user_name][index] < self.full_credit_questions:
+                        last_dt.append({answered_dt: index})
+                    # Keep track of previous question's answered time so we can track time
+                    # between questions answered
+                    previous_answer_dt = answered_dt
+                    # Keep track of previous question's index, so we can deteremine
+                    # previous credit period
+                    previous_question_index = index
+
+            # Assign credits to registrant based on questions answered
+            self.assign_zoom_credits(registrant, questions_by_user[user_name])
+
+
     def get_meta(self, name):
         """
         This method is standard across all models that are
@@ -2315,21 +2839,72 @@ class Event(TendenciBaseModel):
         """
         return EventMeta().get_meta(self, name)
 
-    def assign_credits(self, registrant):
+
+    def assign_zoom_credits(self, registrant, questions_answered):
+        """
+        Assign credits from Event to Registrant for Zoom event,
+        based on questions answered and VirtualEventCreditsLogicConfiguration.
+        questions_answered is a dict with number of questions answered
+        for each credit period (calculated based on credit_period in configuration)
+        """
+        config = self.virtual_event_credits_config
+
+        total_credits = 0
+
+        # Get the number of questions per credit period that
+        # will earn a full credit. This is either full_credit_questions
+        # in the config, or full_credit_percent * credit_period_questions
+        # (also in the config)
+        full_credit_questions = self.full_credit_questions
+
+        # For each credit period, calculate how many credits should be
+        # earned based on configuration.
+        for credit_period in questions_answered:
+            # Half credits are allowed if enabled in the
+            # configuration, if total_credits has reached the
+            # amount indicated in the configuration, and question is
+            # in or after period where half credits are allowed per config.
+            half_credits_allowed = (
+                config.half_credits_allowed and
+                total_credits >= config.half_credit_credits and
+                credit_period >= config.half_credit_periods
+            )
+            # If registrant answered at or above full_credit_questions,
+            # award a full credit. If half credits are allowed, and registrant
+            # answered at least 1/2 the questions in a credit period, award
+            # a half credit
+            if questions_answered[credit_period] >= full_credit_questions:
+                total_credits += 1
+            elif half_credits_allowed and \
+                 questions_answered[credit_period] >= self.half_credit_questions:
+                total_credits += .5
+
+        self.assign_credits(registrant, total_credits)
+
+
+    def assign_credits(self, registrant, calculated_credits=0):
         """
         Assign credits from Event to Registrant.
         Credits default to un-released, so they can be overridden.
         """
-        event = registrant.event
         # only assign those credits that are available
         for credit in self.eventcredit_set.available():
-            RegistrantCredits.objects.get_or_create(
+            credits = calculated_credits or credit.credit_count
+
+            r_credit, _ = RegistrantCredits.objects.get_or_create(
                registrant_id=registrant.pk,
-               event=event,
-               credit_dt=event.start_dt,
+               event_id=self.pk,
                event_credit_id=credit.pk,
-               credits=credit.credit_count,
-           )
+               defaults={
+                   'credits': credits,
+                   'credit_dt': self.start_dt
+               },
+            )
+            # If registrant credit was found, but hasn't been released, allow
+            # it to update the credit count
+            if not r_credit.released and r_credit.credits != credits:
+               r_credit.credits = credits
+               r_credit.save(update_fields=['credits'])
 
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
@@ -2337,7 +2912,7 @@ class Event(TendenciBaseModel):
     def is_registrant_user(self, user):
         if hasattr(user, 'registrant_set'):
             return user.registrant_set.filter(
-                registration__event=self).exists()
+                registration__event=self, cancel_dt__isnull=True).exists()
         return False
 
     def get_absolute_url(self):
@@ -2347,8 +2922,7 @@ class Event(TendenciBaseModel):
         return reverse('event.edit', args=[self.pk])
 
     def review_credits_url(self):
-        site_url = get_setting('site', 'global', 'siteurl')
-        return f'{site_url}/admin/events/registrantcredits/?q={self.title}'
+        return f'/admin/events/registrantcredits/?event={self.id}'
 
     def get_registration_url(self):
         """ This is used to include a sign up url in the event.
@@ -2708,7 +3282,11 @@ class Event(TendenciBaseModel):
         if payment_required:
             params['registration__invoice__balance'] = 0
 
-        spots_taken = Registrant.objects.filter(**params).count()
+        if self.parent and self.nested_events_enabled:
+            spots_taken = RegistrantChildEvent.objects.filter(
+                child_event_id=self.pk, registrant__cancel_dt__isnull=True).count()
+        else:
+            spots_taken = Registrant.objects.filter(**params).count()
 
         if limit == 0:  # no limit
             return (spots_taken, -1)
@@ -2733,6 +3311,15 @@ class Event(TendenciBaseModel):
         return int(limit)
 
     @property
+    def total_spots(self):
+        """Total spots alloted for Event"""
+        limit = self.get_limit()
+        if not limit:
+            return ' _'
+
+        return limit
+
+    @property
     def total_registered(self):
         """Total registered for this Event"""
         # If this is a child event, registration information is in RegistrationChildEvent
@@ -2740,7 +3327,21 @@ class Event(TendenciBaseModel):
             return RegistrantChildEvent.objects.filter(
                 child_event_id=self.pk, registrant__cancel_dt__isnull=True).count()
 
-        return self.registrants_count({'cancel_dt__isnull': True})
+        payment_required = self.registration_configuration.payment_required
+        params = {'cancel_dt__isnull': True}
+        if payment_required:
+            params['registration__invoice__balance'] = 0
+
+        return self.registrants_count(params)
+
+    @property
+    def spots_remaining(self):
+        """Spots available for registration (display unlimited as '_')"""
+        _, spots_remaining = self.get_spots_status()
+        if spots_remaining < 0:
+            return ' _'
+
+        return spots_remaining
 
     @property
     def at_capacity(self):
@@ -2750,6 +3351,23 @@ class Event(TendenciBaseModel):
             return False
 
         return self.total_registered >= limit
+
+    @property
+    def total_checked_in(self):
+        """Total registrants checked into an Event"""
+        if self.parent and self.nested_events_enabled:
+            return RegistrantChildEvent.objects.filter(
+                child_event_id=self.pk, checked_in=True).count()
+
+        return self.registrants_count({'checked_in': True})
+
+    @property
+    def total_checked_out(self):
+        total_registered = self.total_registered
+        if not total_registered:
+            return 0
+
+        return total_registered - self.total_checked_in
 
     @classmethod
     def make_slug(self, length=7):

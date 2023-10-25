@@ -10,6 +10,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import truncatewords
 from django.db.models import Q
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from django_countries import countries as COUNTRIES
 
@@ -135,6 +136,8 @@ class Form(TendenciBaseModel):
     # payments
     custom_payment = models.BooleanField(_("Is Custom Payment"), default=False,
         help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount."))
+    qty_enabled = models.BooleanField(_("Allow users to specify quantity for the pricing option they chose"), default=False,
+        help_text=_("If checked, a Quantity field will show on the form for users to set the quantity they wanted."))
     recurring_payment = models.BooleanField(_("Is Recurring Payment"), default=False,
         help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount. Please also add an email field as a required field with type 'email'"))
     payment_methods = models.ManyToManyField("payments.PaymentMethod", blank=True)
@@ -337,6 +340,10 @@ class FormEntry(models.Model):
     payment_method = models.ForeignKey('payments.PaymentMethod', null=True, on_delete=models.SET_NULL)
     pricing = models.ForeignKey('Pricing', null=True, on_delete=models.SET_NULL)
     custom_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    quantity = models.PositiveSmallIntegerField(blank=True, default=1, validators=[
+                                                                        MaxValueValidator(100),
+                                                                        MinValueValidator(1)
+                                                                    ])
     creator = models.ForeignKey(User, related_name="formentry_creator", null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)

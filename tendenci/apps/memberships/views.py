@@ -90,12 +90,13 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
     """
     app = get_object_or_404(MembershipApp, pk=app_id)
 
+    can_change_app = has_perm(request.user, 'memberships.change_membershipapp', app)
     if not (has_perm(request.user, 'memberships.view_membershipdefault') or \
-            has_perm(request.user, 'memberships.change_membershipapp', app)):
+            can_change_app):
         raise Http403
 
     # check if you has the change perm
-    has_change_perm = has_perm(request.user, 'memberships.change_membershipdefault')
+    has_change_perm = has_perm(request.user, 'memberships.change_membershipdefault') or can_change_app
 
     memberships = MembershipDefault.objects.filter(app_id=app.id
                                     ).exclude(status_detail='archive')
@@ -1308,17 +1309,36 @@ def membership_default_add(request, slug='', membership_id=None,
         # exclude the corp memb field if not join under corporate
         app_fields = app_fields.exclude(field_name='corporate_membership_id')
 
+    user_initial = {}
+    if not user and request.user.is_authenticated and not request.user.is_superuser:
+        user_initial = {'first_name': request.user.first_name,
+                        'last_name': request.user.last_name,
+                        'email': request.user.email,}
     user_form = UserForm(
         app_fields,
         request.POST or None,
         request=request,
         is_corp_rep=is_corp_rep,
-        instance=user)
+        instance=user,
+        initial=user_initial)
 
     if not (request.user.profile.is_superuser or is_corp_rep) and user and 'username' in user_form.fields:
         # set username as readonly field for regular logged-in users
         # we don't want them to change their username, but they can change it through profile
         user_form.fields['username'].widget.attrs['readonly'] = 'readonly'
+
+    if user_initial:
+        request_user_profile = request.user.profile
+        profile_initial = {'company': request_user_profile.company,
+                           'address': request_user_profile.address,
+                            'address2': request_user_profile.address2,
+                            'city': request_user_profile.city,
+                            'state': request_user_profile.state,
+                            'zipcode': request_user_profile.zipcode,
+                            'country': request_user_profile.country,
+                            'work_phone': request_user_profile.work_phone,}
+    else:
+        profile_initial = None
 
     if join_under_corporate and not is_renewal:
         corp_profile = corp_membership.corp_profile
@@ -1333,10 +1353,7 @@ def membership_default_add(request, slug='', membership_id=None,
                 'country': corp_profile.country,
                 'work_phone': corp_profile.phone,}
         else:
-            profile_initial = {
-                'company': corp_profile.name,}
-    else:
-        profile_initial = None
+            profile_initial.update({'company': corp_profile.name,})
 
     profile = user.profile if user else None
     profile_form = ProfileForm(

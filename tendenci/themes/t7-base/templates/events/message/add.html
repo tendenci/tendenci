@@ -28,6 +28,16 @@
                 <p><strong>{{ form.subject.label }}:</strong></p>
                 {{ form.subject }}
             </div>
+            
+            <div class="message-item">
+                <p><strong>{{ form.sender_display.label }}:</strong></p>
+                {{ form.sender_display }}
+            </div>
+            
+            <div class="message-item">
+                <p><strong>{{ form.reply_to.label }}:</strong></p>
+                {{ form.reply_to }}
+            </div>
 
             <div class="message-item">
                 <p><strong>{{ form.body.label }}:</strong></p>
@@ -40,10 +50,10 @@
             </div>
 
             <div class="message-item">
-                <em><strong><font color="red">{% trans "This message will be sent IMMEDIATELY. DO NOT HIT REFRESH!" %}</font></strong></em>.
+                <em><strong><font color="red">{% trans "This message will be sent IMMEDIATELY. DO NOT HIT REFRESH!" %}</font></strong></em>
             </div>
 
-            <input type="submit" value="{% trans "Send Email" %}" />
+            <input class="btn btn-primary" type="submit" value="{% trans "Send Email" %}" />
         </div>
         </form>
     </div>

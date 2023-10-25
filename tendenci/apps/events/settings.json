@@ -1443,5 +1443,22 @@
         "scope_category": "events",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "Enable Zoom integration to launch Zoom meetings from Event",
+        "data_type": "boolean",
+        "update_dt": "2023-08-31 13:17:00",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "enable_zoom",
+        "value": "false",
+        "label": "Enable Zoom Integration?",
+        "input_value": "false, true",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]

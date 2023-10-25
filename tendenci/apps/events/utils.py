@@ -1453,7 +1453,34 @@ def clean_price(price, user):
 
     return price, price_pk, amount
 
-def copy_event(event, user, reuse_rel=False, set_repeat_of=False, copy_to=None):
+def copy_child_events(event, new_event, user, reuse_rel):
+    """Copy child events for a given Event"""
+    # Copy all child events. Start with events that are not repeats of another.
+    # This will make it so we can later tie copies of the repeated event with the
+    # correct newly copied event it is a repeat of.
+    for child_event in event.all_child_events.filter(repeat_of__isnull=True):
+        new_child_event = copy_event(child_event, user, reuse_rel=reuse_rel, new_parent_id=new_event.pk)
+
+        # If there are repeat events for this child event, copy them as well.
+        for repeat_event in event.all_child_events.filter(repeat_of_id=child_event.pk):
+            new_repeat_event = copy_event(repeat_event, user, reuse_rel=reuse_rel)
+
+            # Set the repeat_of fields for this repeat event
+            new_repeat_event.repeat_of = new_child_event
+            new_repeat_event.repeat_uuid = new_child_event.repeat_uuid
+            # Go ahead and set the parent here since we're doing a save anyway.
+            new_repeat_event.parent = new_event
+            new_repeat_event.save(update_fields=['parent', 'repeat_of', 'repeat_uuid'])
+
+
+def copy_event(
+        event,
+        user,
+        reuse_rel=False,
+        set_repeat_of=False,
+        copy_to=None,
+        should_copy_child_events=False,
+        new_parent_id=None):
     #copy event
     if not copy_to:
         new_event = Event()
@@ -1493,6 +1520,8 @@ def copy_event(event, user, reuse_rel=False, set_repeat_of=False, copy_to=None):
     new_event.owner_username = user.username
     new_event.status = event.status
     new_event.status_detail = event.status_detail
+    if new_parent_id:
+        new_event.parent_id = new_parent_id
     new_event.save()
 
     if not new_event.groups.all().exists():
@@ -1650,6 +1679,10 @@ def copy_event(event, user, reuse_rel=False, set_repeat_of=False, copy_to=None):
                     addon = new_addon,
                     title = option.title,
                 )
+
+    # Copy all child events associated with this Event
+    if should_copy_child_events and event.has_any_child_events:
+        copy_child_events(event, new_event, user, reuse_rel)
 
     return new_event
 
@@ -1952,9 +1985,11 @@ def create_member_registration(user, event, form, for_member=False):
     from tendenci.apps.profiles.models import Profile
 
     pricing = form.cleaned_data['pricing']
+    override = form.cleaned_data.get('override', False)
+    override_price = form.cleaned_data.get('override_price')
     reg_attrs = {'event': event,
                  'reg_conf_price': pricing,
-                 'amount_paid': pricing.price,
+                 'amount_paid': pricing.price if not override else override_price,
                  'creator': user,
                  'owner': user}
 
@@ -1973,14 +2008,18 @@ def create_member_registration(user, event, form, for_member=False):
             exists = event.registrants().filter(user=user)
             if not exists:
                 registration = Registration.objects.create(**reg_attrs)
+                if not override_price:
+                    override_price = Decimal(0)
                 registrant_attrs = {'registration': registration,
                                     'user': user,
                                     'first_name': user.first_name,
                                     'last_name': user.last_name,
                                     'email': user.email,
                                     'is_primary': True,
-                                    'amount': pricing.price,
-                                    'pricing': pricing}
+                                    'amount': pricing.price if not override else override_price,
+                                    'pricing': pricing,
+                                    'override': override,
+                                    'override_price': override_price}
                 Registrant.objects.create(**registrant_attrs)
                 registration.save_invoice()
                 registration_ids.append(registration.id)
@@ -2247,7 +2286,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
         email.send()
 
 
-def handle_registration_payment(reg8n):
+def handle_registration_payment(reg8n, redirect_url_only=False):
     """
     Handle registration payment based on method selected
     Returns redirect URL if applicable.
@@ -2264,13 +2303,18 @@ def handle_registration_payment(reg8n):
         # online payment
         # get invoice; redirect to online pay
         # email the admins as well
-        if not reg_conf.payment_required:
-            email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+        if not redirect_url_only:
+            if not reg_conf.payment_required or reg_conf.external_payment_link:
+                email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+
         if reg_conf.external_payment_link:
             return reg_conf.external_payment_ink
 
         return reverse('payment.pay_online', args=[reg8n.invoice.id, reg8n.invoice.guid])
     else:
+        if redirect_url_only:
+            return None
+
         if not reg8n.invoice:
             return None
         # offline payment:
