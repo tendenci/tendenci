@@ -47,7 +47,7 @@ THIS_YEAR = datetime.today().year
 class FormForForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = FormEntry
-        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", 'custom_price',  "creator")
+        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", 'custom_price',  "creator", 'quantity')
 
     def __init__(self, form, user, session=None, *args, **kwargs):
         """
@@ -220,6 +220,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     choices = pricing_options,
                     widget=forms.RadioSelect(attrs={'class': 'pricing-field'})
                 )
+                if len(pricing_options) == 1:
+                    form.fields['pricing_option'].initial = pricing_options[0][0]
+                
+                if formforform.qty_enabled:
+                    form.fields['quantity'] = forms.IntegerField(max_value=100, min_value=1, initial=1)
 
                 form.fields['payment_option'] = forms.ModelChoiceField(
                         label=_('Payment Method'),

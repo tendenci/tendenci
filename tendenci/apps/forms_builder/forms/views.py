@@ -472,6 +472,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
         if form_for_form.is_valid() and (not billing_form or billing_form.is_valid()):
             entry = form_for_form.save(edit_mode)
             entry.entry_path = request.POST.get("entry_path", "")
+            entry.quantity = form_for_form.cleaned_data.get('quantity', 1)
             if not edit_mode:
                 if request.user.is_anonymous:
                     entry.creator = entry.check_and_create_user()
@@ -593,7 +594,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                              billing_start_dt=billing_start_dt,
                              num_days=entry.pricing.num_days,
                              due_sore=entry.pricing.due_sore,
-                             payment_amount=price,
+                             payment_amount=price * entry.quantity,
                              taxable=entry.pricing.taxable,
                              tax_rate=entry.pricing.tax_rate,
                              has_trial_period=entry.pricing.has_trial_period,

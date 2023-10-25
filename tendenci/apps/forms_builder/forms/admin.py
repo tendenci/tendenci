@@ -71,9 +71,9 @@ class FormAdmin(TendenciBaseModelAdmin):
     list_filter = ('group', )
 
     if not get_setting('module', 'recurring_payments', 'enabled'):
-        payment_fields = ("custom_payment", "payment_methods")
+        payment_fields = ("custom_payment", 'qty_enabled', "payment_methods")
     else:
-        payment_fields = ("custom_payment", 'recurring_payment', "payment_methods")
+        payment_fields = ("custom_payment", 'qty_enabled', 'recurring_payment', "payment_methods")
 
     position_fields = ("intro_position", "fields_position", "pricing_position")
     section_name_fields = ("intro_name", "fields_name", "pricing_name")
