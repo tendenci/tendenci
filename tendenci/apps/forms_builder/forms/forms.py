@@ -225,6 +225,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 
                 if formforform.qty_enabled:
                     form.fields['quantity'] = forms.IntegerField(max_value=100, min_value=1, initial=1)
+                    form.fields['quantity'].widget.attrs.update({'style': 'width: 50%;'})
 
                 form.fields['payment_option'] = forms.ModelChoiceField(
                         label=_('Payment Method'),
