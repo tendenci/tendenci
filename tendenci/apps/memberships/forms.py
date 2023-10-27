@@ -828,9 +828,9 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
 
         if self.request.user.is_authenticated and self.request.user.username == un:
             # they are logged in and join or renewal for themselves
-            if email and email !=  self.request.user.email:
+            if email and email.lower() !=  self.request.user.email.lower():
                 # email is changed
-                if User.objects.filter(email=email).exists():
+                if User.objects.filter(email__iexact=email).exists():
                     raise forms.ValidationError(_('''This Email address you entered "%s" already exists in the system.
                                     Please select a different one to continue.''') % email)
 
@@ -851,7 +851,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                 else:
                     if u:
                         # user is not active. if email matches, let them activate the account.
-                        if email and u.email == email:
+                        if email and u.email.lower() == email.lower():
                             raise forms.ValidationError(inactive_user_err_msg)
                         raise forms.ValidationError('This username is taken. Please choose a new username.')
 

@@ -104,7 +104,7 @@ class RegistrationCustomForm(RegistrationForm):
         cleaned_data = super(RegistrationCustomForm, self).clean()
         if self._errors:
             return
-        user = User.objects.filter(email=cleaned_data['email'])
+        user = User.objects.filter(email__iexact=cleaned_data['email'])
         if user and not self.allow_same_email:
             self.similar_email_found = True
             raise forms.ValidationError(_("Similar emails found"))
