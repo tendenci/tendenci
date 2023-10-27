@@ -1492,7 +1492,7 @@ def roster_search(request,
     memberships = MembershipDefault.objects.filter(
                         status=True
                             ).exclude(
-                        status_detail='archive')
+                        status_detail__in=['archive', 'inactive'])
 
     if corp_membership:
         memberships = memberships.filter(

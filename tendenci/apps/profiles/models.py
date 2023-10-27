@@ -765,6 +765,15 @@ class Profile(Person):
         """
         return settings.USE_TWO_FACTOR_AUTH
 
+    def get_corp(self):
+        """
+        Get the corp profile (id and name only) that this user is a rep of.
+        """
+        corpmembershipreps = self.user.corpmembershiprep_set.filter(corp_profile__status=True)
+        if corpmembershipreps.exists():
+            return corpmembershipreps[0].corp_profile
+
+        return None
 
 def get_import_file_path(instance, filename):
     return "imports/profiles/{uuid}/{filename}".format(
