@@ -3138,7 +3138,7 @@ class Event(TendenciBaseModel):
             if with_balance:
                 registrants = registrants.filter(registration__invoice__balance__gt=0)
             else:
-                registrants = registrants.filter(registration__invoice__balance__lte=0)
+                registrants = registrants.filter(Q(registration__invoice__balance__lte=0) | Q(registration__invoice__isnull=True))
 
         return registrants
 

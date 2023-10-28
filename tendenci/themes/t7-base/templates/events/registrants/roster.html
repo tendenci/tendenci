@@ -228,7 +228,9 @@
                 {% if registrant.invoice_dict.tender_date %}
                     {% trans "TENDERED: " %}{{ registrant.invoice_dict.tender_date|date_long }}
                 {% else %}
+                	{% if registrant.invoice_dict.id %}
                     {% trans "Not Tendered" %}
+                    {% endif %}
                 {% endif %}
             </td>
             {% if discount_available %}
