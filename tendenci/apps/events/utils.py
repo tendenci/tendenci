@@ -44,7 +44,7 @@ from tendenci.apps.base.utils import (adjust_datetime_to_timezone,
     create_salesforce_contact, validate_email)
 from tendenci.apps.exports.utils import full_model_to_dict
 from tendenci.apps.emails.models import Email
-from tendenci.apps.base.utils import escape_csv
+from tendenci.apps.base.utils import escape_csv, Echo
 
 
 try:
@@ -76,6 +76,39 @@ PLACE_FIELDS = [
     "place__country",
     "place__url",
 ]
+
+
+def iter_child_event_registrants(child_event_registrants):
+    field_labels = [_('First Name'),
+                    _('Last Name'), 
+                    _('Phone'),
+                    _('Email'),
+                    _('Company'),
+                    _('Price Type'),
+                    _('Registration ID'),
+                    _('Meeting Check In Date/Time'),
+                    _('Session Check In Date/Time'),
+                    _('Check In')]
+    
+    writer = csv.DictWriter(Echo(), fieldnames=field_labels)
+    # write headers - labels
+    yield writer.writerow(dict(zip(field_labels, field_labels)))
+
+    for child_event_registrant in child_event_registrants:
+        registrant = child_event_registrant.registrant
+        values_list = [registrant.first_name,
+                       registrant.last_name,
+                       registrant.phone,
+                       registrant.email,
+                       registrant.company_name,
+                       registrant.pricing.title,
+                       registrant.registration.id,
+                       registrant.checked_in_dt or '',
+                       child_event_registrant.checked_in_dt or '',
+                       'Y' if child_event_registrant.checked_in else '',]
+
+        yield writer.writerow(dict(zip(field_labels, values_list)))
+
 
 def do_events_financial_export(**kwargs):
     identifier = kwargs['identifier']

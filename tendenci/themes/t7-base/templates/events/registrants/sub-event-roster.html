@@ -41,6 +41,10 @@
     <div class="print-badges">
         <ul class="list-unstyled t-meta-data">
             <li class="pull-right">
+                <a href="{% url 'event.registrant.sub_event.roster_export' event.id %}">
+				  <span class="glyphicon glyphicon-export"></span>
+				  {% trans 'Export' %}
+				</a>&nbsp;&nbsp;&nbsp;
                 <a class="t-meta-print-link" href="#">
                     <span class="glyphicon glyphicon-print"></span>
                     {% trans "Print" %}

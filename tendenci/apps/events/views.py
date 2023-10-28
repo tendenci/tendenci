@@ -27,12 +27,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponseRedirect, Http404, HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, Http404, HttpResponse, JsonResponse, StreamingHttpResponse
 from django.http import QueryDict
 from django.urls import reverse
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
+from django.template.defaultfilters import slugify
 from django.forms.formsets import formset_factory
 from django.forms.models import BaseModelFormSet, modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
@@ -160,7 +161,8 @@ from tendenci.apps.events.utils import (
     get_recurrence_dates,
     get_week_days,
     get_next_month,
-    get_prev_month)
+    get_prev_month,
+    iter_child_event_registrants)
 from tendenci.apps.events.addons.forms import RegAddonForm
 from tendenci.apps.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.apps.events.addons.utils import get_available_addons
@@ -662,7 +664,7 @@ def sub_event_check_in(request, parent_event_id, template_name="events/sub-event
 
 @is_enabled('events')
 @login_required
-def sub_event_roster(request, event_id, template_name="events/registrants/sub-event-roster.html"):
+def sub_event_roster(request, event_id, export=False, template_name="events/registrants/sub-event-roster.html"):
     event = get_object_or_404(Event.objects.get_all(), pk=event_id)
 
     if not (has_perm(request.user, 'events.view_registrant') or \
@@ -678,6 +680,13 @@ def sub_event_roster(request, event_id, template_name="events/registrants/sub-ev
         params['checked_in'] = checked_in_or_out == 'in'
 
     registrant_child_events = RegistrantChildEvent.objects.filter(**params)
+
+    if export:
+        response = StreamingHttpResponse(
+        streaming_content=(iter_child_event_registrants(registrant_child_events)),
+        content_type='text/csv',)
+        response['Content-Disposition'] = f'attachment;filename=sub-event-{slugify(event.title)}-roster.csv'
+        return response
 
     return render_to_resp(request=request, template_name=template_name,
                           context={'event': event, 'registrants': registrant_child_events})

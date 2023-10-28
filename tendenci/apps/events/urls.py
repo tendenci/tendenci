@@ -142,6 +142,10 @@ urlpatterns = [
     re_path(r'^%s/(?P<event_id>\d+)/registrants/sub-events/roster/$' % urlpath,
         views.sub_event_roster,
         name="event.registrant.sub_event.roster"),
+    re_path(r'^%s/(?P<event_id>\d+)/registrants/sub-events/roster/export/$' % urlpath,
+        views.sub_event_roster,
+        {'export': True},
+        name="event.registrant.sub_event.roster_export"),
 
     re_path(r'^%s/(?P<event_id>\d+)/registrants/roster/$' % urlpath,
         views.registrant_roster,
