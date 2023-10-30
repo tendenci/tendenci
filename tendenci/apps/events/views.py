@@ -1948,11 +1948,12 @@ def add(request, year=None, month=None, day=None, is_template=False, parent_even
 @login_required
 def delete(request, id, template_name="events/delete.html"):
     event = get_object_or_404(Event.objects.get_all(), pk=id)
+    
     is_template = event.status_detail == 'template'
 
     if has_perm(request.user, 'events.delete_event'):
         if request.method == "POST":
-
+            parent_event = event.parent
             eventlog = EventLog.objects.log(instance=event)
             if eventlog:
                 eventlog_url = reverse('event_log', args=[eventlog.pk])
@@ -1981,6 +1982,10 @@ def delete(request, id, template_name="events/delete.html"):
 
             if is_template:
                 return HttpResponseRedirect(reverse('event.templates_list'))
+            
+            if parent_event:
+                return HttpResponseRedirect(reverse('event', args=[parent_event.id]))
+            
             return HttpResponseRedirect(reverse('event.search'))
 
         return render_to_resp(request=request, template_name=template_name,
