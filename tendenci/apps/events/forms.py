@@ -329,7 +329,11 @@ class AttendanceDatesMixin:
                 pricing.available
         ):
             return list()
-
+ 
+        # Allow people to register for LESS dates covered, but not more
+        total_available_days = len(self.event.full_event_days)
+        if pricing.days_price_covers > total_available_days:
+            pricing.days_price_covers = total_available_days
         if not attendance_dates or len(attendance_dates) != pricing.days_price_covers:
             raise forms.ValidationError(_(f'Please select {pricing.days_price_covers} dates.'))
 

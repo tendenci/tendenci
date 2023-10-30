@@ -356,7 +356,7 @@ function togglePricingDates(pricing_id, should_display, prefix) {
         $(prefix + '-attendance_dates').parent().parent().find('.form-label').find('span').text(daysAttending(pricing_id));
         $(prefix + '-attendance_dates').parent().parent().show();
     } else {
-        $(prefix + '-attendance_dates').parent().parent().hide();
+        //$(prefix + '-attendance_dates').parent().parent().hide();
         $(prefix + '-attendance_dates').find('input[type=checkbox]').prop('checked', true);
     }
 

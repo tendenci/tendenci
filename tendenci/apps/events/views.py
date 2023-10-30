@@ -3296,6 +3296,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
 
             attendance_dates_changed = False
+            total_available_days = len(reg8n.event.full_event_days)
             for index, registrant in enumerate(registrants):
                 # Don't updage attendance dates or child events if registration is closed
                 # or if nested events is not enabled, or event has no child events
@@ -3313,6 +3314,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                 if request.user.is_superuser:
                     total_attendance_dates = len(registrants_updated_dates)
 
+                if pricing.days_price_covers > total_available_days:
+                    pricing.days_price_covers = total_available_days
                 if pricing and pricing.days_price_covers and total_attendance_dates != pricing.days_price_covers:
                     message = f'Select { pricing.days_price_covers - past_dates} dates for {registrant.first_name } { registrant.last_name}'
                     messages.set_level(request, messages.ERROR)

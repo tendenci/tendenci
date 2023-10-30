@@ -2931,6 +2931,8 @@ class Event(TendenciBaseModel):
     def save(self, *args, **kwargs):
         self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
         self.guid = self.guid or str(uuid.uuid4())
+        if self.repeat_uuid and not self.repeat_of:
+            self.repeat_uuid = None
         super(Event, self).save(*args, **kwargs)
 
         if self.image:
