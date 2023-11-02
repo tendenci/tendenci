@@ -965,15 +965,20 @@ class EventForm(TendenciBaseForm):
             #self.fields['groups'].initial = Group.objects.get_or_create_default()
             
         if 'repeat_of' in self.fields:
-            if self.instance.pk and self.instance.parent: # on event edit
-                if self.instance.repeat_of: # repeat_of already set
-                    self.fields['repeat_of'].queryset = Event.objects.filter(
-                        pk=self.instance.repeat_of.pk)
-                else:
-                    self.fields['repeat_of'].queryset = Event.objects.filter(parent_id=self.instance.parent.id).order_by('repeat_uuid').distinct('repeat_uuid')
-            elif 'parent' in self.fields and parent_event_id: # on sub-event add
-                parent_event = Event.objects.get(id=parent_event_id)
-                self.fields['repeat_of'].queryset = parent_event.child_events.order_by('repeat_uuid').distinct('repeat_uuid')
+            if self.instance.pk and self.instance.parent and self.instance.repeat_of: # on event edit, repeat_of already set
+                self.fields['repeat_of'].queryset = Event.objects.filter(pk=self.instance.repeat_of.pk)
+            elif (self.instance.pk and self.instance.parent) or ('parent' in self.fields and parent_event_id): # on editing sub-event with no repeat, or adding new sub-event
+                # Populate repeat_of options with all child events that are not already repeats.
+                parent_event = self.instance.parent if self.instance.pk else None
+                if not parent_event:
+                    parent_event = Event.objects.get(id=parent_event_id)
+                queryset = parent_event.child_events.filter(repeat_of__isnull=True)
+
+                # If there's an instance, make sure it's not in the repeat_of options (don't want an Event to repeat itself)
+                if self.instance.pk:
+                    queryset = queryset.exclude(pk=self.instance.pk)
+                self.fields['repeat_of'].queryset = queryset
+
 
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
@@ -2127,13 +2132,13 @@ class ChildEventRegistrationForm(forms.Form):
 
         for index, start_dt in enumerate(sub_event_datetimes.keys()):
             child_events = upcoming_child_events.filter(start_dt=start_dt)
-            choices = [(event.pk, f'{event.event_code} - {event.title}' if event.event_code else event.title) for event in child_events if not event.at_capacity]
+            choices = [(event.pk, event.title_with_event_code) for event in child_events if not event.at_capacity]
             # Check if registrant already has selection. If so, make sure it's in choices
             selection = None
             current_child_event = registrant.child_events.filter(
                 child_event__start_dt=start_dt).first()
             if current_child_event:
-                selection = (current_child_event.child_event.pk, current_child_event.child_event.title)
+                selection = (current_child_event.child_event.pk, current_child_event.child_event.title_with_event_code)
                 if selection and selection not in choices:
                     choices.append(selection)
 
