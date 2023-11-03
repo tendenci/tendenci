@@ -2939,7 +2939,7 @@ class Event(TendenciBaseModel):
         # all Events that are repeats of this one will have the same repeat_uuid.
         # This allows us to identify all repeats, including the original event. 
         # Without this set, we would not identify the original as being the same
-        # as a repeat.
+        # as a repeated event.
         self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
         self.guid = self.guid or str(uuid.uuid4())
 
