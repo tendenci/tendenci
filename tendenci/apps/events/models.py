@@ -1607,11 +1607,12 @@ class Registrant(models.Model):
                 child_event__repeat_uuid=event.repeat_uuid
             ).exclude(child_event_id=event.pk).exists():
 
-                current_event = self.registrantchildevent_set.filter(
+                # This is the orignal event with a matching repeat_uuid that the user is registered for.
+                original_event = self.registrantchildevent_set.filter(
                     child_event__repeat_uuid=event.repeat_uuid).first().child_event
                 error = _(
                     f'{event.title} on {event.start_dt.date()} is a repeat of event on ' \
-                    f'{current_event.start_dt.date()}. Please select only one.')
+                    f'{original_event.start_dt.date()}. Please select only one.')
                 raise Exception(error)
 
             RegistrantChildEvent.objects.get_or_create(
@@ -2339,6 +2340,11 @@ class Event(TendenciBaseModel):
         self.private_slug = self.private_slug or Event.make_slug()
 
     @property
+    def title_with_event_code(self):
+        """Title prefixed with event_code"""
+        return f'{self.event_code} - {self.title}' if self.event_code else self.title
+    
+    @property
     def has_any_child_events(self):
         """Indicate whether event has child events, whether or not they are in the Event window"""
         return self.nested_events_enabled and self.all_child_events.exists()
@@ -2929,10 +2935,14 @@ class Event(TendenciBaseModel):
         return reverse('registration_event_register', args=[self.pk])
 
     def save(self, *args, **kwargs):
+        # Set repeat_uuid in case we use this Event as a repeat. In that case,
+        # all Events that are repeats of this one will have the same repeat_uuid.
+        # This allows us to identify all repeats, including the original event. 
+        # Without this set, we would not identify the original as being the same
+        # as a repeated event.
         self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
         self.guid = self.guid or str(uuid.uuid4())
-        if self.repeat_uuid and not self.repeat_of:
-            self.repeat_uuid = None
+
         super(Event, self).save(*args, **kwargs)
 
         if self.image:

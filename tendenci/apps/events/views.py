@@ -1608,7 +1608,7 @@ def get_child_events(request):
     parent_id = request.GET.get('parent')
     event = get_object_or_404(Event, id=parent_id)
 
-    child_events = event.child_events.order_by('repeat_uuid').distinct('repeat_uuid')
+    child_events = event.child_events.filter(repeat_of__isnull=True)
     options = [{'value': x.pk, 'text': x.title} for x in child_events]
     default = [{'value': "", 'text': '---------'}]
     return JsonResponse(default + options, safe=False)
