@@ -82,3 +82,5 @@ pyzoom>=1.0.3
 PyJWT>=2.8.0
 # Django model utils (FieldTracker)
 django-model-utils>=4.3.1
+# Create test data
+model-bakery==1.17.0
