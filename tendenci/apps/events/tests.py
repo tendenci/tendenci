@@ -1,11 +1,13 @@
 # coming soon
 # import logging
-# 
-# from django.test import Client, TestCase
+from model_bakery import baker
+
+from django.test import Client, TestCase
 # from django.contrib.auth.models import User
 # from django.urls import reverse
 # 
-# from tendenci.apps.events.models import RegConfPricing, Event, Addon
+from tendenci.apps.events.models import RegConfPricing, Event, Addon
+from tendenci.apps.events.utils import copy_event
 # 
 # 
 # handler = logging.StreamHandler()
@@ -104,3 +106,19 @@
 #         with self.assertRaises(Addon.DoesNotExist):
 #             Addon.objects.get(title='Test Addon')
 #         logger.info('Complete.')
+
+class EventTest(TestCase):
+    def test_repeat_of_relationship(self):
+        original_event = baker.make('events.Event')
+        user = baker.make('auth.User')
+        # Add new event by setting 'repeat_of'
+        repeat_event = copy_event(original_event, user, set_repeat_of=True)
+        self.assertEqual(original_event.repeat_uuid, repeat_event.repeat_uuid)
+
+        # Edit existing event by setting 'repeat_of'
+        new_event = baker.make('events.Event')
+        self.assertNotEqual(original_event.repeat_uuid, new_event.repeat_uuid)
+        another_repeat_event = copy_event(original_event, user, set_repeat_of=True, copy_to=new_event)
+    
+        self.assertEqual(original_event, another_repeat_event.repeat_of)
+        self.assertEqual(original_event.repeat_uuid, another_repeat_event.repeat_uuid)
