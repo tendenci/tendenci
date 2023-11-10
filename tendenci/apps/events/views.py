@@ -4357,16 +4357,17 @@ def event_badges(request, event_id=0, template_name='events/badges.html'):
 
     for registration in registrations:
         for registrant in registration.registrant_set.filter(cancel_dt__isnull=True):
-            has_max_badges_per_page = len(current_batch) == 3
             if payment_required and registration.not_paid():
                 # they're not paid, skip
                 continue
+
+            has_max_badges_per_page = len(current_batch) == 3
 
             if not has_max_badges_per_page:
                 current_batch.append(registrant)
             if has_max_badges_per_page:
                 registrants.append({'registrants': current_batch.copy()})
-                current_batch = list()
+                current_batch = [registrant]
 
     if current_batch:
         registrants.append({'registrants': current_batch.copy()})
