@@ -1,4 +1,5 @@
 {% load email_filters %}
+{% load base_filters %}
 
 <html><body>
 
@@ -8,7 +9,7 @@
 {% if total_amount <= 0 %}
     <h3 style="margin-top:0;">{% trans "Price: Free!" %}</h3>
 {% else %}
-    <h3 style="margin-top:0;">{% blocktrans with total_amount|floatformat:"2" as priceflo %}Total Amount: ${{ priceflo }}{% endblocktrans %} </h3>
+    <h3 style="margin-top:0;">{% blocktrans with total_amount|format_currency as priceflo %}Total Amount: {{ priceflo }}{% endblocktrans %} </h3>
 {% endif %}
 
 {% if is_paid %}  {# handles free & priced events #}
@@ -44,6 +45,7 @@
                     {% endfor %}
                 </div>
         {% else %}
+            {% include "events/email_badge.html" with registrants=registrants %}
             {% trans "Registration Complete. Enjoy the Event!" %}
         {% endif %}
     </div>
@@ -127,7 +129,9 @@
                     <tr>
                         <td>
                             <span>{{ regaddon.addon.title }}
-                            ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                            {% if regaddon.regaddonoption_set.count > 1 %}
+    ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                            {% endif %}
                             </span>
                         </td>
                     </tr>
@@ -136,6 +140,7 @@
                 {% endif %}
 
             {% else %}
+                {% include "events/email_badge.html" with registrants=registrants %}
                 {% trans "Registration Complete. Enjoy the Event!" %}
             {% endif %}
         </div>
@@ -166,11 +171,13 @@
             {% trans "Registration Details" %}
         </a>
     </li>
+    {% if event.can_cancel %}
     <li>
         <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.cancel_registrant" event.pk reg8n.registrant.hash %}">
             {% trans "Cancel Registration" %}
         </a>
     </li>
+    {% endif %}
     <li><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">{% trans "Event Details" %}</a></li>
     {% if for_admin %}
         <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registrant.roster" event.pk %}">{% trans "Event Roster" %}</a></li>

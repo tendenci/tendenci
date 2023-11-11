@@ -11,6 +11,7 @@ from tendenci.apps.user_groups.utils import member_choices
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.files.validators import FileValidator
 
 
 SEARCH_CATEGORIES = (
@@ -115,6 +116,7 @@ class GroupForm(TendenciBaseForm):
                   'dashboard_url',
                   'type',
                   'email_recipient',
+                  'logo',
                   'show_as_option',
                   'sync_newsletters',
                   'allow_self_add',
@@ -138,13 +140,14 @@ class GroupForm(TendenciBaseForm):
                                  'entity',
                                  'dashboard_url',
                                  'email_recipient',
+                                 'logo',
                                  'show_as_option',
                                  'sync_newsletters',
                                  'allow_self_add',
                                  'allow_self_remove',
                                  'show_for_memberships',
                                  'show_for_events',
-                                 'description'
+                                 'description',
                                  'auto_respond',
                                  'auto_respond_priority'
                                  ],
@@ -170,6 +173,8 @@ class GroupForm(TendenciBaseForm):
         self.fields['entity'].initial = entity
         self.fields['entity'].required = True
         self.fields['entity'].empty_label = None
+        self.fields['logo'].validators = [FileValidator(allowed_extensions=('.jpeg', '.jpg', '.png', '.gif',))]
+        self.fields['logo'].required = False
 
     def clean_name(self):
         name = self.cleaned_data['name']

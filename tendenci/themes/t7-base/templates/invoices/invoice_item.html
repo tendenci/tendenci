@@ -14,8 +14,8 @@
     {% endif %}
   </td>
   <!-- No. -->
-  <td>
-    <a href="{% url "invoice.view" invoice.pk %}" class="links">{{ invoice.pk }}</a>
+  <td nowrap>
+    <a href="{% url "invoice.view" invoice.pk %}" class="links">{{ invoice.pk }}4567</a>
   </td>
   <!-- User -->
   <td>
@@ -25,14 +25,17 @@
    		{{ invoice.bill_to }}
    {% endif %}
   </td>
+  <td>
+   ({{ invoice.bill_to_email }})
+  </td>
 
   <!-- Item -->
   <td>
 	{% if obj %}
     {% if obj.get_absolute_url %}
-    <a href="{{ obj.get_absolute_url }}">{{ obj }}</a>
+    <a href="{{ obj.get_absolute_url }}">{{ object_display }}</a>
     {% else %}
-    {{ obj }}
+    {{ object_display }}
     {% endif %}
  	{% endif %}
   </td>

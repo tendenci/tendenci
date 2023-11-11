@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 from tendenci.apps.site_settings.utils import get_setting
-from . import views
+from . import views, forms
 from .feeds import LatestEntriesFeed
 
 urlpath = get_setting('module', 'events', 'url')
@@ -18,6 +18,7 @@ urlpatterns = [
     re_path(r'^%s/ics/$' % urlpath, views.icalendar, name="event.ics"),
     re_path(r'^%s/print-view/(?P<id>\d+)/$' % urlpath, views.print_view, name="event.print_view"),
     re_path(r'^%s/add/$' % urlpath, views.add, name="event.add"),
+    re_path(r'^%s/child-events/$' % urlpath, views.get_child_events, name="events.get_child_events"),
     re_path(r'^%s/add/template/$' % urlpath, views.add, {'is_template': True}, name="event.add_template"),
     re_path(r'^%s/import/add/$' % urlpath, views.import_add, name='event.import_add'),
     re_path(r'^%s/import/preview/(?P<import_id>\d+)/$' % urlpath, views.import_preview, name='event.import_preview'),
@@ -35,12 +36,16 @@ urlpatterns = [
     re_path(r'^%s/add/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, views.add, name="event.add"),
 
     re_path(r'^%s/overview/edit/(?P<id>\d+)/$' % urlpath, views.edit, name="event.edit"),
+    re_path(r'^%s/credits/edit/(?P<id>\d+)/$' % urlpath, views.credits_edit, name="event.credits_edit"),
     re_path(r'^%s/location/edit/(?P<id>\d+)/$' % urlpath, views.location_edit, name="event.location_edit"),
+    re_path(r'^%s/staff/edit/(?P<id>\d+)/$' % urlpath, views.staff_edit, name="event.staff_edit"),
     re_path(r'^%s/organizer/edit/(?P<id>\d+)/$' % urlpath, views.organizer_edit, name="event.organizer_edit"),
     re_path(r'^%s/sponsor/edit/(?P<id>\d+)/$' % urlpath, views.sponsor_edit, name="event.sponsor_edit"),
     re_path(r'^%s/speakers/edit/(?P<id>\d+)/$' % urlpath, views.speaker_edit, name="event.speaker_edit"),
     re_path(r'^%s/regconf/edit/(?P<id>\d+)/$' % urlpath, views.regconf_edit, name="event.regconf_edit"),
     re_path(r'^%s/pricing/edit/(?P<id>\d+)/$' % urlpath, views.pricing_edit, name="event.pricing_edit"),
+    re_path(r'^%s/sub-events/edit/(?P<id>\d+)/$' % urlpath, views.display_child_events, name="event.display_child_events"),
+    re_path(r'^%s/credits/review/(?P<id>\d+)/$' % urlpath, views.review_credits, name="event.review_credits"),
 
     re_path(r'^%s/copy/(?P<id>\d+)/$' % urlpath, views.copy, name="event.copy"),
     re_path(r'^%s/add-from-template/(?P<id>\d+)/$' % urlpath, views.add_from_template, name="event.add_from_template"),
@@ -57,6 +62,13 @@ urlpatterns = [
     re_path(r'^%s/export/$' % urlpath, views.export, name="event.export"),
     re_path(r'^%s/export/status/(?P<identifier>\d+)/$' % urlpath, views.export_status, name="event.export_status"),
     re_path(r'^%s/export/download/(?P<identifier>\d+)/$' % urlpath, views.export_download, name="event.export_download"),
+
+    # Zoom urls
+    re_path(r'^%s/(?P<event_id>\d+)/zoom/$' % urlpath, views.zoom, name='event.zoom'),
+    re_path(r'^%s/(?P<event_id>\d+)/generate_zoom_credits/$' % urlpath, views.generate_zoom_credits, name='event.generate_zoom_credits'),
+
+    # event badges
+    re_path(r'^%s/(?P<event_id>\d+)/badges/$' % urlpath, views.event_badges, name='event.badges'),
 
     # speakers_list view does not exist
     re_path(r'^%s/(?P<event_id>\d+)/speakers/$' % urlpath, views.speaker_list, name="event.speakers"),
@@ -82,7 +94,13 @@ urlpatterns = [
 
     # register for event
     re_path(r'^%s/member-register/(?P<event_id>\d+)/$' % urlpath, views.member_register, name='event.member_register'),
+    re_path(r'^%s/user-register/(?P<event_id>\d+)/$' % urlpath, views.member_register, {'form_class': forms.UserRegistrationForm},  name='event.user_register'),
+    re_path(r'^%s/register-user-lookup/$' % urlpath, views.register_user_lookup, name="events.register_user_lookup"),
     re_path(r'^%s/register/(?P<event_id>\d+)/$' % urlpath, views.register, name='event.register'),
+    re_path(r'^%s/register/(?P<registration_id>\d+)/sub-events/$' % urlpath, views.register_child_events, name='event.register_child_events'),
+    re_path(r'^%s/register/(?P<registration_id>\d+)/sub-events/(?P<guid>[\d\w-]+)/$' % urlpath, views.register_child_events, name='event.register_child_events'),
+    re_path(r'^%s/sessions/(?P<registrant_id>\d+)/$' % urlpath, views.sessions_list, name="event.sessions"),
+    re_path(r'^%s/sessions/(?P<registrant_id>\d+)/edit/$' % urlpath, views.sessions_edit, name="event.sessions_edit"),
     re_path(r'^%s/register/(?P<event_id>\d+)/pre/$' % urlpath, views.register_pre, name='event.register_pre'),
     re_path(r'^%s/register/(?P<event_id>\d+)/individual/(?P<pricing_id>\d+)/$' % urlpath, views.register, {'individual': True}, name='event.register_individual'),
     re_path(r'^%s/register/(?P<event_id>\d+)/table/(?P<pricing_id>\d+)/$' % urlpath, views.register, {'is_table': True}, name='event.register_table'),
@@ -91,6 +109,7 @@ urlpatterns = [
         name="event.registration_edit"),
     re_path(r'^%s/registration/(?P<reg8n_id>\d+)/edit/(?P<hash>\w+)/$' % urlpath, views.registration_edit,
         name="event.registration_edit"),
+    re_path(r'^%s/registrants/(?P<registrant_id>\d+)/check-in/$' % urlpath, views.digital_check_in, name='event.digital_check_in'),
     re_path(r'^%s/registrant/checkin/' % urlpath, views.registrant_check_in, name='event.registrant_check_in'),
 
     # cancel event registration
@@ -107,9 +126,26 @@ urlpatterns = [
     re_path(r'^%s/types/$' % urlpath, views.types, name='event.types'),
     re_path(r'^%s/reassign_type/(?P<type_id>\d+)$' % urlpath, views.reassign_type, name='event.reassign_type'),
 
+    # registrant badge
+    re_path(r'^%s/registrants/(?P<registrant_id>\d+)/badge/$' % urlpath, views.registrant_badge, name='registrant.badge'),
+
+    # registrant certificate
+    re_path(r'^%s/registrants/(?P<registrant_id>\d+)/certificate/$' % urlpath, views.registrant_certificate, name='registrant.certificate'),
+
+    # sample certificate
+    re_path(r'^%s/(?P<event_id>\d+)/certificate/$' % urlpath, views.sample_certificate, name='event.certificate'),
+
     # registrants (search/view); admin-only
     re_path(r'^%s/registrants/search/$' % urlpath, views.global_registrant_search, name="event.global.registrant.search"),
     re_path(r'^%s/(?P<event_id>\d+)/registrants/search/$' % urlpath, views.registrant_search, name="event.registrant.search"),
+
+    re_path(r'^%s/(?P<event_id>\d+)/registrants/sub-events/roster/$' % urlpath,
+        views.sub_event_roster,
+        name="event.registrant.sub_event.roster"),
+    re_path(r'^%s/(?P<event_id>\d+)/registrants/sub-events/roster/export/$' % urlpath,
+        views.sub_event_roster,
+        {'export': True},
+        name="event.registrant.sub_event.roster_export"),
 
     re_path(r'^%s/(?P<event_id>\d+)/registrants/roster/$' % urlpath,
         views.registrant_roster,
@@ -154,6 +190,10 @@ urlpatterns = [
     re_path(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/disable/$' % urlpath, views.disable_addon, name='event.disable_addon'),
     re_path(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/enable/$' % urlpath, views.enable_addon, name='event.enable_addon'),
     re_path(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/delete/$' % urlpath, views.delete_addon, name='event.delete_addon'),
+
+    # sub-events
+    re_path(r'^%s/(?P<parent_event_id>\d+)/sub-events/add/$' % urlpath, views.add, name='event.add_child'),
+    re_path(r'^%s/(?P<parent_event_id>\d+)/sub-events/check-in/$' % urlpath, views.sub_event_check_in, name='event.sub_event_check_in'),
 
     # pending events
     re_path(r'^%s/minimal_add/$' % urlpath, views.minimal_add, name='event.minimal_add'),

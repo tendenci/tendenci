@@ -1,7 +1,15 @@
 from datetime import datetime
 from django import forms
 from django.utils.translation import gettext_lazy as _
+
 from tendenci.apps.payments.models import Payment, PaymentMethod
+
+
+class RefundForm(forms.Form):
+    amount = forms.DecimalField(max_digits=10, decimal_places=2)
+    cancellation_fees = forms.DecimalField(max_digits=10, decimal_places=2)
+    cancel_registration = forms.BooleanField(initial=False, required=False)
+    refund_notes = forms.CharField(widget=forms.Textarea, required=False)
 
 
 class MarkAsPaidForm(forms.ModelForm):
@@ -39,12 +47,13 @@ class MarkAsPaidForm(forms.ModelForm):
         instance.first_name = invoice.bill_to_first_name
         instance.last_name = invoice.bill_to_last_name
         instance.email = invoice.bill_to_email
-        instance.status_detail = 'approved'
 
         instance.creator = user
         instance.creator_username = user.username
         instance.owner = user
         instance.owner_username = user.username
+
+        instance.mark_as_paid()
 
         instance.save()
 

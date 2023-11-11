@@ -61,6 +61,7 @@ from tendenci.apps.events.models import Registrant
 from tendenci.apps.memberships.models import MembershipType
 from tendenci.apps.memberships.forms import EducationForm
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.events.models import Event
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -187,6 +188,16 @@ def index(request, username='', template_name="profiles/index.html"):
             auto_renew_is_set = True
 
     registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=datetime.now())
+    
+    if request.user.is_superuser:
+        # a list of upcoming events (up to 10) that this user has not registered yet (or canceled)
+        upcoming_events = Event.objects.exclude_children().filter(start_dt__gt=datetime.now())
+        registered_event_ids = registrations.filter(cancel_dt__isnull=True).values_list('registration__event_id', flat=True)
+        if registered_event_ids:
+            upcoming_events = upcoming_events.exclude(id__in=registered_event_ids)
+        upcoming_events = upcoming_events.order_by('start_dt')[:10]
+    else:
+        upcoming_events = None
 
     EventLog.objects.log(instance=profile)
 
@@ -248,8 +259,36 @@ def index(request, username='', template_name="profiles/index.html"):
         'membership_reminders': membership_reminders,
         'can_auto_renew': can_auto_renew,
         'auto_renew_is_set': auto_renew_is_set,
-        'recurring_payments': recurring_payments
+        'recurring_payments': recurring_payments,
+        'upcoming_events': upcoming_events
         })
+
+
+@login_required
+def credits(request, username=None, template_name="profiles/credits.html"):
+    """
+    Show profile of username passed.  If no username is passed
+    then redirect to username of person logged in.
+    """
+    if username:
+        user_this = get_object_or_404(User, username=username)
+    else:
+        user_this = request.user
+
+    try:
+        profile = user_this.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create_profile(user=user_this)
+
+    if not profile.allow_edit_by(request.user):
+        raise Http403
+
+    credits_grid, credits_categories = profile.credits_grid
+
+    return render_to_resp(
+        request=request,
+        template_name=template_name,
+        context={'credits_grid': credits_grid, 'credits_categories': credits_categories})
 
 
 def search(request, memberships_search=False, template_name="profiles/search.html"):
@@ -1673,7 +1712,7 @@ def download_user_template(request):
 
     filename = "users_import_template.csv"
 
-    title_list = ['salutation', 'first_name', 'last_name',
+    title_list = ['account_id', 'salutation', 'first_name', 'last_name',
                          'initials', 'display_name', 'email',
                           'email2', 'address', 'address2',
                           'city', 'state', 'zipcode', 'country',
@@ -1703,10 +1742,10 @@ def activate_email(request):
         username = form.cleaned_data['username']
         u = None
         if email and username:
-            [u] = User.objects.filter(is_active=False, email=email, username=username)[:1] or [None]
+            [u] = User.objects.filter(is_active=False, email__iexact=email, username=username)[:1] or [None]
 
         if email and not u:
-            [u] = User.objects.filter(is_active=False, email=email).order_by('-is_active')[:1] or [None]
+            [u] = User.objects.filter(is_active=False, email__iexact=email).order_by('-is_active')[:1] or [None]
 
         if u:
             [rprofile] = RegistrationProfile.objects.filter(user=u)[:1] or [None]

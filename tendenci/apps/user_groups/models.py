@@ -35,6 +35,13 @@ class Group(TendenciBaseModel):
     type = models.CharField(max_length=75, blank=True, choices=TYPE_CHOICES,
                                            default=TYPE_DISTRIBUTION)
     email_recipient = models.CharField(_('Recipient Email'), max_length=255, blank=True)
+    logo = models.ImageField(
+            _('Logo'),
+            upload_to =  "groups",
+            help_text=_("Group Logo. .jpeg, .png and .gif only"),
+            blank=True,
+            null=True
+        )
     show_as_option = models.BooleanField(_('Display Option'), default=True, blank=True)
     allow_self_add = models.BooleanField(_('Allow Self Add'), default=True)
     show_for_memberships = models.BooleanField(default=True,

@@ -189,7 +189,9 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_email',
     'django_otp.plugins.otp_static',
     'two_factor',
-    'two_factor.plugins.email', 
+    'two_factor.plugins.email',
+    'qr_code',
+    'model_bakery',
 
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',
@@ -250,7 +252,7 @@ INSTALLED_APPS = [
     'tendenci.apps.boxes',
     'tendenci.apps.mobile',
     #'tendenci.apps.social_auth',  # Does not support Python 3
-    'tendenci.apps.campaign_monitor',
+    #'tendenci.apps.campaign_monitor',
     'tendenci.apps.theme',
     'tendenci.apps.discounts',
     'tendenci.apps.metrics',
@@ -275,6 +277,7 @@ INSTALLED_APPS = [
     'tendenci.apps.videos',
     'tendenci.apps.testimonials',
     'tendenci.apps.social_services',
+    'tendenci.apps.trainings',
     'tendenci.apps.products',
 
     # Django SQL Explorer
@@ -572,6 +575,12 @@ NEWSLETTER_EMAIL_BACKEND = 'tendenci.apps.emails.backends.NewsletterEmailBackend
 
 NEWSLETTER_SCHEDULE_ENABLED = False
 
+# If True, it allows members to send emails to corporate membership reps
+# (default to False).
+# Why here not in site settings? Because we don't want this feature to be 
+# turned on lightly. Extra caution is needed.
+BROADCAST_EMAIL_ENABLED = False
+
 # Mobile App
 MOBILE_COOKIE_NAME = "tendenci_mobile"
 
@@ -680,6 +689,10 @@ TINYMCE_DEFAULT_CONFIG = {
                                 style|title|width|html|head|title|meta|body|style]"
 }
 
+# ---------------------------------------------------------------------------- #
+# Enable/Disable Features
+# ---------------------------------------------------------------------------- #
+USE_BADGES=False
 
 # ---------------------------------------------------------------------------- #
 # Payment Gateways
@@ -689,11 +702,13 @@ MERCHANT_LOGIN = ''
 MERCHANT_TXN_KEY = ''
 
 # Authorize.Net
-AUTHNET_POST_URL = 'https://secure2.authorize.net/gateway/transact.dll'
-AUTHNET_SIGNATURE_KEY = ''
-
-AUTHNET_CIM_API_TEST_URL = 'https://apitest.authorize.net/xml/v1/request.api'
-AUTHNET_CIM_API_URL = 'https://api2.authorize.net/xml/v1/request.api'
+AUTHNET_API_ENDPOINT = 'https://api.authorize.net/xml/v1/request.api'
+AUTHNET_POST_URL = 'https://accept.authorize.net/payment/payment'
+# AUTHNET_SIGNATURE_KEY = ''
+#
+#
+# AUTHNET_CIM_API_TEST_URL = 'https://apitest.authorize.net/xml/v1/request.api'
+# AUTHNET_CIM_API_URL = 'https://api2.authorize.net/xml/v1/request.api'
 
 # FirstData
 FIRSTDATA_POST_URL = 'https://secure.linkpt.net/lpcentral/servlet/lppay'

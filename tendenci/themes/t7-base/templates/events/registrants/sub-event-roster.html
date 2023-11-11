@@ -1,0 +1,213 @@
+{% extends "events/base-print.html" %}
+{% load bootstrap_pagination_tags %}
+{% load event_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+
+{% block title %}
+    {{ event.title }} - {{ event.start_dt|date:"F j, Y" }} - {% trans "Registrant Roster" %} {{ roster_view }}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/events.css' %}">
+    <link rel="stylesheet" href="{% static 'css/events-roster.css' %}">
+    <link rel="stylesheet" media="screen" href="{% static 'css/events-roster-screen.css' %}">
+    <link rel="stylesheet" media="print" href="{% static 'css/events-roster-print.css' %}">
+
+    <style>
+        .t-print .hide-this {
+            width: 100%;
+        }
+    </style>
+    {% endblock %}
+
+    {% block content %}
+    <div class="t-print">
+        <div class="hide-this">
+    <div class='back-button'>
+        <a href="{% url 'event.sub_event_check_in' event.parent.pk %}">&laquo; {% trans "Back to sub-events" %}</a>
+    </div>
+
+    <div class='event-info'>
+        <h1>{{ event.title }} - {% trans "Registrant Roster" %} {{ roster_view|capfirst }}</h1>
+
+        <h3>{{ event.place.address }} {{ event.place.city_state|join:", " }} {{ event.place.zip }}</h3>
+        <div id="event-time">{{ event.start_dt|date:"F j, Y" }}
+            {% if not event.all_day %}
+                {{ event.start_dt|date:"fA" }} - {{ event.end_dt|date:"fA" }}{% endif %}</div>
+    </div>
+    <div class="print-badges">
+        <ul class="list-unstyled t-meta-data">
+            <li class="pull-right">
+                <a href="{% url 'event.registrant.sub_event.roster_export' event.id %}">
+				  <span class="glyphicon glyphicon-export"></span>
+				  {% trans 'Export' %}
+				</a>&nbsp;&nbsp;&nbsp;
+                <a class="t-meta-print-link" href="#">
+                    <span class="glyphicon glyphicon-print"></span>
+                    {% trans "Print" %}
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="hr"></div>
+    </div>
+
+    <center>
+        <table id="registrant-table">
+            <tr>
+                <th width="1%"></th>
+                <th width="15%" title="{% trans "Price Type" %}">{% trans "Price Type" %}</th>
+                <th width="40%" title="{% trans "Name" %}">{% trans "Name" %}</th>
+                <th width="8%" title="{% trans "Registrant ID" %}">{% trans "Registrant" %}</th>
+                <th width="8%" title="{% trans "Registration ID" %}">{% trans "Registration" %}</th>
+                <th width="12%" title="{% trans "Meeting Check In Date/Time" %}">{% trans "Meeting Check In Date/Time" %}</th>
+                <th width="12%" title="{% trans "Session Check In Date/Time" %}">{% trans "Session Check In Date/Time" %}</th>
+                <th width="6%" class='attended' title="{% trans "Check In" %}">{% trans "Check In" %}</th>
+                <th>&nbsp;&nbsp;</th>
+            </tr>
+            <tr class='row-spacer'>
+                <td colspan="9"></td>
+            </tr>
+            {% for child_event in registrants %}
+            {% with child_event.registrant as registrant %}
+
+            <tr class="{% cycle 'odd' 'even' %}">
+                <td>&nbsp;</td>
+            <td> <!-- Price Type -->
+                <div title="Price Type">
+                    {{ registrant.pricing.title }}
+                </div>
+            </td>
+
+            <td> <!-- Name -->
+                {% if registrant.user_id %}
+                    <div title="View {{ registrant.first_name }}'s profile">
+                        <a href="{% url 'profile' registrant.user.username %}">{% firstof registrant.lastname_firstname registrant.email %}</a>
+                        {% if registrant.memberid %}
+                            <span class="member-icon"
+                                  title="memberID: {{ registrant.memberid }}">{% trans "Member" %}</span>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div title="{{ registrant.name }} does not have a user-account">
+                        {% if registrant.lastname_firstname or registrant.email %}
+                            {% firstof registrant.lastname_firstname registrant.email %}
+                        {% else %}
+                            {% trans "Guest#" %}{{ registrant.pk }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </td>
+            <td> <!-- Registrant ID -->
+                <div title="Registrant ID">
+                    {{ registrant.pk }}
+                </div>
+            </td>
+            <td> <!-- Registrantion ID -->
+                <div title="Registration ID">
+                    <a href="{% url "event.registration_confirmation" event.parent.pk registrant.registration_id %}">{{ registrant.registration_id }}</a>
+                </div>
+            </td>
+            <td> <!-- Meeting check in datetime -->
+                <div title="Meeting Check In Datetime">
+                     {{ registrant.checked_in_dt|date:'m/d h:iA' }}
+                </div>
+            </td>
+            <td> <!-- Session Check In datetime -->
+                <div class="attended-checkedin-text" title="Session Check In Datetime">
+                     {{ child_event.checked_in_dt|date:'m/d h:iA' }}
+                </div>
+
+            <td class="attended-checkbox"> <!-- Check In -->
+                <input type="checkbox" name="checked_in" data-reg="{{ registrant.id }}"
+                       data-event="{{ child_event.pk }}"
+                       value="1" {% if child_event.checked_in %}checked{% endif %}/>
+           </td>
+            </tr>
+
+            <tr class="{% cycle 'odd' 'even' %}">
+                <td>&nbsp;</td>
+                <td></td>
+            <td>
+                <div>{% if registrant.email %}{{ registrant.email }}{% endif %}</div>
+                {% if registrant.phone %}{{ registrant.phone|phonenumber }}{% endif %}
+
+                {% if registrant.roster_field_list %}
+                    {% for field in registrant.roster_field_list %}
+                        {% if field.value %}
+                            <div>{{ field.label }}: {{ field.value }}</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                {% if registrant.comments %}
+                    <div>{% trans "Comments" %}:{% blocktrans with c=registrant.comments %}
+                        {{ c }}{% endblocktrans %}</div>
+                {% endif %}
+            </td>
+            <td></td>
+            </tr>
+
+            {% endwith %}
+            {% endfor %}
+
+            <tr class='row-spacer'>
+                <td colspan="10"></td>
+            </tr>
+            <tr class="bottom-row">
+                <td></td>
+                <td>{% trans "Total Registrants: " %}{{ registrants.count }}</td>
+                <td>{{ event.title }}</td>
+            </tr>
+        </table>
+    </center>
+    </div>
+
+    <div style="clear:both; height:10px;"></div>
+ </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function () {
+            $('.t-meta-print-link').on("click", function() {
+                window.print();
+            });
+            
+            $('.attended-checkbox input[type=checkbox]').on("change", function () {
+                var $this = $(this);
+                var id = $this.data('reg');
+                var event = $this.data('event');
+                var checked_in =  null;
+                var checked_out = null;
+
+                if ($this.val() == 1) {
+                    checked_in = $this.is(':checked');
+                } else {
+                    checked_out = $this.is(':checked');
+                }
+
+                $.post(
+                    '{% url "event.registrant_check_in" %}',
+                    {
+                        'id': id,
+                        'checked_in': checked_in,
+                        'checked_out': checked_out,
+                        'child_event': event,
+                    },
+                    function (data, textStatus, jqXHR) {
+                        json = JSON.parse(data);
+                        if (!json["error"]) {
+                            $this.parent().parent().find('.attended-checkedin-text').html(json['checked_in_dt'])
+                                .css({opacity: 0.1}).animate({opacity: 1}, 900);
+                        }
+                    }
+                );
+            });
+        });
+    </script>
+{% endblock %}

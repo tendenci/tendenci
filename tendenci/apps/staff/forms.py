@@ -86,6 +86,7 @@ class StaffForm(TendenciBaseForm):
         fields = (
             'name',
             'slug',
+            'user',
             'department',
             'positions',
             'education',

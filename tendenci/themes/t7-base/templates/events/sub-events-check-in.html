@@ -1,0 +1,74 @@
+{% extends "events/base-wide.html" %}
+
+{% block title %}{{ block.super }}{{ parent.title }}{% trans "Sub-Events" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+ <link rel="stylesheet" media="print" href="{% static 'css/events-sessions-list-print.css' %}">
+<style>
+  .sub-events-grid .grid {
+    -moz-column-width: 100em;
+    -webkit-column-width: 100em;
+    column-width: 100em;
+    margin-top: 25px;
+    font-size: .8em;
+  }
+  .sub-events-grid .category {
+      margin-bottom: 15px;
+  }
+  .sub-events-grid .row {
+      width: 100%;
+      display: flex;
+  }
+  .sub-events-grid .heading {
+      font-weight: bold;
+  }
+  .sub-events-grid .timeslot {
+      margin-bottom: 10px;
+  }
+  .sub-events-grid .col-md-4 {
+      width: 15%;
+      text-wrap: pretty;
+  }
+  .sub-events-grid .col-md-2 {
+      width: 10%;
+      text-wrap: pretty;
+  }
+</style>
+
+{% endblock %}
+{% block content %}
+<div class="sub-events-grid">
+    <div class='back-button'>
+        <a href="{{ parent.get_absolute_url }}">&laquo; {% trans "Back to" %} {{ parent.title }}</a>
+    </div>
+  <div class="grid">
+    {% for day, day_data in sub_events.items %}
+    <div class="row day heading">
+       <div class="col-md-2">
+         {{ day|date:"M d, Y" }}
+        </div>
+    </div>
+    {% for time_slot, events in day_data.items %}
+      <div class="row timeslot">
+        <div class="col-md-2">
+          {{ time_slot }}
+        </div>
+        {% for event in events %}
+        <div class="col-md-4">
+          <a href="{% url 'event.edit' event.pk %}">{{ event.title }}</a> <br />
+          {% if event.event_code %}<b>Session {{ event.event_code }}</b><br />{% endif %}
+          {% trans "Location:" %} {{ event.place.name }} <br />
+          {% trans "Available:" %} {{ event.total_spots }} <br />
+          {% trans "Registered:" %} <a href="{% url 'event.registrant.sub_event.roster'  event.pk %}">{{ event.total_registered }}</a> <br />
+          {% trans "Remaining:" %} {{ event.spots_remaining }} <br />
+          {% trans "In:" %} <a href="{% url 'event.registrant.sub_event.roster' event.pk %}?q=in"> {{ event.total_checked_in }}</a>
+          {% trans "Out:" %}<a href="{% url 'event.registrant.sub_event.roster' event.pk %}?q=out"> {{ event.total_checked_out }}</a>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

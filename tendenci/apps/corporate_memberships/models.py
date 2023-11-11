@@ -225,6 +225,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
 
 class CorpProfile(TendenciBaseModel):
     guid = models.CharField(max_length=50)
+    account_id = models.IntegerField(blank=True, null=True, unique=True)
     logo = models.ForeignKey(File, null=True, on_delete=models.SET_NULL)
     name = models.CharField(max_length=250, unique=True)
     address = models.CharField(_('Address'), max_length=150,
@@ -559,6 +560,35 @@ class CorpProduct(models.Model):
 
     def get_absolute_url(self):
         return reverse('admin:products_product_change', args=[self.product.id])
+
+
+class Branch(models.Model):
+    """
+    Branch office (or location)
+    """
+    corp_profile = models.ForeignKey("CorpProfile",
+                                     related_name="branches",
+                                     on_delete=models.CASCADE)
+    name = models.CharField(max_length=150, blank=True)
+    address = models.CharField(max_length=150, blank=True)
+    city = models.CharField(max_length=150, blank=True)
+    state = models.CharField(max_length=150, blank=True)
+    zip = models.CharField(max_length=150, blank=True)
+    country = models.CharField(max_length=150, blank=True)
+    phone = models.CharField(_('Phone'), max_length=50,
+                             blank=True, default='')
+    fax = models.CharField(_('Fax'), max_length=50,
+                             blank=True, default='')
+
+    class Meta:
+        app_label = 'corporate_memberships'
+
+    def __str__(self):
+        return self.name
+
+    def city_state_zip(self):
+        state_zip = ' '.join([s for s in (self.state, self.zip) if s])
+        return ', '.join([s for s in (self.city, state_zip) if s])
 
 
 class CorpMembership(TendenciBaseModel):
@@ -1013,47 +1043,48 @@ class CorpMembership(TendenciBaseModel):
         if sf:
             create_salesforce_lead(sf, self.corp_profile)
 
-        if Notice.objects.filter(notice_time='attimeof',
-                                 notice_type='approve_join',
-                                 status=True,
-                                 status_detail='active'
-                                 ).exists():
-
-            if self.anonymous_creator:
-                login_url = '%s%s' % (
-                        get_setting('site', 'global', 'siteurl'),
-                        reverse('auth_login'))
-                login_info = \
-                render_to_string(
-                    template_name='notification/corp_memb_notice_email/join_login_info.html',
-                    context={'corp_membership': self,
-                     'created': created,
-                     'username': username,
-                     'password': password,
-                     'login_url': login_url,
-                     'request': request})
+        if get_setting('module', 'corporate_memberships', 'notificationson'):
+            if Notice.objects.filter(notice_time='attimeof',
+                                     notice_type='approve_join',
+                                     status=True,
+                                     status_detail='active'
+                                     ).exists():
+    
+                if self.anonymous_creator:
+                    login_url = '%s%s' % (
+                            get_setting('site', 'global', 'siteurl'),
+                            reverse('auth_login'))
+                    login_info = \
+                    render_to_string(
+                        template_name='notification/corp_memb_notice_email/join_login_info.html',
+                        context={'corp_membership': self,
+                         'created': created,
+                         'username': username,
+                         'password': password,
+                         'login_url': login_url,
+                         'request': request})
+                else:
+                    login_info = ''
+    
+                self.send_notice_email(request, 'approve_join',
+                                    anonymous_join_login_info=login_info)
             else:
-                login_info = ''
-
-            self.send_notice_email(request, 'approve_join',
-                                anonymous_join_login_info=login_info)
-        else:
-            # send an email to dues reps
-            recipients = dues_rep_emails_list(self)
-            if self.creator:
-                recipients.append(self.creator.email)
-            # avoid duplicate emails
-            recipients = set(recipients)
-            extra_context = {
-                'object': self,
-                'request': request,
-                'invoice': self.invoice,
-                'created': created,
-                'username': username,
-                'password': password
-            }
-            send_email_notification('corp_memb_join_approved',
-                                recipients, extra_context)
+                # send an email to dues reps
+                recipients = dues_rep_emails_list(self)
+                if self.creator:
+                    recipients.append(self.creator.email)
+                # avoid duplicate emails
+                recipients = set(recipients)
+                extra_context = {
+                    'object': self,
+                    'request': request,
+                    'invoice': self.invoice,
+                    'created': created,
+                    'username': username,
+                    'password': password
+                }
+                send_email_notification('corp_memb_join_approved',
+                                    recipients, extra_context)
 
     def disapprove_join(self, request, **kwargs):
         self.approved = False
@@ -1067,7 +1098,8 @@ class CorpMembership(TendenciBaseModel):
                                     self.admin_notes
                                     )
         self.save()
-        self.send_notice_email(request, 'disapprove_join')
+        if get_setting('module', 'corporate_memberships', 'notificationson'):
+            self.send_notice_email(request, 'disapprove_join')
 
     def approve_renewal(self, request, **kwargs):
         """
@@ -1174,25 +1206,26 @@ class CorpMembership(TendenciBaseModel):
             # mark invoice as paid
             self.mark_invoice_as_paid(request.user)
 
-            if Notice.objects.filter(notice_time='attimeof',
-                                 notice_type='approve_renewal',
-                                 status=True,
-                                 status_detail='active'
-                                 ).exists():
-                self.send_notice_email(request, 'approve_renewal')
-            else:
-                # email dues reps that corporate membership has been approved
-                recipients = dues_rep_emails_list(self)
-                if not recipients and self.creator:
-                    recipients = [self.creator.email]
-                extra_context = {
-                    'object': self,
-                    'request': request,
-                    'invoice': self.invoice,
-                    'total_individuals_renewed': total_individuals_renewed
-                }
-                send_email_notification('corp_memb_renewal_approved',
-                                        recipients, extra_context)
+            if get_setting('module', 'corporate_memberships', 'notificationson'):
+                if Notice.objects.filter(notice_time='attimeof',
+                                     notice_type='approve_renewal',
+                                     status=True,
+                                     status_detail='active'
+                                     ).exists():
+                    self.send_notice_email(request, 'approve_renewal')
+                else:
+                    # email dues reps that corporate membership has been approved
+                    recipients = dues_rep_emails_list(self)
+                    if not recipients and self.creator:
+                        recipients = [self.creator.email]
+                    extra_context = {
+                        'object': self,
+                        'request': request,
+                        'invoice': self.invoice,
+                        'total_individuals_renewed': total_individuals_renewed
+                    }
+                    send_email_notification('corp_memb_renewal_approved',
+                                            recipients, extra_context)
 
     def disapprove_renewal(self, request, **kwargs):
         """
@@ -1210,7 +1243,8 @@ class CorpMembership(TendenciBaseModel):
                 self.owner_username = request_user.username
             self.save()
 
-            self.send_notice_email(request, 'disapprove_renewal')
+            if get_setting('module', 'corporate_memberships', 'notificationson'):
+                self.send_notice_email(request, 'disapprove_renewal')
 
         ind_memb_renew_entries = IndivMembershipRenewEntry.objects.filter(
                                             corp_membership=self)
@@ -1251,7 +1285,12 @@ class CorpMembership(TendenciBaseModel):
                 assign_to_user.save()
 
                 # create a profile for this new user
-                Profile.objects.create_profile(assign_to_user)
+                profile = Profile(user=assign_to_user,
+                                  creator_id=assign_to_user.id,
+                                  owner_id=assign_to_user.id,
+                                  creator_username=assign_to_user.username,
+                                  owner_username=assign_to_user.username)
+                profile.save()
 
             self.creator = assign_to_user
             self.creator_username = assign_to_user.username
@@ -1954,10 +1993,12 @@ class CorpMembershipRep(models.Model):
         corp_app = CorpMembershipApp.objects.current_app()
         if corp_app.dues_reps_group:
             if corp_app.dues_reps_group.is_member(self.user):
-                corp_app.dues_reps_group.remove_user(self.user)
+                if not self.user.corpmembershiprep_set.exclude(id=self.id, is_dues_rep=True).exists():
+                    corp_app.dues_reps_group.remove_user(self.user)
         if corp_app.member_reps_group:
             if corp_app.member_reps_group.is_member(self.user):
-                corp_app.member_reps_group.remove_user(self.user)
+                if not self.user.corpmembershiprep_set.exclude(id=self.id, is_member_rep=True).exists():
+                    corp_app.member_reps_group.remove_user(self.user)
 
 
 class IndivEmailVerification(models.Model):
@@ -2398,6 +2439,30 @@ class NoticeLogRecord(models.Model):
 
     class Meta:
         app_label = 'corporate_memberships'
+
+
+class BroadcastEmail(models.Model):
+    STATUS_CHOICES = (
+        ("pending", _("Pending")),
+        ("completed", _("Completed")),
+        ("failed", _("Failed")),
+    )
+    guid = models.CharField(max_length=50, editable=False)
+    params_dict = DictField(_('Parameters Dict'))
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    start_dt = models.DateTimeField(auto_now_add=True)
+    finish_dt = models.DateTimeField(null=True, blank=True)
+    total_sent = models.IntegerField(default=0)
+    status = models.CharField(max_length=50,
+                default="pending", choices=STATUS_CHOICES)
+
+    class Meta:
+        app_label = 'corporate_memberships'
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid4())
+        super(BroadcastEmail, self).save(*args, **kwargs)
 
 
 def delete_corp_profile(sender, **kwargs):

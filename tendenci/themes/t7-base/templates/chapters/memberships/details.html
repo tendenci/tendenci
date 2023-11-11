@@ -65,6 +65,10 @@
 	                            {% else %}
 	                                <p>{% trans 'Membership type does not allow renewals.' %}</p>
 	                            {% endif %}
+	                        {% else %}
+                                {% if chapter_membership.is_expired %}
+                                    <p>{% trans 'Expired' %} <strong>{{ chapter_membership.expire_dt|date:"N j, Y" }}</strong> ({% trans 'grace period' %}: {{ chapter_membership.membership_type.expiration_grace_period }} {% trans 'days' %})</p>
+                                {% endif %}
                             {% endif %}
                         </td>
                         <td id="status" style="vertical-align: top;">
@@ -100,12 +104,14 @@
                             {% if chapter_membership.user == request.user %}
                             {% if chapter_membership.can_renew %}
                                     {% if chapter_membership.app %}
-                                    <a href="{# url "chapters.membership_renew" chapter_membership.app.slug chapter_membership.id #}">{% trans 'Renew' %}</a>
+                                    <div style="margin: 1em;">
+                                     <a class="btn btn-info btn-sm" href="{% url "chapters.membership_renew" chapter_membership.id %}">{% trans 'Renew' %}</a>
+                                    </div>
                                     {% endif %}
                             {% else %}
                                 {% if chapter_membership.app %}
                                     {% if chapter_membership.is_expired %}
-                                    <a href="{# url "chapters.membership_add" membership.app.slug #}">{% trans "This chapter membership is expired, sign up for new membership." %}</a>
+                                    <a href="{% url "chapters.membership_add" chapter_membership.chapter.id %}">{% trans "This chapter membership is expired, sign up for new membership." %}</a>
                                     {% else %}
                                         <div>{% trans 'No pending actions required, good job!' %}</div>
                                     {% endif %}

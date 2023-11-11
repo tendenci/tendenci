@@ -45,7 +45,7 @@ def detail(request, slug=None, template_name="news/view.html"):
         if not request.user.is_authenticated:
             raise Http404
 
-        if not request.user.profile.is_superuser:
+        if not has_perm(request.user, 'news.change_news', news):
             raise Http403
 
     EventLog.objects.log(instance=news)

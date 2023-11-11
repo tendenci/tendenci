@@ -29,14 +29,14 @@ from tendenci.apps.events.models import (
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
-    RecurringEvent, Registrant
+    RecurringEvent, Registrant, EventCredit, EventStaff
 )
 
 from tendenci.libs.form_utils.forms import BetterModelForm
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, StateSelectField, PriceField
+from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, StateSelectField, PercentField, PriceField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.emails.models import Email
@@ -47,10 +47,12 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.events.models import ZoomAPIConfiguration
 from tendenci.apps.events.settings import FIELD_MAX_LENGTH
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.widgets import PercentWidget
 from tendenci.apps.base.forms import ProhibitNullCharactersValidatorMixin
+from tendenci.apps.files.validators import FileValidator
 
 from .fields import UseCustomRegField
 from .widgets import UseCustomRegWidget
@@ -302,7 +304,55 @@ class CustomRegFormForField(forms.ModelForm):
         return cleaned_data
 
 
-class FormForCustomRegForm(forms.ModelForm):
+class AttendanceDatesMixin:
+    """Mixin for forms that use pricing attendance dates"""
+    def add_attendance_dates(self):
+        """Add attendance dates if required by Event"""
+        days = self.event.full_event_days if self.user and self.user.profile.is_superuser else self.event.days
+
+        if self.event and self.event.requires_attendance_dates:
+            self.fields['attendance_dates'] = forms.MultipleChoiceField(
+                widget=forms.CheckboxSelectMultiple,
+                choices = [(date, date) for date in days]
+            )
+
+    def clean_attendance_dates(self):
+        """Validate attendance_dates field in comparison to days pricing covers"""
+        attendance_dates = self.cleaned_data.get('attendance_dates')
+
+        pricing = self.cleaned_data.get('pricing')
+
+        # If we shouldn't be using attenedance dates, return an empty list
+        if (
+                not self.event or not pricing or not
+                pricing.requires_attendance_dates or not
+                pricing.available
+        ):
+            return list()
+ 
+        # Allow people to register for LESS dates covered, but not more
+        total_available_days = len(self.event.full_event_days)
+        if pricing.days_price_covers > total_available_days:
+            pricing.days_price_covers = total_available_days
+        if not attendance_dates or len(attendance_dates) != pricing.days_price_covers:
+            raise forms.ValidationError(_(f'Please select {pricing.days_price_covers} dates.'))
+
+        return attendance_dates
+
+
+def attendance_dates_callback(field, event, is_admin):
+    """Add attendance_dates when using modelformset_factory if applicable"""
+    if field.name == 'attendance_dates' and event.requires_attendance_dates:
+        days = event.full_event_days if  is_admin else event.days
+
+        return forms.MultipleChoiceField(
+                widget=forms.CheckboxSelectMultiple,
+                choices = [(date, date) for date in days]
+            )
+    return field.formfield()
+
+
+class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.ModelForm):
 
     class Meta:
         model = CustomRegFormEntry
@@ -322,7 +372,9 @@ class FormForCustomRegForm(forms.ModelForm):
         self.form_fields = self.custom_reg_form.fields.filter(visible=True).order_by('position')
 
         self.pricings = kwargs.pop('pricings', None)
-        if self.event:
+        self.is_table = kwargs.pop('is_table', False)
+        self.default_pricing = kwargs.pop('default_pricing', False)
+        if self.event and not self.default_pricing:
             self.default_pricing = getattr(self.event, 'default_pricing', None)
 
         super(FormForCustomRegForm, self).__init__(*args, **kwargs)
@@ -398,6 +450,15 @@ class FormForCustomRegForm(forms.ModelForm):
                 self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'),
                                                              required=False, initial=True)
 
+        # certification_track field
+        if self.event and self.event.course:
+            cert_choices = self.event.get_certification_choices()
+            if cert_choices:
+                self.fields['certification_track'] = forms.ChoiceField(
+                                label=_('Certification track'),
+                                choices = cert_choices,
+                                required=False)
+
         # --------------------------
         if self.pricings:
             # add the price options field
@@ -410,8 +471,11 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
 
+        self.add_attendance_dates()
+
         # member id
-        if hasattr(self.event, 'has_member_price') and \
+        if hasattr(self.event, 'has_member_price') and not \
+                    get_setting('module', 'events', 'hide_member_pricing') and \
                     get_setting('module', 'events', 'requiresmemberid') and \
                     self.event.has_member_price:
             self.fields['memberid'] = forms.CharField(label=_('Member ID'), max_length=50, required=False,
@@ -438,6 +502,8 @@ class FormForCustomRegForm(forms.ModelForm):
         self.price = Decimal('0.00')
         self.saved_data = {}
         # -------------------------
+        
+        self.add_form_control_class()
 
     def get_user(self, email=None):
         user = None
@@ -630,6 +696,81 @@ def _get_price_labels(pricing):
                                       description) )
 
 
+class EventCreditForm(forms.Form):
+    ceu_category = forms.CharField(widget=forms.Textarea(attrs={'readonly': 'readonly', 'rows': 3}))
+    available  = forms.BooleanField(required=False)
+    credit_count = forms.DecimalField(required=False)
+    alternate_ceu_id = forms.CharField(required=False)
+    event_id = forms.IntegerField(widget=forms.TextInput(attrs={'readonly': 'readonly', 'hidden': True}))
+    ceu_category_id = forms.IntegerField(widget=forms.TextInput(attrs={'readonly': 'readonly', 'hidden': True}))
+
+    @staticmethod
+    def pre_populate_form(event, category, prefix):
+        """Pre-populate form based on category and event"""
+        initial = {
+            'ceu_category': category.name,
+            'ceu_category_id': category.pk,
+            'event_id': event.pk,
+        }
+
+
+        # If this credit has been configured for this event, add the details as configured.
+        credit = event.get_credit_configuration(category)
+        if credit:
+            initial['credit_count'] = credit.credit_count
+            initial['alternate_ceu_id'] = credit.alternate_ceu_id
+            initial['available'] = credit.available
+
+        return EventCreditForm(
+            prefix=prefix,
+            initial=initial)
+
+    def save(self, apply_changes_to, *args, **kwargs):
+        event = Event.objects.get(pk=self.cleaned_data.get('event_id'))
+        credit_count = self.cleaned_data.get('credit_count')
+
+        # Update if the Event already has this credit configured, or if credit count was set.
+        credit = event.get_or_create_credit_configuration(
+            self.cleaned_data.get('ceu_category_id'), credit_count)
+
+        if credit:
+            try:
+                credit.credit_count = credit_count
+                credit.alternate_ceu_id = self.cleaned_data.get('alternate_ceu_id')
+                credit.available = self.cleaned_data.get('available', False)
+                credit.save(apply_changes_to=apply_changes_to, from_event=event)
+            except Exception:
+                raise ValidationError(f"{credit.ceu_subcategory} not updated, try again.")
+            return credit
+
+
+class StaffForm(FormControlWidgetMixin, BetterModelForm):
+    label = _('Staff Member')
+
+    class Meta:
+        model = EventStaff
+
+        fields = (
+            'name',
+            'role',
+            'signature_image',
+            'use_signature_on_certificate',
+            'include_on_certificate',
+        )
+
+        fieldsets = [(_('Staff'), {
+          'fields': ['name',
+                     'role',
+                     'signature_image',
+                     'use_signature_on_certificate',
+                     'include_on_certificate',
+                    ],
+          'legend': '',
+          'classes': ['boxy-grey'],
+          })
+        ]
+
+
 class EventForm(TendenciBaseForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
@@ -685,11 +826,30 @@ class EventForm(TendenciBaseForm):
                  ('pending',_('Pending')),
                  ('template',_('Template')),))
 
+    parent = forms.ModelChoiceField(
+        required=False,
+        queryset=Event.objects.available_parent_events(),
+        help_text=_("Larger symposium this event is a part of"),
+    )
+
+    repeat_of = forms.ModelChoiceField(
+        required=False,
+        queryset=Event.objects.none(),
+        help_text=_("Select child event this is a repeat of"),
+    )
+
     class Meta:
         model = Event
         fields = (
             'title',
+            'course',
+            'short_name',
+            'event_code',
+            'delivery_method',
             'description',
+            'event_relationship',
+            'parent',
+            'repeat_of',
             'start_dt',
             'end_dt',
             'is_recurring_event',
@@ -706,6 +866,7 @@ class EventForm(TendenciBaseForm):
             'groups',
             'external_url',
             'photo_upload',
+            'certificate_image',
             'tags',
             'allow_anonymous_view',
             'user_perms',
@@ -720,6 +881,12 @@ class EventForm(TendenciBaseForm):
 
         fieldsets = [(_('Event Information'), {
                       'fields': ['title',
+                                 'event_relationship',
+                                 'parent',
+                                 'repeat_of',
+                                 'course',
+                                 'short_name',
+                                 'event_code',
                                  'description',
                                  'is_recurring_event',
                                  'frequency',
@@ -738,10 +905,12 @@ class EventForm(TendenciBaseForm):
                        'fields': ['on_weekend',
                                   'timezone',
                                   'priority',
+                                  'delivery_method',
                                   'type',
                                   'groups',
                                   'external_url',
                                   'photo_upload',
+                                  'certificate_image',
                                   'tags',
                                  ],
                       'legend': ''
@@ -766,9 +935,21 @@ class EventForm(TendenciBaseForm):
         self.edit_mode = kwargs.pop('edit_mode', False)
         self.recurring_mode = kwargs.pop('recurring_mode', False)
         is_template = kwargs.pop('is_template', False)
+        parent_event_id = kwargs.pop('parent_event_id', None)
         super(EventForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
+            self.fields['parent'].queryset = self.fields['parent'].queryset.exclude(
+                pk=self.instance.pk
+            )
+            # Queryset `available_parent_events` filters out past events so you can't
+            # assign a past event to a new child event. However, if this is an old child
+            # event, we need to make sure it's an option in the drop down. Since we don't
+            # allow changing the parent event once it's set, it is ok for it to be the
+            # only option.
+            if self.instance.parent:
+                self.fields['parent'].queryset = Event.objects.filter(pk=self.instance.parent.pk)
+
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if 'private_slug' in self.fields:
                 self.fields['enable_private_slug'].help_text = self.instance.get_private_slug(absolute_url=True)
@@ -782,6 +963,22 @@ class EventForm(TendenciBaseForm):
 
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
             #self.fields['groups'].initial = Group.objects.get_or_create_default()
+            
+        if 'repeat_of' in self.fields:
+            if self.instance.pk and self.instance.parent and self.instance.repeat_of: # on event edit, repeat_of already set
+                self.fields['repeat_of'].queryset = Event.objects.filter(pk=self.instance.repeat_of.pk)
+            elif (self.instance.pk and self.instance.parent) or ('parent' in self.fields and parent_event_id): # on editing sub-event with no repeat, or adding new sub-event
+                # Populate repeat_of options with all child events that are not already repeats.
+                parent_event = self.instance.parent if self.instance.pk else None
+                if not parent_event:
+                    parent_event = Event.objects.get(id=parent_event_id)
+                queryset = parent_event.child_events.filter(repeat_of__isnull=True)
+
+                # If there's an instance, make sure it's not in the repeat_of options (don't want an Event to repeat itself)
+                if self.instance.pk:
+                    queryset = queryset.exclude(pk=self.instance.pk)
+                self.fields['repeat_of'].queryset = queryset
+
 
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
@@ -801,6 +998,7 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('frequency')
             self.fields.pop('end_recurring')
             self.fields.pop('recurs_on')
+            #self.fields['repeat_of'].widget.attrs.update({'disabled': True})
         else:
             if is_template:
                 # hide recurring event fields when adding a template
@@ -817,6 +1015,18 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('start_event_date')
             self.fields.pop('end_event_date')
             self.fields.pop('photo_upload')
+
+        # Set event relationship field to read only if this is a parent
+        # event that already has children, or a child event with a parent
+        # set
+        nested_events = get_setting('module', 'events', 'nested_events')
+        if self.edit_mode and nested_events:
+            has_child_events = self.instance.pk and self.instance.has_child_events
+            if has_child_events or self.instance.parent:
+                self.fields['event_relationship'].widget.attrs.update({'disabled': True})
+
+            if self.instance.parent:
+                self.fields['parent'].widget.attrs.update({'disabled': True})
 
         default_groups = Group.objects.filter(status=True, status_detail="active",
                                               show_for_events=True)
@@ -842,6 +1052,21 @@ class EventForm(TendenciBaseForm):
         self.fields['timezone'].initial = settings.TIME_ZONE
         
         self.fields['type'].required = True
+
+        # check if course field is needed
+        if not get_setting('module', 'events', 'usewithtrainings'):
+            if 'course' in self.fields:
+                del self.fields['course']
+        else:
+            self.fields['course'].queryset = self.fields['course'].queryset.filter(
+                location_type='onsite',
+                status_detail='enabled').order_by('name') # onsite courses only
+        
+        # If nested events is not enabled, remove it from the form
+        if not nested_events:
+            del self.fields['event_relationship']
+            del self.fields['parent']
+            del self.fields['repeat_of']
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
@@ -892,6 +1117,14 @@ class EventForm(TendenciBaseForm):
                 errors = self._errors.setdefault("end_dt", ErrorList())
                 errors.append(_(u"This cannot be \
                     earlier than the start date."))
+
+            parent = cleaned_data.get("parent")
+            if parent and (start_dt < parent.start_dt or end_dt > parent.end_dt):
+                if start_dt < parent.start_dt:
+                    errors = self._errors.setdefault("start_dt", ErrorList())
+                if end_dt > parent.end_dt:
+                    errors = self._errors.setdefault("end_dt", ErrorList())
+                errors.append(_(f"Sub-events must happen during parent event - {parent}"))
 
             if start_event_date and end_event_date:
                 if start_event_date > end_event_date:
@@ -1006,6 +1239,11 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
 
     field_order = [
                 'virtual',
+                'use_zoom_integration',
+                'zoom_api_configuration',
+                'zoom_meeting_id',
+                'zoom_meeting_passcode',
+                'is_zoom_webinar',
                 'place',
                 'name',
                 'description',
@@ -1044,6 +1282,10 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
         if get_setting('module', 'events', 'stateusedropdown'):
             self.fields['state'] = StateSelectField(label=_('State'), required=False)
             self.add_form_control_class()
+
+        default_zoom_config = ZoomAPIConfiguration.objects.filter(use_as_default=True).first()
+        if default_zoom_config:
+            self.fields['zoom_api_configuration'].initial = default_zoom_config
 
     def save(self, *args, **kwargs):
         commit = kwargs.pop('commit', True)
@@ -1103,13 +1345,15 @@ class SpeakerForm(FormControlWidgetMixin, BetterModelForm):
             'file',
             'featured',
             'description',
+            'position'
         )
 
         fieldsets = [(_('Speaker'), {
           'fields': ['name',
                     'file',
                     'featured',
-                    'description'
+                    'description',
+                    'position'
                     ],
           'legend': '',
           'classes': ['boxy-grey'],
@@ -1150,12 +1394,31 @@ class SpeakerForm(FormControlWidgetMixin, BetterModelForm):
         return self.cleaned_data
 
 
-class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
+class ImageUploadFormMixin:
+    """Mixin to upload an image"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.image:
+            name = f"{self.label.lower()}-remove_photo"
+            self.fields['image_upload'].help_text = f'<input name="{name}" id="id_{name}" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
+        self.fields['image_upload'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
+
+    def save(self, *args, **kwargs):
+        """Remove image if needed"""
+        instance = super().save(*args, **kwargs)
+        if self.data.get(f'{self.label.lower()}-remove_photo'):
+            if instance.image:
+                instance.image.delete()
+        return instance
+
+
+class OrganizerForm(ImageUploadFormMixin, FormControlWidgetMixin, forms.ModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Organizer._meta.app_label,
         'storme_model':Organizer._meta.model_name.lower()}))
     label = 'Organizer'
+    image_upload = forms.FileField(label=_('Logo'), required=False)
 
     class Meta:
         model = Organizer
@@ -1163,6 +1426,7 @@ class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
         fields = (
             'name',
             'description',
+            'image_upload',
         )
 
     def __init__(self, *args, **kwargs):
@@ -1173,18 +1437,21 @@ class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
 
-class SponsorForm(FormControlWidgetMixin, forms.ModelForm):
+class SponsorForm(ImageUploadFormMixin, FormControlWidgetMixin, forms.ModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Sponsor._meta.app_label,
         'storme_model':Sponsor._meta.model_name.lower()}))
     label = 'Sponsor'
+    image_upload = forms.FileField(label=_('Logo'), required=False)
 
     class Meta:
         model = Sponsor
 
         fields = (
+            'name',
             'description',
+            'image_upload'
         )
 
     def __init__(self, *args, **kwargs):
@@ -1204,14 +1471,16 @@ class PaymentForm(forms.ModelForm):
 
 class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
     label = "Pricing"
-    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available'))
-    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available'))
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available for registration'))
+    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available for registration'))
     price = PriceField(label=_('Price'), max_digits=21, decimal_places=2, initial=0.00)
     #dates = Reg8nDtField(label=_("Start and End"), required=False)
     groups = forms.ModelMultipleChoiceField(required=False, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
     payment_required = forms.ChoiceField(required=False,
                                          choices=(('True', _('Yes')), ('False', _('No'))),
                                          initial='True')
+    days_price_covers = forms.IntegerField(
+        required=False, help_text=_('Number of days this price covers (Optional).'))
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('reg_form_queryset', None)
@@ -1230,6 +1499,9 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
         if not self.user or not self.user.profile.is_superuser:
             filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
             default_groups = default_groups.filter(filters).distinct()
+
+        if not get_setting("module", "events", "nested_events"):
+            self.fields['days_price_covers'].widget = forms.HiddenInput()
 
         self.fields['groups'].queryset = default_groups
 
@@ -1262,6 +1534,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
             'registration_cap',
             'payment_required',
             'price',
+            'days_price_covers',
             'include_tax',
             'tax_rate',
             'start_dt',
@@ -1280,6 +1553,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
                     'registration_cap',
                     'payment_required',
                     'price',
+                    'days_price_covers',
                     'include_tax',
                     'tax_rate',
                     'start_dt',
@@ -1339,6 +1613,37 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
         mce_attrs={'storme_app_label':RegistrationConfiguration._meta.app_label,
         'storme_model':RegistrationConfiguration._meta.model_name.lower()}))
 
+    cancellation_fee = PriceField(
+        label=_('Cancellation Fee'),
+        max_digits=21,
+        decimal_places=2,
+        initial=0.00,
+        help_text=_('Fee registrant pays when cancelling. ' \
+                    'Leave as 0 if there is no cancellation fee. ' \
+                    'If cancellation percent is set, that will be used instead.'
+                    )
+    )
+
+    cancellation_percent = PercentField(
+        label=_('Cancellation Percent'),
+        allowed_decimal_places=0,
+        help_text=_(
+            'Percent of total price registrant pays when cancelling. ' \
+            'If percent is set, this is used to calculate cancellation fee, ' \
+            'overriding other configuration for cancellation fee. ' \
+            'Leave as 0% to set cancellation fee directly instead.'
+        )
+    )
+
+    cancel_by_dt = forms.DateField(
+        label=_('Cancel by'),
+        required=False,
+        widget=forms.DateInput(attrs={'class':'datepicker'}),
+        help_text=_('Date through which cancellation is allowed.')
+    )
+
+
+
     class Meta:
         model = RegistrationConfiguration
 
@@ -1348,6 +1653,8 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'payment_method',
             'payment_required',
             'external_payment_link',
+            'allow_guests',
+            'guest_limit',
             'require_guests_info',
             'discount_eligible',
             'gratuity_enabled',
@@ -1360,7 +1667,12 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'reminder_days',
             'registration_email_type',
             'registration_email_text',
-            'reply_to'
+            'reply_to',
+            'reply_to_receive_notices',
+            'cancel_by_dt',
+            'cancellation_fee',
+            'cancellation_percent',
+            'cancel_by_dt',
         )
 
         fieldsets = [(_('Registration Configuration'), {
@@ -1369,6 +1681,8 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     'payment_method',
                     'payment_required',
                     'external_payment_link',
+                    'allow_guests',
+                    'guest_limit',
                     'require_guests_info',
                     'discount_eligible',
                     'gratuity_enabled',
@@ -1381,7 +1695,11 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     'reminder_days',
                     'registration_email_type',
                     'registration_email_text',
-                    'reply_to'
+                    'reply_to',
+                    'reply_to_receive_notices',
+                    'cancellation_fee',
+                    'cancellation_percent',
+                    'cancel_by_dt',
                     ],
           'legend': ''
           })
@@ -1624,6 +1942,8 @@ IS_TABLE_CHOICES = (
                     ('0', _('Individual registration(s)')),
                     ('1', _('Table registration')),
                     )
+
+
 class RegistrationPreForm(forms.Form):
     is_table = forms.ChoiceField(
                     widget=forms.RadioSelect(),
@@ -1727,8 +2047,11 @@ class RegistrationForm(forms.Form):
         override_table = self.cleaned_data['override_table']
         override_price_table = self.cleaned_data['override_price_table']
 
-        if override_table and override_price_table <0:
-            raise forms.ValidationError(_('Override price must be a positive number.'))
+        if override_table:
+            if override_price_table is None:
+                raise forms.ValidationError(_('Override is checked, but override price is not specified.'))
+            elif  override_price_table < 0:
+                raise forms.ValidationError(_('Override price must be a positive number.'))
         return override_price_table
 
 
@@ -1766,14 +2089,84 @@ class FreePassCheckForm(forms.Form):
     member_number = forms.CharField(max_length=50, required=False)
 
 
-class RegistrantForm(forms.Form):
+class EventCheckInForm(forms.Form):
+    """
+    Form for digital check in for events and sub-events
+    """
+    def __init__(self, registrant, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if not registrant.child_events.exists():
+            self.fields['event'] = forms.HiddenInput()
+        else:
+            queryset = registrant.child_events_available_for_check_in
+            default = queryset.filter(child_event__end_dt__gt=datetime.now()).first()
+            self.fields['event'] = forms.ModelChoiceField(
+                queryset=queryset,
+                widget=forms.Select,
+                initial=default,
+                label=_("Check into Session"),
+            )
+
+
+class ChildEventRegistrationForm(forms.Form):
+    """
+    Form for child event registration
+    """
+    def __init__(self, registrant, is_admin, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        upcoming_child_events = registrant.registration.event.upcoming_child_events
+        # Override constraint to only provide upcoming events if is_admin
+        if is_admin:
+            upcoming_child_events = registrant.registration.event.child_events.filter(
+                registration_configuration__enabled=True
+            )
+
+        if not upcoming_child_events.exists():
+            return
+
+        # Set the initial values. Add a new control for each session.
+        # A session is determined by date and time of the sub-event.
+        sub_event_datetimes = registrant.sub_event_datetimes(is_admin)
+
+        for index, start_dt in enumerate(sub_event_datetimes.keys()):
+            child_events = upcoming_child_events.filter(start_dt=start_dt)
+            choices = [(event.pk, event.title_with_event_code) for event in child_events if not event.at_capacity]
+            # Check if registrant already has selection. If so, make sure it's in choices
+            selection = None
+            current_child_event = registrant.child_events.filter(
+                child_event__start_dt=start_dt).first()
+            if current_child_event:
+                selection = (current_child_event.child_event.pk, current_child_event.child_event.title_with_event_code)
+                if selection and selection not in choices:
+                    choices.append(selection)
+
+            if not choices:
+                continue
+
+            choices.append((None, "Not attending"))
+            self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'] = forms.ChoiceField(
+                choices=choices,
+                widget=forms.RadioSelect,
+                required=False,
+                label=f'{start_dt.time().strftime("%I:%M %p")} - {sub_event_datetimes[start_dt].time().strftime("%I:%M %p")}',
+                help_text=f'{start_dt.date()}'
+            )
+
+            # Load current value (if there is one) to allow editing
+            if selection:
+                self.fields[f'{registrant.pk}-{start_dt} - {sub_event_datetimes[start_dt]}'].initial = selection
+
+
+class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
     """
     Registrant form.
     """
     FIELD_NAMES = ['salutation', 'first_name', 'last_name', 'email', 'mail_name',
                    'position_title', 'company_name', 'phone', 'address',
                    'city', 'state', 'zip_code', 'country', 'meal_option',
-                   'comments']
+                   'comments', 'certification_track']
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', AnonymousUser)
@@ -1781,8 +2174,10 @@ class RegistrantForm(forms.Form):
         self.form_index = kwargs.pop('form_index', None)
         self.pricings = kwargs.pop('pricings', None)
         self.validate_pricing = kwargs.pop('validate_pricing', True)
+        self.is_table = kwargs.pop('is_table', False)
+        self.default_pricing = kwargs.pop('default_pricing', False)
 
-        if self.event:
+        if self.event and not self.default_pricing:
             self.default_pricing = getattr(self.event, 'default_pricing', None)
 
         super(RegistrantForm, self).__init__(*args, **kwargs)
@@ -1837,6 +2232,15 @@ class RegistrantForm(forms.Form):
         else:
             self.empty_permitted = False
 
+        # certification field
+        if self.event.course:
+            cert_choices = self.event.get_certification_choices()
+            if cert_choices:
+                self.fields['certification_track'] = forms.ChoiceField(
+                                label=_('Certification track'),
+                                choices = cert_choices,
+                                required=False)
+
         if self.pricings:
             # add the price options field
             self.fields['pricing'] = forms.ModelChoiceField(
@@ -1848,6 +2252,8 @@ class RegistrantForm(forms.Form):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
             self.fields['pricing'].required=True
+
+        self.add_attendance_dates()
 
         # member id
         if hasattr(self.event, 'has_member_price') and \
@@ -1868,6 +2274,7 @@ class RegistrantForm(forms.Form):
         if not self.event.is_table and reg_conf.allow_free_pass:
             self.fields['use_free_pass'] = forms.BooleanField(label=_("Use Free Pass"),
                                                              required=False)
+        self.add_form_control_class()
 
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
@@ -2019,6 +2426,9 @@ class RegistrantBaseFormSet(BaseFormSet):
                  initial=None, error_class=ErrorList, **kwargs):
         self.event = kwargs.pop('event', None)
         self.user = kwargs.pop('user', None)
+        self.is_table = kwargs.pop('is_table', None)
+        self.default_pricing = kwargs.pop('default_pricing', None)
+        self.validate_pricing = kwargs.pop('validate_pricing', True)
         custom_reg_form = kwargs.pop('custom_reg_form', None)
         if custom_reg_form:
             self.custom_reg_form = custom_reg_form
@@ -2042,6 +2452,10 @@ class RegistrantBaseFormSet(BaseFormSet):
 
         defaults['event'] = self.event
         defaults['user'] = self.user
+        defaults['is_table'] = self.is_table
+        #if self.default_pricing:
+        defaults['default_pricing'] =self.default_pricing
+        defaults['validate_pricing'] = self.validate_pricing
         defaults['form_index'] = i
         if hasattr(self, 'custom_reg_form'):
             defaults['custom_reg_form'] = self.custom_reg_form
@@ -2068,12 +2482,31 @@ class RegistrantBaseFormSet(BaseFormSet):
         form = self.form(**defaults)
         self.add_fields(form, i)
         return form
-    
+
+    def _clean_form(self, form):
+        email = form.cleaned_data.get('email', None)
+
+        if email:
+            if not get_setting('module', 'events', 'canregisteragain'):
+                # check if this user can register
+                if not self.user.is_superuser:
+                    if self.user.email.lower() != email.lower():
+                        raise forms.ValidationError(_(f"{email} is NOT your email address."))       
+                
+                # check if this email address is already used
+                if Registrant.objects.filter(user__email__iexact=email,
+                                             registration__event=self.event,
+                                             cancel_dt__isnull=True).exists():
+                    if self.user.is_authenticated and email == self.user.email:
+                        raise forms.ValidationError(_('You have already registered.'))
+                    raise forms.ValidationError(_(f'User {email} has already registered.'))
+  
     def clean(self):
         return_data = super(RegistrantBaseFormSet, self).clean()
         # check if we have enough available spaces for price options
         pricings = {}
         for form in self.forms:
+            self._clean_form(form)
             pricing = form.cleaned_data.get('pricing', None)
             if pricing and pricing.registration_cap:
                 if pricing not in pricings:
@@ -2156,7 +2589,7 @@ class MessageAddForm(forms.ModelForm):
 
     class Meta:
         model = Email
-        fields = ('subject', 'body',)
+        fields = ('subject', 'body', 'sender_display', 'reply_to')
 
     def __init__(self, event_id=None, *args, **kwargs):
         super(MessageAddForm, self).__init__(*args, **kwargs)
@@ -2164,6 +2597,7 @@ class MessageAddForm(forms.ModelForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+
 
 class EmailForm(forms.ModelForm):
     #events = forms.CharField()
@@ -2341,7 +2775,36 @@ class EventRegistrantSearchForm(forms.Form):
                                         required=False)
 
 
-class MemberRegistrationForm(forms.Form):
+class UserMemberRegBaseForm(FormControlWidgetMixin, forms.Form):
+    """
+    User or member Registration base form.
+    """
+
+    def __init__(self, pricings, *args, **kwargs):
+        super(UserMemberRegBaseForm, self).__init__(*args, **kwargs)
+
+        self.fields['pricing'] = forms.ModelChoiceField(
+            queryset=pricings,
+            widget=forms.RadioSelect(),)
+        self.fields['pricing'].label_from_instance = _get_price_labels
+        self.fields['pricing'].empty_label = None
+        self.fields['override'] = forms.BooleanField(label=_("Admin Price Override?"),
+                                  required=False)
+        self.fields['override_price'] = forms.DecimalField(label=_("Override Price"),
+                                            max_digits=10,
+                                            decimal_places=2,
+                                            required=False)
+
+    def clean_override_price(self):
+        override = self.cleaned_data['override']
+        override_price = self.cleaned_data['override_price']
+        if override:
+            if (override_price is None) or override_price < 0:
+                raise forms.ValidationError(_('Override price must be a positive number.'))
+        return override_price
+
+
+class MemberRegistrationForm(UserMemberRegBaseForm):
     """
     Member Registration form.
     """
@@ -2349,13 +2812,7 @@ class MemberRegistrationForm(forms.Form):
                                  help_text=_("comma separated if multiple"))
 
     def __init__(self, event, pricings, *args, **kwargs):
-        super(MemberRegistrationForm, self).__init__(*args, **kwargs)
-
-        self.fields['pricing'] = forms.ModelChoiceField(
-            queryset=pricings,
-            widget=forms.RadioSelect(),)
-        self.fields['pricing'].label_from_instance = _get_price_labels
-        self.fields['pricing'].empty_label = None
+        super(MemberRegistrationForm, self).__init__(pricings, *args, **kwargs)
 
     def clean_member_ids(self):
         member_ids = self.cleaned_data['member_ids'].split(',')
@@ -2366,6 +2823,35 @@ class MemberRegistrationForm(forms.Form):
                 raise forms.ValidationError(_('Member #%s does not exists!' % mem_id.strip()))
 
         return self.cleaned_data['member_ids']
+
+
+class UserRegistrationForm(UserMemberRegBaseForm):
+    """
+    User Registration form.
+    """
+    user_display = forms.CharField(max_length=80,
+                        label=_('User'),
+                        required=False,
+                        help_text=_('Type name or username or email, then press the down arrow key to select a suggestion'))
+    user = forms.IntegerField(widget=forms.HiddenInput())
+
+    def __init__(self, event, pricings, *args, **kwargs):
+        self.event = event
+        super(UserRegistrationForm, self).__init__(pricings, *args, **kwargs)
+
+        self.fields['user'].error_messages['required'
+                                ] = _('Please enter a valid user.')
+
+    def clean_user(self):
+        user = int(self.cleaned_data['user'])
+        if not User.objects.filter(id=user).exists():
+            raise forms.ValidationError(_('User does not exists!'))
+        if self.event.registrants().filter(user=user):
+            user = User.objects.get(id=user)
+            raise forms.ValidationError(_(f'{user.first_name} {user.last_name} ({user.email}) already registered for event "{self.event}"!'))
+
+        return self.cleaned_data['user']
+
 
 class EventExportForm(FormControlWidgetMixin, forms.Form):
     start_dt = forms.DateField(

@@ -1,0 +1,165 @@
+{% load qr_code %}
+{% load base_tags %}
+<style>
+  .badge-content {
+      width: 4in;
+      line-height: 1.1;
+  }
+  .badge-section {
+      height: 3in;
+      font-size: .8em;
+      border: 1px solid transparent;
+  }
+  .badge-container {
+      background: #D9D9D9;
+  }
+  .badge-container .contents {
+      height: 75px;
+  }
+  .badge-section .row{
+      width: 100%;
+      margin: auto;
+      margin-bottom: 5px;
+  }
+  .badge-section .col-md-6 {
+      float: left;
+      width: 50%;
+      height: 100%;
+  }
+  .badge-section .col-md-6.info {
+      margin-top: 15px;
+      width: 100%;
+      text-align: center;
+  }
+  .badge-section .col-md-6.qr {
+      width: 38%;
+  } 
+  .badge-section .qr svg {
+      width: 39mm !important;
+      height: 39mm !important;
+      margin-top: -9px;
+  }
+  .badge-section .event_name {
+      font-size: 1.8em;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+      height: 50px;
+  }
+  .badge-section .name {
+      font-weight: bold;
+      font-size: 1.2em;
+  }
+  .badge-section .logo {
+      width: fit-content;
+      margin-top: 5px;
+      margin-right: 7px;
+      float: right;
+  }
+  .badge-section .logo img {
+      height: 110px;
+      max-width: 200px;
+  }
+  .badge-section .registration {
+      margin-top: -10px;
+      text-align: center;
+      font-size: .8em;
+      width: 100%;
+  }
+  .badge-back.badge-section {
+      padding-top: 5px;
+      padding-left: 2px;
+      font-size: 8px;
+  }
+  .badge-back .row:nth-child(odd) {
+      background-color: #D9D9D9;
+  }
+  .badge-back .col {
+      float: left;
+  }
+  .badge-back .time {
+      width: 80px;
+      margin-right: 5px;
+      margin-left: 5px;
+  }
+  .badge-back .place {
+      width: 80px;
+  }
+
+  @media print {
+      .badge-container {
+          background: #D9D9D9  !important;;
+          -webkit-print-color-adjust: exact;
+      }
+      .badge-back .row:nth-child(odd) {
+          background-color: #D9D9D9 !important;
+          -webkit-print-color-adjust: exact;
+      } 
+  }
+</style>
+
+<div class="badge-content">
+  {% if display == "front" %}
+  <div class="badge-container badge-section">
+    <div class="event_name">
+      {{ registrant.registration.event.title }}
+    </div>
+
+    <div class="contents">
+      <div class="row">
+        <div class="col-md-6 info">
+          <div class="name">
+            {{ registrant.first_name }} {{ registrant.last_name }}
+          </div>
+          <div>
+            {{ registrant.company_name }}
+          </div>
+          <div>
+            {{ registrant.pricing.title }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 qr">
+            {% qr_from_text registrant.check_in_url size="s" %}
+          </div>
+          <div class="col-md-6 logo">
+            {% if registrant.registration.event.sponsor_set.first %}
+              <img class="logo" src="{% image_url registrant.registration.event.sponsor_set.first.image %}" />
+            {% endif %}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 registration">
+            {% trans "Registrant ID:" %} {{ registrant.pk }} <br/>
+            {% if registrant.registration.owner and registrant.registration.owner.account_id %}
+              {% trans "Account ID:" %} {{ registrant.registration.owner.account_id }}<br/>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% else %}
+
+  <div class="badge-back badge-section">
+  {% for child in registrant.child_events %}
+    <div class="row">
+      <div class="col time">
+        {{ child.child_event.start_dt|date:"D" }} {{ child.child_event.start_dt|time:"g:i A"}}
+      </div>
+      <div class="col place">
+        {{ child.child_event.place.name }}&nbsp;
+      </div>
+      <div class="col short-name">
+        {% if child.child_event.short_name %}
+          {{ child.child_event.short_name }}
+        {% else %}
+          {{ child.child_event.title }}
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+{% endif %}
+</div>

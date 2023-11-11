@@ -1,0 +1,19 @@
+<div class="child-wrap">
+  <div class="child">
+    <h4 class="time-period">{% trans "Event(s)" %}</h4>
+  </div>
+  <div class="desc-short">
+    {% if not events %}
+      {% blocktrans with parent_event.title as title %}
+        <strong>"{{ title }}" does not have credits configured.</strong>
+      {% endblocktrans %}
+    {% endif %}
+    {% for event in events %}
+    <div class="row">
+      <div class="col-md-8">
+        <a href="{{ event.review_credits_url }}">{{ event.title }}</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>

@@ -26,7 +26,7 @@
     {% if request.user.id == rp.user.id %}
        {% trans 'Manage my Payment Info' %}
     {% else %}
-    {% trans "Manage Payment Info for " %} <a href="{% url "profile" rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
+    {% trans "Manage Payment Info" %}
     {% endif %}
     </h1>
 
@@ -37,6 +37,9 @@
   </div>
 
 <br />
+<div>
+	<a href="https://www.authorize.net/" target="_blank"> <img src="https://www.authorize.net/content/dam/anet-redesign/reseller/authorizenet-200x50.png" border="0" alt="Authorize.net Logo" width="200" height="50"/></a>
+</div>
 
     <div class="AuthorizeNetPopupOuter">
       <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" frameborder="0"

@@ -75,7 +75,7 @@ urlpatterns += [
 
     re_path(r'^redirects/', include('tendenci.apps.redirects.urls')),
     re_path(r'^mobile/', include('tendenci.apps.mobile.urls')),
-    re_path(r'^campaign_monitor/', include('tendenci.apps.campaign_monitor.urls')),
+    #re_path(r'^campaign_monitor/', include('tendenci.apps.campaign_monitor.urls')),
     re_path(r'^discounts/', include('tendenci.apps.discounts.urls')),
     re_path(r'^versions/', include('tendenci.apps.versions.urls')),
     re_path(r'^reports/', include('tendenci.apps.reports.urls')),
@@ -129,9 +129,11 @@ urlpatterns += [
     re_path(r'^', include('tendenci.apps.videos.urls')),
     re_path(r'^', include('tendenci.apps.testimonials.urls')),
     re_path(r'^', include('tendenci.apps.social_services.urls')),
+    re_path(r'^', include('tendenci.apps.trainings.urls')),
 
     re_path(r'^explorer/', include('explorer.urls')),
     re_path(r'^explorer/', include('tendenci.apps.explorer_extensions.urls')),
+    path('qr_code/', include('qr_code.urls', namespace="qr_code")),
 ]
 
 if not settings.USE_S3_STORAGE:
@@ -146,11 +148,11 @@ if not settings.USE_S3_STORAGE:
             'document_root': settings.THEMES_DIR,
         }),
     ] + urlpatterns
-    if settings.DEBUG:
-        urlpatterns = [
-            re_path(r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
-                base_views.plugin_static_serve),
-        ] + urlpatterns
+    # if settings.DEBUG:
+    #     urlpatterns = [
+    #         re_path(r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
+    #             base_views.plugin_static_serve),
+    #     ] + urlpatterns
 
 if settings.USE_S3_STORAGE:
     urlpatterns = [

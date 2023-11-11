@@ -1,0 +1,101 @@
+{% extends "payments/base.html" %}
+{% load payments_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Pay Online' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="well basic-info">
+  <div>{% trans 'Invoice #' %}: {{ payment.invoice.id }}</div>
+  <div>{% trans 'Description' %}: {{ payment.description }}</div>
+  <div id="total-amount">{% trans 'Total' %}: {{ payment.amount|format_currency }}</div>
+</div>
+
+<div class="forms">
+
+<div>
+	<a href="https://www.authorize.net/" target="_blank">{% trans 'Payment via' %} <img src="https://www.authorize.net/content/dam/anet-redesign/reseller/authorizenet-200x50.png" border="0" alt="Authorize.net Logo" width="200" height="50"/></a>
+</div>
+	
+<p>
+<form id="paymentForm" method="POST" action=""> {% csrf_token %}
+    <input type="hidden" name="dataValue" id="dataValue" />
+    <input type="hidden" name="dataDescriptor" id="dataDescriptor" />
+    <input type="hidden" name="firstName" id="customerInformation_firstName" />
+    <input type="hidden" name="lastName" id="customerInformation_lastName" />
+    <button type="button"
+        class="AcceptUI btn btn-success"
+        data-billingAddressOptions='{"show":true, "required":true}' 
+        data-apiLoginID="{{ api_login }}" 
+        data-clientKey="{{ public_client_key }}"
+        data-acceptUIFormBtnTxt="Submit" 
+        data-acceptUIFormHeaderTxt="Card Information"
+        data-paymentOptions='{"showCreditCard": true, "showBankAccount": false' 
+        data-responseHandler="responseHandler">{% trans 'Click Here to Pay' %}
+    </button>
+</form>
+</p>
+
+</div>
+
+<p>&nbsp;</p>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+<script type="text/javascript"
+    src="{{ accept_js_url }}"
+    charset="utf-8">
+</script>
+
+<script type="text/javascript">
+//$(window).bind("load", function() {
+//   $('#paymentForm button.AcceptUI').click();
+//});
+
+function responseHandler(response) {
+    if (response.messages.resultCode === "Error") {
+        var i = 0;
+        while (i < response.messages.message.length) {
+            console.log(
+                response.messages.message[i].code + ": " +
+                response.messages.message[i].text
+            );
+            i = i + 1;
+        }
+    } else {
+        paymentFormUpdate(response);
+    }
+}
+
+
+function paymentFormUpdate(response) {
+    var opaqueData = response.opaqueData;
+    document.getElementById("dataDescriptor").value = opaqueData.dataDescriptor;
+    document.getElementById("dataValue").value = opaqueData.dataValue;
+    
+    var customerInformation = response.customerInformation;
+    document.getElementById("customerInformation_firstName").value = customerInformation.firstName;
+    document.getElementById("customerInformation_lastName").value = customerInformation.lastName;
+
+    // If using your own form to collect the sensitive data from the customer,
+    // blank out the fields before submitting them to your server.
+    // document.getElementById("cardNumber").value = "";
+    // document.getElementById("expMonth").value = "";
+    // document.getElementById("expYear").value = "";
+    // document.getElementById("cardCode").value = "";
+
+    document.getElementById("paymentForm").submit();
+}
+</script>
+
+{% endblock %}

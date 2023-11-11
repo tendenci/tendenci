@@ -1,0 +1,28 @@
+<div class="child-wrap">
+  <div class="child">
+    <h4 class="time-period">{% trans "Sub-Event(s)" %}</h4>
+  </div>
+  
+  <div class="desc-short">
+  <table class="table table-striped">
+    {% for child in child_events %}
+    	<tr>
+      <td width="30%">
+        {{ child.start_dt|date:"m/d/y" }} {{ child.start_dt|time:"g:i A"}}
+      </td>
+      <td width="20%">
+        {{ child.event_code }}      
+      </td>
+      {% if is_admin %}
+      <td width="20%">
+        {% if child.registration_configuration.enabled %}registration enabled{% else %}{% endif %}
+      </td>
+      {% endif %}
+      <td width="50%">
+        <a href="{% if edit %}{{child.get_absolute_edit_url}}{% else %}{{ child.get_absolute_url }}{% endif %}">{{ child.title }}</a>
+      </td>
+      </tr>
+    {% endfor %}
+    </table>
+  </div>
+</div>

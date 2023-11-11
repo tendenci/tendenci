@@ -84,6 +84,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                 profile = Profile.objects.create(**profile_kwarg)
                 profile.save()
 
+            donation.user = user
             donation.save(user)
 
             # create invoice

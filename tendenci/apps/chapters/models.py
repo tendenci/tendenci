@@ -70,7 +70,8 @@ class Chapter(BasePage):
                               help_text=_('Only jpg, gif, or png images.'),
                               on_delete=models.SET_NULL)
     contact_name = models.CharField(max_length=200, null=True, blank=True)
-    contact_email = models.CharField(max_length=200, null=True, blank=True)
+    contact_email = models.CharField(max_length=200, null=True, blank=True,
+                                    help_text=_('Comma separated'))
     join_link = models.CharField(max_length=200, null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     newsletter_group = models.ForeignKey(Group, null=True, blank=True,
@@ -149,7 +150,14 @@ class Chapter(BasePage):
                     while str(num) in t_list:
                         num += 1
                     group.slug = f'{group.slug}{str(num)}'
-                    # group name is also a unique field
+            # group name is also a unique field
+            if Group.objects.filter(name=group.name).exists():
+                tmp_groups = Group.objects.filter(name__istartswith=group.name)
+                if tmp_groups:
+                    t_list = [g.name[len(group.name):] for g in tmp_groups]
+                    num = 1
+                    while str(num) in t_list:
+                        num += 1                    
                     group.name = f'{group.name}{str(num)}'
 
             group.label = self.title
@@ -186,6 +194,9 @@ class Chapter(BasePage):
         """
         Update the associated group perms for the officers of this chapter. 
         Grant officers the view and change permissions for their own group.
+        
+        Note: this group is unique among chapters, but might be shared by committees.
+
         """
         if not self.group:
             return
@@ -196,6 +207,10 @@ class Chapter(BasePage):
 
         officer_users = [officer.user for officer in self.officers(
             ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        # include officers in committees that are associated with this group
+        for committee in self.group.committee_set.all():
+            officer_users.extend([officer.user for officer in committee.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))])
         if officer_users:
             ObjectPermission.objects.assign(officer_users,
                                         self.group, perms=perms)
@@ -206,6 +221,9 @@ class Chapter(BasePage):
         """
         Update the associated newsletter_group perms for the officers of this chapter. 
         Grant officers the view and change permissions for their own group.
+
+        Note: this newsletter group could be shared by chapters, 
+               and by committees.
         """
         if not self.newsletter_group:
             return
@@ -216,6 +234,14 @@ class Chapter(BasePage):
 
         officer_users = [officer.user for officer in self.officers(
             ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        # include officers in committees that are associated with this group
+        for committee in self.newsletter_group.committee_set.all():
+            officer_users.extend([officer.user for officer in committee.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))])
+        # also check if newsletter_group is shared by other chapters
+        for chapter in self.newsletter_group.chapter_set.exclude(id=self.id):
+            officer_users.extend([officer.user for officer in chapter.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))])
         if officer_users:
             ObjectPermission.objects.assign(officer_users,
                                         self.newsletter_group, perms=perms)
@@ -232,7 +258,7 @@ class Chapter(BasePage):
 
     def is_chapter_member(self, user):
         if not user.is_anonymous:
-            return self.chaptermembership_set.filter(user=user).exists()
+            return self.chaptermembership_set.filter(user=user, status=True).exists()
 
         return False
 
@@ -258,7 +284,7 @@ class Position(models.Model):
 
 class Officer(models.Model):
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
-    user = models.ForeignKey(User,  related_name="%(app_label)s_%(class)s_user", on_delete=models.CASCADE)
+    user = models.ForeignKey(User,  related_name="chapter_officers", on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField(max_length=120, null=True, blank=True)
@@ -698,6 +724,25 @@ class ChapterMembership(TendenciBaseModel):
             return self.chapter.external_payment_link
         return ''
 
+    @property
+    def national_membership(self):
+        [membership] = self.user.membershipdefault_set.exclude(
+                    status_detail='archive').order_by('-create_dt')[:1] or [None]
+        return membership
+
+    @property
+    def national_membership_type(self):
+        membership = self.national_membership
+        if membership:
+            return membership.membership_type.name
+        return ''
+    
+    @property
+    def national_membership_invoice(self):
+        membership = self.national_membership
+        if membership:
+            return membership.get_invoice()
+
     def create_member_number(self):
         #TODO: Decide how member numbers should be generated for chapter members
         return str(self.id)
@@ -797,7 +842,7 @@ class ChapterMembership(TendenciBaseModel):
             elif status == 'pending':
                 actions.append((approve_link, _('Approve')))
                 actions.append((disapprove_link, _('Disapprove')))
-                actions.append((expire_link, _('Expire Chapter Membership')))
+                #actions.append((expire_link, _('Expire Chapter Membership')))
             elif status == 'expired':
                 actions.append((approve_link, _('Approve Chapter Membership')))
  
@@ -1681,13 +1726,6 @@ class Notice(models.Model):
         context['chapter_membership'] = chapter_membership
         context.update(global_context)
 
-        if chapter_membership and chapter_membership.expire_dt:
-            context.update({
-                'expire_dt': time.strftime(
-                "%d-%b-%y %I:%M %p",
-                chapter_membership.expire_dt.timetuple()),
-            })
-
         if chapter_membership and chapter_membership.payment_method:
             payment_method_name = chapter_membership.payment_method.human_name
         else:
@@ -1705,8 +1743,8 @@ class Notice(models.Model):
         else:
             invoice_link = ""
             total_amount = ""
-        if chapter_membership.expire_dt:
-            expire_dt = time.strftime("%d-%b-%y %I:%M %p",
+        if chapter_membership and chapter_membership.expire_dt:
+            expire_dt = time.strftime("%d-%b-%y",
                                       chapter_membership.expire_dt.timetuple())
         else:
             expire_dt = ''

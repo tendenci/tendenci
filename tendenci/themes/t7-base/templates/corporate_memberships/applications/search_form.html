@@ -10,6 +10,13 @@
                 </div>
             </fieldset>
         {% endif %}
+        
+        <fieldset>
+            <div class="form-group">
+                <label for="{{ search_form.membership_type.id_for_label }}">{{ search_form.membership_type.label }}:</label>
+                {{ search_form.membership_type }}
+            </div>
+        </fieldset>  
 
         {% if "industry" in search_form.fields %}
             <fieldset>

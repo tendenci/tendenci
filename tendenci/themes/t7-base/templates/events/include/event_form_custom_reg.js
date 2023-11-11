@@ -108,21 +108,20 @@ $(document).ready(function() {
         toggle_email_reminder($this);
     });
 
-    if ($("#id_display_event_registrants").is(':checked')) {
-        //$('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').show();
-        $('div.id_display_registrants_to').parent().show();
-    }else {
-        //$('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').hide();
-        $('div.id_display_registrants_to').parent().hide();
+	var toggle_display_event_attendees = function(){
+	    if ($("#id_display_event_registrants").is(':checked')) {
+	        //$('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').show();
+	        //$('div.id_display_registrants_to').parent().show();
+	        $('input[name=display_registrants_to]').closest('.form-group').show();
+	    }else {
+	        //$('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').hide();
+	        //$('div.id_display_registrants_to').parent().hide();
+	        $('input[name=display_registrants_to]').closest('.form-group').hide();
+	    }
     }
-    $('#id_display_event_registrants').on("click", function(){
-        if($("#id_display_event_registrants").is(':checked')){
-            //$('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').slideDown('fast');
-            $('div.id_display_registrants_to').parent().slideDown('fast');
-        }else{
-            //$('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').slideUp('fast');
-            $('div.id_display_registrants_to').parent().slideUp('fast');
-        }
+    toggle_display_event_attendees();
+    $('#id_display_event_registrants').on("change", function(){
+		toggle_display_event_attendees();
     });
 
     var recurringCheck = $('#id_is_recurring_event');

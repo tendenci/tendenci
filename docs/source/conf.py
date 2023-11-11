@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Tendenci documentation build configuration file, created by
 # sphinx-quickstart on Thu Apr  5 08:47:04 2012.
@@ -62,14 +61,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Tendenci'
-copyright = '2021, Tendenci'
+copyright = '2023, Tendenci'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '14.0'
+version = '14.4'
 # The full version, including alpha/beta/rc tags.
 release = tendenci_version
 
@@ -128,7 +127,7 @@ html_title = "Tendenci - The Open Source AMS Software for NGOs and Governments"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
-html_short_title= "Tendenci 14"
+html_short_title= "Tendenci"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
@@ -205,8 +204,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ('index', 'Tendenci.tex', u'Tendenci Documentation',
-        u'Tendenci', 'manual'),
+    ('index', 'Tendenci.tex', 'Tendenci Documentation',
+        'Tendenci', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

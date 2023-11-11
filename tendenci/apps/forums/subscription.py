@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 
 from django.conf import settings
@@ -9,6 +8,7 @@ from django.utils import translation
 from django.contrib.sites.models import Site
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import add_tendenci_footer
+from tendenci.apps.emails.models import Email
 
 from . import defaults, util, compat
 from .models import ForumSubscription
@@ -87,6 +87,8 @@ def notify_topic_subscribers(post):
     subject = ''.join(subject.splitlines())
 
     for user in users:
+        if Email.is_blocked(user.email):
+            continue
         message = get_email_message(user, **context_vars)
         if message:
             message = add_tendenci_footer(message, content_type="text")
@@ -112,6 +114,8 @@ def send_notification(users, template, context={}):
 
     mails = tuple()
     for user in users:
+        if Email.is_blocked(user.email):
+            continue
         try:
             validate_email(user.email)
         except:

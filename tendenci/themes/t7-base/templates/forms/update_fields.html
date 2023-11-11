@@ -4,20 +4,32 @@
 
 {% block title %}{% firstof MODULE_FORMS_LABEL 'Forms' %} {% trans 'Fields Update' %}{% endblock %}
 
+{% block extra_head %}
+    {{ block.super }}
+    <style>
+    fieldset{
+    	border: 1px solid #ccc !important;
+    	margin: 1em !important;
+    	padding-top: 1em !important;
+    }
+    </style>
+{% endblock %}
+
 {% block content %}
 
 <div class="t">
     <h1>{% firstof MODULE_FORMS_LABEL trans 'Forms' %} {% trans "Fields Update" %}</h1>
 
     <div class="form-builder-wrap">
-        <form action="{% url 'form_field_update' form_instance.pk %}" method="post">{% csrf_token %}
+        <form class="form-horizontal" action="{% url 'form_field_update' form_instance.pk %}" method="post">{% csrf_token %}
         {{ form.management_form }}
         <div class="forms">
             {{ form|styled_form_set }}
-            <input type="submit" value="{% trans 'Update Field(s)' %}" />
+            <input class="btn btn-primary" type="submit" value="{% trans 'Update Field(s)' %}" />
         </div>
         </form>
     </div>
 
 </div>
+<br/>
 {% endblock %}

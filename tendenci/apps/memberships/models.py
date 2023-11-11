@@ -6,6 +6,7 @@ import time
 from functools import partial
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from ast import literal_eval
 
 from django.db import models
 from django.urls import reverse
@@ -677,12 +678,12 @@ class MembershipDefault(TendenciBaseModel):
                 if hasattr(demographic, field_name):  # catches broken db relationships
                     data = getattr(demographic, field_name)
                     try:
-                        is_file = eval(data).get('type') == u'file'
+                        is_file = literal_eval(data).get('type') == 'file'
                     except Exception:
                         is_file = False
 
                     if is_file:
-                        field_list.append((field_label, eval(data).get('html')))
+                        field_list.append((field_label, literal_eval(data).get('html')))
                     else:
                         field_list.append((field_label, data))
 
@@ -806,17 +807,19 @@ class MembershipDefault(TendenciBaseModel):
             typical membership emails.
         Returns outcome via boolean.
         """
-        ret = Notice.send_notice(
-            request=request,
-            emails=self.user.email,
-            notice_type=notice_type,
-            membership=self,
-            membership_type=self.membership_type,
-        )
-        # log notice
-        Notice.log_notices([self],
-                           notice_type=notice_type
-                           )
+        ret = False
+        if get_setting('module', 'corporate_memberships', 'notificationson'):
+            ret = Notice.send_notice(
+                request=request,
+                emails=self.user.email,
+                notice_type=notice_type,
+                membership=self,
+                membership_type=self.membership_type,
+            )
+            # log notice
+            Notice.log_notices([self],
+                               notice_type=notice_type
+                               )
 
         return ret
 
@@ -824,7 +827,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         Notify corp reps when individuals joined/renewed under a corporation.
         """
-        if self.corporate_membership_id:
+        if get_setting('module', 'corporate_memberships', 'notificationson') and self.corporate_membership_id:
             from tendenci.apps.corporate_memberships.models import CorpMembership
             [corp_membership] = CorpMembership.objects.filter(
                                 pk=self.corporate_membership_id
@@ -926,7 +929,8 @@ class MembershipDefault(TendenciBaseModel):
             from tendenci.apps.notifications.utils import send_welcome_email
             self.user.is_active = True
             self.user.save()
-            send_welcome_email(self.user)
+            if get_setting('module', 'corporate_memberships', 'notificationson'):
+                send_welcome_email(self.user)
 
         if not self.renewal:
             # add new member to the default group

@@ -17,13 +17,37 @@ $('select#id_place-place').on("change", function() {
                     $('input#id_place-city').val(json["city"]);
                     $('input#id_place-state').val(json["state"]);
                     $('input#id_place-zip').val(json["zip"]);
-                    $('input#id_place-country').val(json["country"]);
+                    $('select#id_place-country option[value="' + json["country"] + '"]').prop('selected', true); 
                     $('input#id_place-url').val(json["url"]);
                 }
             }
         );
     }
 });
+function toggleZoomIntegration(show_zoom_options) {
+    if (show_zoom_options && '{{ use_zoom_integration }}' == 'True') {
+        $('#id_place-use_zoom_integration').parent().parent().parent().parent().show();
+    } else {
+        $('#id_place-use_zoom_integration').parent().parent().parent().parent().hide();
+    }
+
+    toggleZoomMeetingInfo($('#id_place-use_zoom_integration').is(':checked') && show_zoom_options);
+}
+
+function toggleZoomMeetingInfo(show_zoom_options) {
+    if (show_zoom_options && '{{ use_zoom_integration }}' == 'True') {
+        $('#id_place-zoom_api_configuration').parent().parent().show();
+        $('#id_place-zoom_meeting_id').parent().parent().show();
+        $('#id_place-zoom_meeting_passcode').parent().parent().show();
+        $('#id_place-is_zoom_webinar').parent().parent().parent().parent().show();
+    } else {
+        $('#id_place-zoom_api_configuration').parent().parent().hide();
+        $('#id_place-zoom_meeting_id').parent().parent().hide();
+        $('#id_place-zoom_meeting_passcode').parent().parent().hide();
+        $('#id_place-is_zoom_webinar').parent().parent().parent().parent().hide();
+    }
+}
+
 function hideShowAddressFields(action="show") {
 	const address_fields = [$('#id_place-place'),
 							$('#id_place-address'), 
@@ -48,6 +72,8 @@ function processVirtual(virtual_field){
     } else {
 		hideShowAddressFields(action="show");
     }
+
+    toggleZoomIntegration($(virtual_field).is(':checked'));
 }
 
 var virtual_field = $('#id_place-virtual');
@@ -59,4 +85,8 @@ virtual_field.on("change", function() {
     } else {
 		hideShowAddressFields(action="show");
     }*/
+});
+
+$('#id_place-use_zoom_integration').on("change", function() {
+    toggleZoomMeetingInfo(virtual_field.is(':checked') && $(this).is(':checked'));
 });

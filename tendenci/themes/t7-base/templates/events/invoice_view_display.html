@@ -35,12 +35,25 @@
                      <br />{% trans "Registered as:" %} {{ price_title}}
                     {% endif %}
                     {% endwith %}
+                    {% if reg.cancel_dt %}
+                        {% trans "(Canceled)" %}
+                    {% endif %}
                 </td>
                 <td class="td-right">
                     {{ reg.amount|format_currency }}
                 </td>
             </tr>
-        {% endfor %}
+            {% endfor %}
+            {% for line in invoice.invoicelineitem_set.all %}
+                <tr>
+                    <td>
+                        {{ line.description }}
+                    </td>
+                    <td class="td-right">
+                        {{ line.total|format_currency }}
+                    </td>
+                </tr>
+            {% endfor %}
     {% endif %}
 {% endwith %}
 {% with obj.regaddon_set.all as regaddons %}
@@ -48,8 +61,10 @@
         {% for regaddon in regaddons %}
             <tr>
                 <td>
-                {{ regaddon.addon.title }}
-                ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                    {{ regaddon.addon.title }}
+                {% if regaddon.regaddonoption_set.count > 1 %}
+                    ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                    {% endif %}
                 </td>
                 <td class="td-right">
                     <span>{{ regaddon.amount|format_currency }}</span>

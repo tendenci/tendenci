@@ -23,15 +23,17 @@ class FileAdmin(admin.StackedInline):
 
 
 class StaffAdmin(TendenciBaseModelAdmin):
-    list_display = ['name', 'slug', 'department', 'phone', 'position']
+    list_display = ['name', 'slug', 'department', 'phone', 'user', 'position']
     list_filter = ['department']
     list_editable = ['position']
     search_fields = ['name', 'biography', 'cv']
     prepopulated_fields = {'slug': ['name']}
+    autocomplete_fields = ('user',)
     fieldsets = (
         (None, {'fields': (
             'name',
             'slug',
+            'user',
             'department',
             'positions',
             'education',
@@ -64,7 +66,8 @@ class StaffAdmin(TendenciBaseModelAdmin):
             static('js/global/tinymce.event_handlers.js'),
             static('js/admin/admin-list-reorder.js'),
         )
-        css = {'all': [static('css/admin/dynamic-inlines-with-sort.css')], }
+        css = {'all': [static('css/admin/dynamic-inlines-with-sort.css'),
+                       static("css/autocomplete_ext.css")], }
 
     def years(self, obj):
         return obj.years()

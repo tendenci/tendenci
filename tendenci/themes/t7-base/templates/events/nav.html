@@ -78,7 +78,7 @@
             <ul>
                 <li class="heading">{% trans "This Event" %}</li>
                 <li class="divider"></li>
-                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Event" %}</a></li>
+                <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Event" %}</a></li>
             {% if nav_object.is_recurring_event %}
                     <li><a href="{% url "event.recurring" nav_object.pk %}">{% trans "View Recurring Event List" %}</a></li>
             {% endif %}

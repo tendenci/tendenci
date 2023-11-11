@@ -94,7 +94,11 @@
                     <th width="8%" title="{% trans "Discount Amount" %}">{% trans "Discount$" %}</th>
                 {% endif %}
                 <th width="8%" title="{% trans "Balance" %}">{% trans "Balance" %}</th>
-                <th width="6%" class='attended' title="{% trans "Attendance Checkbox" %}">{% trans "Attend" %}</th>
+                <th width="6%" class='attended' title="{% trans "Attendance Checkbox" %}">{% trans "Check In" %}</th>
+                {% if event.check_out_enabled %}
+                <th width="6%" class='attended' title="{% trans "Check Out Checkbox" %}">{% trans "Check Out" %}</th>
+                {% endif %}
+                <th>&nbsp;&nbsp;</th>
             </tr>
             <tr class='row-spacer'>
                 <td colspan="9"></td>
@@ -173,6 +177,17 @@
                 <input type="checkbox" name="checked_in" data-reg="{{ registrant.id }}"
                        value="1" {% if registrant.checked_in %}checked{% endif %}/>
             </td>
+            {% if event.check_out_enabled %}
+            <td class="attended-checkbox">
+                <input type="checkbox" name="checked_out" data-reg="{{ registrant.id }}"
+                       value="0" {% if registrant.checked_out %}checked{% endif %}/>
+            </td>
+            {% endif %}
+            <td class="print-badge-cell">
+                <a class="t-meta-print-link" href="{% url "registrant.badge" registrant.pk %}">
+                    {% trans "Print Badge" %}
+                </a>
+            </td>
             </tr>
 
                 {% if registrant.invoice_dict.balance > 0 %}
@@ -213,7 +228,9 @@
                 {% if registrant.invoice_dict.tender_date %}
                     {% trans "TENDERED: " %}{{ registrant.invoice_dict.tender_date|date_long }}
                 {% else %}
+                	{% if registrant.invoice_dict.id %}
                     {% trans "Not Tendered" %}
+                    {% endif %}
                 {% endif %}
             </td>
             {% if discount_available %}
@@ -233,10 +250,12 @@
             {% endif %}
             <td class="attended-checkedin-text">{% if registrant.checked_in and registrant.checked_in_dt %}
                 {{ registrant.checked_in_dt|date:'m/d h:iA' }}{% endif %}</td>
+            {% if event.check_out_enabled %}
+            <td class="attended-checkedout-text">{% if registrant.checked_out and registrant.checked_out_dt %}
+                {{ registrant.checked_out_dt|date:'m/d h:iA' }}{% endif %}</td>
+            {% endif %}
+            <td></td>
             </tr>
-
-
-
 
                 {% with registrant.additionals as additionals %}
 
@@ -277,7 +296,8 @@
 
                 </td>
                 <td>&nbsp;</td>
-
+                <td></td>
+                <td></td>
                 </tr>
 
                 {% endwith %}
@@ -338,6 +358,7 @@
             <div>{% trans "Showing paid and non-paid registrants." %}</div>
         {% endif %}
 
+		{% if not payment_required %}
         <div>
             <a href="{% url "event.registrant.roster.paid" event.pk %}">{% blocktrans %}Show only
                 <strong>paid</strong>{% endblocktrans %}</a>
@@ -346,8 +367,20 @@
             <a href="{% url "event.registrant.roster.total" event.pk %}">{% blocktrans %}Show
                 <strong>total</strong>{% endblocktrans %}</a>
         </div>
+        {% endif %}
     </div>
-
+    {% if use_badges %}
+    <div class="print-badges">
+        <ul class="list-unstyled t-meta-data">
+            <li class="pull-right">
+                <a class="t-meta-print-link" href="{% url "event.badges" event.pk %}">
+                    <span class="glyphicon glyphicon-print"></span>
+                    {% trans "Print Badges" %}
+                </a>
+            </li>
+        </ul>
+    </div>
+    {% endif %}
     <div style="clear:both; height:10px;"></div>
 
 {% endblock %}
@@ -373,25 +406,31 @@
 
             $('.attended-checkbox input[type=checkbox]').on("change", function () {
                 var $this = $(this);
-                var action = 'not_checked_in';
                 var id = $this.data('reg');
+                var checked_in =  null;
+                var checked_out = null;
 
-                if ($this.is(':checked')) {
-                    action = 'checked_in';
+                if ($this.val() == 1) {
+                    checked_in = $this.is(':checked');
+                } else {
+                    checked_out = $this.is(':checked');
                 }
 
                 $.post(
                     '{% url "event.registrant_check_in" %}',
                     {
                         'id': id,
-                        'action': action
+                        'checked_in': checked_in,
+                        'checked_out': checked_out,
                     },
                     function (data, textStatus, jqXHR) {
                         json = JSON.parse(data);
                         if (!json["error"]) {
                             $this.closest('tr').next().find('.attended-checkedin-text').html(json['checked_in_dt'])
                                 .css({opacity: 0.1}).animate({opacity: 1}, 900);
-                            if (action == 'checked_in') {
+$this.closest('tr').next().find('.attended-checkedout-text').html(json['checked_out_dt'])
+                                .css({opacity: 0.1}).animate({opacity: 1}, 900);
+                            if (checked_in) {
                                 total_checked_in = total_checked_in + 1;
                             } else {
                                 total_checked_in = total_checked_in - 1;

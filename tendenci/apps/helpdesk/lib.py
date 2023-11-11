@@ -9,6 +9,8 @@ lib.py - Common functions (eg multipart e-mail)
 from django.utils.encoding import smart_str
 from django.db.models import Q
 
+from tendenci.apps.site_settings.utils import get_setting
+
 import logging
 logger = logging.getLogger('helpdesk')
 
@@ -70,8 +72,11 @@ def send_templated_mail(template_name, context, recipients, sender=None, bcc=Non
             logger.warning('template "%s" does not exist, no mail sent' % template_name)
             return # just ignore if template doesn't exist
 
-    if not sender:
-        sender = settings.DEFAULT_FROM_EMAIL
+    headers = {}
+    if sender:
+        headers['Reply-To'] = sender
+
+    sender = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
 
     footer_file = os.path.join('helpdesk', locale, 'email_text_footer.txt')
 
@@ -109,7 +114,8 @@ def send_templated_mail(template_name, context, recipients, sender=None, bcc=Non
                                     text_part,
                                     sender,
                                     recipients,
-                                    bcc=bcc)
+                                    bcc=bcc,
+                                    headers=headers)
     msg.attach_alternative(html_part, "text/html")
 
     if files:

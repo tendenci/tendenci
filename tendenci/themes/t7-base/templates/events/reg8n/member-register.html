@@ -7,18 +7,59 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'css/events.css' %}" />
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 {% endblock %}
 
 {% block content %}
 <div class="t">
-    <h1>{% trans "Member Registration" %}</h1>
+    <h1>{% if for_member %}{% trans "Member Registration" %}{% else %}{% trans "Event Registration" %}{% endif %}</h1>
+    <div>&nbsp;</div>
+    <div class="well">
+    	<div class="event-title"><a href="{% url "event" event.id %}">{{ event.title }}</a></div>
+    	<div class="event-time">
+            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
+            <div class="line"> {% if not event.all_day %}
+            {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}</div>
+        </div>
+         {% include "events/include/spots_status.html" %}
+    </div>
+    
     <div class="form-wrap">
-        <form action="{% url "event.member_register" event.pk %}" method="post">{% csrf_token %}
+        <form class="form-horizontal" action="" method="post">{% csrf_token %}
             <div class="forms">
                 {{ form|styled_form }}
-                <input type="submit" value="{% trans "Register Members" %}"/>
+                
+	            <div class="form-group">
+		            <div class="col-sm-offset-3 col-sm-9">
+		                <button type="submit" class="btn btn-primary text-capitalize">
+		                        {% trans "Submit" %}
+		                </button>
+		            </div>
+	        	</div>
             </div>
         </form>
     </div>
 </div>
 {% endblock %}
+
+{% block extra_body %}
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+ <script type="text/javascript">
+    $(document).ready(function(){
+
+        $( "#id_user_display" ).autocomplete({
+            source: "{% url "events.register_user_lookup" %}",
+            selectFirst:true,
+            minLength:2,
+            select:function(event,ui) {
+                $("#id_user").val(ui.item.id)
+            }
+        });
+
+    });
+   </script>
+
+ {% endblock %}
+

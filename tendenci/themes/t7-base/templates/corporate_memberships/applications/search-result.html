@@ -1,5 +1,6 @@
 {% load base_filters %}
 {% load corporate_memberships_tags %}
+{% load corporate_memberships_filters %}
 
 
 {% if corporate_membership %}
@@ -81,14 +82,18 @@
                         </li>
                     {% endif %}
 
-                    {% if request.user.is_superuser and not corporate_membership.is_archive %}
+                    {% if not corporate_membership.is_archive %}
+                    {% if request.user.is_superuser or corp_profile|is_rep:request.user %}
+                    {% with corporate_membership.members_count as mcount %}
                         <a href="{% url "corpmembership.roster_search" %}?cm_id={{ corporate_membership.id }}">
-                        {% blocktrans count mcount=corporate_membership.members_count %}
-                            {{ mcount }} Member
-                        {% plural %}
-                            {{ mcount }} Members
-                        {% endblocktrans %}
+                            {{ mcount }} {% trans "Member" %}{{ mcount|pluralize }}
                         </a>
+                        {% if mcount > 0 and MODULE_TRAININGS_ENABLED %}
+                        <br />
+                        <a href="{% url 'trainings.transcripts_corp' corp_profile.id %}">{% trans "View Transcripts" %}</a>
+                        {% endif %}
+                    {% endwith %}
+                    {% endif %}
                     {% endif %}
 
                     {% if request.user.is_superuser and corporate_membership.is_join_pending %}

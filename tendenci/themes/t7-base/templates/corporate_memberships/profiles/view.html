@@ -1,6 +1,7 @@
 {% extends "corporate_memberships/base-wide.html" %}
 {% load base_filters %}
 {% load corporate_memberships_tags %}
+{% load corporate_memberships_filters %}
 
 {% block title %}{{ block.super }}{% trans "Corporate Profile" %}{% endblock %}
 
@@ -29,6 +30,9 @@
 .corp-expired{
 	color: red;
 }
+#corp-branches .row{
+	margin-bottom: 15px;
+}
 </style>
 
 {% endblock %}
@@ -54,6 +58,16 @@
             {{ corp_profile.parent_entity }}
             </div>
         </div>
+        {% if corp_profile.account_id %}
+            <div class="row">
+                <div class="col-xs-4">
+                    {% trans 'Account ID' %}
+                </div>
+                <div class="col-xs-6">
+                {{ corp_profile.account_id }}
+                </div>
+            </div>
+        {% endif %}
         <div class="row">
             <div class="col-xs-4">
                 {% trans 'Company Name' %}
@@ -162,6 +176,15 @@
     {% if members_count > 10 %}
     <div><a href="{% url 'corpmembership.roster_search' %}?cm_id={{ corp_membership.id }}">{% trans 'View All Members' %}</a></div>
     {% endif %}
+    
+    {% if members_count > 0 and MODULE_TRAININGS_ENABLED %}
+    {% if request.user.is_superuser or corp_profile|is_rep:request.user %}
+    <div>
+    	<a href="{% url 'trainings.transcripts_corp' corp_profile.id %}">{% trans "View Transcripts" %}</a>
+    </div>
+    {% endif %}
+    {% endif %}
+                        
 
     {% else %}
     <div><em>{% trans "No members joined yet" %}</em></div>
@@ -189,7 +212,34 @@
         </tbody>
     </table>
   {% endif %}
-    
+  
+  {% with corp_profile.branches.all as branches %}
+  {% if branches %}
+  <h3>{% trans 'Branches' %}</h3>
+  <div id="corp-branches">
+	  {% for branch in branches %}
+	  {% if forloop.counter0|divisibleby:"2"%}
+	  	{% if not forloop.first %}
+	  	</div>
+	  	{% endif %}
+	  	<div class="row">
+	  {% endif %} 
+	  	<div class="col-xs-6">
+		  	<div><strong>{{ branch.name }}</strong></div>
+		  	<div>{{ branch.address }}</div>
+		  	<div>{{ branch.city_state_zip }} {{ branch.country }}</div>
+		  	{% if branch.phone %}
+		  	<div><strong>{% trans 'Phone:' %}</strong> {{ branch.phone }}</div>
+		  	{% endif %}
+		  	{% if branch.fax %} 
+		  	<div><strong>{% trans 'Fax:' %}</strong> {{ branch.fax }}</div>
+		  	{% endif %}
+	  	</div>
+	  {% endfor %}
+	  </div>
+  </div>
+  {% endif %} 
+  {% endwith %} 
 
     <h3>{% trans 'Representatives' %}</h3>
     {% if reps %}

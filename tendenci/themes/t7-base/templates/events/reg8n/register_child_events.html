@@ -1,0 +1,94 @@
+{% extends "events/base-wide.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans "Sub-Event Registration" %} {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/event-registration.css' %}" />
+<style>
+  .session ul > li {
+      display: inline-block;
+      margin-right: 15px;
+      font-size: .8em;
+      font-weight: normal;
+  }
+  .session .time, .session .event-options {
+      float: left;
+  }
+  .session .time {
+      font-size: .8em;
+  }
+  .session input {
+      font-size: .5em;
+      font-weight: normal;
+  }
+  .registration_info {
+      font-size: .8em;
+      margin-bottom: 10px;
+  }
+
+  
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <h1>{% trans "Meeting Registrations- Sessions" %}</h1>
+  <h4>{{ event.title }}</h4>
+  {% if registrants|length == 1 %}
+  <div><a href="{% url "event.sessions" registrants.0.id %}">{% trans "View Schedule" %}</a></div>
+  {% endif %}
+</div>
+<div class="form-wrap">
+           
+  <form id="sub_event_form" action="" method="post">{% csrf_token %}
+    {% for form, registrant in forms|zip:registrants %}
+    <div class="{% cycle 'odd-registrant' 'event-registrant' %}">
+      <h4><strong>{{ registrant.first_name }} {{ registrant.last_name }}</strong></h4>
+      <div class="registration_info">
+        <div>{% trans "Registration Type: " %}<strong>{{ registrant.pricing.title }}</strong></div>
+        <div>{% trans "Registration Price: " %}<strong>{{ registrant.pricing.price|format_currency }}</strong></div>
+      </div>
+      {% if use_full_dates %}
+        {% for day in registrant.past_attendance_dates %}
+        <strong>{{ day|convert_str_date }}</strong> <br/>
+        {% for field in form %}
+        {% if field.help_text == day %}
+        <div class="session">
+          <div class="time">{{ field.label }}</div>
+          <div class="event-options">{{ field }}</div>
+        </div>
+        <div class="clear"></div>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+      {% endif %}
+        {% for day in registrant.upcoming_attendance_dates %}
+        <strong>{{ day|convert_str_date }}</strong> <br/>
+        {% for field in form %}
+        {% if field.help_text == day %}
+        <div class="session">
+          <div class="time">{{ field.label }}</div>
+          <div class="event-options">{{ field }}</div>
+        </div>
+        <div class="clear"></div>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+    {% if payment_required and registration.is_credit_card_payment %}
+    <div class="well" style="margin-top: 1em;">
+    	<p class="text-danger"><strong>{% trans 'Note: Your registration will not be completed until payment is received.' %}</strong></p>
+    	{% if registration.is_credit_card_payment %}
+    	<div>{% trans "Click Save & Continue to continue with the payment." %}</div>
+    	{% endif %}
+    </div>
+    {% endif %}
+    <input class="btn btn-default" title='{% trans "Register for Sub-Events" %}' type="submit" value="{% if payment_required and registration.is_credit_card_payment %}{% trans "Save & Continue" %}{% else %}Submit{% endif %}" id="register_sub_events" >
+  </form>
+</div>
+{% endblock %}

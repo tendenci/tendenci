@@ -118,7 +118,14 @@
               <td>{% trans 'Username' %}</td>
               <td>{{ profile.user.username }}</td>
             </tr>
-            
+
+            {% if profile.account_id %}
+            <tr>
+              <td>{% trans 'Account ID' %}</td>
+              <td>{{ profile.account_id }}</td>
+            </tr>
+            {% endif %}
+
             {% if can_edit or not profile.hide_email %}
             <tr>
               <td>{% trans 'Email' %}</td>
@@ -263,14 +270,15 @@
             
           </div>
           <!-- END INVOICE BTN -->
-          
-          
+          {% if profile.has_released_credits %}
+<h3><a href="{% url 'profile.credits' user_this.username %}">CEU Credits</a></h3>
+          {% endif %}
           <!-- MEMBERSHIPS -->
           {% if MODULE_MEMBERSHIPS_ENABLED %}
           
           <h3>{% trans 'Memberships' %}
             {% if membership_apps %}
-            <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" membership_apps.0.slug %}?username={{ user_this.username }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
+            <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" membership_apps.0.slug %}?username={{ user_this.username|urlencode }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
             {% else %}
             <a title="{% trans 'Create a membership application' %}" href="{% url "admin:memberships_membershipapp_add" %}" class="glyph plus">+</a>
             {% endif %}
@@ -280,7 +288,7 @@
           <div class="app-links">
             {% for app in membership_apps %}
             <div>
-              <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" app.slug %}?username={{ user_this.username }}">{% trans 'Join' %}</a>
+              <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" app.slug %}?username={{ user_this.username|urlencode }}">{% trans 'Join' %}</a>
               {{ app.name }}
             </div>
             {% endfor %}
@@ -386,29 +394,80 @@
           <div class="table-responsive">
             <table class="table">
               {% for reg in registrations %}
+              {% with reg.reg8n_status as reg8n_status %}
               <tr>
                 <td>
                   <a href="{{ reg.get_absolute_url }}">{% trans "Registration" %} #{{ reg.registration.pk }}</a>
                 </td>
                 <td>
-                  {{ reg.reg8n_status }}
+                  <span class="{%if reg8n_status == "cancelled" %}text-muted{% else %}{%if reg8n_status == "payment-required" %}text-danger{% else %}text-info{% endif %}{% endif %}">{{ reg8n_status }}</span>
+                  {% if reg.event.has_child_events and reg.user %}
+	                  {% if reg8n_status != "cancelled" and reg8n_status != "payment-required" %}
+	                  	<div><a href="{% url "event.sessions" reg.pk %}">{% if request.user == reg.user %}{% trans "View my Schedule" %}{% else %}{% trans "View Schedule" %}{% endif %}</a></div>
+	                  {% endif %}
+                  {% endif %}
+                  {% if reg8n_status == "payment-required" %}
+                  		{% with reg.invoice as invoice %}
+	                  	<div><a href="{% url 'payment.pay_online' invoice.pk guid %}">{% trans "Pay Online" %}</a></div>
+	                  	{% endwith %}
+	               {% endif %}
                 </td>
                 <td>
-                  <a href="{{ reg.registration.event.get_absolute_url }}">{{ reg.registration.event }}</a>
+                  {% if reg.event.can_cancel and reg8n_status != "cancelled" %}
+                  <a href="{% url 'event.cancel_registration' reg.event.pk reg.registration.pk %}">
+                    {% trans "Cancel" %}
+                  </a>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="{{ reg.registration.event.get_absolute_url }}">{{ reg.registration.event.title }}</a>
                 </td>
                 <td>
                   {{ reg.registration.event.start_dt }} - {{ reg.registration.event.end_dt }}
                 </td>
               </tr>
+              {% endwith %}
               {% endfor %}
             </table>
           </div>
           {% else %}
           {% trans "No upcoming event registrations." %}
           {% endif %}
+          
+          
+           {% if request.user.is_superuser and upcoming_events %}
+           <div style="margin: 1em;">
+            <div>				
+				<a title="toggle expand/collapse" class="big" id="toggle-upcoming-events-box"  data-toggle="collapse" href="#upcoming-events-box" aria-expanded="false" aria-controls="upcoming-events-box">
+				  {% if registrations %}{% trans "Register this User for more Events" %}
+				  {% else %}{% trans "Register this User" %}
+				  {% endif %}
+				   <span class="glyphicon glyphicon-collapse-down"></span>
+				</a>
+			</div>
+		
+        	<div id="upcoming-events-box" class="table-responsive collapse">
+            <table class="table table-striped table-condensed">
+              {% for event in upcoming_events %}
+              <tr>
+                <td>{{ event.date }}</td>
+                <td>
+                  <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
+                </td>
+                <td>
+                  <a class="btn btn-info btn-sm" href="{% url 'event.user_register' event.id %}?user={{ profile.user.id }}">{% trans "Register this user" %}</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </table>
+           </div>
+          </div>
+       	   {% endif %}
+          
+          
         </div>
-
         {% endif %}
+        
 
         {% if recurring_payments %}
 		 {% if request.user.is_superuser or request.user == profile.user %}

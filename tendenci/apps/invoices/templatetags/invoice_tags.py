@@ -17,25 +17,26 @@ def invoice_nav(context, invoice=None):
 @register.inclusion_tag("invoices/invoice_item.html")
 def invoices_search_results_line(request, invoice):
     obj = invoice.get_object()
+    object_display = invoice.object_display(obj=obj)
+        
 
-    search_line_display = None
-    if invoice.object_type:
-        from django.template.loader import render_to_string
-        from django.template import TemplateDoesNotExist
+    # search_line_display = None
+    # if invoice.object_type:
+    #     from django.template.loader import render_to_string
+    #     from django.template import TemplateDoesNotExist
+    #
+    #     app_label = invoice.object_type.app_label
+    #     template_name = "%s/invoice_search_result_line.html" % (app_label)
+    #     try:
+    #         search_line_display = render_to_string(
+    #             template_name=template_name,
+    #             context={'obj':obj,'invoice':invoice},
+    #             request=request
+    #         )
+    #     except (TemplateDoesNotExist, IOError):
+    #         pass
 
-        app_label = invoice.object_type.app_label
-        template_name = "%s/invoice_search_result_line.html" % (app_label)
-
-        try:
-            search_line_display = render_to_string(
-                template_name=template_name,
-                context={'obj':obj,'invoice':invoice},
-                request=request
-            )
-        except (TemplateDoesNotExist, IOError):
-            pass
-
-    return {'request':request, 'invoice':invoice, 'obj':obj, 'search_line_display':search_line_display}
+    return {'request':request, 'invoice':invoice, 'obj':obj, 'object_display': object_display}
 
 
 @register.inclusion_tag("invoices/search_line_header.html", takes_context=True)
@@ -135,7 +136,9 @@ def invoice_total_display(request, invoice):
 @register.inclusion_tag("invoices/payment_history.html")
 def payment_history_display(request, invoice):
     payments = invoice.payment_set.order_by('-id')
+    refunds = invoice.refund_set.order_by('-id')
 
     return {'request':request,
             'invoice':invoice,
-            'payments': payments}
+            'payments': payments,
+            'refunds': refunds}

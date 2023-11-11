@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import os
 import uuid
 import hashlib
@@ -14,6 +15,7 @@ from django.core.files.storage import default_storage
 from django.core.files import File
 from django.conf import settings
 from django.db import connection, ProgrammingError
+from django.db.models import Max
 
 from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
@@ -62,6 +64,7 @@ class Profile(Person):
 
     # relations
     guid = models.CharField(max_length=40)
+    account_id = models.IntegerField(blank=True, null=True, unique=True)
     entity = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.SET_NULL)
     pl_id = models.IntegerField(default=1)
     historical_member_number = models.CharField(_('historical member number'), max_length=50, blank=True)
@@ -186,6 +189,85 @@ class Profile(Person):
             self.save()
         return self.language
 
+    @property
+    def has_released_credits(self):
+        return self.released_credits.exists()
+
+    @property
+    def released_credits(self):
+        """All released credits for this user"""
+        from tendenci.apps.events.models import RegistrantCredits
+
+        return RegistrantCredits.objects.filter(
+            registrant__user=self.user, released=True).order_by('-credit_dt')
+
+    @property
+    def credits_grid(self):
+        """
+        Returns grid with credits by category -> by year -> by Event
+        Also returns all credit names by category
+        """
+        credits = OrderedDict()
+        credit_names_by_category = OrderedDict()
+
+        for credit in self.released_credits:
+            if not credit.event_credit:
+                continue
+
+            # Add category to grid
+            category = credit.event_credit.ceu_subcategory.parent.name
+            year = credit.credit_dt.year
+            if category not in credits:
+                credits[category] = OrderedDict()
+
+            # Track credit names for this category across years
+            credit_name = credit.event_credit.ceu_subcategory.name
+            if category not in credit_names_by_category:
+                credit_names_by_category[category] = list()
+
+            # Add year to grid under current category
+            if year not in credits[category]:
+                credits[category][year] = {'total': 0, 'events': dict(), 'credits': OrderedDict()}
+
+                # Add any credits from previous years in this category, initialize to 0
+                for previous_years_credit in credit_names_by_category[category]:
+                    credits[category][year]['credits'][previous_years_credit] = 0
+
+            # If this is a new credit we've just seen this year, update previous years
+            # with 0 credits
+            if credit_name not in credit_names_by_category[category]:
+                for key in credits[category]:
+                    credits[category][key]['credits'][credit_name] = 0
+                    credits[category][key]['credits'] = \
+                        OrderedDict(sorted(credits[category][key]['credits'].items()))
+                credit_names_by_category[category].append(credit_name)
+                credit_names_by_category[category] = sorted(credit_names_by_category[category])
+
+            # Update total credits for the year, and totals by credit
+            credits[category][year]['total'] += credit.credits
+            if credit_name not in credits[category][year]['credits']:
+                credits[category][year]['credits'][credit_name] = 0
+                credits[category][year]['credits'] = \
+                    OrderedDict(sorted(credits[category][year]['credits'].items()))
+            credits[category][year]['credits'][credit_name] += credit.credits
+
+            # Add Event details for this year in this category
+            event = credit.event
+            if event.pk not in credits[category][year]['events']:
+                credits[category][year]['events'][event.pk] = {
+                    'start_dt': event.start_dt.strftime('%m-%d-%y'),
+                    'credits': 0,
+                    'type': category,
+                    'meeting_name': event.parent.title if event.parent else event.title,
+                    'registrant_id': credit.registrant.pk,
+                    'event': event.title if event.parent else None,
+                }
+
+            # Update total credits for this event (by pk)
+            credits[category][year]['events'][event.pk]['credits'] += credit.credits
+
+        return credits, credit_names_by_category
+
     def first_name(self):
         return self.user.first_name
 
@@ -241,9 +323,22 @@ class Profile(Person):
                 if default_storage.exists(size_path):
                     default_storage.delete(size_path)
 
+    def get_next_account_id(self):
+        """
+        Get the next available account_id.
+        """
+        account_id_max = Profile.objects.all().aggregate(Max('account_id'))['account_id__max']
+        return account_id_max and account_id_max + 1 or 0
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid4())
+
+            # check and assign account id
+            if not self.account_id and self.is_active:
+                if get_setting('module', 'users', 'useaccountid'):
+                    self.account_id = self.get_next_account_id()
+                    self.save()
 
         # match allow_anonymous_view with opposite of hide_in_search
         if self.hide_in_search:
@@ -264,13 +359,13 @@ class Profile(Person):
                 # remove existing photo from storage
                 self.delete_old_photo()
 
-        try:
-            from tendenci.apps.campaign_monitor.utils import update_subscription
-            if hasattr(self, 'old_email') and getattr(self, 'old_email') != self.user.email:
-                update_subscription(self, self.old_email)
-                del self.old_email
-        except ImportError:
-            pass
+        # try:
+        #     from tendenci.apps.campaign_monitor.utils import update_subscription
+        #     if hasattr(self, 'old_email') and getattr(self, 'old_email') != self.user.email:
+        #         update_subscription(self, self.old_email)
+        #         del self.old_email
+        # except ImportError:
+        #     pass
 
     def allow_search_users(self):
         """
@@ -354,6 +449,23 @@ class Profile(Person):
 
         return False
 
+    def allow_view_transcript(self, user2_compare):
+        """
+        Check if `user2_compare` is allowed to view this user's transcript.
+        """
+        if user2_compare.is_superuser:
+            return True
+
+        if user2_compare == self.user:
+            return True
+        
+        if self.membership and self.membership.corp_profile_id:
+            corp_profile_id = self.membership.corp_profile_id
+            if user2_compare.corpmembershiprep_set.filter(corp_profile_id=corp_profile_id).exists():
+                return True # user2_compare is a rep of the corp that this user is a member of
+
+        return False
+
     def can_renew(self):
         """
         Looks at all memberships the user is actively associated
@@ -414,6 +526,12 @@ class Profile(Person):
     def chapter_memberships(self):
         return self.user.chaptermembership_set.exclude(
                status_detail='archive').order_by('chapter', '-create_dt')
+
+    def names_of_chapters(self):
+        """
+        Names of chapters that this user is a member of.
+        """
+        return ', '.join([m.chapter.title for m in self.chapter_memberships()]) 
 
     def get_chapters(self):
         """
@@ -647,6 +765,15 @@ class Profile(Person):
         """
         return settings.USE_TWO_FACTOR_AUTH
 
+    def get_corp(self):
+        """
+        Get the corp profile (id and name only) that this user is a rep of.
+        """
+        corpmembershipreps = self.user.corpmembershiprep_set.filter(corp_profile__status=True)
+        if corpmembershipreps.exists():
+            return corpmembershipreps[0].corp_profile
+
+        return None
 
 def get_import_file_path(instance, filename):
     return "imports/profiles/{uuid}/{filename}".format(

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 templatetags for django-form-utils
 

@@ -6,10 +6,10 @@ from tendenci.apps.locations.models import Location
 from tendenci.apps.locations.forms import LocationForm
 
 class LocationAdmin(TendenciBaseModelAdmin):
-    list_display = ['location_name', 'slug', 'owner_link', 'admin_perms', 'admin_status']
+    list_display = ['location_name', 'slug', 'owner_link', 'admin_perms', 'entity', 'admin_status']
     list_filter = ['status_detail', 'owner_username']
     prepopulated_fields = { }#'slug': ['title']}
-    search_fields = ['title', 'description']
+    search_fields = ['location_name', 'description']
     prepopulated_fields = {'slug': ['location_name']}
     fieldsets = (
         (_('Location Information'), {
@@ -20,6 +20,7 @@ class LocationAdmin(TendenciBaseModelAdmin):
                        'longitude',
 #                       'photo_upload',
                        'hq',
+                       'entity'
             )
         }),
         (_('Contact'), {

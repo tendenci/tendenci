@@ -1,0 +1,147 @@
+<style>
+  .credits .headings {
+      margin-left: 33%;
+      font-size: .8em;
+  }
+  .credits .category {
+      font-size: .85em;
+  }
+  .credits .headings .col-md-8 {
+      float: left;
+      width: 33%;
+      margin-left: -15px;
+  }
+  .credits .subtable {
+      margin-left: 25px;
+      margin-bottom: 15px;
+  }
+  .credits .row {
+      width: 100%;
+  }
+  .credits label {
+      display: none;
+  }
+  .credits input {
+      float: left;
+  }
+  .credits input[type=number] {
+      width: 15%;
+      margin-left: -35px;
+  }
+  .credits input[type=text] {
+      width: 25%;
+      margin-left: 10px;
+  }
+  .credits input[type=checkbox] {
+      width: 40%;      
+  }
+  .credits textarea[readonly="readonly"] {
+      border: 0px;
+      width: 130px;
+      font-size: .8em;
+      float: left;
+      resize: none;
+  }
+
+  @media screen and (max-width: 1200px) {
+      .credits input[type=text] {
+          width: 20%;
+          margin-left: 10px;
+      }      
+  }
+  @media screen and (max-width: 1000px) {
+    .credits input[type=text] {
+        margin-left: 5px;
+    }
+    .credits input[type=checkbox] {
+      width: 32%;      
+    }
+
+    .credits .category {
+        font-size: .8em;
+    }
+    .credits textarea[readonly="readonly"] {
+        width: 105px;
+        font-size: .8em;
+    }
+    .credits .subtable {
+        margin-left: 30px;   
+    }
+  }
+  @media screen and (max-width: 767px) {
+    .credits input[type=checkbox] {
+      width: 48%;      
+    }      
+  }
+  @media screen and (max-width: 767px) {
+      .credits input[type=checkbox] {
+          width: 45%;
+      }
+  }
+  @media screen and (max-width: 668px) {
+    .credits input[type=checkbox] {
+      width: 40%;      
+    }      
+  }
+  @media screen and (max-width: 560px) {
+    .credits input[type=text] {
+        margin-left: 1px;
+    }
+    .credits input[type=checkbox] {
+      width: 32%;      
+    }
+    .credits textarea[readonly="readonly"] {
+      width: 105px;
+    }
+  }
+  @media screen and (max-width: 433px) {
+      .credits .headings {
+          font-size: .75em;
+      }
+      .credits .category {
+          font-size: .75em;
+      }
+      .credits .subtable {
+          font-size: .75em;
+          margin-left: 10px;
+      }
+      .credits input[type=checkbox] {
+          width: 25%;
+      }
+  }
+</style>
+
+<div class="credits">
+{% if credit_forms %}
+<div class="headings">
+  <div class="col-md-8">{% trans 'Available' %}</div>
+  <div class="col-md-8">{% trans 'Credits' %}</div>
+  <div class="col-md-8">{% trans 'Alternate CEU ID' %}</div>
+</div>
+<div class="clear"></div>
+{% endif %}
+
+{% for category, forms in credit_forms.items %}
+<div class="category"><b>{{category}}</b> </div>
+<div class="subtable">
+  {% for form in forms %}
+  <div class="row">
+    {{form}}
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+
+{% if not credit_forms and user.is_superuser %}
+  <a href='/admin/events/ceucategory/'> {% trans 'Add Credits' %}</a>
+{% endif %}
+</div>
+{% if credit_forms and event.allow_credit_configuration_with_warning %}
+<div>
+  {% blocktrans %}
+  <b>Note: If creating sub-events for this event,
+credits should be added at the sub-event level in the
+    sub-event credits tables.</b>
+  {% endblocktrans %}
+</div>
+{% endif %}

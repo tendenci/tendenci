@@ -3,8 +3,7 @@ six
 configparser
 Django>=3.2,<4.0
 django-formtools>=1.0
-pisa
-Pillow==9.3.0
+Pillow==9.4.0
 django-authority>=0.14
 django-countries==7.2.1
 django-localflavor==3.1
@@ -36,7 +35,7 @@ stripe==2.60.0
 pycryptodome==3.10.1
 boto3==1.24.1
 django-timezone-field==4.2.1
-django-ses==2.2.0
+django-ses==3.5.0
 django-tastypie==0.14.3
 docutils==0.17.1
 chardet==4.0.0
@@ -60,8 +59,8 @@ unicodecsv
 django-bootstrap-form>=3.1,<4
 email-reply-parser
 django-markdown-deux
-xhtml2pdf==0.2.5
-reportlab==3.6.6
+xhtml2pdf==0.2.11
+reportlab==3.6.13
 python-magic
 XlsxWriter==1.4.4
 nameparser
@@ -75,4 +74,13 @@ pymemcache>=3.5.2
 # two factor
 django-two-factor-auth>=1.14.0
 phonenumbers>=8.12.51
-
+# QR code generator
+django-qr-code>=3.1.1
+# Zoom SDK
+pyzoom>=1.0.3
+# Python JWT
+PyJWT>=2.8.0
+# Django model utils (FieldTracker)
+django-model-utils>=4.3.1
+# Create test data
+model-bakery==1.17.0

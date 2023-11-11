@@ -9,6 +9,7 @@ import pytz
 import time as ttime
 import subprocess
 from dateutil.relativedelta import relativedelta
+from ast import literal_eval
 
 from django.http import HttpResponseServerError
 from django.conf import settings
@@ -75,6 +76,14 @@ def get_membership_field_values(membership, app_fields):
             value = getattr(membership, field_name)
         elif hasattr(ud, field_name):
             value = getattr(ud, field_name)
+            if value and '{' in value:
+                try:
+                    is_file = literal_eval(value).get('type') == 'file'
+                except ValueError:
+                    is_file = False
+                if is_file:
+                    value = literal_eval(value).get('html')
+                
         data.append(value)
     return data
 
@@ -245,9 +254,13 @@ def get_ud_file_instance(demographics, field_name):
     if not data:
         return None
 
+    # data is supposed to be a dict
+    if not ('{' in data and '}' in data):
+        return None
+
     try:
-        pk = eval(data).get('pk')
-    except Exception:
+        pk = literal_eval(data).get('pk')
+    except ValueError:
         pk = 0
 
     file_id = 0
@@ -401,6 +414,7 @@ def process_export(
 
         profile_field_list = [
             'member_number',
+            'account_id',
             'company',
             'phone',
             'address',
@@ -408,6 +422,7 @@ def process_export(
             'city',
             'state',
             'zipcode',
+            'county',
             'country',
             'address_2',
             'address2_2',
@@ -1094,7 +1109,7 @@ def get_user_by_username(username):
     if not username:
         return None
 
-    return User.objects.filter(username=username)
+    return User.objects.filter(username__iexact=username)
 
 
 def get_user_by_member_number(member_number):
@@ -1165,6 +1180,11 @@ class ImportMembDefault(object):
                                   'school2', 'major2', 'degree2', 'graduation_year2',
                                   'school3', 'major3', 'degree3', 'graduation_year3',
                                   'school4', 'major4', 'degree4', 'graduation_year4',]
+        # Track account_ids in file to handle duplicate account_ids within the same file.
+        self.account_ids_in_file = list()
+        # Allow specific fields to be null, even when clean_data would normally provide a
+        # default for the field type.
+        self.allow_null_fields = ['account_id']
         self.should_handle_demographic = False
         self.should_handle_education = False
         self.membership_fields = dict([(field.name, field)
@@ -1470,6 +1490,8 @@ class ImportMembDefault(object):
             else:  # email
                 users = get_user_by_email(self.memb_data['email'])
 
+            self.set_unique_account_id(users)
+
             if users:
                 user_display['user_action'] = 'update'
 
@@ -1525,14 +1547,46 @@ class ImportMembDefault(object):
         user_display.update({
             'first_name': self.memb_data.get('first_name', u''),
             'last_name': self.memb_data.get('last_name', u''),
+            'account_id': self.memb_data.get('account_id', u''),
             'email': self.memb_data.get('email', u''),
             'username': self.memb_data.get('username', u''),
             'member_number': self.memb_data.get('member_number', u''),
             'phone': self.memb_data.get('phone', u''),
-            'company': self.memb_data.get('company', u''),
+            'company': self.memb_data.get('company', u'').strip(),
         })
 
         return user_display
+
+    def set_unique_account_id(self, users):
+        """
+        Make sure account_id is unique. If duplicate is found, append '1'
+        """
+        # No need to make sure account_id is unique if none was imported.
+        # Also, don't update account_id for existing profile if it hasn't
+        # been changed.
+        account_id = self.memb_data.get('account_id')
+        user = users.first() if users else None
+        existing_account_id = str(user.profile.account_id) if user else None
+        if not account_id or (user and account_id == existing_account_id):
+            return None
+
+        # Append '1' as long as duplicate account_id is found.
+        has_duplicates = (
+            Profile.objects.filter(account_id=account_id) or
+            account_id in self.account_ids_in_file
+        )
+        while has_duplicates:
+            account_id = f'{account_id}1'
+            has_duplicates = (
+                account_id != existing_account_id and
+                (
+                    Profile.objects.filter(account_id=account_id) or
+                    account_id in self.account_ids_in_file
+                )
+            )
+
+        self.account_ids_in_file.append(account_id)
+        self.memb_data['account_id'] = account_id
 
     def do_import_membership_default(self, user, memb_data, memb, action_info):
         """
@@ -1823,6 +1877,11 @@ class ImportMembDefault(object):
         """
         Clean the data based on the field type.
         """
+        # Some fields should be left null even if the field type normaly
+        # is given a default value.
+        if not value and field.null and field.name in self.allow_null_fields:
+            return None
+
         field_type = field.get_internal_type()
         if field_type in ['CharField', 'EmailField',
                           'URLField', 'SlugField']:
@@ -1831,6 +1890,8 @@ class ImportMembDefault(object):
             if len(value) > field.max_length:
                 # truncate the value to ensure its length <= max_length
                 value = value[:field.max_length]
+            if field_type == 'CharField':
+                value = value.strip()
             if field.name == 'time_zone':
                 if value not in pytz.all_timezones:
                     if value in self.t4_timezone_map:

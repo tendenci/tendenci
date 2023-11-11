@@ -55,6 +55,31 @@
         </td>
             <td class="td-right">{{ payment.amount|format_currency }}</td>
         </tr>
+       {% for refund in payment.completed_refunds %}
+       <tr>
+         <td class="td-right"><strong>{% trans "Refunded: " %}</strong>&nbsp;
+            <a href="#" onclick="$(this).next().toggle(); return false;">{% trans "(details)" %}</a>
+            <div class="payment-details">
+                {% if refund.trans_id %}
+                <p><strong>{% trans "Transaction ID:" %}</strong> {{ refund.trans_id }}</p>
+                {% endif %}
+                {% if refund.refund_id %}
+                <p><strong>{% trans "Refund ID:" %}</strong> {{ refund.refund_id }}</p>
+                {% endif %}
+                {% if refund.response_reason_text %}
+                <p><strong>{% trans "Response:" %}</strong> {{ refund.response_reason_text }}</p>
+                {% endif %}
+                <p><strong>{% trans "Refund Status:" %}</strong>
+                {{ refund.response_status }}
+                </p>
+                {% if refund.notes %}
+                <p><strong>{% trans "Notes:" %}</strong> {{refund.notes}}</p>
+                {% endif %}
+            <div>
+         </td>
+         <td class="td-right"> {{ refund.net_amount |format_currency }}</td>
+      </tr>
+      {% endfor %}
           {% endfor %}
         </table>
           {% endif %}

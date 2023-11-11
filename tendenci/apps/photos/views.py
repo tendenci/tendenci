@@ -238,6 +238,10 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
 
     photo = get_object_or_404(Image, id=id)
     size = [int(s) for s in size.split('x')]
+    for s in size:
+        # height and width must be > 0
+        if s <= 0:
+            raise Http404
     size = aspect_ratio(photo.image_dimensions(), size, constrain)
 
     # check permissions
@@ -257,7 +261,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     file_name = photo.image_filename()
     file_path = 'cached%s%s' % (request.path, file_name)
     if default_storage.exists(file_path):
-        image = PILImage.open(default_storage.open(file_path))
+        image = PILImage.open(photo.image)
     else:
         # gets resized image from cache or rebuild
         image = get_image(photo.image, size, PHOTO_PRE_KEY, crop=crop, quality=quality, unique_key=str(photo.pk), constrain=constrain)
@@ -269,6 +273,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     response = HttpResponse(content_type='image/jpeg')
     response['Content-Disposition'] = '%s filename="%s"' % (attachment, photo.image_filename())
     image.convert('RGB').save(response, "JPEG", quality=quality)
+    image.close()
 
     if photo.is_public_photo() and photo.is_public_photoset():
         if not default_storage.exists(file_path):
@@ -307,20 +312,20 @@ def photo_original(request, id):
         raise Http404
     except IndexError:
         ext = "png"
-
+    #ext = 'png'
     if ext in ["jpg", 'JPG']:
         ext = "jpeg"
     
-    with default_storage.open(str(photo.image.file), 'rb') as f:
-        if photo.exif_data and photo.exif_data.get('Orientation', 1) in (3, 6, 8):
-            img = PILImage.open(f)
-            # rotate image if needed
-            img = apply_orientation(img)
-            output = io.BytesIO()
+    if photo.exif_data and photo.exif_data.get('Orientation', 1) in (3, 6, 8):
+        img = PILImage.open(photo.image)
+        # rotate image if needed
+        img = apply_orientation(img)
+        with io.BytesIO() as output:
             img.save(output, format=ext.upper())
+            img.close()
             return HttpResponse(output.getvalue(), content_type="image/{}".format(ext))
 
-        return HttpResponse(f, content_type="image/{}".format(ext))
+    return HttpResponse(photo.image, content_type="image/{}".format(ext))
 
 
 @login_required
@@ -613,7 +618,8 @@ def handle_uploaded_photo(request, photoset_id, file_path):
     # truncate; make unique; append extension
     filename = filename[:70] + '-' + str(uuid.uuid4())[:5] + extension
 
-    photo.image.save(filename, File(open(file_path, 'rb')))
+    with open(file_path, 'rb') as f:
+        photo.image.save(filename, File(f))
 
     position_max = Image.objects.filter(
         photoset=photoset_id).aggregate(Max('position'))['position__max'] or 0

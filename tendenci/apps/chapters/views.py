@@ -137,7 +137,7 @@ def search(request, template_name="chapters/search.html"):
             chapters = chapters.filter(state=state)
         if county:
             chapters = chapters.filter(county__iexact=county)
-        chapters = chapters.order_by('-create_dt')
+        chapters = chapters.order_by('title')
     else:
         chapters = Chapter.objects.none()
 
@@ -527,7 +527,9 @@ def chapter_memberships_search(request, chapter_id=0,
             import csv
             def iter_chapter_memberships(chapter_memberships, app_fields):
                 field_labels = [_('First Name'), _('Last Name'), _('Email'), _('Username')]
+                field_labels += [_('Phone'), _('Address'), _('County'), _('State'), _('Zip Code'),]
                 field_labels += [field.label for field in app_fields]
+                field_labels += [_('Membership Type')]
                 field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
                                 _('Expire Date'), _('Status Detail')]
                 field_labels.insert(0, _('Chapter'))
@@ -541,7 +543,13 @@ def chapter_memberships_search(request, chapter_id=0,
                                    chapter_membership.user.last_name,
                                    chapter_membership.user.email,
                                    chapter_membership.user.username,]
+                    profile = chapter_membership.user.profile if hasattr(chapter_membership.user, 'profile') else None
+                    if profile:
+                        values_list += [profile.phone, profile.address, profile.county, profile.state, profile.zipcode,]
+                    else:
+                        values_list += ['', '', '', '', '']
                     values_list += get_chapter_membership_field_values(chapter_membership, app_fields)
+                    values_list.append(chapter_membership.membership_type.name)
                     if chapter_membership.create_dt:
                         values_list.append(chapter_membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
                     else:
@@ -749,16 +757,16 @@ def membership_details(request, chapter_membership_id=0,
 
     if request.user.is_superuser or is_chapter_leader:
         if 'approve' in request.GET:
-            chapter_membership.approve(request_user=request.user)
-            messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
+            if chapter_membership.approve(request_user=request.user):
+                messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
 
         if 'disapprove' in request.GET:
-            chapter_membership.disapprove(request_user=request.user)
-            messages.add_message(request, messages.SUCCESS, _('Successfully Disapproved'))
+            if chapter_membership.disapprove(request_user=request.user):
+                messages.add_message(request, messages.SUCCESS, _('Successfully Disapproved'))
 
         if 'expire' in request.GET:
-            chapter_membership.expire(request_user=request.user)
-            messages.add_message(request, messages.SUCCESS, _('Successfully Expired'))
+            if chapter_membership.expire(request_user=request.user):
+                messages.add_message(request, messages.SUCCESS, _('Successfully Expired'))
 
 
     app = chapter_membership.app
@@ -879,7 +887,8 @@ def chapter_membership_add(request, chapter_id=0,
             # TODO: email notification to admin
             # Who should be notified? site admin or chapter leaders?
             if chapter.contact_email:
-                recipients = [chapter.contact_email]
+                recipients = chapter.contact_email.split(',')
+                recipients = [email.strip() for email in recipients if email]
             else:
                 recipients = get_notice_recipients(
                                 'module', 'chapters',
@@ -996,7 +1005,7 @@ def chapter_membership_renew(request, chapter_membership_id=0,
         raise Http403
 
     if not chapter_membership.can_renew():
-        if not (chapter_membership.chapter.is_chapter_leader(request.user) or request.user.is_superuser):
+        if not request.user.is_superuser:
             return HttpResponseRedirect(reverse('chapters.membership_details',
                         args=[chapter_membership.id]))
 

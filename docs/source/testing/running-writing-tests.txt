@@ -1,0 +1,58 @@
+Running and Writting Tests
+==========================
+
+.. note:: Please consider adding tests when **adding or fixing** code in Tendenci!
+
+Test, test, test! There is no need for us to stress how important testing is - everybody knows that. 
+
+At the current stage, both manual testing and automated testing are important.
+Manual testing can not be completely replaced by automated testing.
+There are many cases you would want to run manual tests.
+Automated testing can help us run tests more efficiently. Therefore,
+if applicable, please test thoroughly as an anonymous user, a logged-in user, a member 
+and a super user, respectively, for your new features or updates to ensure they work as expected.
+ 
+
+Running Tests
+-------------
+To run automated testing in Tendenci, just type the following command and run in your dev environment.
+::
+
+    python manage.py test tendenci
+    
+ 
+If coverage.py (a tool to measure the exposure of your codebase to tests) is
+installed it can also be used to provide reports
+
+::
+
+  coverage run --source='tendenci' manage.py test tendenci --keepdb
+  coverage report
+ 
+
+Running with --keepdb is optional but speeds up Tendenci testing a lot due to
+its migration heavy nature but you will need to remove it if you see problems
+while running tests.
+
+--verbosity 2 can be used to increase output during testing.
+
+Note that when running `manage.py test` for the first time all migrations will
+need to be applied to the test database. If run with --keepdb that step will be
+skipped in future.
+
+
+Writing Tests
+-------------
+
+Django's documentation covers writing tests and we recommend you look there for guidance `https://docs.djangoproject.com/en/dev/intro/tutorial05/ <https://docs.djangoproject.com/en/dev/intro/tutorial05/>`_.
+
+You can write your test cases in the tests.py in an app, or use the following testing structure. 
+::
+
+    app_name
+        tests
+             __init__.py
+             test_forms.py
+             test_models.py
+             test_views.py
+

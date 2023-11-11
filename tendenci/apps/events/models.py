@@ -1,18 +1,27 @@
 from builtins import str
 import uuid
 from hashlib import md5
+import jwt
+import json
 import operator
+import pytz
+from model_utils import FieldTracker
+from collections import OrderedDict
 from datetime import datetime, timedelta
+from dateutil.parser import parse
 from functools import reduce
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 from django.db.models.aggregates import Sum
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.fields import AutoField
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Q
@@ -21,8 +30,11 @@ from tagging.fields import TagField
 from timezone_field import TimeZoneField
 
 from tendenci.apps.events.managers import EventManager, RegistrantManager, EventTypeManager
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.notifications import models as notification
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.utils import get_notice_recipients, get_query_filters
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
@@ -31,6 +43,7 @@ from tendenci.apps.user_groups.models import GroupMembership
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.files.models import File
+from tendenci.apps.site_settings.crypt import encrypt, decrypt
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import PaymentMethod as GlobalPaymentMethod
 
@@ -41,6 +54,8 @@ from tendenci.apps.base.utils import (localize_date, get_timezone_choices,
 from tendenci.apps.emails.models import Email
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
+from tendenci.apps.trainings.models import Course, Certification
+from tendenci.apps.zoom import ZoomClient
 
 # from south.modelsinspector import add_introspection_rules
 # add_introspection_rules([], [r'^timezone_field\.TimeZoneField'])
@@ -121,6 +136,35 @@ class Place(models.Model):
     name = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
 
+    # Zoom integration
+    use_zoom_integration = models.BooleanField(
+        default=False,
+        help_text=_('Use Zoom integration to allow launching Zoom meeting from Event.<br />Note: The credits generated via Zoom meeting can override those specified under the Credits tab.')
+    )
+    zoom_api_configuration = models.ForeignKey(
+        'ZoomAPIConfiguration',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text=_("Zoom API credentials for the account you want to use for this Event's meeting.")
+    )
+    zoom_meeting_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=_('Zoom meeting ID for this Event.')
+    )
+    zoom_meeting_passcode = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=_('Zoom meeting passcode for this Event.')
+    )
+    is_zoom_webinar = models.BooleanField(
+        default=False,
+        help_text=_('Check if the Zoom meeting is a webinar.')
+    )
+
     # offline location
     address = models.CharField(max_length=150, blank=True)
     city = models.CharField(max_length=150, blank=True)
@@ -147,6 +191,233 @@ class Place(models.Model):
 
     def city_state(self):
         return [s for s in (self.city, self.state) if s]
+
+
+class VirtualEventCreditsLogicConfiguration(models.Model):
+    credit_period = models.PositiveSmallIntegerField(
+        _('Period (Number of Minutes per Credits Earned)'),
+        default=50,
+        help_text=_('Number of minutes to earn 1 full credit.')
+    )
+    credit_period_questions = models.PositiveSmallIntegerField(
+        _('Number of Questions for each credit period'),
+        default=4,
+        help_text=_('Total number of questions per credit period.')
+    )
+    full_credit_percent = models.DecimalField(
+        _('Percent of Questions Correct for Full Credit'),
+        blank=True,
+        null=True,
+        max_digits=2,
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        help_text=_('Per period. Leave blank if using number of questions.')
+    )
+    full_credit_questions = models.PositiveSmallIntegerField(
+        _('Number of Questions for Full Credit'),
+        blank=True,
+        null=True,
+        help_text=_('Per period. Leave blank if using percentage.')
+    )
+    half_credits_allowed = models.BooleanField(_('Half Credits Allowed'), default=True)
+    half_credit_periods = models.PositiveSmallIntegerField(
+        _('Number of Periods after which Half Credits Can be Earned'),
+        default=0,
+        help_text=_('Leave 0 if allowed for entirety of event')
+    )
+    half_credit_credits = models.PositiveIntegerField(
+        _('Number of full credits required before half credits can be earned.'),
+        default=0,
+        help_text=_('Leave 0 if there is no requirement.')
+    )
+
+    class Meta:
+        verbose_name =_('Virtual Event Credits Logic Configuration')
+        verbose_name_plural =_('Virtual Event Credits Logic Configuration')
+
+
+class ZoomAPIConfiguration(models.Model):
+    """API Configuration to use for Zoom Events"""
+    account_name = models.CharField(
+        max_length=255,
+        help_text=_('Used to easily identify this Zoom account.')
+    )
+    sdk_client_id = models.CharField(
+        max_length=100,
+        help_text=_('Client ID for Zoom SDK app (to launch Zoom from Event).')
+    )
+    sdk_client_secret = models.CharField(
+        max_length=255,
+        help_text=_('Client secret for Zoom SDK app (to launch Zoom from Event).')
+    )
+    oauth_account_id = models.CharField(
+        max_length=100,
+        help_text=_('Account ID for Zoom Server to Server OAuth app (get meeting/webinar info).')
+    )
+    oauth_client_id = models.CharField(
+        max_length=100,
+        help_text=_('Client ID for Zoom Server to Server OAuth app (get meeting/webinar info).')
+    )
+    oauth_client_secret = models.CharField(
+        max_length=255,
+        help_text=_('Client secret for Zoom Server to Server Oauth app (get meeting/webinar info).')
+    )
+    use_as_default = models.BooleanField(
+        default=False,
+        help_text=_(
+            'Check to use this as the default option when selecting a Zoom API Configuration. ' \
+            'Only one configuration can be used as default.'
+        )
+    )
+
+    tracker = FieldTracker(fields=['sdk_client_secret', 'oauth_client_secret'])
+
+    class Meta:
+        verbose_name =_('Zoom API Configuration')
+        verbose_name_plural =_('Zoom API Configurations')
+
+    def __str__(self):
+        return self.account_name
+
+    def get_sdk_secret(self):
+        return decrypt(self.sdk_client_secret)
+
+    def get_oauth_secret(self):
+        return decrypt(self.oauth_client_secret)
+
+    def save(self, *args, **kwargs):
+        """
+        Encode API secret before storing in database.
+        """
+        if self.tracker.has_changed("sdk_client_secret"):
+            self.sdk_client_secret = encrypt(self.sdk_client_secret)
+
+        if self.tracker.has_changed("oauth_client_secret"):
+            self.oauth_client_secret = encrypt(self.oauth_client_secret)
+
+        return super().save(*args, **kwargs)
+
+
+class CEUCategory(models.Model):
+    """
+    Continuing Education Units
+    Can optionally be included in Events
+    """
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=15)
+    parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = _("Continuing Education Unit Category")
+        verbose_name_plural = _("Continuing Education Unit Categories")
+        ordering = ('name',)
+        app_label = 'events'
+
+    def __str__(self):
+        return self.name
+
+
+class EventCreditQuerySet(models.QuerySet):
+    def available(self):
+        return self.filter(available=True, credit_count__gt=0)
+
+
+class EventCreditManager(models.Manager.from_queryset(EventCreditQuerySet)):
+    pass
+
+
+class EventCredit(models.Model):
+    """Credits configured for an Event"""
+    event = models.ManyToManyField('Event', blank=True)
+    # When deleting a configuration for a credit, it will remove it from the event
+    # configuration. History of credits earned for a Registrant will be saved
+    # independent so it won't be lost if a CEUCategory is deleted.
+    ceu_subcategory = models.ForeignKey(CEUCategory, on_delete=models.CASCADE)
+    credit_count = models.DecimalField(max_digits=5, decimal_places=1, default=0)
+    alternate_ceu_id = models.CharField(max_length=150, blank=True, null=True)
+    available = models.BooleanField(default=False)
+
+    objects = EventCreditManager()
+
+    def save(self, apply_changes_to='self', from_event=None, *args, **kwargs):
+        """Update for recurring events after save"""
+        super().save(*args, **kwargs)
+        if apply_changes_to != 'self':
+            if not from_event:
+                raise Exception("Must provide event to update recurring events from")
+
+            recurring_events = from_event.recurring_event.event_set.all()
+
+            if apply_changes_to == 'rest':
+                recurring_events = recurring_events.filter(
+                    start_dt__gte=from_event.start_dt)
+
+            # Update existing configs. Create new ones if needed.
+            for event in recurring_events:
+                credit = event.get_or_create_credit_configuration(self.ceu_subcategory.pk, True)
+                credit.credit_count = self.credit_count
+                credit.alternate_ceu_id = self.alternate_ceu_id
+                credit.available = self.available
+                credit.save()
+
+
+class ImageMixin:
+    @property
+    def url(self):
+        site_url = get_setting('site', 'global', 'siteurl')
+        return f'{site_url}{self.image.url}'
+
+class SignatureImage(ImageMixin, models.Model):
+    """Images to use as signatures"""
+    image = models.ImageField(
+        _('Image'),
+        upload_to=settings.PHOTOS_DIR + "/signatures",
+        help_text=_("Image of person's signature")
+    )
+    name = models.CharField(_('Name'), max_length=255,
+                            help_text=_('Name of person to whom signature belongs.'))
+
+    def __str__(self):
+        return self.name
+
+
+class CertificateImage(ImageMixin, models.Model):
+    """Additional image to display on certificate"""
+    image = models.ImageField(
+        _('Image'),
+        upload_to=settings.PHOTOS_DIR + "/certificates",
+        help_text=_("Additional image to display on certificate")
+    )
+    name = models.CharField(_('Name'), max_length=255,
+                            help_text=_('Enter name to easily identify image'))
+
+    def __str__(self):
+        return self.name
+
+
+class EventStaff(models.Model):
+    """Staff supporting Event"""
+    event = models.ManyToManyField('Event')
+    name = models.CharField(_('Name'), max_length=255)
+    role = models.CharField(_('Role'), max_length=255)
+    include_on_certificate = models.BooleanField(
+        _('Include on Certificate'),
+        default=False,
+        help_text=_("Check to display name and role on certificate")
+    )
+    signature_image = models.ForeignKey(
+        SignatureImage,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text=_("Optional image of staff member's signature"),
+    )
+    use_signature_on_certificate = models.BooleanField(
+        _('Use Signature Image on Certificate'),
+        default=False,
+        help_text=_('Enabling will display signature image on certificate. ' \
+                    'If not enabled, the printed name will be used. (If using certificates)'),
+    )
 
 
 class RegistrationConfiguration(models.Model):
@@ -181,6 +452,8 @@ class RegistrationConfiguration(models.Model):
                         "the required fields in registration form are also required for guests.  "),
                         default=False)
 
+    allow_guests = models.BooleanField(default=False)
+    guest_limit = models.PositiveSmallIntegerField(default=0)
     is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
     discount_eligible = models.BooleanField(default=True)
     gratuity_enabled = models.BooleanField(default=False)
@@ -222,10 +495,24 @@ class RegistrationConfiguration(models.Model):
     registration_email_text = models.TextField(_('Registration Email Text'), blank=True)
     reply_to = models.EmailField(_('Registration email reply to'), max_length=120, null=True, blank=True,
                                  help_text=_('The email address that receives the reply message when registrants reply their registration confirmation emails.'))
+    reply_to_receive_notices = models.BooleanField(_('Reply-to receives notices'), default=False,
+                                                   help_text=_('Make the above reply-to address also receives the event-specific admin notices.'))
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+    cancel_by_dt = models.DateTimeField(_('Cancel by'),
+                                        blank=True,
+                                        null=True)
+    cancellation_fee = models.DecimalField(_('Cancellation Fee'),
+                                           max_digits=21,
+                                           decimal_places=2,
+                                           default=0)
+    cancellation_percent = models.DecimalField(_('Cancellation Percent'),
+                                               default=0,
+                                               max_digits=2,
+                                               decimal_places=2,
+                                               validators=[MinValueValidator(0), MaxValueValidator(1)])
     class Meta:
         app_label = 'events'
 
@@ -236,10 +523,18 @@ class RegistrationConfiguration(models.Model):
         Return boolean.
         """
         has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
-        has_account = get_setting('site', 'global', 'merchantaccount') is not ''
-        has_api = any([settings.MERCHANT_LOGIN, settings.PAYPAL_MERCHANT_LOGIN])
+        has_account = get_setting('site', 'global', 'merchantaccount') not in ('asdf asdf asdf', '')
 
-        return all([has_method, has_account, has_api])
+        return all([has_method, has_account])
+
+    def get_cancellation_fee(self, amount):
+        """Get cancellation fee"""
+        cancellation_fee = self.cancellation_fee
+
+        if self.cancellation_percent:
+            cancellation_fee = round(amount * self.cancellation_percent, 2)
+
+        return cancellation_fee
 
     def get_available_pricings(self, user, is_strict=False, spots_available=-1):
         """
@@ -298,7 +593,8 @@ class RegConfPricing(OrderingBaseModel):
                             'Note: this number should not exceed the specified registration limit.'))
     spots_taken = models.IntegerField(default=0)
     groups = models.ManyToManyField(Group, blank=True)
-
+    days_price_covers = models.PositiveSmallIntegerField(
+        blank=True, null=True, help_text=_("Number of days this price covers (optional)."))
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
@@ -337,6 +633,19 @@ class RegConfPricing(OrderingBaseModel):
         if self.title:
             return '%s' % self.title
         return '%s' % self.pk
+
+    @property
+    def requires_attendance_dates(self):
+        """
+        Pricing requires attendance dates if
+        the Event requires attendance dates and
+        days price covers is specified.
+        """
+        return (
+            self.days_price_covers and
+            self.reg_conf and hasattr(self.reg_conf, 'event') and
+            self.reg_conf.event.requires_attendance_dates
+        )
 
     def available(self):
         if not self.reg_conf.enabled or not self.status:
@@ -438,6 +747,9 @@ class RegConfPricing(OrderingBaseModel):
         now = datetime.now()
         filter_and, filter_or = None, None
 
+        # Hide non-member pricing if setting turned on
+        is_strict = is_strict or get_setting('module', 'events', 'hide_member_pricing')
+
         if is_strict:
             if user.is_anonymous:
                 filter_or = {'allow_anonymous': True}
@@ -447,9 +759,7 @@ class RegConfPricing(OrderingBaseModel):
                             }
             else:
                 # user is a member
-                filter_or = {'allow_anonymous': True,
-                             'allow_user': True,
-                             'allow_member': True}
+                filter_or = {'allow_member': True}
 
         else:
             filter_or = {'allow_anonymous': True,
@@ -502,6 +812,23 @@ class Registration(models.Model):
     reg_conf_price = models.ForeignKey(RegConfPricing, null=True, on_delete=models.SET_NULL)
 
     reminder = models.BooleanField(default=False)
+    
+    key_contact_name = models.CharField(_('Training Contact'),
+                                        max_length=150,
+                                        blank=True,
+                                        default='')
+    key_contact_phone = models.CharField(_('Training Contact Phone'),
+                                        max_length=50,
+                                        blank=True,
+                                        default='')
+    key_contact_fax = models.CharField(_('Training Contact Fax'),
+                                        max_length=50,
+                                        blank=True,
+                                        default='')
+    need_reservation = models.BooleanField(default=False)
+    nights = models.PositiveSmallIntegerField(default=0, blank=True,)
+    begin_dt = models.DateField(_("Beginning on"), blank=True, null=True)
+    
 
     # TODO: Payment-Method must be soft-deleted
     # so that it may always be referenced
@@ -548,6 +875,45 @@ class Registration(models.Model):
     def hash(self):
         return md5(".".join([str(self.event.pk), str(self.pk)]).encode()).hexdigest()
 
+    @property
+    def can_edit_child_events(self):
+        """If any registrant can edit child events, return True"""
+        if not self.event.nested_events_enabled:
+            return False
+
+        for registrant in self.registrant_set.filter(cancel_dt__isnull=True):
+            return (
+                not registrant.registration_closed and (
+                    (registrant.user and registrant.user.profile.is_superuser and
+                    registrant.event.child_events.exists()) or
+                    registrant.event.upcoming_child_events.exists()
+                )
+            )
+
+        return False
+
+    def allow_adjust_invoice_by(self, request_user):
+        """
+        Returns whether or not the request_user can adjust invoice
+        for this event registration.
+        """
+        if not request_user.is_anonymous:
+            if request_user.is_superuser:
+                return True
+            # check if request_user is chapter leader or committee leader
+            if get_setting('module', 'events', 'leadercanadjust'):
+                [group] = self.event.groups.all()[:1] or [None]
+                if group:
+                    [committee] = group.committee_set.all()[:1] or [None]
+                    if committee:
+                        return committee.is_committee_leader(request_user)
+    
+                    [chapter] = group.chapter_set.all()[:1] or [None]
+                    if chapter:
+                        return chapter.is_chapter_leader(request_user)
+
+        return False
+
     def payment_abandoned(self):
         if self.invoice and self.invoice.balance > 0 and \
             self.invoice.payment_set.filter(status_detail='').exists():
@@ -556,6 +922,13 @@ class Registration(models.Model):
             if self.invoice.create_dt + timedelta(days=1) < datetime.now():
                 return True
         return False
+
+    def not_paid(self):
+        return self.invoice and self.invoice.balance > 0
+    
+    def is_credit_card_payment(self):
+        return self.payment_method and \
+            (self.payment_method.machine_name).lower() == 'credit-card'
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
@@ -650,13 +1023,95 @@ class Registration(models.Model):
             #notify the admins too
             email_admins(self.event, self.invoice.total, self_reg8n, self, registrants)
 
+    @property
+    def allow_refunds(self):
+        """Indicate if refunds are allowed"""
+        return get_setting('module', 'events', 'allow_refunds') != "No"
+
+    def refund(self, request, refund_amount, confirmation_message):
+        """Refund this registration's invoice"""
+        if not self.allow_refunds:
+            return
+
+        refund_amount = self.invoice.get_refund_amount(refund_amount)
+        try:
+            if refund_amount:
+                self.invoice.refund(refund_amount, request.user, confirmation_message)
+        except:
+            messages.set_level(request, messages.ERROR)
+            error_message = f"Refund in the amount of ${refund_amount} failed to process. " \
+                            f"Please contact support."
+            messages.error(request, _(error_message))
+
+        messages.success(request, _(confirmation_message))
+
+    def cancel(self, request, refund=True, cancellation_fees=None):
+        """
+        Cancel all registrants on this registration.
+        Refunding here is optional in the case that it is done
+        separately (ex in the Refund menu)
+
+        Call registrant.cancel with check_registration_status set and
+        refund set to False to  hold off on these tasks until after
+        the loop.
+        Set cancellation_fees if you need to override the default calcuated
+        fees.
+        """
+        if self.canceled:
+            return
+
+        registrants = self.registrant_set.filter(cancel_dt__isnull=True)
+        refund_amount = 0
+        for registrant in registrants:
+            registrant.cancel(
+                request,
+                check_registration_status=False,
+                refund=False,
+                process_cancellation_fee=cancellation_fees is None,
+            )
+            if registrant.amount:
+                refund_amount += registrant.amount
+
+        # Adjust and process cancellation fees if indicated
+        if cancellation_fees is not None:
+            self.process_adjusted_cancellation_fees(cancellation_fees, request.user)
+
+        confirmation_message = self.event.get_refund_confirmation_message(registrants)
+
+        # Refund if applicable
+        if refund and self.invoice.can_auto_refund and refund_amount:
+            self.refund(request, refund_amount, confirmation_message)
+
+        self.canceled = True
+        self.save()
+
+    def process_adjusted_cancellation_fees(self, cancellation_fee, user=None):
+        """
+        Adjust and process cancellation fees for invoice.
+        Set update_fee to True to update existing cancellation line item
+        instead of adding a new one.
+        """
+        # Only applicable if refunds are enabled
+        if not self.allow_refunds:
+            return
+
+        # Adjust cancellation_fee
+        self.invoice.adjusted_cancellation_fees = cancellation_fee
+        self.invoice.save(update_fields=['adjusted_cancellation_fees'])
+
+        # Update invoice with adjusted cancellation fee
+        self.invoice.update_cancellation_fee_line_item(cancellation_fee, user)
+
     def status(self):
         """
         Returns registration status.
         """
         config = self.event.registration_configuration
 
-        balance = self.invoice.balance
+        if self.invoice:
+            balance = self.invoice.balance
+        else:
+            balance = 0
         if self.reg_conf_price is None or self.reg_conf_price.payment_required is None:
             payment_required = config.payment_required
         else:
@@ -689,6 +1144,18 @@ class Registration(models.Model):
     @property
     def graguity_in_percentage(self):
         return '{:.1%}'.format(self.gratuity)
+
+    @property
+    def default_cancellation_fees(self):
+        """
+        Default cancellation fee for registration is the
+        sum of all fees for registrants.
+        """
+        fee = 0
+        for registrant in self.registrant_set.all():
+            fee += registrant.cancellation_fee
+
+        return fee
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -835,6 +1302,8 @@ class Registrant(models.Model):
     This is the information that was used while registering
     """
     registration = models.ForeignKey('Registration', on_delete=models.CASCADE)
+    attendance_dates = models.JSONField(
+        blank=True, null=True, help_text=_("The dates this registrant will be attending."))
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
     pricing = models.ForeignKey('RegConfPricing', null=True, on_delete=models.SET_NULL)  # used for dynamic pricing
@@ -879,6 +1348,9 @@ class Registrant(models.Model):
         decimal_places=2,
         default=0
     )
+    certification_track = models.ForeignKey(Certification,
+                                   null=True, blank=True,
+                                   on_delete=models.SET_NULL)
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
     memberid = models.CharField(_('Member ID'), max_length=50, blank=True, null=True)
@@ -886,6 +1358,8 @@ class Registrant(models.Model):
 
     checked_in = models.BooleanField(_('Is Checked In?'), default=False)
     checked_in_dt = models.DateTimeField(null=True)
+    checked_out = models.BooleanField(_('Is Checked Out?'), default=False)
+    checked_out_dt = models.DateTimeField(null=True)
 
     reminder = models.BooleanField(_('Receive event reminders'), default=False)
 
@@ -904,10 +1378,291 @@ class Registrant(models.Model):
         else:
             return '%s, %s' % (self.last_name, self.first_name)
 
+    @property
+    def registration_closed(self):
+        """Returns whether registration is closed for this registrant's pricing"""
+        return self.pricing.registration_has_ended
+
+    @property
+    def event(self):
+        return self.registration.event
+
+    @property
+    def registration_configuration(self):
+        return self.event.registration_configuration
+
     def register_pricing(self):
         # The pricing is a field recently added. The previous registrations
         # store the pricing in registration.
         return self.pricing or self.registration.reg_conf_price
+
+    @property
+    def event_dates_display(self):
+        return self.event.event_dates_display
+
+    @property
+    def upcoming_event_days(self):
+        """Number of days upcoming covered by pricing"""
+        if self.pricing and self.pricing.days_price_covers:
+            past_dates_count = len(self.past_attendance_dates)
+            if self.user and self.user.profile.is_superuser:
+                past_dates_count = 0
+            return self.pricing.days_price_covers - past_dates_count
+        return 0
+
+    @property
+    def available_child_events(self):
+        """Child events occurring on the dates Registrant is attending"""
+        if not self.event.nested_events_enabled or not self.attendance_dates:
+            return Event.objects.none()
+            
+        return self.event.child_events.filter(start_dt__date__in=self.attendance_dates)
+
+    @property
+    def past_attendance_dates(self):
+        """Attendance dates for sessions in the past"""
+        if self.attendance_dates:
+            return [x for x in self.attendance_dates if parse(x).date() <= datetime.now().date()]
+        return list()
+
+    @property
+    def upcoming_attendance_dates(self):
+        """Attendance dates for future sessions"""
+        if self.attendance_dates:
+            return [x for x in self.attendance_dates if parse(x).date() > datetime.now().date()]
+        return list()
+
+    @property
+    def can_edit_attendance_dates(self):
+        """
+        Attendance dates are editable if registration is not closed,
+        nested events are enabled, event has child events
+        """
+        return (
+            not self.registration_closed and
+            self.event.nested_events_enabled and
+            self.event.has_child_events
+        )
+
+    def sub_event_datetimes(self, is_admin=False):
+        """Returns list of start_dt for available sub events"""
+        child_events = self.event.child_events if is_admin else self.available_child_events
+
+        return self.event.sub_event_datetimes(child_events)
+
+    @property
+    def released_credits(self):
+        """All released credits for registrant"""
+        return self.registrantcredits_set.filter(released=True)
+
+    @property
+    def released_cpe_credits(self):
+        """All released CPE credits (non IRS)"""
+        # Continuing Professional Education
+        return self.released_credits.filter(event_credit__ceu_subcategory__parent__code="CPE")
+
+    @property
+    def released_irs_credits(self):
+        """All released IRS credits"""
+        return self.released_credits.filter(event_credit__ceu_subcategory__parent__code="GOV")
+
+    @property
+    def credits_earned(self):
+        """Total credits earned (non IRS)"""
+        return self.released_cpe_credits.aggregate(Sum('credits')).get('credits__sum') or 0
+
+    @property
+    def irs_credits_earned(self):
+        """total IRS credits earned"""
+        return self.released_irs_credits.aggregate(Sum('credits')).get('credits__sum') or 0
+
+    @property
+    def credits_earned_by_code(self):
+        """Credits earned by code"""
+        credits = dict()
+        for credit in self.released_cpe_credits:
+            code = credit.event_credit.ceu_subcategory.code
+            if code not in credits:
+                credits[code] = 0
+            credits[code] += credit.credits
+
+        return '; '.join([f'{key}:{value}' for key, value in credits.items()])
+
+    @property
+    def credits_earned_by_name(self):
+        """Credits earned by name"""
+        return '; '.join(self.released_cpe_credits.values_list(
+            'event_credit__ceu_subcategory__name', flat=True))
+
+    def get_cpe_credits_by_event(self, event):
+        """Total CPE credits by event"""
+        return self.released_cpe_credits.filter(
+            event_credit__event=event,
+        ).aggregate(Sum('credits')).get('credits__sum') or 0
+
+    def get_irs_credits_by_event(self, event):
+        """Total IRS credits by event"""
+        return self.released_irs_credits.filter(
+            event_credit__event=event,
+        ).aggregate(Sum('credits')).get('credits__sum') or 0
+
+    def get_irs_alternate_ceu(self, event):
+        """Alternate CEU for event"""
+        credit = RegistrantCredits.objects.filter(event=event).exclude(
+            Q(event_credit__alternate_ceu_id='') |
+            Q(event_credit__alternate_ceu_id__isnull=True)
+        ).filter(event_credit__ceu_subcategory__parent__code="GOV").first()
+        if credit:
+            return credit.event_credit.alternate_ceu_id
+        return ''
+
+    @property
+    def credits_by_sub_event(self):
+        """Credits by sub-event"""
+        credits = dict()
+        events_visited = []
+        for r_credit in RegistrantCredits.objects.filter(registrant=self).order_by('credit_dt', 'event__event_code'):
+            event = r_credit.event
+            if event.id in events_visited:
+                continue
+            events_visited.append(event.id)
+
+            date = event.start_dt.date().strftime('%B %d, %Y')
+
+            cpe_credits = self.get_cpe_credits_by_event(event)
+            irs_credits = self.get_irs_credits_by_event(event)
+            if not cpe_credits and not irs_credits:
+                continue
+
+            if date not in credits:
+                credits[date] = list()
+
+            credits[date].append({
+                'event_code': event.event_code,
+                'title': event.title,
+                'credits': cpe_credits,
+                'irs_credits': irs_credits,
+
+                'alternate_ceu': self.get_irs_alternate_ceu(event),
+            })
+        events_visited = None
+        return credits
+
+    @property
+    def membership(self):
+        """User's Membership record"""
+        if not self.user:
+            return None
+
+        return self.user.membershipdefault_set.first()
+
+    @property
+    def ptin(self):
+        """PTIN entered in registration (if applicable)"""
+        # first check user profile member_number_2
+        if self.user:
+            if hasattr(self.user, 'profile'): 
+                if self.user.profile.member_number_2:
+                    return self.user.profile.member_number_2
+
+        if not self.custom_reg_form_entry:
+            return None
+
+        if self.custom_reg_form_entry.field_entries.filter(field__label="PTIN").exists():
+            return self.custom_reg_form_entry.field_entries.filter(
+                field__label="PTIN").first().value
+
+    @property
+    def license_state(self):
+        """License State (if entered on membership)"""
+        if not self.membership:
+            return None
+
+        return self.membership.license_state
+
+    @property
+    def license_number(self):
+        """License Number (if entered on membership)"""
+        if not self.membership:
+            return None
+
+        return self.membership.license_number
+
+    def register_child_events(self, child_event_pks, is_admin=False):
+        """Register for child event"""
+        params = dict()
+        if not is_admin:
+            # Remove past events from deletion list if not an admin
+            params = {'child_event__start_dt__date__gt': datetime.now().date()}
+        # Remove any upcoming records that have been updated to 'not attending'
+        self.registrantchildevent_set.filter(**params).exclude(
+            child_event_id__in=child_event_pks,
+        ).delete()
+
+        # Add child event if it's not already registered
+        for child_event_pk in child_event_pks:
+            event = Event.objects.get(pk=child_event_pk)
+
+            if self.registrantchildevent_set.filter(
+                child_event__repeat_uuid=event.repeat_uuid
+            ).exclude(child_event_id=event.pk).exists():
+
+                # This is the orignal event with a matching repeat_uuid that the user is registered for.
+                original_event = self.registrantchildevent_set.filter(
+                    child_event__repeat_uuid=event.repeat_uuid).first().child_event
+                error = _(
+                    f'{event.title} on {event.start_dt.date()} is a repeat of event on ' \
+                    f'{original_event.start_dt.date()}. Please select only one.')
+                raise Exception(error)
+
+            RegistrantChildEvent.objects.get_or_create(
+                child_event_id=child_event_pk,
+                registrant_id=self.pk,
+            )
+
+    @property
+    def child_events(self):
+        """Child events registered Registrant is attending"""
+        return self.registrantchildevent_set.all().order_by('child_event__start_dt')
+
+    @property
+    def child_events_available_for_check_in(self):
+        """
+        Child events available for check in
+        These are child events not yet checked into, and
+        that are upcoming today.
+        """
+        return self.child_events.filter(
+            checked_in=False,
+            child_event__start_dt__date=datetime.today()
+        )
+
+    @property
+    def check_in_url(self):
+        """URL to check registrant into event"""
+        site_url = get_setting('site', 'global', 'siteurl')
+        return f"{site_url}{reverse('event.digital_check_in', args=[self.pk])}"
+
+    @property
+    def cancellation_fee(self):
+        """Cancellation fee for registrant"""
+        return self.registration_configuration.get_cancellation_fee(self.amount)
+
+    def process_cancellation_fee(self, user=None):
+        """Add cancellation fee to invoice"""
+        # Only applicable if refunds are enabled
+        if not self.allow_refunds:
+            return
+
+        cancellation_fee = self.cancellation_fee
+
+        if cancellation_fee:
+            self.registration.invoice.add_line_item(
+                cancellation_fee,
+                Invoice.LineDescriptions.CANCELLATION_FEE,
+                user,
+                update_total=False,
+            )
 
     @property
     def lastname_firstname(self):
@@ -917,6 +1672,46 @@ class Registrant(models.Model):
         if fn and ln:
             return ', '.join([ln, fn])
         return fn or ln
+
+    def zoom_check_in(self, event):
+        """
+        Check in through Zoom. Will check in only if not
+        already checked in (if connection is lost then reconnected
+        check in datetime will reflect the initial check in).
+        Child event will be checked in if applicable. However,
+        credits will not be assigned (they will be generated from
+        Zoom poll results)
+        """
+        # Check in to parent Event
+        if not self.checked_in:
+            self.check_in_or_out(True)
+
+        # Check in to child Event (if this is a child event)
+        child_event = self.child_events.filter(child_event=event).first()
+        if child_event and not child_event.checked_in:
+            child_event.checked_in = True
+            child_event.checked_in_dt = datetime.now()
+            child_event.save()
+
+
+    def check_in_or_out(self, check_in):
+        """Check in or check out to/of main Event"""
+        check_in_or_out = 'checked_in' if check_in else 'checked_out'
+        datetime_field = 'checked_in_dt' if check_in else 'checked_out_dt'
+        error_message_var = 'in' if check_in else 'out'
+        error_message = \
+            _(f'Registrant was not successfully checked {error_message_var}. Please try again')
+
+        setattr(self, check_in_or_out, True)
+        setattr(self, datetime_field, datetime.now())
+
+        try:
+            self.save(update_fields=[check_in_or_out, datetime_field])
+        except:
+            raise Exception(error_message)
+
+        if check_in_or_out == 'checked_out' and not self.event.eventcredit_set.available().exists():
+            self.event.assign_credits(self)
 
     def get_name(self):
         if self.custom_reg_form_entry:
@@ -937,6 +1732,10 @@ class Registrant(models.Model):
             if primary_registrant:
                 return _('Guest of {}').format(' '.join(primary_registrant))
         return None
+
+    def course(self):
+        event = self.registration.event
+        return event.course
 
     @classmethod
     def event_registrants(cls, event=None):
@@ -961,6 +1760,130 @@ class Registrant(models.Model):
     def get_absolute_url(self):
         return reverse('event.registration_confirmation', args=[self.registration.event.pk, self.registration.pk])
 
+    @property
+    def invoice(self):
+        """Invoice for this registrant"""
+        return self.registration.invoice
+
+    @property
+    def check_out_enabled(self):
+        """
+        Check out is enabled if Event doesn't have child events or
+        if nested events are not enabled.
+        """
+        return self.registration.event.check_out_enabled
+
+    def cancel(self, request, check_registration_status=True, refund=True, process_cancellation_fee=True):
+        """
+        Cancel registrant.
+
+        By default, check and update Registration status if all
+        registrants have canceled. This can be turned off in the case
+        of looping through and cancelling all registrants. In that
+        case, it would be done at the end of the loop.
+        See Registration.cancel
+
+        By default, will refund if configured for auto refunds.
+        Turn this off if refund is being done separately in Refund menu.
+        Turn off process_cancellation_fee to bulk adjust cancellation fees
+        for entire invoice separately.
+        """
+        if self.cancel_dt:
+            return
+
+        can_refund = False
+        can_auto_refund = False
+        self.cancel_dt = datetime.now()
+        self.save()
+
+        # update the amount_paid in registration
+        if self.amount:
+            if self.registration.amount_paid:
+                self.registration.amount_paid -= self.amount
+                self.registration.save()
+
+            # update the invoice if invoice is not tendered
+            if not self.invoice.is_tendered:
+                self.invoice.total -= self.amount
+                self.invoice.subtotal -= self.amount
+                self.invoice.balance -= self.amount
+                self.invoice.save(request.user)
+
+            can_refund = self.invoice.can_refund
+            can_auto_refund = self.invoice.can_auto_refund
+
+            # Refund and apply cancellation fees if applicable
+            if process_cancellation_fee:
+                self.process_cancellation_fee(request.user)
+
+            confirmation_message = None
+            if self.invoice.can_auto_refund and self.amount:
+                confirmation_message = self.event.get_refund_confirmation_message([self])
+
+            if refund and can_auto_refund:
+                self.refund(request, confirmation_message)
+
+        # check if all registrants in this registration are canceled.
+        # if so, update the canceled field.
+        reg8n = self.registration
+        if check_registration_status and not reg8n.registrant_set.filter(
+                registration=reg8n,
+                cancel_dt__isnull=True
+        ).exists():
+            reg8n.canceled = True
+            reg8n.save()
+        EventLog.objects.log(instance=self)
+
+        # Notify of cancellation
+        self.send_cancellation_notification(request.user, can_refund, can_auto_refund, refund)
+
+    @property
+    def allow_refunds(self):
+        return get_setting('module', 'events', 'allow_refunds') != "No"
+
+    def refund(self, request, confirmation_message):
+        """Refund this registrant's invoice"""
+        if not self.allow_refunds:
+            return
+
+        refund_amount = self.invoice.get_refund_amount(self.amount)
+        try:
+            if refund_amount:
+                self.invoice.refund(refund_amount, request.user, confirmation_message)
+        except:
+            messages.set_level(request, messages.ERROR)
+            error_message = f"Refund in the amount of ${refund_amount} failed to process. " \
+                            f"Please contact support."
+            messages.error(request, _(error_message))
+
+        messages.success(request, _(confirmation_message))
+
+    def send_cancellation_notification(self, user, can_refund, can_auto_refund, include_refund=True):
+        """
+        Send cancellation notification.
+
+        include_refund defaults to True to include refund info in email.
+        Turn this off if refund is separate. This can happen if refund is
+        processed separately (ex: when cancelling from the Refund menu)
+        """
+        user_is_registrant = user.is_authenticated and self.user and user == self.user
+        recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+
+        if recipients and notification:
+            notification.send_emails(recipients, 'event_registration_cancelled', {
+                'event': self.event,
+                'user': user,
+                'registrants_paid': self.event.registrants(with_balance=False),
+                'registrants_pending': self.event.registrants(with_balance=True),
+                'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+                'registrant': self,
+                'user_is_registrant': user_is_registrant,
+                'allow_refunds': self.allow_refunds and include_refund,
+                'can_refund': can_refund and include_refund,
+                'can_auto_refund': can_auto_refund and include_refund,
+            })
+
     def reg8n_status(self):
         """
         Returns string status.
@@ -973,10 +1896,7 @@ class Registrant(models.Model):
         else:
             balance = 0
 
-        if self.pricing is None or self.pricing.payment_required is None:
-            payment_required = config.payment_required
-        else:
-            payment_required = self.pricing.payment_required
+        payment_required = self.pricing and self.pricing.payment_required  or config.payment_required
 
         if self.cancel_dt:
             return 'cancelled'
@@ -1050,6 +1970,55 @@ class Registrant(models.Model):
                                              entry=entry,
                                              field=field)
 
+
+class RegistrantChildEvent(models.Model):
+    child_event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    registrant = models.ForeignKey('Registrant', on_delete=models.CASCADE)
+    checked_in = models.BooleanField(_('Is Checked In?'), default=False)
+    checked_in_dt = models.DateTimeField(null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        event = self.child_event
+        return f'{event.title} {event.start_dt.time().strftime("%I:%M %p")} - ' \
+               f'{event.end_dt.time().strftime("%I:%M %p")}'
+
+
+class RegistrantCredits(models.Model):
+    """Credits a registrant is rewarded"""
+    registrant = models.ForeignKey(Registrant, on_delete=models.CASCADE)
+    event_credit = models.ForeignKey(EventCredit, blank=True, null=True, on_delete=models.SET_NULL)
+    credits = models.DecimalField(
+        max_digits=5,
+        decimal_places=1,
+        default=0,
+        help_text=_("Defaults to value set in EventCredit, but can be overridden.")
+    )
+    released = models.BooleanField(
+        default=False,
+        help_text=_("Indicates credits can be displayed on a certificate.")
+    )
+    event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    credit_dt = models.DateTimeField(db_index=True)
+
+    class Meta:
+        verbose_name_plural = _("Registrant Credits")
+
+    def delete(self, *args, **kwargs):
+        """
+        Don't allow deleting credits that have been released
+        NOTE: Bulk delete will ignore this code
+        """
+        if self.released:
+            raise Exception(_("Deleting released credits is not allowed."))
+        super().delete(*args, **kwargs)
+
+    @property
+    def credit_name(self):
+        return self.event_credit and self.event_credit.ceu_subcategory.name
+
+
 class Payment(models.Model):
     """
     Event registration payment
@@ -1077,14 +2046,51 @@ class PaymentMethod(models.Model):
         return self.label
 
 
-class Sponsor(models.Model):
+class SponserLogo(File):
+    class Meta:
+        app_label = 'events'
+
+
+class ImageUploader:
+    def upload(self, file_obj, user, is_public, save=True):
+        """Upload image"""
+        image = self.upload_class()
+        image.content_type = ContentType.objects.get_for_model(self.__class__)
+        image.creator = user
+        image.creator_username = user.username
+        image.owner = user
+        image.owner_username = user.username
+        filename = "%s" % (file_obj.name)
+        file_obj.file.seek(0)
+        image.file.save(filename, file_obj)
+
+        set_s3_file_permission(image.file, public=is_public)
+
+        # By default, save image. Set save to false if you will be saving
+        # the instance later.
+        self.image = image
+        if save:
+            self.save(update_fields=['image'])
+
+
+class Sponsor(ImageUploader, models.Model):
     """
     Event sponsor
     Event can have multiple sponsors
     Sponsor can contribute to multiple events
     """
+    upload_class = SponserLogo
+
     event = models.ManyToManyField('Event')
     description = models.TextField(blank=True, default='')
+    name = models.CharField(max_length=255, blank=True, null=True)
+    image = models.ForeignKey(
+        SponserLogo,
+        help_text=_('Logo that represents organizer'),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
 
     class Meta:
         app_label = 'events'
@@ -1103,18 +2109,33 @@ class Discount(models.Model):
     class Meta:
         app_label = 'events'
 
-class Organizer(models.Model):
+
+class OrganizerLogo(File):
+    class Meta:
+        app_label = 'events'
+
+
+class Organizer(ImageUploader, models.Model):
     """
     Event organizer
     Event can have multiple organizers
     Organizer can maintain multiple events
     """
+    upload_class = OrganizerLogo
+
     _original_name = None
 
     event = models.ManyToManyField('Event', blank=True)
     user = models.OneToOneField(User, blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=True) # static info.
     description = models.TextField(blank=True) # static info.
+    image = models.ForeignKey(
+        OrganizerLogo,
+        help_text=_('Logo that represents organizer'),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
 
     class Meta:
         app_label = 'events'
@@ -1127,7 +2148,7 @@ class Organizer(models.Model):
         return self.name
 
 
-class Speaker(models.Model):
+class Speaker(OrderingBaseModel):
     """
     Event speaker
     Event can have multiple speakers
@@ -1218,9 +2239,55 @@ class Event(TendenciBaseModel):
     """
     Calendar Event
     """
+    class EventRelationship:
+        PARENT = 'parent'
+        CHILD = 'child'
+
+        CHOICES = (
+            (PARENT, 'Is Parent Event'),
+            (CHILD, 'Is Child Event')
+        )
+
     guid = models.CharField(max_length=40, editable=False)
+    parent = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        help_text=_("Larger symposium this event is a part of"),
+    )
+    event_relationship = models.CharField(
+        max_length=50,
+        choices=EventRelationship.CHOICES,
+        default=EventRelationship.PARENT,
+        help_text=_("Select 'child' if this is a sub-event of a larger symposium"),
+    )
     type = models.ForeignKey(Type, blank=True, null=True, on_delete=models.SET_NULL)
+    event_code = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=_("Optional code representing this event.")
+    )
+    repeat_of = models.ForeignKey(
+        'self',
+        related_name="repeat_events",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text=_("Select if this child event is a repeat of another. "
+                    "Registrants can only register for one instance of this child event.")
+    )
+    repeat_uuid = models.UUIDField(blank=True, null=True)
     title = models.CharField(max_length=150, blank=True)
+    course = models.ForeignKey(Course, blank=True, null=True, on_delete=models.SET_NULL)
+    short_name = models.CharField(
+        max_length=150,
+        blank=True,
+        null=True,
+        help_text=_("Shorter name to display when space is limited (optional).")
+    )
+    delivery_method = models.CharField(max_length=150, blank=True, null=True)
     description = models.TextField(blank=True)
     all_day = models.BooleanField(default=False)
     start_dt = models.DateTimeField()
@@ -1236,6 +2303,8 @@ class Event(TendenciBaseModel):
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey(EventPhoto,
         help_text=_('Photo that represents this event.'), null=True, blank=True, on_delete=models.SET_NULL)
+    certificate_image = models.ForeignKey(CertificateImage,
+        help_text=_('Optional photo to display on certificate.'), null=True, blank=True, on_delete=models.SET_NULL)
     groups = models.ManyToManyField(Group, default=get_default_group, related_name='events')
     tags = TagField(blank=True)
     priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the event calendar day list and single day list. They will be featured with a star icon on the monthly calendar and the list view."))
@@ -1259,6 +2328,7 @@ class Event(TendenciBaseModel):
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
+
     objects = EventManager()
 
     class Meta:
@@ -1269,6 +2339,501 @@ class Event(TendenciBaseModel):
         super(Event, self).__init__(*args, **kwargs)
         self.private_slug = self.private_slug or Event.make_slug()
 
+    @property
+    def title_with_event_code(self):
+        """Title prefixed with event_code"""
+        return f'{self.event_code} - {self.title}' if self.event_code else self.title
+    
+    @property
+    def has_any_child_events(self):
+        """Indicate whether event has child events, whether or not they are in the Event window"""
+        return self.nested_events_enabled and self.all_child_events.exists()
+
+    @property
+    def has_child_events(self):
+        """Indicate whether event has child events"""
+        return self.nested_events_enabled and self.child_events.exists()
+
+    @property
+    def all_child_events(self):
+        """All child events, including those outside of Event timeframe"""
+        return Event.objects.filter(parent_id=self.pk).order_by('start_dt', 'event_code')
+
+    @property
+    def child_events(self):
+        """All child events tied to this event"""
+        return self.all_child_events.filter(
+            start_dt__gte=self.start_dt,
+            end_dt__lte=self.end_dt,
+        )
+
+    def sub_event_datetimes(self, child_events=None):
+        """Returns list of start_dt for available sub events"""
+        datetimes = dict()
+        child_events = child_events or self.child_events
+
+        for event in child_events:
+            if event.start_dt not in datetimes:
+                datetimes[event.start_dt] = event.end_dt
+            else:
+                datetimes[event.start_dt] = max(datetimes[event.start_dt], event.end_dt)
+
+        return datetimes
+
+    @property
+    def sub_events_by_datetime(self):
+        """Used to create grid of sub events by datetime"""
+        sub_events_by_datetime = OrderedDict()
+        sub_event_datetimes = self.sub_event_datetimes()
+
+        for start_dt in sub_event_datetimes.keys():
+            child_events = self.child_events.filter(start_dt=start_dt)
+            if not child_events.exists():
+                continue
+
+            day = start_dt.date()
+            start_time = start_dt.strftime("%-I:%M %p")
+            end_time = sub_event_datetimes[start_dt].strftime("%-I:%M %p")
+            time_slot = f'{start_time} - {end_time}'
+
+            if day not in sub_events_by_datetime:
+                sub_events_by_datetime[day] = OrderedDict()
+
+            sub_events_by_datetime[day][time_slot] = child_events
+        
+        return sub_events_by_datetime
+
+    def get_child_events_by_permission(self, user=None, edit=False):
+        action = 'edit' if edit else 'view'
+
+        # If superuser, return everything - including sub events outside
+        # main event's window
+        if user and user.profile.is_superuser:
+            return self.all_child_events
+
+        if action == 'view':
+            filters = get_query_filters(user, 'events.view_event')
+        else:
+            filters = get_query_filters(user, 'events.change_event')
+        return self.child_events.filter(filters).distinct()
+
+    @property
+    def upcoming_child_events(self):
+        """All upcoming child events available for registration"""
+        return self.child_events.filter(
+            start_dt__date__gt=datetime.now().date(),
+            registration_configuration__enabled=True
+        )
+
+    @property
+    def events_with_credits(self):
+        """Return events that have credits assigned"""
+        events = self.child_events if self.nested_events_enabled and self.child_events else [self]
+
+        pks = RegistrantCredits.objects.filter(event__in=events).order_by(
+            'event').distinct().values_list('event', flat=True)
+        return Event.objects.filter(pk__in=pks)
+
+    @property
+    def enable_certificate_preview(self):
+        """
+        Indicates if certificate preview should be enabled.
+        It should be enabled when credits are configured.
+        """
+        # Don't preview certificate on child events
+        if self.parent and self.nested_events_enabled:
+            return False
+
+        events = self.child_events if self.nested_events_enabled and self.child_events else [self]
+
+        return EventCredit.objects.filter(event__in=events).exists()
+
+    @property
+    def possible_cpe_credits_queryset(self):
+        """Possible CPE credits (queryset)"""
+        return self.eventcredit_set.available().exclude(ceu_subcategory__code="CE")
+
+    @property
+    def possible_cpe_credits(self):
+        """Total possible CPE credits"""
+        return self.possible_cpe_credits_queryset.aggregate(Sum('credit_count')).get('credit_count__sum') or 0
+
+    @property
+    def possible_credits_by_code(self):
+        """Possible credits by code"""
+        credits = dict()
+        for credit in self.possible_cpe_credits_queryset:
+            code = credit.ceu_subcategory.code
+            if code not in credits:
+                credits[code] = 0
+            credits[code] += credit.credit_count
+
+        return '; '.join([f'{key}:{value}' for key, value in credits.items()])
+
+    @property
+    def group_location(self):
+        """Location tied to group"""
+        return self.groups.first().entity.locations_location_entity.first()
+
+    @property
+    def can_configure_credits(self):
+        """Indicates if credits can be configured on this Event"""
+        return self.use_credits_enabled and not self.has_child_events
+
+    @property
+    def requires_attendance_dates(self):
+        """
+        Event registration requires attendance dates if nested events
+        are enabled and this event has child events.
+        """
+        return self.nested_events_enabled and self.has_child_events
+
+    @property
+    def allow_credit_configuration_with_warning(self):
+        """
+        Indicates credit configuration allowed
+        with warning that credits should be configured
+        on the child event(s) if added.
+        """
+        return self.can_configure_credits and self.event_relationship == EventRelationship.PARENT
+
+    @property
+    def sponsor(self):
+        """Access Sponsor for this Event"""
+        return self.sponsor_set.first()
+
+    @property
+    def organizer(self):
+        """Access Organizer for this Event"""
+        return self.organizer_set.first()
+
+    @property
+    def certificate_signatures(self):
+        """Signatures to display on certificate"""
+        return self.eventstaff_set.filter(include_on_certificate=True).order_by('pk')
+
+    @property
+    def zoom_integration_setup(self):
+        """Indicates Zoom integration is enabled and setup."""
+        return (
+            get_setting("module", "events", "enable_zoom") and
+            self.use_zoom_integration and
+            self.zoom_meeting_number and
+            self.zoom_meeting_passcode
+        )
+
+    @property
+    def enable_zoom_meeting(self):
+        """
+        Indicates Zoom meeting should be enabled.
+        This should be enabled if use_zoom_integration is turned on,
+        and if there is a meeting number and passcode configured.
+        Meeting will not be enabled until 10 minutes before
+        event starts. Meeting will be available to join up until
+        the end_dt (allows participants to re-join if they lose connection)
+        """
+        ten_minutes_prior = datetime.now() >= self.start_dt - timedelta(minutes=10)
+
+        return (
+            ten_minutes_prior and
+            datetime.now() < self.end_dt and
+            self.zoom_integration_setup
+        )
+
+    @property
+    def zoom_meeting_number(self):
+        """Zoom meeting number for this event."""
+        return self.place.zoom_meeting_id if self.place else None
+
+    @property
+    def zoom_meeting_passcode(self):
+        """Zoom meeting passcode for this event."""
+        return self.place.zoom_meeting_passcode if self.place else None
+
+    @property
+    def use_zoom_integration(self):
+        """Use Zoom for this Event"""
+        return self.place.use_zoom_integration if self.place else None
+
+    @property
+    def is_zoom_webinar(self):
+        """Zoom meeting is a webinar"""
+        return self.place.is_zoom_webinar if self.place else False
+
+    @property
+    def zoom_api_configuration(self):
+        """Zoom API Configuration for this Event"""
+        return self.place.zoom_api_configuration if self.place else None
+
+    @property
+    def zoom_meeting_config(self):
+        if not self.zoom_api_configuration:
+            raise Exception(_("Zoom API not configured"))
+
+        return json.dumps({
+            'signature': self.zoom_jwt_token,
+            'sdkKey': self.zoom_api_configuration.sdk_client_id,
+            'meetingNumber':  self.zoom_meeting_number,
+            'passWord': self.zoom_meeting_passcode,
+            'tk': '',
+            'zak': ''
+        })
+
+    @property
+    def zoom_jwt_token(self):
+        """Generate token for Zoom meeting"""
+        if not self.zoom_api_configuration:
+            raise Exception(_("Zoom API not configured"))
+
+        max_exp = datetime.now().astimezone(pytz.UTC) + timedelta(hours=24)
+        end_dt = self.end_dt.astimezone(pytz.UTC)
+
+        payload = {
+            'sdkKey': self.zoom_api_configuration.sdk_client_id,
+            'mn': self.zoom_meeting_number,
+            'role': 0, # 0 is regular attendee, 1 is the host
+            'exp': min(end_dt, max_exp),
+            'appKey': self.zoom_api_configuration.sdk_client_id,
+        }
+
+        return jwt.encode(
+            payload, self.zoom_api_configuration.get_sdk_secret(), algorithm="HS256")
+
+    @property
+    def zoom_credits_ready(self):
+        """
+        Zoom credits are ready to generate.
+        They either have not been generated, or have not been released.
+        """
+        return (
+            self.zoom_integration_setup and
+            datetime.now() >= self.end_dt and
+            (
+                not self.registrantcredits_set.exists() or
+                self.registrantcredits_set.filter(released=False).exists()
+            )
+        )
+
+    def get_zoom_poll_results(self, client):
+        """Get Zoom poll responses"""
+        response = client.get_meeting_poll_results(self.zoom_meeting_number, self.is_zoom_webinar)
+
+        if not response.status_code == 200:
+            raise Exception(_('Failed to get poll results, check meeting ID and try again'))
+
+        questions = response.json().get('questions')
+
+        if not questions:
+            raise Warning(_('No questions were answered.'))
+
+        return questions
+
+    def get_registrant_by_user_name(self, user_name):
+        """Get registrant tied to this Event by user_name"""
+        event = self.parent if self.parent and self.nested_events_enabled else self
+
+        return Registrant.objects.filter(
+            registration__event_id=event.pk,
+            user__username=user_name
+        ).first()
+
+    def get_registrant_by_user(self, user):
+        """
+        Get registrant by user. If this is for a child event,
+        verify registrant is currently registered.
+        """
+        event = self.parent if self.parent and self.nested_events_enabled else self
+
+        # If no parent event is set, this is the parent event. Or if
+        # nested events are not enabled, this should function as a parent or
+        # standalone event
+        if not self.parent or not self.nested_events_enabled:
+            return Registrant.objects.filter(
+                registration__event_id=event.pk,
+                user_id=user.pk,
+                cancel_dt__isnull=True,
+            ).first()
+
+        # Return registrant tied to child event
+        registrant_child_event = RegistrantChildEvent.objects.filter(
+            child_event_id=self.pk,
+            registrant__user_id=user.pk,
+            registrant__cancel_dt__isnull=True
+        ).first()
+
+        return registrant_child_event.registrant if registrant_child_event else None
+
+    @cached_property
+    def virtual_event_credits_config(self):
+        """Configuration of rules for virtual event credit generation"""
+        config = VirtualEventCreditsLogicConfiguration.objects.first()
+
+        if not config:
+            raise Exception(_("Must setup Virtual Events Credits Configuration "))
+
+        return config
+
+    @property
+    def full_credit_questions(self):
+        """
+        Get the number of questions per credit period that
+        will earn a full credit. This is either full_credit_questions
+        in the config, or full_credit_percent * credit_period_questions
+        (also in the config)
+        """
+        config = self.virtual_event_credits_config
+
+        return config.full_credit_questions or (
+            config.full_credit_percent * config.credit_period_questions)
+
+    @property
+    def half_credit_questions(self):
+        """
+        Half credit questions represents the point where a
+        half credit should be earned in a Zoom event
+        """
+        config = self.virtual_event_credits_config
+
+        return config.credit_period_questions / 2
+
+    def generate_zoom_credits(self):
+        """Generate credits earned from Zoom event"""
+        if not self.zoom_api_configuration:
+            raise Exception(_("Zoom API not configured"))
+
+        client = ZoomClient(
+            client_id=self.zoom_api_configuration.oauth_client_id,
+            client_secret=self.zoom_api_configuration.get_oauth_secret(),
+            account_id=self.zoom_api_configuration.oauth_account_id
+        )
+
+        questions_answered = self.get_zoom_poll_results(client)
+        questions_by_user = dict()
+
+        # Get configuration for credit period.
+        config = self.virtual_event_credits_config
+
+        # Get credit_period timedelta to calculate elapsed time
+        # to determine what credit period a question is in.
+        credit_period_minutes = timedelta(minutes=config.credit_period, seconds=1)
+
+        # For each user that answered questions, count the number
+        # of questions answered within a credit period
+        for question in questions_answered:
+            # Get registrant by username
+            user_name = question.get('name')
+            registrant = self.get_registrant_by_user_name(user_name)
+            if not registrant:
+                continue
+
+            question_details = list(reversed(question.get('question_details', list())))
+
+            if user_name not in questions_by_user:
+                questions_by_user[user_name] = dict()
+
+            # Calculate elasped time since first answered question.
+            # From that, determine what credit period each question
+            # is in and count answered questions by the credit period
+            # for the user. Readjust start time if credits not earned in
+            # previous credit period
+            previous_question_index = 0  # Index (credit period) of previous question
+            previous_answers = None  # answers in previous credit period
+            index_offset = 0  # Offset to use when resetting start_dt
+            last_dt = list()  # Track datetimes of questions answered
+            credits_earned_list = list() # List of credit periods where credits were earned
+            should_reset_start_dt = False  # indicate start date should be reset
+            previous_answer_dt = None  # datetime of previous question's answer
+            start_dt = self.start_dt  # start datetime used to calculate time elasped
+
+            for detail in question_details:
+                if detail.get('answer'):
+                    answered_dt = datetime.strptime(detail.get('date_time'), '%Y-%m-%d %H:%M:%S')
+
+                    # Calculate what credit period this is based on elasped time since start.
+                    # Add index_offset to accomodate start datetime adjustments
+                    index = int((answered_dt - start_dt)/credit_period_minutes) + index_offset
+                    # Total questions answered so far in this credit period
+                    answered = questions_by_user[user_name].get(index, 0)
+
+                    # If answered is 0, this is the first answer in this credit period
+                    # Get the previous credit period's count of answers so we can
+                    # determine if start datetime should be reset (if full credit was not earned).
+                    if not answered:
+                        previous_answers = questions_by_user[user_name].get(previous_question_index)
+
+                    # If this isn't the first answer, the gap between this answer and the previous is
+                    # greater than credit_period_minutes or this is a new credit period and no credit
+                    # was earned in the previous credit period.
+                    if (
+                            (previous_answer_dt and
+                            (answered_dt - previous_answer_dt) >= credit_period_minutes) or
+                            not answered and previous_answers and previous_answers < self.full_credit_questions
+                    ):
+                        should_reset_start_dt = True
+
+                    # If this is at least the 2nd calculated credit period, there were answers in
+                    # the previous credit period, there were fewer answers than needed to get a credit:
+                    # Try the next available start date if not currently earning a credit (based on questions answered) and adjust counts.
+                    if (should_reset_start_dt):
+                        new_offset = 0  # value to add to index_offset
+
+                        # While there are datetimes to move start to and while we
+                        # haven't found a full credit period, keep moving start time
+                        # up
+                        while last_dt and not new_offset:
+                            # Move start date to answered question
+                            start_dt_data = last_dt.pop()
+                            new_start_dt = list(start_dt_data.keys())[0]
+                            start_dt_index = start_dt_data[new_start_dt]
+                            # If the new start date is prior to the old one,
+                            # if it's in the same credit period as current, or
+                            # if it's in a credit period that earned a credit, skip it
+                            if (
+                                    start_dt_index in credits_earned_list or
+                                    new_start_dt <= start_dt or
+                                    start_dt_index == index
+                            ):
+                                continue
+
+                            # Reset start datetime, and check elasped time to see
+                            # if we've found a full credit period. If so, increment
+                            # 'answered' to pull in the answer of the new start time
+                            # to the current period, and remove it from the previous.
+                            start_dt = new_start_dt
+                            new_offset = int((answered_dt - start_dt)/credit_period_minutes)
+                            if not new_offset:
+                                answered += 1
+                                questions_by_user[user_name][start_dt_index] -= 1
+
+                        index_offset = index  # Set index_offset to stay in correct credit period
+
+                    # Increment questions answers for current credit period for current answer
+                    # (includes answers pulled from previous credit period if start time reset)
+                    questions_by_user[user_name][index] = answered + 1
+
+                    # If credits have been earned, turn off switch to reset start time
+                    if questions_by_user[user_name][index] >= self.full_credit_questions:
+                        should_reset_start_dt = False
+
+                        # Since enough credits were earned in this credit period, we can't
+                        # go back here to reset start time.
+                        credits_earned_list.append(index)
+
+                    # Keep track of last question answered and the credit period it's in,
+                    # so we can reset start time if needed (if credits not earned)
+                    if questions_by_user[user_name][index] < self.full_credit_questions:
+                        last_dt.append({answered_dt: index})
+                    # Keep track of previous question's answered time so we can track time
+                    # between questions answered
+                    previous_answer_dt = answered_dt
+                    # Keep track of previous question's index, so we can deteremine
+                    # previous credit period
+                    previous_question_index = index
+
+            # Assign credits to registrant based on questions answered
+            self.assign_zoom_credits(registrant, questions_by_user[user_name])
+
+
     def get_meta(self, name):
         """
         This method is standard across all models that are
@@ -1277,11 +2842,90 @@ class Event(TendenciBaseModel):
         """
         return EventMeta().get_meta(self, name)
 
+
+    def assign_zoom_credits(self, registrant, questions_answered):
+        """
+        Assign credits from Event to Registrant for Zoom event,
+        based on questions answered and VirtualEventCreditsLogicConfiguration.
+        questions_answered is a dict with number of questions answered
+        for each credit period (calculated based on credit_period in configuration)
+        """
+        config = self.virtual_event_credits_config
+
+        total_credits = 0
+
+        # Get the number of questions per credit period that
+        # will earn a full credit. This is either full_credit_questions
+        # in the config, or full_credit_percent * credit_period_questions
+        # (also in the config)
+        full_credit_questions = self.full_credit_questions
+
+        # For each credit period, calculate how many credits should be
+        # earned based on configuration.
+        for credit_period in questions_answered:
+            # Half credits are allowed if enabled in the
+            # configuration, if total_credits has reached the
+            # amount indicated in the configuration, and question is
+            # in or after period where half credits are allowed per config.
+            half_credits_allowed = (
+                config.half_credits_allowed and
+                total_credits >= config.half_credit_credits and
+                credit_period >= config.half_credit_periods
+            )
+            # If registrant answered at or above full_credit_questions,
+            # award a full credit. If half credits are allowed, and registrant
+            # answered at least 1/2 the questions in a credit period, award
+            # a half credit
+            if questions_answered[credit_period] >= full_credit_questions:
+                total_credits += 1
+            elif half_credits_allowed and \
+                 questions_answered[credit_period] >= self.half_credit_questions:
+                total_credits += .5
+
+        self.assign_credits(registrant, total_credits)
+
+
+    def assign_credits(self, registrant, calculated_credits=0):
+        """
+        Assign credits from Event to Registrant.
+        Credits default to un-released, so they can be overridden.
+        """
+        # only assign those credits that are available
+        for credit in self.eventcredit_set.available():
+            credits = calculated_credits or credit.credit_count
+
+            r_credit, _ = RegistrantCredits.objects.get_or_create(
+               registrant_id=registrant.pk,
+               event_id=self.pk,
+               event_credit_id=credit.pk,
+               defaults={
+                   'credits': credits,
+                   'credit_dt': self.start_dt
+               },
+            )
+            # If registrant credit was found, but hasn't been released, allow
+            # it to update the credit count
+            if not r_credit.released and r_credit.credits != credits:
+               r_credit.credits = credits
+               r_credit.save(update_fields=['credits'])
+
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
 
+    def is_registrant_user(self, user):
+        if hasattr(user, 'registrant_set'):
+            return user.registrant_set.filter(
+                registration__event=self, cancel_dt__isnull=True).exists()
+        return False
+
     def get_absolute_url(self):
         return reverse('event', args=[self.pk])
+
+    def get_absolute_edit_url(self):
+        return reverse('event.edit', args=[self.pk])
+
+    def review_credits_url(self):
+        return f'/admin/events/registrantcredits/?event={self.id}'
 
     def get_registration_url(self):
         """ This is used to include a sign up url in the event.
@@ -1291,14 +2935,21 @@ class Event(TendenciBaseModel):
         return reverse('registration_event_register', args=[self.pk])
 
     def save(self, *args, **kwargs):
+        # Set repeat_uuid in case we use this Event as a repeat. In that case,
+        # all Events that are repeats of this one will have the same repeat_uuid.
+        # This allows us to identify all repeats, including the original event. 
+        # Without this set, we would not identify the original as being the same
+        # as a repeated event.
+        self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
         self.guid = self.guid or str(uuid.uuid4())
+
         super(Event, self).save(*args, **kwargs)
 
         if self.image:
             set_s3_file_permission(self.image.file, public=self.is_public())
 
     def __str__(self):
-        return self.title
+        return f'{self.title} ({self.start_dt.strftime("%m/%d/%Y")} - {self.end_dt.strftime("%m/%d/%Y")})'
 
     @property
     def has_addons(self):
@@ -1307,10 +2958,59 @@ class Event(TendenciBaseModel):
             status=True
             ).exists()
 
+    @property
+    def nested_events_enabled(self):
+        """Indicates if nested_events is enabled"""
+        return get_setting("module", "events", "nested_events")
+
+    @property
+    def use_credits_enabled(self):
+        """Indicates if use_credits is enabled"""
+        return get_setting("module", "events", "use_credits")
+
+    @cached_property
+    def credits(self):
+        """Credits configured for this Event"""
+        return self.eventcredit_set.available()
+
+    def get_or_create_credit_configuration(self, ceu_category_id, should_create):
+        """Get or create credit configuration for a given CEUCategory"""
+        category = CEUCategory.objects.get(pk=ceu_category_id)
+        credit = self.get_credit_configuration(category)
+
+        if not credit and should_create:
+            credit = EventCredit.objects.create(ceu_subcategory_id=ceu_category_id)
+            credit.event.add(self)
+
+        return credit
+
+    def get_credit_configuration(self, ceu_category):
+        """Get credit configuration for given CEUCategory"""
+        return self.eventcredit_set.filter(ceu_subcategory=ceu_category).first()
+
     # this function is to display the event date in a nice way.
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010
     def dt_display(self, format_date='%a, %b %d, %Y', format_time='%I:%M %p'):
         return format_datetime_range(self.start_dt, self.end_dt, format_date, format_time)
+
+    @property
+    def check_out_enabled(self):
+        """
+        Check out is enabled if Event doesn't have child events and
+        isn't a child event or if nested events are not enabled.
+        """
+        return (
+            not self.nested_events_enabled or
+            (not self.has_child_events and not self.parent)
+        )
+
+    @property
+    def can_cancel(self):
+        """
+        Indicate whether cancelleation is allowed.
+        """
+        cancel_by_dt = self.registration_configuration.cancel_by_dt
+        return not cancel_by_dt or cancel_by_dt + timedelta(days=1) >= datetime.now()
 
     @property
     def is_over(self):
@@ -1386,6 +3086,55 @@ class Event(TendenciBaseModel):
                 return "{0.day} {0:%b %Y}".format(self.start_dt)
         return ''
 
+    def get_cancellation_confirmation_message(self, registrants):
+        """
+        Get cancellation confirmation message for registrants.
+        Message will vary based on allow_refunds setting.
+        """
+        allow_refunds = get_setting("module", "events", "allow_refunds")
+
+        message = None
+
+        if allow_refunds == "Yes":
+            message = f"You have canceled your registration to { self.title } on " \
+                      f"{ self.display_start_date }. You will receive an email confirmation " \
+                      f"with a link to your updated invoice once event administrators " \
+                      f"have processed your refund."
+        elif allow_refunds == "Auto":
+            message = self.get_refund_confirmation_message(registrants, True)
+
+        return message
+
+    def get_refund_confirmation_message(self, registrants, include_invoice_url=False):
+        """
+        Get refund confirmation message for registrants.
+        In some cases, we will leave out the invoice_url (ex. in an email where we already include it).
+        This will also be the cancellation confirmation message when auto refunds are turned on.
+        """
+        invoice = registrants[0].invoice
+        amount = 0
+        fee = 0
+
+        for registrant in registrants:
+            amount += registrant.amount
+            fee += registrant.cancellation_fee
+
+        amount = invoice.get_refund_amount(amount)
+
+        cancellation_fee_message = ""
+        if invoice.pending_cancellation_fees and amount > invoice.pending_cancellation_fees:
+            cancellation_fee_message = f", and your cancellation fee of ${invoice.pending_cancellation_fees} processed"
+
+        message = f"Your registration fee in the amount of ${amount} for {self.title} on " \
+                  f"{self.display_start_date} has been canceled{cancellation_fee_message}. "
+
+        if include_invoice_url:
+            invoice_url = reverse('invoice.view', args=[invoice.pk, invoice.guid])
+            message += f"You may access your final registration invoice " \
+                       f"<a class='alert-link' href={invoice_url}> here</a>."
+
+        return message
+
     def registrants(self, **kwargs):
         """
         This method can return 3 different values.
@@ -1401,7 +3150,7 @@ class Event(TendenciBaseModel):
             if with_balance:
                 registrants = registrants.filter(registration__invoice__balance__gt=0)
             else:
-                registrants = registrants.filter(registration__invoice__balance__lte=0)
+                registrants = registrants.filter(Q(registration__invoice__balance__lte=0) | Q(registration__invoice__isnull=True))
 
         return registrants
 
@@ -1427,9 +3176,7 @@ class Event(TendenciBaseModel):
         Speakers with no name are excluded in the list.
         """
 
-        speakers = self.speaker_set.exclude(name="").order_by('pk')
-
-        return speakers
+        return self.speaker_set.exclude(name="").order_by('position', 'pk')
 
     def number_of_days(self):
         delta = self.end_dt - self.start_dt
@@ -1440,6 +3187,11 @@ class Event(TendenciBaseModel):
         if self.image:
             return self.image.file
         return None
+
+    @property
+    def display_start_date(self):
+        """Start date formatted for confirmation messages"""
+        return self.start_dt.strftime("%m/%d/%Y")
 
     def date_range(self, start_date, end_date):
         for n in range((end_date - start_date).days):
@@ -1475,6 +3227,55 @@ class Event(TendenciBaseModel):
             same_date = start_dt.date() == self.end_dt.date()
             yield {'start_dt':start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
 
+    def get_child_events_days(self, params):
+        """
+        Returns each day of event covered by a sub-event given
+        specificed parameters.
+        """
+        days = set()
+
+        for event in self.child_events.filter(**params):
+            spans = event.date_spans()
+
+            for span in spans:
+                if span['same_date']:
+                    days.add(datetime.date(span['start_dt']))
+                else:
+                    date_range = self.date_range(
+                        span['start_dt'], span['end_dt'] + timedelta(days=1))
+                    date_range = [datetime.date(x) for x in date_range]
+                    days.update(date_range)
+
+        return sorted(days)
+
+    @property
+    def days(self):
+        """
+        List of each day of event covered by a sub-event.
+        This is used to provide a list of potential attendance dates
+        to filter sub-events by date. Includes dates for upcoming sessions only.
+        """
+        params = {'start_dt__date__gt': datetime.now()}
+        return self.get_child_events_days(params)
+
+    @property
+    def full_event_days(self):
+        """
+        List of each day of event covered by a sub-event.
+        Includes all dates, not restricted to upcoming dates.
+        """
+        days = set()
+
+        params = {
+            'start_dt__date__gte': self.start_dt.date(),
+            'end_dt__date__lte': self.end_dt.date()
+        }
+        return self.get_child_events_days(params)
+
+    @property
+    def event_dates_display(self):
+        return ', '.join([x.strftime('%b %d, %Y') for x in self.full_event_days])
+
     def get_spots_status(self):
         """
         Return a tuple of (spots_taken, spots_available) for this event.
@@ -1490,7 +3291,11 @@ class Event(TendenciBaseModel):
         if payment_required:
             params['registration__invoice__balance'] = 0
 
-        spots_taken = Registrant.objects.filter(**params).count()
+        if self.parent and self.nested_events_enabled:
+            spots_taken = RegistrantChildEvent.objects.filter(
+                child_event_id=self.pk, registrant__cancel_dt__isnull=True).count()
+        else:
+            spots_taken = Registrant.objects.filter(**params).count()
 
         if limit == 0:  # no limit
             return (spots_taken, -1)
@@ -1513,6 +3318,65 @@ class Event(TendenciBaseModel):
         if self.registration_configuration:
             limit = self.registration_configuration.limit
         return int(limit)
+
+    @property
+    def total_spots(self):
+        """Total spots alloted for Event"""
+        limit = self.get_limit()
+        if not limit:
+            return ' _'
+
+        return limit
+
+    @property
+    def total_registered(self):
+        """Total registered for this Event"""
+        # If this is a child event, registration information is in RegistrationChildEvent
+        if self.parent and self.nested_events_enabled:
+            return RegistrantChildEvent.objects.filter(
+                child_event_id=self.pk, registrant__cancel_dt__isnull=True).count()
+
+        payment_required = self.registration_configuration.payment_required
+        params = {'cancel_dt__isnull': True}
+        if payment_required:
+            params['registration__invoice__balance'] = 0
+
+        return self.registrants_count(params)
+
+    @property
+    def spots_remaining(self):
+        """Spots available for registration (display unlimited as '_')"""
+        _, spots_remaining = self.get_spots_status()
+        if spots_remaining < 0:
+            return ' _'
+
+        return spots_remaining
+
+    @property
+    def at_capacity(self):
+        """Indicates if Event is at capacity"""
+        limit = self.get_limit()
+        if not limit:
+            return False
+
+        return self.total_registered >= limit
+
+    @property
+    def total_checked_in(self):
+        """Total registrants checked into an Event"""
+        if self.parent and self.nested_events_enabled:
+            return RegistrantChildEvent.objects.filter(
+                child_event_id=self.pk, checked_in=True).count()
+
+        return self.registrants_count({'checked_in': True})
+
+    @property
+    def total_checked_out(self):
+        total_registered = self.total_registered
+        if not total_registered:
+            return 0
+
+        return total_registered - self.total_checked_in
 
     @classmethod
     def make_slug(self, length=7):
@@ -1548,11 +3412,40 @@ class Event(TendenciBaseModel):
         """
         Check if event is private (i.e. if private enabled)
         """
-        # print('enable_private_slug', self.enable_private_slug)
         # print('private_slug', self.private_slug)
         # print('slug', slug)
 
         return all((self.enable_private_slug, self.private_slug, self.private_slug == slug))
+
+    def get_certification_choices(self):
+        choices = []
+        if self.course:
+            school_category = self.course.school_category
+            if school_category:
+                choices.append(('', '----------'))
+                for certcat in school_category.certcat_set.all():
+                    choices.append((certcat.certification.id, certcat.certification.name))
+        return choices
+
+    def reg_start_dt(self):
+        """
+        Registration start date.
+        """
+        [pricing] = RegConfPricing.objects.filter(
+                    reg_conf=self.registration_configuration,
+                    status=True).order_by('start_dt')[:1] or [None]
+        if pricing:
+            return pricing.start_dt
+
+    def reg_end_dt(self):
+        """
+        Registration end date.
+        """
+        [pricing] = RegConfPricing.objects.filter(
+                    reg_conf=self.registration_configuration,
+                    status=True).order_by('-end_dt')[:1] or [None]
+        if pricing:
+            return pricing.end_dt
 
 
 class StandardRegForm(models.Model):
@@ -1780,6 +3673,13 @@ class CustomRegFormEntry(models.Model):
         for entry in self.field_entries.filter(field__field_function="GroupSubscription"):
             entry.field.execute_function(self, entry.value, user=user)
 
+    def get_certification_track(self):
+        [registrant] = Registrant.objects.filter(custom_reg_form_entry=self)[:1] or None
+        if registrant and registrant.certification_track:
+            return registrant.certification_track.id
+
+        return None
+
 
 class CustomRegFieldEntry(models.Model):
     entry = models.ForeignKey("CustomRegFormEntry", related_name="field_entries", on_delete=models.CASCADE)
@@ -1837,7 +3737,14 @@ class Addon(models.Model):
 
 class AddonOption(models.Model):
     addon = models.ForeignKey(Addon, related_name="options", on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
+    title = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text='If only one option, please use the first "Title" field ' \
+                  'at the top of the form instead. Radio buttons will not ' \
+                  'be displayed if more than one option is not offered.'
+    )
     # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
     # choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
 

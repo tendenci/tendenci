@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from tendenci.libs.model_report.highcharts.base import true, false, null, Solid, outside, undefined, _, CollectionObject, DictObject
 
 

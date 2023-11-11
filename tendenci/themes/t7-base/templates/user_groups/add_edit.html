@@ -16,7 +16,7 @@
 {% block content %}
  <h1>{% if group %}{% trans "Edit Group" %}{% else %}{% trans "Create Group" %}{% endif %} </h1>
  <div>
-     <form id="t-user_group-form" class="form-horizontal"  action="." method="post">{% csrf_token %}
+     <form id="t-user_group-form" class="form-horizontal"  action="." method="post" enctype="multipart/form-data">{% csrf_token %}
          <div class="forms">
              {{ form|styled_form }}
 

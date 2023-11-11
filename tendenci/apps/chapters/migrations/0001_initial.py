@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
                 ('notes', tendenci.libs.tinymce.models.HTMLField(blank=True, null=True)),
                 ('sponsors', tendenci.libs.tinymce.models.HTMLField(blank=True, default='')),
                 ('contact_name', models.CharField(blank=True, max_length=200, null=True)),
-                ('contact_email', models.CharField(blank=True, max_length=200, null=True)),
+                ('contact_email', models.CharField(blank=True, max_length=200, null=True, help_text='Comma separated')),
                 ('join_link', models.CharField(blank=True, max_length=200, null=True)),
                 ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chapter_creator', to=settings.AUTH_USER_MODEL)),
                 ('entity', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, to='entities.Entity')),
@@ -73,7 +73,7 @@ class Migration(migrations.Migration):
                 ('phone', models.CharField(blank=True, max_length=50, null=True)),
                 ('chapter', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='chapters.Chapter')),
                 ('position', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='chapters.Position')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='chapters_officer_user', to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='chapter_officers', to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

@@ -39,12 +39,13 @@ PASSWORD_REGEX_DEFAULT = r'^(?=.*(\d|[!@#\$%\^&\*_\-\+])).{8,}$'
 PASSWORD_HELP_TEXT_DEFAULT = _('Password must contain at least 1 number or 1 special character. Password must be 8 or more characters long.')
 
 class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
-    SEARCH_CRITERIA_CHOICES = (
+    SEARCH_CRITERIA_CHOICES = [
                         ('', _('SELECT ONE')),
                         ('first_name', _('First Name')),
                         ('last_name', _('Last Name')),
                         ('email', _('Email')),
                         ('username', _('Username')),
+                        ('account_id', _('Account ID')),
                         ('member_number', _('Member Number')),
                         ('company', _('Company')),
                         ('department', _('Department')),
@@ -57,7 +58,10 @@ class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
                         ('zipcode', _('Zip Code')),
                         ('country', _('Country')),
                         ('spouse', _('Spouse'))
-                        )
+                        ]
+    if not get_setting('module', 'users', 'useaccountid'):
+        SEARCH_CRITERIA_CHOICES.remove(('account_id', _('Account ID'),))
+
     SEARCH_METHOD_CHOICES = (
                              ('starts_with', _('Starts With')),
                              ('contains', _('Contains')),
@@ -115,6 +119,7 @@ class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
             self.fields['industry'].widget.attrs.update({'class': 'form-control'})
         else:
             del self.fields['industry']
+            
 #         for field in self.fields:
 #             if field not in ['search_criteria', 'search_text', 'search_method', 'member_only']:
 #                 self.fields[field].widget.attrs.update({'class': 'form-control'})
@@ -132,6 +137,7 @@ class ProfileForm(TendenciBaseForm):
 
     initials = forms.CharField(label=_("Initial"), max_length=50, required=False,
                                widget=forms.TextInput(attrs={'size':'10'}))
+    account_id = forms.IntegerField(label=_("Account ID"), required=False)
     display_name = forms.CharField(label=_("Display name"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'30'}))
 
@@ -207,6 +213,7 @@ class ProfileForm(TendenciBaseForm):
         fields = ('salutation',
                   'first_name',
                   'last_name',
+                  'account_id',
                   'username',
                   'password1',
                   'password2',
@@ -248,6 +255,7 @@ class ProfileForm(TendenciBaseForm):
                   'is_billing_address_2',
                   'url',
                   'dob',
+                  'member_number_2',
                   'ssn',
                   'spouse',
                   'time_zone',
@@ -311,6 +319,7 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['admin_notes']
                 del self.fields['security_level']
                 del self.fields['status_detail']
+                del self.fields['account_id']
 
             if self.user_current.profile.is_superuser and self.user_current == self.user_this:
                 self.fields['security_level'].choices = (('superuser',_('Superuser')),)
@@ -347,7 +356,9 @@ class ProfileForm(TendenciBaseForm):
                                                     required=self.fields['state_2'].required)
             self.fields['state'].widget.attrs.update({'class': 'form-control'})
             self.fields['state_2'].widget.attrs.update({'class': 'form-control'})
-            
+        if get_setting('module', 'users', 'showmembernumber2'):
+            self.fields['member_number_2'].label = get_setting('module', 'users', 'membernumber2label')
+            self.fields['member_number_2'].required = False
 
     def clean_username(self):
         """
@@ -368,9 +379,28 @@ class ProfileForm(TendenciBaseForm):
             # At least MIN_LENGTH long
             # r'^(?=.{8,})(?=.*[0-9=]).*$'
             if not re.match(self.password_regex, password1):
-                raise forms.ValidationError(mark_safe("The password does not meet the requirements"))
+                raise forms.ValidationError(_("The password does not meet the requirements"))
 
         return password1
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not self.user_this:
+            if User.objects.filter(email__iexact=email).exists():
+                raise forms.ValidationError(_("The email address entered already exists in the system."))
+
+        return email
+
+    def clean_account_id(self):
+        account_id = self.cleaned_data.get('account_id')
+        if account_id:
+            profiles = Profile.objects.filter(account_id=account_id)
+            if self.instance and self.instance.account_id:
+                profiles = profiles.exclude(id=self.instance.id)
+            if profiles.exists():
+                raise forms.ValidationError(
+                _(f"Account id '{account_id}' is already taken. Please choose a different number."))
+        return self.cleaned_data['account_id']
 
     def clean(self):
         """
@@ -898,7 +928,7 @@ class UserUploadForm(forms.ModelForm):
         char_det = chardet.detect(file_content)
         encoding = char_det["encoding"]
         confidence = char_det["confidence"]
-        if confidence < 0.7:
+        if confidence < 0.6:
             encoding = 'utf-8'
         if encoding:
             file_content = file_content.decode(encoding)
@@ -906,6 +936,7 @@ class UserUploadForm(forms.ModelForm):
         header_line_index = file_content.find('\n')
         header_list = ((file_content[:header_line_index]
                             ).strip('\r')).split(',')
+        header_list = [name.strip('"') for name in header_list]
         header_list = normalize_field_names(header_list)
         key_list = []
         for key in key.split(','):

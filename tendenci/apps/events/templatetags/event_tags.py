@@ -17,9 +17,46 @@ from tendenci.apps.events.utils import (registration_earliest_time,
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.events.forms import EventSimpleSearchForm
+from tendenci.apps.site_settings.utils import get_setting
 
 
 register = Library()
+
+
+@register.inclusion_tag("events/badge.html", takes_context=True)
+def badge(context, registrant, display='front'):
+    context.update({
+        "registrant": registrant,
+        "display": display,
+    })
+    return context
+
+@register.inclusion_tag("events/credits.html", takes_context=True)
+def credits_form_display(context, event, credit_forms, user):
+    context.update({
+        "event": event,
+        "credit_forms": credit_forms,
+        "user": user,
+    })
+    return context
+
+
+@register.inclusion_tag("events/child_events.html", takes_context=True)
+def child_events_display(context, event, user=None, edit=False):
+    context.update({
+        "child_events": event.get_child_events_by_permission(user, edit),
+        "edit": edit,
+    })
+    return context
+
+
+@register.inclusion_tag("events/credits_review.html", takes_context=True)
+def review_and_edit_credits(context, event):
+    context.update({
+        "parent_event": event,
+        "events": event.events_with_credits,
+    })
+    return context
 
 
 @register.inclusion_tag("events/options.html", takes_context=True)
@@ -55,6 +92,37 @@ def event_current_app(context, user, event=None):
     context.update({
         "app_object": event,
         "user": user
+    })
+    return context
+
+
+@register.inclusion_tag("events/clone_modal.html", takes_context=True)
+def event_clone_modal(context, event):
+    context.update({"event": event})
+    return context
+
+
+@register.inclusion_tag("events/reg8n/cancel_modal.html", takes_context=True)
+def event_cancel_modal(
+        context, event, hash=None, registrant=None, registrants=[], registration=None):
+    if not registrant and not registrants:
+        raise Exception("Must include at least one registrant or a list of registrants")
+
+    reg = registrant if registrant else registrants[0]
+    cancellation_fee = event.registration_configuration.get_cancellation_fee(reg.amount)
+
+    if len(registrants) > 1:
+        cancellation_fee *= len(registrants)
+
+    allow_refunds_setting = get_setting("module", "events", "allow_refunds")
+    allow_refunds = allow_refunds_setting and allow_refunds_setting != "No"
+
+    context.update({
+        "event": event,
+        "registrant": registrant,
+        "registration": registration,
+        "cancellation_fee": cancellation_fee,
+        "allow_refunds": allow_refunds,
     })
     return context
 
@@ -101,10 +169,16 @@ def registration_pricing_and_button(context, event, user):
         spots_taken, spots_available = (-1, -1)
 
     is_registrant = False
+    registrant = None
     # check if user has already registered
     if hasattr(user, 'registrant_set'):
-        is_registrant = user.registrant_set.filter(
-            registration__event=event).exists()
+        registrants = user.registrant_set.filter(
+            registration__event=event).filter(cancel_dt__isnull=True)
+        registrant_count = registrants.count()
+
+        is_registrant = registrant_count > 0
+        if registrant_count == 1:
+            registrant = registrants.first()
 
     context.update({
         'now': datetime.now(),
@@ -119,6 +193,7 @@ def registration_pricing_and_button(context, event, user):
         'pricing': pricing,
         'user': user,
         'is_registrant': is_registrant,
+        'registrant': registrant,
     })
 
     return context
@@ -273,6 +348,44 @@ def event_list(parser, token):
     return EventListNode(day, type_slug, ordering, group, search_text, context_var)
 
 
+class UserRegistrationNode(Node):
+
+    def __init__(self, user, event, context_var):
+        self.user = Variable(user)
+        self.event = Variable(event)
+        self.context_var = context_var
+
+    def render(self, context):
+
+        user = self.user.resolve(context)
+        event = self.event.resolve(context)
+
+        registration = None
+        if not isinstance(user, AnonymousUser):
+            registrants = user.registrant_set.filter(registration__event=event, cancel_dt=None)
+            if registrants.count() == 1:
+                registration = registrants.first().registration
+
+        context[self.context_var] = registration
+        return ''
+
+@register.tag
+def user_registration(parser, token):
+    """
+    Example: {% user_registration user event as registration %}
+    """
+    bits = token.split_contents()
+
+    if len(bits) != 5:
+        message = '%s tag requires 5 arguments' % bits[0]
+        raise TemplateSyntaxError(_(message))
+
+    user = bits[1]
+    event = bits[2]
+    context_var = bits[4]
+
+    return UserRegistrationNode(user, event, context_var)
+
 class IsRegisteredUserNode(Node):
 
     def __init__(self, user, event, context_var):
@@ -296,7 +409,6 @@ class IsRegisteredUserNode(Node):
 
         context[self.context_var] = exists
         return ''
-
 
 @register.tag
 def is_registered_user(parser, token):
@@ -339,6 +451,7 @@ class ListEventsNode(ListNode):
         event_type = ''
         group = u''
         start_dt = u''
+        registered_only = False
 
         randomize = False
 
@@ -417,6 +530,12 @@ class ListEventsNode(ListNode):
                 group = int(group)
             except:
                 group = None
+        if 'registered_only' in self.kwargs:
+            try:
+                registered_only = Variable(self.kwargs['registered_only'])
+                registered_only = registered_only.resolve(context)
+            except:
+                registered_only = self.kwargs['registered_only']
 
         filters = get_query_filters(user, 'events.view_event')
         items = Event.objects.filter(filters)
@@ -481,6 +600,9 @@ class ListEventsNode(ListNode):
                 items = items.order_by("-start_dt", '-priority')
             else:
                 items = items.order_by(order)
+
+        if user and user.is_authenticated and registered_only:
+            items = [item for item in items if item.is_registrant_user(user)]
 
         if randomize:
             items = list(items)

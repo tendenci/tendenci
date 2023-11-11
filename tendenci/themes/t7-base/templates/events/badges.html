@@ -1,0 +1,80 @@
+{% extends "events/base-print.html" %}
+{% load event_tags %}
+
+{% block title %}{% blocktrans with title=event.get_title %}Print Badges - {{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{{ event.get_description }}{% endblock %}
+{% block meta_keywords %}{{ event.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/events.css' %}" />
+
+<style>
+  .col-badge {
+      width: 50%;
+      height: 3in;
+      float: left;
+  }
+
+  @media print {
+      @page {
+          size: portrait;
+          margin-right: .25in !important;
+          margin-left: .25in !important;
+          margin-top: 1.05in !important;
+          margin-bottom: .8in !important;
+          size: letter;
+      }
+      .col-badge {
+          width: 4in;
+          height: 3in;
+      }
+      .page-break {
+          page-break-before: always !important;
+      }
+      .container {
+          display: none;
+      }
+      body {
+          margin: 0 !important;
+      }
+  }
+  
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t-print">
+  <div class="hide-this">
+    <h1>{% trans "Print Badges" %}</h1>
+
+    <div class="guide">
+      <div><a href="{% url 'event.registrant.roster' event.pk %}">&laquo; {% trans "Back to roster" %}</a></div>
+    </div>
+  </div>
+  <div class="badge-wrap">
+    {% for registrant_data in registrants %}
+    {% if not forloop.parentloop.first %}<div class="page-break" style="clear:both;"></div>{% endif %}
+    <div class="badge-row">
+      {% for registrant in registrant_data.registrants %}
+      <div class="col-badge">
+        {% badge registrant 'front' %}
+      </div>
+      <div class="col-badge">
+        {% badge registrant 'back' %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    <div style="clear:both;"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      window.print();
+    });
+  </script>
+{% endblock %}

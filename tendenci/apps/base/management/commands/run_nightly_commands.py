@@ -10,6 +10,7 @@ class Command(BaseCommand):
     nightly (daily) basis.
     """
     def handle(self, *args, **options):
+        from tendenci.apps.site_settings.utils import get_setting
         commands = ('expire_jobs',
                     'expire_resumes',
                     'expire_stories',
@@ -20,6 +21,7 @@ class Command(BaseCommand):
                     'clean_memberships',
                     'refresh_membership_groups',
                     'send_corp_membership_notices',
+                    'clean_chapter_memberships',
                     'clean_old_exports',
                     'clean_old_imports',
                     #'delete_soft_deleted_items',
@@ -30,6 +32,9 @@ class Command(BaseCommand):
                     'clearsessions',
                     'make_recurring_payment_transactions',
                     )
+
+        if get_setting('module', 'chapters', 'membershipsenabled'):
+            commands += ('send_chapter_membership_notices',)
         for c in commands:
             try:
                 call_command(c)

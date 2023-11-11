@@ -1,4 +1,4 @@
-from builtins import str
+from datetime import date
 
 from django.db import models
 from django.urls import reverse
@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.pages.models import BasePage
@@ -79,6 +80,39 @@ class Committee(BasePage):
             self.featured_image = image
             self.save()
 
+    def update_group_perms(self, **kwargs):
+        """
+        Update the associated group perms for the officers of this chapter. 
+        Grant officers the view and change permissions for their own group.
+        """
+        if not self.group:
+            return
+ 
+        ObjectPermission.objects.remove_all(self.group)
+    
+        perms = ['view', 'change']
+
+        officer_users = [officer.user for officer in self.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        # include officers in chapters that are associated with this group
+        for chapter in self.group.chapter_set.all():
+            officer_users.extend([officer.user for officer in chapter.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))])
+        if officer_users:
+            ObjectPermission.objects.assign(officer_users,
+                                        self.group, perms=perms)
+        
+
+    def is_committee_leader(self, user):
+        """
+        Check if this user is one of the chapter leaders.
+        """
+        if not user.is_anonymous:
+            return self.officers().filter(Q(expire_dt__isnull=True) | Q(
+                expire_dt__gte=date.today())).filter(user=user).exists()
+
+        return False
+
 
 class Position(models.Model):
     title = models.CharField(_(u'title'), max_length=200)
@@ -92,7 +126,7 @@ class Position(models.Model):
 
 class Officer(models.Model):
     committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
-    user = models.ForeignKey(User,  related_name="%(app_label)s_%(class)s_user", on_delete=models.CASCADE)
+    user = models.ForeignKey(User,  related_name="committee_officers", on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField(max_length=120, null=True, blank=True)

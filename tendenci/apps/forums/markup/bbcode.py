@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-, absolute_import
-
 from tendenci.apps.theme.templatetags.static import static
 from bbcode import Parser
 from django.forms import Textarea

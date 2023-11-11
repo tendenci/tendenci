@@ -225,9 +225,9 @@ def group_add_edit(request, group_slug=None,
 
     if request.method == 'POST':
         if edit:
-            form = form_class(request.POST, instance=group, user=request.user)
+            form = form_class(request.POST, request.FILES, instance=group, user=request.user)
         else:
-            form = form_class(request.POST, user=request.user)
+            form = form_class(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             group = form.save(commit=False)
             if not group.id:

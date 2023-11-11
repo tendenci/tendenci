@@ -141,8 +141,8 @@ class CategoryAdmin(admin.ModelAdmin):
     fieldsets = ((None, {'fields': ('name',)}),)
     inlines = (CategoryAdminInline,)
 
-    def queryset(self, request):
-        qs = super(CategoryAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(CategoryAdmin, self).get_queryset(request)
         return qs.filter(parent__isnull=True)
 
 admin.site.register(FilesCategory, CategoryAdmin)

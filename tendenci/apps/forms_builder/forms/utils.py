@@ -103,22 +103,23 @@ def make_invoice_for_entry(entry, **kwargs):
     price = entry.pricing.price
     if price is None:
         price = kwargs.get('custom_price')
+    amount = price * entry.quantity
     now = datetime.now()
 
     inv = Invoice()
     inv.title = "%s Invoice" % (entry.form.title)
     inv.object_type = ContentType.objects.get(app_label=entry._meta.app_label, model=entry._meta.model_name)
     inv.object_id = entry.id
-    inv.subtotal = price
-    inv.total = price
-    inv.balance = price
+    inv.subtotal = amount
+    inv.total = amount
+    inv.balance = amount
     inv.due_date = now
     inv.ship_date = now
 
     tax = 0
     if entry.pricing and entry.pricing.taxable:
-        tax = price * entry.pricing.tax_rate
-        total = tax + price
+        tax = amount * entry.pricing.tax_rate
+        total = tax + amount
         inv.tax = tax
         inv.subtotal = total
         inv.total = total

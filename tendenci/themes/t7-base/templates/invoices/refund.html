@@ -1,0 +1,149 @@
+{% extends "invoices/base.html" %}
+{% load invoice_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'Invoice Refund'%}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/invoices.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div class="page-header">
+    <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans 'Invoice Refund'%}</h1>
+  </div>
+
+  <a class="btn btn-default" href="{% url "invoice.view" invoice.pk %}" class="links">{% trans "View Invoice" %} #{{ invoice.pk }}</a>
+  <br /><br />
+
+  <div class="invoice-adjust">
+    <div class="field-wrapper required">
+      <label class="field-label">{% trans 'Billing Information:'%}</label>
+      <div style="float:left;">
+        {% if invoice.bill_to %}{{invoice.bill_to}}<br />{% endif %}
+        {% if invoice.bill_to_phone %}{{invoice.bill_to_phone}}<br />{% endif %}
+        {% if invoice.bill_to_email %}{{invoice.bill_to_email}}<br />{% endif %}
+        {% if invoice.bill_to_address %}{{invoice.bill_to_address}}{% endif %}
+        {% if invoice.bill_to_city %}{{invoice.bill_to_city}}{% endif %}
+        {% if invoice.bill_to_state %}{{invoice.bill_to_state}}{% endif %}
+        {% if invoice.bill_to_zip_code %}{{invoice.bill_to_zip_code}}{% endif %}
+        {% if invoice.bill_to_country %}{{invoice.bill_to_country}}{% endif %}<br />
+      </div>
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+      <label class="field-label">{% trans 'Current Invoice Totals:'%}</label>
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+      <label class="field-label">{% trans 'Sub Total:'%}</label>
+      <div>{{invoice.subtotal|format_currency }}</div>
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+      <label class="field-label">{% trans 'Total:'%}</label>
+      <div>{{invoice.total|format_currency }}</div>
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+      <label class="field-label">{% trans 'Payments/Credits:'%}</label>
+      <div>{{invoice.payments_credits|format_currency }}</div>
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+      <label class="field-label">{% trans 'Balance:'%}</label>
+      <div>{{invoice.balance|format_currency }}</div>
+    </div>
+    <div class="clear-left"></div>
+    <p>&nbsp;</p>
+
+    <form method="post" action=".">{% csrf_token %}
+      <div class="field-wrapper required" id="amount">
+        <label for="id_variance" class="field-label">{% trans 'Refund Amount'%} ({{SITE_GLOBAL_CURRENCYSYMBOL}}):</label>
+        {{ form.amount }}
+      </div>
+        {% if form.amount.errors %}
+            {{ form.amount.errors }}
+        {% endif %}
+      <div class="clear-left"></div>
+      <div class="field-wrapper" id="cancellation_fees">
+        <label class="field-label">{% trans 'Cancellation Fees:'%}</label>
+        <div>{{ form.cancellation_fees }}</div>
+      </div>
+      <div class="clear-left"></div>
+      <div class="field-wrapper">
+        <label class="field-label">{% trans 'Total Refundable Amount:' %}</label>
+        <div>{{ invoice.total_less_refunds|format_currency }}</div>
+        <div id="refund_instructions"> Refund and cancellation fee totalled must be less than or equal to refundable amount</div>
+      </div>
+      <div class="clear-left"></div>
+      {% if allow_cancel %}
+      <div class="field-wrapper" id="cancel">
+        <label class="field-label">{% trans 'Cancel Registration?' %}</label>
+        <div>{{form.cancel_registration}}</div>
+      </div>
+      <div class="clear-left"></div>
+      {% endif %}
+      <div class="field-wrapper">
+        <label class="field-label">{% trans 'Notes/Comments:' %}</label>
+        <div> {{ form.refund_notes }}</div>
+      </div>
+      <div class="clear-left"></div>
+      <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Submit' %}" id="adjust-sumit-button" />
+    </form>
+    <br /><br />
+  </div>
+
+</div>
+{% endblock %}
+
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+  $(document).ready(function() {
+      var display_cancellation_fees = {{ invoice.total_cancellation_fees }} || '{{ is_canceled }}' == 'true';
+
+      toggle_cancellation($('#id_cancel_registration').is(':checked'), display_cancellation_fees);
+      
+      $('#id_cancel_registration').on("change", function() {
+          toggle_cancellation($(this).is(':checked'), display_cancellation_fees);
+      });
+
+      function toggle_cancellation_fees(should_display) {
+          if (should_display) {
+              $('#cancellation_fees').show();
+              $('#refund_instructions').show();
+          } else {
+              $('#cancellation_fees').hide();
+              $('#refund_instructions').hide();
+          }
+      }
+
+      function toggle_cancellation(is_cancelling, display_cancellation_fees) {
+          var cancellation_fees = {{ invoice.total_cancellation_fees }};
+          if (is_cancelling) {
+              var potential_fees = {{ invoice.default_cancellation_fees }};
+              if ({{ invoice.registered_count }} > 0 ) {
+                  potential_fees *= {{ invoice.registered_count }};
+              }
+              cancellation_fees += potential_fees;
+              var amount = {{ invoice.total_less_refunds }} - cancellation_fees;
+                  $('#id_amount').val(amount);
+          } else {
+              $('#id_amount').val({{ invoice.refundable_amount }});
+          }
+
+          $('#id_cancellation_fees').val(cancellation_fees);
+          toggle_cancellation_fees(is_cancelling || display_cancellation_fees);
+      }
+  });
+</script>
+{% endblock %}

@@ -50,13 +50,13 @@
 	    {% if can_edit or can_delete %}
 	        <li class="pull-right">
 	          <div class="form-group">
-			    {% if can_edit %}
-		            <a class="btn btn-warning" method="POST" title="{% trans 'Edit this form entry' %}" href="{% url 'form_entry_edit' entry.pk %}">
+			    {% if can_edit and not form.custom_payment and not form.recurring_payment %}
+		            <a class="btn btn-sm btn-warning" method="POST" title="{% trans 'Edit this form entry' %}" href="{% url 'form_entry_edit' entry.pk %}">
 		              {% trans "Edit" %}
 		            </a>
 	    		{% endif %}
 			    {% if can_delete %}
-		            <a class="btn btn-danger" method="POST" title="{% trans 'Link to delete confirmation page' %}" href="{% url 'form_entry_delete' entry.pk %}">
+		            <a class="btn btn-sm btn-danger" method="POST" title="{% trans 'Link to delete confirmation page' %}" href="{% url 'form_entry_delete' entry.pk %}">
 		              {% trans "Delete" %}
 		            </a>
 			    {% endif %}

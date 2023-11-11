@@ -14,6 +14,7 @@ from decimal import Decimal
 import dateutil.parser as dparser
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.conf import settings
 from django.urls import reverse
@@ -25,13 +26,14 @@ from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 import simplejson
 from django.utils.html import strip_tags
+from django.utils.translation import gettext as _
 from pytz import timezone
 from pytz import UnknownTimeZoneError
 
 from tendenci.apps.events.models import (Event, Place, Speaker, Organizer, Sponsor,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption, CustomRegField, Type,
-    TypeColorSet, RecurringEvent)
+    TypeColorSet, RecurringEvent, EventCredit, EventStaff)
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.site_settings.utils import get_setting
@@ -42,7 +44,7 @@ from tendenci.apps.base.utils import (adjust_datetime_to_timezone,
     create_salesforce_contact, validate_email)
 from tendenci.apps.exports.utils import full_model_to_dict
 from tendenci.apps.emails.models import Email
-from tendenci.apps.base.utils import escape_csv
+from tendenci.apps.base.utils import escape_csv, Echo
 
 
 try:
@@ -74,6 +76,39 @@ PLACE_FIELDS = [
     "place__country",
     "place__url",
 ]
+
+
+def iter_child_event_registrants(child_event_registrants):
+    field_labels = [_('First Name'),
+                    _('Last Name'), 
+                    _('Phone'),
+                    _('Email'),
+                    _('Company'),
+                    _('Price Type'),
+                    _('Registration ID'),
+                    _('Meeting Check In Date/Time'),
+                    _('Session Check In Date/Time'),
+                    _('Check In')]
+    
+    writer = csv.DictWriter(Echo(), fieldnames=field_labels)
+    # write headers - labels
+    yield writer.writerow(dict(zip(field_labels, field_labels)))
+
+    for child_event_registrant in child_event_registrants:
+        registrant = child_event_registrant.registrant
+        values_list = [registrant.first_name,
+                       registrant.last_name,
+                       registrant.phone,
+                       registrant.email,
+                       registrant.company_name,
+                       registrant.pricing.title,
+                       registrant.registration.id,
+                       registrant.checked_in_dt or '',
+                       child_event_registrant.checked_in_dt or '',
+                       'Y' if child_event_registrant.checked_in else '',]
+
+        yield writer.writerow(dict(zip(field_labels, values_list)))
+
 
 def do_events_financial_export(**kwargs):
     identifier = kwargs['identifier']
@@ -717,6 +752,13 @@ def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
         if clean_recipient and (clean_recipient not in email_list):
             email_list.append(clean_recipient)
 
+    # check and send to the reply_to addr specified for this event reg
+    reg_conf = event.registration_configuration
+    if reg_conf.reply_to and reg_conf.reply_to_receive_notices:
+        email_addr = reg_conf.reply_to.strip()
+        if email_addr not in email_list:
+            email_list.append(email_addr)
+
     notification.send_emails(
         email_list,
         'event_registration_confirmation',
@@ -891,7 +933,6 @@ def get_registrants_prices(*args):
             amount_list.append(amount)
             tax_list.append(amount * price.tax_rate)
             
-
     # apply discount if any
     discount_code = reg_form.cleaned_data.get('discount_code', None)
     discount_amount = Decimal(0)
@@ -1079,6 +1120,7 @@ def create_registrant_from_form(*args, **kwargs):
     impementation of events in the registration module.
     """
     from tendenci.apps.events.forms import FormForCustomRegForm
+    from tendenci.apps.trainings.models import Certification
 
     # arguments were getting kinda long
     # moved them to an unpacked version
@@ -1099,6 +1141,7 @@ def create_registrant_from_form(*args, **kwargs):
     registrant.use_free_pass = kwargs.get('use_free_pass', False)
     registrant.memberid = form.cleaned_data.get('memberid', '')
     registrant.reminder = form.cleaned_data.get('reminder', False)
+    registrant.attendance_dates = form.cleaned_data.get('attendance_dates')
 
     if custom_reg_form and isinstance(form, FormForCustomRegForm):
         entry = form.save(event)
@@ -1126,9 +1169,21 @@ def create_registrant_from_form(*args, **kwargs):
         registrant.comments = form.cleaned_data.get('comments', '') or ''
 
         if registrant.email:
-            users = User.objects.filter(email=registrant.email)
-            if users:
-                registrant.user = users[0]
+            if reg8n.creator and reg8n.creator.email == registrant.email:
+                registrant.user = reg8n.creator
+            else:
+                users = User.objects.filter(email__iexact=registrant.email)
+                if users:
+                    registrant.user = users[0]
+
+    if event and event.course:
+        # certification_track
+        try:
+            certification_id = int(form.cleaned_data.get('certification_track', 0) or 0)
+        except ValueError:
+            certification_id = 0
+        if certification_id:
+            [registrant.certification_track] = Certification.objects.filter(id=certification_id)[:1] or [None]
 
     registrant.save()
     add_sf_attendance(registrant, event)
@@ -1431,44 +1486,100 @@ def clean_price(price, user):
 
     return price, price_pk, amount
 
-def copy_event(event, user, reuse_rel=False):
+def copy_child_events(event, new_event, user, reuse_rel):
+    """Copy child events for a given Event"""
+    # Copy all child events. Start with events that are not repeats of another.
+    # This will make it so we can later tie copies of the repeated event with the
+    # correct newly copied event it is a repeat of.
+    for child_event in event.all_child_events.filter(repeat_of__isnull=True):
+        new_child_event = copy_event(child_event, user, reuse_rel=reuse_rel, new_parent_id=new_event.pk)
+
+        # If there are repeat events for this child event, copy them as well.
+        for repeat_event in event.all_child_events.filter(repeat_of_id=child_event.pk):
+            new_repeat_event = copy_event(repeat_event, user, reuse_rel=reuse_rel)
+
+            # Set the repeat_of fields for this repeat event
+            new_repeat_event.repeat_of = new_child_event
+            new_repeat_event.repeat_uuid = new_child_event.repeat_uuid
+            # Go ahead and set the parent here since we're doing a save anyway.
+            new_repeat_event.parent = new_event
+            new_repeat_event.save(update_fields=['parent', 'repeat_of', 'repeat_uuid'])
+
+
+def copy_event(
+        event,
+        user,
+        reuse_rel=False,
+        set_repeat_of=False,
+        copy_to=None,
+        should_copy_child_events=False,
+        new_parent_id=None):
     #copy event
-    new_event = Event.objects.create(
-        title = event.title,
-        entity = event.entity,
-        description = event.description,
-        timezone = event.timezone,
-        type = event.type,
-        image = event.image,
-        start_dt = event.start_dt,
-        end_dt = event.end_dt,
-        all_day = event.all_day,
-        on_weekend = event.on_weekend,
-        mark_registration_ended = event.mark_registration_ended,
-        private_slug = event.private_slug,
-        password = event.password,
-        tags = event.tags,
-        external_url = event.external_url,
-        priority = event.priority,
-        display_event_registrants = event.display_event_registrants,
-        display_registrants_to = event.display_registrants_to,
-        allow_anonymous_view = False,
-        allow_user_view = event.allow_user_view,
-        allow_member_view = event.allow_member_view,
-        allow_user_edit = event.allow_user_edit,
-        allow_member_edit = event.allow_member_edit,
-        creator = user,
-        creator_username = user.username,
-        owner = user,
-        owner_username = user.username,
-        status = event.status,
-        status_detail = event.status_detail,
-    )
-    new_event.groups.add(*list(event.groups.all()))
+    if not copy_to:
+        new_event = Event()
+    else:
+        new_event = copy_to
+
+    new_event.title = event.title
+    new_event.entity = event.entity
+    new_event.event_relationship=event.event_relationship
+    new_event.event_code=event.event_code
+    new_event.short_name=event.short_name
+    new_event.delivery_method=event.delivery_method
+    new_event.description = event.description
+    new_event.timezone = event.timezone
+    new_event.type = event.type
+    new_event.image = event.image
+    new_event.start_dt = event.start_dt
+    new_event.end_dt = event.end_dt
+    new_event.all_day = event.all_day
+    new_event.on_weekend = event.on_weekend
+    new_event.mark_registration_ended = event.mark_registration_ended
+    new_event.private_slug = event.private_slug
+    new_event.password = event.password
+    new_event.tags = event.tags
+    new_event.external_url = event.external_url
+    new_event.priority = event.priority
+    new_event.display_event_registrants = event.display_event_registrants
+    new_event.display_registrants_to = event.display_registrants_to
+    new_event.allow_anonymous_view = False
+    new_event.allow_user_view = event.allow_user_view
+    new_event.allow_member_view = event.allow_member_view
+    new_event.allow_user_edit = event.allow_user_edit
+    new_event.allow_member_edit = event.allow_member_edit
+    new_event.creator = user
+    new_event.creator_username = user.username
+    new_event.owner = user
+    new_event.owner_username = user.username
+    new_event.status = event.status
+    new_event.status_detail = event.status_detail
+    if new_parent_id:
+        new_event.parent_id = new_parent_id
+    new_event.save()
+
+    if not new_event.groups.all().exists():
+        new_event.groups.add(*list(event.groups.all()))
+
+    if set_repeat_of:
+        new_event.parent = event.parent
+        new_event.repeat_of = event
+        new_event.repeat_uuid = event.repeat_uuid
+        new_event.save(update_fields=['parent', 'repeat_of', 'repeat_uuid'])
+
+    # Copy credit configuration
+    if not new_event.eventcredit_set.available().exists():
+        for config in event.eventcredit_set.available():
+            credit = EventCredit.objects.create(
+                ceu_subcategory=config.ceu_subcategory,
+                credit_count=config.credit_count,
+                alternate_ceu_id=config.alternate_ceu_id,
+                available=config.available,
+            )
+            credit.event.add(new_event)
 
     #copy place
     place = event.place
-    if place:
+    if place and not new_event.place:
         if reuse_rel:
             new_event.place = place
         else:
@@ -1485,98 +1596,126 @@ def copy_event(event, user, reuse_rel=False):
             new_event.place = new_place
         new_event.save()
 
+    #copy staff
+    if not new_event.eventstaff_set.all().exists():
+        for staff in event.eventstaff_set.all():
+            if reuse_rel:
+                staff.event.add(new_event)
+            else:
+                new_staff = EventStaff.objects.create(
+                    name=staff.name,
+                    role=staff.role,
+                    include_on_certificate=staff.include_on_certificate,
+                )
+                new_staff.event.add(new_event)
+
+
     #copy speakers
-    for speaker in event.speaker_set.all():
-        if reuse_rel:
-            speaker.event.add(new_event)
-        else:
-            new_speaker = Speaker.objects.create(
-                user = speaker.user,
-                name = speaker.name,
-                description = speaker.description,
-            )
-            new_speaker.event.add(new_event)
+    if not new_event.speaker_set.all().exists():
+        for speaker in event.speaker_set.all():
+            if reuse_rel:
+                speaker.event.add(new_event)
+            else:
+                new_speaker = Speaker.objects.create(
+                    user = speaker.user,
+                    name = speaker.name,
+                    description = speaker.description,
+                )
+                new_speaker.event.add(new_event)
 
     #copy organizers
-    for organizer in event.organizer_set.all():
-        if reuse_rel:
-            organizer.event.add(new_event)
-        else:
-            new_organizer = Organizer.objects.create(
-                user = organizer.user,
-                name = organizer.name,
-                description = organizer.description,
-            )
-            new_organizer.event.add(new_event)
+    if not new_event.organizer_set.all().exists():
+        for organizer in event.organizer_set.all():
+            if reuse_rel:
+                organizer.event.add(new_event)
+            else:
+                new_organizer = Organizer.objects.create(
+                    user = organizer.user,
+                    name = organizer.name,
+                    image = organizer.image,
+                    description = organizer.description,
+                )
+                new_organizer.event.add(new_event)
 
     #copy sponsor
-    for sponsor in event.sponsor_set.all():
-        if reuse_rel:
-            sponsor.event.add(new_event)
-        else:
-            new_sponsor = Sponsor.objects.create(
-                description = sponsor.description,
-            )
-            new_sponsor.event.add(new_event)
+    if not new_event.sponsor_set.all().exists():
+        for sponsor in event.sponsor_set.all():
+            if reuse_rel:
+                sponsor.event.add(new_event)
+            else:
+                new_sponsor = Sponsor.objects.create(
+                    name = sponsor.name,
+                    description = sponsor.description,
+                    image = sponsor.image,
+                )
+                new_sponsor.event.add(new_event)
 
     #copy registration configuration
-    old_regconf = event.registration_configuration
-    if old_regconf:
-        new_regconf = RegistrationConfiguration.objects.create(
-            payment_required = old_regconf.payment_required,
-            limit = old_regconf.limit,
-            enabled = old_regconf.enabled,
-            require_guests_info = old_regconf.require_guests_info,
-            is_guest_price = old_regconf.is_guest_price,
-            discount_eligible = old_regconf.discount_eligible,
-            display_registration_stats = old_regconf.display_registration_stats,
-            use_custom_reg_form = old_regconf.use_custom_reg_form,
-            reg_form = old_regconf.reg_form,
-            bind_reg_form_to_conf_only = old_regconf.bind_reg_form_to_conf_only,
-            send_reminder = old_regconf.send_reminder,
-            reminder_days = old_regconf.reminder_days,
-            registration_email_text = old_regconf.registration_email_text,
-        )
-        new_regconf.payment_method.set(old_regconf.payment_method.all())
-        new_regconf.save()
-        new_event.registration_configuration = new_regconf
-        new_event.save()
-
-        #copy regconf pricings
-        for pricing in old_regconf.regconfpricing_set.filter(status=True):
-            new_pricing = RegConfPricing.objects.create(
-                reg_conf = new_regconf,
-                title = pricing.title,
-                quantity = pricing.quantity,
-                price = pricing.price,
-                reg_form = pricing.reg_form,
-                start_dt = pricing.start_dt,
-                end_dt = pricing.end_dt,
-                allow_anonymous = pricing.allow_anonymous,
-                allow_user = pricing.allow_user,
-                allow_member = pricing.allow_member,
+    if not new_event.registration_configuration:
+        old_regconf = event.registration_configuration
+        if old_regconf:
+            new_regconf = RegistrationConfiguration.objects.create(
+                payment_required = old_regconf.payment_required,
+                limit = old_regconf.limit,
+                enabled = old_regconf.enabled,
+                require_guests_info = old_regconf.require_guests_info,
+                allow_guests=old_regconf.allow_guests,
+                guest_limit=old_regconf.guest_limit,
+                is_guest_price = old_regconf.is_guest_price,
+                discount_eligible = old_regconf.discount_eligible,
+                display_registration_stats = old_regconf.display_registration_stats,
+                use_custom_reg_form = old_regconf.use_custom_reg_form,
+                reg_form = old_regconf.reg_form,
+                bind_reg_form_to_conf_only = old_regconf.bind_reg_form_to_conf_only,
+                send_reminder = old_regconf.send_reminder,
+                reminder_days = old_regconf.reminder_days,
+                registration_email_text = old_regconf.registration_email_text,
             )
-            new_pricing.groups.set(pricing.groups.all())
+            new_regconf.payment_method.set(old_regconf.payment_method.all())
+            new_regconf.save()
+            new_event.registration_configuration = new_regconf
+            new_event.save()
+    
+            #copy regconf pricings
+            for pricing in old_regconf.regconfpricing_set.filter(status=True):
+                new_pricing = RegConfPricing.objects.create(
+                    reg_conf = new_regconf,
+                    title = pricing.title,
+                    quantity = pricing.quantity,
+                    price = pricing.price,
+                    reg_form = pricing.reg_form,
+                    start_dt = pricing.start_dt,
+                    end_dt = pricing.end_dt,
+                    allow_anonymous = pricing.allow_anonymous,
+                    allow_user = pricing.allow_user,
+                    allow_member = pricing.allow_member,
+                )
+                new_pricing.groups.set(pricing.groups.all())
 
     #copy addons
-    for addon in event.addon_set.all():
-        new_addon = Addon.objects.create(
-            event = new_event,
-            title = addon.title,
-            price = addon.price,
-            group = addon.group,
-            default_yes = addon.default_yes,
-            allow_anonymous = addon.allow_anonymous,
-            allow_user = addon.allow_user,
-            allow_member = addon.allow_member,
-            status = addon.status,
-        )
-        # copy addon options
-        for option in addon.options.all():
-            AddonOption.objects.create(
-                addon = new_addon,
-                title = option.title,
+    if not new_event.addon_set.all().exists():
+        for addon in event.addon_set.all():
+            new_addon = Addon.objects.create(
+                event = new_event,
+                title = addon.title,
+                price = addon.price,
+                group = addon.group,
+                default_yes = addon.default_yes,
+                allow_anonymous = addon.allow_anonymous,
+                allow_user = addon.allow_user,
+                allow_member = addon.allow_member,
+                status = addon.status,
             )
+            # copy addon options
+            for option in addon.options.all():
+                AddonOption.objects.create(
+                    addon = new_addon,
+                    title = option.title,
+                )
+
+    # Copy all child events associated with this Event
+    if should_copy_child_events and event.has_any_child_events:
+        copy_child_events(event, new_event, user, reuse_rel)
 
     return new_event
 
@@ -1611,7 +1750,9 @@ def get_active_days(event):
 
 def get_custom_registrants_initials(entries, **kwargs):
     initials = []
-    for entry in entries:
+    check_cert = kwargs.get('check_cert', False)
+    attendance_dates = kwargs.get('attendance_dates')
+    for index, entry in enumerate(entries):
         fields_d = {}
         field_entries = entry.field_entries.all()
         for field_entry in field_entries:
@@ -1620,6 +1761,10 @@ def get_custom_registrants_initials(entries, **kwargs):
             else:
                 field_key = 'field_%d' % field_entry.field.id
             fields_d[field_key] = field_entry.value
+        if check_cert:
+            fields_d['certification_track'] = entry.get_certification_track()
+        if attendance_dates:
+            fields_d['attendance_dates'] = attendance_dates[index]
         initials.append(fields_d)
     return initials
 
@@ -1868,35 +2013,50 @@ def add_sf_attendance(registrant, event):
                     'EndDateTime':event.end_dt.isoformat()})
 
 
-def create_member_registration(user, event, form):
+def create_member_registration(user, event, form, for_member=False):
 
     from tendenci.apps.profiles.models import Profile
 
     pricing = form.cleaned_data['pricing']
+    override = form.cleaned_data.get('override', False)
+    override_price = form.cleaned_data.get('override_price')
     reg_attrs = {'event': event,
                  'reg_conf_price': pricing,
-                 'amount_paid': pricing.price,
+                 'amount_paid': pricing.price if not override else override_price,
                  'creator': user,
                  'owner': user}
 
-    for mem_id in form.cleaned_data['member_ids'].split(','):
-        mem_id = mem_id.strip()
-        [member] = Profile.objects.filter(member_number=mem_id,
-                                          status_detail='active')[:1] or [None]
-        if member:
-            exists = event.registrants().filter(user=member.user)
+    if for_member:
+        member_ids = [mem_id.strip() for mem_id in form.cleaned_data['member_ids'].split(',')]
+        user_ids = Profile.objects.filter(member_number__in=member_ids,
+                                          status_detail='active').values_list('user_id', flat=True)
+    else:
+        user_ids = [int(form.cleaned_data['user'])]
+    
+    registration_ids = []                                   
+    for user_id in user_ids: 
+        [user] = User.objects.filter(id=user_id)[:1] or [None]                                   
+
+        if user:
+            exists = event.registrants().filter(user=user)
             if not exists:
                 registration = Registration.objects.create(**reg_attrs)
+                if not override_price:
+                    override_price = Decimal(0)
                 registrant_attrs = {'registration': registration,
-                                    'user': member.user,
-                                    'first_name': member.user.first_name,
-                                    'last_name': member.user.last_name,
-                                    'email': member.user.email,
+                                    'user': user,
+                                    'first_name': user.first_name,
+                                    'last_name': user.last_name,
+                                    'email': user.email,
                                     'is_primary': True,
-                                    'amount': pricing.price,
-                                    'pricing': pricing}
+                                    'amount': pricing.price if not override else override_price,
+                                    'pricing': pricing,
+                                    'override': override,
+                                    'override_price': override_price}
                 Registrant.objects.create(**registrant_attrs)
                 registration.save_invoice()
+                registration_ids.append(registration.id)
+    return registration_ids
 
 
 def get_week_days(tgtdate, cal):
@@ -2157,3 +2317,68 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             subject=subject,
             body=body)
         email.send()
+
+
+def handle_registration_payment(reg8n, redirect_url_only=False):
+    """
+    Handle registration payment based on method selected
+    Returns redirect URL if applicable.
+    """
+    event = reg8n.event
+    is_credit_card_payment = reg8n.payment_method and \
+        (reg8n.payment_method.machine_name).lower() == 'credit-card' \
+        and reg8n.invoice.balance > 0
+    reg_conf=event.registration_configuration
+    registrants = reg8n.registrant_set.all().order_by('id')
+
+    self_reg8n = get_setting('module', 'users', 'selfregistration')
+    if is_credit_card_payment:
+        # online payment
+        # get invoice; redirect to online pay
+        # email the admins as well
+        if not redirect_url_only:
+            if not reg_conf.payment_required or reg_conf.external_payment_link:
+                email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+
+        if reg_conf.external_payment_link:
+            return reg_conf.external_payment_ink
+
+        return reverse('payment.pay_online', args=[reg8n.invoice.id, reg8n.invoice.guid])
+    else:
+        if redirect_url_only:
+            return None
+
+        if not reg8n.invoice:
+            return None
+        # offline payment:
+        # send email; add message; redirect to confirmation
+        primary_registrant = reg8n.registrant
+
+        if primary_registrant and  primary_registrant.email:
+            site_label = get_setting('site', 'global', 'sitedisplayname')
+            site_url = get_setting('site', 'global', 'siteurl')
+
+            notification.send_emails(
+                [primary_registrant.email],
+                'event_registration_confirmation',
+                {
+                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                    'SITE_GLOBAL_SITEURL': site_url,
+                    'self_reg8n': self_reg8n,
+
+                    'reg8n': reg8n,
+                    'registrants': registrants,
+
+                    'event': event,
+                    'total_amount': reg8n.invoice.total,
+                    'is_paid': reg8n.invoice.balance == 0,
+                    'reply_to': reg_conf.reply_to,
+                },
+                True, # save notice in db
+            )
+            #email the admins as well
+
+            # fix the price
+            email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+
+        return None

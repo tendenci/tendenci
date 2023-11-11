@@ -51,6 +51,9 @@ div.pricing-list-wrap li{
     padding: 3px 0;
     margin-left: 3px;
 }
+div.small-font {
+    font-size: .8em;
+}
 </style>
 {{ block.super }}
 {% endblock %}
@@ -65,6 +68,7 @@ div.pricing-list-wrap li{
     
     <!-- TOP -->
     <br />
+
     {% if event.status_detail == 'template' %}
     <div class="alert alert-info" role="alert">{% trans 'This is a event template.' %} 
     <a href="{% url 'event.add_from_template' event.pk %}" class="alert-link">{% trans 'Add an event using this template.' %}</a>
@@ -122,12 +126,28 @@ div.pricing-list-wrap li{
 			{% endif %}
 			{% if event.place.national %}
 				{% include 'events/include/display_national.html' %}
-			{% endif %}
+			      {% endif %}
+            {% if registrant_user and event.enable_zoom_meeting %}
+            <div class="btn btn-success">
+              <a href="{% url 'event.zoom' event.pk %}" style="color:white;">{% trans "Join Meeting" %}</a>
+            </div>
+            {% else %}
+            <div class="small-font">
+              {% if registrant_user and event.zoom_integration_setup %}
+              {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
+              Zoom meeting available from 10 minutes prior to <strong>{{ start_dt }}</strong> through <strong>{{ end_dt }}</strong>
+              {% endblocktrans %}
+            {% endif %}
+            </div>
+            {% endif %}
+
           </p>
         </div>
         <div class="col-xs-5">
           {% if event.registration_configuration.enabled %}
-          {% registration_pricing_and_button event request.user %}
+          {% if MODULE_EVENTS_CANREGISTERAGAIN or not my_registrants or request.user.is_superuser %}
+         		{% registration_pricing_and_button event request.user %}
+           {% endif %}
           {% endif %}
         </div>
       </div>
@@ -220,7 +240,13 @@ div.pricing-list-wrap li{
           </div>
         </div>
         {% endif %}
-        
+
+        {% if event.has_child_events %}
+          <br /><br />
+          {% child_events_display event request.user %}
+          <br/><br/>
+        {% endif %}
+
         {% if addons %}
         <hr/>
         <h4 class="time-period">{% trans "Addons" %}</h4> 
@@ -348,12 +374,25 @@ div.pricing-list-wrap li{
       
       {% if event.registration_configuration.enabled %}
       <div class="vitals">
+      {% if not MODULE_EVENTS_CANREGISTERAGAIN and my_registrants and not request.user.is_superuser %}
+      	{% if my_registrants and my_registrants.0.reg8n_status == 'payment-required' and event.registration_configuration.can_pay_online %}
+       	<a class="btn btn-lg btn-warning" href="{% url "payment.pay_online" my_registrants.0.registration.invoice.pk my_registrants.0.registration.invoice.guid %}">
+              {% trans "Complete my registration!" %}</a>
+       	{% else %}
+          {% if my_registrants.count == 1 %}
+	        <a class="btn btn-success" href="{% url 'event.registration_confirmation' event.id my_registrants.0.registration.id %}">{% trans "View/Update My Registration" %}</a>
+	 		{% else %}
+	 		<a class="btn btn-success" href="{% url 'profile' request.user.username %}">{% trans "View My Registration" %}</a>
+	 		{% endif %}
+	 	{% endif %}
+	   {% else %}
         <h4 class="time-period">
           {% if not free_event %}
           {% trans 'Pricing' %}
           {% endif %}
         </h4>
         {% registration_pricing_and_button event request.user %}
+      {% endif %}
       </div>
 
        
@@ -421,9 +460,10 @@ div.pricing-list-wrap li{
 {{ block.super }}
 <script type="text/javascript" src="{% static 'js/jquery.tipsy.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/social_media_icons.js' %}"></script>
+
 <script type="text/javascript">
   $(document).ready(function(){
-  
+
   $('td.price-disabled').tipsy({
   gravity: 'e',
   live: true

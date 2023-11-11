@@ -35,7 +35,7 @@
     <div class="edit-links">
     <ul>
         {% if request.user.is_staff %}
-        <li><a class="eventlog-link" href="{% url "event_log.search" %}?user_id={{ profile.user.pk }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="eventlog-link" href="{% url "event_log.search" %}?user_id={{ profile.user.pk }}&start_dt_0={{ profile.user.date_joined|date:'Y-m-d' }}&start_dt_1=12%3A00+AM&end_dt_0={% now "Y-m-d" %}&end_dt_1=11%3A30+PM">{% trans "Eventlogs" %}</a></li>
         {% endif %}
         <li><a class="edit-link" href="{% url "profile.edit" profile.user_id %}">{% trans "Edit" %}</a></li>
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
@@ -60,6 +60,13 @@
                 <li>
                     <a href="{% url "invoice.search" %}?bill_to_email={{ user_this.email}}" title=="View invoices">{% trans "Invoices" %}</a>
                 </li>
+                {% if MODULE_TRAININGS_ENABLED %}
+                {% if request.user.is_superuser or request.user == profile.user  %}
+                <li>
+                    <a style="white-space: nowrap;" href ="{% url 'trainings.transcripts_user' profile.user_id %}" title="View Transcript">{% trans "View Transcript" %}</a>
+                </li>
+                {% endif %}
+                {% endif %}
                  {% if request.user.is_superuser %}
 	                <li>
 	                    <a href="{% url "profile.edit_perms" profile.user_id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
@@ -70,6 +77,7 @@
 	                    <a href ="{{ request.path }}?_impersonate={{ profile.user.username }}" title="Impersonate">{% trans "Impersonate" %}</a>
 	                </li>
 	                {% endif %}
+	                
 	                <li>
 	                    <a href="{% url "admin:auth_user_delete" profile.user_id %}" class="delete" title="Delete User">{% trans "Delete" %}</a>
 	                </li>

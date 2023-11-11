@@ -144,7 +144,7 @@ class Newsletter(models.Model):
     # recipient, subject fields
     member_only = models.BooleanField(default=False)
     send_to_email2 = models.BooleanField(default=False)
-    enforce_direct_mail_flag = models.BooleanField(_("Skip members that have opted for Don't Send Email in their profile"), default=False)
+    enforce_direct_mail_flag = models.BooleanField(_("Skip members that have opted for Don't Send Email in their profile"), default=True)
     group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL, blank=True)
     include_login = models.BooleanField()
     personalize_subject_first_name = models.BooleanField()

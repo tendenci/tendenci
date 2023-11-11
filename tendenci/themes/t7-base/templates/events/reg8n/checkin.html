@@ -1,0 +1,72 @@
+{% extends "events/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans "Check-In Registrant" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<style>
+  .checked_in, .error, .session_form {
+      font-size: 1.5em;
+      margin-top: 25px;
+      margin-bottom: 25px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="guide">
+  <div>
+    <a href="{% url 'event.registrant.roster' registrant.registration.event.pk %}">&laquo; {% trans "Back to roster" %}
+    </a>
+  </div>
+</div>
+
+<div class="t">
+    <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Check-In" %}</h1>
+
+<div class="event-wrap">
+  {% if error %}
+      <div class="error">{{ error }}</div>
+  {% endif %}
+
+  {% if not error and registrant.checked_in and not registrant.checked_out and not confirm_session_check_in %}
+  <div class="checked_in">
+    {% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name and parent_event.title as event %}
+    {{ first_name }} {{ last_name }} succesfully checked in to <strong>{{ event }}</strong>
+    {% endblocktrans %}
+  </div>
+  {% else %}
+  {% if not error and registrant.checked_out and not confirm_session_check_in  %}
+  <div class="checked_in">
+    {% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name and parent_event.title as event %}
+    {{ first_name }} {{ last_name }} succesfully checked out of <strong>{{ event }}</strong>
+    {% endblocktrans %}
+  </div>
+  {% else %}
+  {% if not error and confirm_session_check_in  %}
+  <div class="checked_in">
+    {% blocktrans with registrant.first_name as first_name and registrant.last_name as last_name and confirm_session_check_in as event %}
+    {{ first_name }} {{ last_name }} succesfully checked in to <strong>{{ event }}</strong>
+    {% endblocktrans %}
+  </div>
+  {% endif %}
+  {% endif %}
+  {% endif %}
+
+  {% if form %}
+  <form action="{% url 'event.digital_check_in' registrant.pk %}" method="post">
+    {% csrf_token %}
+    <div class="forms">
+      <div class="session_form">
+        <label for="{{ form.event.id_for_label }}">{{ form.event.label }}:</label><br />
+          {{ form.event }}
+      </div>
+      <input class="btn btn-primary" type="submit" value="{% trans "Check In" %}" />
+    </div>
+  </form>
+  {% endif %}
+  </div>
+</div>
+{% endblock %}

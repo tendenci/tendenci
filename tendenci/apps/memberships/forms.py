@@ -141,6 +141,16 @@ class MemberSearchForm(FormControlWidgetMixin, forms.Form):
         app_fields = kwargs.pop('app_fields')
         user = kwargs.pop('user')
         super(MemberSearchForm, self).__init__(*args, **kwargs)
+
+        # status_detail
+        self.fields['status_detail'] = forms.ChoiceField(
+                    required=False,
+                    widget=forms.RadioSelect,
+                    choices=(('', _('All')),
+                            ('active', _('Active')),
+                            ('pending', _('Pending')),
+                            ('expired', _('Expired'))))
+
         assign_search_fields(self, app_fields)
         self.add_form_control_class()
 
@@ -818,9 +828,9 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
 
         if self.request.user.is_authenticated and self.request.user.username == un:
             # they are logged in and join or renewal for themselves
-            if email and email !=  self.request.user.email:
+            if email and email.lower() !=  self.request.user.email.lower():
                 # email is changed
-                if User.objects.filter(email=email).exists():
+                if User.objects.filter(email__iexact=email).exists():
                     raise forms.ValidationError(_('''This Email address you entered "%s" already exists in the system.
                                     Please select a different one to continue.''') % email)
 
@@ -841,7 +851,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                 else:
                     if u:
                         # user is not active. if email matches, let them activate the account.
-                        if email and u.email == email:
+                        if email and u.email.lower() == email.lower():
                             raise forms.ValidationError(inactive_user_err_msg)
                         raise forms.ValidationError('This username is taken. Please choose a new username.')
 
@@ -1108,13 +1118,10 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
         super(DemographicsForm, self).__init__(*args, **kwargs)
         
         self.field_names = [name for name in self.fields]
-        self.file_upload_fields = {}
         # change the default widget to TextInput instead of TextArea
         for key, field in self.fields.items():
             if field.widget.__class__.__name__.lower() == 'textarea':
                 field.widget = forms.widgets.TextInput({'size': 30})
-            if 'fileinput' in field.widget.__class__.__name__.lower():
-                self.file_upload_fields.update({key:field})
             if field.widget.__class__.__name__.lower() == 'selectdatewidget':
                 field.widget.years = list(range(1920, THIS_YEAR + 10))
 
@@ -1122,6 +1129,12 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
         # Moved down here otherwise the widget would be overridden by
         # the above code which sets the default widget to TextInput
         assign_fields(self, app_field_objs)
+
+        # this section needs to be here, otherwise the 'fileinput' has been assigned yet.
+        self.file_upload_fields = {}
+        for key, field in self.fields.items():
+            if 'fileinput' in field.widget.__class__.__name__.lower():
+                self.file_upload_fields.update({key:field})
 
         self.app = None
         self.demographics = None
@@ -1659,6 +1672,7 @@ class MembershipDefaultForm(TendenciBaseForm):
     salutation = forms.CharField(required=False)
     first_name = forms.CharField(initial=u'')
     last_name = forms.CharField(initial=u'')
+    account_id = forms.IntegerField(required=False)
     email = forms.CharField(initial=u'')
     email2 = forms.CharField(initial=u'', required=False)
     display_name = forms.CharField(initial=u'', required=False)
@@ -1910,6 +1924,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             ]
 
             profile_attrs = [
+                'account_id',
                 'email2',
                 'industry',
                 'company',
@@ -2060,7 +2075,7 @@ class MembershipDefaultForm(TendenciBaseForm):
 
     def save(self, *args, **kwargs):
         """
-        Create membership record.
+        Save changes for membership record.
         Handle all objects:
             Membership
             Membership.user
@@ -2079,21 +2094,14 @@ class MembershipDefaultForm(TendenciBaseForm):
         membership = super(MembershipDefaultForm, self).save(*args, **kwargs)
 
         if request_user:
-            membership.creator = request_user
-            membership.creator_username = request_user.username
+            # this form is just on membership edit
+            # membership.creator = request_user
+            # membership.creator_username = request_user.username
             membership.owner = request_user
             membership.owner_username = request_user.username
 
-        membership.entity = Entity.objects.first()
-
-        # get or create user
-        membership.user, created = membership.get_or_create_user(**{
-            'username': self.cleaned_data.get('username'),
-            'password': self.cleaned_data.get('password'),
-            'first_name': self.cleaned_data.get('first_name'),
-            'last_name': self.cleaned_data.get('last_name'),
-            'email': self.cleaned_data.get('email')
-        })
+        if not membership.entity:
+            membership.entity = Entity.objects.first()
 
         # assign corp_profile_id
         if membership.corporate_membership_id:
@@ -2107,45 +2115,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             membership.set_member_number()
             membership.user.profile.member_number = membership.member_number
             membership.user.profile.save()
-        else:
-            # adding membership record
-            membership.renewal = membership.user.profile.can_renew()
-
-            # create record in database
-            # helps with associating invoice record
-            membership.save()
-
-            NOW = datetime.now()
-
-            if not membership.approval_required():  # approval not required
-
-                # save invoice tendered
-                membership.save_invoice(status_detail='tendered')
-
-                # auto approve -------------------------
-                membership.application_approved = True
-                membership.application_approved_user = \
-                    request_user or membership.user
-                membership.application_approved_dt = NOW
-
-                membership.application_approved_denied_user = \
-                    request_user or membership.user
-
-                membership.set_join_dt()
-                membership.set_renew_dt()
-                membership.set_expire_dt()
-
-                membership.archive_old_memberships()
-                membership.send_email(request, ('approve_renewal' if membership.is_renewal() else 'approve'))
-
-            else:  # approval required
-                # save invoice estimate
-                membership.save_invoice(status_detail='estimate')
-
-            # application complete
-            membership.application_complete_dt = NOW
-            membership.application_complete_user = membership.user
-
+    
             # save application fields
             # save join, renew, and expire dt
             membership.save()
@@ -2234,16 +2204,16 @@ class MembershipDefaultForm(TendenciBaseForm):
                     )
             # --------------------------------------------------
 
-            # send welcome email; if required
-            if created:
-                send_welcome_email(membership.user)
+            # # send welcome email; if required
+            # if created:
+            #     send_welcome_email(membership.user)
 
         # [un]subscribe to group
         membership.group_refresh()
 
         if membership.application_approved:
             membership.archive_old_memberships()
-            membership.save_invoice(status_detail='tendered')
+            #membership.save_invoice(status_detail='tendered')
 
         # loop through & set these user attributes
         # user.first_name = self.cleaned_data.get('first_name', u'')
@@ -2262,6 +2232,7 @@ class MembershipDefaultForm(TendenciBaseForm):
         # profile.display_name = self.cleaned_data.get('display_name', u'')
         profile_attrs = [
             'display_name',
+            'account_id',
             'industry',
             'company',
             'position_title',

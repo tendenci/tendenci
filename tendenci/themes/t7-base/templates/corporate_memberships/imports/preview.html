@@ -50,6 +50,9 @@
                 <th>{% trans 'Row #' %}</th>
                 <th>{% trans  'Action' %}</th>
                 <th>{% trans 'Company Name' %}</th>
+                {% if 'account_id' in fieldnames %}
+                <th>{% trans 'Account ID' %}</th>
+                {% endif %}
                 {% if 'email' in fieldnames %}
                 <th>{% trans 'Email' %}</th>
                 {% endif %}
@@ -71,6 +74,9 @@
                 <td>{{ cm.row_num }}</td>
                 <td class="action-{{ cm.action }}">{{ cm.action }}</td>
                 <td>{{ cm.company_name }}</td>
+                {% if 'account_id' in fieldnames %}
+                <td>{{ cm.account_id }}</td>
+                {% endif %}
                 {% if 'email' in fieldnames %}
                 <td>{{ cm.email }}</td>
                 {% endif %}

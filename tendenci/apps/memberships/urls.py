@@ -156,7 +156,7 @@ urlpatterns = [
 
     # application
     re_path(r"^%s/default-confirmation/(?P<hash>[\w]+)/$" % urlpath, views.application_confirmation_default, name="membership.application_confirmation_default"),
-    re_path(r"^%s/default-application/(?P<cmb_id>\d+)?/?$" % urlpath, views.application_detail_default, name="membership.application_detail_default"),
+    #re_path(r"^%s/default-application/(?P<cmb_id>\d+)?/?$" % urlpath, views.application_detail_default, name="membership.application_detail_default"),
 
 ]
 

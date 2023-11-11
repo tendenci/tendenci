@@ -112,9 +112,15 @@ table#registrant-table a:hover {
 	height: 20px;
 	cursor: pointer;
 }
-.attended-checkedin-text{
+.attended-checkedin-text, .attended-checkedout-text{
 	color: green !important;
 }
 #checked-in-total{
 	text-align: center;
+}
+.print-badges {
+	width: 99%;
+}
+.print-badge-cell {
+	padding: 5px;
 }

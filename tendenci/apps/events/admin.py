@@ -1,7 +1,10 @@
 from csv import writer
 from datetime import datetime
 
+from django import forms
 from django.contrib import admin, messages
+from django.db import models
+from django.db.models import Count
 from django.urls import reverse
 from django.urls import path, re_path
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -10,13 +13,19 @@ from django.utils.encoding import iri_to_uri
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.core.exceptions import ValidationError
+from django.forms import BaseInlineFormSet
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
-    CustomRegFormEntry, CustomRegFieldEntry, Event)
-from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
+                                         CustomRegFormEntry, CustomRegFieldEntry, Event,
+                                         CEUCategory, SignatureImage, CertificateImage,
+                                         RegistrantCredits, VirtualEventCreditsLogicConfiguration,
+                                         ZoomAPIConfiguration)
+from tendenci.apps.events.forms import (CustomRegFormAdminForm, CustomRegFormForField, TypeForm,
+                                        StandardRegAdminForm)
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.site_settings.utils import delete_settings_cache
+from tendenci.apps.site_settings.utils import delete_settings_cache, get_setting
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.theme.templatetags.static import static
 
@@ -290,5 +299,176 @@ class StandardRegFormAdmin(admin.ModelAdmin):
         return False
 
 
+class CEUSubCategoryFormSet(BaseInlineFormSet):
+
+    def clean(self):
+        super(CEUSubCategoryFormSet, self).clean()
+
+        for form in self.forms:
+            if not hasattr(form, 'cleaned_data'):
+                continue
+
+            data = form.cleaned_data
+
+            if (data.get('DELETE') and form.instance.eventcredit_set.available().exists()):
+                raise ValidationError(_(f'You cannot delete this sub-category "{form.instance}" - It is being used by events.'))
+
+
+class CEUCategoryAdminInline(admin.TabularInline):
+    fieldsets = ((None, {'fields': ('code', 'name',)}),)
+    model = CEUCategory
+    extra = 0
+    verbose_name = _("Continuing Education Unit Sub-Category")
+    verbose_name_plural = _("Continuing Education Unit Sub-Categories")
+    formset = CEUSubCategoryFormSet
+
+
+class CEUCategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'code', 'name',)
+    list_display_links = ('name',)
+    fieldsets = ((None, {'fields': ('code', 'name',)}),)
+    inlines = (CEUCategoryAdminInline,)
+    verbose_name = _("Continuing Education Unit Category")
+    verbose_name_plural = _("Continuing Education Unit Categories")
+
+    def get_queryset(self, request):
+        qs = super(CEUCategoryAdmin, self).get_queryset(request)
+        return qs.filter(parent__isnull=True)
+
+
+class SignatureImageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+
+
+class CertificateImageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+
+
+class RegistrantCreditsEventFilter(admin.SimpleListFilter):
+    """Filter Events that have credits assigned to registrants"""
+    title = _('Event')
+    parameter_name = 'event'
+
+    def lookups(self, request, model_admin):
+        events = []
+        events_pk = RegistrantCredits.objects.all().values_list('event', flat=True)
+
+        for event in Event.objects.filter(pk__in=events_pk).order_by('-start_dt'):
+            events.append((str(event.id), str(event)))
+        return events
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(event__id__exact=self.value())
+        else:
+            return queryset
+
+
+class RegistrantCreditsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'registrant', 'event_code', 'event_link', 'credit_name', 'credits', 'released')
+    list_editable = ('credits', 'released')
+    search_fields = ('event__title', 'event__event_code',)
+    readonly_fields = ('registrant', 'event_credit', 'event_link')
+    list_filter = ('released', RegistrantCreditsEventFilter)
+    actions = ["release"]
+
+
+    def event_link(self, obj):
+        return mark_safe('<a href="{}">{}</a>'.format(
+            obj.event.get_absolute_url(),
+            obj.event
+        ))
+    event_link.short_description = 'event'
+
+    def release(self, request, queryset):
+        """Release all credits"""
+        queryset.update(released=True)
+    release.short_description=_("Release all credits")
+
+    def has_delete_permission(self, request, obj=None):
+        """Don't allow deleting released credits"""
+        result = super().has_delete_permission(request, obj=obj)
+
+        if obj and obj.released:
+            self.message_user(
+                request,
+                _(f"Credits for {obj.registrant} in {obj.credit_name} have already been released.")
+            )
+            return False
+        return result
+
+    def has_add_permission(self, request):
+        return False
+
+    def event_code(self, obj):
+        return obj.event.event_code
+    event_code.short_description = _('Event Code')
+
+
+class VirtualEventCreditsLogicConfigurationAdmin(admin.ModelAdmin):
+    list_display = (
+        'edit',
+        'credit_period',
+        'credit_period_questions',
+        'full_credit_percent',
+        'full_credit_questions',
+        'half_credits_allowed',
+        'half_credit_periods',
+        'half_credit_credits',
+    )
+
+    def edit(self, obj):
+        return 'Edit'
+
+    def has_add_permission(self, request):
+        return not VirtualEventCreditsLogicConfiguration.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+class ZoomAPIConfigurationForm(forms.ModelForm):
+    class Meta:
+        model = ZoomAPIConfiguration
+        fields = '__all__'
+        widgets = {
+            'sdk_client_secret': forms.PasswordInput(
+                render_value = True, attrs={'autocomplete': 'new-password'}),
+            'oauth_client_secret': forms.PasswordInput(
+                render_value = True, attrs={'autocomplete': 'new-password'})
+        }
+
+
+class ZoomAPIConfigurationAdmin(admin.ModelAdmin):
+    """Configure Zoom API credentials"""
+    form = ZoomAPIConfigurationForm
+    list_display=('account_name', 'use_as_default')
+    list_editable=('use_as_default',)
+
+    def save_model(self, request, obj, form, change):
+        if obj.use_as_default:
+            ZoomAPIConfiguration.objects.update(use_as_default=False)
+        super().save_model(request, obj, form, change)
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and not obj.use_as_default and ZoomAPIConfiguration.objects.filter(
+                use_as_default=True).exists():
+            return ['use_as_default']
+        return super().get_readonly_fields(request, obj)
+
+
+if get_setting('module', 'events', 'enable_zoom'):
+    admin.site.register(ZoomAPIConfiguration, ZoomAPIConfigurationAdmin)
+
+if get_setting('module', 'events', 'use_credits'):
+    admin.site.register(CEUCategory, CEUCategoryAdmin)
+
+    if get_setting('module', 'events', 'enable_zoom'):
+        admin.site.register(VirtualEventCreditsLogicConfiguration, VirtualEventCreditsLogicConfigurationAdmin)
+
+
+admin.site.register(RegistrantCredits, RegistrantCreditsAdmin)
+admin.site.register(SignatureImage, SignatureImageAdmin)
+admin.site.register(CertificateImage, CertificateImageAdmin)
 admin.site.register(StandardRegForm, StandardRegFormAdmin)
 admin.site.register(Event, EventAdmin)

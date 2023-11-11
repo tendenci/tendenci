@@ -99,6 +99,7 @@ class Command(BaseCommand):
                                 registration_configuration__payment_required=True,
                                 status=True,
                                 status_detail='active')
+        events = events.filter(registration_configuration__external_payment_link='')
         if event_id:
             events = events.filter(id=event_id)
         
@@ -115,7 +116,7 @@ class Command(BaseCommand):
                 
                 if organizer:
                     if organizer.name:
-                        kwargs.update({'sender_display': organizer.namel})
+                        kwargs.update({'sender_display': organizer.name})
                     if organizer.user and organizer.user.email:
                             kwargs.update({'reply_to': organizer.user.email})
                 

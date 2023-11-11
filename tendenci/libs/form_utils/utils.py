@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 utility functions for django-form-utils
 

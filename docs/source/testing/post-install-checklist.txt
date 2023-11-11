@@ -81,9 +81,9 @@ Site Content Review
 Contact and Custom Forms
 ------------------------
 
-1. Verify the official "contact" form is using the "contacts" module and not the custom forms module. There are many technical reasons for this beyond the scope of a checklist.
+1. The "contact" form is one of the custom forms that is specified in the setting “Contact Form” /settings/site/global/#id_contact_form.
 
-  - Default Contact form has an email address in th "Send Copies To" field.
+  - Check if the default Contact form has an email address in the "Send Copies To" field.
 
 2. Custom forms - a necessary evil. Verify all forms if used on the site are in "published" status
 
@@ -209,7 +209,7 @@ Accessibility
 
 1. Check for Accessibility
 
-  - Web Accessibility Measurement Tool http://wave.webaim.org/
+  - Web Accessibility Measurement Tool https://wave.webaim.org
   - Note: The community's goal is to make Tendenci 100% Accessible.
 
 2. Submit issues if you see something in core that is broken

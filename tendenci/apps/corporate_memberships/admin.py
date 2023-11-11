@@ -13,7 +13,7 @@ from tendenci.apps.corporate_memberships.models import (
     CorpMembershipAppField,
     CorpMembership,
     CorpMembershipRep,
-    CorpProfile, CorpProduct,
+    CorpProfile, CorpProduct, Branch,
     Notice)
 from tendenci.apps.corporate_memberships.forms import (
     CorporateMembershipTypeForm,
@@ -21,7 +21,7 @@ from tendenci.apps.corporate_memberships.forms import (
     NoticeForm,
     CorpMembershipAppFieldAdminForm,
     CorpProfileAdminForm,
-    CorpProductForm)
+    CorpProductForm, BranchAdminForm)
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 
 from tendenci.apps.base.utils import tcurrency
@@ -29,10 +29,11 @@ from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.perms.utils import update_perms_and_save
 
 
 class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
-    list_display = ['name', 'id', 'price', 'renewal_price', 'membership_type', 'apply_cap',
+    list_display = ['name', 'id', 'price', 'renewal_price', 'get_membership_type', 'apply_cap',
                      'membership_cap', 'allow_above_cap', 'above_cap_price', 'reps_groups', 'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
     list_editable = ['position']
@@ -77,6 +78,15 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
 
         return instance
 
+    @mark_safe
+    def get_membership_type(self, instance):
+        return '<a href="%s">%s</a>' % (
+              reverse('admin:memberships_membershiptype_change',
+                      args=[instance.membership_type.id]),
+              instance.membership_type.name,)
+    get_membership_type.short_description = _('Membership Type (Individual)')
+    get_membership_type.admin_order_field = 'membership_type'
+    
     @mark_safe
     def reps_groups(self, instance):
         reps_groups_links = ''
@@ -218,6 +228,7 @@ approve_selected.short_description = u'Approve selected'
 
 class CorpMembershipAdmin(TendenciBaseModelAdmin):
     list_display = ['profile',
+                    'account_id',
                     'statusdetail',
                     'parent_entity',
                     'cm_type',
@@ -229,7 +240,7 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                     'roster_link',
                     'invoice_url']
     list_filter = ['corporate_membership_type', StatusDetailFilter, 'join_dt', 'expiration_dt']
-    search_fields = ['corp_profile__name']
+    search_fields = ['corp_profile__name', 'corp_profile__account_id']
 
     actions = [approve_selected,]
 
@@ -245,6 +256,11 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                     ).exclude(status_detail='archive'
                               ).order_by('status_detail',
                                          'corp_profile__name')
+
+    def account_id(self, instance):
+        return instance.corp_profile.account_id
+    account_id.short_description = _('Account ID')
+    account_id.admin_order_field = 'corp_profile__account_id'
 
     @mark_safe
     def profile(self, instance):
@@ -578,15 +594,30 @@ class ProductInline(admin.TabularInline):
     verbose_name_plural = 'Products'
 
 
+class BranchInlineAdmin(admin.StackedInline):
+    model = Branch
+    fields = ('name', 'address', 'city', 'state', 'zip',
+              'country', 'phone', 'fax')
+    extra = 1
+    verbose_name = _('Branch')
+    verbose_name_plural = _('Branches')
+    ordering = ("name",)
+    form = BranchAdminForm
+
+
 class CorpProfileAdmin(TendenciBaseModelAdmin):
     model = CorpProfile
     list_display = ['name',]
+    if get_setting('module', 'trainings', 'enabled'):
+        list_display.append('show_transcripts')
     search_fields = ('name',)
-    inlines = (CorpMembershipRepInlineAdmin, CorpMembershipInlineAdmin)
+    inlines = (CorpMembershipRepInlineAdmin, BranchInlineAdmin,
+               CorpMembershipInlineAdmin)
     if get_setting('module', 'corporate_memberships', 'useproducts'):
         inlines = (ProductInline,) + inlines
     fieldsets = [(_('Company Details'), {
                       'fields': ('name',
+                                 'account_id',
                                  'logo_file',
                                  'url',
                                  'number_employees',
@@ -613,6 +644,27 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+    def save_model(self, request, object, form, change):
+        """
+        Update the permissions backend and log the event
+        """
+        instance = form.save(commit=False)
+        instance.owner = request.user
+        update_perms_and_save(request, form, instance)
+        
+        form.save_logo(instance, request.user)
+        return instance
+
+    @mark_safe
+    def show_transcripts(self, instance):
+        if instance:
+            corp_mem = instance.corp_membership
+            if corp_mem and corp_mem.members_count > 0:
+                url = reverse('trainings.transcripts_corp', args=[instance.id])
+                return f'<a href="{url}" title="View Transcripts">View Transcripts</a>'
+        return ""
+    show_transcripts.short_description = 'Transcripts'
 
 
 class CorpMembershipRepAdmin(admin.ModelAdmin):

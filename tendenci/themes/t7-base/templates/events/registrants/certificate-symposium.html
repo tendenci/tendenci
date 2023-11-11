@@ -1,0 +1,326 @@
+{% load base_tags %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<style>
+  .certificate {
+      width: 10.8in;
+      height: 8in;
+      marign: 5px;
+      border: 1px solid black;
+      padding: 2px;
+  }
+  .certificate img {
+      max-height: 1in;
+  }
+  .certificate .grid {
+      width: 100%;
+      height: 100%;
+  }
+  .certificate .row {
+      width: 100%;
+      height: 1em;
+  }
+  .certificate .align-right{
+      float: right;
+      text-align: right;
+  }
+  .certificate .align-left {
+      float: left;
+  }
+  .certificate .small-font {
+      font-size: .8em;
+      text-align: center;
+  }
+
+  .certificate .extra-small-font {
+      font-size: .7em;
+      font-weight: normal;
+  }
+  .certificate .row.logos {
+      min-height: 150px;
+  }
+  .certificate .row.heading, .certificate .row.awarded, .certificate .row.event {
+      height: 100px;
+      margin-bottom: 10px;
+  }
+
+  .certificate .row.heading {
+      height: 110px;
+      margin-top: 25px;
+  }
+  .certificate .row.heading img {
+      margin-left: 40px;
+      margin-right: 40px;
+  }
+  .certificate .row.credits {
+      margin-top: 10px;
+      text-align: center;
+  }
+
+  .certificate .row.address {
+      margin-top: 20px;
+  }
+  
+  .certificate .row.staff {
+      margin-bottom: 50px;
+      height: 50px;
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+  }
+  .certificate .heading div, .certificate .awarded div, .certificate .event div {
+      float: left;
+      width: 30%;
+  }
+  .certificate .heading div.heading {
+      width: 40%;
+      text-align: center;
+      font-size: 2em;
+  }
+  .certificate .awarded div.awarded {
+      width: 40%;
+      text-align: center;
+  }
+  .certificate .event div.event {
+      width: 40%;
+      text-align: center;
+      font-size: 1.2em;
+  }
+  .certificate .event span.dates {
+      font-size: .75em;
+  }
+  .certificate .staff div.staff {
+      width: 30%;
+      text-align: center;
+      float: left;
+      font-size: 1.3em;
+      padding-right: 16px;
+      padding-left: 16px;
+      font-weight: bold;
+  }
+  .certificate .staff hr {
+      margin: 0;
+  }
+  .certificate .staff div.staff span.role {
+      font-size: .75em;
+      font-weight: normal;
+  }
+  .certificate .formatted-text {
+      font-size: .8em;
+  }
+  .certificate .formatted-text .name {
+      font-size: .95em;
+      font-weight: bold;
+  }
+  .certificate .formatted-text p {
+      margin-block-start: 0;
+      margin-block-end: 0;
+  }
+  .certificate .formatted-text.align-right {
+      margin-right: 2px;
+      margin-left: 0 !important;
+  }
+  .certificate .row.logos .left, .certificate .row.logos .right {
+      width: 50%;
+      float: left;
+      display: flex;
+      align-items: center;
+  }
+  .certificate .row.logos .right {
+      float: right;
+      flex-direction: row-reverse;
+  }
+
+  .certificate.credits {
+      font-weight: normal;
+  }
+  .certificate.credits .row.heading {
+      height: 50px;
+      font-weight: bold;
+      border-bottom: solid 1px black;
+  }
+  .certificate.credits .row {
+      border-bottom: solid 1px black;
+      height: 1.2em;
+  }
+  .certificate.credits .col-md-12 {
+      width: 60%;
+  }
+  .certificate.credits .title {
+      margin-left: 100px;
+  }
+  .certificate.credits .col-md-4 {
+      width: 30%;
+  }
+  .certificate.credits .row.day {
+      font-weight: bold;
+  }
+  .certificate.credits .row.day span.day {
+      margin-left: 100px;
+  }
+  .certificate.credits .row.details  {
+      display: flex;
+      align-items: center;
+  }
+  .certificate.credits .row.details div {
+      float: left;
+  }
+  .certificate.credits .col-100px {
+      width: 100px;
+      text-align: center;
+  }
+  .certificate.credits .col-150px; {
+      width: 150px;
+  }
+  .certificate.credits .col-90px {
+      width: 93px;
+  }
+  .certificate.credits .col-47px {
+      width: 47px;
+  }
+  .certificate.credits .col-166px {
+      width: 166px; 
+      text-align: left;
+  }
+  
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="certificate">
+  <div class="grid">
+    <div class="row year">
+      <div class="col-md-8 align-right">{{ registrant.event.start_dt.year }}</div>
+    </div>
+    <div class="row logos">
+      <div class="left">
+        <div class="logo align-left">
+          {% if registrant.event.sponsor %}
+          <img  src="{% image_url registrant.event.sponsor.image %}" title="{{ registrant.event.sponsor.name }}" alt="{{ registrant.event.sponsor.name }}"/>
+        </div>
+        <div class="formatted-text">
+          <div class="name">{{ registrant.event.sponsor.name }}</div>
+          {{ registrant.event.sponsor.description|safe }}
+          {% else %}
+              &nbsp;
+          {% endif %}
+        </div>
+      </div>
+      <div class="right">
+        <div class="logo align-right">
+          {% if registrant.event.organizer and registrant.event.organizer.image %}
+          <img src="{% image_url registrant.event.organizer.image %}" title="{{ registrant.event.organizer.name }}" alt="{{ registrant.event.organizer.name }}"/>
+		  {% endif %}
+        </div>
+        <div class="formatted-text align-right">
+          {% if registrant.event.organizer %}
+          <div class="name">{{ registrant.event.organizer.name }} </div>
+          {{ registrant.event.organizer.description|safe }}
+          {% else %}
+          &nbsp;
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="row heading">
+      <div class="col-md-3">
+        <img src="{% image_url registrant.event.image %}" title="{{ registrant.event.title }}" alt="{{ registrant.event.title }}"/></div>
+      <div class="col-md-3 heading">
+        <hr>
+        {% trans "CERTIFICATE OF CONTINUING EDUCATION" %}
+      </div>
+      <div class="col-md-3 align-right">
+        <img src="{{ registrant.event.certificate_image.url }}" title="{{ registrant.event.title }}" alt="{{ registrant.event.title }}"/>
+      </div>
+    </div>
+    <div class="row awarded">
+      <div class="col-md-3">&nbsp;</div>
+      <div class="col-md-3 awarded">
+        {% trans "This certificate awarded to" %} <br />
+        <strong>{{ registrant.first_name }} {{ registrant.last_name }}</strong> <br />
+        <hr>
+        {% trans "In recognition of attending" %}
+      </div>
+      <div class="col-md-3">&nbsp;</div>
+    </div>
+    <div class="row event">
+      <div class="col-md-3">&nbsp;</div>
+      <div class="col-md-3 event">
+        <strong>{{ registrant.event.title }}</strong> <br />
+        <span class="dates">{{ registrant.event_dates_display }}</span> <br />
+        {% if registrant.event.place.virtual %}
+	        {% if registrant.event.delivery_method %}{{ registrant.event.delivery_method }}{% endif %} <br />
+	        {% trans "Online" %}
+        {% else %}
+        	{% if registrant.event.place.name %}
+        	{{ registrant.event.place.name  }},
+        	{% endif %}
+        	{% if registrant.event.place.city %} 
+        	{{ registrant.event.place.city  }},
+        	{% endif %}
+        	{% if registrant.event.place.state %} 
+        	{{ registrant.event.place.state  }}
+        	{% endif %}
+        {% endif %}
+      </div>
+      <div class="col-md-3">&nbsp;</div>
+    </div>
+    <div class="row staff">
+      {% for staff in registrant.event.certificate_signatures %}
+      <div class="col-md-3 staff">
+        {% if staff.use_signature_on_certificate %}
+        <img  src="{{ staff.signature_image.url }}" title="{{ staff.name }}" alt="{{ staff.name }}"/> <br />
+        <span class="extra-small-font">{{ staff.name }} - {{ staff.role }}</span>
+        {% else %}
+        {{ staff.name }}
+        <hr>
+        <span class="role">{{ staff.role }}</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="row small-font">{% trans "In accordance with the standards of the National Registry of CPE Sponsors, CPE Credits have been granted based on a 50-minute hour." %}</div>
+    <div class="row credits">
+      <div class="total-credits"><strong>{% trans "CPE CREDITS EARNED: " %} {{ registrant.credits_earned }}</strong> ({{ registrant.credits_earned_by_code }})</div>
+    </div>
+    <div class="row credits">
+      <div class="total-credits"><strong>{% trans "IRS CE CREDITS EARNED " %}</strong> - See Reverse: <strong>{{ registrant.irs_credits_earned }} {% if registrant.ptin %} {% trans "PTIN: "%} {{ registrant.ptin }}{% endif %} {% if registrant.license_number %} {% trans "LICENSE NUMBER: " %}{{ registrant.license_state}} {{ registrant.license_number }} {% endif %}</strong></div>
+    </div>
+    <div class="row address small-font">
+      <strong>{{ address }} {{ phone }}</phone>
+    </div>
+  </div>
+</div>
+
+{% if registrant.credits_by_sub_event %}
+<div class="certificate credits">
+  <div class="row heading">
+    <div class="title col-md-12">
+      {% trans "Class Title" %}
+    </div>
+    <div class="col-md-4">
+      <div>Credits</div>
+      <div>IRS CE ID</div>
+      <div>IRS CE Earned</div>
+    </div>
+  </div>
+  {% for day, events in registrant.credits_by_sub_event.items %}
+    <div class="row day"><span class="day">{{ day }}</span></div>
+    {% for event in events %}
+      <div class="row details">
+        <div class="col-100px">{{ event.event_code }}</div>
+        <div class="col-md-12">{{ event.title }}</div>
+        <div class="col-md-4">
+            <div class="col-47px">{{ event.credits }}</div>
+            <div class="col-166px">{{ event.alternate_ceu }}&nbsp;</div>
+            <div class="col-47px">{{ event.irs_credits }}</div>
+        </div>
+      </div>
+    {% endfor %}
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+

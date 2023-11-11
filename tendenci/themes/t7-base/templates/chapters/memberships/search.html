@@ -111,7 +111,9 @@ h3{
 					{% endif %}
 					<th>{% trans "User" %}</th>
 					<th nowrap>{% trans "Membership Type" %}</th>
-					<th nowrap>{% trans "Balance Due" %}</th>
+					<th nowrap>{% trans "Chapter Dues/Balance" %}</th>
+					<th nowrap>{% trans "National Membership Type" %}</th>
+					<th nowrap>{% trans "National Dues/Balance" %}</th>
 					{% for app_field in app_fields %}
 						<th nowrap>{{ app_field.label }}</th>
 					{% endfor %}
@@ -136,6 +138,14 @@ h3{
 						{% if chapter_membership.invoice %}
                         <a href="{% url "invoice.view" chapter_membership.invoice.pk %}">{{ chapter_membership.invoice.balance|format_currency }}</a>
                     	{% endif %}
+						</td>
+						<td nowrap>{{ chapter_membership.national_membership_type }}</td>
+						<td nowrap>
+						{% with chapter_membership.national_membership_invoice as national_invoice %}
+						{% if national_invoice %}
+                        <a href="{% url "invoice.view" national_invoice.pk %}">{{ national_invoice.balance|format_currency }}</a>
+                    	{% endif %}
+						{% endwith %}
 						</td>
 						{% render_chapter_member_row chapter_membership app_fields %}
 						<td nowrap>{{ chapter_membership.create_dt|date:"N j, Y" }}</td>

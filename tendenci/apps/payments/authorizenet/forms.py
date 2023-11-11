@@ -1,6 +1,14 @@
 from django import forms
 from django.conf import settings
 
+
+class AcceptJSPaymentForm(forms.Form):
+    dataValue = forms.CharField(required=True, widget=forms.HiddenInput())
+    dataDescriptor = forms.CharField(required=True, widget=forms.HiddenInput())
+    firstName = forms.CharField(required=False, widget=forms.HiddenInput())
+    lastName = forms.CharField(required=False, widget=forms.HiddenInput())
+
+
 class SIMPaymentForm(forms.Form):
     x_login = forms.CharField(max_length=20, required=True, widget=forms.HiddenInput, initial=settings.MERCHANT_LOGIN)
     x_relay_response = forms.CharField(max_length=8, widget=forms.HiddenInput, initial="TRUE")

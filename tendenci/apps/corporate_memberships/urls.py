@@ -70,6 +70,12 @@ urlpatterns = [
 
     re_path(r"^%s/download/(?P<cm_id>\d+)/(?P<field_id>\d+)/$" % urlpath,
         views.download_file, name="corpmembership.download_file"),
+    
+    # message
+    re_path(r'^%s/message/broadcast/$' % urlpath, views.broadcast_email, name='corpmembership.broadcast_email'),
+    re_path(r'^%s/message/broadcast/conf/(?P<bce_id>\d+)/(?P<guid>[\d\w-]+)/$' % urlpath,
+            views.broadcast_email_conf,
+            name='corpmembership.broadcast_email_conf'),
 
 
     # import to CorpMembership

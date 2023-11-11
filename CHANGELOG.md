@@ -1,3 +1,70 @@
+### 14.5.1 [2023-07-04]
+
+* Fixed an issue about reps could be removed from dues reps and member reps groups when they're removed from a corp but still associated with other corps.
+* Merged HL integration.
+ 
+
+### 14.5 [2023-06-27]
+
+* **New Feature:** Added Trainings module that allows a Tendenci site to offer certificate programs to users. https://tendenci.readthedocs.io/en/latest/topic-guides/trainings.html
+* Besides the standard accounts, express accounts can also be added to stripe connect in Tendenci. For info how to set up stripe connect, please see https://tendenci.readthedocs.io/en/latest/topic-guides/payments.html#how-to-use-stripe-connect. 
+* Members list is now viewable to users who have the membership view permission. Previously, it requires change permission. However, the export and email abilities in the members list still require change permission.
+* Allowed users with news view and change perms to view un-released news so that they can edit. https://github.com/tendenci/tendenci/issues/1176
+* Resolved the issue about guest info is required on event registration form when only first registrant is required.
+* Other small fixes.
+
+
+### 14.4 [2023-05-16]
+
+* Updated Authorize.Net payment gateway integration. 1) Switched SIM to Accept Hosted beause SIM is deprecated https://developer.authorize.net/api/upgrade_guide.html. 2) Removed xml.etree.ElementTree that was used by CIM in recurring payments. The xml.etree.ElementTree module is no longer supported. https://docs.python.org/3/library/xml.etree.elementtree.html
+* Integrated stripe connect to payments. https://tendenci.readthedocs.io/en/latest/topic-guides/payments.html#how-to-use-stripe-connect
+* Updated forums to not send notifications to those listed in the emailblocks.
+* Set the default value for enforce_direct_mail_flag to True on newsletter add. 
+* Other small fixes.
+
+
+### 14.3.6 [2023-03-28]
+
+* Chapter leaders are now not allowed to renew their chapter memberships that are not in renewal period.
+* Included membership_type field to chapter memberships export. 
+* Updated memberships search to display links for files uploaded via ud fields.
+* Fixed a bug that causes files uploaded via ud fields not being saved. 
+* More bug fixes.
+
+
+### 14.3.5 [2023-03-10]
+
+* Added an option for admins to associate a donation to a user, if not already.
+* Fixed a NoneType error for event registration (when admin override is checked but override price is not specified).
+
+
+### 14.3.4 [2023-03-09]
+
+* Committee officers can access their associated groups.
+* Admin can register events after an event is full.
+* Corporate memberships search can filter by membership types.
+* Corp profiles can specify their branches.
+* Added an option for members to send broadcast emails to corp reps.
+* Included county field on memberships and group members exports.
+* Added the command "send_chapter_membership_notices" to the nightly run commands list.
+* Added account_id field to corp profiles and user profiles.
+* Added an option to allow chapter or committee leaders to adjust invoices for their events by the site setting "Chapter or Committee Leaders Can Adjust Registration Invoices for Their Events".
+* Resolved some issues for front-end form edit.
+* Fixed the issue about uploading logos for a corp profile resulting in duplicate logos.
+* Resolved the issue about missing permission checks on form submissions.
+* More bug fixes.
+
+
+### 14.3.3 [2022-12-21]
+
+* Added an option for corporate members to show their products on their corp profiles.
+* Activities logged in eventlogs previously only work for IPv4, it now supports IPv6 as well.
+* Made the notifitions go to chapter contacts (specified in the contact email field) when a new member joins a chapter.
+* Avoided a redundant admin notification from being sent for auto-approved membership types. 
+* Included more basic user info to chapter memberships exports. 
+* Bugfixes: Resolved an AttributeError at event delete. Fixed a photo upload issue. Resolved some issues for form entry edit. 
+
+
 ### 14.3.2 [2022-11-19]
 
 * Bumped gevent to 22.10.2 to resolve an installation error for tendenci on Ubuntu 22.04 LTS.
@@ -14,7 +81,7 @@
 * Made Youtube shorts URLs work for videos.
 * Granted chapter officers the view and change permissions for their own newsletter group. 
 * Renamed the setting "Google Analytics UA Number" to "Google Analytics Tracking (Measurement) ID".
-* Refactored file upload process for forms to resolve the possible issue about file not being saved, also sanitize file name.
+* Refactored file upload process for forms to resolve the possible issue about file not being saved, also sanitized file name.
 * Resolved recaptcha v3 timeout issue.
 * Fixed an error on logo saving when non-logged in users applying for corporate memberships.
 * Some update on Ukrainian translations (Thanks @silpol).

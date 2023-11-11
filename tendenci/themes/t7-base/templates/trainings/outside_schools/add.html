@@ -1,0 +1,45 @@
+{% extends "trainings/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{% trans "Trainings - Outside Schools" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Outside Schools" %}</h1>
+
+    <form id="outside-schools-form" class="form-horizontal" action="" method="post">{% csrf_token %}
+        {{ form|styled_form }}
+        
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary text-capitalize">
+                        {% trans "Add" %}
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+        	// date picker
+            $('#id_date').datepicker({ dateFormat: 'yy-mm-dd' });
+            
+        	// select all / unselect all 
+           var select_unselect = '<a onclick="$(this).parent().find(\':checkbox\').prop(\'checked\', true);">Select All</a> / <a onclick="$(this).parent().find(\':checkbox\').prop(\'checked\', false);">Unselect All</a>';
+           var first_checkbox = $("form#outside-schools-form").find("input[name='participants']").closest('div.checkbox');
+           // wrap the checkboxes in the well
+           $(first_checkbox).wrapAll('<div class="well well-sm" style="height: 300px; overflow: auto; border: 1px solid #e3e3e3">');
+		   // add select all / unselect all 
+           $(first_checkbox).closest('div.well').before(select_unselect);    
+        });
+    </script>
+{% endblock %}

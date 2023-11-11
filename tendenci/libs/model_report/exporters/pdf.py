@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from io import BytesIO
 from html import escape
 from xhtml2pdf import pisa

@@ -269,7 +269,8 @@
                                         {% endif %}
                                     </div>
                                     <div style="clear: both"><!-- IE7 --></div>
-                                    {% else%}
+                                    {% else %}
+                                    {% if field.name != 'attendance_dates' %}
                                     {% if field.errors %}
                                     <div class="error">{{ field.errors }}</div>
                                     {% endif %}
@@ -280,6 +281,27 @@
                                     <div class="help-text">{{ field.help_text }}</div>
                                     {% endif %}
                                 </div>
+                                {% endif %}
+                                {% if field.name == 'attendance_dates' and event.requires_attendance_dates %}
+                                <div class="form-field attendance_dates">
+                                    {% if field.errors %}
+                                    <div class="error">
+                                        {{field.errors}}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-label">
+                                        {% blocktrans %}
+                                        <b>Please select the <span></span> date(s) you will be attending {{field.choices.length}} : </b>
+                                        {% endblocktrans %}
+                                    </div>
+                                    <div class="field">{{ field }}</div>
+                                    {% if field.help_text %}
+                                    <div class="help_text">
+                                        {{ field.help_text }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                                 {% endif %}
                                 {% endif %}
                                 {% endif %}
@@ -319,8 +341,7 @@
                 {% endfor %}
             </div>
 
-
-             {% if not event.is_table %}
+             {% if not event.is_table and event.registration_configuration.allow_guests %}
             <div class="add-registrant-box">
                 <button type="button" class="btn btn-default" onClick="add_registrants(this, 'registrant'); return false;" title="{% trans "Add another one before pressing Register & Pay" %}">{% trans "Add Another Registrant" %}</button>
             </div>
@@ -383,14 +404,14 @@
                 </div>
             {% endif %}
 
-            {% if reg_form.captcha %}
+            {% if reg_form.captcha and not do_confirmation %}
                 <div class="form-field">
                     <div class="error">{{ reg_form.captcha.errors }}</div>
                     <div class="required">{{ reg_form.captcha.label }}</div>
                     <div class="field">{{ reg_form.captcha }}</div>
                 </div>
             {% endif %}
-            <input class="btn btn-primary" type="submit" name="commit" id="register-form-button" class="registration-green-button" value="{% if event.free_event %}{% trans 'RSVP' %}{% else %}{% trans 'Register'%}{% endif %}" />
+            <input class="btn btn-primary" type="submit" name="commit" id="register-form-button" class="registration-green-button" value="{% if event.free_event %}{% trans 'Submit' %}{% else %}{% trans 'Continue'%}{% endif %}" />
 
             <div class="clear"></div>
         </div>
@@ -398,7 +419,11 @@
         <div class="forms" id="confirm-div">
             <div>
                 <p><strong>{% trans "Please review the following." %}</strong></p>
-                <p class="cls-paragraph-warning"><strong>{% trans 'Your registration will not be completed until you click "Confirm My Registration" at the bottom of this page.' %}</strong></p>
+                {% if not reg_conf.payment_required %}
+                <p class="cls-paragraph-warning"><strong>{% trans 'Your registration will not be completed until you click "Confirm My Details" at the bottom of this page.' %}</strong></p>
+                {% else %}
+                <p class="cls-paragraph-warning"><strong>{% trans 'Note: Your registration will not be completed until payment is received.' %}</strong></p>
+                {% endif %}
                 {% for registrant in flat_registrants %}
                     {% include "events/reg8n/registrant_summary_preview.html" %}
                 {% endfor %}
@@ -469,12 +494,12 @@
             </div>
             
             <input type="hidden" name="confirmed" />
-			{% if not event.is_table %}
+			{% if not event.is_table and event.registration_configuration.allow_guests %}
             <input class="btn btn-default" type="submit" name="addmore" value="{% trans "Add Another Registrant" %}" />
              <br /><br />
              {% endif %}
             <div class="clear"></div>
-            <input class="btn btn-success" type="submit" name="commit" value="{% trans 'Confirm My Registration' %}" />
+            <input class="btn btn-success" type="submit" name="commit" value="{% if not reg_conf.payment_required %}{% trans 'Confirm My Details' %}{% else %}{% trans 'Save & Continue' %}{% endif %}" />
            <br /><br />
             <div class="clear"></div>
         </div>

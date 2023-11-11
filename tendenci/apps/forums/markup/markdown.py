@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from tendenci.apps.theme.templatetags.static import static
 
 from markdown import Markdown

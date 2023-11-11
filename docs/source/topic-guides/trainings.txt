@@ -1,0 +1,36 @@
+Trainings
+=========
+
+Tendenci Trainings module allows you to offer certificate programs to users.  
+
+How does it work?
+~~~~~~~~~~~~~~~~~
+
+For each certification program, a site admin first specifies a set of certification categories with required credits. Then courses can be added and associated with each certification category. 
+
+There are 3 types of courses - online, onsite and outside.  
+
+A certificate is granted to a user upon completion of all the courses that meet the requirements of the certification. Users can view their progress and download their transcripts. 
+
+What are diamond requirements?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Diamond requirements of a certification is set of additional requirements that a user can pursue after completing the certification. There are up to 9 diamonds a user can receive. 
+
+
+How to offer online and onsite courses?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The courses in the trainings work with Tendenci Events module. If you turn on the setting "Use with Trainings" https://yoursitedomain/settings/module/events/#id_usewithtrainings, a course dropdown  would show on event add/edit so that you can select a course for the event. When users register the event, they'd have the option to select what certification they'd like to track. 
+
+In addition, The trainings module is integrated with BlueVolt, an online learning platform https://www.bluevolt.com/. If you opt in using BlueVolt, periodically, user exams can be automatically pulled from BlueVolt to your site for reporting.
+
+What are outside schools?
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The outside schools functionality allows users to add training records received from outside of your organization. Admin can verify and approve them accordingly.
+
+How to enable Trainings module?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To enalble Trainings module, please go to https://yoursitedomain/settings/module/trainings/#id_enabled

@@ -1,0 +1,24 @@
+{% load qr_code %}
+
+<style>
+  .registrant_separator {
+      background: white;
+      height: 10px;
+      margin-left: -10px;
+  }
+</style>
+
+{% for registrant in registrants %}
+    <div>
+      {% trans "Registrant ID:" %} {{ registrant.pk }}
+    </div>
+    <div>
+      {{ registrant.first_name }} {{ registrant.last_name }}
+    </div>
+    <div>
+      <img src="{{ SITE_GLOBAL_SITEURL }}{% qr_url_from_text registrant.check_in_url size=6 image_format='png' %}" alt="Badge">
+    </div>
+    {% if not forloop.last %}
+      <div class="registrant_separator"></div>
+    {% endif %}
+{% endfor %}

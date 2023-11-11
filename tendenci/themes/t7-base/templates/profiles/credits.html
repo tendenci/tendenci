@@ -1,0 +1,130 @@
+
+{% extends "events/base-wide.html" %}
+
+{% block title %}{{ block.super }}{% trans "CEU Credits" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+  .credits-grid {
+      font-size: .8em;
+  }
+  .credits-grid .grid {
+    -moz-column-width: 100em;
+    -webkit-column-width: 100em;
+    column-width: 100em;
+  }
+  .credits-grid .category {
+      margin-bottom: 15px;
+  }
+  .credits-grid .row {
+      width: 100%;
+  }
+  .credits-grid .row.headings {
+      font-weight: bold;
+  }
+  .credits-grid .event-details {
+      margin-left: 34px;
+      padding: 2px;
+      display: none;
+      border: 1px solid black;
+  }
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="credits-grid">
+  <h1>CEUs</h1>
+  <div class="grid">
+    {% for category, year_data in credits_grid.items %}
+  <div class="category">
+  <div class="row">
+    <div class="col-md-1">
+      {{ category }}
+    </div>
+    <div class="col-md-1">
+      Total
+    </div>
+    {% for cat, credit_names in credits_categories.items %}
+      {% if cat == category %}
+        {% for credit_name in credit_names %}
+          <div class="col-md-1">{{ credit_name }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% for year, data in year_data.items %}
+  <div class="year-data">
+    <div class="row">
+      <div class="col-md-1">
+        <a href="#" class="year">+ {{ year }}</a>
+      </div>
+      <div class="col-md-1">
+        {{ data.total }}
+      </div>
+      {% for key, value in data.credits.items %}
+          <div class="col-md-1">{{ value }}</div>
+      {% endfor %}
+      </div>
+      <div class="event-details">
+      {% for event_id, event in data.events.items %}
+      <div class= "row headings">
+        <div class="col-md-1">
+          Date
+        </div>
+        <div class="col-md-1">
+          Credits</div>
+        <div class="col-md-2">
+          Type
+        </div>
+        <div class="col-md-4">
+          Meeting
+        </div>
+        <div class="col-md-4">
+          Event
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-1">
+          {{ event.start_dt }}
+        </div>
+        <div class="col-md-1">
+          {{ event.credits}}
+        </div>
+        <div class="col-md-2">
+          {{ event.type }}
+        </div>
+        <div class="col-md-4">
+          <a href="{% url 'registrant.certificate' event.registrant_id %}"> {{ event.meeting_name }}</a>
+        </div>
+        <div class="col-md-4">
+          {{ event.event }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+  </div>
+  {% empty %}
+  <p>{% trans 'No CEUs available.' %}</p>
+  {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+  $(document).ready(function(){
+      $('.year').click(function(){
+          var details = $(this).parent().parent().parent().find('.event-details');
+          if (details.is(':hidden')) {
+              details.show();
+          } else {
+              details.hide();
+          }
+      });
+    });
+</script>
+{% endblock %}

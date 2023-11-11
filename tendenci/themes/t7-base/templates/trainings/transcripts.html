@@ -1,0 +1,174 @@
+{% extends "trainings/base.html" %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load training_tags %}
+{% load training_filters %}
+{% load styled_forms %}
+
+{% block title %}{% trans "Transcripts" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <style>
+    #customers .panel-primary > .panel-heading {
+        background-color: #337ab7;
+    }
+    #customers .panel-primary {
+        border-color: #337ab7;
+    }
+    .panel-heading .accordion-toggle:after {
+		/* symbol for "opening" panels */
+		font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
+		content: "\e114"; /* taken from bootstrap.css */
+		float: right; 
+		color: white;
+	}
+	.panel-heading .accordion-toggle.collapsed:after {
+		/* symbol for "collapsed" panels */
+		content: "\e080"; /* taken from bootstrap.css */
+	}
+	#block_transcript_nav .nav-tabs {
+	    margin-bottom: 15px;
+	}
+    </style>
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+
+<h1>{% trans 'Transcripts' %} {% if corp_profile %}<small>- {{ corp_profile.name }}</small>{% endif %}</h1>
+
+<div id="block_transcript_nav">
+	<ul class="nav nav-tabs nav-justified cm-wizard" role="tablist">
+		{% if participants_form %}
+		<li class="{% if step == 'step1' %}active{% endif %}"><a href="#block_step_first" aria-controls="block_step_first" role="tab" data-toggle="tab" aria-expanded="false">1. Participants</a></li>
+		{% endif %}
+		<li class="{% if step == 'step2' %}active{% elif step == 'step1' %}disabled{% endif %}"><a href="#block_step_second" aria-controls="block_step_second" role="tab" {% if step != 'step1' %}data-toggle="tab"{% endif %}>2. Information</a></li>
+		<li class="{% if step == 'step3' %}active{% elif step == 'step1' or step == 'step2' %}disabled{% endif %}"><a href="#block_step_finish" aria-controls="block_step_finish" role="tab" {% if step != 'step1' and step != 'step2'  %}data-toggle="tab"{% endif %}>3.  Summation</a></li>
+	</ul>
+</div>
+
+<div class="tab-content">
+
+{% if participants_form %}
+<div id="block_step_first" role="tabpanel" class="tab-pane{% if step == 'step1' %} active{% endif %}">
+ <form id="participants-form" class="" action=""?{{ qs }} method="post">{% csrf_token %}	
+	{% include "trainings/includes/participants_form.html" %}
+	<div class="col-sm-6">
+	<div class="pull-left">
+		<input type="submit" value="Continue" class="btn btn-primary text-uppercase">
+	</div>
+	</div>
+</form>
+</div>
+{% endif %}
+
+
+<div id="block_step_second" role="tabpanel" class="tab-pane{% if step == 'step2' %} active{% endif %}">
+<form id="courses-info-form" class="" action=""?{{ qs }} method="post">{% csrf_token %}
+	{% if hidden_participants_form %}
+	{{ hidden_participants_form|styled_form }}
+	{% endif %}
+	{% include "trainings/includes/courses_info_form.html" %}
+	<br />
+	<div class="col-sm-12">
+	<div id="msg-alert" class="hidden alert alert-danger"></div>
+	<div class="pull-left clearfix">
+		<input type="submit" value="Continue" name="step2" class="btn btn-primary text-uppercase">
+	</div>
+	<div class="pull-right">
+	<a class="btn btn-default text-uppercase btnPrevious">{% trans "Back" %}</a>
+	</div>
+	</div>
+</form>
+</div>
+
+
+<div id="block_step_finish" role="tabpanel" class="tab-pane{% if step == 'step3' %} active{% endif %}">
+{% if step == 'step3' %}
+{% if users|length > 1 %}
+<div class="pull-right" style="padding-bottom: 3px;">
+<a class="btn btn-success btn-sm" href="{% url 'trainings.transcripts_corp_pdf' corp_profile.id %}?{{ qs }}">Download All PDFs</a>
+</div>
+<div class="clearfix"></div>
+{% endif %}
+
+{% autopaginate users 20 %}
+<div class="panel-group" id="customers" role="tablist" aria-multiselectable="true">
+{% for customer in users %}
+    <div class="panel panel-primary">
+	  <div class="panel-heading" role="tab" id="customer_header_{{ customer.id }}">
+		<h4 class="panel-title">
+		<a class="accordion-toggle" data-toggle="collapse" data-parent="#customers" href="#customer_panel_{{ customer.id }}" 
+		          aria-controls="customer_panel_{{ customer.id }}" aria-expanded="true">{{ customer.get_full_name }}</a>
+		</h4>
+	  </div>
+	  <div id="customer_panel_{{ customer.id }}" class="panel-collapse collapse {% if forloop.first %} in{% endif %}" role="tabpanel" aria-labelledby="customer_header_{{ customer.id }}" 
+	                style="overflow-x: auto;" aria-expanded="true">
+	  
+	  <div class="pull-right" style="padding: 5px 10px 0px 0px;">             
+	  <a href="{% url 'trainings.transcripts_user_pdf' customer.id %}?{{ qs }}">{% trans "Download PDF" %}</a>
+	  </div>
+	{% include "trainings/includes/customer_transcript.html" %}
+        
+    </div>
+  </div>
+  
+  {% endfor %}
+  
+  {% paginate %}
+</div>
+<div class="pull-right">
+   <a class="btn btn-default text-uppercase btnPrevious">{% trans "Back" %}</a>
+</div>
+{% endif %} {# end of step3 #}
+
+</div>
+</div>
+
+<div class="clearfix"></div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+	(function($) {
+		$(document).ready(function(){
+			$('.btnPrevious').click(function(){
+			 $('.nav-tabs > .active').prev('li').find('a').trigger('click');
+			});
+			
+			$('form#courses-info-form input[type=submit]').click(function(e){
+				var total;
+				var num_allowed;
+				var limit = 1188; 
+				var num_p = $('form#courses-info-form input[name="p"]').length;
+				var num_l = $('form#courses-info-form input[name="l"]:checked').length;
+				var num_s = $('form#courses-info-form input[name="s"]:checked').length;
+				var num_selected = num_l + num_s;
+				total = num_p + num_selected;
+				
+				if (total > limit){
+					if (num_p > limit){
+						num_allowed = 0;
+					}else{
+						num_allowed = limit - num_p;
+					}
+					$('form #msg-alert').text("Too many courses selected! Allowed: " + num_allowed + ", Selected: " + num_selected + ".");
+		            $('form #msg-alert').removeClass('hidden');
+		            setTimeout(function () {
+		                $('form #msg-alert').addClass('hidden');
+		            }, 5000);
+            
+					e.preventDefault();
+					return false;
+				}
+			});
+		});
+	}(jQuery));
+</script>
+
+{% endblock %}

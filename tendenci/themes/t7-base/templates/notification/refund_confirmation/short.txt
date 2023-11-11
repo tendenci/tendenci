@@ -1,0 +1,2 @@
+
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} - Refund Confirmation{% if failed %} Failure {% endif %}: {{ title }}

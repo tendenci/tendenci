@@ -1,0 +1,71 @@
+{% extends "trainings/base.html" %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+
+
+{% block title %}{% trans "Outside Schools" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <style>
+    .table.schools-list a:link{
+    	text-decoration: none; 
+    }
+    .table.schools-list a:visited{
+    	text-decoration: none; 
+    }
+    .table.schools-list a.desc:after {
+	    content: " \f106";
+	    font-family: FontAwesome;
+	    font-size: 14px;
+	}
+
+	.table.schools-list a.asc:after {
+	    content: " \f107";
+	    font-family: FontAwesome;
+	    font-size: 14px;
+	}
+    </style>
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <a class="pull-right btn btn-primary" href="{% url 'trainings.add_outside_schools' %}">{% trans "Add" %}</a>
+  <h1>{% trans 'Outside Schools' %}</h1>
+
+</div>
+
+    {% autopaginate object_list 50 %}
+
+<table class="table table-striped table-bordered schools-list">
+	 <tr>
+		 <th><a {% if s == 'school_name' %}class="{% if o %}{{ o }}{% endif %}"{% endif %} 
+	     href="{% url 'trainings.outside_schools' %}?s=school_name&o={{ next_order }}">{% trans "School Name" %}</a></th>
+	     <th><a {% if s == 'date' %}class="{% if o %}{{ o }}{% endif %}"{% endif %} 
+	     href="{% url 'trainings.outside_schools' %}?s=date&o={{ next_order }}">{% trans "Date" %}</a></th>
+	     <th><a {% if s == 'credits' %}class="{% if o %}{{ o }}{% endif %}"{% endif %} 
+	     href="{% url 'trainings.outside_schools' %}?s=credits&o={{ next_order }}">{% trans "Credits" %}</a></th>
+		 <th><a {% if s == 'status_detail' %}class="{% if o %}{{ o }}{% endif %}"{% endif %} 
+	     href="{% url 'trainings.outside_schools' %}?s=status_detail&o={{ next_order }}">{% trans "Status" %}</a></th>
+	 </tr>
+	 {% for school in object_list %}
+		<tr>
+			<td>{{ school.school_name }}</td>
+			<td>{{ school.date|date }}</td>
+			<td>{% if school.credits %}{{ school.credits }}{% endif %}</td>
+			<td>{{ school.status_detail|capfirst }}</td>
+	   </tr>
+    {% endfor %}
+</table>
+
+    {% paginate %}
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+{% endblock %}

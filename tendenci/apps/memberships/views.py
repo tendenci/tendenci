@@ -5,6 +5,7 @@ import math
 from decimal import Decimal
 from hashlib import md5
 import csv
+
 #from dateutil.parser import parse
 from datetime import datetime, timedelta, date
 import time as ttime
@@ -13,7 +14,7 @@ import calendar
 from collections import OrderedDict
 from dateutil.parser import parse as dparse, ParserError 
 from dateutil.relativedelta import relativedelta
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote as url_quote
  
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -83,9 +84,19 @@ from tendenci.apps.base.utils import get_next_url
 
 @login_required
 def memberships_search(request, app_id=0, template_name="memberships/search-per-app.html"):
+    """
+    Allow users with membership view permission to access, but export and email are limited to
+    those with change permission.
+    """
     app = get_object_or_404(MembershipApp, pk=app_id)
-    if not has_perm(request.user, 'memberships.change_membershipdefault'):
+
+    can_change_app = has_perm(request.user, 'memberships.change_membershipapp', app)
+    if not (has_perm(request.user, 'memberships.view_membershipdefault') or \
+            can_change_app):
         raise Http403
+
+    # check if you has the change perm
+    has_change_perm = has_perm(request.user, 'memberships.change_membershipdefault') or can_change_app
 
     memberships = MembershipDefault.objects.filter(app_id=app.id
                                     ).exclude(status_detail='archive')
@@ -104,6 +115,7 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
         form = MemberSearchForm(request.POST, app_fields=app_fields, user=request.user)
     else:
         form = MemberSearchForm(request.GET, app_fields=app_fields, user=request.user)
+
     if form.is_valid():
         user_fieldnames = [field.name for field in User._meta.fields if \
                            field.get_internal_type() in ['CharField', 'TextField']]
@@ -113,8 +125,13 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
                            field.get_internal_type() in ['CharField', 'TextField']]
         demographic_fieldnames = [field.name for field in MembershipDemographic._meta.fields if \
                            field.get_internal_type() in ['CharField', 'TextField']]
+        status_detail = form.cleaned_data.get('status_detail')
+        if status_detail:
+            memberships = memberships.filter(status_detail__iexact=status_detail)
 
         for field_name, field_value in form.cleaned_data.items():
+            if field_name == 'status_detail':
+                continue
             if field_value:
                 if isinstance(field_value, list):
                     if field_name in user_fieldnames:
@@ -142,6 +159,8 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
         memberships = memberships.order_by('user__last_name', 'user__first_name')
     
         if 'export' in request.GET:
+            if not has_change_perm:
+                raise Http403
             EventLog.objects.log(description="memberships export from memberships search")
     
             response = StreamingHttpResponse(
@@ -164,6 +183,8 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
 
         if ('email_members' in request.POST or 'email_members_selected' in request.POST) \
                 and email_form.is_valid():
+            if not has_change_perm:
+                raise Http403
             if 'email_members_selected' in request.POST:
                 selected_members = request.POST.getlist('selected_members')
                 if selected_members:
@@ -197,6 +218,7 @@ def memberships_search(request, app_id=0, template_name="memberships/search-per-
     return render_to_resp(request=request, template_name=template_name,
         context={
             'memberships': memberships,
+            'has_change_perm': has_change_perm,
             'search_form': form,
             'email_form': email_form,
             'total_members': memberships.count(),
@@ -450,61 +472,7 @@ def referer_url(request):
     try:
         return redirect(next_url)
     except NoReverseMatch:
-        raise Http404 
-
-
-def application_detail_default(request, **kwargs):
-    """
-    Returns default membership application response
-    """
-
-    if request.method == 'POST':
-        form = MembershipDefaultForm(request.POST)
-
-        if form.is_valid():
-            membership = form.save(request=request, commit=False)
-
-            if membership.get_invoice():
-
-                # is online payment
-                online_payment_requirements = (
-                    membership.get_invoice().total > 0,
-                    membership.payment_method,
-                    membership.payment_method.is_online,
-                )
-
-                # online payment
-                if all(online_payment_requirements):
-                    return HttpResponseRedirect(reverse(
-                        'payment.pay_online',
-                        args=[membership.get_invoice().pk,
-                            membership.get_invoice().guid]
-                    ))
-
-            # show membership edit page
-            if request.user.profile.is_superuser:
-                return HttpResponseRedirect(reverse(
-                'admin:memberships_membershipdefault_change',
-                args=[membership.pk]
-                ))
-
-            # show confirmation page
-            return HttpResponseRedirect(reverse(
-                'membership.application_confirmation_default',
-                args=[membership.guid]
-            ))
-
-    else:
-
-        # create default form
-        form = MembershipDefaultForm(request=request)
-
-    # show application
-    return render_to_resp(
-        request=request, template_name='memberships/applications/detail_default.html', context={
-        'form': form,
-        }
-    )
+        raise Http404
 
 
 def application_confirmation_default(request, hash):
@@ -886,7 +854,7 @@ def download_default_template(request):
         title_list.remove('sig_user_group_ids')
     # replace user field with fields in auth_user and profile
     title_list.remove('user')
-    title_list = ['first_name', 'last_name', 'username', 'email', 'email2',
+    title_list = ['first_name', 'last_name', 'username', 'account_id', 'email', 'email2',
                   'phone', 'salutation', 'company',
                   'position_title', 'sex',  'address',
                   'address2', 'city', 'state',
@@ -1302,9 +1270,9 @@ def membership_default_add(request, slug='', membership_id=None,
         if app.use_for_corp:
             redirect_url = reverse('membership_default.corp_pre_add')
 
-            if username:
+            if username and u:
                 return HttpResponseRedirect(
-                    '%s?username=%s' % (redirect_url, u.username))
+                    '%s?username=%s' % (redirect_url, url_quote(u.username)))
             return redirect(redirect_url)
 
     if not (request.user.is_superuser or (join_under_corporate and is_corp_rep)):
@@ -1341,17 +1309,36 @@ def membership_default_add(request, slug='', membership_id=None,
         # exclude the corp memb field if not join under corporate
         app_fields = app_fields.exclude(field_name='corporate_membership_id')
 
+    user_initial = {}
+    if not user and request.user.is_authenticated and not request.user.is_superuser:
+        user_initial = {'first_name': request.user.first_name,
+                        'last_name': request.user.last_name,
+                        'email': request.user.email,}
     user_form = UserForm(
         app_fields,
         request.POST or None,
         request=request,
         is_corp_rep=is_corp_rep,
-        instance=user)
+        instance=user,
+        initial=user_initial)
 
     if not (request.user.profile.is_superuser or is_corp_rep) and user and 'username' in user_form.fields:
         # set username as readonly field for regular logged-in users
         # we don't want them to change their username, but they can change it through profile
         user_form.fields['username'].widget.attrs['readonly'] = 'readonly'
+
+    if user_initial:
+        request_user_profile = request.user.profile
+        profile_initial = {'company': request_user_profile.company,
+                           'address': request_user_profile.address,
+                            'address2': request_user_profile.address2,
+                            'city': request_user_profile.city,
+                            'state': request_user_profile.state,
+                            'zipcode': request_user_profile.zipcode,
+                            'country': request_user_profile.country,
+                            'work_phone': request_user_profile.work_phone,}
+    else:
+        profile_initial = None
 
     if join_under_corporate and not is_renewal:
         corp_profile = corp_membership.corp_profile
@@ -1366,10 +1353,7 @@ def membership_default_add(request, slug='', membership_id=None,
                 'country': corp_profile.country,
                 'work_phone': corp_profile.phone,}
         else:
-            profile_initial = {
-                'company': corp_profile.name,}
-    else:
-        profile_initial = None
+            profile_initial.update({'company': corp_profile.name,})
 
     profile = user.profile if user else None
     profile_form = ProfileForm(
@@ -1565,29 +1549,31 @@ def membership_default_add(request, slug='', membership_id=None,
                     membership.pend()
                     membership.save()  # save pending status
 
-                    if membership.is_renewal():
-                        notice_sent = Notice.send_notice(
-                            request=request,
-                            emails=membership.user.email,
-                            notice_type='renewal',
-                            membership=membership,
-                            membership_type=membership.membership_type,
-                        )
-                        memberships_renewal_notified.append(membership)
-
-                    else:
-                        notice_sent =  Notice.send_notice(
-                            request=request,
-                            emails=membership.user.email,
-                            notice_type='join',
-                            membership=membership,
-                            membership_type=membership.membership_type,
-                        )
-                        memberships_join_notified.append(membership)
+                    if get_setting('module', 'corporate_memberships', 'notificationson'):
+                        if membership.is_renewal():
+                            notice_sent = Notice.send_notice(
+                                request=request,
+                                emails=membership.user.email,
+                                notice_type='renewal',
+                                membership=membership,
+                                membership_type=membership.membership_type,
+                            )
+                            memberships_renewal_notified.append(membership)
+    
+                        else:
+                            notice_sent =  Notice.send_notice(
+                                request=request,
+                                emails=membership.user.email,
+                                notice_type='join',
+                                membership=membership,
+                                membership_type=membership.membership_type,
+                            )
+                            memberships_join_notified.append(membership)
                 else:
                     is_renewal = membership.is_renewal()
                     membership.approve(request_user=customer)
-                    membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
+                    if get_setting('module', 'corporate_memberships', 'notificationson'):
+                        notice_sent = membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
 
                 # application complete
                 membership.application_complete_dt = datetime.now()
@@ -1639,20 +1625,21 @@ def membership_default_add(request, slug='', membership_id=None,
                     ))
 
             # send email notification to admin
-            if not notice_sent:
-                recipients = get_notice_recipients(
-                    'module', 'memberships',
-                    'membershiprecipients')
-
-                extra_context = {
-                    'membership': membership,
-                    'app': app,
-                    'request': request
-                }
-                send_email_notification(
-                    'membership_joined_to_admin',
-                    recipients,
-                    extra_context)
+            if get_setting('module', 'corporate_memberships', 'notificationson'):
+                if not notice_sent:
+                    recipients = get_notice_recipients(
+                        'module', 'memberships',
+                        'membershiprecipients')
+    
+                    extra_context = {
+                        'membership': membership,
+                        'app': app,
+                        'request': request
+                    }
+                    send_email_notification(
+                        'membership_joined_to_admin',
+                        recipients,
+                        extra_context)
 
             # redirect: confirmation page
             return HttpResponseRedirect(reverse(

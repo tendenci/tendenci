@@ -26,19 +26,19 @@
                         </li>
                     {% endif %}
 
-                    <li class="content-item">
-                        <span class="app-name">
-                            <a href="{% url 'membership.search' %}">{% trans "Search" %}</a>
-                        </span>
-                    </li>
-
-                    {% if can_edit_setting %}
+					{% if can_edit_setting %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'settings.index' 'module' 'memberships' %}">{% trans "Settings" %}</a>
                             </span>
                         </li>
                     {% endif %}
+                    
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'membership.search' %}">{% trans "Search" %}</a>
+                        </span>
+                    </li>
 
                     {% if user.profile.is_superuser %}
                         <li class="content-item">

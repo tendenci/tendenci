@@ -63,12 +63,18 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
 
                 # update all permissions and save the model
                 entity = update_perms_and_save(request, form, entity)
+                entity.allow_user_view = form.cleaned_data['allow_user_view']
+                entity.allow_member_view = form.cleaned_data['allow_member_view']
+                entity.save()
 
                 messages.add_message(request, messages.SUCCESS, _('Successfully added %(e)s' % { 'e': entity }))
 
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))
         else:
-            form = form_class(user=request.user)
+            form = form_class(user=request.user, 
+                              initial={'allow_anonymous_view': False,
+                                        'allow_user_view': False,
+                                        'allow_member_view': False})
 
         return render_to_resp(request=request, template_name=template_name,
             context={'form':form})
@@ -87,6 +93,9 @@ def edit(request, id, form_class=EntityForm, template_name="entities/edit.html")
 
                 # update all permissions and save the model
                 entity = update_perms_and_save(request, form, entity)
+                entity.allow_user_view = form.cleaned_data['allow_user_view']
+                entity.allow_member_view = form.cleaned_data['allow_member_view']
+                entity.save()
 
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))
         else:

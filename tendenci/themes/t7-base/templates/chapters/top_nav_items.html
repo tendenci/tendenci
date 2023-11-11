@@ -22,7 +22,7 @@
                 <ul class="list-unstyled content-dropdown-col col-sm-{% if app_object %}6{% else %}12{% endif %} col-xs-12">
                     {% if app_object %}
                         <li>
-                            <span class="content-head text-content-head">{% trans 'All Chapters' %}</span>
+                            <span class="content-head text-content-head">{% trans 'All' %} {% firstof MODULE_CHAPTERS_LABEL_PLURAL trans "Chapters" %}</span>
                         </li>
                     {% endif %}
 
@@ -36,7 +36,7 @@
 
                     <li class="content-item">
                         <span class="app-name">
-                            <a href="{% url 'chapters.search' %}">{% trans "Search Chapters" %}</a>
+                            <a href="{% url 'chapters.search' %}">{% trans "Search" %} {% firstof MODULE_CHAPTERS_LABEL_PLURAL trans "Chapters" %}</a>
                         </span>
                     </li>
 
@@ -44,9 +44,9 @@
                         <li class="content-item">
                             <span class="app-name">
                                 {% if request.user.is_superuser %}
-                                 <a href="{% url 'admin:chapters_chapter_add' %}">{% trans "Add Chapter" %}</a>
+                                 <a href="{% url 'admin:chapters_chapter_add' %}">{% trans "Add" %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
                                 {% else %}
-                                <a href="{% url 'chapters.add' %}">{% trans "Add Chapter" %}</a>
+                                <a href="{% url 'chapters.add' %}">{% trans "Add" %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
                                 {% endif %}
                             </span>
                         </li>
@@ -102,19 +102,19 @@
                     {% if can_view_chapter or can_edit_chapter or is_chapter_leader %}
                         <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                             <li>
-                                <span class="content-head text-content-head">{% trans "This Chapter" %}</span>
+                                <span class="content-head text-content-head">{% trans "This" %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</span>
                             </li>
 
                             {% if can_view_chapter or is_chapter_leader %}
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View Chapter" %}</a>
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
                                     </span>
                                 </li>
 	                            {% if can_add_chapter %}
 	                                <li class="content-item">
 	                                    <span class="app-name">
-	                                        <a href="{% url "chapters.copy_from" app_object.pk %}">{% trans "Clone Chapter" %}</a>
+	                                        <a href="{% url "chapters.copy_from" app_object.pk %}">{% trans "Clone" %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
 	                                    </span>
 	                                </li>
 	                            {% endif %}
@@ -123,7 +123,7 @@
                             {% if can_edit_chapter or is_chapter_leader %}
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a href="{% url 'chapters.edit' app_object.pk %}">{% trans "Edit Chapter" %}</a>
+                                        <a href="{% url 'chapters.edit' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
                                     </span>
                                 </li>
 
@@ -177,7 +177,7 @@
 
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a class="delete" href="{% url 'chapters.delete' app_object.pk %}">{% trans "Delete Chapter" %}</a>
+                                        <a class="delete" href="{% url 'chapters.delete' app_object.pk %}">{% trans "Delete" %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
                                     </span>
                                 </li>
                             {% endif %}

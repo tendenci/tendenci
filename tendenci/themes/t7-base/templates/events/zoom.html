@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>{% trans "Zoom Meeting - " %}{{ event.title }}</title>
+    <!-- For Client View -->
+    <link type="text/css" rel="stylesheet" href="https://source.zoom.us/2.15.2/css/bootstrap.css" />
+    <link type="text/css" rel="stylesheet" href="https://source.zoom.us/2.15.2/css/react-select.css" />
+
+    <meta http-equiv="origin-trial" content="">
+
+    <style>
+      html, body {
+          min-width: 0 !important;
+      }
+      #zmmtg-root {
+          display: none;
+      }
+      main {
+          width: 70%;
+          margin: auto;
+          text-align: center;
+      }
+      main button {
+          margin-top: 20px;
+          background-color: #2D8CFF;
+          color: #ffffff;
+          text-decoration: none;
+          padding-top: 10px;
+          padding-bottom: 10px;
+          padding-left: 40px;
+          padding-right: 40px;
+          display: inline-block;
+          border-radius: 10px;
+          cursor: pointer;
+          border: none;
+          outline: none;
+      }
+      main button:hover {
+          background-color: #2681F2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+     </main>
+
+    <!-- For Component and Client View -->
+<script src="https://source.zoom.us/2.15.2/lib/vendor/react.min.js"></script>
+<script src="https://source.zoom.us/2.15.2/lib/vendor/react-dom.min.js"></script>
+<script src="https://source.zoom.us/2.15.2/lib/vendor/redux.min.js"></script>
+<script src="https://source.zoom.us/2.15.2/lib/vendor/redux-thunk.min.js"></script>
+<script src="https://source.zoom.us/2.15.2/lib/vendor/lodash.min.js"></script>
+
+<!-- For Component View -->
+<!-- script src="https://source.zoom.us/2.15.2/zoom-meeting-embedded-2.15.2.min.js"></script> -->
+<script src="https://source.zoom.us/zoom-meeting-2.15.2.min.js"></script>
+    {% include 'events/include/zoom.js' %}
+
+  </body>
+ </html>

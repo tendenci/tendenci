@@ -1,0 +1,22 @@
+
+<fieldset>
+  <div class="form-group">
+	<div class="col-sm-6">
+	  <label class="control-label h4">{% trans "Participants" %}</label><br>
+	  <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">{% trans "Select All" %}</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">{% trans "Unselect All" %}</a>
+	  <div class="well well-sm" style="height: 300px; overflow: auto; border: 1px solid #e3e3e3">
+	   {% with participants_form.p as field %}
+	   {% for choice in participants_form.p.field.choices %}
+          <div class="checkbox">
+              <label>
+                  <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0 }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1 }}
+              </label>
+          </div>
+       {% endfor %}
+       {% endwith %}
+	  </div>
+	</div>
+	
+  </div>
+
+</fieldset>

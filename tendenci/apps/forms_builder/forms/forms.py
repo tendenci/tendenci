@@ -47,7 +47,7 @@ THIS_YEAR = datetime.today().year
 class FormForForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = FormEntry
-        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", 'custom_price',  "creator")
+        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", 'custom_price',  "creator", 'quantity')
 
     def __init__(self, form, user, session=None, *args, **kwargs):
         """
@@ -60,8 +60,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
         self.user = user
         self.form = form
-        self.form_fields = (form.fields.all() if self.edit_mode else form.fields.visible()).order_by('position')
+        self.form_fields = form.fields.visible().order_by('position')
         self.auto_fields = form.fields.auto_fields().order_by('position')
+        if self.edit_mode:
+            self.auto_fields = self.auto_fields.none()
+        
         self.session = {} if session is None else session
         super(FormForForm, self).__init__(*args, **kwargs)
 
@@ -116,10 +119,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
                 # If editing an existing object, that object defines the initial
                 if self.edit_mode:
-                    try:
-                        instance_field = self.instance.fields.get(field_id=field.id)
-                    except ObjectDoesNotExist:
-                        instance_field = None
+                    [instance_field] = self.instance.fields.filter(field_id=field.id)[:1] or [None]
 
                     if instance_field:
                         instance_fields[field_key] = instance_field
@@ -199,12 +199,15 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                         )
                     else:
                         if formforform.recurring_payment:
+                            pricing_display = tcurrency(pricing.price) + ' per '
+                            if pricing.billing_frequency > 1:
+                                pricing_display += f' {pricing.billing_frequency} {pricing.billing_period}s'
+                            else:
+                                pricing_display += f'{pricing.billing_period}'
+                            pricing_display += f' - {pricing.label}'
+                            pricing_display = f'<strong>{pricing_display}</strong><br>{pricing.description}'
                             pricing_options.append(
-                                (pricing.pk, mark_safe('<strong>%s per %s %s - %s</strong><br>%s' %
-                                                        (tcurrency(pricing.price),
-                                                         pricing.billing_frequency, pricing.billing_period,
-                                                         pricing.label, pricing.description)))
-                            )
+                                (pricing.pk, mark_safe(pricing_display)))
                         else:
                             pricing_options.append(
                                 (pricing.pk, mark_safe('<strong>%s %s</strong><br>%s' %
@@ -217,6 +220,12 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     choices = pricing_options,
                     widget=forms.RadioSelect(attrs={'class': 'pricing-field'})
                 )
+                if len(pricing_options) == 1:
+                    form.fields['pricing_option'].initial = pricing_options[0][0]
+                
+                if formforform.qty_enabled:
+                    form.fields['quantity'] = forms.IntegerField(max_value=100, min_value=1, initial=1)
+                    form.fields['quantity'].widget.attrs.update({'style': 'width: 50%;'})
 
                 form.fields['payment_option'] = forms.ModelChoiceField(
                         label=_('Payment Method'),
@@ -299,6 +308,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             entry_id = self.cleaned_data.get(field_key + "-id", None)
 
             if value and field.field_type == 'FileField':
+                if edit_mode:
+                    if isinstance(value, str):
+                        # we're editing the entry but new file is not uploaded.
+                        # The value contains the path of the file from previous submission.
+                        continue
                 value = self.handle_uploaded_file(value)
 
             # if the value is a list convert is to a comma delimited string
@@ -556,10 +570,10 @@ class FormForm(TendenciBaseForm):
             i += 1
         return slug
 
-class FormForField(forms.ModelForm):
+class FormForField(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = Field
-        exclude = ["position"]
+        exclude = ["position", 'remember']
 
     def clean(self):
         cleaned_data = self.cleaned_data

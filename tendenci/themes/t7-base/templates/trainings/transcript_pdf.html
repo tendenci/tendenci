@@ -1,0 +1,87 @@
+{% load base_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>{% trans "Transcript" %}</title>
+<style>
+#transcript_content td{
+    padding: 3px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+#p4p-logo{
+    text-align: right;
+}
+h1{
+	font-size: 1.6em;
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+}
+td.title{
+	-pdf-keep-with-next: true;
+	font-size: 1.2em;
+}
+#header_content{
+	border-bottom: 1px solid #aaa;
+}
+#footer_content{
+	text-align: center;
+	border-top: 1px solid #aaa;
+	padding-top: 3px;
+}
+@page {
+        size: letter portrait;
+        @frame header_frame {          
+            -pdf-frame-content: header_content;
+            left: 50pt; width: 512pt; top: 50pt; height: 110pt;
+        }
+        @frame footer_frame {           /* Static frame */
+            -pdf-frame-content: footer_content;
+            left: 50pt; width: 512pt; top: 752pt; height: 30pt;
+        }
+        
+        @frame content_frame {
+            left: 50pt;
+            width: 512pt;
+            top: 140pt;
+            height: 572pt;
+           
+        }
+    }
+</style>
+</head>
+
+<body>
+<div class="t">
+  <div id="header_content">
+  	<table>
+  	<tr>
+  	<td valign="bottom">
+    <h1>{% trans "Transcript" %}</h1>
+    </td>
+  	<td valign="bottom">
+    <h1>{{ customer.get_full_name }}
+    </h1>
+    </td>
+    <td>
+    {% if logo_base64_src %}
+    <div style="text-align: right;"><img width="180" height="100" src="{{ logo_base64_src }}" /></div>
+	{% endif %}
+	</td>
+	</tr>
+	</table>
+	
+  </div>
+
+ <div id="footer_content"><pdf:pagenumber> of <pdf:pagecount> </div>
+
+ <div id="transcript_content">
+ {% include "trainings/includes/customer_transcript.html" %}
+ </div>
+
+<div style="clear: both"></div>
+</div>
+</body>
+
+</html>

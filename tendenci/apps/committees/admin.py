@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.html import strip_tags
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.perms.utils import update_perms_and_save
@@ -45,9 +46,9 @@ class OfficerAdminInline(admin.TabularInline):
 
 
 class CommitteeAdmin(TendenciBaseModelAdmin):
-    list_display = ('view_on_site', 'edit_link', 'title', 'group', 'admin_perms', 'admin_status')
+    list_display = ('view_on_site', 'edit_link', 'title', 'group_link', 'admin_perms', 'admin_status')
     search_fields = ('title', 'content',)
-    list_editable = ('title', 'group',)
+    list_editable = ('title',)
     fieldsets = (
         (None, {'fields': (
             'title',
@@ -111,6 +112,11 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
         
         return instance
 
+    def save_related(self, request, form, formsets, change):
+        super(CommitteeAdmin, self).save_related(request, form, formsets, change)
+        # update group perms to officers
+        form.instance.update_group_perms()
+
     def save_formset(self, request, form, formset, change):
         """
         Associate the user to each instance saved.
@@ -147,6 +153,15 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
         )
         return link
     view_on_site.short_description = 'view'
+
+    @mark_safe
+    def group_link(self, instance):
+        group_url = reverse('group.detail',args=[instance.group.slug])
+        group_name = instance.group.name
+                            
+        return f'<a href="{group_url}" title="{group_name}">{group_name}</a>'
+    group_link.short_description = _('group')
+    group_link.admin_order_field = 'group'
 
 
 admin.site.register(Committee, CommitteeAdmin)

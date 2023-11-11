@@ -84,7 +84,8 @@ class Command(BaseCommand):
         # exclude legacy tables
         tables_excluded = ['corporate_memberships_corporatemembership',
                            'corporate_memberships_corporatemembershiparchive',
-                           'directories_directory']
+                           'directories_directory',
+                           'stripe_stripeaccount']
         table_updated = []
         for model in models:
             if TendenciBaseModel in model.__bases__:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.db import models, migrations
 import tendenci.apps.base.fields
 import django.db.models.deletion
@@ -80,6 +79,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='officer',
             name='user',
-            field=models.ForeignKey(related_name='committees_officer_user', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
+            field=models.ForeignKey(related_name='committee_officers', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

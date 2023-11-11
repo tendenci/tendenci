@@ -2,6 +2,7 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load corporate_memberships_tags %}
+{% load corporate_memberships_filters %}
 
 {% has_perm user corporate_memberships.change_corpmembership as can_edit %}
 {% allow_edit_corp corporate_membership request.user as allow_edit %}
@@ -85,6 +86,14 @@
 	                                    <a href="{% url 'corpmembership.upgrade' corporate_membership.id %}">{% trans "Upgrade" %}</a>
 	                                </li>
 			                        {% endif %}
+			                        
+			                     	{% if MODULE_TRAININGS_ENABLED %}
+			                     	{% if request.user.is_superuser or corporate_membership.corp_profile|is_rep:request.user %}
+			                     	<li>
+			                     		<a href="{% url 'trainings.transcripts_corp' corporate_membership.corp_profile.id %}">{% trans "View Transcripts" %}</a>
+			                     	</li>
+			                     	{% endif %}
+			                     	{% endif %}
 		                        {% endif %}
 		                        {% if can_delete %}
                                 <li>

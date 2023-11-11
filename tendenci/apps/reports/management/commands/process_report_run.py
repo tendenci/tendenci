@@ -32,7 +32,7 @@ class Command(BaseCommand):
         from tendenci.apps.reports.models import CONFIG_OPTIONS
         is_summary_mode = (run.output_type == 'html-summary')
         results = []
-        totals = {'total': 0, 'payments_credits': 0, 'balance': 0, 'count': 0}
+        totals = {'total': 0, 'payments_credits': 0, 'balance': 0, 'count': 0, 'refunds': 0}
         filters = Q()
         filters = (filters & Q(create_dt__gte=run.range_start_dt) & Q(create_dt__lte=run.range_end_dt))
 
@@ -95,6 +95,7 @@ class Command(BaseCommand):
                             'total': 0,
                             'payments_credits': 0,
                             'balance': 0,
+                            'refunds': 0,
                         }
                     invoice_dict = sm_dict[key]
                     invoice_dict['count'] += 1
@@ -102,6 +103,7 @@ class Command(BaseCommand):
                     invoice_dict['total'] += invoice.total
                     invoice_dict['payments_credits'] += invoice.payments_credits
                     invoice_dict['balance'] += invoice.balance
+                    invoice_dict['refunds'] += invoice.refunds
                 ot_dict['summary'] = [v for k,v in sm_dict.items()]
 
             ot_dict['invoices'] = invoices.order_by('create_dt')
@@ -112,7 +114,7 @@ class Command(BaseCommand):
                 'is_donation': 'donation' in ot_dict['object_type'].lower(),
                 })
 
-            aggregates = invoices.aggregate(Sum('total'), Sum('payments_credits'), Sum('balance'))
+            aggregates = invoices.aggregate(Sum('total'), Sum('payments_credits'), Sum('balance'), Sum('refunds'))
             for k, v in aggregates.items():
                 if not v: aggregates[k] = v or 0
 
@@ -122,6 +124,7 @@ class Command(BaseCommand):
             totals['total'] = totals['total'] + aggregates['total__sum']
             totals['payments_credits'] = totals['payments_credits'] + aggregates['payments_credits__sum']
             totals['balance'] = totals['balance'] + aggregates['balance__sum']
+            totals['refunds'] = totals['refunds'] + aggregates['refunds__sum']
 
         results = sorted(results, key=lambda k: k['object_type'])
 
