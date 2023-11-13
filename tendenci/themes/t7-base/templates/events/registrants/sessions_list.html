@@ -39,7 +39,7 @@
 {% else %}
 	{% trans "Schedule for: " %}<strong>{{ registrant.user.get_full_name }}</strong>
 {% endif %}
-&nbsp;&nbsp;<a class="edit-btn" href="{% url "event.sessions_edit" registrant.pk %}"><span class="glyphicon glyphicon-pencil"></span>{% trans 'Edit' %}</a>
+{% if can_edit %}&nbsp;&nbsp;<a class="edit-btn" href="{% url "event.sessions_edit" registrant.pk %}"><span class="glyphicon glyphicon-pencil"></span>{% trans 'Edit' %}</a>{% endif %}
 <div onclick="window.print()" class="pull-right print-link" style="cursor: pointer;"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</div>
 </div>
 <div id="sessions-wrap">

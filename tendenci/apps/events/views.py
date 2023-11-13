@@ -2218,7 +2218,8 @@ def sessions_list(request, registrant_id, template_name="events/registrants/sess
             'event': event,
             'registrant': registrant,
             'attend_dates': attend_dates,
-            'reg_child_events': reg_child_events
+            'reg_child_events': reg_child_events,
+            'can_edit': request.user.is_superuser or (not event.is_over and not registrant.registration_closed)
         })
 
 
