@@ -881,16 +881,27 @@ class Registration(models.Model):
         if not self.event.nested_events_enabled:
             return False
 
+        can_edit = False
         for registrant in self.registrant_set.filter(cancel_dt__isnull=True):
-            return (
+            can_edit = (
                 not registrant.registration_closed and (
                     (registrant.user and registrant.user.profile.is_superuser and
                     registrant.event.child_events.exists()) or
                     registrant.event.upcoming_child_events.exists()
                 )
             )
+            if can_edit:
+                return True
 
         return False
+    
+    @property
+    def can_admin_edit_child_events(self):
+        """If admin user can edit child events, return True"""
+        if not self.event.nested_events_enabled:
+            return False
+
+        return self.event.child_events.exists()
 
     def allow_adjust_invoice_by(self, request_user):
         """
@@ -1443,7 +1454,7 @@ class Registrant(models.Model):
             self.event.nested_events_enabled and
             self.event.has_child_events
         )
-
+    
     def sub_event_datetimes(self, is_admin=False):
         """Returns list of start_dt for available sub events"""
         child_events = self.event.child_events if is_admin else self.available_child_events
@@ -2951,6 +2962,17 @@ class Event(TendenciBaseModel):
     def __str__(self):
         return f'{self.title} ({self.start_dt.strftime("%m/%d/%Y")} - {self.end_dt.strftime("%m/%d/%Y")})'
 
+    @property
+    def can_edit_attendance_dates_admin(self):
+        """
+        Attendance dates are editable by an admin user if
+        nested events are enabled and event has child events
+        """
+        return (
+            self.nested_events_enabled and
+            self.has_child_events
+        )
+    
     @property
     def has_addons(self):
         return Addon.objects.filter(
