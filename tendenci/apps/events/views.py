@@ -2218,7 +2218,8 @@ def sessions_list(request, registrant_id, template_name="events/registrants/sess
             'event': event,
             'registrant': registrant,
             'attend_dates': attend_dates,
-            'reg_child_events': reg_child_events
+            'reg_child_events': reg_child_events,
+            'can_edit': request.user.is_superuser or (not event.is_over and not registrant.registration_closed)
         })
 
 
@@ -3298,9 +3299,13 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             attendance_dates_changed = False
             total_available_days = len(reg8n.event.full_event_days)
             for index, registrant in enumerate(registrants):
-                # Don't updage attendance dates or child events if registration is closed
+                # Don't updage attendance dates or child events if registration is closed (non admin users)
                 # or if nested events is not enabled, or event has no child events
-                if not registrant.can_edit_attendance_dates:
+                can_edit_attendance_dates = (
+                    registrant.can_edit_attendance_dates or
+                    (request.user.is_superuser and reg8n.event.can_edit_attendance_dates_admin)
+                )
+                if not can_edit_attendance_dates:
                     continue
 
                 pricing = registrant.pricing
@@ -3388,6 +3393,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                                               'formset_errors':formset_errors,
                                               'total_regt_forms':total_regt_forms,
                                               'reg8n': reg8n,
+                                              'is_admin': request.user.is_superuser,
                                               'registrants': registrants
                                                })
 
