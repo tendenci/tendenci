@@ -2403,8 +2403,8 @@ class Event(TendenciBaseModel):
                 continue
 
             day = start_dt.date()
-            start_time = start_dt.strftime("%-I:%M %p")
-            end_time = sub_event_datetimes[start_dt].strftime("%-I:%M %p")
+            start_time = start_dt.strftime("%I:%M %p")
+            end_time = sub_event_datetimes[start_dt].strftime("%I:%M %p")
             time_slot = f'{start_time} - {end_time}'
 
             if day not in sub_events_by_datetime:
