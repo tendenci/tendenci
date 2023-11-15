@@ -339,17 +339,19 @@
                             {% endif %}
 
                             {% if request.user.is_superuser %}
-                                <li class="content-item">
-                                    <span class="app-name">
-                                        <a href="{% url 'event.member_register' app_object.pk %}">{% trans "Register Members" %}</a>
-                                    </span>
-                                </li>
+                                {% if not event.nested_events_enabled or not event.parent %}
+                                    <li class="content-item">
+                                        <span class="app-name">
+                                            <a href="{% url 'event.member_register' app_object.pk %}">{% trans "Register Members" %}</a>
+                                        </span>
+                                    </li>
                                 
-                                <li class="content-item">
-                                    <span class="app-name">
-                                        <a href="{% url 'event.user_register' app_object.pk %}">{% trans "Register A User" %}</a>
-                                    </span>
-                                </li>
+                                    <li class="content-item">
+                                        <span class="app-name">
+                                            <a href="{% url 'event.user_register' app_object.pk %}">{% trans "Register A User" %}</a>
+                                        </span>
+                                    </li>
+                                {% endif %}
                             {% endif %}
                             
                             <li class="content-item">
