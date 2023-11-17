@@ -2349,6 +2349,7 @@ class Event(TendenciBaseModel):
     def __init__(self, *args, **kwargs):
         super(Event, self).__init__(*args, **kwargs)
         self.private_slug = self.private_slug or Event.make_slug()
+        self._original_repeat_of = self.repeat_of
 
     @property
     def title_with_event_code(self):
@@ -2951,7 +2952,18 @@ class Event(TendenciBaseModel):
         # This allows us to identify all repeats, including the original event. 
         # Without this set, we would not identify the original as being the same
         # as a repeated event.
-        self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
+        
+        # Check if repeat_of has been removed or switched to another sub event
+        if self.repeat_of != self._original_repeat_of:
+            if not self.repeat_of:
+                # 1) removed - re-assign a new unique uuid 
+                self.repeat_uuid = uuid.uuid4()
+            else:
+                # 2) switched to another event - find the new repeat_uuid
+                self.repeat_uuid = self.repeat_of.repeat_uuid or uuid.uuid4()
+        else:
+            self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
+
         self.guid = self.guid or str(uuid.uuid4())
 
         super(Event, self).save(*args, **kwargs)
