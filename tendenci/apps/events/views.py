@@ -4877,12 +4877,21 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
     # registrants with regular reg form
     non_custom_registrants = registrants.filter(custom_reg_form_entry=None)
-    non_custom_registrants = non_custom_registrants.values('pk', *registrant_lookups)
-
+    non_custom_registrants = non_custom_registrants.values('pk', 'user_id', *registrant_lookups)
     if non_custom_registrants:
         values_list.insert(0, list(registrant_mappings.keys()) + ['is_paid', 'primary_registrant'])
 
         for registrant_dict in non_custom_registrants:
+            if registrant_dict['user_id']:
+                user = User.objects.get(id=registrant_dict['user_id'])
+                if hasattr(user, 'profile'):
+                    profile = user.profile
+                    registrant_dict['address'] = registrant_dict['address'] or profile.address
+                    registrant_dict['city'] = registrant_dict['city'] or profile.city
+                    registrant_dict['state'] = registrant_dict['state'] or profile.state
+                    registrant_dict['zip'] = registrant_dict['zip'] or profile.zipcode
+                    registrant_dict['country'] = registrant_dict['country'] or profile.country
+
 
             is_paid = False
             primary_registrant = u'-- N/A ---'
@@ -4903,6 +4912,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
                 registrant_dict['registration__invoice__balance'] = 0
 
             del registrant_dict['pk']
+            del registrant_dict['user_id']
 
             # keeps order of values
             registrant_tuple = RegistrantTuple(**registrant_dict)
