@@ -4493,6 +4493,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     event = get_object_or_404(Event, pk=id)
     registrants_count = 1
     registrant_hash = hash
+    is_registrant = False
 
     if reg8n_id:
         registration = get_object_or_404(Registration, event=event, pk=reg8n_id)
@@ -4553,6 +4554,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         'registrants_count': registrants_count,
         'addons': addons,
         'hash': registrant_hash,
+        'is_registrant': is_registrant,
+        'use_badges': settings.USE_BADGES,
         })
 
 
