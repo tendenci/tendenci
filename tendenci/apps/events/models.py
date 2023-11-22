@@ -1302,6 +1302,32 @@ class Registration(models.Model):
 
         return addons_text
 
+    def send_registrant_notification(self):
+        primary_registrant = self.registrant
+        if primary_registrant and  primary_registrant.email:
+            site_label = get_setting('site', 'global', 'sitedisplayname')
+            site_url = get_setting('site', 'global', 'siteurl')
+            self_reg8n = get_setting('module', 'users', 'selfregistration')
+            registrants = self.registrant_set.filter(cancel_dt=None).order_by('id')
+            notification.send_emails(
+                    [primary_registrant.email],
+                    'event_registration_confirmation',
+                    {
+                        'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                        'SITE_GLOBAL_SITEURL': site_url,
+                        'self_reg8n': self_reg8n,
+    
+                        'reg8n': self,
+                        'registrants': registrants,
+    
+                        'event': self.event,
+                        'total_amount': self.invoice.total,
+                        'is_paid': self.invoice.balance == 0,
+                        'reply_to': self.event.registration_configuration.reply_to,
+                    },
+                    True, # save notice in db
+                )
+
 
 class Registrant(models.Model):
     """
