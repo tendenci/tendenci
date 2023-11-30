@@ -54,6 +54,16 @@
         {% endif %}
     {% endif %}
 {% endfor %}
+{% if form.qty_enabled %}
+    <tr>
+        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+            <span style="font-size:9.0pt;color:#4f6b72;">{% trans "Quantity" %}</span>
+        </td>
+        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+            <span style="font-size:9.0pt;color:#000000;">{{ entry.quantity }}</span>
+        </td>
+    </tr>
+{% endif %}
 </table>
 
 {% if form.custom_payment or form.recurring_payment %}
@@ -63,6 +73,11 @@
     <strong>{% trans 'Method' %}:</strong> {{ entry.payment_method }}<br />
     <strong>{% trans 'Pricing' %}:</strong> {{ entry.pricing.label }}<br />
     <strong>{% trans 'Price' %}:</strong> {% if entry.pricing.price %}{{ entry.pricing.price|format_currency }}{% else %}{{ custom_price|format_currency }}{% endif %}<br />
+	{% with entry.get_invoice as invoice %}
+	{% if invoice %}
+	{% endif %}
+	<a href="{{ site_url }}{% url "invoice.view" invoice.id %}">{% trans "View Invoice" %}</a><br />
+	{% endwith %}
     </p>
 {% endif %}
 

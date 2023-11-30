@@ -473,6 +473,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
             entry = form_for_form.save(edit_mode)
             entry.entry_path = request.POST.get("entry_path", "")
             entry.quantity = form_for_form.cleaned_data.get('quantity', 1)
+            redirect_obj = None
             if not edit_mode:
                 if request.user.is_anonymous:
                     entry.creator = entry.check_and_create_user()
@@ -482,6 +483,88 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
 
             if not edit_mode:
                 entry.set_group_subscribers()
+
+                # Check for SPAM
+                email_to = form_for_form.email_to()
+                is_spam = Email.is_blocked(email_to)
+                if is_spam:
+                    # log the spam
+                    description = "Email \"{0}\" blocked because it is listed in email_blocks.".format(email_to)
+                    EventLog.objects.log(instance=form, description=description)
+
+                    if form.completion_url:
+                        return HttpResponseRedirect(form.completion_url)
+                    return redirect("form_sent", form.slug)
+
+            # payment redirect
+            if (form.custom_payment or form.recurring_payment) and entry.pricing:
+                # get the pricing's price, custom or otherwise
+                price = entry.pricing.price or form_for_form.cleaned_data.get('custom_price')
+
+                if form.recurring_payment:
+                    if request.user.is_anonymous:
+                        rp_user = entry.creator
+                    else:
+                        rp_user = request.user
+                    billing_start_dt = datetime.datetime.now()
+                    trial_period_start_dt = None
+                    trial_period_end_dt = None
+                    if entry.pricing.has_trial_period:
+                        trial_period_start_dt = datetime.datetime.now()
+                        trial_period_end_dt = trial_period_start_dt + datetime.timedelta(1)
+                        billing_start_dt = trial_period_end_dt
+                    # Create recurring payment
+                    rp = RecurringPayment(
+                             user=rp_user,
+                             description=form.title,
+                             billing_period=entry.pricing.billing_period,
+                             billing_start_dt=billing_start_dt,
+                             num_days=entry.pricing.num_days,
+                             due_sore=entry.pricing.due_sore,
+                             payment_amount=price * entry.quantity,
+                             taxable=entry.pricing.taxable,
+                             tax_rate=entry.pricing.tax_rate,
+                             has_trial_period=entry.pricing.has_trial_period,
+                             trial_period_start_dt=trial_period_start_dt,
+                             trial_period_end_dt=trial_period_end_dt,
+                             trial_amount=entry.pricing.trial_amount,
+                             creator=rp_user,
+                             creator_username=rp_user.username,
+                             owner=rp_user,
+                             owner_username=rp_user.username,
+                         )
+                    rp.save()
+                    if rp.platform == 'authorizenet':
+                        rp.add_customer_profile()
+
+                    # redirect to recurring payments
+                    messages.add_message(request, messages.SUCCESS, _('Successful transaction.'))
+                    redirect_obj = redirect('recurring_payment.view_account', rp.id, rp.guid)
+                else:
+                    # create the invoice
+                    invoice = make_invoice_for_entry(entry, custom_price=price)
+
+                    update_invoice_for_entry(invoice, billing_form)
+
+                    # log an event for invoice add
+                    EventLog.objects.log(instance=form)
+
+                    # redirect to online payment
+                    if invoice.balance > 0:
+                        if (entry.payment_method.machine_name).lower() == 'credit-card':
+                            redirect_obj = redirect('payment.pay_online', invoice.id, invoice.guid)
+                        # redirect to invoice page
+                        redirect_obj = redirect('invoice.view', invoice.id, invoice.guid)
+
+            if edit_mode:
+                redirect_obj = redirect("form_entry_detail", id)
+            else:
+                # default redirect
+                if form.completion_url:
+                    completion_url = form.completion_url.strip().replace('[entry_id]', str(entry.id))
+                    redirect_obj = HttpResponseRedirect(completion_url)
+
+                redirect_obj = redirect("form_sent", form.slug)
 
             # Email - only one original submission. Subsequent edits of the entry we don't notify about
             if not edit_mode:
@@ -495,16 +578,6 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                 submitter_body = generate_submitter_email_body(entry, form_for_form)
                 email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
                 email_to = form_for_form.email_to()
-                is_spam = Email.is_blocked(email_to)
-                if is_spam:
-                    # log the spam
-                    description = "Email \"{0}\" blocked because it is listed in email_blocks.".format(email_to)
-                    EventLog.objects.log(instance=form, description=description)
-
-                    if form.completion_url:
-                        return HttpResponseRedirect(form.completion_url)
-                    return redirect("form_sent", form.slug)
-
                 email = Email()
                 email.subject = subject
                 email.reply_to = form.email_from
@@ -569,75 +642,8 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                         email.recipient = email_recipients
                         email.send(fail_silently=fail_silently, attachments=attachments)
 
-            # payment redirect
-            if (form.custom_payment or form.recurring_payment) and entry.pricing:
-                # get the pricing's price, custom or otherwise
-                price = entry.pricing.price or form_for_form.cleaned_data.get('custom_price')
-
-                if form.recurring_payment:
-                    if request.user.is_anonymous:
-                        rp_user = entry.creator
-                    else:
-                        rp_user = request.user
-                    billing_start_dt = datetime.datetime.now()
-                    trial_period_start_dt = None
-                    trial_period_end_dt = None
-                    if entry.pricing.has_trial_period:
-                        trial_period_start_dt = datetime.datetime.now()
-                        trial_period_end_dt = trial_period_start_dt + datetime.timedelta(1)
-                        billing_start_dt = trial_period_end_dt
-                    # Create recurring payment
-                    rp = RecurringPayment(
-                             user=rp_user,
-                             description=form.title,
-                             billing_period=entry.pricing.billing_period,
-                             billing_start_dt=billing_start_dt,
-                             num_days=entry.pricing.num_days,
-                             due_sore=entry.pricing.due_sore,
-                             payment_amount=price * entry.quantity,
-                             taxable=entry.pricing.taxable,
-                             tax_rate=entry.pricing.tax_rate,
-                             has_trial_period=entry.pricing.has_trial_period,
-                             trial_period_start_dt=trial_period_start_dt,
-                             trial_period_end_dt=trial_period_end_dt,
-                             trial_amount=entry.pricing.trial_amount,
-                             creator=rp_user,
-                             creator_username=rp_user.username,
-                             owner=rp_user,
-                             owner_username=rp_user.username,
-                         )
-                    rp.save()
-                    if rp.platform == 'authorizenet':
-                        rp.add_customer_profile()
-
-                    # redirect to recurring payments
-                    messages.add_message(request, messages.SUCCESS, _('Successful transaction.'))
-                    return redirect('recurring_payment.view_account', rp.id, rp.guid)
-                else:
-                    # create the invoice
-                    invoice = make_invoice_for_entry(entry, custom_price=price)
-
-                    update_invoice_for_entry(invoice, billing_form)
-
-                    # log an event for invoice add
-                    EventLog.objects.log(instance=form)
-
-                    # redirect to online payment
-                    if invoice.balance > 0:
-                        if (entry.payment_method.machine_name).lower() == 'credit-card':
-                            return redirect('payment.pay_online', invoice.id, invoice.guid)
-                        # redirect to invoice page
-                        return redirect('invoice.view', invoice.id, invoice.guid)
-
-            if edit_mode:
-                return redirect("form_entry_detail", id)
-            else:
-                # default redirect
-                if form.completion_url:
-                    completion_url = form.completion_url.strip().replace('[entry_id]', str(entry.id))
-                    return HttpResponseRedirect(completion_url)
-
-                return redirect("form_sent", form.slug)
+            if redirect_obj:
+                return redirect_obj
 
     # set form's template to forms/base.html if no template or template doesn't exist
     if not form.template or not template_exists(form.template):
