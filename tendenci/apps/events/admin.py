@@ -383,7 +383,7 @@ class RegistrantCreditsAdmin(admin.ModelAdmin):
     def release(self, request, queryset):
         """Release all credits"""
         queryset.update(released=True)
-    release.short_description=_("Release all credits")
+    release.short_description=_("Release selected credits")
 
     def has_delete_permission(self, request, obj=None):
         """Don't allow deleting released credits"""
