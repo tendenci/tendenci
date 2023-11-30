@@ -4287,9 +4287,11 @@ def registrant_check_in(request):
         checked_out = request.POST.get('checked_out', None)
         child_event = request.POST.get('child_event', None)
         if registrant_id:
+            registrant_id = int(registrant_id)
             if not child_event:
                 [registrant] = Registrant.objects.filter(id=registrant_id)[:1] or [None]
             else:
+                child_event = int(child_event)
                 registrant = RegistrantChildEvent.objects.filter(pk=child_event).first()
 
             if registrant:
