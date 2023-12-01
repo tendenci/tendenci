@@ -4301,6 +4301,10 @@ def registrant_check_in(request):
                         registrant.checked_in = True
                         registrant.checked_in_dt = datetime.now()
                         registrant.save()
+                        if child_event:
+                            # nested events don't have checked_out enabled, assign credits now
+                            # the registrant here is an instance of RegistrantChildEvent
+                            registrant.child_event.assign_credits(registrant.registrant)
                     response_d['checked_in_dt'] = registrant.checked_in_dt
                     if isinstance(response_d['checked_in_dt'], datetime):
                         response_d['checked_in_dt'] = response_d['checked_in_dt'].strftime('%m/%d %I:%M%p')
