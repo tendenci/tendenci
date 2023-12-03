@@ -881,16 +881,27 @@ class Registration(models.Model):
         if not self.event.nested_events_enabled:
             return False
 
+        can_edit = False
         for registrant in self.registrant_set.filter(cancel_dt__isnull=True):
-            return (
+            can_edit = (
                 not registrant.registration_closed and (
                     (registrant.user and registrant.user.profile.is_superuser and
                     registrant.event.child_events.exists()) or
                     registrant.event.upcoming_child_events.exists()
                 )
             )
+            if can_edit:
+                return True
 
         return False
+    
+    @property
+    def can_admin_edit_child_events(self):
+        """If admin user can edit child events, return True"""
+        if not self.event.nested_events_enabled:
+            return False
+
+        return self.event.child_events.exists()
 
     def allow_adjust_invoice_by(self, request_user):
         """
@@ -1291,6 +1302,32 @@ class Registration(models.Model):
 
         return addons_text
 
+    def send_registrant_notification(self):
+        primary_registrant = self.registrant
+        if primary_registrant and  primary_registrant.email:
+            site_label = get_setting('site', 'global', 'sitedisplayname')
+            site_url = get_setting('site', 'global', 'siteurl')
+            self_reg8n = get_setting('module', 'users', 'selfregistration')
+            registrants = self.registrant_set.filter(cancel_dt=None).order_by('id')
+            notification.send_emails(
+                    [primary_registrant.email],
+                    'event_registration_confirmation',
+                    {
+                        'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                        'SITE_GLOBAL_SITEURL': site_url,
+                        'self_reg8n': self_reg8n,
+    
+                        'reg8n': self,
+                        'registrants': registrants,
+    
+                        'event': self.event,
+                        'total_amount': self.invoice.total,
+                        'is_paid': self.invoice.balance == 0,
+                        'reply_to': self.event.registration_configuration.reply_to,
+                    },
+                    True, # save notice in db
+                )
+
 
 class Registrant(models.Model):
     """
@@ -1443,7 +1480,7 @@ class Registrant(models.Model):
             self.event.nested_events_enabled and
             self.event.has_child_events
         )
-
+    
     def sub_event_datetimes(self, is_admin=False):
         """Returns list of start_dt for available sub events"""
         child_events = self.event.child_events if is_admin else self.available_child_events
@@ -2338,6 +2375,7 @@ class Event(TendenciBaseModel):
     def __init__(self, *args, **kwargs):
         super(Event, self).__init__(*args, **kwargs)
         self.private_slug = self.private_slug or Event.make_slug()
+        self._original_repeat_of = self.repeat_of
 
     @property
     def title_with_event_code(self):
@@ -2392,8 +2430,8 @@ class Event(TendenciBaseModel):
                 continue
 
             day = start_dt.date()
-            start_time = start_dt.strftime("%-I:%M %p")
-            end_time = sub_event_datetimes[start_dt].strftime("%-I:%M %p")
+            start_time = start_dt.strftime("%I:%M %p")
+            end_time = sub_event_datetimes[start_dt].strftime("%I:%M %p")
             time_slot = f'{start_time} - {end_time}'
 
             if day not in sub_events_by_datetime:
@@ -2940,7 +2978,18 @@ class Event(TendenciBaseModel):
         # This allows us to identify all repeats, including the original event. 
         # Without this set, we would not identify the original as being the same
         # as a repeated event.
-        self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
+        
+        # Check if repeat_of has been removed or switched to another sub event
+        if self.repeat_of != self._original_repeat_of:
+            if not self.repeat_of:
+                # 1) removed - re-assign a new unique uuid 
+                self.repeat_uuid = uuid.uuid4()
+            else:
+                # 2) switched to another event - find the new repeat_uuid
+                self.repeat_uuid = self.repeat_of.repeat_uuid or uuid.uuid4()
+        else:
+            self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
+
         self.guid = self.guid or str(uuid.uuid4())
 
         super(Event, self).save(*args, **kwargs)
@@ -2951,6 +3000,17 @@ class Event(TendenciBaseModel):
     def __str__(self):
         return f'{self.title} ({self.start_dt.strftime("%m/%d/%Y")} - {self.end_dt.strftime("%m/%d/%Y")})'
 
+    @property
+    def can_edit_attendance_dates_admin(self):
+        """
+        Attendance dates are editable by an admin user if
+        nested events are enabled and event has child events
+        """
+        return (
+            self.nested_events_enabled and
+            self.has_child_events
+        )
+    
     @property
     def has_addons(self):
         return Addon.objects.filter(

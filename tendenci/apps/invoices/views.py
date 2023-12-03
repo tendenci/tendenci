@@ -203,14 +203,18 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
             action_taken = invoice.make_payment(payment.creator,
                                                 payment.amount)
             if action_taken:
+                obj = invoice.get_object()
                 if invoice.use_third_party_payment:
                     # it's a third party payment (external payment),
                     # approve this chapter membership if invoice is marked
                     # as paid.
-                    obj = invoice.get_object()
                     if obj and obj.__class__.__name__ == 'ChapterMembership':
                         if not obj.is_approved():
                             obj.approve(request_user=request.user)
+                if obj.__class__.__name__ == 'Registration':
+                    # send confirmation email to registrant
+                    if not obj.event.is_over:
+                        obj.send_registrant_notification()
                 
                 EventLog.objects.log(instance=invoice)
                 messages.add_message(
