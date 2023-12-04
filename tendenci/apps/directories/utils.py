@@ -33,7 +33,7 @@ def resize_s3_image(image_path, width=200, height=200):
     content = f.read()
     f.close()
     img = Image.open(BytesIO(content))
-    img.thumbnail((width,height),Image.ANTIALIAS)
+    img.thumbnail((width,height),Image.LANCZOS)
     f = storage.open(image_path, 'w')
     img.save(f)
     f.close()

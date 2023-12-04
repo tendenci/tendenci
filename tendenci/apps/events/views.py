@@ -2218,7 +2218,8 @@ def sessions_list(request, registrant_id, template_name="events/registrants/sess
             'event': event,
             'registrant': registrant,
             'attend_dates': attend_dates,
-            'reg_child_events': reg_child_events
+            'reg_child_events': reg_child_events,
+            'can_edit': request.user.is_superuser or (not event.is_over and not registrant.registration_closed)
         })
 
 
@@ -3298,9 +3299,13 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             attendance_dates_changed = False
             total_available_days = len(reg8n.event.full_event_days)
             for index, registrant in enumerate(registrants):
-                # Don't updage attendance dates or child events if registration is closed
+                # Don't updage attendance dates or child events if registration is closed (non admin users)
                 # or if nested events is not enabled, or event has no child events
-                if not registrant.can_edit_attendance_dates:
+                can_edit_attendance_dates = (
+                    registrant.can_edit_attendance_dates or
+                    (request.user.is_superuser and reg8n.event.can_edit_attendance_dates_admin)
+                )
+                if not can_edit_attendance_dates:
                     continue
 
                 pricing = registrant.pricing
@@ -3388,6 +3393,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                                               'formset_errors':formset_errors,
                                               'total_regt_forms':total_regt_forms,
                                               'reg8n': reg8n,
+                                              'is_admin': request.user.is_superuser,
                                               'registrants': registrants
                                                })
 
@@ -4281,9 +4287,11 @@ def registrant_check_in(request):
         checked_out = request.POST.get('checked_out', None)
         child_event = request.POST.get('child_event', None)
         if registrant_id:
+            registrant_id = int(registrant_id)
             if not child_event:
                 [registrant] = Registrant.objects.filter(id=registrant_id)[:1] or [None]
             else:
+                child_event = int(child_event)
                 registrant = RegistrantChildEvent.objects.filter(pk=child_event).first()
 
             if registrant:
@@ -4293,6 +4301,10 @@ def registrant_check_in(request):
                         registrant.checked_in = True
                         registrant.checked_in_dt = datetime.now()
                         registrant.save()
+                        if child_event:
+                            # nested events don't have checked_out enabled, assign credits now
+                            # the registrant here is an instance of RegistrantChildEvent
+                            registrant.child_event.assign_credits(registrant.registrant)
                     response_d['checked_in_dt'] = registrant.checked_in_dt
                     if isinstance(response_d['checked_in_dt'], datetime):
                         response_d['checked_in_dt'] = response_d['checked_in_dt'].strftime('%m/%d %I:%M%p')
@@ -4357,16 +4369,17 @@ def event_badges(request, event_id=0, template_name='events/badges.html'):
 
     for registration in registrations:
         for registrant in registration.registrant_set.filter(cancel_dt__isnull=True):
-            has_max_badges_per_page = len(current_batch) == 3
             if payment_required and registration.not_paid():
                 # they're not paid, skip
                 continue
+
+            has_max_badges_per_page = len(current_batch) == 3
 
             if not has_max_badges_per_page:
                 current_batch.append(registrant)
             if has_max_badges_per_page:
                 registrants.append({'registrants': current_batch.copy()})
-                current_batch = list()
+                current_batch = [registrant]
 
     if current_batch:
         registrants.append({'registrants': current_batch.copy()})
@@ -4486,6 +4499,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     event = get_object_or_404(Event, pk=id)
     registrants_count = 1
     registrant_hash = hash
+    is_registrant = False
 
     if reg8n_id:
         registration = get_object_or_404(Registration, event=event, pk=reg8n_id)
@@ -4546,6 +4560,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         'registrants_count': registrants_count,
         'addons': addons,
         'hash': registrant_hash,
+        'is_registrant': is_registrant,
+        'use_badges': settings.USE_BADGES,
         })
 
 
@@ -4870,12 +4886,21 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
     # registrants with regular reg form
     non_custom_registrants = registrants.filter(custom_reg_form_entry=None)
-    non_custom_registrants = non_custom_registrants.values('pk', *registrant_lookups)
-
+    non_custom_registrants = non_custom_registrants.values('pk', 'user_id', *registrant_lookups)
     if non_custom_registrants:
         values_list.insert(0, list(registrant_mappings.keys()) + ['is_paid', 'primary_registrant'])
 
         for registrant_dict in non_custom_registrants:
+            if registrant_dict['user_id']:
+                user = User.objects.get(id=registrant_dict['user_id'])
+                if hasattr(user, 'profile'):
+                    profile = user.profile
+                    registrant_dict['address'] = registrant_dict['address'] or profile.address
+                    registrant_dict['city'] = registrant_dict['city'] or profile.city
+                    registrant_dict['state'] = registrant_dict['state'] or profile.state
+                    registrant_dict['zip'] = registrant_dict['zip'] or profile.zipcode
+                    registrant_dict['country'] = registrant_dict['country'] or profile.country
+
 
             is_paid = False
             primary_registrant = u'-- N/A ---'
@@ -4896,6 +4921,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
                 registrant_dict['registration__invoice__balance'] = 0
 
             del registrant_dict['pk']
+            del registrant_dict['user_id']
 
             # keeps order of values
             registrant_tuple = RegistrantTuple(**registrant_dict)

@@ -32,7 +32,7 @@ If necessary, you may be able to run Tendenci on a VM with as little as 1 CPU co
 3GB of storage, but you will likely find that to be too slow/constrained even for testing purposes.
 
 
-Please note that Tendenci 14 requires Python 3.7 or newer. 
+Please note that Tendenci 14 requires Python 3.8 or newer. 
 
 
 System Preparation

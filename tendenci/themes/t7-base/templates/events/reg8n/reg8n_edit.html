@@ -58,7 +58,7 @@
 
                 <div class="{% cycle 'odd-registrant' 'even-registrant'%}">
                     {{ form|styled_form }}
-                    {% if registrant.registration_closed %}
+                    {% if registrant.registration_closed and not is_admin %}
                         <input class="registration_closed" type="hidden" />
                     {% endif %}
                     {% if reg8n.event.nested_events_enabled and registrant.pricing and registrant.pricing.days_price_covers and not registrant.registration_closed %}
@@ -85,7 +85,7 @@
                 {% endfor %}
 
         </div>
-            {% if reg8n.can_edit_child_events %}
+            {% if reg8n.can_admin_edit_child_events and is_admin or reg8n.can_edit_child_events%}
                 <input class="btn btn-primary" type="submit" name="child_events" value="{% trans "Save and Edit Sub-Events" %}" />
             {% endif %}
             <input class="btn btn-primary" type="submit" value="{% trans "Save Changes" %}" />

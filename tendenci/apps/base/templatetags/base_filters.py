@@ -373,7 +373,7 @@ def thumbnail(file, size='200x200'):
             return u''
 
         image = Image.open(default_storage.open(filename))
-        image.thumbnail([x, y], Image.ANTIALIAS)
+        image.thumbnail([x, y], Image.LANCZOS)
 
         f = default_storage.open(miniature_filename, 'w')
         image.save(f, image.format, quality=90, optimize=1)

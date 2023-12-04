@@ -49,6 +49,7 @@ def notify_forum_subscribers(topic):
         context = {
             'manage_url': reverse('pybb:forum_subscription', kwargs={'pk': forum.id}),
             'topic': topic,
+            'site_url': get_setting('site', 'global', 'siteurl'),
         }
         send_notification(users, 'forum_subscription_email', context)
     subscriptions = qs.filter(type=ForumSubscription.TYPE_SUBSCRIBE)
@@ -104,7 +105,7 @@ def notify_topic_subscribers(post):
 def send_notification(users, template, context={}):
     if not 'site' in context:
         context['site'] = Site.objects.get_current()
-    context['site_url'] = get_setting('site', 'global', 'siteurl'),
+    context['site_url'] = get_setting('site', 'global', 'siteurl')
     old_lang = translation.get_language()
     from_email = settings.DEFAULT_FROM_EMAIL
 
