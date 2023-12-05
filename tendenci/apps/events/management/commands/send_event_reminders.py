@@ -48,9 +48,9 @@ class Command(BaseCommand):
         from tendenci.apps.site_settings.utils import get_setting
 
         email = Email()
-        if event.organizer and event.organizer.user \
-            and event.organizer.user.email:
-            email.recipient = event.organizer.user.email
+        if event.organizer_first and event.organizer_first.user \
+            and event.organizer_first.user.email:
+            email.recipient = event.organizer_first.user.email
         else:
             email.recipient = get_setting('module', 'events', 'admin_emails')
             if not email.recipient:
@@ -115,20 +115,21 @@ class Command(BaseCommand):
                                 )
 
                 reg_conf = event.registration_configuration
-                [organizer] = Organizer.objects.filter(event=event)[:1] or [None]
-                event.organizer = organizer
+                organizer = event.organizer_set.all().first()
+                event.organizer_first = organizer
 
                 email = reg_conf.email
                 if not email:
                     email = Email()
 
-                if not email.sender_display:
-                    if organizer.name:
-                        email.sender_display = organizer.name
-
-                if not email.reply_to:
-                    if organizer.user and organizer.user.email:
-                        email.reply_to = organizer.user.email
+                if organizer:
+                    if not email.sender_display:
+                        if organizer.name:
+                            email.sender_display = organizer.name
+    
+                    if not email.reply_to:
+                        if organizer.user and organizer.user.email:
+                            email.reply_to = organizer.user.email
 
                 if not email.subject:
                     email.subject = 'Reminder: %s' % event.title
