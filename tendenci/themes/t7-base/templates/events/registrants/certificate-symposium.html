@@ -259,8 +259,8 @@
       <div class="col-md-3 event">
         <strong>{{ registrant.event.title }}</strong> <br />
         <span class="dates">{{ registrant.event_dates_display }}</span> <br />
+        {% if registrant.event.delivery_method %}{{ registrant.event.delivery_method }}{% endif %} <br />
         {% if registrant.event.place.virtual %}
-	        {% if registrant.event.delivery_method %}{{ registrant.event.delivery_method }}{% endif %} <br />
 	        {% trans "Online" %}
         {% else %}
         	{% if registrant.event.place.name %}
