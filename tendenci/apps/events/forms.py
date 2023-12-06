@@ -67,7 +67,8 @@ ALLOWED_LOGO_EXT = (
 EMAIL_AVAILABLE_TOKENS = ['event_title',
                           'event_date',
                           'event_location',
-                          'event_link'
+                          'event_link',
+                          'qr_code',
                           ]
 
 
@@ -2572,11 +2573,14 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
 
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
+    if not settings.USE_BADGES and 'qr_code' in EMAIL_AVAILABLE_TOKENS:
+        EMAIL_AVAILABLE_TOKENS.remove('qr_code')
     subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.model_name.lower()}),
-        label=_('Email Content'))
+        label=_('Email Content'), help_text=_('Available tokens: <br />' +
+        ', '.join(['{{ %s }}' % token for token in EMAIL_AVAILABLE_TOKENS])))
 
     payment_status = forms.ChoiceField(
         initial='all',
@@ -2601,6 +2605,8 @@ class MessageAddForm(forms.ModelForm):
 
 class EmailForm(forms.ModelForm):
     #events = forms.CharField()
+    if not settings.USE_BADGES and 'qr_code' in EMAIL_AVAILABLE_TOKENS:
+        EMAIL_AVAILABLE_TOKENS.remove('qr_code')
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.model_name.lower()}),

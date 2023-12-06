@@ -41,7 +41,7 @@ from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.imports.utils import extract_from_excel
 from tendenci.apps.base.utils import (adjust_datetime_to_timezone,
     format_datetime_range, UnicodeWriter, get_salesforce_access,
-    create_salesforce_contact, validate_email)
+    create_salesforce_contact, validate_email, convert_absolute_urls)
 from tendenci.apps.exports.utils import full_model_to_dict
 from tendenci.apps.emails.models import Email
 from tendenci.apps.base.utils import escape_csv, Echo
@@ -214,7 +214,7 @@ def do_events_financial_export(**kwargs):
     
     
 
-def render_event_email(event, email):
+def render_event_email(event, email, registrants=None):
     """
     Render event email subject and body.
     """
@@ -222,6 +222,8 @@ def render_event_email(event, email):
     context['event_title'] = event.title
     context['event_date'] = format_datetime_range(event.start_dt, event.end_dt)
     context['event_location'] = ''
+    if registrants:
+        context['registrants'] = registrants
     if event.place:
         context['event_location'] += '<div><strong>Location</strong>:</div>'
         if event.place.name:
@@ -733,6 +735,14 @@ def email_registrants(event, email, **kwargs):
                 email.body = email.body.replace('[invoicelink]', invoicelink)
             else:
                 email.body = email.body.replace('[invoicelink]', '')
+            if email.body.find('{{ qr_code }}') != -1:
+                email.body = '{% load qr_code %}\n' + email.body
+                qr_code_replacement = '{% include "events/email_badge.html" with registrants=registrants %}'
+                email.body = email.body.replace('{{ qr_code }}', qr_code_replacement)
+            email = render_event_email(event, email, registrants=[registrant])
+            # replace the relative links with absolute urls
+            # in the email body and subject
+            email.body = convert_absolute_urls(email.body, site_url)
             email.send()
 
         email.body = tmp_body  # restore to the original

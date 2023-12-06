@@ -42,6 +42,7 @@
             <div class="message-item">
                 <p><strong>{{ form.body.label }}:</strong></p>
                 {{ form.body }}
+                <span class="help-block">{{ form.body.help_text|safe }}</span>
             </div>
 
             <div class="message-item">
