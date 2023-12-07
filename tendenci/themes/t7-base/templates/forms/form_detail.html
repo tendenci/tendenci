@@ -46,7 +46,53 @@
     {# TODO: Update this #}
     <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
     <script type="text/javascript">
+    	function updateSubTotal(this_obj, is_custom_price=false){
+    		var price;
+    		if (is_custom_price == true){
+    			price = $(this_obj).val();
+    		}else{
+    			var checked_pricing = $("input[name='pricing_option']:checked");
+    			if (checked_pricing.next('strong').find('span').attr('data-price')){
+    				price = checked_pricing.next('strong').find('span').data('price');
+    			}else{
+    				var checked_custom_price = checked_pricing.next("input[class='custom-price']");
+    				if (checked_custom_price){
+    					console.log("CCC", checked_custom_price, checked_custom_price.val());
+    					price = checked_custom_price.val();
+    				}
+    			}
+    		}
+		    if (isNaN(price)){
+		        price = 0;
+		    }
+		    var qty = $("input[name='quantity']").val();
+		    if (isNaN(qty)){
+		        qty = 0;
+		    }
+		    
+		    var subtotal = parseFloat(price) * parseInt(qty);
+		    //console.log(subtotal.toFixed(2));
+		    $('#subtotal-area').html(subtotal.toFixed(2));
+    	}
+    	
+    	
         $(document).ready(function(){
+        	{% if form.qty_enabled %}
+	        	$("input[id='id_quantity']").closest("div").append('<div class="text-success">Subtotal({{ SITE_GLOBAL_CURRENCYSYMBOL }}): <span id="subtotal-area"></span></div>'); 
+	        	updateSubTotal();
+	        	
+	        	$("input[name='quantity']").on("change", function() {
+	                 updateSubTotal();
+	            });
+	            $("input[name='pricing_option']").on("change", function() {
+	                 updateSubTotal();
+	            });
+	            $("input[class='custom-price']").on("change", function() {
+	                 updateSubTotal(this, is_custom_price=true);
+	            });
+            
+            {% endif %}
+        
             $('.custom-price').on("click", function() {
                 $(this).prev('input[type="radio"]').prop('checked', true);
             });

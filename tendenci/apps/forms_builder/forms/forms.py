@@ -210,10 +210,8 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                                 (pricing.pk, mark_safe(pricing_display)))
                         else:
                             pricing_options.append(
-                                (pricing.pk, mark_safe('<strong>%s %s</strong><br>%s' %
-                                                       (tcurrency(pricing.price),
-                                                        pricing.label, pricing.description)))
-                            )
+                                (pricing.pk, mark_safe(f'<strong><span data-price="{pricing.price}">{tcurrency(pricing.price)} {pricing.label}</span></strong><br>{pricing.description}'))
+                                )
 
                 form.fields['pricing_option'] = forms.ChoiceField(
                     label=formforform.pricing_name or _('Pricing'),
