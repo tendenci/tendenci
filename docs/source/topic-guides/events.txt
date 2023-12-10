@@ -47,8 +47,20 @@ Different pricing options can be set for different levels of registration. For e
 All of these pricing options (and any others you might think up), can be configured to have a start and end time, and can be made only available members of your site or possibly only people in certain groups.
 
 
-Zoom Integration
+Cancellation Fee
 ~~~~~~~~~~~~~~~~
+
+If you want to charge a cancellation fee when an event registration is cancelled, you can set it up in your events by specifying a cancellation fee or cancellation percent. Please note that this functionality only works with stripe payment.
+
+
+Nested Events
+-------------
+
+If you want to host your events with sessions, you can utilize the nested events feature. To enable the nested events, please turn on the setting "Enable Nested Events". https://www.example.com/settings/module/events/#id_nested_events.
+
+
+Zoom Integration
+----------------
 You can setup your Event to integrate with Zoom. It will launch a meeting from the Event's page. This can be used for calculating credits (if you are using credits) or from just simply providing an easy to find location for the link to your Zoom meeting. The 'Join Meeting' button will appear on the Event's page
 10 minutes prior to the Event's start date and time and will remain available until the end date and time configured in the 'Overview' section of Event edit.
 
@@ -64,7 +76,7 @@ If you are using credits, once Zoom meeting has finished, and it is past the Eve
 
 
 Zoom API Configuration
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 From the Admin Backend for Events, you will find Zoom API Configuration. This will allow you to integrate your Zoom account(s). Multiple accounts
 can be used, but only one default can be set. The default integration will be selected on Event creation. You will be able to use another configured
 account by changing your selection on Event add or on Event edit.
@@ -74,7 +86,7 @@ for your SDK app (see SDK app configuration) and your account id, client id and 
 
 
 Zoom App Creation
-----------------------
+~~~~~~~~~~~~~~~~~
 Follow these steps from your Zoom account to:
    1. Create an app that will allow you to launch your Zoom meeting from an Event (SDK App Configuration)
    2. Create an app that will allow you to pull meeting information such as poll results (Server-to-Server App Configuration)

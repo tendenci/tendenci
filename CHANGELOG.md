@@ -1,3 +1,22 @@
+### 14.8 [2023-12-10]
+
+**New Features and Improvements**
+
+* ** Event Cancellation and Refund:** 1) Added the ability to charge a cancellation fee when an event registration is cancelled.  2) Added the refund capability to either automatically or manually refund when users cancel their registrations. Currently this feature is only available with Stripe payment. To enable it, you can turn on the setting "Allow refunds" https://www.example.com/settings/module/events/#id_allow_refunds
+* **Nested Events:** Nested events functionality allows you to host events with sessions or sub-events. To enable the nested events, turn on the setting "Enable Nested Events" https://www.example.com/settings/module/events/#id_nested_events.
+* Added an option to not allow users who already registered to register an event again https://www.example.com/settings/module/events/#id_canregisteragain
+* More new features in events: Attendants can earn credits and be granted with certificates. QR code and badges can be used for digital check-in. Zoom integration, etc... 
+* Added the "Register A User" functionality for admin to easily search and register a user for an event.
+* Updated Stripe Connect onboarding process https://tendenci.readthedocs.io/en/latest/topic-guides/payments.html#how-to-use-stripe-connect.
+* Updated custom forms to allow users to specify the quantity of the item(s) purchased. 
+
+**Backward Incompatible**
+
+* Dropped Python 3.6 support. 
+
+**More updates and bugfixes**
+
+
 ### 14.5.1 [2023-07-04]
 
 * Fixed an issue about reps could be removed from dues reps and member reps groups when they're removed from a corp but still associated with other corps.
