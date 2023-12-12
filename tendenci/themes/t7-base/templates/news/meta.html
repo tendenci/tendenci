@@ -26,7 +26,7 @@
         <li><strong>{% trans "Source:" %}</strong> <a href="{% url 'news' %}?q=source:{{ news.source }}">{{ news.source|urlize }}</a></li>
     {% endif %}
 
-    <li><strong>{% trans "Released:" %}</strong> <span>{{ news.release_dt|date:"long" }}</span></li>
+    <li><strong>{% if news.is_released %}{% trans "Released:" %}{% else %}<span class="text-warning">{% trans "To Be Released on:" %}</span>{% endif %}</strong> <span>{{ news.release_dt|date:"long" }}</span></li>
 
     {% if news.first_name or news.last_name or news.phone or news.fax or news.email or news.website %}
         {% if news.first_name or news.last_name %}
