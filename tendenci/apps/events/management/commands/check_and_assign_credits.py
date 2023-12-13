@@ -16,7 +16,7 @@ class Command(BaseCommand):
             help='The id of the event to be checked')
 
     def handle(self, *args, **options):
-        from tendenci.apps.events.models import Event, RegistrantChildEvent
+        from tendenci.apps.events.models import Event, Registrant, RegistrantChildEvent
 
         verbosity = options['verbosity']
         event_id = options['event_id']
@@ -25,14 +25,22 @@ class Command(BaseCommand):
             return
 
         event = Event.objects.get(id=event_id)
-        for child_event in event.all_child_events:
-            if verbosity >= 2:
-                print('Processing child event:', child_event)
-            for c_registrant in RegistrantChildEvent.objects.filter(
-                                    child_event=child_event,
-                                    checked_in=True):
+        if event.has_child_events:
+            for child_event in event.all_child_events:
                 if verbosity >= 2:
-                    print(c_registrant.registrant)
-                child_event.assign_credits(c_registrant.registrant)
-
+                    print('Processing child event:', child_event)
+                for c_registrant in RegistrantChildEvent.objects.filter(
+                                        child_event=child_event,
+                                        checked_in=True):
+                    if verbosity >= 2:
+                        print(c_registrant.registrant)
+                    child_event.assign_credits(c_registrant.registrant)
+        else:
+            for registrant in Registrant.objects.filter(
+                        registration__event=event,
+                            cancel_dt__isnull=True):
+                reg8n = registrant.registration
+                if reg8n.status() == 'registered':
+                    print(registrant)
+                    event.assign_credits(registrant)
         print('Done')
