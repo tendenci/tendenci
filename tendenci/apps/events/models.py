@@ -1747,7 +1747,7 @@ class Registrant(models.Model):
         except:
             raise Exception(error_message)
 
-        if check_in_or_out == 'checked_out' and not self.event.eventcredit_set.available().exists():
+        if check_in_or_out == 'checked_out' and self.event.eventcredit_set.available().exists():
             self.event.assign_credits(self)
 
     def get_name(self):
