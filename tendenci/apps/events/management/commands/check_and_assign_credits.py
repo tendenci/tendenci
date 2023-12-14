@@ -38,7 +38,9 @@ class Command(BaseCommand):
         else:
             for registrant in Registrant.objects.filter(
                         registration__event=event,
-                            cancel_dt__isnull=True):
+                        checked_in=True,
+                        checked_out=True,
+                        cancel_dt__isnull=True):
                 reg8n = registrant.registration
                 if reg8n.status() == 'registered':
                     print(registrant)
