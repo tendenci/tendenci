@@ -122,7 +122,15 @@
           <td>{% trans "Invoice For" %}</td>
           <td class="td-right">
             {% if object.event.pk %}
+            {% if obj_name == 'registration' %}
             <a href="{% url 'event.registration_confirmation' object.event.pk object.pk %}">{{ object }}</a><br>
+            {% else %}
+            	{% if request.user.is_superuser %}
+            	<a href="{% url 'admin:events_assetspurchase_change' object.pk %}">{{ object }}</a><br>
+            	{% else %}
+            	{{ object }}<br>
+            	{% endif %}
+            {% endif %}
             <strong>{% trans 'Event Date' %}:</strong> {{ object.event.start_dt }}
             {% else %}
 	            {% if invoice.bill_to %}

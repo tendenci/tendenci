@@ -134,7 +134,8 @@ from tendenci.apps.events.forms import (
     EventSimpleSearchForm,
     EventReportFilterForm,
     GratuityForm,
-    management_forms_tampered)
+    management_forms_tampered,
+    AssetsPurchaseForm)
 from tendenci.apps.events.utils import (
     email_registrants,
     render_event_email,
@@ -2167,6 +2168,86 @@ def member_register(request, event_id, form_class=MemberRegistrationForm,
         'event':event,
         'form': form,
         'for_member': for_member
+    })
+
+@is_enabled('events')
+@login_required
+def purchase_assets(request, event_id, form_class=AssetsPurchaseForm,
+                    template_name="events/reg8n/purchase-assets.html"):
+    """
+    Event assets purchase.
+    """
+    event = get_object_or_404(Event, pk=event_id)
+    if event.parent:
+        # this is a child event
+        raise Http404
+
+    reg_conf = event.registration_configuration
+
+    # check if event allows assets purchase
+    if not event.is_over:
+        # event not over yet, 
+        if reg_conf and reg_conf.enabled:
+            msg_string = _(f'Registration is still open. You can register for the event {event.title}')
+        else:
+            msg_string = _('Event is not over yet')
+        messages.add_message(request, messages.INFO, msg_string)
+        return HttpResponseRedirect(reverse('event', args=[event_id]))
+
+    if not reg_conf.available_for_purchase:
+        msg_string = _('No assets are available for purchasing for this event.')
+        messages.add_message(request, messages.INFO, msg_string)
+        return HttpResponseRedirect(reverse('event', args=[event_id]))
+
+    pricings = reg_conf.get_assets_purchase_available_pricings(request.user)
+    pricings = pricings.filter(quantity=1)
+    if pricings.count() == 0:
+        msg_string = f'No pricing is available for event {event.title}'
+        messages.add_message(request, messages.ERROR, _(msg_string))
+
+    initial = {}
+    if not request.user.is_superuser:
+        initial = {'first_name':request.user.first_name,
+                    'last_name':request.user.last_name,
+                    'email':request.user.email,}
+        if hasattr(request.user, 'profile'):
+            profile = request.user.profile
+            initial.update({'phone': profile.phone})
+    form = form_class(event, pricings, request.POST or None,
+                      request_user=request.user, initial=initial)
+
+    if request.method == "POST":
+        if form.is_valid():
+            assets_purchaser = form.save(commit=False)
+            # find user record
+            if assets_purchaser.email.lower() == request.user.email.lower():
+                assets_purchaser.user = request.user
+            else:
+                user = User.objects.filter(email__iexact=assets_purchaser.email).first()
+                if user:
+                    assets_purchaser.user = user
+            assets_purchaser.event = event
+            assets_purchaser.amount = assets_purchaser.pricing.price
+            assets_purchaser.save()
+            # create invoice
+            assets_purchaser.save_invoice(request.user)
+            
+            # log an event
+            EventLog.objects.log(instance=assets_purchaser)
+            
+            # redirect to online payment
+            if assets_purchaser.payment_method.machine_name.lower() == 'credit-card' \
+                and assets_purchaser.invoice.balance > 0:
+                return HttpResponseRedirect(reverse('payment.pay_online',
+                                    args=[assets_purchaser.invoice.id,
+                                          assets_purchaser.invoice.guid]))
+            return HttpResponseRedirect(reverse('invoice.view', args=[assets_purchaser.invoice.id]))
+
+    
+    return render_to_resp(request=request, template_name=template_name,
+           context={
+            'event':event,
+            'form': form,
     })
 
 
