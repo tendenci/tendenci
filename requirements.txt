@@ -9,7 +9,7 @@ django-countries==7.2.1
 django-localflavor==3.1
 dj-pagination>=2.5.0
 django-picklefield>=3.0.1
-django-simple-captcha==0.5.14
+django-simple-captcha==0.5.20
 #django-nocaptcha-recaptcha==0.0.20
 django-tagging==0.5.0
 django-haystack==3.0
