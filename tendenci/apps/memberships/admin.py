@@ -339,6 +339,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     list_filter = [
         MembershipStatusDetailFilter,
         'membership_type',
+        ('region', admin.RelatedOnlyFieldListFilter),
     ]
     if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
         list_filter.append(MembershipAutoRenewFilter)

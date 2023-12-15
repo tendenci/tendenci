@@ -2352,33 +2352,11 @@ def handle_registration_payment(reg8n, redirect_url_only=False):
             return None
         # offline payment:
         # send email; add message; redirect to confirmation
-        primary_registrant = reg8n.registrant
+        reg8n.send_registrant_notification()
+        
+        #email the admins as well
 
-        if primary_registrant and  primary_registrant.email:
-            site_label = get_setting('site', 'global', 'sitedisplayname')
-            site_url = get_setting('site', 'global', 'siteurl')
-
-            notification.send_emails(
-                [primary_registrant.email],
-                'event_registration_confirmation',
-                {
-                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
-                    'SITE_GLOBAL_SITEURL': site_url,
-                    'self_reg8n': self_reg8n,
-
-                    'reg8n': reg8n,
-                    'registrants': registrants,
-
-                    'event': event,
-                    'total_amount': reg8n.invoice.total,
-                    'is_paid': reg8n.invoice.balance == 0,
-                    'reply_to': reg_conf.reply_to,
-                },
-                True, # save notice in db
-            )
-            #email the admins as well
-
-            # fix the price
-            email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+        # fix the price
+        email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
 
         return None

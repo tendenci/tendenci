@@ -149,7 +149,16 @@
                 {% else %}
                     {% if not registration.is_table and event.can_cancel %}
                       {% if user.is_authenticated %}
-                          <a href="{% url "event.cancel_registrant" event.pk registrant.pk %}">{% trans "Cancel" %}</a>
+                      	  {% if use_badges %}
+                      	  {% if is_registrant or request.user.is_superuser %}
+                           {% if registration.status == 'registered' %}
+                         	 <a class="t-meta-print-link" title="print badge" href="{% url "registrant.badge" registrant.pk %}">
+			                    {% trans "Print Badge" %}
+			                </a>
+			                {% endif %}
+                          {% endif %}
+                          {% endif %}
+                          &nbsp;&nbsp;&nbsp;<a href="{% url "event.cancel_registrant" event.pk registrant.pk %}"><span class="text-danger">{% trans "Cancel" %}</span></a>
                       {% else %}
                           <a href="{% url "event.cancel_registrant" event.pk registrant.hash %}">{% trans "Cancel" %}</a>
                       {% endif %}
