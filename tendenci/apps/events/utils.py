@@ -354,6 +354,40 @@ def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
             sheet.write(row+start, col, val, style=style)
 
 
+def get_calendar_data():
+    """
+    Get data needed to return .ics calendar file.
+    """
+    p = re.compile(r'http(s)?://(www.)?([^/]+)')
+    d = {}
+    file_name = ''
+
+    d['site_url'] = get_setting('site', 'global', 'siteurl')
+
+    match = p.search(d['site_url'])
+    if match:
+        d['domain_name'] = match.group(3)
+    else:
+        d['domain_name'] = ""
+
+    if d['domain_name']:
+        file_name = '%s.ics' % (d['domain_name'])
+    else:
+        file_name = "event.ics"
+
+    return file_name, d
+
+def get_ics_defaults():
+    """
+    Create string for the default ics options
+    """
+    ics_str = "BEGIN:VCALENDAR\r\n"
+    ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci Codebase 12 MIMEDIR//EN\r\n"
+    ics_str += "VERSION:2.0\r\n"
+    ics_str += "METHOD:REQUEST\r\n"
+
+    return ics_str
+
 def get_ievent(request, d, event_id):
     from tendenci.apps.events.models import Event
 

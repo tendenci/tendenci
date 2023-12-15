@@ -147,6 +147,8 @@ from tendenci.apps.events.utils import (
     get_pricing,
     clean_price,
     get_event_spots_taken,
+    get_calendar_data,
+    get_ics_defaults,
     get_ievent,
     get_vevents,
     copy_event,
@@ -533,49 +535,31 @@ def templates_list(request, template_name="events/templates_list.html"):
         'events': events,
         })
 
-
 def icalendar(request):
-    p = re.compile(r'http(s)?://(www.)?([^/]+)')
-    d = {}
-    file_name = ''
     ics_str = ''
-
-    d['site_url'] = get_setting('site', 'global', 'siteurl')
-    match = p.search(d['site_url'])
-    if match:
-        d['domain_name'] = match.group(3)
-    else:
-        d['domain_name'] = ""
+    file_name, d = get_calendar_data()
 
     if request.user.is_authenticated:
-        file_name = 'ics-%s.ics' % (request.user.pk)
+        existing_file_name = 'ics-%s.ics' % (request.user.pk)
 
     absolute_directory = os.path.join(settings.MEDIA_ROOT, 'files/ics')
     if not os.path.exists(absolute_directory):
         os.makedirs(absolute_directory)
 
-    if file_name:
-        file_path = os.path.join(absolute_directory, file_name)
+    if existing_file_name:
+        file_path = os.path.join(absolute_directory, existing_file_name)
         # Check if ics file exists
         if os.path.isfile(file_path):
             ics = open(file_path, 'r+')
             ics_str = ics.read()
             ics.close()
     if not ics_str:
-        ics_str = "BEGIN:VCALENDAR\r\n"  
-        ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci 12 MIMEDIR//EN\r\n"
-        ics_str += "VERSION:2.0\r\n"
-        ics_str += "METHOD:PUBLISH\r\n"
-
+        ics_str = get_ics_defaults()
         ics_str += get_vevents(request.user, d)
-
         ics_str += "END:VCALENDAR\r\n"
+
     response = HttpResponse(ics_str)
     response['Content-Type'] = 'text/calendar'
-    if d['domain_name']:
-        file_name = '%s.ics' % (d['domain_name'])
-    else:
-        file_name = "event.ics"
     response['Content-Disposition'] = 'attachment; filename="%s"' % (file_name)
     return response
 
@@ -583,36 +567,20 @@ def icalendar(request):
 def icalendar_single(request, id, guid=''):
     reg8n_guid = guid
     reg8n_id = request.GET.get('reg8n_id')
-    
-    p = re.compile(r'http(s)?://(www.)?([^/]+)')
-    d = {'reg8n_guid': reg8n_guid,
-         'reg8n_id': reg8n_id}
+    file_name, d = get_calendar_data()
+
+    d.update({'reg8n_guid': reg8n_guid,
+              'reg8n_id': reg8n_id})
 
     if not Event.objects.filter(pk=id).exists():
         raise Http404
 
-    d['site_url'] = get_setting('site', 'global', 'siteurl')
-    match = p.search(d['site_url'])
-    if match:
-        d['domain_name'] = match.group(3)
-    else:
-        d['domain_name'] = ""
-
-    ics_str = "BEGIN:VCALENDAR\r\n"
-    ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci Codebase 12 MIMEDIR//EN\r\n"
-    ics_str += "VERSION:2.0\r\n"
-    ics_str += "METHOD:PUBLISH\r\n"
-
+    ics_str = get_ics_defaults()
     ics_str += get_ievent(request.user, d, id)
-
     ics_str += "END:VCALENDAR\r\n"
 
     response = HttpResponse(ics_str)
     response['Content-Type'] = 'text/calendar'
-    if d['domain_name']:
-        file_name = '%s.ics' % (d['domain_name'])
-    else:
-        file_name = "event.ics"
     response['Content-Disposition'] = 'attachment; filename="%s"' % (file_name)
     return response
 
