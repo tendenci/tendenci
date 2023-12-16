@@ -1,0 +1,39 @@
+{% load email_filters %}
+{% load base_filters %}
+
+<html><body>
+
+<h1 style="margin-bottom:0;">{% blocktrans with event.title as title and event.start_dt|date:"N j, Y \a\t f A" as start_dt %}{{ title }} on {{ start_dt }}{% endblocktrans %}</h1>
+<h3 style="margin:0;">{% trans "Event Assets Purchased for event " %} {{ event.title }} {% if for_admin %}{% trans "(Admin Copy)" %}{% endif %}</h3>
+
+<h3 style="margin-top:0;">{% blocktrans with assets_purchase.amount|format_currency as priceflo %}Total Amount: {{ priceflo }}{% endblocktrans %} </h3>
+
+{% if assets_purchase.is_paid %}
+    <div style="background-color:#CFFFCE; padding:10px; font-size:1.2em;">
+        {% if for_admin %}
+            {% trans "Payment Received." %}
+            <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" assets_purchase.invoice.pk assets_purchase.invoice.guid %}">{% trans "View Invoice."%}</a>
+            <div style="font-size:1.0em; margin-top:5px;">
+                  <div>{{ assets_purchase.first_name }} {{ assets_purchase.last_name }}  ({{ assets_purchase.email }})</div>
+                  <div>{% trans "Pricing Type" %}: {{ assets_purchase.pricing.title }}</div>
+            </div>
+        {% else %}
+            {% trans "Successfully purchased event assets. Thank you!" %}
+        {% endif %}
+    </div>
+{% else %}
+    <div style="background-color:#FFC; padding:10px; font-size:1.2em;">
+        {% if for_admin %}
+            {% trans "Not Paid." %}
+            <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" assets_purchase.invoice.pk assets_purchase.invoice.guid %}">{% trans "View Invoice."%}</a>
+            <div style="font-size:1.0em; margin-top:5px;">
+                <div>{{ assets_purchase.first_name }} {{ assets_purchase.last_name }}  ({{ assets_purchase.email }})</div>
+                <div>{% trans "Pricing Type" %}: {{ assets_purchase.pricing.title }}</div>
+            </div>
+        {% else %}
+            {% trans "Payment is required." %}
+            <a href="{{ SITE_GLOBAL_SITEURL }}{% url "payment.pay_online" assets_purchase.invoice.pk assets_purchase.invoice.guid %}">{% trans "Complete the event assets purchase." %}</a>
+        {% endif %}
+    </div>
+{% endif %}
+</body></html>
