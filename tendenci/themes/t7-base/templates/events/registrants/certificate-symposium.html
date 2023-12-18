@@ -49,7 +49,7 @@
       height: 110px;
       margin-top: 25px;
   }
-  .certificate .row.heading img {
+  .certificate .row.heading img, .certificate .row.heading .img-blank {
       margin-left: 40px;
       margin-right: 40px;
   }
@@ -231,13 +231,22 @@
     </div>
     <div class="row heading">
       <div class="col-md-3">
-        <img src="{% image_url registrant.event.image %}" title="{{ registrant.event.title }}" alt="{{ registrant.event.title }}"/></div>
+      	{% if registrant.event.image %}
+        <img src="{% image_url registrant.event.image %}" title="{{ registrant.event.title }}" alt="{{ registrant.event.title }}"/>
+        {% else %}
+        <span class="img-blank"></span>
+        {% endif %}
+      </div>
       <div class="col-md-3 heading">
         <hr>
         {% trans "CERTIFICATE OF CONTINUING EDUCATION" %}
       </div>
       <div class="col-md-3 align-right">
+      	{% if registrant.event.certificate_image %}
         <img src="{{ registrant.event.certificate_image.url }}" title="{{ registrant.event.title }}" alt="{{ registrant.event.title }}"/>
+        {% else %}
+        <span class="img-blank"></span>
+        {% endif %}
       </div>
     </div>
     <div class="row awarded">
@@ -255,8 +264,8 @@
       <div class="col-md-3 event">
         <strong>{{ registrant.event.title }}</strong> <br />
         <span class="dates">{{ registrant.event_dates_display }}</span> <br />
+        {% if registrant.event.delivery_method %}{{ registrant.event.delivery_method }}{% endif %} <br />
         {% if registrant.event.place.virtual %}
-	        {% if registrant.event.delivery_method %}{{ registrant.event.delivery_method }}{% endif %} <br />
 	        {% trans "Online" %}
         {% else %}
         	{% if registrant.event.place.name %}

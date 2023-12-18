@@ -38,15 +38,19 @@ def payment_thankyou_display(request, payment):
             app_label = obj._meta.app_label
             template_name = "%s/payment_thankyou_display.html" % (app_label)
             try:
-                obj_display = render_to_string(template_name=template_name, context={'obj':obj,
-                                                   'payment':payment},
-                                                   request=request)
+                obj_display = render_to_string(template_name=template_name, context={
+                                                    'obj':obj,
+                                                    'model_name': obj._meta.model_name,
+                                                    'payment':payment},
+                                                    request=request)
             except (TemplateDoesNotExist, IOError):
                 pass
 
             template_name = "%s/payment_thankyou_header.html" % (app_label)
             try:
-                obj_header = render_to_string(template_name=template_name, context={'obj':obj,
+                obj_header = render_to_string(template_name=template_name, context={
+                                                    'obj':obj,
+                                                    'model_name': obj._meta.model_name,
                                                    'payment':payment},
                                                    request=request)
             except (TemplateDoesNotExist, IOError):

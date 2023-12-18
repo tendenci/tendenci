@@ -567,6 +567,32 @@ class RegistrationConfiguration(models.Model):
 
         return pricings
 
+
+    def get_assets_purchase_available_pricings(self, user):
+        """
+        Get the available pricings for this user.
+        """
+        filter_and, filter_or = RegConfPricing.get_assets_purchase_access_filter(user)
+
+        q_obj = None
+        if filter_and:
+            q_obj = Q(**filter_and)
+        if filter_or:
+            q_obj_or = reduce(operator.or_, [Q(**{key: value}) for key, value in filter_or.items()])
+            if q_obj:
+                q_obj = reduce(operator.and_, [q_obj, q_obj_or])
+            else:
+                q_obj = q_obj_or
+        pricings = RegConfPricing.objects.filter(
+                    reg_conf=self,
+                    status=True,
+                    assets_purchase=True,
+                    )
+        if q_obj:
+            pricings = pricings.filter(q_obj).distinct()
+
+        return pricings
+
     def has_member_price(self):
         """
         Returns [boolean] whether or not this
@@ -575,6 +601,13 @@ class RegistrationConfiguration(models.Model):
         price_set = self.regconfpricing_set.all()
         has_members = [p.allow_member for p in price_set]
         return any(has_members)
+
+    @property
+    def available_for_purchase(self):
+        """
+        Assets available for purchasing.
+        """
+        return self.regconfpricing_set.filter(assets_purchase=True).exists()
 
 
 class RegConfPricing(OrderingBaseModel):
@@ -595,6 +628,7 @@ class RegConfPricing(OrderingBaseModel):
     groups = models.ManyToManyField(Group, blank=True)
     days_price_covers = models.PositiveSmallIntegerField(
         blank=True, null=True, help_text=_("Number of days this price covers (optional)."))
+    assets_purchase = models.BooleanField(_('Pricing available for assets purchase'), default=False)
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
@@ -780,7 +814,33 @@ class RegConfPricing(OrderingBaseModel):
                 filter_and['quantity__lte'] = spots_available
 
         return filter_and, filter_or
-    
+
+    @staticmethod
+    def get_assets_purchase_access_filter(user):
+        if user.profile.is_superuser: return None, None
+        now = datetime.now()
+        filter_and, filter_or = None, None
+
+        if user.is_anonymous:
+            filter_or = {'allow_anonymous': True}
+        elif not user.profile.is_member:
+            filter_or = {'allow_anonymous': True,
+                         'allow_user': True
+                        }
+        else:
+            # user is a member
+            filter_or = {'allow_anonymous': True,
+                         'allow_user': True,
+                         'allow_member': True}
+
+        if not user.is_anonymous and user.profile.is_member:
+            # get a list of groups for this user
+            groups_id_list = user.group_member.values_list('group__id', flat=True)
+            if groups_id_list:
+                filter_or.update({'groups__in': groups_id_list})
+
+        return filter_and, filter_or
+   
     @property
     def tax_amount(self):
         if self.include_tax:
@@ -1747,7 +1807,7 @@ class Registrant(models.Model):
         except:
             raise Exception(error_message)
 
-        if check_in_or_out == 'checked_out' and not self.event.eventcredit_set.available().exists():
+        if check_in_or_out == 'checked_out' and self.event.eventcredit_set.available().exists():
             self.event.assign_credits(self)
 
     def get_name(self):
@@ -2006,6 +2066,162 @@ class Registrant(models.Model):
                                              value=value,
                                              entry=entry,
                                              field=field)
+
+
+class AssetsPurchase(models.Model):
+    """
+    Event assets purchaser.
+    """
+    STATUS_CHOICES = (
+                ('approved', _('Approved')),
+                ('pending', _('Pending')),
+                ('declined', _('Declined')),
+                )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
+    pricing = models.ForeignKey('RegConfPricing', null=True, on_delete=models.SET_NULL)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
+    payment_method = models.ForeignKey(GlobalPaymentMethod, null=True, on_delete=models.SET_NULL)
+
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    phone = models.CharField(max_length=50, blank=True)
+    email = models.CharField(max_length=100)
+
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+
+    status_detail = models.CharField(_('Status'),
+                                     max_length=20,
+                                     default='pending',
+                                     choices=STATUS_CHOICES)
+
+    objects = RegistrantManager()
+
+    class Meta:
+        app_label = 'events'
+
+    def __str__(self):
+        return f'Assets purchase for the event "{self.event.title}" for {self.user.username}'
+
+    def save_invoice(self, request_user, *args, **kwargs):
+        status_detail = kwargs.get('status_detail', 'tendered')
+
+        object_type = ContentType.objects.get(app_label=self._meta.app_label,
+            model=self._meta.model_name)
+
+        try: # get invoice
+            invoice = Invoice.objects.get(
+                object_type = object_type,
+                object_id = self.pk,
+            )
+        except ObjectDoesNotExist: # else; create invoice
+            # cannot use get_or_create method
+            # because too many fields are required
+            invoice = Invoice()
+            invoice.object_type = object_type
+            invoice.object_id = self.pk
+
+        invoice.bill_to =  self.first_name + ' ' + self.last_name
+        
+        invoice.bill_to_first_name = self.first_name
+        invoice.bill_to_last_name = self.last_name
+        invoice.bill_to_email = self.email
+        invoice.ship_to = invoice.bill_to
+        invoice.ship_to_first_name = self.first_name
+        invoice.ship_to_last_name = self.last_name
+        invoice.ship_to_email = self.email
+        if hasattr(self.user, 'profile'):
+            profile = self.user.profile
+            invoice.bill_to_company = profile.company
+            invoice.bill_to_phone = profile.phone
+            invoice.bill_to_address = profile.address
+            invoice.bill_to_city = profile.city
+            invoice.bill_to_state = profile.state
+            invoice.bill_to_zip_code = profile.zipcode
+            invoice.bill_to_country =  profile.country
+            invoice.ship_to_company = profile.company
+            invoice.ship_to_address = profile.address
+            invoice.ship_to_city = profile.city
+            invoice.ship_to_state = profile.state
+            invoice.ship_to_zip_code =  profile.zipcode
+            invoice.ship_to_country = profile.country
+            invoice.ship_to_phone =  profile.phone
+
+        invoice.creator = request_user
+        invoice.owner = self.user
+
+        # update invoice with details
+        invoice.title = "Assets purchaser %s for Event: %s" % (self.pk, self.event.title)
+        invoice.estimate = ('estimate' == status_detail)
+        invoice.status_detail = status_detail
+        invoice.tender_date = datetime.now()
+        invoice.due_date = datetime.now()
+        invoice.ship_date = datetime.now()
+
+        invoice.subtotal = self.amount
+        invoice.total = invoice.subtotal
+        invoice.balance = invoice.total
+        invoice.save()
+
+        self.invoice = invoice
+
+        self.save()
+
+        return invoice
+
+    def is_paid(self):
+        return self.invoice and self.invoice.balance <= 0
+
+    def email_purchased(self, to_admin=False):
+        """
+        Email to user or admins that event assets purchased.
+        """
+        if self.event.registration_configuration:
+                reply_to = self.event.registration_configuration.reply_to
+        else:
+            reply_to = None
+        site_label = get_setting('site', 'global', 'sitedisplayname')
+        site_url = get_setting('site', 'global', 'siteurl')
+        
+        if to_admin:
+            admins = get_setting('module', 'events', 'admin_emails').split(',')
+            recipients = [admin.strip() for admin in admins if admin.strip()]
+            reg_conf = self.event.registration_configuration
+            if reg_conf.reply_to and reg_conf.reply_to_receive_notices:
+                email_addr = reg_conf.reply_to.strip()
+                if email_addr not in recipients:
+                    recipients.append(email_addr)
+        else:
+            recipients = [self.email]
+
+        if recipients:
+            notification.send_emails(
+                [self.email],  # recipient(s)
+                'event_assets_purchase_confirmation',  # template
+                {
+                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                    'SITE_GLOBAL_SITEURL': site_url,
+                    'site_label': site_label,
+                    'site_url': site_url,
+                    'assets_purchase': self,
+                    'event': self.event,
+                    'reply_to': reply_to,
+                },
+                True,  # notice saved in db
+            )
+
+    def auto_update_paid_object(self, request, payment):
+        """
+        Update the object after online payment is received.
+        """
+        if self.is_paid:
+            self.status_detail = 'approved'
+            self.save()
+
+            self.email_purchased()
+            self.email_purchased(to_admin=True)
 
 
 class RegistrantChildEvent(models.Model):
@@ -3075,6 +3291,10 @@ class Event(TendenciBaseModel):
     @property
     def is_over(self):
         return self.end_dt <= datetime.now()
+
+    @property
+    def available_for_purchase(self):
+        return self.is_over and self.registration_configuration and self.registration_configuration.available_for_purchase
 
     @property
     def money_collected(self):

@@ -215,6 +215,8 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
                     # send confirmation email to registrant
                     if not obj.event.is_over:
                         obj.send_registrant_notification()
+                elif obj.__class__.__name__ == 'AssetsPurchase':
+                    obj.auto_update_paid_object(request, payment)
                 
                 EventLog.objects.log(instance=invoice)
                 messages.add_message(

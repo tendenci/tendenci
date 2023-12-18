@@ -29,7 +29,8 @@ from tendenci.apps.events.models import (
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
-    RecurringEvent, Registrant, EventCredit, EventStaff
+    RecurringEvent, Registrant, EventCredit, EventStaff,
+    AssetsPurchase
 )
 
 from tendenci.libs.form_utils.forms import BetterModelForm
@@ -67,7 +68,8 @@ ALLOWED_LOGO_EXT = (
 EMAIL_AVAILABLE_TOKENS = ['event_title',
                           'event_date',
                           'event_location',
-                          'event_link'
+                          'event_link',
+                          'qr_code',
                           ]
 
 
@@ -694,6 +696,14 @@ def _get_price_labels(pricing):
                                       target_display,
                                       end_dt,
                                       description) )
+
+
+def _get_assets_purchase_price_labels(pricing):
+    if pricing.description:
+        description = '<br/>&nbsp;' + pricing.description
+    else:
+        description = ''
+    return mark_safe(f'{tcurrency(pricing.price)} {pricing.title}{description}')
 
 
 class EventCreditForm(forms.Form):
@@ -1534,6 +1544,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
             'registration_cap',
             'payment_required',
             'price',
+            'assets_purchase',
             'days_price_covers',
             'include_tax',
             'tax_rate',
@@ -1553,6 +1564,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
                     'registration_cap',
                     'payment_required',
                     'price',
+                    'assets_purchase',
                     'days_price_covers',
                     'include_tax',
                     'tax_rate',
@@ -2572,11 +2584,14 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
 
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
+    if not settings.USE_BADGES and 'qr_code' in EMAIL_AVAILABLE_TOKENS:
+        EMAIL_AVAILABLE_TOKENS.remove('qr_code')
     subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.model_name.lower()}),
-        label=_('Email Content'))
+        label=_('Email Content'), help_text=_('Available tokens: <br />' +
+        ', '.join(['{{ %s }}' % token for token in EMAIL_AVAILABLE_TOKENS])))
 
     payment_status = forms.ChoiceField(
         initial='all',
@@ -2601,6 +2616,8 @@ class MessageAddForm(forms.ModelForm):
 
 class EmailForm(forms.ModelForm):
     #events = forms.CharField()
+    if not settings.USE_BADGES and 'qr_code' in EMAIL_AVAILABLE_TOKENS:
+        EMAIL_AVAILABLE_TOKENS.remove('qr_code')
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.model_name.lower()}),
@@ -2802,6 +2819,49 @@ class UserMemberRegBaseForm(FormControlWidgetMixin, forms.Form):
             if (override_price is None) or override_price < 0:
                 raise forms.ValidationError(_('Override price must be a positive number.'))
         return override_price
+
+
+class AssetsPurchaseForm(FormControlWidgetMixin, forms.ModelForm):
+    class Meta:
+        model = AssetsPurchase
+        fields = (
+            'first_name',
+            'last_name',
+            'phone',
+            'email',
+            'pricing',
+            'payment_method'
+        )
+
+    def __init__(self, event, pricings, *args, **kwargs):
+        self.user = kwargs.pop('request_user')
+        self.event = event
+        reg_conf = event.registration_configuration
+        super(AssetsPurchaseForm, self).__init__(*args, **kwargs)
+
+        self.fields['pricing'] = forms.ModelChoiceField(
+            queryset=pricings,
+            widget=forms.RadioSelect(),)
+        self.fields['pricing'].label_from_instance = _get_assets_purchase_price_labels
+        self.fields['pricing'].empty_label = None
+        if len(pricings) == 1:
+            self.fields['pricing'].initial = pricings[0]
+
+        # payment method
+        payment_methods = reg_conf.payment_method.all()
+        if not self.user.is_superuser:
+            payment_methods = payment_methods.exclude(admin_only=True)
+        self.fields['payment_method'] = forms.ModelChoiceField(
+            empty_label=None, queryset=payment_methods,
+            widget=forms.RadioSelect(), initial=1, required=True)
+
+    def clean(self, *args, **kwargs):
+        # check if user already purchased
+        email = self.cleaned_data['email']
+        if AssetsPurchase.objects.filter(email__iexact=email, event_id=self.event.id).exists():
+            raise forms.ValidationError(_(f'User with email address "{email}" has purchased already for event {self.event.title}.'))
+
+        return self.cleaned_data
 
 
 class MemberRegistrationForm(UserMemberRegBaseForm):

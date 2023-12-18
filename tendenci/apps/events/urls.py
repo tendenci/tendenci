@@ -95,6 +95,7 @@ urlpatterns = [
     # register for event
     re_path(r'^%s/member-register/(?P<event_id>\d+)/$' % urlpath, views.member_register, name='event.member_register'),
     re_path(r'^%s/user-register/(?P<event_id>\d+)/$' % urlpath, views.member_register, {'form_class': forms.UserRegistrationForm},  name='event.user_register'),
+    re_path(r'^%s/assets-purchase/(?P<event_id>\d+)/$' % urlpath, views.purchase_assets, name='event.purchase_assets'),
     re_path(r'^%s/register-user-lookup/$' % urlpath, views.register_user_lookup, name="events.register_user_lookup"),
     re_path(r'^%s/register/(?P<event_id>\d+)/$' % urlpath, views.register, name='event.register'),
     re_path(r'^%s/register/(?P<registration_id>\d+)/sub-events/$' % urlpath, views.register_child_events, name='event.register_child_events'),
