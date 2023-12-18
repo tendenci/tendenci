@@ -4513,13 +4513,21 @@ def sample_certificate(request, event_id=0, template_name='events/registrants/ce
     if not request.user.is_superuser or not has_perm(request.user,'events.view_event', event):
         raise Http403
 
-    credits_by_sub_events = {datetime.now().date().strftime('%B %d, %Y'): [{
-        'event_code': event.event_code,
-        'title': event.title,
-        'credits': event.possible_cpe_credits,
-        'irs_credits': 5.0,
-        'alternate_ceu': '123423423487'
-    }]}
+    sub_event_credits = list()
+    credit_event = event # event to use for getting sample credits (single event certificates)
+    for child_event in event.child_events:
+        if child_event.possible_cpe_credits:
+            credit_event = child_event
+            # List of credits by sub-event (symposium certificates)
+            sub_event_credits.append({
+                'event_code': child_event.event_code,
+                'title': child_event.title,
+                'credits': child_event.possible_cpe_credits,
+                'irs_credits': 5.0,
+                'alternate_ceu': '123423423487'
+            })
+
+    credits_by_sub_events = {datetime.now().date().strftime('%B %d, %Y'): sub_event_credits}
 
     registrant = {
         'event': event,
@@ -4528,12 +4536,12 @@ def sample_certificate(request, event_id=0, template_name='events/registrants/ce
         'license_state': 'TX',
         'ptin': 987654321,
         'event_dates_display': event.event_dates_display,
-        'possible_cpe_credits': event.possible_cpe_credits,
-        'credits_earned': event.possible_cpe_credits,
+        'possible_cpe_credits': credit_event.possible_cpe_credits,
+        'credits_earned': credit_event.possible_cpe_credits,
         'irs_credits_earned': 5.0,
         'credits_by_sub_event': credits_by_sub_events,
-        'possible_credits_by_code': event.possible_credits_by_code,
-        'credits_earned_by_code': event.possible_credits_by_code
+        'possible_credits_by_code': credit_event.possible_credits_by_code,
+        'credits_earned_by_code': credit_event.possible_credits_by_code
     }
     # TODO: remove hard-coded symposiums later
     if not (event.has_child_events and (event.type and event.type.name.lower() == 'symposiums')):
