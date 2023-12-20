@@ -63,6 +63,11 @@ def create_notice_types(sender, **kwargs):
         _('Recap to admin for notice to registrants who abandoned payment has been sent.'),
         verbosity=verbosity)
 
+    notification.create_notice_type(
+        'event_assets_purchase_confirmation',
+        _('Event Assets Purchase Confirmation'),
+        _('The email you receive confirming your event assets purchase'),
+        verbosity=verbosity)
 
 def init_signals():
     post_save.connect(save_contribution, sender=Event, weak=False)

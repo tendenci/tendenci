@@ -21,13 +21,15 @@ from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, St
                                          CustomRegFormEntry, CustomRegFieldEntry, Event,
                                          CEUCategory, SignatureImage, CertificateImage,
                                          RegistrantCredits, VirtualEventCreditsLogicConfiguration,
-                                         ZoomAPIConfiguration)
+                                         ZoomAPIConfiguration,
+                                         AssetsPurchase)
 from tendenci.apps.events.forms import (CustomRegFormAdminForm, CustomRegFormForField, TypeForm,
                                         StandardRegAdminForm)
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import delete_settings_cache, get_setting
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.base.utils import tcurrency
 
 
 class EventAdmin(TendenciBaseModelAdmin):
@@ -466,6 +468,53 @@ if get_setting('module', 'events', 'use_credits'):
     if get_setting('module', 'events', 'enable_zoom'):
         admin.site.register(VirtualEventCreditsLogicConfiguration, VirtualEventCreditsLogicConfigurationAdmin)
 
+class AssetsPurchaseAdmin(admin.ModelAdmin):
+
+    list_display = ('id',
+        'first_name',
+        'last_name',
+        'email',
+        'user_profile',
+        'amount',
+        'event',
+        'pricing',
+        'get_invoice',
+        'create_dt',
+        'status_detail'
+    )
+    fieldsets = (
+        (None, {'fields': ('event', 'user', 'first_name', 'last_name', 'email',
+                           'amount', 'pricing',
+                           'payment_method',
+                            'invoice',
+                           'status_detail',)},),
+    )
+    search_fields = ("first_name", 'last_name',
+                     'email', 'event__title')
+    list_filter = (('event', admin.RelatedOnlyFieldListFilter),)
+    ordering = ['-create_dt']
+    readonly_fields = ('user', 'event', 'invoice',)
+
+    @mark_safe
+    def get_invoice(self, instance):
+        if instance.invoice:
+            if instance.invoice.balance > 0:
+                return f'<a href="{instance.invoice.get_absolute_url()}" title="Invoice">#{instance.invoice.id} ({tcurrency(instance.invoice.balance)})</a>'
+            else:
+                return f'<a href="{instance.invoice.get_absolute_url()}" title="Invoice">#{instance.invoice.id}</a>'
+        return ""
+    get_invoice.short_description = 'Invoice'
+
+    @mark_safe
+    def user_profile(self, instance):
+        url = reverse('profile', args=[instance.user.username])
+        return f'<a href="{url}">{instance.user.username}</a>'
+    user_profile.short_description = _('User')
+
+    def has_add_permission(self, request):
+        return False
+
+admin.site.register(AssetsPurchase, AssetsPurchaseAdmin)
 
 admin.site.register(RegistrantCredits, RegistrantCreditsAdmin)
 admin.site.register(SignatureImage, SignatureImageAdmin)

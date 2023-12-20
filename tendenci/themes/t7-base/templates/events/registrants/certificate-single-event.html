@@ -4,9 +4,9 @@
 <link rel="stylesheet" href="{% static 'css/events.css' %}">
 <style>
   .certificate {
-      width: 8in;
-      height: 11in;
-      marign: 5px;
+      width: 7.5in;
+      height: 10.5in;
+      margin: 5px;
       border: 1px solid black;
       padding: 2px;
   }
@@ -81,14 +81,14 @@
       line-height: .75em;
   }
   .certificate .row.staff {
-      margin-top: 240px;
+      margin-top: 190px;
       display: flex;
       align-items: center;
       justify-content: space-evenly;
   }
   .certificate .row.address {
       text-align: center;
-      margin-top: 110px;
+      margin-top: 100px;
       font-size: .9em;
   }
   .certificate .row.staff img {
@@ -153,6 +153,13 @@
       width: 50%;
   }
 
+  @media print {
+      @page {
+          size: portrait;
+          margin: 0 .25in 0 .25in !important;
+          size: letter;
+      }
+  }
 </style>
 {% endblock %}
 

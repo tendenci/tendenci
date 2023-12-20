@@ -10,7 +10,7 @@ from django.db.models import Q
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import GroupMembership
-from tendenci.apps.events.models import Registrant
+from tendenci.apps.events.models import Registrant, AssetsPurchase
 from tendenci.apps.staff.models import Staff
 from tendenci.apps.emails.models import Email
 
@@ -128,6 +128,17 @@ class HigherLogicAPI:
                     "GroupName": event.title,
                     "GroupType": "Event",
                     "Role": ''})
+
+        #   AssetsPurchase
+        assets_purchases = AssetsPurchase.objects.filter(user=user)
+        for assets_purchase in assets_purchases:
+            if assets_purchase.status_detail == 'approved':
+                event = assets_purchase.event
+                community_groups.append({"GroupId": f'event-{event.id}',
+                        "GroupName": event.title,
+                        "GroupType": "Event",
+                        "Role": ''})
+        
         return community_groups
 
     def get_user_address_list(self, profile):

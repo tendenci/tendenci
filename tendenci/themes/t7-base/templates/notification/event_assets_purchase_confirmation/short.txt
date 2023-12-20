@@ -1,0 +1,3 @@
+{% load base_filters %}
+Event Assets Purchased for event - {{ event.title }}
+

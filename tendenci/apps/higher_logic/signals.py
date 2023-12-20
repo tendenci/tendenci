@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, pre_delete
 from django.contrib.auth.models import User
 
 from tendenci.apps.higher_logic.models import UnPushedItem
-from tendenci.apps.events.models import Registrant, Event
+from tendenci.apps.events.models import Registrant, Event, AssetsPurchase
 from tendenci.apps.memberships.models import MembershipDefault
 from tendenci.apps.staff.models import Staff
 from tendenci.apps.profiles.models import Profile
@@ -60,10 +60,10 @@ def save_unpushed_items_for_delete(sender, **kwargs):
 
 
 def init_signals():
-    for model in (Event, Profile, Registrant, MembershipDefault, Staff, GroupMembership):
+    for model in (Event, Profile, Registrant, AssetsPurchase, MembershipDefault, Staff, GroupMembership):
         # When these items are created or updated, the associated user needs to be updated as well at HL
         post_save.connect(save_unpushed_items, sender=model, weak=False)
-    for model in (Registrant, MembershipDefault, Staff, GroupMembership):
+    for model in (Registrant, AssetsPurchase, MembershipDefault, Staff, GroupMembership):
         # When these items are deleted, the associated user needs to be updated at HL
         pre_delete.connect(save_unpushed_items, sender=model, weak=False)
     for model in (User, Event):

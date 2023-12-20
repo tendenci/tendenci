@@ -392,6 +392,9 @@ div.small-font {
           {% endif %}
         </h4>
         {% registration_pricing_and_button event request.user %}
+          {% if event.available_for_purchase %}
+             <a class="btn btn-success" href="{% url 'event.purchase_assets' event.id %}">{% trans "Purchase Recording & Materials Only" %}</a>
+          {% endif %}
       {% endif %}
       </div>
 

@@ -5,8 +5,8 @@
 <style>
   .certificate {
       width: 10.8in;
-      height: 8in;
-      marign: 5px;
+      height: 8.1in;
+      margin: 0 0 5px 0;
       border: 1px solid black;
       padding: 2px;
   }
@@ -184,7 +184,12 @@
       width: 166px; 
       text-align: left;
   }
-  
+  @media print {
+      @page {
+          size: landscape;
+          margin: .1in 0 .1in 0 !important;
+      }
+  }  
 </style>
 {% endblock %}
 
