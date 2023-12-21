@@ -141,8 +141,11 @@ def index(request, username='', template_name="profiles/index.html"):
     # content counts
     content_counts = {'total': 0, 'invoice': 0}
 
-    inv_count = Invoice.objects.filter(Q(owner=user_this) |
+    if user_this.email:
+        inv_count = Invoice.objects.filter(Q(owner=user_this) |
                                         Q(bill_to_email=user_this.email)).count()
+    else:
+        inv_count = Invoice.objects.filter(owner=user_this).count()
     content_counts['invoice'] = inv_count
     content_counts['total'] += inv_count
 
