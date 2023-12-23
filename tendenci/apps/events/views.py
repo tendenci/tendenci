@@ -3402,8 +3402,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
                 if pricing.days_price_covers > total_available_days:
                     pricing.days_price_covers = total_available_days
-                if pricing and pricing.days_price_covers and total_attendance_dates != pricing.days_price_covers:
-                    message = f'Select { pricing.days_price_covers - past_dates} dates for {registrant.first_name } { registrant.last_name}'
+                if pricing and pricing.days_price_covers and total_attendance_dates > pricing.days_price_covers - past_dates:
+                    message = f'Select up to { pricing.days_price_covers - past_dates} dates for {registrant.first_name } { registrant.last_name}'
                     messages.set_level(request, messages.ERROR)
                     messages.add_message(request, messages.ERROR, _(message))
                     redirect = False
