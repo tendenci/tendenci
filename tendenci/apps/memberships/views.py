@@ -76,6 +76,7 @@ from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_membership_app, get_membership_summary_data,
     email_pending_members,
     email_membership_members)
+from tendenci.apps.regions.models import Region
 from tendenci.apps.base.forms import CaptchaForm
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.theme.utils import get_template_content_raw
@@ -2493,7 +2494,17 @@ def report_member_roster(request, template_name='reports/membership_roster.html'
 def report_member_quick_list(request, template_name='reports/membership_quick_list.html'):
     """ Table view of current members fname, lname and company only.
     """
-    members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
+    membership_filter = {"status":1, "status_detail":"active"}
+
+    regions = Region.objects.values('id','region_name').order_by('region_name')
+
+    region = request.GET.get('region', '')
+    if region != '':
+
+        # Add region filter
+        membership_filter['region']=region
+
+    members = MembershipDefault.objects.filter(membership_filter).order_by('user__last_name')
 
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
@@ -2526,7 +2537,7 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 
     EventLog.objects.log()
 
-    return render_to_resp(request=request, template_name=template_name, context={'members': members})
+    return render_to_resp(request=request, template_name=template_name, context={'members': members, 'regions':regions})
 
 
 @staff_member_required
