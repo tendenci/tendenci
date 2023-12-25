@@ -2494,17 +2494,20 @@ def report_member_roster(request, template_name='reports/membership_roster.html'
 def report_member_quick_list(request, template_name='reports/membership_quick_list.html'):
     """ Table view of current members fname, lname and company only.
     """
-    membership_filter = {"status":1, "status_detail":"active"}
+    members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
+    region = request.GET.get('region', '')
 
     regions = Region.objects.values('id','region_name').order_by('region_name')
+    region_rec = {}
 
-    region = request.GET.get('region', '')
-    if region != '':
+    if region:
 
         # Add region filter
-        membership_filter['region']=region
+        members = members.filter(region_id=region)
+        region_rec = regions.filter(id=region).values('id','region_name')
+        if region_rec:
+            region_rec = region_rec[0]
 
-    members = MembershipDefault.objects.filter(membership_filter).order_by('user__last_name')
 
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
@@ -2537,7 +2540,7 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 
     EventLog.objects.log()
 
-    return render_to_resp(request=request, template_name=template_name, context={'members': members, 'regions':regions})
+    return render_to_resp(request=request, template_name=template_name, context={'members': members, 'region':region, 'region_rec':region_rec, 'regions':regions})
 
 
 @staff_member_required
