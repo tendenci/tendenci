@@ -1,3 +1,13 @@
+### 14.8.1 [2023-12-24]
+
+* New feature: Event assets purchase for the past events.
+* Updated registration for the nested events to allow users to register for less dates.
+* Fixed the issue about creator and owner not being able to search their own news items.
+* Fixed a bug in invoices search that didn't take account into blank email address.
+* Resolved an issue about forms not being redirected to payment.
+* Other small fixes. 
+ 
+
 ### 14.8 [2023-12-10]
 
 **New Features and Improvements**
