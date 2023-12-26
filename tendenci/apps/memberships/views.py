@@ -2499,6 +2499,7 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 
     regions = Region.objects.values('id','region_name').order_by('region_name')
     region_rec = {}
+    region_url_param = ''
 
     if region:
 
@@ -2507,6 +2508,7 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
         region_rec = regions.filter(id=region).values('id','region_name')
         if region_rec:
             region_rec = region_rec[0]
+            region_url_param='&region={}'.format(region_rec['id'])
 
 
     # returns csv response ---------------
@@ -2540,7 +2542,7 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 
     EventLog.objects.log()
 
-    return render_to_resp(request=request, template_name=template_name, context={'members': members, 'region':region, 'region_rec':region_rec, 'regions':regions})
+    return render_to_resp(request=request, template_name=template_name, context={'members': members, 'region':region, 'region_rec':region_rec, 'region_url_param':region_url_param, 'regions':regions})
 
 
 @staff_member_required

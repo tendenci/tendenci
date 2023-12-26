@@ -11,7 +11,7 @@
 </div>
 <div class="mems-wrap">
 {% if members %}
-<p><a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv">
+<p><a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv{{ region_url_param }}">
     {% trans 'Download CSV File' %}</a></p>
     <table class="table table-tendenci-reports">
         <tr>
