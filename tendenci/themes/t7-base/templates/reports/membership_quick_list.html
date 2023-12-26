@@ -3,29 +3,27 @@
 {% block content %}
 <div class="page-header">
   <h1>{% trans "Current Members Quick List" %}
-{% if region_rec %}
- - {{ region_rec.region_name }}
+{% if region_name %}
+ - {{ region_name }}
 {% endif %}
 </h1>
 
 </div>
 <div class="mems-wrap">
 {% if members %}
-<p><a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv{{ region_url_param }}">
-<form class="search-form pull-right form-inline" action="{% url "membership-quick-list" %}" method="get">
+<p class="pull-left"><a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv{{ region_url_param }}">
+    {% trans 'Download CSV File' %}</a></p>
+<form class="search-form pull-right form-inline" action="{% url "reports-members-quick-list" %}" method="get">
   <div class="form-group">
     <label class="control-label" for="id_region">{% trans "Select a region" %}:</label>
-    <select class="form-control" name="region" id="id_region" onchange="this.form.submit();">
+    <select class="form-control" name="region_id" id="id_region" onchange="this.form.submit();">
       <option value="">All</option>
       {% for next_region in regions %}
-      <option value="{{ next_region.id }}" {% if region == next_region.id %}selected="selected"{% endif %}> &nbsp;{{ next_region.region_name }}</option>
+      <option value="{{ next_region.id }}" {% if region_name == next_region.region_name %}selected="selected"{% endif %}> &nbsp;{{ next_region.region_name }}</option>
       {% endfor %}
     </select>
   </div>
 </form>
-
-
-    {% trans 'Download CSV File' %}</a></p>
     <table class="table table-tendenci-reports">
         <tr>
             <th>{% trans "Last Name" %}</th>
