@@ -12,6 +12,19 @@
 <div class="mems-wrap">
 {% if members %}
 <p><a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv{{ region_url_param }}">
+<form class="search-form pull-right form-inline" action="{% url "membership-quick-list" %}" method="get">
+  <div class="form-group">
+    <label class="control-label" for="id_region">{% trans "Select a region" %}:</label>
+    <select class="form-control" name="region" id="id_region" onchange="this.form.submit();">
+      <option value="">All</option>
+      {% for next_region in regions %}
+      <option value="{{ next_region.id }}" {% if region == next_region.id %}selected="selected"{% endif %}> &nbsp;{{ next_region.region_name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</form>
+
+
     {% trans 'Download CSV File' %}</a></p>
     <table class="table table-tendenci-reports">
         <tr>
