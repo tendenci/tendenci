@@ -1,6 +1,6 @@
 from builtins import str
 from datetime import datetime, timedelta
-from os.path import join, isdir
+from os.path import join, isdir, normpath
 from os import mkdir
 from PIL import Image
 
@@ -107,7 +107,9 @@ def colored_image(request, color):
     from webcolors import hex_to_rgb
 
     base_dir = join(settings.MEDIA_ROOT, 'event_logs')
-    full_path = join(base_dir, '%s.png' % color)
+    full_path = normpath(join(base_dir, '%s.png' % color))
+    if not full_path.startswith(base_dir):
+        raise Http403
 
     if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
         rgb = hex_to_rgb('#%s' % color)

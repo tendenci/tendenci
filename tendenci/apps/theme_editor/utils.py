@@ -240,7 +240,7 @@ def get_file_content(root_dir, theme, filename):
             pass
 
     if not content:
-        current_file = os.path.join(root_dir, filename)
+        current_file = safe_join(root_dir, filename)
         if os.path.isfile(current_file):
             fd = open(current_file, 'r')
             content = fd.read()
@@ -252,7 +252,7 @@ def archive_file(root_dir, relative_file_path, request):
     """
     Archive the file into the database if it is edited
     """
-    file_path = os.path.join(root_dir, relative_file_path)
+    file_path = safe_join(root_dir, relative_file_path)
     if os.path.isfile(file_path):
         (file_dir, file_name) = os.path.split(file_path)
         fd = open(file_path, 'r')
@@ -264,16 +264,18 @@ def archive_file(root_dir, relative_file_path, request):
                                   author=request.user)
         archive.save()
 
-
 def copy_file_to_theme(source_full_path, to_theme, path_to_file, filename):
     """Copies a file and all associated directories into theme
     """
     root_dir = get_theme_root(to_theme)
+    dest_dir = safe_join(root_dir, path_to_file)
+
     try:
-        os.makedirs(os.path.join(root_dir, path_to_file))
+        os.makedirs(dest_dir)
     except OSError:
         pass
-    dest_full_path = os.path.join(root_dir, path_to_file, filename)
+    dest_full_path = safe_join(dest_dir, filename)
+
     shutil.copy(source_full_path, dest_full_path)
 
     # copy to s3
