@@ -9,6 +9,7 @@ from django.core.files import File
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.core.cache import cache
+from django.utils._os import safe_join
 
 # local
 from tendenci.apps.theme.utils import theme_choices
@@ -44,7 +45,7 @@ class FileForm(forms.Form):
 
     def save(self, root_dir, theme, file_relative_path, request):
         content = self.cleaned_data["content"]
-        file_path = os.path.join(root_dir, file_relative_path)
+        file_path = safe_join(root_dir, file_relative_path)
 
         # write the theme file locally in case it was wiped by a restart
         if settings.USE_S3_THEME and not os.path.isfile(file_path):
