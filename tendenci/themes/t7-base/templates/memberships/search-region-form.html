@@ -1,0 +1,29 @@
+<form class="search-form pull-right form-inline" id="frm_region" action="{% url "reports-members-quick-list" %}" method="get">
+  <div class="form-group">
+    <label class="control-label" for="id_region">{% trans "Select a region" %}:</label>
+    <select class="form-control" name="region_id" id="id_region" onchange="this.form.submit();">
+      <option value="">All</option>
+      {% for next_region in regions %}
+      <option value="{{ next_region.id }}" {% if region_name == next_region.region_name %}selected="selected"{% endif %}> &nbsp;{{ next_region.region_name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+<script type="text/javascript">
+$(document).ready(function() {
+
+    $("frm_region").submit(function() {
+
+        let form = $(this);
+
+        form.find('input, select, textarea').each(function() {
+            let input = $(this);
+            if (input.val() == '') {
+                input.prop('disabled', true);
+            }
+        });
+
+    });
+
+ });
+</script>
+</form>
