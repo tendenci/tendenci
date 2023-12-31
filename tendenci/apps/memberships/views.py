@@ -74,6 +74,7 @@ from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats, iter_memberships,
     get_membership_stats, ImportMembDefault,
     get_membership_app, get_membership_summary_data,
+    add_region_filter,
     email_pending_members,
     email_membership_members)
 from tendenci.apps.regions.models import Region
@@ -2495,21 +2496,22 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
     """ Table view of current members fname, lname and company only.
     """
     members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
-    region_id = request.GET.get('region_id', '')
+    context, members = add_region_filter(request, members)
 
-    regions = Region.objects.values('id','region_name').order_by('region_name')
-    region_url_param = u''
-    region_name = u''
-
-    if region_id:
-
-        # Add region filter
-        members = members.filter(region_id=region_id)
-        region_rec = regions.filter(id=region_id).values('id','region_name').first()
-        if region_rec:
-            region_name = region_rec['region_name']
-            region_url_param='&region={}'.format(region_id)
-
+    # region_id = request.GET.get('region_id', '')
+    #
+    # regions = Region.objects.values('id','region_name').order_by('region_name')
+    # region_url_param = u''
+    # region_name = u''
+    #
+    # if region_id:
+        #
+        # # Add region filter
+        # members = members.filter(region_id=region_id)
+        # region_rec = regions.filter(id=region_id).values('id','region_name').first()
+        # if region_rec:
+            # region_name = region_rec['region_name']
+            # region_url_param='&region={}'.format(region_id)
 
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
@@ -2542,7 +2544,8 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 
     EventLog.objects.log()
 
-    return render_to_resp(request=request, template_name=template_name, context={'members': members, 'region_id':region_id, 'region_name':region_name, 'region_url_param':region_url_param, 'regions':regions})
+    # return render_to_resp(request=request, template_name=template_name, context={'members': members, 'region_id':region_id, 'region_name':region_name, 'region_url_param':region_url_param, 'regions':regions})
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @staff_member_required
