@@ -1,4 +1,5 @@
 {% extends "reports/base.html" %}
+{% load membership_tags %}
 
 {% block content %}
 <div class="page-header">
@@ -13,16 +14,7 @@
 {% if members %}
 <p class="pull-left"><a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv{{ region_url_param }}">
     {% trans 'Download CSV File' %}</a></p>
-<form class="search-form pull-right form-inline" action="{% url "reports-members-quick-list" %}" method="get">
-  <div class="form-group">
-    <label class="control-label" for="id_region">{% trans "Select a region" %}:</label>
-    <select class="form-control" name="region_id" id="id_region" onchange="this.form.submit();">
-      <option value="">All</option>
-      {% for next_region in regions %}
-      <option value="{{ next_region.id }}" {% if region_name == next_region.region_name %}selected="selected"{% endif %}> &nbsp;{{ next_region.region_name }}</option>
-      {% endfor %}
-    </select>
-  </div>
+    {% search_region_form %}
 </form>
     <table class="table table-tendenci-reports">
         <tr>
@@ -41,5 +33,6 @@
 {% else %}
 {% trans "No active members." %}
 {% endif %}
+
 </div>
 {% endblock content %}
