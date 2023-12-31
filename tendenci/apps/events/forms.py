@@ -2292,9 +2292,7 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
         data = self.cleaned_data['first_name']
 
         # detect markup
-        pattern = re.compile(r'<[^>]*?>', re.I and re.M)
-        markup = pattern.search(data)
-        if markup:
+        if '<' in data and '>' in data:
             raise forms.ValidationError(_("Markup is not allowed in the name field"))
 
         # detect URL and Email
