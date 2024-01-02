@@ -1900,54 +1900,6 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
     #     return cleaned_data
 
 
-class Reg8nForm(forms.Form):
-    """
-    Registration form.
-    """
-    first_name = forms.CharField(max_length=50)
-    last_name = forms.CharField(max_length=50)
-    company_name = forms.CharField(max_length=100, required=False)
-    username = forms.CharField(max_length=50, required=False)
-    phone = forms.CharField(max_length=20, required=False)
-    email = EmailVerificationField(label=_("Email"))
-    captcha = CustomCatpchaField(label=_('Type the code below'))
-
-    def __init__(self, event_id=None, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super(Reg8nForm, self).__init__(*args, **kwargs)
-
-        event = Event.objects.get(pk=event_id)
-        payment_method = event.registration_configuration.payment_method.all()
-
-        self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None,
-            queryset=payment_method, widget=forms.RadioSelect(), initial=1, required=False)
-
-        self.fields['price'] = forms.DecimalField(
-            widget=forms.HiddenInput(), initial=event.registration_configuration.price)
-
-        if user and user.is_authenticated:
-            self.fields.pop('captcha')
-            user_fields = ['first_name', 'last_name', 'company_name', 'username', 'phone','email']
-            for user_field in user_fields:
-                self.fields.pop(user_field)
-
-    def clean_first_name(self):
-        data = self.cleaned_data['first_name']
-
-        # detect markup
-        markup_pattern = re.compile(r'<[^>]*?>', re.I and re.M)
-        markup = markup_pattern.search(data)
-        if markup:
-            raise forms.ValidationError(_("Markup is not allowed in the name field"))
-
-        # detect URL and Email
-        pattern_string = r'\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
-        pattern = re.compile(pattern_string, re.I and re.M)
-        domain_extension = pattern.search(data)
-        if domain_extension or "://" in data:
-            raise forms.ValidationError(_("URL's and Emails are not allowed in the name field"))
-
-        return data
 
 
 IS_TABLE_CHOICES = (
