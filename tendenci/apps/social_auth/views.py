@@ -86,10 +86,8 @@ def disconnect(request, backend):
     if not backend:
         return HttpResponseServerError('Incorrect authentication service')
     backend.disconnect(request.user)
-    url = request.GET.get(REDIRECT_FIELD_NAME, '')
-    if request.method == 'POST':
-        url = request.POST.get(REDIRECT_FIELD_NAME, url)
-    url = url or DEFAULT_REDIRECT
+
+    url = get_next_url(request, method=request.method) or DEFAULT_REDIRECT
     return HttpResponseRedirect(url)
 
 
