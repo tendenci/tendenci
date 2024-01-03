@@ -83,13 +83,16 @@ def get_us_state_name(state_abbr):
     """
     return dict(US_STATES).get(state_abbr, state_abbr)
 
-def get_next_url(request):
+def get_next_url(request, method='GET'):
     """
     Returns a valid "next" url. The purpose of this function
     is to validate the "next" url, a user-provided value
     to avoid phishing scams.
     """
-    form = NextURLForm(request.GET)
+    if method == 'GET':
+        form = NextURLForm(request.GET)
+    else:
+        form = NextURLForm(request.POST)
     if form.is_valid():
         return form.cleaned_data.get('next', None)
     return None
