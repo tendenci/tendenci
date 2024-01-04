@@ -34,6 +34,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.recurring_payments.models import RecurringPayment
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.base.utils import get_next_url
 
 from .models import StripeAccount
 from .utils import stripe_set_app_info
@@ -499,7 +500,8 @@ def update_card(request, rp_id):
         msg_string = 'Error updating payment method: {}'.format(e)
 
     messages.add_message(request, message_status, _(msg_string))
-    next_page = request.GET.get('next')
+    
+    next_page = get_next_url(request)
     if next_page:
         return HttpResponseRedirect(next_page)
     else:

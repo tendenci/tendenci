@@ -3390,6 +3390,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                     continue
 
                 pricing = registrant.pricing
+                
 
                 past_dates = len(registrant.past_attendance_dates)
                 registrants_updated_dates = list()
@@ -3400,14 +3401,15 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                 if request.user.is_superuser:
                     total_attendance_dates = len(registrants_updated_dates)
 
-                if pricing.days_price_covers > total_available_days:
-                    pricing.days_price_covers = total_available_days
-                if pricing and pricing.days_price_covers and total_attendance_dates > pricing.days_price_covers - past_dates:
-                    message = f'Select up to { pricing.days_price_covers - past_dates} dates for {registrant.first_name } { registrant.last_name}'
-                    messages.set_level(request, messages.ERROR)
-                    messages.add_message(request, messages.ERROR, _(message))
-                    redirect = False
-                    break
+                if pricing and pricing.days_price_covers:
+                    if pricing.days_price_covers > total_available_days:
+                        pricing.days_price_covers = total_available_days
+                    if total_attendance_dates > pricing.days_price_covers - past_dates:
+                        message = f'Select up to { pricing.days_price_covers - past_dates} dates for {registrant.first_name } { registrant.last_name}'
+                        messages.set_level(request, messages.ERROR)
+                        messages.add_message(request, messages.ERROR, _(message))
+                        redirect = False
+                        break
 
                 original_dates = registrant.attendance_dates if request.user.is_superuser else registrant.upcoming_attendance_dates
                 if registrants_updated_dates != original_dates:

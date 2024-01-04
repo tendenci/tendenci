@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.base.http import Http403
-from tendenci.apps.base.utils import checklist_update
+from tendenci.apps.base.utils import checklist_update, get_next_url
 from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from tendenci.apps.event_logs.models import EventLog
@@ -137,7 +137,7 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
 
                 messages.add_message(request, messages.SUCCESS, _('Successfully updated %(str)s' % {'str': str(story)}))
 
-                redirect_to = request.POST.get('next', '')
+                redirect_to = get_next_url(request, method='POST')
                 if redirect_to:
                     return HttpResponseRedirect(redirect_to)
                 else:

@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.http import urlquote
 from django.shortcuts import redirect
+from tendenci.apps.site_settings.utils import get_setting
 
 PASSWORD_PROMT_MAX_AGE = 30 * 60      # 30 minites
 
@@ -15,7 +16,7 @@ def ssl_required(view_func):
     def decorator(request, *args, **kwargs):
         if not request.is_secure():
             if getattr(settings, 'SSL_ENABLED', False):
-                request_url = request.build_absolute_uri(request.get_full_path())
+                request_url = get_setting('site', 'global', 'siteurl') + request.get_full_path()
                 ssl_url = request_url.replace('http://', 'https://')
                 return HttpResponseRedirect(ssl_url)
         return view_func(request, *args, **kwargs)

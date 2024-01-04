@@ -37,6 +37,7 @@ from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.utils import get_theme_info
+from tendenci.apps.base.utils import get_next_url
 
 BASEFILE_EXTENSIONS = (
     'txt',
@@ -338,7 +339,7 @@ def file_display(request, file_path):
 
 @login_required
 def password_again(request, template_name="base/password.html"):
-    next = request.GET.get('next')
+    next = get_next_url(request)
 
     if request.method == "POST":
         form = PasswordForm(request.POST, user=request.user)
