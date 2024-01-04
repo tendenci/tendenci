@@ -1,2 +1,1 @@
-
-<h1>{% trans "Event Registration Payment Status" %}</h1>
+<h1>{% if model_name == 'assetspurchase' %}{% trans "Event Assets Purchase Payment Status" %}{% else %}{% trans "Event Registration Payment Status" %}{% endif %}</h1>
