@@ -382,9 +382,9 @@ def get_ics_defaults():
     Create string for the default ics options
     """
     ics_str = "BEGIN:VCALENDAR\r\n"
-    ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci Codebase 12 MIMEDIR//EN\r\n"
     ics_str += "VERSION:2.0\r\n"
-    ics_str += "METHOD:REQUEST\r\n"
+    ics_str += "METHOD:PUBLISH\r\n"
+    ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci Codebase 12 MIMEDIR//EN\r\n"
 
     return ics_str
 
@@ -396,19 +396,27 @@ def get_ievent(request, d, event_id):
     event = Event.objects.get(id=event_id)
     e_str = "BEGIN:VEVENT\r\n"
 
-    # date time
-    time_zone = event.timezone
-    if not time_zone:
-        time_zone = settings.TIME_ZONE
-
-    e_str += "DTSTAMP:{}\r\n".format(adjust_datetime_to_timezone(datetime.now(), time_zone, 'UTC').strftime('%Y%m%dT%H%M%SZ'))
-
     # organizer
     organizers = event.organizer_set.all()
     if organizers:
         organizer_name_list = [organizer.name for organizer in organizers]
         e_str += "ORGANIZER:%s\r\n" % (', '.join(organizer_name_list))
 
+    event_url = "%s%s" % (site_url, reverse('event', args=[event.pk]))
+    d['event_url'] = event_url
+    # text description
+    e_str += "DESCRIPTION:%s\r\n" % (build_ical_text(event,d))
+
+    # uid
+    e_str += "UID:uid%d@%s\r\n" % (event.pk, d['domain_name'])
+
+    e_str += "SUMMARY:%s\r\n" % strip_tags(event.title)
+
+    # date time
+    time_zone = event.timezone
+    if not time_zone:
+        time_zone = settings.TIME_ZONE
+        
     if event.start_dt:
         start_dt = adjust_datetime_to_timezone(event.start_dt, time_zone, 'UTC')
         start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
@@ -418,27 +426,22 @@ def get_ievent(request, d, event_id):
         end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
         e_str += "DTEND:%s\r\n" % (end_dt)
 
+    e_str += "CLASS:PUBLIC\r\n"
+    e_str += "PRIORITY:5\r\n"
+
+    e_str += "DTSTAMP:{}\r\n".format(adjust_datetime_to_timezone(datetime.now(), time_zone, 'UTC').strftime('%Y%m%dT%H%M%SZ'))
+
+    e_str += "TRANSP:OPAQUE\r\n"
+
+    e_str += "SEQUENCE:0\r\n"
+
     # location
     if event.place:
         e_str += "LOCATION:%s\r\n" % (event.place.name)
 
-    e_str += "TRANSP:OPAQUE\r\n"
-    e_str += "SEQUENCE:0\r\n"
-
-    # uid
-    e_str += "UID:uid%d@%s\r\n" % (event.pk, d['domain_name'])
-
-    event_url = "%s%s" % (site_url, reverse('event', args=[event.pk]))
-    d['event_url'] = event_url
-
-    # text description
-    e_str += "DESCRIPTION:%s\r\n" % (build_ical_text(event,d))
     #  html description
     e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\r\n" % (build_ical_html(event,d))
 
-    e_str += "SUMMARY:%s\r\n" % strip_tags(event.title)
-    e_str += "PRIORITY:5\r\n"
-    e_str += "CLASS:PUBLIC\r\n"
     e_str += "BEGIN:VALARM\r\n"
     e_str += "TRIGGER:-PT30M\r\n"
     e_str += "ACTION:DISPLAY\r\n"
