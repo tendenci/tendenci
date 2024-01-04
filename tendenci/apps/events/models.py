@@ -1047,6 +1047,10 @@ class Registration(models.Model):
         """
         Update the object after online payment is received.
         """
+        if self.event.is_over:
+            # event is over, no need to send registration confimation
+            return
+
         try:
             from tendenci.apps.notifications import models as notification
         except:

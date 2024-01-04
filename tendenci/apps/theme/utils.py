@@ -6,6 +6,7 @@ from io import StringIO
 
 from django.conf import settings
 from django.core.cache import cache
+from django.utils._os import safe_join
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.middleware import get_current_request
@@ -88,7 +89,7 @@ def get_theme_info(theme=None):
         return theme_info
 
     if is_builtin_theme(theme) or not settings.USE_S3_THEME:
-        info_file = os.path.join(get_theme_root(theme), 'theme.info')
+        info_file = safe_join(get_theme_root(theme), 'theme.info')
         if not os.path.isfile(info_file):
             return {}
         with open(info_file) as fp:

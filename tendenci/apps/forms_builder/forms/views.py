@@ -553,18 +553,20 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                     if invoice.balance > 0:
                         if (entry.payment_method.machine_name).lower() == 'credit-card':
                             redirect_obj = redirect('payment.pay_online', invoice.id, invoice.guid)
-                        # redirect to invoice page
-                        redirect_obj = redirect('invoice.view', invoice.id, invoice.guid)
+                        else:
+                            # redirect to invoice page
+                            redirect_obj = redirect('invoice.view', invoice.id, invoice.guid)
 
-            if edit_mode:
-                redirect_obj = redirect("form_entry_detail", id)
-            else:
-                # default redirect
-                if form.completion_url:
-                    completion_url = form.completion_url.strip().replace('[entry_id]', str(entry.id))
-                    redirect_obj = HttpResponseRedirect(completion_url)
-
-                redirect_obj = redirect("form_sent", form.slug)
+            if not redirect_obj:
+                if edit_mode:
+                    redirect_obj = redirect("form_entry_detail", id)
+                else:
+                    # default redirect
+                    if form.completion_url:
+                        completion_url = form.completion_url.strip().replace('[entry_id]', str(entry.id))
+                        redirect_obj = HttpResponseRedirect(completion_url)
+                    else:
+                        redirect_obj = redirect("form_sent", form.slug)
 
             # Email - only one original submission. Subsequent edits of the entry we don't notify about
             if not edit_mode:

@@ -1,5 +1,6 @@
 import uuid
 import os
+from urllib.parse import urlparse
 
 from django.db import models
 from django.urls import reverse
@@ -134,5 +135,6 @@ class Resume(TendenciBaseModel):
 
     @property
     def is_linkedin_url(self):
-        return self.resume_url and 'linkedin.com' in self.resume_url
+        o = urlparse(self.resume_url)
+        return o.hostname.lower() == 'www.linkedin.com' or o.hostname.lower() == 'linkedin.com'
                 

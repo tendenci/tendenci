@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.social_auth.backends import get_backend
 from tendenci.apps.social_auth.utils import sanitize_redirect
+from tendenci.apps.base.utils import get_next_url
 
 
 DEFAULT_REDIRECT = getattr(settings, 'SOCIAL_AUTH_LOGIN_REDIRECT_URL', '') or \
@@ -85,10 +86,8 @@ def disconnect(request, backend):
     if not backend:
         return HttpResponseServerError('Incorrect authentication service')
     backend.disconnect(request.user)
-    url = request.GET.get(REDIRECT_FIELD_NAME, '')
-    if request.method == 'POST':
-        url = request.POST.get(REDIRECT_FIELD_NAME, url)
-    url = url or DEFAULT_REDIRECT
+
+    url = get_next_url(request, method=request.method) or DEFAULT_REDIRECT
     return HttpResponseRedirect(url)
 
 
@@ -99,9 +98,7 @@ def auth_process(request, backend, complete_url_name):
     if not backend:
         return HttpResponseServerError(_('Incorrect authentication service'))
     # Check and sanitize a user-defined GET/POST redirect_to field value.
-    redirect = request.GET.get(REDIRECT_FIELD_NAME)
-    if request.method == 'POST':
-        redirect = request.POST.get(REDIRECT_FIELD_NAME, redirect)
+    redirect = get_next_url(request, method=request.method)
     redirect = sanitize_redirect(request.get_host(), redirect)
     request.session[REDIRECT_FIELD_NAME] = redirect or DEFAULT_REDIRECT
     if backend.uses_redirect:

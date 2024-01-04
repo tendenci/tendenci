@@ -518,8 +518,11 @@ def search(request, template_name="invoices/search.html"):
         if all([search_criteria == 'owner__id',
                 search_method == 'exact',
                 owner]):
-            invoices = invoices.filter(Q(bill_to_email__iexact=owner.email)
+            if owner.email:
+                invoices = invoices.filter(Q(bill_to_email__iexact=owner.email)
                                | Q(owner_id=owner.id))
+            else:
+                invoices = invoices.filter(owner_id=owner.id)
         else:
             search_filter = {'%s%s' % (search_criteria,
                                        search_type): search_text}

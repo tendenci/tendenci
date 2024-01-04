@@ -10,6 +10,7 @@ from tendenci.apps.site_settings.utils import delete_settings_cache
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.theme.utils import theme_options
 from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.base.utils import get_next_url
 
 
 def list(request, scope, scope_category, template_name="site_settings/list.html"):
@@ -48,7 +49,7 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
             msg_string = 'Successfully saved %s settings' % scope_category.replace('_',' ').title()
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-            redirect_to = request.POST.get('next', '')
+            redirect_to = get_next_url(request, method='POST')
             if redirect_to:
                 return HttpResponseRedirect(redirect_to)
 
@@ -96,7 +97,7 @@ def single_setting(request, scope, scope_category, name, template_name="site_set
             msg_string = 'Successfully saved %s settings' % name.replace('_',' ').title()
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-            redirect_to = request.POST.get('next', '')
+            redirect_to = get_next_url(request, method='POST')
             if redirect_to:
                 return HttpResponseRedirect(redirect_to)
 

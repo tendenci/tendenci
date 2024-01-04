@@ -12,6 +12,7 @@ from tendenci.apps.emails.forms import EmailForm, AmazonSESVerifyEmailForm
 from tendenci.apps.emails.models import Email
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.base.utils import get_next_url
 
 
 @login_required
@@ -46,23 +47,23 @@ def edit(request, id, form_class=EmailForm, template_name="emails/edit.html"):
     email = get_object_or_404(Email, pk=id)
     if not email.allow_edit_by(request.user): raise Http403
 
-    next = request.GET.get("next", "")
+    next_url = get_next_url(request)
     if request.method == "POST":
         form = form_class(request.POST, instance=email)
 
         if form.is_valid():
             email = form.save(request.user)
 
-            next = request.POST.get("next", "")
-            if not next or ' ' in next:
-                next = reverse('email.view', args=[email.id])
+            next_url = get_next_url(request, method='POST')
+            if not next_url or ' ' in next_url:
+                next_url = reverse('email.view', args=[email.id])
 
-            return HttpResponseRedirect(next)
+            return HttpResponseRedirect(next_url)
     else:
         form = form_class(instance=email)
 
     return render_to_resp(request=request, template_name=template_name,
-        context={'form':form, 'email':email, 'next':next})
+        context={'form':form, 'email':email, 'next':next_url})
 
 def search(request, template_name="emails/search.html"):
     if request.user.profile.is_superuser:

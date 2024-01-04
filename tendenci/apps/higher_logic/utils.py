@@ -366,6 +366,10 @@ class HigherLogicAPI:
                 # skip sub events
                 continue
 
+            if event.status_detail != 'active':
+                # skip non-active events
+                continue
+
             event_dict = {
                 "MeetingId": f'event-{event.id}',
                 "Title": event.title,

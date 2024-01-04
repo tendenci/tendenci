@@ -14,6 +14,7 @@ from authlib.integrations.django_client import OAuth
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.utils import get_next_url
 
 
 oauth = OAuth()
@@ -39,7 +40,10 @@ myclient = oauth.create_client(settings.OAUTH2_REMOTE_APP_NAME)
 class LoginView(View):
     def get(self, request):
         if request.user.is_authenticated:
-            return HttpResponseRedirect(request.GET.get('next', settings.LOGIN_REDIRECT_URL))
+            next_url = get_next_url(request)
+            if not next_url:
+                next_url = settings.LOGIN_REDIRECT_URL
+            return HttpResponseRedirect(next_url)
 
         request.session['next'] = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
 

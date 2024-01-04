@@ -39,6 +39,7 @@
   <h1>{% trans "Meeting Registrations- Sessions" %}</h1>
   <h4>{{ event.title }}</h4>
   {% if registrants|length == 1 %}
+  <div class="pull-right"><a href="{% url "event.registration_edit" registrants.0.registration.id %}">{% trans "Edit registration" %}</a></div>
   <div><a href="{% url "event.sessions" registrants.0.id %}">{% trans "View Schedule" %}</a></div>
   {% endif %}
 </div>
