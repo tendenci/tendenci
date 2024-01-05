@@ -1,13 +1,26 @@
 {% extends "reports/base.html" %}
+{% load membership_tags %}
 
 {% block content %}
 <div class="page-header">
-  <h1>{% trans "Current Members Quick List" %}</h1>
+  <h1>{% trans "Current Members Quick List" %}
+{% if region_name %}
+ - {{ region_name }}
+{% endif %}
+</h1>
+
 </div>
 <div class="mems-wrap">
+
+<p class="pull-left">
 {% if members %}
-<p><a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv">
-    {% trans 'Download CSV File' %}</a></p>
+<a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv{{ region_url_param }}">
+
+    {% trans 'Download CSV File' %}</a>
+{% endif %}
+    {% search_region_form %}
+    </p>
+{% if members %}
     <table class="table table-tendenci-reports">
         <tr>
             <th>{% trans "Last Name" %}</th>
@@ -25,5 +38,6 @@
 {% else %}
 {% trans "No active members." %}
 {% endif %}
+
 </div>
 {% endblock content %}

@@ -78,6 +78,10 @@ def render_membership_field(request, field_obj,
     return {'request': request, 'field_obj': field_obj,
             'field': field, 'field_pwd': field_pwd}
 
+@register.inclusion_tag('memberships/search-region-form.html', takes_context=True)
+def search_region_form(context):
+    return context
+
 
 @register.filter
 def get_actions(membership, user):

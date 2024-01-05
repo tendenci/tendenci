@@ -69,13 +69,15 @@ from tendenci.apps.memberships.forms import (
     AutoRenewSetupForm,
     MessageForm,
     MemberSearchForm,
-    EmailMembersForm)
+    EmailMembersForm,
+    RegionForm)
 from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats, iter_memberships,
     get_membership_stats, ImportMembDefault,
     get_membership_app, get_membership_summary_data,
     email_pending_members,
     email_membership_members)
+from tendenci.apps.regions.models import Region
 from tendenci.apps.base.forms import CaptchaForm
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.theme.utils import get_template_content_raw
@@ -2494,6 +2496,17 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
     """ Table view of current members fname, lname and company only.
     """
     members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
+    region_form = None
+    region_name = None
+    region_url_param = ''
+    if members.filter(region__isnull=False).exists():
+        region_form = RegionForm(request.GET)
+        if region_form.is_valid():
+            region = region_form.cleaned_data['region']
+            if region:
+                region_name = region.region_name
+                region_url_param = f'&region={region.id}'
+                members = members.filter(region_id=region.id)
 
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
@@ -2526,7 +2539,12 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 
     EventLog.objects.log()
 
-    return render_to_resp(request=request, template_name=template_name, context={'members': members})
+    context={'members': members,
+             'region_form': region_form,
+             'region_name': region_name,
+             'region_url_param': region_url_param}
+    # return render_to_resp(request=request, template_name=template_name, context={'members': members, 'region_id':region_id, 'region_name':region_name, 'region_url_param':region_url_param, 'regions':regions})
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @staff_member_required
