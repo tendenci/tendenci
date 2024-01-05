@@ -832,21 +832,6 @@ def get_over_time_stats():
 
     return stats
 
-def add_region_filter(request, members):
-  regions = Region.objects.values('id','region_name').order_by('region_name')
-  context = {'members': members, 'regions': regions}
-  region_id = request.GET.get('region_id', '')
-  if region_id:
-    # Add region filter
-    members = members.filter(region_id=region_id)
-    context['members'] = members
-    context['region_id'] = region_id
-    region_rec = regions.filter(id=region_id).values('id','region_name').first()
-    if region_rec:
-        context['region_name'] = region_rec['region_name']
-        context['region_url_param'] = '&region={}'.format(region_id)
-
-  return context, members
 
 def months_back(n):
     """Return datetime minus n months"""

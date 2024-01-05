@@ -11,11 +11,16 @@
 
 </div>
 <div class="mems-wrap">
+
+<p class="pull-left">
 {% if members %}
-<p class="pull-left"><a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv{{ region_url_param }}">
-    {% trans 'Download CSV File' %}</a></p>
+<a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv{{ region_url_param }}">
+
+    {% trans 'Download CSV File' %}</a>
+{% endif %}
     {% search_region_form %}
-</form>
+    </p>
+{% if members %}
     <table class="table table-tendenci-reports">
         <tr>
             <th>{% trans "Last Name" %}</th>

@@ -48,6 +48,7 @@ from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.emails.models import Email
 from tendenci.apps.base.utils import validate_email
 from tendenci.apps.base.utils import get_timezone_choices
+from tendenci.apps.regions.models import Region
 
 
 THIS_YEAR = datetime.today().year
@@ -135,6 +136,13 @@ def assign_search_fields(form, app_field_objs):
             else:
                 form.fields[obj.field_name] = forms.CharField(label=obj.label, required=False)
 
+
+class RegionForm(FormControlWidgetMixin, forms.Form):
+    region = forms.ModelChoiceField(label=_("Select a region"),
+                                      queryset=Region.objects.filter(status_detail='active').order_by('region_name'),
+                                      empty_label="All",
+                                      required=False)
+  
 
 class MemberSearchForm(FormControlWidgetMixin, forms.Form):
     def __init__(self, *args, **kwargs):
