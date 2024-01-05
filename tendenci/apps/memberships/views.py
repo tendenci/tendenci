@@ -2498,12 +2498,14 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
     members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
     region_form = None
     region_name = None
+    region_url_param = ''
     if members.filter(region__isnull=False).exists():
         region_form = RegionForm(request.GET)
         if region_form.is_valid():
             region = region_form.cleaned_data['region']
             if region:
                 region_name = region.region_name
+                region_url_param = f'&region={region.id}'
                 members = members.filter(region_id=region.id)
 
     # returns csv response ---------------
@@ -2539,7 +2541,8 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 
     context={'members': members,
              'region_form': region_form,
-             'region_name': region_name}
+             'region_name': region_name,
+             'region_url_param': region_url_param}
     # return render_to_resp(request=request, template_name=template_name, context={'members': members, 'region_id':region_id, 'region_name':region_name, 'region_url_param':region_url_param, 'regions':regions})
     return render_to_resp(request=request, template_name=template_name, context=context)
 
