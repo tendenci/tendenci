@@ -92,10 +92,18 @@ class Type(models.Model):
     An event can only be one type
     A type can have multiple events
     """
+    cert_tempt_choices = (
+        ('', ''),
+        ('events/registrants/certificate-symposium.html', 'certificate-symposium.html'),
+        ('events/registrants/certificate-single-event.html', 'certificate-single-event.html',
+    ))
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50, editable=False)
     color_set = models.ForeignKey('TypeColorSet', on_delete=models.CASCADE)
-
+    certificate_template = models.CharField(max_length=100,
+                                            blank=True, default='',
+                                            choices=cert_tempt_choices)
+    
     objects = EventTypeManager()
 
     class Meta:
@@ -2682,6 +2690,15 @@ class Event(TendenciBaseModel):
             start_dt__date__gt=datetime.now().date(),
             registration_configuration__enabled=True
         )
+
+    def get_certificate_template(self):
+        template_name = self.type and self.type.certificate_template
+        if not template_name:
+            if self.has_child_events:
+                template_name='events/registrants/certificate-symposium.html'
+            else:
+                template_name = 'events/registrants/certificate-single-event.html'
+        return template_name
 
     @property
     def events_with_credits(self):
