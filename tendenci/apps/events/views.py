@@ -4508,7 +4508,7 @@ def registrant_badge(request, registrant_id=0, template_name='events/badges.html
 
 @is_enabled('events')
 @login_required
-def sample_certificate(request, event_id=0, template_name='events/registrants/certificate-symposium.html'):
+def sample_certificate(request, event_id=0):
     """Sample certificate for Event"""
     event = get_object_or_404(Event, pk=event_id)
 
@@ -4545,9 +4545,7 @@ def sample_certificate(request, event_id=0, template_name='events/registrants/ce
         'possible_credits_by_code': credit_event.possible_credits_by_code,
         'credits_earned_by_code': credit_event.possible_credits_by_code
     }
-    # TODO: remove hard-coded symposiums later
-    if not (event.has_child_events and (event.type and event.type.name.lower() == 'symposiums')):
-        template_name = 'events/registrants/certificate-single-event.html'
+    template_name = event.get_certificate_template()
 
     return render_to_resp(request=request, template_name=template_name,
         context={
@@ -4559,16 +4557,14 @@ def sample_certificate(request, event_id=0, template_name='events/registrants/ce
 
 @is_enabled('events')
 @login_required
-def registrant_certificate(request, registrant_id=0, template_name='events/registrants/certificate-symposium.html'):
+def registrant_certificate(request, registrant_id=0):
     registrant = get_object_or_404(Registrant, pk=registrant_id)
 
     if not has_perm(request.user,'registrants.view_registrant', registrant):
         if not (registrant.user and registrant.user == request.user):
             raise Http403
 
-    # TODO: remove hard-coded symposiums later
-    if not (registrant.event.has_child_events and (registrant.event.type and registrant.event.type.name.lower() == 'symposiums')):
-        template_name = 'events/registrants/certificate-single-event.html'
+    template_name = registrant.event.get_certificate_template()
 
     return render_to_resp(request=request, template_name=template_name,
         context={
