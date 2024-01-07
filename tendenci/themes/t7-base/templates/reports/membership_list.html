@@ -1,11 +1,16 @@
 {% extends "reports/base.html" %}
 {% load bootstrap_pagination_tags %}
+{% load membership_tags %}
 
 {% block content %}
 
 {% if active %}
 <div class="page-header">
-  <h1>{% trans "Active Memberships Report" %}</h1>
+  <h1>{% trans "Active Memberships Report" %}
+{% if region_name %}
+ - {{ region_name }}
+{% endif %}
+</h1>
 </div>
 {% if days == 0 %}
 <p>{% trans "Lists all memberships that are still active." %}</p>
@@ -36,7 +41,11 @@
 
 {% else %}
 <div class="page-header">
-  <h1>{% trans "Expired Memberships Report" %}</h1>
+  <h1>{% trans "Expired Memberships Report" %}
+{% if region_name %}
+ - {{ region_name }}
+{% endif %}
+</h1>
 </div>
 {% if days == 0 %}
 {% trans "Lists all memberships that have expired.  Grace periods are not included." %}
@@ -62,17 +71,17 @@ Currently showing members who expired in the last {{ days }} days.
   </select>
 </form>
 {% endif %}
-
+{% search_region_form %}
 
 
 <p><em>{{ mems|length }} {% trans "Members listed" %}</em></p>
 {% autopaginate mems 50 %}
 
 {% if active %}
-<p><a class="btn btn-default" href="{% url "reports-active-members" %}?output=csv{% if request.GET.days %}&days={{ request.GET.days }}{% endif %}">
+<p><a class="btn btn-default" href="{% url "reports-active-members" %}?output=csv{{ region_url_param }}{% if request.GET.days %}&days={{ request.GET.days }}{% endif %}">
   {% trans 'Download CSV File' %}</a></p>
 {% else %}
-<p><a class="btn btn-default" href="{% url "reports-expired-members" %}?output=csv{% if request.GET.days %}&days={{ request.GET.days }}{% endif %}">
+<p><a class="btn btn-default" href="{% url "reports-expired-members" %}?output=csv{{ region_url_param }}{% if request.GET.days %}&days={{ request.GET.days }}{% endif %}">
   {% trans 'Download CSV File' %}</a></p>
 {% endif %}
 
