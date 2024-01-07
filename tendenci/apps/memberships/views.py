@@ -2189,11 +2189,23 @@ def report_active_members(request, template_name='reports/membership_list.html')
     if request.GET.get('days'):
         days = int(request.GET.get('days'))
         compare_dt = datetime.now() - timedelta(days=days)
-        mems = MembershipDefault.objects.filter(status=True, status_detail="active", join_dt__gte=compare_dt).order_by('join_dt')
+        members = MembershipDefault.objects.filter(status=True, status_detail="active", join_dt__gte=compare_dt).order_by('join_dt')
     else:
         days = 0
-        mems = MembershipDefault.objects.filter(status=True, status_detail='active')
+        members = MembershipDefault.objects.filter(status=True, status_detail='active')
 
+    region_form = None
+    region_name = None
+    region_url_param = ''
+    if members.filter(region__isnull=False).exists():
+        region_form = RegionForm(request.GET)
+        if region_form.is_valid():
+            region = region_form.cleaned_data['region']
+            if region:
+                region_name = region.region_name
+                region_url_param = f'&region={region.id}'
+                members = members.filter(region_id=region.id)
+ 
     # sort order of all fields for the upcoming response
     is_ascending_username = True
     is_ascending_full_name = True
@@ -2206,40 +2218,40 @@ def report_active_members(request, template_name='reports/membership_list.html')
     # get sort order
     sort = request.GET.get('sort', 'subscribe_dt')
     if sort == 'username':
-        mems = mems.order_by('user__username')
+        members = members.order_by('user__username')
         is_ascending_username = False
     elif sort == '-username':
-        mems = mems.order_by('-user__username')
+        members = members.order_by('-user__username')
         is_ascending_username = True
     elif sort == 'full_name':
-        mems = mems.order_by('user__first_name', 'user__last_name')
+        members = members.order_by('user__first_name', 'user__last_name')
         is_ascending_full_name = False
     elif sort == '-full_name':
-        mems = mems.order_by('-user__first_name', '-user__last_name')
+        members = members.order_by('-user__first_name', '-user__last_name')
         is_ascending_full_name = True
     elif sort == 'email':
-        mems = mems.order_by('user__email')
+        members = members.order_by('user__email')
         is_ascending_email = False
     elif sort == '-email':
-        mems = mems.order_by('-user__email')
+        members = members.order_by('-user__email')
         is_ascending_email = True
     elif sort == 'type':
-        mems = mems.order_by('membership_type')
+        members = members.order_by('membership_type')
         is_ascending_type = False
     elif sort == '-type':
-        mems = mems.order_by('-membership_type')
+        members = members.order_by('-membership_type')
         is_ascending_type = True
     elif sort == 'subscription':
-        mems = mems.order_by('join_dt')
+        members = members.order_by('join_dt')
         is_ascending_subscription = False
     elif sort == '-subscription':
-        mems = mems.order_by('-join_dt')
+        members = members.order_by('-join_dt')
         is_ascending_subscription = True
     elif sort == 'expiration':
-        mems = mems.order_by('expire_dt')
+        members = members.order_by('expire_dt')
         is_ascending_expiration = False
     elif sort == '-expiration':
-        mems = mems.order_by('-expire_dt')
+        members = members.order_by('-expire_dt')
         is_ascending_expiration = True
     # COMMENT OUT THIS INVOICE SORTING - because it is a very resource intensive 
     # operation and easily to cause timeout with large volume of memberships.
@@ -2260,7 +2272,7 @@ def report_active_members(request, template_name='reports/membership_list.html')
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
     if ouput == 'csv':
-        def iter_mems(mems):
+        def iter_mems(members):
             header_row = [
                 'username',
                 'full name',
@@ -2275,43 +2287,59 @@ def report_active_members(request, template_name='reports/membership_list.html')
             
             yield writer.writerow(dict(zip(header_row, header_row)))
                 
-            for mem in mems:
+            for member in members:
     
                 invoice_pk = ''
-                if mem.get_invoice():
-                    invoice_pk = '%i' % mem.get_invoice().pk
+                if member.get_invoice():
+                    invoice_pk = '%i' % member.get_invoice().pk
     
                 mem_row = [
-                    mem.user.username,
-                    mem.user.get_full_name(),
-                    mem.user.email,
-                    mem.membership_type.name,
-                    mem.join_dt,
-                    mem.expire_dt,
+                    member.user.username,
+                    member.user.get_full_name(),
+                    member.user.email,
+                    member.membership_type.name,
+                    member.join_dt,
+                    member.expire_dt,
                     invoice_pk,
                 ]
                 yield writer.writerow(dict(zip(header_row, mem_row)))
 
         response = StreamingHttpResponse(streaming_content=(
-                    iter_mems(mems)),
+                    iter_mems(members)),
                     content_type='text/csv',)
         response['Content-Disposition'] = 'attachment;filename=active-memberships.csv'
 
         return response
     # ------------------------------------
+    context = {'region_form': region_form,
+             'region_name': region_name,
+             'region_url_param': region_url_param
+             'mems': members,
+             'active': True,
+             'days': days,
+             'is_ascending_username': is_ascending_username,
+             'is_ascending_full_name': is_ascending_full_name,
+             'is_ascending_email': is_ascending_email,
+             'is_ascending_type': is_ascending_type,
+             'is_ascending_subscription': is_ascending_subscription,
+             'is_ascending_expiration': is_ascending_expiration,
+             'is_ascending_invoice': is_ascending_invoice,
+             }
+ 
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
-    return render_to_resp(request=request, template_name=template_name, context={
-            'mems': mems,
-            'active': True,
-            'days': days,
-            'is_ascending_username': is_ascending_username,
-            'is_ascending_full_name': is_ascending_full_name,
-            'is_ascending_email': is_ascending_email,
-            'is_ascending_type': is_ascending_type,
-            'is_ascending_subscription': is_ascending_subscription,
-            'is_ascending_expiration': is_ascending_expiration,
-            'is_ascending_invoice': is_ascending_invoice,
-            })
+#    return render_to_resp(request=request, template_name=template_name, context={
+#            'mems': members,
+#            'active': True,
+#            'days': days,
+#            'is_ascending_username': is_ascending_username,
+#            'is_ascending_full_name': is_ascending_full_name,
+#            'is_ascending_email': is_ascending_email,
+#            'is_ascending_type': is_ascending_type,
+#            'is_ascending_subscription': is_ascending_subscription,
+#            'is_ascending_expiration': is_ascending_expiration,
+#            'is_ascending_invoice': is_ascending_invoice,
+#            })
 
 
 @staff_member_required
