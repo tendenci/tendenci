@@ -2313,7 +2313,7 @@ def report_active_members(request, template_name='reports/membership_list.html')
     # ------------------------------------
     context = {'region_form': region_form,
              'region_name': region_name,
-             'region_url_param': region_url_param
+             'region_url_param': region_url_param,
              'mems': members,
              'active': True,
              'days': days,
