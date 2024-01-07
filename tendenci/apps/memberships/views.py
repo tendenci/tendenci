@@ -2350,11 +2350,23 @@ def report_expired_members(request, template_name='reports/membership_list.html'
     if request.GET.get('days'):
         days = int(request.GET.get('days'))
         compare_dt = datetime.now() - timedelta(days=days)
-        mems = MembershipDefault.objects.filter(status_detail="expired", expire_dt__gte=compare_dt).order_by('expire_dt')
+        members = MembershipDefault.objects.filter(status_detail="expired", expire_dt__gte=compare_dt).order_by('expire_dt')
     else:
         days = 0
-        mems = MembershipDefault.objects.filter(status_detail="expired")
+        members = MembershipDefault.objects.filter(status_detail="expired")
 
+    # Region filtering
+    region_form = None
+    region_name = None
+    region_url_param = ''
+    if members.filter(region__isnull=False).exists():
+        region_form = RegionForm(request.GET)
+        if region_form.is_valid():
+            region = region_form.cleaned_data['region']
+            if region:
+                region_name = region.region_name
+                region_url_param = f'&region={region.id}'
+                members = members.filter(region_id=region.id)
     # sort order of all fields for the upcoming response
     is_ascending_username = True
     is_ascending_full_name = True
@@ -2367,50 +2379,50 @@ def report_expired_members(request, template_name='reports/membership_list.html'
     # get sort order
     sort = request.GET.get('sort', 'subscribe_dt')
     if sort == 'username':
-        mems = mems.order_by('user__username')
+        members = members.order_by('user__username')
         is_ascending_username = False
     elif sort == '-username':
-        mems = mems.order_by('-user__username')
+        members = members.order_by('-user__username')
         is_ascending_username = True
     elif sort == 'full_name':
-        mems = mems.order_by('user__first_name', 'user__last_name')
+        members = members.order_by('user__first_name', 'user__last_name')
         is_ascending_full_name = False
     elif sort == '-full_name':
-        mems = mems.order_by('-user__first_name', '-user__last_name')
+        members = members.order_by('-user__first_name', '-user__last_name')
         is_ascending_full_name = True
     elif sort == 'email':
-        mems = mems.order_by('user__email')
+        members = members.order_by('user__email')
         is_ascending_email = False
     elif sort == '-email':
-        mems = mems.order_by('-user__email')
+        members = members.order_by('-user__email')
         is_ascending_email = True
     elif sort == 'type':
-        mems = mems.order_by('membership_type')
+        members = members.order_by('membership_type')
         is_ascending_type = False
     elif sort == '-type':
-        mems = mems.order_by('-membership_type')
+        members = members.order_by('-membership_type')
         is_ascending_type = True
     elif sort == 'subscription':
-        mems = mems.order_by('join_dt')
+        members = members.order_by('join_dt')
         is_ascending_subscription = False
     elif sort == '-subscription':
-        mems = mems.order_by('-join_dt')
+        members = members.order_by('-join_dt')
         is_ascending_subscription = True
     elif sort == 'expiration':
-        mems = mems.order_by('expire_dt')
+        members = members.order_by('expire_dt')
         is_ascending_expiration = False
     elif sort == '-expiration':
-        mems = mems.order_by('-expire_dt')
+        members = members.order_by('-expire_dt')
         is_ascending_expiration = True
     elif sort == 'invoice':
         # since we need to sort by a related field with the proper
         # conditions we'll need to bring the sorting to the python level
-        mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=True)
+        members = sorted(members, key=lambda mem: mem.get_invoice(), reverse=True)
         is_ascending_invoice = False
     elif sort == '-invoice':
         # since we need to sort by a related field with the proper
         # conditions we'll need to bring the sorting to the python level
-        mems = sorted(mems, key=lambda mem: mem.get_invoice(), reverse=False)
+        members = sorted(members, key=lambda mem: mem.get_invoice(), reverse=False)
         is_ascending_invoice = True
 
     EventLog.objects.log()
@@ -2431,7 +2443,7 @@ def report_expired_members(request, template_name='reports/membership_list.html'
         ]
 
         table_data = []
-        for mem in mems:
+        for mem in members:
 
             invoice_pk = u''
             if mem.get_invoice():
@@ -2455,8 +2467,8 @@ def report_expired_members(request, template_name='reports/membership_list.html'
         )
     # ------------------------------------
 
-    return render_to_resp(request=request, template_name=template_name, context={
-            'mems': mems,
+    context = {
+            'mems': members,
             'active': False,
             'days': days,
             'is_ascending_username': is_ascending_username,
@@ -2466,7 +2478,23 @@ def report_expired_members(request, template_name='reports/membership_list.html'
             'is_ascending_subscription': is_ascending_subscription,
             'is_ascending_expiration': is_ascending_expiration,
             'is_ascending_invoice': is_ascending_invoice,
-            })
+            'region_form': region_form,
+            'region_name': region_name,
+            'region_url_param': region_url_param,
+    }
+    return render_to_resp(request=request, template_name=template_name, context=context)
+#    return render_to_resp(request=request, template_name=template_name, context={
+#            'mems': mems,
+#            'active': False,
+#            'days': days,
+#            'is_ascending_username': is_ascending_username,
+#            'is_ascending_full_name': is_ascending_full_name,
+#            'is_ascending_email': is_ascending_email,
+#            'is_ascending_type': is_ascending_type,
+#            'is_ascending_subscription': is_ascending_subscription,
+#            'is_ascending_expiration': is_ascending_expiration,
+#            'is_ascending_invoice': is_ascending_invoice,
+#            })
 
 
 @staff_member_required
