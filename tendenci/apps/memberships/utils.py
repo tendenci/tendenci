@@ -47,6 +47,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.apps.emails.models import Email
 from tendenci.apps.educations.models import Education
+from tendenci.apps.regions.models import Region
 from tendenci.apps.base.utils import escape_csv, Echo
 
 

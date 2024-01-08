@@ -1,0 +1,19 @@
+{% if region_form %}
+<form class="search-form pull-right form-inline" id="frm_region" action="{% url "reports-members-quick-list" %}" method="get">
+  {{ region_form.region.label }}: {{ region_form.region }}
+</form>  
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+	$('#id_region').on('change', function (e) {
+		if ($(this).val() == '')
+		{
+			$(this).prop('disabled', true);
+		}
+        $("form#frm_region").submit();
+    });
+
+ });
+</script>
+{% endif %}
