@@ -114,6 +114,10 @@ def search(request, template_name="pages/search.html"):
             else:
                 pages = Page.objects.none()
 
+        elif query.startswith("tag:"):
+            tag_name = query[4:]
+            if tag_name:
+                pages = pages.filter(tags__icontains=tag_name)
         else:
             pages = pages.filter(
                 Q(title__icontains=query)
