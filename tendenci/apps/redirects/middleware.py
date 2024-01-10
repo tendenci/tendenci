@@ -1,5 +1,5 @@
+from urllib.parse import quote as urlquote
 from django.urls import resolve
-from django.utils.http import urlquote
 from django.utils.deprecation import MiddlewareMixin
 
 

@@ -1,5 +1,5 @@
+from html import unescape
 from django.utils.html import strip_tags
-from django.utils.text import unescape_entities
 from tendenci.apps.meta.utils import generate_meta_keywords
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import truncate_words
@@ -92,7 +92,7 @@ class ArticleMeta():
             content = object.body
 
         content = strip_tags(content)  # strips HTML tags
-        content = unescape_entities(content)
+        content = unescape(content)
         content = content.replace("\n", "").replace("\r", "")
         content = truncate_words(content, 50)  # ~ about 250 chars
 

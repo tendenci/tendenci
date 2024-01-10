@@ -20,7 +20,7 @@ from django.shortcuts import Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.middleware.csrf import _compare_masked_tokens
+from django.middleware.csrf import _does_token_match
 import requests
 import stripe
 
@@ -271,7 +271,7 @@ class FetchAccessToken(View):
         if not code:
             raise Http404
         # if csrf_token doesn't match, raise 403
-        if not _compare_masked_tokens(state, csrf_token):
+        if not _does_token_match(state, csrf_token):
             raise Http403
 
         # fetch access token

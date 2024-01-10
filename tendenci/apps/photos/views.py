@@ -28,7 +28,7 @@ from django.views.decorators.csrf import csrf_exempt
 from tendenci.libs.utils import python_executable
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
-from tendenci.apps.base.utils import checklist_update
+from tendenci.apps.base.utils import checklist_update, is_ajax
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save, assign_files_perms, get_query_filters, has_view_perm
 from tendenci.apps.site_settings.utils import get_setting
@@ -584,7 +584,7 @@ def photoset_view_yours(request, template_name="photos/photo-set/yours.html"):
 
 @csrf_exempt
 def get_sub_categories(request):
-    if request.is_ajax() and request.method == "POST":
+    if is_ajax(request) and request.method == "POST":
         cat = request.POST.get('cat', None)
         if cat:
             sub_cats = PhotoCategory.objects.filter(parent=cat)
