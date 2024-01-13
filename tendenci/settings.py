@@ -821,6 +821,9 @@ def EXPLORER_PERMISSION_CHANGE(r):
 # Configure Django-Q cluster
 Q_CLUSTER = {
     "orm": "default",
+    "retry": 36000,
+    "timeout": 35000,
+    "max_attempts": 1
 }
 
 # ---------------------------------------------------------------------------- #
