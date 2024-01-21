@@ -781,7 +781,7 @@ class RegConfPricing(OrderingBaseModel):
 
     @property
     def timezone(self):
-        return self.reg_conf.event.timezone.zone
+        return self.reg_conf.event.timezone.key
 
     @staticmethod
     def get_access_filter(user, is_strict=False, spots_available=-1):
