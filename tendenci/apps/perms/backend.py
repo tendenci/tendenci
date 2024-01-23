@@ -161,7 +161,7 @@ class ObjectPermBackend(ModelBackend):
                 if obj.creator_id == user.id:
                     return True
 
-            if hasattr(obj, 'owner'):
+            if hasattr(obj, 'owner') and obj.owner:
                 if obj.owner.id == user.id:
                     return True
     
