@@ -16,6 +16,12 @@
 {% block extra_head %}
     {{ block.super }}
     <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %}  {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}" href="{% url 'directory.feed' %}" />
+  <style>
+  .directories-heading, .directories-body{
+  	height: 12em;
+  	overflow: hidden;
+  }
+  </style>
 {% endblock %}
 
 {% block content_classes %}{{ block.super }} t-search-view{% endblock %}
@@ -56,7 +62,7 @@
         </em>
     </h4>
 
-    <section>
+    <section class="clearfix">
         {% for directory in directories %}
             {% search_result directory %}
         {% empty %}
