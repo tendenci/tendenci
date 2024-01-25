@@ -145,3 +145,8 @@ credits should be added at the sub-event level in the
   {% endblocktrans %}
 </div>
 {% endif %}
+{% if credit_forms and user.is_superuser %}
+ <p> 
+ <input type="checkbox" id="sync_credits" name="sync_credits"> <label for="sync_credits">{% trans 'Update Credits for Checked-in Registrants' %}</label> 
+ </p>
+{% endif %}
