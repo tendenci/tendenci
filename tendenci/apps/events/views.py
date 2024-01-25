@@ -824,6 +824,10 @@ def credits_edit(request, id, form_class=EventCreditForm, template_name="events/
                 messages.add_message(request, messages.ERROR, e.args[0])
                 redirect_url = 'event.credits_edit'
 
+        sync_credits = request.POST.get('sync_credits', False)
+        if sync_credits:
+            event.sync_credits()
+
         msg_string = 'Successfully updated %s' % str(event)
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 

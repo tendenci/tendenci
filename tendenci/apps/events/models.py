@@ -3181,8 +3181,41 @@ class Event(TendenciBaseModel):
             # If registrant credit was found, but hasn't been released, allow
             # it to update the credit count
             if not r_credit.released and r_credit.credits != credits:
-               r_credit.credits = credits
-               r_credit.save(update_fields=['credits'])
+                r_credit.credits = credits
+                r_credit.save(update_fields=['credits'])
+
+    def sync_credits(self):
+        """
+        Sync credits with the checked-in registrant.
+
+        If a credit is removed from an event, it will be removed
+        from registrant credits as well unless it is already released.
+        """
+        if self.parent: # a child event
+            for c_registrant in RegistrantChildEvent.objects.filter(
+                                    child_event=self,
+                                    checked_in=True):
+                self.assign_credits(c_registrant.registrant)
+        else: # single event
+            for registrant in Registrant.objects.filter(
+                        registration__event=self,
+                        checked_in=True,
+                        checked_out=True,
+                        cancel_dt__isnull=True):
+                reg8n = registrant.registration
+                if reg8n.status() == 'registered':
+                    self.assign_credits(registrant)
+
+        # remove registrant credits that are no longer available for this event
+        # except for those already released
+        available_credit_ids = EventCredit.objects.filter(event=self,
+                                                       available=True
+                                                       ).values_list('id', flat=True)
+        registrant_credits = RegistrantCredits.objects.filter(event=self, released=False)
+        if available_credit_ids:
+            registrant_credits = registrant_credits.exclude(
+                    event_credit_id__in=available_credit_ids)
+        registrant_credits.delete()
 
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
