@@ -165,7 +165,8 @@ from tendenci.apps.events.utils import (
     get_week_days,
     get_next_month,
     get_prev_month,
-    iter_child_event_registrants)
+    iter_child_event_registrants,
+    replace_qr_code)
 from tendenci.apps.events.addons.forms import RegAddonForm
 from tendenci.apps.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.apps.events.addons.utils import get_available_addons
@@ -4722,7 +4723,15 @@ def edit_email(request, event_id, form_class=EmailForm, template_name='events/ed
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             if request.POST.get('submit', '') == 'Save & Test':
-                render_event_email(event, email)
+                registrants = None
+                if email.body.find('{{ qr_code }}') != -1:
+                    registrant = Registrant.objects.filter(
+                                    user=request.user,
+                                    registration__event=event).first()
+                    if registrant:
+                        registrants = [registrant]
+                        email.body = replace_qr_code(email.body)
+                email = render_event_email(event, email, registrants=registrants)
                 site_url = get_setting('site', 'global', 'siteurl')
                 email.recipient = request.user.email
                 email.subject = "Reminder: %s" % email.subject
