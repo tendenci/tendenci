@@ -250,6 +250,12 @@ def render_event_email(event, email, registrants=None):
     return email
 
 
+def replace_qr_code(template_content):
+    template_content = '{% load qr_code %}\n' + template_content
+    qr_code_replacement = '{% include "events/email_badge.html" with registrants=registrants %}'
+    return template_content.replace('{{ qr_code }}', qr_code_replacement)
+
+
 def get_default_reminder_template(event):
     from tendenci.apps.events.forms import EMAIL_AVAILABLE_TOKENS
 
