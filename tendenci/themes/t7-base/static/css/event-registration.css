@@ -54,6 +54,8 @@
     float: right;
     width: 200px;
     margin:2px;
+    position: sticky;
+    bottom: 0;
 }
 #registrant-forms .form-label{
 	display: inline;

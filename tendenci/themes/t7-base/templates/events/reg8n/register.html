@@ -124,95 +124,6 @@
     <div class="form-wrap">
         <form id="registration-form" action="" method="post">{% csrf_token %}
         <div class="forms" id="fillup-div">
-
-            <div id="reg-form-wrap">
-                <div class="float-anchor"><!-- ie7 fix --></div>
-                <div class="float-window">
-
-                <div id="reg-form-box" {% if event.free_event %}style="display:none;"{% endif %}>
-                    <div style="background:#3E83C9;color:#fff; padding: 3px; font-weight: bold; font-size:1.2em; text-align: center;">
-                        <div >{% trans 'Summary' %}</div>
-                    </div>
-
-                    <div style="padding: 1em;">
-                        <div id="original-price" style="display:none;">{{ total_price|floatformat:2 }}</div>
-                        <div class="summary-total">
-                            {{ SITE_GLOBAL_CURRENCYSYMBOL }}
-                            <span class="summary-total-amount" id="summary-total-amount" data-price="{{ total_price}}">{{ total_price|floatformat:2 }}</span>
-                        </div>
-
-                        <div class="summary-payment">
-                            <noscript>
-                            <div>
-                                <input class="btn btn-default" title="{% trans "Update Summary" %}" type="submit" id="update_summary" name="update_summary" value="{% trans "Update Summary" %}" />
-                            </div>
-                            </noscript>
-
-                        </div>
-
-                        {# price list #}
-                        <table id="summary-price">
-                            {% if event.is_table %}
-                            <tr class="summary-registrant" id="summary-registrant-0">
-                                <td width="50%" class="item-label">{% trans "Table of " %}{{ pricing.quantity }}</td>
-                                <td width="50%" align="right">
-                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                    {% with price_list|first as price_entry %}
-                                    <span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
-                                    {% endwith %}
-                                </td>
-                            </tr>
-                            {% else %}
-                            {% for price_entry in price_list %}
-                            <tr class="summary-registrant" id="summary-registrant-{{ forloop.counter0 }}" {% if price_entry.deleted %} class="deleted-item"{% endif %}>
-                                <td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
-                                <td width="50%" align="right">
-                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                    <span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            {% endif %}
-                            {% for form in addon_formset.forms %}
-                            <tr class="summary-addon" id="summary-addon-{{ forloop.counter0 }}">
-                                <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
-                                <td width="50%" align="right">
-                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                    <span class="item-price">{{ form.chosen_addon.price|floatformat:2 }}</span>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </table>
-                        <table id="summary-total-price">
-                            <tr>
-                                <td><div id="total-label">{% trans "Total" %}</div></td>
-                                <td align="right">
-                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                    <span id="total-amount">{{ total_price|floatformat:2 }}</span>
-                                </td>
-                            </tr>
-                            <tr class="discount-summary">
-                                <td><div id="discount-label">{% trans "Discount" %}</div></td>
-                                <td align="right">
-                                    <span class="currency-symbol">- {{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                    <span id="discount-amount">0</span>
-                                </td>
-                            </tr>
-                            <tr class="line-on-top discount-summary">
-                                <td><div id="final-label">{% trans "Total" %}</div></td>
-                                <td align="right">
-                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                    <span id="final-amount">{{ total_price|floatformat:2 }}</span>
-                                </td>
-                            </tr>
-                        </table>
-
-                    </div>
-
-               </div>
-               </div>  {# float-widow#}
-            </div>
-
             <div id="registrant-forms">
                 {{ registrant.management_form }}
                 {% for form in registrant.forms %}
@@ -339,7 +250,95 @@
                     </div>
                 {% endwith %}
                 {% endfor %}
-            </div>
+            </div> {# end of div id="registrant-forms"#}
+            
+            <div id="reg-form-wrap">
+                <div class="float-anchor"><!-- ie7 fix --></div>
+                <div class="float-window">
+
+                <div id="reg-form-box" {% if event.free_event %}style="display:none;"{% endif %}>
+                    <div style="background:#3E83C9;color:#fff; padding: 3px; font-weight: bold; font-size:1.2em; text-align: center;">
+                        <div >{% trans 'Summary' %}</div>
+                    </div>
+
+                    <div style="padding: 1em;">
+                        <div id="original-price" style="display:none;">{{ total_price|floatformat:2 }}</div>
+                        <div class="summary-total">
+                            {{ SITE_GLOBAL_CURRENCYSYMBOL }}
+                            <span class="summary-total-amount" id="summary-total-amount" data-price="{{ total_price}}">{{ total_price|floatformat:2 }}</span>
+                        </div>
+
+                        <div class="summary-payment">
+                            <noscript>
+                            <div>
+                                <input class="btn btn-default" title="{% trans "Update Summary" %}" type="submit" id="update_summary" name="update_summary" value="{% trans "Update Summary" %}" />
+                            </div>
+                            </noscript>
+
+                        </div>
+
+                        {# price list #}
+                        <table id="summary-price">
+                            {% if event.is_table %}
+                            <tr class="summary-registrant" id="summary-registrant-0">
+                                <td width="50%" class="item-label">{% trans "Table of " %}{{ pricing.quantity }}</td>
+                                <td width="50%" align="right">
+                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    {% with price_list|first as price_entry %}
+                                    <span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            {% for price_entry in price_list %}
+                            <tr class="summary-registrant" id="summary-registrant-{{ forloop.counter0 }}" {% if price_entry.deleted %} class="deleted-item"{% endif %}>
+                                <td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                                <td width="50%" align="right">
+                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    <span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                            {% for form in addon_formset.forms %}
+                            <tr class="summary-addon" id="summary-addon-{{ forloop.counter0 }}">
+                                <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                                <td width="50%" align="right">
+                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    <span class="item-price">{{ form.chosen_addon.price|floatformat:2 }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        <table id="summary-total-price">
+                            <tr>
+                                <td><div id="total-label">{% trans "Total" %}</div></td>
+                                <td align="right">
+                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    <span id="total-amount">{{ total_price|floatformat:2 }}</span>
+                                </td>
+                            </tr>
+                            <tr class="discount-summary">
+                                <td><div id="discount-label">{% trans "Discount" %}</div></td>
+                                <td align="right">
+                                    <span class="currency-symbol">- {{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    <span id="discount-amount">0</span>
+                                </td>
+                            </tr>
+                            <tr class="line-on-top discount-summary">
+                                <td><div id="final-label">{% trans "Total" %}</div></td>
+                                <td align="right">
+                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    <span id="final-amount">{{ total_price|floatformat:2 }}</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+
+               </div>
+               </div>  {# float-widow#}
+            </div> {# end of div id="reg-form-wrap" #}
 
              {% if not event.is_table and event.registration_configuration.allow_guests %}
             <div class="add-registrant-box">
@@ -575,6 +574,9 @@ $(function () {
 	var i;
 	var myid;
 	var has_checked_addon = false;
+	
+	// hide the checkbox in front of the addons (more updates needed)
+	//$("input[name=add-addons]").prop("checked", true).hide();
 	
  	if ($('input[id="id_addon-TOTAL_FORMS"]').attr('value') == "0") {
 	   $('input[name="add-addons"]').each(function() {
