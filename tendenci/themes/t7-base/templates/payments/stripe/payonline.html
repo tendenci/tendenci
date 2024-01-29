@@ -15,6 +15,17 @@
 <div class="well basic-info">
   <div>{% trans 'Invoice #' %}: {{ payment.invoice.id }}</div>
   <div>{% trans 'Description' %}: {{ payment.description }}</div>
+  {% with payment.invoice.registration as obj %}
+  {% if obj %}
+  <table class="table">
+  <tr>
+  	<th>{% trans 'Item' %}</th>
+  	<th>{% trans 'Amount' %}</th>
+  </tr>
+  {% include 'events/invoice_view_display.html' %}
+  </table>
+  {% endif %}
+  {% endwith %}
   <div id="total-amount">{% trans 'Total' %}: {{ payment.amount|format_currency }}</div>
 </div>
 
