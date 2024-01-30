@@ -665,7 +665,14 @@ class UserCertData(models.Model):
             return next_d_number
         else:
             return next_d_number - 1
-        
+
+    def email(self):
+        return self.user.email
+
+    def total_credits(self):
+        return self.user.transcript_set.filter(certification_track=self.certification
+                                        ).aggregate(Sum('credits'))['credits__sum'] or 0
+
 
 def get_transcript_zip_file_path(instance, filename):
     return "export/trainings/{filename}".format(

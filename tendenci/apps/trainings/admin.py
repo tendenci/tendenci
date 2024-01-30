@@ -5,6 +5,9 @@ from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.admin import SimpleListFilter
+from django.db.models import OuterRef, Subquery, Q
+from django.db.models import Sum
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.theme.templatetags.static import static
@@ -342,11 +345,41 @@ class TranscriptAdmin(admin.ModelAdmin):
     show_user.admin_order_field = 'user__first_name'
 
 
+class CreditsFilter(SimpleListFilter):
+    title = 'Total Credits'
+    parameter_name = 'total_credits'
+
+    def lookups(self, request, model_admin):
+        return (
+            (1, '3.5 or less'),
+        )
+
+    def queryset(self, request, queryset):
+        try:
+            value = int(self.value())
+        except:
+            value = None
+
+        if value is None:
+            return queryset
+
+        if value == 1:
+            transcript_subquery = Transcript.objects.filter(user=OuterRef('user'),
+                    certification_track=OuterRef('certification')).order_by().values('user_id').annotate(
+                        total_credits=Sum('credits')).values('total_credits')
+            queryset = queryset.annotate(total_credits=Subquery(transcript_subquery)).filter(
+                    Q(total_credits__lte=3.5) | Q(total_credits=None))
+
+        return queryset
+
+
 class UserCertDataAdmin(admin.ModelAdmin):
     model = UserCertData
     list_display = ['id',
                     'show_user',
+                    'email',
                     'certification',
+                    'total_credits',
                     'certification_dt',
                     'diamond_1_dt',
                     'diamond_2_dt',
@@ -362,7 +395,7 @@ class UserCertDataAdmin(admin.ModelAdmin):
     search_fields = ['user__first_name',
                      'user__last_name',
                      'user__email']
-    list_filter = ['certification',]
+    list_filter = ['certification', CreditsFilter]
     fieldsets = (
         (None, {
             'fields': (
@@ -398,7 +431,7 @@ class UserCertDataAdmin(admin.ModelAdmin):
                 )
         return ""
     show_user.short_description = 'User'
-    
+   
     @mark_safe
     def show_transcript(self, instance):
         if instance.user:
