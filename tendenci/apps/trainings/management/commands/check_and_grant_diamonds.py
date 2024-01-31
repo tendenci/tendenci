@@ -9,7 +9,7 @@ class Command(BaseCommand):
     Calculate and grant diamond certifications.
     
     Set a daily cron job:
-    1 20 * * * /opt/venvs/venv_t14/bin/python /opt/webapps/orgs/tendenci_site/manage.py check_and_grant_diamonds
+    1 20 * * * /src/venv/bin/python /var/www/tendenci_site/manage.py check_and_grant_diamonds
     """
     
     def handle(self, *args, **options):

@@ -15,7 +15,7 @@ from .models import (SchoolCategory, Certification,
                      CertCat, Course, Transcript,
                      TeachingActivity,
                      OutsideSchool,
-                     UserCertData,
+                     UserCertData, UserCredits,
                      Exam,
                      BluevoltExamImport)
 from .forms import CourseForm, UpdateTranscriptActionForm
@@ -413,6 +413,10 @@ class UserCertDataAdmin(admin.ModelAdmin):
             'diamond_9_dt',
         )},),
     )
+    
+    def get_queryset(self, request):
+        qs = super(UserCertDataAdmin, self).get_queryset(request)
+        return qs.filter(certification__enable_diamond=True)
 
     def get_readonly_fields(self, request, obj=None):
         if obj: # editing
@@ -439,6 +443,36 @@ class UserCertDataAdmin(admin.ModelAdmin):
             return f'<a href="{url}" title="View Transcript">View Transcript</a>'
         return ""
     show_transcript.short_description = 'Transcript'
+
+
+class UserCreditsAdmin(UserCertDataAdmin):
+    verbose_name = "User Credits"
+    list_display = ['id',
+                    'show_user',
+                    'email',
+                    'certification',
+                    'total_credits',
+                    'show_transcript',]
+    #list_editable = ('certification_dt', 'diamond_1_dt')
+    search_fields = ['user__first_name',
+                     'user__last_name',
+                     'user__email']
+    list_filter = ['certification', CreditsFilter]
+    can_delete = False
+    actions = None
+    list_display_links = ('show_transcript', )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_queryset(self, request):
+        return super(admin.ModelAdmin, self).get_queryset(request)
 
 
 class BluevoltExamImportAdmin(admin.ModelAdmin):
@@ -510,5 +544,6 @@ admin.site.register(Transcript, TranscriptAdmin)
 admin.site.register(TeachingActivity, TeachingActivityAdmin)
 admin.site.register(OutsideSchool, OutsideSchoolAdmin)
 admin.site.register(UserCertData, UserCertDataAdmin)
+admin.site.register(UserCredits, UserCreditsAdmin)
 if hasattr(settings, 'BLUEVOLT_API_KEY') and settings.BLUEVOLT_API_KEY:
     admin.site.register(BluevoltExamImport, BluevoltExamImportAdmin)
