@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.urls import reverse
+from django.utils.functional import cached_property
 
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.libs.tinymce import models as tinymce_models
@@ -245,7 +246,11 @@ class Certification(models.Model):
             if certcat:
                 required_credits += certcat.required_credits
         return required_credits
-            
+
+    @cached_property
+    def total_credits_required(self):
+        return self.cert_required_credits()
+           
     # def credits_earned_by_user(self, user, category=None, d_num=0, for_diamond_number=False):
     #     """
     #     Get credits earned and required by category for user
@@ -674,6 +679,7 @@ class UserCertData(models.Model):
     def email(self):
         return self.user.email
 
+    @cached_property
     def total_credits(self):
         return self.user.transcript_set.filter(
                        certification_track=self.certification
