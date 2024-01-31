@@ -349,8 +349,8 @@ class TranscriptAdmin(admin.ModelAdmin):
 
 
 class CreditsFilter(SimpleListFilter):
-    title = 'Total Credits Needed'
-    parameter_name = 'total_credits'
+    title = 'Total Credits'
+    parameter_name = 'credits_check'
 
     def lookups(self, request, model_admin):
         return (
@@ -370,19 +370,27 @@ class CreditsFilter(SimpleListFilter):
             required_credits_list = []
             credits_needed = Decimal(3.5) # <=3.5 more credits needed towards any certification. hard-code it here for now 
             filter_or_list = []
+            filter_exclude_list = []
             for cert in Certification.objects.all():
-                required_credits_list.append((cert.id, cert.cert_required_credits()))
+                required_credits = cert.cert_required_credits()
+                required_credits_list.append((cert.id, required_credits - credits_needed, required_credits))
+
             if required_credits_list:
                 for required_credits in required_credits_list:
-                    filter_or_list.append(Q(certification_id=required_credits[0]) & Q(total_credits__gte=required_credits[1] - credits_needed))
+                    filter_or_list.append(Q(certification_id=required_credits[0]) & Q(total_credits__gte=required_credits[1]))
+                    filter_exclude_list.append(Q(certification_id=required_credits[0]) & Q(total_credits__gte=required_credits[2]))
             # build the q_filter_or
             q_filter_or = reduce(operator.or_, filter_or_list)
             transcript_subquery = Transcript.objects.filter(user=OuterRef('user'),
-                    certification_track=OuterRef('certification')).order_by().values('user_id').annotate(
+                    certification_track=OuterRef('certification'),
+                    status='approved').order_by().values('user_id').annotate(
                         total_credits=Sum('credits')).values('total_credits')
             queryset = queryset.annotate(total_credits=Subquery(transcript_subquery)).filter(
                     q_filter_or)
-
+            # exclude those already meet the required credits
+            for filter_exclude in filter_exclude_list:
+                queryset = queryset.exclude(filter_exclude)
+            #print(queryset.query)
         return queryset
 
 
@@ -462,14 +470,16 @@ class UserCreditAdmin(UserCertDataAdmin):
     list_display = ['id',
                     'show_user',
                     'email',
+                    'show_company',
                     'certification',
-                    'total_credits',
+                    'show_total_credits',
                     #'credits_required', # commenting it out now as it is too resource intensive
                     'show_transcript',]
     #list_editable = ('certification_dt', 'diamond_1_dt')
     search_fields = ['user__first_name',
                      'user__last_name',
-                     'user__email']
+                     'user__email',
+                     'user__profile__company']
     list_filter = ['certification', CreditsFilter]
     can_delete = False
     actions = None
@@ -486,6 +496,18 @@ class UserCreditAdmin(UserCertDataAdmin):
 
     def get_queryset(self, request):
         return super(admin.ModelAdmin, self).get_queryset(request)
+
+    def show_company(self, instance):
+        if instance.user and hasattr(instance.user, 'profile'):
+            return instance.user.profile.company
+    show_company.short_description = 'Company'
+
+    def show_total_credits(self, instance):
+        if instance:
+            total_credits = instance.total_credits
+            if total_credits:
+                return f'{total_credits}/{instance.certification.total_credits_required}'   
+    show_total_credits.short_description = 'Applicable credits/Credits needed'
     
     # def credits_required(self, instance):
     #     if instance.certification:
