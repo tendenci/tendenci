@@ -1,4 +1,7 @@
 import subprocess
+import operator
+from functools import reduce
+from decimal import Decimal
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
@@ -15,7 +18,7 @@ from .models import (SchoolCategory, Certification,
                      CertCat, Course, Transcript,
                      TeachingActivity,
                      OutsideSchool,
-                     UserCertData, UserCredits,
+                     UserCertData, UserCredit,
                      Exam,
                      BluevoltExamImport)
 from .forms import CourseForm, UpdateTranscriptActionForm
@@ -346,12 +349,12 @@ class TranscriptAdmin(admin.ModelAdmin):
 
 
 class CreditsFilter(SimpleListFilter):
-    title = 'Total Credits'
+    title = 'Total Credits Needed'
     parameter_name = 'total_credits'
 
     def lookups(self, request, model_admin):
         return (
-            (1, '3.5 or less'),
+            (1, '<= 3.5 more credits needed'),
         )
 
     def queryset(self, request, queryset):
@@ -364,11 +367,21 @@ class CreditsFilter(SimpleListFilter):
             return queryset
 
         if value == 1:
+            required_credits_list = []
+            credits_needed = Decimal(3.5) # <=3.5 more credits needed towards any certification. hard-code it here for now 
+            filter_or_list = []
+            for cert in Certification.objects.all():
+                required_credits_list.append((cert.id, cert.cert_required_credits()))
+            if required_credits_list:
+                for required_credits in required_credits_list:
+                    filter_or_list.append(Q(certification_id=required_credits[0]) & Q(total_credits__gte=required_credits[1] - credits_needed))
+            # build the q_filter_or
+            q_filter_or = reduce(operator.or_, filter_or_list)
             transcript_subquery = Transcript.objects.filter(user=OuterRef('user'),
                     certification_track=OuterRef('certification')).order_by().values('user_id').annotate(
                         total_credits=Sum('credits')).values('total_credits')
             queryset = queryset.annotate(total_credits=Subquery(transcript_subquery)).filter(
-                    Q(total_credits__lte=3.5) | Q(total_credits=None))
+                    q_filter_or)
 
         return queryset
 
@@ -445,13 +458,13 @@ class UserCertDataAdmin(admin.ModelAdmin):
     show_transcript.short_description = 'Transcript'
 
 
-class UserCreditsAdmin(UserCertDataAdmin):
-    verbose_name = "User Credits"
+class UserCreditAdmin(UserCertDataAdmin):
     list_display = ['id',
                     'show_user',
                     'email',
                     'certification',
                     'total_credits',
+                    #'credits_required', # commenting it out now as it is too resource intensive
                     'show_transcript',]
     #list_editable = ('certification_dt', 'diamond_1_dt')
     search_fields = ['user__first_name',
@@ -473,6 +486,11 @@ class UserCreditsAdmin(UserCertDataAdmin):
 
     def get_queryset(self, request):
         return super(admin.ModelAdmin, self).get_queryset(request)
+    
+    # def credits_required(self, instance):
+    #     if instance.certification:
+    #         return instance.certification.cert_required_credits()
+    # credits_required.short_description = 'Credits Required'
 
 
 class BluevoltExamImportAdmin(admin.ModelAdmin):
@@ -544,6 +562,6 @@ admin.site.register(Transcript, TranscriptAdmin)
 admin.site.register(TeachingActivity, TeachingActivityAdmin)
 admin.site.register(OutsideSchool, OutsideSchoolAdmin)
 admin.site.register(UserCertData, UserCertDataAdmin)
-admin.site.register(UserCredits, UserCreditsAdmin)
+admin.site.register(UserCredit, UserCreditAdmin)
 if hasattr(settings, 'BLUEVOLT_API_KEY') and settings.BLUEVOLT_API_KEY:
     admin.site.register(BluevoltExamImport, BluevoltExamImportAdmin)

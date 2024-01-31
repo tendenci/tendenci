@@ -678,12 +678,14 @@ class UserCertData(models.Model):
         return self.user.transcript_set.filter(
                        certification_track=self.certification
                         ).filter(status='approved'
-                                 ).aggregate(Sum('credits'))['credits__sum'] or '-'
+                                 ).aggregate(Sum('credits'))['credits__sum']
 
 
-class UserCredits(UserCertData):
+class UserCredit(UserCertData):
     class Meta:
         proxy = True
+        verbose_name = "User Credits"
+        verbose_name_plural = "User Credits"
 
 
 def get_transcript_zip_file_path(instance, filename):
