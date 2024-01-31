@@ -611,6 +611,11 @@ class Transcript(models.Model):
             assign_diamond_number = kwargs.pop('assign_diamond_number', True)
             if assign_diamond_number and not self.apply_to:
                 self.apply_to = self.caculate_apply_to()
+        
+        for cert in Certification.objects.all():      
+            if not UserCertData.objects.filter(user=self.user, certification=cert).exists():
+                # add the user to UserCertData
+                UserCertData.objects.create(user=self.user, certification=cert)
         super(Transcript, self).save(*args, **kwargs)
 
 
@@ -670,8 +675,15 @@ class UserCertData(models.Model):
         return self.user.email
 
     def total_credits(self):
-        return self.user.transcript_set.filter(certification_track=self.certification
-                                        ).aggregate(Sum('credits'))['credits__sum'] or 0
+        return self.user.transcript_set.filter(
+                       certification_track=self.certification
+                        ).filter(status='approved'
+                                 ).aggregate(Sum('credits'))['credits__sum'] or '-'
+
+
+class UserCredits(UserCertData):
+    class Meta:
+        proxy = True
 
 
 def get_transcript_zip_file_path(instance, filename):
