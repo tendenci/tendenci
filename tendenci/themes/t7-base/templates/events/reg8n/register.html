@@ -576,6 +576,9 @@ $(function () {
 	var myid;
 	var has_checked_addon = false;
 	
+	// hide the checkbox in front of the addons
+	$("input[name=add-addons]").hide();
+
  	if ($('input[id="id_addon-TOTAL_FORMS"]').attr('value') == "0") {
 	   $('input[name="add-addons"]').each(function() {
 	      i = $(this).attr('value');

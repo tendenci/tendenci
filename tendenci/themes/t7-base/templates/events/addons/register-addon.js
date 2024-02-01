@@ -125,11 +125,14 @@ $(document).ready(function(){
     });
 
     $("#add-addons-button").on("click", function(){
-        var addons = $('input:checkbox[name=add-addons]:checked');
-        if (addons.length > 0){
+        //var addons = $('input:checkbox[name=add-addons]:checked');
+        var addons = $('input:checkbox[name=add-addons]');
+        //if (addons.length > 0){
             for(var i = 0; i<addons.length; i++){
                 var addon = $(addons[i]);
-                if(addon.val()){
+                var addon_num = parseInt($("#add-addon-"+ addon.val() +"-count").val());
+                if(addon.val() && addon_num > 0){
+	                $(addons[i]).prop("checked", true); // check the checkbox
                     var addon_d = {};
                     addon_d['quantity'] = addon.attr('quantity');
                     addon_d['price'] = addon.attr('price');
@@ -140,15 +143,17 @@ $(document).ready(function(){
                     addon_d['option'] = parseInt(selected_option.val());
                     addon_d['option_title'] = $(selected_option).attr('title');
                    // console.log(addon_d);
-                    var addon_num = parseInt($("#add-addon-"+ addon.val() +"-count").val());
+                    
                     for(var j=0; j<addon_num; j++){
                         addAddon('addon', addon_d, container);
                     }
+                    
+                    $("#add-addon-"+ addon.val() +"-count").val(0); // set qty to 0 after being processed (more js updates needed, otherwise, it breaks)
                 }
             }
-        } else {
-            alert("Please select some addons first.");
-        }
+        //} else {
+        //    alert("Please select some addons first.");
+        //}
     });
 
     var addon_inputs = $(".addon-input");
@@ -162,9 +167,9 @@ $(document).ready(function(){
         // Set option_title_display if title is not None
         var option_title_display = '';
         var option_title = addon_option.attr('title');
-        print(option_title)
+        //console.log(option_title)
         if (option_title != 'None') {
-            alert('it is none!');
+            //alert('it is none!');
             option_title_display = ': ' + option_title;
         }
 
