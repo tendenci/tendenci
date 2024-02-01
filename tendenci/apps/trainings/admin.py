@@ -495,7 +495,8 @@ class UserCreditAdmin(UserCertDataAdmin):
         return False
 
     def get_queryset(self, request):
-        return super(admin.ModelAdmin, self).get_queryset(request)
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
+        return qs.filter(user__is_active=True)
 
     def show_company(self, instance):
         if instance.user and hasattr(instance.user, 'profile'):
