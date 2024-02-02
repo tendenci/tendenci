@@ -5333,7 +5333,7 @@ def list_addons(request, event_id, template_name="events/addons/list.html"):
 
     return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
-        'addons':event.addon_set.all(),
+        'addons':event.addon_set.all().order_by('position'),
     })
 
 

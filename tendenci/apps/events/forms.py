@@ -2656,6 +2656,7 @@ class AddonForm(BetterModelForm):
             'price',
             'group',
             'default_yes',
+            'position',
             'allow_anonymous',
             'allow_user',
             'allow_member',)
@@ -2666,6 +2667,7 @@ class AddonForm(BetterModelForm):
                     'price',
                     'group',
                     'default_yes',
+                    'position',
                 ],'legend': ''
             }),
             (_('Permissions'), {
