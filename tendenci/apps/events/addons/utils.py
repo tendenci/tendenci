@@ -35,6 +35,8 @@ def get_available_addons(event, user, is_strict=False):
     if q_obj:
         addons = addons.filter(q_obj)
 
+    addons = addons.order_by('position')
+
     return addons
 
 def get_addon_access_filter(user, is_strict=False):

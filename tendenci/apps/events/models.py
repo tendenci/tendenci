@@ -4023,7 +4023,7 @@ class CustomRegFieldEntry(models.Model):
     class Meta:
         app_label = 'events'
 
-class Addon(models.Model):
+class Addon(OrderingBaseModel):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
 
