@@ -233,6 +233,20 @@ def zoom(request, event_id, template_name="events/zoom.html"):
     if not registrant or registrant.reg8n_status() == 'payment-required':
         raise Http403
 
+    if not event.zoom_integration_setup:
+        raise Http404
+
+    now = datetime.now()
+    not_ready_yet = event.start_dt - now > timedelta(minutes=10)
+    meeting_is_over = now > event.end_dt
+    if not_ready_yet or meeting_is_over:
+        if not_ready_yet:
+            msg_string = _('Zoom meeting is not available yet, please try later.')
+        elif meeting_is_over:
+            msg_string = _('Zoom meeting is over.')
+        messages.add_message(request, messages.WARNING, msg_string)
+        return HttpResponseRedirect(reverse('event', args=[event.pk]))
+
     return render_to_resp(request=request, template_name=template_name, context={
         'event': event,
         'registrant': registrant
