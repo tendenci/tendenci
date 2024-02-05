@@ -4256,7 +4256,9 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
                     registrant.addons_amount = Decimal('0')
                     for addon_item in reg8n_to_addons_list:
                         if addon_item[0] == registrant.registration_id:
-                            registrant.addons += '%s(%s) ' % (addon_item[1], addon_item[2])
+                            registrant.addons += addon_item[1]
+                            if addon_item[2]:
+                                registrant.addons += f'({addon_item[2]})'
                             registrant.addons_amount += addon_item[3]
 
     total_sum = float(0)
