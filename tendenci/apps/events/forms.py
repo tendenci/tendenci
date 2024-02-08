@@ -1539,6 +1539,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
 
         fields = [
             'title',
+            'position',
             'description',
             'quantity',
             'registration_cap',
@@ -1554,11 +1555,12 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
             'allow_anonymous',
             'allow_user',
             'allow_member',
-            'position'
+            
          ]
 
         fieldsets = [(_('Registration Pricing'), {
           'fields': ['title',
+                     'position',
                     'description',
                     'quantity',
                     'registration_cap',
@@ -1575,7 +1577,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
                     'allow_anonymous',
                     'allow_user',
                     'allow_member',
-                    'position'
+                   
                     ],
           'legend': '',
           'classes': ['boxy-grey'],
