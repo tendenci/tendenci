@@ -127,7 +127,7 @@ class Article(TendenciBaseModel):
         """
         now = datetime.now()
         now_with_tz = adjust_datetime_to_timezone(now, settings.TIME_ZONE)
-        if self.timezone and self.release_dt and self.timezone.zone != settings.TIME_ZONE:
+        if self.timezone and self.release_dt and self.timezone.key != settings.TIME_ZONE:
             time_diff = adjust_datetime_to_timezone(now, self.timezone) - now_with_tz
             self.release_dt_local = self.release_dt + time_diff
         else:
