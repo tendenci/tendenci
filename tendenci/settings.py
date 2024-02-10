@@ -646,24 +646,23 @@ TINYMCE_SPELLCHECKER = False
 TINYMCE_COMPRESSOR = False
 TINYMCE_FILEBROWSER = True
 
-# plugins: stormeimage codemirror
 TINYMCE_DEFAULT_CONFIG = {
-    'theme': "modern",
-    'plugins': "image  advlist autolink lists link charmap print preview anchor \
-        searchreplace visualblocks code fullscreen \
-        insertdatetime media table contextmenu paste textcolor colorpicker hr",
+    'tinymce_version': '6',
+    'theme': "silver",
+    'plugins': ["image", 'advlist', 'autolink', 'lists', 'link', 'charmap',
+                'preview', 'anchor', 'searchreplace', 'visualblocks', 'code',  
+                 'emoticons', 'quickbars', 'importcss',
+                'insertdatetime', 'media', 'table', 'fullscreen',],
+    'toolbar': 'code undo redo | bold italic underline | forecolor backcolor emoticons | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | fullscreen',
     'menubar': 'file edit insert view format table',
-    'toolbar': "code insertfile undo redo | styleselect | forecolor backcolor | bold italic hr | \
-                alignleft aligncenter alignright alignjustify | bullist numlist outdent \
-                indent | link image | fullscreen",
-    'image_advtab': 'true',
-    'image_title': 'true',
-    'media_alt_source': 'false',
-    'media_poster': 'false',
-    'cache_suffix': '?v=4.3.8',
-    # Specify your css to apply to the editable area
-    #'content_css': '/static/themes/<theme name>/css/styles.css',
     'resize': 'both',
+    'image_advtab': True,
+    'image_title': True,
+    'media_alt_source': False,
+    'media_poster': False,
+    'quickbars_insert_toolbar': False,
+    'quickbars_selection_toolbar': True,
+    'quickbars_image_toolbar': False,
     'link_class_list': [
         {'title': 'None', 'value': ''},
         {'title': 'Primary Button', 'value': 'btn btn-primary'},
@@ -673,10 +672,13 @@ TINYMCE_DEFAULT_CONFIG = {
         {'title': 'none', 'value': ''},
         {'title': 'img-responsive', 'value': 'img-responsive'},
        ],
-    'tabfocus_elements': ":prev,:next",
+    'file_picker_callback': 'tendenciFileManager',
+    #'tabfocus_elements': ":prev,:next", # removed from version 6
     'convert_urls': 'false',
     'handle_event_callback': "event_handler",
-
+    'promotion': False,
+    'convert_urls': False,
+    #'valid_children' : '+body[style]',
     # Additions - JMO
     'inline_styles': True,
     'height': 400,
