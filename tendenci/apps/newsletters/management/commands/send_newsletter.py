@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.cache import cache
 from django.template.loader import render_to_string
 from django.urls import reverse
+#from django.template import Context, Template
 
 
 class Command(BaseCommand):
@@ -23,6 +24,33 @@ class Command(BaseCommand):
     """
     def add_arguments(self, parser):
         parser.add_argument('newsletter_id', type=int)
+
+    def move_style_to_header(self, email):
+        """
+        Move the <style> block from email body to html header
+        """
+        p = re.compile(r'^(<style[^>]*>([\d\D\s\S\w\W]*?)</style>)', re.IGNORECASE)
+        email.body = email.body.strip()
+        match_obj = p.search(email.body)
+        if match_obj:
+            style_block = match_obj.group(1)
+            body = re.sub(p, '', email.body)
+            template = """
+                <!DOCTYPE>
+                <html>
+                    <head>
+                        <title>[title]</title>
+                        [style_block]
+                    </head>
+                    <body>
+                        [body]
+                    </body>
+                </html>
+            """
+            email.body = template.replace('[title]', email.subject
+                                          ).replace('[style_block]', style_block
+                                          ).replace('[body]', body)
+        return email
 
     def send_newsletter(self, newsletter_id, **kwargs):
         from tendenci.apps.emails.models import Email
@@ -76,7 +104,7 @@ class Command(BaseCommand):
             newsletter.nr_data = nr_data
 
         recipients = newsletter.get_recipients()
-        email = newsletter.email
+        email = self.move_style_to_header(newsletter.email)
         # replace relative to absolute urls
         self.site_url = get_setting('site', 'global', 'siteurl')
         email.body = email.body.replace("src=\"/", "src=\"%s/" % self.site_url)

@@ -62,6 +62,7 @@ class TinyMCE(forms.Textarea):
 
         if self.mce_attrs.get('fullpage', False):
             #mce_config['plugins'].append('fullpage')
+            # allow style tag for newsletter
             mce_config['valid_children'] = '+body[style]'
         # mce_config.update(self.mce_attrs)
         # if mce_config['mode'] == 'exact':
