@@ -553,6 +553,7 @@ def templates_list(request, template_name="events/templates_list.html"):
 
 def icalendar(request):
     ics_str = ''
+    existing_file_name = ''
     file_name, d = get_calendar_data()
 
     if request.user.is_authenticated:
