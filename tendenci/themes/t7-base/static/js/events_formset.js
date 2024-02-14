@@ -36,7 +36,8 @@ function update_form_fields(form, original_form, form_number, total, remove) {
     form.find(':input').each(function() {
     	if ($(this).attr('name')){
 	        var name = $(this).attr('name').replace(search, replacement);
-	        var id = 'id_' + name;
+	        //var id = 'id_' + name;
+	        var id = name;
 	        var type = $(this).attr('type');
 	        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
 	
@@ -60,7 +61,7 @@ function update_form_fields(form, original_form, form_number, total, remove) {
 
     // remove mceEditor and display the textarea - because it doesn't work on clone
     if (!remove) {
-        form.find('.mceEditor').each(function() {
+        form.find('.tox-tinymce').each(function() {
             var $this = $(this);
             $this.parent('.field').find('textarea').show();
             $this.remove();
@@ -83,12 +84,28 @@ function update_form_fields(form, original_form, form_number, total, remove) {
     return form;
 }
 
+var tinymceOptions = {
+    plugins: 'lists advlist link autolink',
+    toolbar: 'fontselect fontsizeselect | bold italic underline strikethrough | alignleft aligncenter alignright | bullist numlist | link image',
+    menubar: false,
+    branding: false,
+    paste_data_images: false,
+    isLoaded: false,
+};
+
+function initTinyMCE(inputTagId){
+    var tinymce_options = tinymceOptions;
+    tinymce_options.selector = '#' + inputTagId;
+    // plugins = tinymce.activeEditor.options.get("plugins");
+    tinymce.init(tinymce_options);
+}
+
 function clone_form(selector, type) {
     var current_element = $(selector);
  // check if we have mceEditor
     var textarea_id;
     //var myEditor = $(new_element).find('.mceEditor');
-    var myEditor = $(current_element).find('.mce-tinymce');
+    var myEditor = $(current_element).find('.tox-tinymce');
     var old_height;
     
     if (myEditor){
@@ -96,15 +113,18 @@ function clone_form(selector, type) {
         var mytextarea = myEditor.parent('div').find('textarea');
         if (mytextarea){
             textarea_id = mytextarea.attr('id');
-            tinyMCE.EditorManager.execCommand('mceRemoveEditor', false, textarea_id);
+            //tinyMCE.EditorManager.execCommand('mceRemoveEditor', false, textarea_id);
+            tinyMCE.execCommand('mceRemoveEditor', false, textarea_id);
         }
     }
     
     var new_element = current_element.clone(true);
     if (textarea_id){
-    	tinyMCE.EditorManager.execCommand('mceAddEditor', false, textarea_id);
+    	//tinyMCE.EditorManager.execCommand('mceAddEditor', false, textarea_id);
+    	//tinyMCE.execCommand('mceAddEditor', false, {id: textarea_id});
+    	initTinyMCE(textarea_id)
     }
-    
+
     var form_functions = current_element.next();
     var form_functions_clone = form_functions.clone(true);
     var total = parseInt($('#' + type + '-TOTAL_FORMS').val());
@@ -119,7 +139,7 @@ function clone_form(selector, type) {
         total,
         false
     );
-
+    
     // update the total
     total++;
     $('#' + type + '-TOTAL_FORMS').val(total);
@@ -132,18 +152,8 @@ function clone_form(selector, type) {
     // Add mce Editor
     if (myEditor){
         if (textarea_id){
-        var search = '-' + (form_number) + '-';
-        var replacement = '-' + (parseInt(form_number) + 1) + '-';
-        var new_textarea_id = textarea_id.replace(search, replacement);
-
-        // it's weird, the new id has to add id_ in front of the original one
-        // id_speaker-1-description
-        if (new_textarea_id.substr(0, 3) !='id_'){
-            new_textarea_id = 'id_' + new_textarea_id;
-        }
-        //tinyMCE.EditorManager.execCommand('mceRemoveEditor', false, 'speaker-1-description');
-        //tinyMCE.execCommand('mceAddEditor', false, new_textarea_id);
-        tinyMCE.EditorManager.execCommand('mceAddEditor', false, new_textarea_id);
+        new_textarea_id = new_element.find('textarea.tinymce').attr('id');
+        initTinyMCE(new_textarea_id);
         //tinyMCE.triggerSave();
       }
     }
@@ -365,6 +375,7 @@ $(document).ready(function(){
 
     $('div.formset-add a').on("click", function(e) {
         var params = get_formset_and_prefix($(this));
+        //console.log('div.' + params.form_set + ':visible:last', params.prefix);
         clone_form('div.' + params.form_set + ':visible:last', params.prefix);
         initialize_pickers();
         hook_all_tax_fields_js();

@@ -677,6 +677,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'convert_urls': 'false',
     'handle_event_callback': "event_handler",
     'promotion': False,
+    'branding': False,
     'convert_urls': False,
     #'valid_children' : '+body[style]',
     # Additions - JMO
