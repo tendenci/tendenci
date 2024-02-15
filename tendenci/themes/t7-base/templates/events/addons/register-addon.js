@@ -147,8 +147,7 @@ $(document).ready(function(){
                     for(var j=0; j<addon_num; j++){
                         addAddon('addon', addon_d, container);
                     }
-                    
-                    $("#add-addon-"+ addon.val() +"-count").val(0); // set qty to 0 after being processed (more js updates needed, otherwise, it breaks)
+                    $("#add-addon-"+ addon.val() +"-count").val(0);
                 }
             }
         //} else {
