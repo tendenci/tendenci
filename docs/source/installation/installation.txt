@@ -32,7 +32,7 @@ If necessary, you may be able to run Tendenci on a VM with as little as 1 CPU co
 3GB of storage, but you will likely find that to be too slow/constrained even for testing purposes.
 
 
-Please note that Tendenci 14 requires Python 3.8 or newer. 
+Please note that Tendenci 15 requires Python 3.8 or newer. 
 
 
 System Preparation
@@ -290,13 +290,13 @@ Set ``TIME_ZONE`` to the local time zone configured on the system running Tenden
 Setting up the Site
 -------------------
 
-Copy "tendenci2020" theme to the themes directory (adjust your path if your venv path is different or you're running a different python version rather than python 3.8):
+Copy "juniper" theme to the themes directory (adjust your path if your venv path is different or you're running a different python version rather than python 3.8):
 ::
 
-    mkdir /var/www/mysite/themes/tendenci2020
-    cp -r /srv/venv_mysite/lib/python3.8/site-packages/tendenci/themes/t7-tendenci2020/* /var/www/mysite/themes/tendenci2020/
+    mkdir /var/www/mysite/themes/juniper
+    cp -r /srv/venv_mysite/lib/python3.8/site-packages/tendenci/themes/juniper/* /var/www/mysite/themes/juniper/
     # for ubuntu 22.04 LTS
-    cp -r /srv/venv_mysite/lib/python3.10/site-packages/tendenci/themes/t7-tendenci2020/* /var/www/mysite/themes/tendenci2020/
+    cp -r /srv/venv_mysite/lib/python3.10/site-packages/tendenci/themes/juniper/* /var/www/mysite/themes/juniper/
 
 
 Initialize the database and load some default data:

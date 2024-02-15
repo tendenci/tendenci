@@ -1,15 +1,15 @@
 [
     {
-        "default_value": "tendenci2020",
+        "default_value": "juniper",
         "description": "The current theme in use for the website.",
         "data_type": "string",
         "update_dt": "2011-08-04 12:38:23",
         "input_type": "select",
         "client_editable": true,
         "name": "theme",
-        "value": "tendenci2020",
+        "value": "juniper",
         "label": "Theme",
-        "input_value": "tendenci2020",
+        "input_value": "juniper",
         "parent_id": 0,
         "scope": "module",
         "scope_category": "theme_editor",

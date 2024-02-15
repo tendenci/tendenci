@@ -1,7 +1,7 @@
-# Tendenci2020 — Tendenci Base Theme
+# Juniper — Tendenci Base Theme
 One base starter theme for a Tendenci site. This theme is a fully responsive, completely customizable Bootstrap theme for Tendenci.
 
-<img src="screenshots/tendenci2020showcase.jpg" alt="Tendenci2020 Responsive Web Design Images for Tendenci Screenshots Tendenci" />
+<img src="screenshots/junipershowcase.jpg" alt="Tendenci2020 Responsive Web Design Images for Tendenci Screenshots Tendenci" />
 
 ## Getting Started
 
@@ -37,7 +37,7 @@ When updating the css in your site be mindful that these classes are implemented
 ### Masonry
 This theme also uses Masonry in the Photos and Videos modules.  It can be easily applied anywhere else there are variable sized grids.
 
-<img src="screenshots/tendenci2020-masonry.jpg" width="580" alt="An example of Masonry implemented in the Videos Module Screenshots Tendenci" /> <img src="screenshots/masonry-photos.png" width="250" alt="An example of Masonry implemented in the Photos Module Screenshots Tendenci" />
+<img src="screenshots/juniper-masonry.jpg" width="580" alt="An example of Masonry implemented in the Videos Module Screenshots Tendenci" /> <img src="screenshots/masonry-photos.png" width="250" alt="An example of Masonry implemented in the Photos Module Screenshots Tendenci" />
 
 ## Icons
 Icon sets in this theme are:
