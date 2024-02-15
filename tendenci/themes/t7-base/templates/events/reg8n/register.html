@@ -262,8 +262,10 @@
                                     {% if field|is_checkbox %}
                                     <div class="checkbox-input">
                                         <div class="error">{{ field.errors }}</div>
-                                        <div class="field">{{ field }}</div>
-                                        <div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
+                                        <div class="field">
+                                        	<div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
+                                        	{{ field }}
+                                        </div>
                                         {% if field.help_text %}
                                         <div class="help-text">{{ field.help_text }}</div>
                                         {% endif %}
