@@ -261,7 +261,9 @@
                                 <div class="form-field{% if field.name == 'override' %} admin-override{% endif %}">
                                     {% if field|is_checkbox %}
                                     <div class="checkbox-input">
+                                    	{% if field.errors %}
                                         <div class="error">{{ field.errors }}</div>
+                                        {% endif %}
                                         <div class="field">
                                         	<div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
                                         	{{ field }}
@@ -282,8 +284,9 @@
                                     {% if field.help_text %}
                                     <div class="help-text">{{ field.help_text }}</div>
                                     {% endif %}
+                                    {% endif %}
                                 </div>
-                                {% endif %}
+                                
                                 {% if field.name == 'attendance_dates' and event.requires_attendance_dates %}
                                 <div class="form-field attendance_dates">
                                     {% if field.errors %}
