@@ -807,7 +807,7 @@ class RegConfPricing(OrderingBaseModel):
             filter_or = {'allow_anonymous': True,
                         'allow_user': True,
                         'allow_member': True}
-        if not user.is_anonymous and user.profile.is_member:
+        if not user.is_anonymous and user.group_member.exists():
             # get a list of groups for this user
             groups_id_list = user.group_member.values_list('group__id', flat=True)
             if groups_id_list:
