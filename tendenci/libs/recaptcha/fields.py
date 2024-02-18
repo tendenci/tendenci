@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from . import client
 from ._compat import HTTPError
 from .constants import TEST_PRIVATE_KEY, TEST_PUBLIC_KEY
-from .widgets import ReCaptchaV2Checkbox, ReCaptchaBase, ReCaptchaV3
+from .widgets import ReCaptchaV2Checkbox, ReCaptchaBase
 
 
 logger = logging.getLogger(__name__)

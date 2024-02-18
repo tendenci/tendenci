@@ -22,7 +22,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.decorators import is_enabled
-from .models import (TeachingActivity, OutsideSchool, Transcript,
+from .models import (TeachingActivity, OutsideSchool,
              CertCat, Certification, CorpTranscriptsZipFile, Course)        
 from .forms import (TeachingActivityForm,
                     OutsideSchoolForm,

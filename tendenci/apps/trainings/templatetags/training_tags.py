@@ -3,7 +3,7 @@ from django.urls import reverse
 
 #from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.trainings.utils import user_transcripts, user_outside_schools, user_teaching_activities
+from tendenci.apps.trainings.utils import user_transcripts, user_teaching_activities
 from tendenci.apps.files.models import File
 
 register = Library()

@@ -1,12 +1,12 @@
-from unittest.mock import MagicMock, PropertyMock, patch
-from urllib.error import HTTPError
+from unittest.mock import PropertyMock, patch
+# from urllib.error import HTTPError
 
 from django.conf import settings
 from django import forms
-from django.core.exceptions import ImproperlyConfigured
+# from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase, override_settings
 
-from tendenci.libs import recaptcha as captcha
+# from tendenci.libs import recaptcha as captcha
 from .. import fields, widgets
 from ..client import RecaptchaResponse
 

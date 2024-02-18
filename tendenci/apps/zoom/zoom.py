@@ -1,7 +1,7 @@
 import base64
 import requests
 
-from django.conf import settings
+# from django.conf import settings
 
 
 DEFAULT_BASE_URL = "https://api.zoom.us/v2"

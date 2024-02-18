@@ -8,7 +8,6 @@ from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
-from django.contrib.auth.models import User
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.registry.sites import site as registry_site

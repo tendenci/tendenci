@@ -1,10 +1,10 @@
-import json
+# import json
 import uuid
 
 from django.conf import settings
 from django.forms import widgets
-from django.utils.safestring import mark_safe
-from django.utils.translation import get_language
+# from django.utils.safestring import mark_safe
+# from django.utils.translation import get_language
 
 from ._compat import urlencode
 from .constants import DEFAULT_RECAPTCHA_DOMAIN

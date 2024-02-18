@@ -25,13 +25,13 @@ from tendenci.apps.theme.utils import (get_theme, get_active_theme, get_theme_ro
                                        is_base_theme, theme_choices, get_theme_search_order)
 from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
-from tendenci.apps.theme_editor.forms import (FileForm, ThemeNameForm, ThemeSelectForm,
+from tendenci.apps.theme_editor.forms import (FileForm, ThemeNameForm,
                                               UploadForm, AddTemplateForm)
 from tendenci.apps.theme_editor.utils import (is_valid_path, is_theme_read_only, ThemeInfo,
                                               app_templates, get_dir_list, get_file_list,
                                               get_file_content, get_all_files_list,
                                               copy_file_to_theme)
-from tendenci.libs.boto_s3.utils import save_file_to_s3
+#from tendenci.libs.boto_s3.utils import save_file_to_s3
 from tendenci.libs.uploader import uploader
 
 DEFAULT_FILE = 'templates/homepage.html'

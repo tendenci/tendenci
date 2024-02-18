@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-import fileinput
-import fnmatch
+# import fileinput
+# import fnmatch
 import os
-import re
+# import re
 import sys
 from argparse import ArgumentParser
-from difflib import unified_diff
+# from difflib import unified_diff
 
 from django.core.management import ManagementUtility
 
