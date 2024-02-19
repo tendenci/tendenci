@@ -1968,7 +1968,7 @@ class RegistrationForm(forms.Form):
         else:
             display_discount = False
 
-        if not event.free_event:
+        if not event.free_event or event.has_addons_price:
             if reg_conf.can_pay_online:
                 payment_methods = reg_conf.payment_method.all()
             else:
