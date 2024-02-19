@@ -436,6 +436,17 @@
                     <p>Disclaimer: The availability of discount code is subject to
                     change without any warranty before confirming your registration.</p>
                 {% endif %}
+                
+                {% if addons and addon_formset.has_addon_selected %}
+                <div>{% trans "Addon(s)" %}</div>
+                <ul>
+	            {% for form in addon_formset.forms %}
+	            	{% if form.chosen_addon %}
+	            	<li>{{ form.chosen_addon.title }}: {{ SITE_GLOBAL_CURRENCYSYMBOL }} {{ form.chosen_addon.price|floatformat:2 }}</li>
+	            	{% endif %}
+				{% endfor %}
+				</ul>
+	            {% endif %}
                            
                            
                 {% if gratuity_form.gratuity or gratuity_form.gratuity_preferred %}

@@ -50,3 +50,9 @@ class RegAddonBaseFormSet(BaseFormSet):
             if addon:
                 total_price += addon.price
         return total_price
+
+    def has_addon_selected(self):
+        for form in self.forms:
+            if form.chosen_addon:
+                return True
+        return False
