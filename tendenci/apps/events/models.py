@@ -3289,6 +3289,14 @@ class Event(TendenciBaseModel):
             ).exists()
 
     @property
+    def has_addons_price(self):
+        return Addon.objects.filter(
+            event=self,
+            status=True,
+            price__gt=0
+            ).exists()
+
+    @property
     def nested_events_enabled(self):
         """Indicates if nested_events is enabled"""
         return get_setting("module", "events", "nested_events")
