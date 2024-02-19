@@ -443,7 +443,7 @@
                 <ul>
 	            {% for form in addon_formset.forms %}
 	            	{% if form.chosen_addon %}
-	            	<li>{{ form.chosen_addon.title }}: {{ SITE_GLOBAL_CURRENCYSYMBOL }} {{ form.chosen_addon.price|floatformat:2 }}</li>
+	            	<li>{{ form.chosen_addon.title }}: {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ form.chosen_addon.price|floatformat:2 }}</li>
 	            	{% endif %}
 				{% endfor %}
 				</ul>
