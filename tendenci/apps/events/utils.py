@@ -390,13 +390,12 @@ def get_ics_defaults():
     ics_str = "BEGIN:VCALENDAR\r\n"
     ics_str += "VERSION:2.0\r\n"
     ics_str += "METHOD:PUBLISH\r\n"
-    ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci Codebase 12 MIMEDIR//EN\r\n"
+    ics_str += foldline("PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci Codebase MIMEDIR//EN")
+    ics_str += "\r\n"
 
     return ics_str
 
 def get_ievent(request, d, event_id):
-    from tendenci.apps.events.models import Event
-
     site_url = get_setting('site', 'global', 'siteurl')
 
     event = Event.objects.get(id=event_id)
@@ -406,12 +405,14 @@ def get_ievent(request, d, event_id):
     organizers = event.organizer_set.all()
     if organizers:
         organizer_name_list = [organizer.name for organizer in organizers]
-        e_str += "ORGANIZER:%s\r\n" % (', '.join(organizer_name_list))
+        e_str += foldline("ORGANIZER:%s" % (', '.join(organizer_name_list)))
+        e_str += "\r\n"
 
     event_url = "%s%s" % (site_url, reverse('event', args=[event.pk]))
     d['event_url'] = event_url
     # text description
-    e_str += "DESCRIPTION:%s\r\n" % (build_ical_text(event,d))
+    e_str += foldline("DESCRIPTION:%s" % (build_ical_text(event,d)))
+    e_str += "\r\n"
 
     # uid
     e_str += "UID:uid%d@%s\r\n" % (event.pk, d['domain_name'])
@@ -443,10 +444,12 @@ def get_ievent(request, d, event_id):
 
     # location
     if event.place:
-        e_str += "LOCATION:%s\r\n" % (event.place.name)
+        e_str += foldline("LOCATION:%s" % (event.place.name))
+        e_str += "\r\n"
 
     #  html description
-    e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\r\n" % (build_ical_html(event,d))
+    e_str += foldline("X-ALT-DESC;FMTTYPE=text/html:%s" % (build_ical_html(event,d)))
+    e_str += "\r\n"
 
     e_str += "BEGIN:VALARM\r\n"
     e_str += "TRIGGER:-PT30M\r\n"
@@ -459,8 +462,6 @@ def get_ievent(request, d, event_id):
 
 
 def get_vevents(user, d):
-    from tendenci.apps.events.models import Event
-
     site_url = get_setting('site', 'global', 'siteurl')
 
     e_str = ""
@@ -479,7 +480,8 @@ def get_vevents(user, d):
         organizers = event.organizer_set.all()
         if organizers:
             organizer_name_list = [organizer.name for organizer in organizers]
-            e_str += "ORGANIZER:%s\r\n" % (', '.join(organizer_name_list))
+            e_str += foldline("ORGANIZER:%s" % (', '.join(organizer_name_list)))
+            e_str += "\r\n"
 
         # date time
         time_zone = event.timezone
@@ -497,7 +499,8 @@ def get_vevents(user, d):
 
         # location
         if event.place:
-            e_str += "LOCATION:%s\r\n" % (event.place.name)
+            e_str += foldline("LOCATION:%s" % (event.place.name))
+            e_str += "\r\n"
 
         e_str += "TRANSP:OPAQUE\r\n"
         e_str += "SEQUENCE:0\r\n"
@@ -509,7 +512,8 @@ def get_vevents(user, d):
         d['event_url'] = event_url
 
         # text description
-        e_str += "DESCRIPTION:%s\r\n" % (build_ical_text(event,d))
+        e_str += foldline("DESCRIPTION:%s" % (build_ical_text(event,d)))
+        e_str += "\r\n"
         #  html description
         #e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\n" % (build_ical_html(event,d))
 
@@ -606,6 +610,44 @@ def build_ical_text(event, d):
     return ical_text
 
 
+def foldline(line, limit=75, fold_sep='\r\n '):
+    """Make a string folded as defined in RFC5545
+    Lines of text SHOULD NOT be longer than 75 octets, excluding the line
+    break.  Long content lines SHOULD be split into a multiple line
+    representations using a line "folding" technique.  That is, a long
+    line can be split between any two characters by inserting a CRLF
+    immediately followed by a single linear white-space character (i.e.,
+    SPACE or HTAB).
+    
+    This function is copied from
+    https://github.com/collective/icalendar/blob/master/src/icalendar/parser.py
+    """
+    assert isinstance(line, str)
+    assert '\n' not in line
+
+    # Use a fast and simple variant for the common case that line is all ASCII.
+    try:
+        line.encode('ascii')
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        pass
+    else:
+        return fold_sep.join(
+            line[i:i + limit - 1] for i in range(0, len(line), limit - 1)
+        )
+
+    ret_chars = []
+    byte_count = 0
+    for char in line:
+        char_byte_len = len(char.encode('utf-8'))
+        byte_count += char_byte_len
+        if byte_count >= limit:
+            ret_chars.append(fold_sep)
+            byte_count = char_byte_len
+        ret_chars.append(char)
+
+    return ''.join(ret_chars)
+
+
 def build_ical_html(event, d):
     # disclaimer: registration
     ical_html = "<div>--- This iCal file does *NOT* confirm registration."
@@ -686,6 +728,9 @@ def build_ical_html(event, d):
     ical_html += " - The Open Source AMS for Associations ---</div>"
 
     ical_html  = ical_html.replace(';', '\\;')
+    ical_html  = ical_html.replace('\r\n', ' ')
+    ical_html  = ical_html.replace('\r', ' ')
+    ical_html  = ical_html.replace('\n', ' ')
     #ical_html  = degrade_tags(ical_html.replace(';', '\\;'))
 
     return ical_html
