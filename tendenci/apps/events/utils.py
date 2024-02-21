@@ -401,12 +401,14 @@ def get_ievent(request, d, event_id):
     event = Event.objects.get(id=event_id)
     e_str = "BEGIN:VEVENT\r\n"
 
-    # organizer
-    organizers = event.organizer_set.all()
-    if organizers:
-        organizer_name_list = [organizer.name for organizer in organizers]
-        e_str += foldline("ORGANIZER:%s" % (', '.join(organizer_name_list)))
-        e_str += "\r\n"
+    # organizer - Commenting it out for now
+    #  because the ORGANIZER property expects both name and email like ORGANIZER;CN=John Smith:mailto:jsmith@example.com.
+    #  If it is left as blank or name alone, it would make "Add to calendar" act as “meeting update” in outlook.
+    # organizers = event.organizer_set.all()
+    # if organizers:
+    #     organizer_name_list = [organizer.name for organizer in organizers]
+    #     e_str += foldline("ORGANIZER:%s" % (', '.join(organizer_name_list)))
+    #     e_str += "\r\n"
 
     event_url = "%s%s" % (site_url, reverse('event', args=[event.pk]))
     d['event_url'] = event_url
@@ -443,7 +445,7 @@ def get_ievent(request, d, event_id):
     e_str += "SEQUENCE:0\r\n"
 
     # location
-    if event.place:
+    if event.place and event.place.name:
         e_str += foldline("LOCATION:%s" % (event.place.name))
         e_str += "\r\n"
 
