@@ -1,3 +1,21 @@
+### 14.8.2 [2024-2-21]
+
+* Added Region filter option to member_quick_list report. (Thanks to @rob-hills)
+* Updated addons on event registration:  1) Removed the checkbox in front of the addons. 2) Added help text in the addons section. 3) Cleared qty after being processed.
+* Added an itemized list on payonline for event registration.
+* Added the ability to sync credits on event credits edit. 
+* Updated event reminder edit to include QR code in reminder test.
+* Added an option to block renewal for individual members under corp /settings/module/memberships/#id_orgmembercanrenew.
+* linked "Join Zoom Meeting" in registration confirmation email and updated launching zoom meeting to redirect to event view if meeting is not ready or already over.  
+* Fixed a format issue on directories search 
+* iCal update: 1) Resolved an issue that made "Add to calendar" act as “meeting update” in outlook. 2) Ensured lines of text are less than 75 octets https://icalendar.org/iCalendar-RFC-5545/3-1-content-lines.html
+* Fixed pages search not working for tags
+* Fixed an issue for event view that the RSVP button doesn't show for non-member users, even though they are in the selected group(s) for a pricing.
+* Fixed an issue that the default selected addons can't be deleted.
+* Selected addons now show on registration review page. 
+* Resolved code scanning alerts
+* Other miscellaneous fixes
+
 ### 14.8.1 [2023-12-24]
 
 * New feature: Event assets purchase for the past events.
