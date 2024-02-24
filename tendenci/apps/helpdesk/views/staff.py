@@ -43,6 +43,7 @@ from tendenci.apps.helpdesk import settings as helpdesk_settings
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.helpdesk.settings import DEFAULT_USER_SETTINGS
+from tendenci.apps.event_logs.models import EventLog
 
 if helpdesk_settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE:
     # treat 'normal' users like 'staff'
@@ -166,6 +167,7 @@ def delete_ticket(request, ticket_id):
                 'ticket': ticket,
             })
     else:
+        EventLog.objects.log(instance=ticket)
         ticket.delete()
         return HttpResponseRedirect(reverse('helpdesk_home'))
 delete_ticket = staff_member_required(delete_ticket)
