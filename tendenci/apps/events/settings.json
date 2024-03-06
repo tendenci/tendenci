@@ -1460,5 +1460,22 @@
         "scope_category": "events",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, and if Payment is required for an event, the roster report shows paid only instead of both paid and non-paid registrants.",
+        "data_type": "boolean",
+        "update_dt": "2024-02-06 13:50:00",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "roster_paid_only",
+        "value": "false",
+        "label": "Roster Report Shows Paid Only",
+        "input_value": "false, true",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]
