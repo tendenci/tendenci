@@ -358,7 +358,7 @@
             <div>{% trans "Showing paid and non-paid registrants." %}</div>
         {% endif %}
 
-		{% if not payment_required %}
+		{% if not payment_required or not MODULE_EVENTS_ROSTER_PAID_ONLY %}
         <div>
             <a href="{% url "event.registrant.roster.paid" event.pk %}">{% blocktrans %}Show only
                 <strong>paid</strong>{% endblocktrans %}</a>

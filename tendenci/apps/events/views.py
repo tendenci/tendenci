@@ -4089,9 +4089,8 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         if get_setting('module', 'events', 'roster_paid_only'):
             # if payment is requird, they don't want to see those not paid
             roster_view = 'paid'
-    else:
-        if not roster_view:  # default to total page
-            roster_view = 'total'
+    if not roster_view:  # default to total page
+        roster_view = 'total'
 
     # paid or non-paid or total
     registrations = Registration.objects.filter(event=event, canceled=False)
