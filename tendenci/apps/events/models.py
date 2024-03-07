@@ -2633,6 +2633,65 @@ class Event(TendenciBaseModel):
             end_dt__lte=self.end_dt,
         )
 
+    @property
+    def structured_data(self):
+        site_url = get_setting('site', 'global', 'siteurl')
+        url = site_url + self.get_absolute_url()
+        data = {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": self.title,
+          "description": self.description,
+          "startDate": self.start_dt.isoformat(),
+          "endDate": self.end_dt.isoformat(),
+          "eventStatus": "https://schema.org/EventScheduled",
+          }
+        if self.image:
+            data['image'] = site_url + reverse('file', args=[self.image.pk])
+        
+        if self.place:
+            if self.place.virtual:
+                data['eventAttendanceMode'] = "https://schema.org/OnlineEventAttendanceMode"
+                data['location'] = {"@type": "VirtualLocation"}
+                if self.place.url:
+                    data['location']['url'] = self.place.url
+            else:
+                data['eventAttendanceMode'] = "https://schema.org/OfflineEventAttendanceMode"
+                if self.place.name or self.place.address:
+                    data['location'] = {"@type": "Place",}
+                    if self.place.name:
+                        data['location']['name'] = self.place.name
+                    if self.place.address:
+                        data['location']['address'] = {"@type": "PostalAddress",
+                                                       "streetAddress": self.place.address,
+                                                       "addressLocality": self.place.city,
+                                                       "addressRegion": self.place.state,
+                                                       "postalCode": self.place.zip,
+                                                       "addressCountry": self.place.country}
+        pricings = RegConfPricing.objects.filter(
+                    reg_conf=self.registration_configuration,
+                    status=True
+                    ).filter(Q(allow_anonymous=True) | Q(allow_user=True) | Q(allow_member=True))
+        if pricings.count() > 0:
+            offers_list = []
+            for pricing in pricings:
+                offers_list.append({
+                "@type": "Offer",
+                "name": pricing.title,
+                "price": str(pricing.price),
+                "priceCurrency": get_setting("site", "global", "currency"),
+                "validFrom": pricing.start_dt.isoformat(),
+                "url": url,
+              })
+
+            if pricings.count() == 1:
+                data['offers'] = offers_list[0]
+            else:
+                data['offers'] = offers_list
+
+        return data
+        
+
     def sub_event_datetimes(self, child_events=None):
         """Returns list of start_dt for available sub events"""
         datetimes = dict()

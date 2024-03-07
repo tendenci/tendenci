@@ -3,12 +3,14 @@ import random
 from datetime import datetime, timedelta
 from operator import or_
 from functools import reduce
+import json
 
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import AnonymousUser, User
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.utils.translation import gettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.events.models import Event, Registrant, Type
 from tendenci.apps.events.utils import (registration_earliest_time,
@@ -671,3 +673,9 @@ def list_events(parser, token):
         kwargs['order'] = 'next_upcoming'
 
     return ListEventsNode(context_var, *args, **kwargs)
+
+
+@register.simple_tag
+def render_json_ld(structured_data):
+    return mark_safe(f'<script type="application/ld+json">{json.dumps(structured_data)}</script>')
+    
