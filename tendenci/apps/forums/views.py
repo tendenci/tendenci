@@ -442,7 +442,8 @@ class PostEditMixin(PybbFormsMixin):
                         success = False
                 else:
                     topic.poll_question = None
-                    topic.poll_answers.all().delete()
+                    if hasattr(topic, 'id') and topic.id:
+                        topic.poll_answers.all().delete()
         else:
             pollformset = None
 
