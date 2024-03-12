@@ -670,7 +670,7 @@ def directory_export(request, template_name="directories/export.html"):
         default_storage.save(temp_file_path, ContentFile(b''))
 
         # start the process
-        subprocess.Popen([python_executable(), "manage.py",
+        subprocess.Popen(["django-admin",
                           "directory_export_process",
                           '--export_fields=%s' % export_fields,
                           '--export_status_detail=%s' % export_status_detail,

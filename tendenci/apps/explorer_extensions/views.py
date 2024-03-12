@@ -37,7 +37,7 @@ def _export_page(request):
                 new_obj.author = request.user
                 new_obj.export_format = form.cleaned_data['format']
                 new_obj.save()
-                subprocess.Popen([python_executable(), "manage.py",
+                subprocess.Popen(["django-admin",
                               "create_database_dump",
                               str(request.user.pk), form.cleaned_data['format'], str(new_obj.pk) ])
                 messages.add_message(request, messages.INFO, "Success! The system is now generating your export file. Please reload in a few seconds to update the list.")

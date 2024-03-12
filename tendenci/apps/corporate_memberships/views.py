@@ -148,7 +148,7 @@ def broadcast_email(request):
                     creator=request.user,)
                 bce.save()
                 # start a subprocess to generate a zip file
-                subprocess.Popen([python_executable(), "manage.py",
+                subprocess.Popen(["django-admin",
                               "run_broadcast_email",
                               str(bce.pk) ])
                 messages.add_message(request, messages.INFO, _("Your email is being sent. Please reload in a few seconds to check if it's done."))
@@ -1713,7 +1713,7 @@ def import_preview(request, mimport_id,
 #                                 args=[mimport.id]))
         else:
             if mimport.status == 'not_started':
-                subprocess.Popen([python_executable(), "manage.py",
+                subprocess.Popen(["django-admin",
                               "corp_membership_import_preprocess",
                               str(mimport.pk)])
 
@@ -1753,7 +1753,7 @@ def import_process(request, mimport_id):
         mimport.num_processed = 0
         mimport.save()
         # start the process
-        subprocess.Popen([python_executable(), "manage.py",
+        subprocess.Popen(["django-admin",
                           "import_corp_memberships",
                           str(mimport.pk),
                           str(request.user.pk)])
