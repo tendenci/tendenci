@@ -201,16 +201,22 @@
     </div>
     <div class="row logos">
       <div class="left">
-        <div class="logo align-left">
-          {% if registrant.event.sponsor %}
-          <img  src="{% image_url registrant.event.sponsor.image %}" title="{{ registrant.event.sponsor.name }}" alt="{{ registrant.event.sponsor.name }}"/>
-        </div>
-        <div class="formatted-text">
-          <div class="name">{{ registrant.event.sponsor.name }}</div>
-          {{ registrant.event.sponsor.description|safe }}
-          {% else %}
-              &nbsp;
-          {% endif %}
+        <div class="logo align-left" style="text-align: center;">
+        {% with registrant.event.groups.all.0 as event_group %}
+      {% if event_group %}
+	      {% if event_group.logo %}
+	      <div style="margin-bottom: 1em;">
+	      <img src="{{ event_group.logo.url }}" title="{{ event_group.name }}" alt="{{ event_group.name }}"/>
+	      </div>
+	      {% endif %}
+	      <div class="formatted-text">
+	        <div class="name">{{ event_group.name }}</div>
+	          {{ event_group.description|safe }}
+	      </div>
+      {% else %}
+          &nbsp;
+      {% endif %}
+      {% endwith %}
         </div>
       </div>
       <div class="right">
@@ -231,7 +237,8 @@
     </div>
     <div class="row heading">
       <div class="col-md-3">
-      	{% if registrant.event.image %}
+         {# have to hard-code Symposiums here until we figured out a way #}
+      	{% if registrant.event.type.name == 'Symposiums' and registrant.event.image %}
         <img src="{% image_url registrant.event.image %}" title="{{ registrant.event.title }}" alt="{{ registrant.event.title }}"/>
         {% else %}
         <span class="img-blank"></span>
