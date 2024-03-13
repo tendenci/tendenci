@@ -4,8 +4,8 @@
 <link rel="stylesheet" href="{% static 'css/events.css' %}">
 <style>
   .certificate {
-      width: 7.5in;
-      height: 10.5in;
+      width: 10.8in;
+      height: 8.1in;
       margin: 5px;
       border: 1px solid black;
       padding: 2px;
@@ -49,9 +49,17 @@
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
+      width: 62% !important;
+      text-align: center;
+      margin: auto;
   }
-  .certificate .row.heading, .certificate .row.awarded, .certificate .row.event {
-      height: 130px;
+   .certificate .row.awarded, .certificate .row.event {
+      height: 110px;
+      margin-bottom: 10px;
+  }
+  
+  .certificate .row.heading {
+      height: 50px;
       margin-bottom: 10px;
   }
 
@@ -62,7 +70,7 @@
   }
   .certificate .row.heading {
       height: 50px;
-      margin-top: 80px;
+      margin-top: 30px;
   }
   .certificate .row.awarded {
       display: flex;
@@ -81,14 +89,14 @@
       line-height: .75em;
   }
   .certificate .row.staff {
-      margin-top: 190px;
+      margin-top: 110px;
       display: flex;
       align-items: center;
       justify-content: space-evenly;
   }
   .certificate .row.address {
       text-align: center;
-      margin-top: 100px;
+      margin-top: 90px;
       font-size: .9em;
   }
   .certificate .row.staff img {
@@ -160,15 +168,75 @@
           size: letter;
       }
   }
+  
+  .certificate.credits {
+      font-weight: normal;
+  }
+  .certificate.credits .heading div {
+      float: left;
+      
+  }
+  .certificate.credits .heading div.heading {
+      width: 40%;
+      text-align: center;
+      font-size: 2em;
+  }
+  .certificate.credits .row.heading {
+      height: 50px;
+      font-weight: bold;
+      border-bottom: solid 1px black;
+  }
+  .certificate.credits .row {
+      border-bottom: solid 1px black;
+      height: 1.2em;
+  }
+  .certificate.credits .col-md-12 {
+      width: 60%;
+  }
+  .certificate.credits .title {
+      margin-left: 100px;
+  }
+  .certificate.credits .col-md-4 {
+      width: 30%;
+  }
+  .certificate.credits .row.day {
+      font-weight: bold;
+  }
+  .certificate.credits .row.day span.day {
+      margin-left: 100px;
+  }
+  .certificate.credits .row.details  {
+      display: flex;
+      align-items: center;
+  }
+  .certificate.credits .row.details div {
+      float: left;
+  }
+  .certificate.credits .col-100px {
+      width: 100px;
+      text-align: center;
+  }
+  .certificate.credits .col-150px; {
+      width: 150px;
+  }
+  .certificate.credits .col-90px {
+      width: 93px;
+  }
+  .certificate.credits .col-47px {
+      width: 47px;
+  }
+  .certificate.credits .col-166px {
+      width: 166px; 
+      text-align: left;
+  }
+  
+
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="certificate">
   <div class="grid">
-    <div class="row site-name">
-      {{ site_name }}
-    </div>
     <div class="row logos">
     {% with registrant.event.groups.all.0 as event_group %}
       {% if event_group %}
@@ -201,9 +269,8 @@
       </div>
     </div>
     <div class="row event">
-      <div class="col-md-3 event" style="width: 55%;">
-        <strong>{% trans "Topic: " %} <br />
-          <strong>{{ registrant.event.title }}</strong> <br />
+      <div class="col-md-3 event" style="width: 40%;">
+        <strong>{% trans "Topic: " %}{{ registrant.event.title }}</strong> <br />
           <div class="details">
             {% if registrant.event.delivery_method %}
             <div class="row">
@@ -215,16 +282,17 @@
               <div class="left">{% trans "Date:" %}</div>
               <div class="right"> {{ registrant.event.start_dt|date:"F j, Y" }}</div>
             </div>
+            {% if registrant.event.place and registrant.event.place.name %}
             <div class="row">
               <div class="left">{% trans "Location: "%}</div>
               <div class="right">{{ registrant.event.place.name }}</div>
             </div>
+            {% endif %}
        
             <div class="row">
               <div class="left">{% trans "CPE Credits Earned: " %}</div>
-              <div class="right">{{ registrant.credits_earned }}</div>   
+              <div class="right">{{ registrant.credits_earned }} ({{ registrant.credits_earned_by_code }})</div>   
             </div>
-            <div class="row credits small-font" style="text-align: center">({{ registrant.credits_earned_by_code }})</div>
         </div>
       </div>
     <div class="row small-font">{% trans "In accordance with the standards of the National Registry of CPE Sponsors, CPE Credits have been granted based on a 50-minute hour." %}</div>
@@ -249,4 +317,7 @@
     {{ registrant.event.group_location.city }}, {{ registrant.event.group_location.state }} {{ registrant.event.group_location.zipcode }}
   </div>
 </div>
+</div>
+
+{% include "events/registrants/certificate-sub-events-credits.html" %}
 {% endblock %}
