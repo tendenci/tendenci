@@ -315,33 +315,7 @@
   </div>
 </div>
 
-{% if registrant.credits_by_sub_event %}
-<div class="certificate credits">
-  <div class="row heading">
-    <div class="title col-md-12">
-      {% trans "Class Title" %}
-    </div>
-    <div class="col-md-4">
-      <div>Credits</div>
-      <div>IRS CE ID</div>
-      <div>IRS CE Earned</div>
-    </div>
-  </div>
-  {% for day, events in registrant.credits_by_sub_event.items %}
-    <div class="row day"><span class="day">{{ day }}</span></div>
-    {% for event in events %}
-      <div class="row details">
-        <div class="col-100px">{{ event.event_code }}</div>
-        <div class="col-md-12">{{ event.title }}</div>
-        <div class="col-md-4">
-            <div class="col-47px">{{ event.credits }}</div>
-            <div class="col-166px">{{ event.alternate_ceu }}&nbsp;</div>
-            <div class="col-47px">{{ event.irs_credits }}</div>
-        </div>
-      </div>
-    {% endfor %}
-  {% endfor %}
-</div>
-{% endif %}
+{% include "events/registrants/certificate-sub-events-credits.html" %}
+
 {% endblock %}
 
