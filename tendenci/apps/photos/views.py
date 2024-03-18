@@ -261,7 +261,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     file_name = photo.image_filename()
     file_path = 'cached%s%s' % (request.path, file_name)
     if default_storage.exists(file_path):
-        image = PILImage.open(photo.image)
+        image = PILImage.open(default_storage.open(file_path))
     else:
         # gets resized image from cache or rebuild
         image = get_image(photo.image, size, PHOTO_PRE_KEY, crop=crop, quality=quality, unique_key=str(photo.pk), constrain=constrain)
