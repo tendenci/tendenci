@@ -1,4 +1,3 @@
-{% if registrant.event.has_child_events %}
 {% with registrant.credits_by_sub_event as sub_events_credits %}
 {% if sub_events_credits %}
 <div class="certificate credits">
@@ -29,4 +28,3 @@
 </div>
 {% endif %}
 {% endwith %}
-{% endif %}
