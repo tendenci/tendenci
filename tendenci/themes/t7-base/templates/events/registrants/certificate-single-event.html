@@ -319,5 +319,7 @@
 </div>
 </div>
 
+{% if registrant.event.has_any_child_events %}
 {% include "events/registrants/certificate-sub-events-credits.html" %}
+{% endif %}
 {% endblock %}
