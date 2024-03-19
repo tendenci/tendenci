@@ -1648,7 +1648,7 @@ class Registrant(models.Model):
 
             credits[date].append({
                 'event_code': event.event_code,
-                'title': event.title,
+                'title': event.title if len(event.title) <= 60 else event.short_name,
                 'credits': cpe_credits,
                 'irs_credits': irs_credits,
 
