@@ -241,7 +241,7 @@
       	{% if registrant.event.type.name == 'Symposiums' and registrant.event.image %}
         <img src="{% image_url registrant.event.image %}" title="{{ registrant.event.title }}" alt="{{ registrant.event.title }}"/>
         {% else %}
-        <span class="img-blank"></span>
+        <span class="img-blank">&nbsp;</span>
         {% endif %}
       </div>
       <div class="col-md-3 heading">
