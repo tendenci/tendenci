@@ -96,7 +96,7 @@
   }
   .certificate .row.address {
       text-align: center;
-      margin-top: 90px;
+      margin-top: 80px;
       font-size: .9em;
   }
   .certificate .row.staff img {
@@ -319,7 +319,7 @@
 </div>
 </div>
 
-{% if registrant.event.has_any_child_events %}
+
 {% include "events/registrants/certificate-sub-events-credits.html" %}
-{% endif %}
+
 {% endblock %}
