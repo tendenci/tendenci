@@ -13,7 +13,7 @@ from tendenci.apps.profiles.forms import ProfileAdminForm
 
 
 class ProfileAdmin(TendenciBaseModelAdmin):
-    list_display = ('username', 'account_id', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser')
+    list_display = ('username', 'account_id', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser', 'get_last_login')
     search_fields = ('account_id', 'display_name', 'user__first_name', 'user__last_name', 'user__username', 'user__email')
 
     fieldsets = (
@@ -108,6 +108,10 @@ class ProfileAdmin(TendenciBaseModelAdmin):
         return obj.is_active
     is_active.boolean = True
 
+    def get_last_login(self, obj):
+        return obj.user.last_login
+    get_last_login.short_description = _('Last Login')
+
     def get_user(self, obj):
         name = "%s %s" % (obj.user.first_name, obj.user.last_name)
         name = name.strip()
@@ -120,7 +124,7 @@ admin.site.register(Profile, ProfileAdmin)
 
 class MyUserAdmin(UserAdmin):
     list_display = ('id', 'username', 'email', 'first_name', 'last_name',
-                    'show_member_number', 'is_staff', 'is_superuser', 'is_active')
+                    'show_member_number', 'is_staff', 'is_superuser', 'is_active', 'last_login')
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
