@@ -62,7 +62,7 @@ class Command(BaseCommand):
             newsletter.send_status = 'resending'
 
         elif newsletter.send_status == 'resent':
-            newsletter.send_status == 'resending'
+            newsletter.send_status = 'resending'
 
         newsletter.save()
 
