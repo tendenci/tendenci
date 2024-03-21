@@ -53,6 +53,13 @@
             {% endif %}
         {% endif %}
 
+		{% if form.qty_enabled %}
+			<p>
+	           <strong>{% trans 'Quantity' %}</strong><br />
+	           <em>{{ entry.quantity }}</em>
+	       </p>
+	    {% endif %}
+
         <p>
            <strong>{% trans 'Entry Time' %}</strong><br />
            <em>{{ entry.entry_time }}</em>
