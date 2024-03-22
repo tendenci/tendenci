@@ -86,12 +86,15 @@ class SkillSet(models.Model):
                   'street': self.user.profile.address,
                   'city': self.user.profile.city,
                   'country': self.user.profile.country}
-        url = 'http://nominatim.openstreetmap.org/search'
-        result = requests.get(url, params=params).json()
-        if result and not 'error' in result:
-            lat = result[0]['lat']
-            lng = result[0]['lon']
-            self.loc = "POINT(%s %s)" % (lng, lat)
+        url = 'https://nominatim.openstreetmap.org/search'
+        headers = {'User-Agent': 'Tendenci 15',}
+        ret = requests.get(url, params=params, headers=headers)
+        if ret.ok:
+            result = ret.json()
+            if result and not 'error' in result:
+                lat = result[0]['lat']
+                lng = result[0]['lon']
+                self.loc = "POINT(%s %s)" % (lng, lat)
         super(SkillSet, self).save(*args, **kwargs)
 
 
