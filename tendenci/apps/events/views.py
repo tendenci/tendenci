@@ -4075,6 +4075,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 
     sort_order = request.GET.get('sort_order', 'last_name')
     sort_type = request.GET.get('sort_type', 'asc')
+    checked_in_only = request.GET.get('checked_in_only', False)
 
     if sort_order not in ('first_name', 'last_name', 'company_name'):
         sort_order = 'last_name'
@@ -4145,8 +4146,12 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     if roster_view in ('paid', 'non-paid'):
         registrants = registrants.filter(registration__in=registrations)
 
-    # get the total checked in
-    total_checked_in = registrants.filter(checked_in=True).count()
+    if checked_in_only:
+        registrants = registrants.filter(checked_in=True)
+        total_checked_in = registrants.count()
+    else:
+        # get the total checked in
+        total_checked_in = registrants.filter(checked_in=True).count()
 
     # Pricing title - store with the registrant to improve the performance.
     pricing_titles = RegConfPricing.objects.filter(
@@ -4288,7 +4293,8 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         'discount_available': discount_available,
         'addon_total_sum': addon_total_sum,
         'total_checked_in': total_checked_in,
-        'payment_required': payment_required})
+        'payment_required': payment_required,
+        'checked_in_only': checked_in_only})
 
 
 @is_enabled('events')
