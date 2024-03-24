@@ -433,7 +433,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 
     start_dt = datetime.now()
     end_dt = None
-    form = EventSearchForm(request.GET or {'start_dt':start_dt.strftime('%Y-%m-%d')},
+    form = EventSearchForm(request.GET or {'start_dt':start_dt.strftime(settings.SHORT_DATE_FORMAT)},
                            user=request.user)
 
     # Handle legacy tag links
@@ -3266,7 +3266,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         keys = [x for x in post_data if 'attendance_dates' in x]
         for key in keys:
             attendance_dates = post_data.getlist(key)
-            formatted_attendance_dates = [dparser.parse(x).strftime("%Y-%m-%d") for x in attendance_dates]
+            formatted_attendance_dates = [dparser.parse(x).strftime(settings.SHORT_DATE_FORMAT) for x in attendance_dates]
             post_data.setlist(key, formatted_attendance_dates)
             updated_attendance_dates.append(formatted_attendance_dates)
 
