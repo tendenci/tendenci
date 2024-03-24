@@ -2130,8 +2130,8 @@ def membership_join_report(request):
                 memberships = memberships.filter(status_detail=membership_status)
     else:
         form = ReportForm(initial={
-            'start_date': start_date.strftime('%m/%d/%Y'),
-            'end_date': end_date.strftime('%m/%d/%Y')})
+            'start_date': start_date.strftime(settings.SHORT_DATE_FORMAT),
+            'end_date': end_date.strftime(settings.SHORT_DATE_FORMAT)})
 
     end_date_time = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59)
     memberships = memberships.filter(application_approved_dt__gte=start_date,
