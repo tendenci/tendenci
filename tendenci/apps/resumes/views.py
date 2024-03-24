@@ -365,8 +365,8 @@ def export(request, template_name="resumes/export.html"):
         end_dt = form.cleaned_data['end_dt']
         include_files = form.cleaned_data['include_files']
         if start_dt and end_dt:
-            start_dt = start_dt.strftime('%m/%d/%Y')
-            end_dt = end_dt.strftime('%m/%d/%Y')
+            start_dt = start_dt.strftime(settings.SHORT_DATE_FORMAT)
+            end_dt = end_dt.strftime(settings.SHORT_DATE_FORMAT)
             kwargs = {'start_dt': start_dt, 'end_dt': end_dt}
         else:
             kwargs = {}
