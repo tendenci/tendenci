@@ -150,6 +150,8 @@ class Certification(models.Model):
     diamond_period = models.PositiveSmallIntegerField(_("Period"), blank=True, default=12)
     diamond_required_activity = models.PositiveSmallIntegerField(_("Required Teaching Activity"),
                                                                 blank=True, default=1)
+    required_credits = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+
     class Meta:
         verbose_name = _("Certification")
         verbose_name_plural = _("Certifications")
@@ -250,7 +252,16 @@ class Certification(models.Model):
     @cached_property
     def total_credits_required(self):
         return self.cert_required_credits()
-           
+
+    def cal_required_credits(self):
+        """
+        Calculate and update the required_credits for this certification.
+        """
+        total_credits_required = self.total_credits_required
+        if self.required_credits != total_credits_required:
+            self.required_credits = total_credits_required
+            self.save(update_fields=['required_credits'])
+       
     # def credits_earned_by_user(self, user, category=None, d_num=0, for_diamond_number=False):
     #     """
     #     Get credits earned and required by category for user
@@ -365,6 +376,10 @@ class CertCat(models.Model):
         return self.certification.get_earned_credits(user, 
                                                      diamond_number=d_num,
                                                      category=self.category)
+
+    def save(self, *args, **kwargs):
+        self.certification.cal_required_credits()
+        super(CertCat, self).save(*args, **kwargs)
     
 
 class Course(TendenciBaseModel):
@@ -617,10 +632,12 @@ class Transcript(models.Model):
             if assign_diamond_number and not self.apply_to:
                 self.apply_to = self.caculate_apply_to()
         
-        for cert in Certification.objects.all():      
-            if not UserCertData.objects.filter(user=self.user, certification=cert).exists():
+        for cert in Certification.objects.all():
+            user_cert_data = UserCertData.objects.filter(user=self.user, certification=cert).first()      
+            if not user_cert_data:
                 # add the user to UserCertData
-                UserCertData.objects.create(user=self.user, certification=cert)
+                user_cert_data = UserCertData.objects.create(user=self.user, certification=cert)
+            user_cert_data.cal_applicable_credits()
         super(Transcript, self).save(*args, **kwargs)
 
 
@@ -638,6 +655,7 @@ class UserCertData(models.Model):
     diamond_7_dt = models.DateField(_('Diamond Date 7'), blank=True, null=True)
     diamond_8_dt = models.DateField(_('Diamond Date 8'), blank=True, null=True)
     diamond_9_dt = models.DateField(_('Diamond Date 9'), blank=True, null=True)
+    applicable_credits = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
         return f'{self.certification} for {self.user}'
@@ -647,6 +665,24 @@ class UserCertData(models.Model):
         verbose_name = _("User Certification Data")
         verbose_name_plural = _("User Certification Data")
         app_label = 'trainings'
+
+    def cal_applicable_credits(self):
+        """
+        Calculate and update the applicable_credits for this user's certification.
+        """
+        total_applicable_credits = 0
+        for cat in self.certification.categories.all():
+            [certcat] = CertCat.objects.filter(certification=self.certification, category=cat)[:1] or [None]
+            if certcat:
+                required_credits = certcat.required_credits
+                earned_credits = self.certification.get_earned_credits(self.user, category=cat)
+                if earned_credits > required_credits:
+                    total_applicable_credits += required_credits
+                else:
+                    total_applicable_credits += earned_credits
+        if total_applicable_credits != self.applicable_credits:
+            self.applicable_credits = total_applicable_credits
+            self.save(update_fields=['applicable_credits'])
 
     def get_next_d_number(self):
         if not self.certification_dt:
