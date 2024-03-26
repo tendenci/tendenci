@@ -5672,9 +5672,9 @@ def export(request, template_name="events/export.html"):
         if by_type:
             process_options.append("--type=%s" % by_type.pk)
         if start_dt:
-            process_options.append("--start_dt=%s" % start_dt.strftime('%m/%d/%Y'))
+            process_options.append("--start_dt=%s" % start_dt.strftime(settings.SHORT_DATE_FORMAT))
         if end_dt:
-            process_options.append("--end_dt=%s" % end_dt.strftime('%m/%d/%Y'))
+            process_options.append("--end_dt=%s" % end_dt.strftime(settings.SHORT_DATE_FORMAT))
 
         # start the process
         subprocess.Popen(process_options)
