@@ -255,7 +255,7 @@ class Profile(Person):
             event = credit.event
             if event.pk not in credits[category][year]['events']:
                 credits[category][year]['events'][event.pk] = {
-                    'start_dt': event.start_dt.strftime('%m-%d-%y'),
+                    'start_dt': event.start_dt.strftime(settings.SHORT_DATE_FORMAT),
                     'credits': 0,
                     'type': category,
                     'meeting_name': event.parent.title if event.parent else event.title,
