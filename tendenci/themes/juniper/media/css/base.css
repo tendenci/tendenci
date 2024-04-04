@@ -486,7 +486,7 @@ footer a,
 footer li {
   font-size: 12px;
   color: #eee;
-  font-family: FontAwesome, 'Roboto', sans-serif !important;
+  /*font-family: FontAwesome, 'Roboto', sans-serif !important;*/
 }
 footer .left-line {
   border-left: 1px solid #666;

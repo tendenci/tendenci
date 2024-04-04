@@ -1,6 +1,6 @@
 ### 15.0 [2024-3-30]
  
-* **Breaking Changes: Requires Django 4.2 LTS**. Django 3.2 LTS is not supported. For migrating T14 sites to T15, please follow the guide in docs/source/upgrade/upgrade-to-tendenci.txt.
+* **Breaking Changes: Requires Django 4.2 LTS**. Django 3.2 LTS is not supported. For migrating T14 sites to T15, please follow the guide in https://tendenci.readthedocs.io/en/latest/upgrade/upgrade-to-tendenci.html.
 * Implemented json-ld as structured data on event view for events to show in Google events search.
 * Added bulk checkout feature on events roster report.
 * Adjusted the format for event certifications.
