@@ -11,7 +11,6 @@ from django.template.loader import render_to_string
 from django.template.loader import get_template
 
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import escape_csv, Echo
@@ -148,15 +147,14 @@ def process_invoice_export(start_dt=None, end_dt=None,
     identifier = identifier or int(ttime.time())
     file_name_temp = 'export/invoices/%s_temp.csv' % identifier
 
-    with default_storage.open(file_name_temp, 'wb') as csvfile:
-        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
-        csv_writer.writerow(fields)
+    with default_storage.open(file_name_temp, 'w') as csvfile:
+        csv_writer = csv.DictWriter(csvfile, fieldnames=fields)
 
         invoices = Invoice.objects.filter(status=True,
                                           update_dt__gte=start_dt,
                                           update_dt__lte=end_dt)
         for invoice in invoices:
-            items_list = []
+            row_dict = {}
             for field_name in fields:
                 item = getattr(invoice, field_name)
                 if item is None:
@@ -170,8 +168,8 @@ def process_invoice_export(start_dt=None, end_dt=None,
                         item = item.strftime('%H:%M:%S')
                     elif isinstance(item, str):
                         item = escape_csv(item)
-                items_list.append(item)
-            csv_writer.writerow(items_list)
+                row_dict[field_name] = item
+            csv_writer.writerow(row_dict)
 
     # rename the file name
     file_name = 'export/invoices/%s.csv' % identifier

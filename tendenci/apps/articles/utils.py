@@ -1,5 +1,6 @@
 import time as ttime
 from datetime import datetime, date, time
+import csv
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
@@ -7,7 +8,6 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 
 from tendenci.apps.articles.models import Article
-from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import escape_csv
@@ -43,14 +43,13 @@ def process_export(identifier, user_id):
     identifier = identifier or int(ttime.time())
     file_name_temp = 'export/articles/%s_temp.csv' % (identifier)
 
-    with default_storage.open(file_name_temp, 'wb') as csvfile:
-        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
-        csv_writer.writerow(field_list)
+    with default_storage.open(file_name_temp, 'w') as csvfile:
+        csv_writer = csv.DictWriter(csvfile, fieldnames=field_list)
 
         articles = Article.objects.filter(status_detail='active')
 
         for article in articles:
-            items_list = []
+            row_dict = {}
             for field_name in field_list:
                 item = getattr(article, field_name)
 
@@ -62,8 +61,8 @@ def process_export(identifier, user_id):
                     item = item.strftime('%H:%M:%S')
                 else:
                     item = escape_csv(item)
-                items_list.append(item)
-            csv_writer.writerow(items_list)
+                row_dict[field_name] = item
+            csv_writer.writerow(row_dict)
 
     # rename the file name
     file_name = 'export/articles/%s.csv' % identifier
