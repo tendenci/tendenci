@@ -22,7 +22,7 @@ from django.core import exceptions
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.user_groups.models import GroupMembership, Group
-from tendenci.apps.base.utils import UnicodeWriter, normalize_newline
+from tendenci.apps.base.utils import normalize_newline
 from tendenci.apps.emails.models import Email
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.site_settings.utils import get_setting
