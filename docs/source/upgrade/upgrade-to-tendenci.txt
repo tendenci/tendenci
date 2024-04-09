@@ -13,6 +13,17 @@ Replace the content of the ``requirements/tendenci.txt`` with the following:
 ::
 
     tendenci>=15,<16
+    
+Update the conf/urls.py. Replace:
+::
+
+    from django.conf.urls import url, include
+    
+with the following, then in the `urlpatterns` list, replace `url` with `re_path`.
+::
+
+    from django.urls import re_path, include
+    
 
 
 We recommend to create a new virtual env instead of using the existing one.
