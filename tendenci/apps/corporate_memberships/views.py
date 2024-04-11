@@ -231,10 +231,7 @@ def free_passes_list(request,
 def corp_members_donated(request, 
                     template_name='corporate_memberships/reports/corp_members_donated.html'):
     corp_members = CorpMembership.objects.filter(donation_amount__gt=0
-                                   ).values('id',
-                                'corp_profile__name', 'donation_amount',
-                                'invoice', 'create_dt', 'status_detail'
-                                ).order_by('-donation_amount', 'corp_profile__name')
+                                   ).order_by('-donation_amount', 'corp_profile__name')
 
     return render_to_resp(request=request, template_name=template_name,
                               context={'corp_members': corp_members,})
@@ -1272,7 +1269,8 @@ def corp_renew(request, id,
                             indiv_renewal_price * count_members
 
                 opt_d = {'renewal': True,
-                         'renewal_total': renewal_total}
+                         'renewal_total': renewal_total,
+                         'include_donation': not get_setting('module', 'corporate_memberships', 'donationsepinv')}
                 if corpmembership_app.donation_enabled:
                     # check for donation
                     donation_option, donation_amount = form.cleaned_data.get('donation_option_value', (None, None))
@@ -1289,6 +1287,10 @@ def corp_renew(request, id,
                                         new_corp_membership,
                                         **opt_d)
                 new_corp_membership.invoice = inv
+                if new_corp_membership.donation_amount:
+                    # check if should create a separate invoice for donation
+                    if not opt_d['include_donation']:
+                        new_corp_membership.donation_add(request.user)
                 new_corp_membership.save()
 
                 # assign object permissions

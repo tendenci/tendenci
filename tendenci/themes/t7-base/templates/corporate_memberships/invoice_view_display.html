@@ -13,7 +13,7 @@
         {% endif%}
     </td>
     <td class="td-right">
-        {% if obj and obj.donation_amount %}
+        {% if obj and obj.donation_amount and not obj.donation %}
         {{ invoice.total|subtract:obj.donation_amount|format_currency }}
          {% else %}
            {{ invoice.total|format_currency }}
@@ -22,7 +22,7 @@
 </tr>
 
 {% if obj.renewal %}
-   {% if obj.donation_amount %}
+   {% if obj.donation_amount and not obj.donation %}
        <tr>
             <td>
                 {% trans "Donation Amount " %}

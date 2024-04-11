@@ -129,7 +129,10 @@
 
                                             {% if field_obj.field_name == "payment_method" %}
                                                 {% if corporate_membership.invoice %}
-                                                    - <a href="{% url 'invoice.view' corporate_membership.invoice.id  %}">{% trans "View Invoice" %}</a>
+                                                    - <a href="{% url 'invoice.view' corporate_membership.invoice.id  %}">{% trans "View Invoice" %}</a><br /> <i{% if corporate_membership.invoice.balance > 0 %} class="text-danger"{% endif %}>{% trans "Balance:" %} {{ corporate_membership.invoice.balance|format_currency }}</i>
+                                                {% endif %}
+                                                {% if corporate_membership.donation and corporate_membership.donation.invoice %}
+                                                    <br /><br /> <a href="{% url 'invoice.view' corporate_membership.donation.invoice.id  %}">{% trans "View Donation Invoice" %}</a><br /> <i{% if corporate_membership.donation.invoice.balance > 0 %} class="text-danger"{% endif %}>{% trans "Balance:" %} {{ corporate_membership.donation.invoice.balance|format_currency }}</i>
                                                 {% endif %}
                                             {% endif %}
                                         {% endif %}

@@ -31,9 +31,14 @@
 
   {% for cm in corp_members %}
     <tr>
-        <td><a href="{% url 'corpmembership.view' cm.id %}">{{ cm.corp_profile__name }}</a></td>
+        <td><a href="{% url 'corpmembership.view' cm.id %}">{{ cm.corp_profile.name }}</a></td>
         <td>{{ cm.donation_amount }}</td>
-        <td>{% if cm.invoice %}<a href="{% url 'invoice.view' cm.invoice %}">{{ cm.invoice }}</a>{% endif %}</td>
+        <td>{% if cm.donation and cm.donation.invoice %}
+        	<a href="{% url 'invoice.view' cm.donation.invoice.id %}">{{ cm.donation.invoice.id }}</a>
+        	{% elif cm.invoice %}
+        	<a href="{% url 'invoice.view' cm.invoice.id %}">{{ cm.invoice.id }}</a>
+        	{% endif %}
+        </td>
         <td>{{ cm.create_dt|date:"F j, Y" }}</td>
         <td>{{ cm.status_detail }}</td>
     </tr>
