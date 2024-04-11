@@ -268,6 +268,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
     corp_profile = corp_memb.corp_profile
     renewal = kwargs.get('renewal', False)
     renewal_total = kwargs.get('renewal_total', 0)
+    include_donation = kwargs.get('include_donation', True)
     if not corp_memb.invoice or renewal:
         inv = Invoice()
         inv.entity = corp_profile.entity
@@ -333,11 +334,12 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
             inv.balance = total
 
         # Check for donation
-        donation_amount = kwargs.get('donation_amount', None)
-        if donation_amount:
-            inv.subtotal += donation_amount
-            inv.total += donation_amount
-            inv.balance += donation_amount
+        if include_donation:
+            donation_amount = kwargs.get('donation_amount', None)
+            if donation_amount:
+                inv.subtotal += donation_amount
+                inv.total += donation_amount
+                inv.balance += donation_amount
 
         inv.estimate = True
         inv.status_detail = 'estimate'

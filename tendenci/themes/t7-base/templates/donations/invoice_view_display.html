@@ -3,7 +3,7 @@
 <tr>
     <td>
         {% if obj %}
-            {% trans 'Donation #' %}<a href="{% url 'donation.view' obj.id %}" title="{% trans 'View Donation' %}">{{  obj.id }}</a> from {{  obj.first_name }} {{ obj.last_name}} ({{  obj.email }})
+            {% trans 'Donation #' %}<a href="{% url 'donation.view' obj.id %}" title="{% trans 'View Donation' %}">{{  obj.id }}</a> {% if obj.from_object %}From {{ obj.from_object }} (ID: <a href="{{ obj.from_object.get_absolute_url }}">{{ obj.from_object.id }}</a>) {% else %}from {{  obj.first_name }} {{ obj.last_name}} ({{  obj.email }}){% endif %}
         {% else %}
             {% trans 'Donation information not available' %}
         {% endif%}

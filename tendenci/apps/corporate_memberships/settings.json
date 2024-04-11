@@ -236,5 +236,22 @@
         "scope_category": "corporate_memberships",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If donation is enabled, a separate invoice will be created for donation on corp memberships join/renewal. Default False.",
+        "data_type": "boolean",
+        "update_dt": "2024-04-09 20:50:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "donationsepinv",
+        "value": "false",
+        "label": "Use A Separate Invoice for Donation",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "corporate_memberships",
+        "store": true,
+        "updated_by": ""
     }
 ]
