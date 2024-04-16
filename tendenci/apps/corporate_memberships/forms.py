@@ -792,7 +792,8 @@ class CorpMembershipRenewForm(forms.ModelForm):
                         _("You've selected {count} individual members, but the maximum allowed is {cap}.".format(count=count_members,  cap=cmt.membership_cap)) )
 
         if 'donation_option_value' in self.cleaned_data \
-            and 'donate_to_entity' in self.cleaned_data:
+            and 'donate_to_entity' in self.cleaned_data \
+            and self.cleaned_data['donation_option_value'] != ['', '']:
             if not self.cleaned_data['donate_to_entity']:
                 raise forms.ValidationError({'donate_to_entity': _("Please select where we should allocate your donation.")
                                              })
