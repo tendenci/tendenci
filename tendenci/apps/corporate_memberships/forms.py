@@ -760,7 +760,7 @@ class CorpMembershipRenewForm(forms.ModelForm):
                 self.fields['donate_to_entity'].widget = forms.RadioSelect()
                 self.fields['donate_to_entity'].queryset = entity_qs
                 self.fields['donate_to_entity'].empty_label = None
-                self.fields['donate_to_entity'].label = _('Donate to')
+                self.fields['donate_to_entity'].label = _('Contribute to')
                 if entity_qs.count() == 1:
                     self.fields['donate_to_entity'].initial = entity_qs[0]
             else:
