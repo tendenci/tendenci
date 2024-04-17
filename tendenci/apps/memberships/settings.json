@@ -223,7 +223,7 @@
     },
     {
         "default_value": "true",
-        "description": "If true, organizational members can renew for themeselves. Otherwise, only admin or corp reps can renew the individual memberships.",
+        "description": "If true, organizational members can renew for themselves. Otherwise, only admin or corp reps can renew the individual memberships.",
         "data_type": "boolean",
         "update_dt": "2024-01-29 21:50:00",
         "input_type": "select",
