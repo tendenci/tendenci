@@ -1359,7 +1359,7 @@ def membership_default_add(request, slug='', membership_id=None,
                             'country': request_user_profile.country,
                             'work_phone': request_user_profile.work_phone,}
     else:
-        profile_initial = None
+        profile_initial = {}
 
     if join_under_corporate and not is_renewal:
         corp_profile = corp_membership.corp_profile

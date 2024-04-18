@@ -27,7 +27,9 @@
                             <div class="profile-icon">
                                 <a href="{% url 'profile' user.username %}">{% gravatar user 100 %}</a>
                             </div>
-                            <a class="update-photo-link" href="{% url 'profile.upload_photo' user.id %}">{% trans 'Update Photo' %}</a>
+                            <div class="clearfix">
+                               <a class="update-photo-link" href="{% url 'profile.upload_photo' user.id %}">{% trans 'Update Photo' %}</a>
+                            </div>
                         </ul>
                     </div>
 

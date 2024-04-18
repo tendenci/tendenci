@@ -540,21 +540,21 @@ def build_ical_text(event, d):
     except:
         reg8n_id = 0
     if not (reg8n_guid and reg8n_id):
-        ical_text = "--- This iCal file does *NOT* confirm registration.\r\n"
+        ical_text = "--- This iCal file does *NOT* confirm registration.\n"
     else:
         ical_text = "--- "
-    ical_text += "Event details subject to change. ---\r\n"
-    ical_text += '%s\r\n\r\n' % d['event_url']
+    ical_text += "Event details subject to change. ---\n"
+    ical_text += '%s\n\n' % d['event_url']
 
     # title
-    ical_text += "Event Title: %s\r\n" % strip_tags(event.title)
+    ical_text += "Event Title: %s\n" % strip_tags(event.title)
 
     # start_dt
-    ical_text += 'Start Date / Time: %s %s\r\n' % (event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
+    ical_text += 'Start Date / Time: %s %s\n' % (event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
 
     # location
     if event.place:
-        ical_text += 'Location: %s\r\n' % (event.place.name)
+        ical_text += 'Location: %s\n' % (event.place.name)
 
 #    # sponsor
 #    sponsors = event.sponsor_set.all()
@@ -566,7 +566,7 @@ def build_ical_text(event, d):
     speakers = event.speaker_set.all()
     if speakers.count() > 0:
         speaker_name_list = [speaker.name for speaker in speakers]
-        ical_text += 'Speaker: %s\r\n' % (', '.join(speaker_name_list))
+        ical_text += 'Speaker: %s\n' % (', '.join(speaker_name_list))
 
     # maps
     show_map_link = False
@@ -574,7 +574,7 @@ def build_ical_text(event, d):
                 or (event.place and event.place.address and event.place.zip):
         show_map_link = True
     if show_map_link:
-        ical_text += "Google\r\n"
+        ical_text += "Google\n"
         ical_text += "http://maps.google.com/maps?q="
         ical_text += event.place.address.replace(" ", "+")
         if event.place.city:
@@ -587,28 +587,27 @@ def build_ical_text(event, d):
             ical_text += ','
             ical_text += event.place.zip
 
-        ical_text += "\r\n\r\nForecast\n"
-        ical_text += "http://www.weather.com/weather/monthly/%s\r\n\r\n" % (event.place.zip)
+        ical_text += "\n\nForecast\n"
+        ical_text += "http://www.weather.com/weather/monthly/%s\n\n" % (event.place.zip)
 
-    ical_text += strip_tags((event.description).replace('&nbsp;', " "))
+    ical_text += strip_tags((event.description).replace('&nbsp;', " ")) + '\n\n'
     
     if reg8n_guid and reg8n_id:
         if Registration.objects.filter(guid=reg8n_guid, id=reg8n_id, event_id=event.id).exists():
             registration_email_text = event.registration_configuration.registration_email_text
             if registration_email_text:
-                ical_text += '%s\r\n' % (strip_tags((event.registration_configuration.registration_email_text).replace('&nbsp;', " ")))
+                ical_text += '%s\n' % (strip_tags((event.registration_configuration.registration_email_text).replace('&nbsp;', " ")))
 
     if not (reg8n_guid and reg8n_id):
         ical_text += "--- This iCal file does *NOT* confirm registration."
     else:
         ical_text += "--- "
-    ical_text += "Event details subject to change. ---\r\n\r\n"
-    ical_text += "--- By Tendenci - The Open Source AMS for Associations ---\r\n"
+    ical_text += "Event details subject to change. ---\n\n"
+    ical_text += "--- By Tendenci - The Open Source AMS for Associations ---\n"
 
     ical_text  = ical_text.replace(';', '\\;')
     ical_text  = ical_text.replace('\n', '\\n')
-    ical_text  = ical_text.replace('\r', '\\r')
-
+    ical_text  = ical_text.replace('\r', '')
     return ical_text
 
 

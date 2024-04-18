@@ -16,10 +16,10 @@ from tendenci.apps.social_services.utils import get_responder_skills_data
 def skill_list(request, username, edit=False, template_name="social_services/skills.html"):
 
     user_this = get_object_or_404(User, username=username)
-    try:
-        skills = user_this.skillset
-    except SkillSet.DoesNotExist:
+    if not hasattr(user_this, 'skillset'):
         skills = SkillSet.objects.create(user=user_this)
+    else:
+        skills = user_this.skillset
 
     edit_mode = False
     if edit and (request.user == user_this or request.user.is_superuser):
