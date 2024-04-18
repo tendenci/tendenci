@@ -6,14 +6,18 @@ class Command(BaseCommand):
     args = '<ics_pk>'
     help = "Runs an export task for the specified model."
 
-    def handle(self, *args, **options):
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('ics_id')
+
+    def handle(self, ics_id, **options):
         try:
             from tendenci.apps.events.ics.models import ICS
             from tendenci.apps.events.tasks import EventsICSTask
 
-            if args:
+            if ics_id:
                 try:
-                    ics = ICS.objects.get(pk=int(args[0]))
+                    ics = ICS.objects.get(pk=int(ics_id))
                 except ICS.DoesNotExist:
                     raise CommandError('ICS not specified')
 

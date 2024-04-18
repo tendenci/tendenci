@@ -1,0 +1,30 @@
+{% with registrant.credits_by_sub_event as sub_events_credits %}
+{% if sub_events_credits %}
+<div class="certificate credits">
+  <div class="row heading">
+    <div class="title col-md-12">
+      {% trans "Class Title" %}
+    </div>
+    <div class="col-md-4">
+      <div style="width: 30%;">Credits</div>
+      <div style="width: 30%;">IRS CE ID</div>
+      <div style="width: 30%;">IRS CE Earned</div>
+    </div>
+  </div>
+  {% for day, events in sub_events_credits.items %}
+    <div class="row day"><span class="day">{{ day }}</span></div>
+    {% for event in events %}
+      <div class="row details">
+        <div class="col-100px">{{ event.event_code }}</div>
+        <div class="col-md-12">{{ event.title }}</div>
+        <div class="col-md-4">
+            <div class="col-47px">{{ event.credits }}</div>
+            <div class="col-166px">{{ event.alternate_ceu }}&nbsp;</div>
+            <div class="col-47px">{{ event.irs_credits }}</div>
+        </div>
+      </div>
+    {% endfor %}
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}

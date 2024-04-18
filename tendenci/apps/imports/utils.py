@@ -13,7 +13,7 @@ from django.utils.encoding import smart_str
 from tendenci.apps.base.utils import validate_email
 from django.core.files.storage import default_storage
 
-import xlrd
+import xlrd3 as xlrd
 from xlwt import Workbook, XFStyle
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.profiles.models import Profile

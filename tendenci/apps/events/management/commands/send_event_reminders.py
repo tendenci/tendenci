@@ -20,7 +20,8 @@ class Command(BaseCommand):
         from tendenci.apps.site_settings.utils import get_setting
         from tendenci.apps.base.utils import convert_absolute_urls
         from tendenci.apps.events.utils import (render_event_email,
-                                  get_default_reminder_template)
+                                  get_default_reminder_template,
+                                  replace_qr_code)
         
         
         def get_reminder_conf_body(event):
@@ -70,10 +71,7 @@ class Command(BaseCommand):
                     if not email_rendered:
                         original_body = email.body
                         if email.body.find('{{ qr_code }}') != -1:
-                            email.body = '{% load qr_code %}\n' + email.body
-                            #qr_code_replacement = '<img src="{% qr_url_from_text registrant.check_in_url size=6 image_format="png" %}" alt="Badge">'
-                            qr_code_replacement = '{% include "events/email_badge.html" with registrants=registrants %}'
-                            email.body = email.body.replace('{{ qr_code }}', qr_code_replacement)
+                            email.body = replace_qr_code(email.body)
                         email = render_event_email(event, email, registrants=[registrant])
                         # replace the relative links with absolute urls
                         # in the email body and subject

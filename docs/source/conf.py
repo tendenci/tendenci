@@ -61,14 +61,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Tendenci'
-copyright = '2023, Tendenci'
+copyright = '2024, Tendenci'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '14.4'
+version = '15.0'
 # The full version, including alpha/beta/rc tags.
 release = tendenci_version
 

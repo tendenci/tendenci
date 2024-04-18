@@ -1,18 +1,18 @@
-import json
+# import json
 import logging
-import os
-import os.path
-import shutil
+# import os
+# import os.path
+# import shutil
 
-from django.conf import settings
+# from django.conf import settings
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
-
-from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
-
-from .forms import UploadFileForm
-from . import utils
+# from django.views.decorators.csrf import csrf_exempt
+# from django.views.generic import View
+#
+# from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+#
+# from .forms import UploadFileForm
+# from . import utils
 
 logger = logging.getLogger('django')
 

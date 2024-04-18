@@ -21,6 +21,7 @@ from django.views import generic
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.perms.decorators import is_enabled
+from tendenci.apps.base.utils import is_ajax
 
 from . import compat, defaults, util
 from .compat import get_atomic_func
@@ -441,7 +442,8 @@ class PostEditMixin(PybbFormsMixin):
                         success = False
                 else:
                     topic.poll_question = None
-                    topic.poll_answers.all().delete()
+                    if hasattr(topic, 'id') and topic.id:
+                        topic.poll_answers.all().delete()
         else:
             pollformset = None
 
@@ -502,7 +504,7 @@ class AddPostView(IsEnabledMixin, PostEditMixin, generic.CreateView):
                     profile = util.get_pybb_profile(post.user)
                     self.quote = util._get_markup_quoter(defaults.PYBB_MARKUP)(post.body, profile.get_display_name())
 
-                if self.quote and request.is_ajax():
+                if self.quote and is_ajax(request):
                     return HttpResponse(self.quote)
         return super(AddPostView, self).dispatch(request, *args, **kwargs)
 
@@ -694,7 +696,7 @@ class DeletePostView(generic.DeleteView):
         self.object = self.get_object()
         self.object.delete()
         redirect_url = self.get_success_url()
-        if not request.is_ajax():
+        if not is_ajax(request):
             return HttpResponseRedirect(redirect_url)
         else:
             return HttpResponse(redirect_url)
@@ -705,7 +707,7 @@ class DeletePostView(generic.DeleteView):
         except Topic.DoesNotExist:
             return self.forum.get_absolute_url()
         else:
-            if not self.request.is_ajax():
+            if not is_ajax(self.request):
                 return self.topic.get_absolute_url()
             else:
                 return ""

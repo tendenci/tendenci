@@ -980,11 +980,14 @@ function random_pwd()
   var length = 12;
     var chars = "$&*()#@?+=-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
     var pwd = "";
-    for(x=0;x<length;x++)
+    for(x=0;x<length-1;x++)
     {
       i = Math.floor(Math.random() * 68);
       pwd += chars.charAt(i);
     }
+    // make sure we have one of these chars to meet the pwd requirements
+    chars = "$&*()#@?+=-1234567890";
+    pwd += chars.charAt(Math.floor(Math.random() * 21));
     return pwd;
 }
 </script>

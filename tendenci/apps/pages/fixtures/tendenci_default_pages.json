@@ -135,39 +135,6 @@
         "view_contact_form": false,
         "entity": 1,
         "meta": null,
-        "owner": null,
-        "guid": "f8c95136-55bd-11e2-b645-1231381359d0",
-        "create_dt": "2013-01-03T09:55:18.566",
-        "group": 1,
-        "update_dt": "2013-01-03T09:55:18.853",
-        "content": "",
-        "template": "default.html",
-        "owner_username": "system_generated",
-        "allow_anonymous_view": true,
-        "status": true,
-        "design_notes": "",
-        "tags": "tendencidemo",
-        "status_detail": "active",
-        "syndicate": false,
-        "creator_username": "system_generated",
-        "slug": "theme-resources",
-        "contributor_type": 1,
-        "allow_user_edit": false,
-        "title": "Theme Resources",
-        "allow_member_view": false,
-        "allow_member_edit": false,
-        "header_image": null
-    },
-    "model": "pages.page",
-    "pk": 5
-},
-{
-    "fields": {
-        "creator": null,
-        "allow_user_view": false,
-        "view_contact_form": false,
-        "entity": 1,
-        "meta": null,
         "owner": 1,
         "guid": "2b18f948-55be-11e2-9aeb-1231381359d0",
         "create_dt": "2013-01-03T09:56:42.974",
@@ -192,7 +159,7 @@
         "header_image": null
     },
     "model": "pages.page",
-    "pk": 6
+    "pk": 5
 },
 {
     "fields": {
@@ -225,40 +192,7 @@
         "header_image": null
     },
     "model": "pages.page",
-    "pk": 7
-},
-{
-    "fields": {
-        "creator": null,
-        "allow_user_view": false,
-        "view_contact_form": false,
-        "entity": 1,
-        "meta": null,
-        "owner": null,
-        "guid": "fff0abde-55fa-11e2-b0c1-123139209570",
-        "create_dt": "2013-01-03T17:12:09.868",
-        "group": 1,
-        "update_dt": "2013-01-04T10:22:24.463",
-        "content": "<p>This is a example of a page using the full width layout.&nbsp; You can choose which layout your page is using below under the dropdown labeled <strong>Template</strong>.&nbsp; Your options are <a href=\"/full-width-layout/\"><strong>Default</strong></a> (full width layout), <a href=\"/right-sidebar-layout/\"></a><strong><a href=\"/right-sidebar-layout/\">Right Sidebar</a></strong> (layout wiht sidebar on the right), and <a href=\"/left-sidebar-layout/\"></a><strong><a href=\"/left-sidebar-layout/\">Left Sidebar</a></strong> (layout wiht sidebar on the left).</p>\r\n<p>Donec mi risus, tempus faucibus faucibus vel, consectetur sit amet urna.  Nunc lobortis faucibus tortor, non dictum metus egestas nec. Aliquam  vitae felis turpis. Proin at erat sit amet mi elementum cursus commodo  ut elit. Ut rutrum luctus libero a mattis. Aliquam luctus viverra  congue. Integer placerat mollis porttitor. Nunc et turpis vitae tellus  tincidunt pharetra. Proin tempor sapien in ligula luctus eget rhoncus  lorem posuere.</p>\r\n<p>This is an example of list:</p>\r\n<ul>\r\n<li>Etiam purus sem, suscipit vel adipiscing sit amet, varius et metus. </li>\r\n<li>Cras  interdum pretium diam, id euismod arcu aliquet eu.</li>\r\n<li> Phasellus faucibus,  augue ut tincidunt consequat.</li>\r\n<li>Phasellus posuere metus vitae ipsum pharetra sed  rutrum massa placerat. </li>\r\n<li>Aenean ut mi urna, sit amet facilisis mi. Donec  ornare tincidunt justo ut porttitor. </li>\r\n<li>Vivamus luctus velit sit amet  lectus vulputate.</li>\r\n</ul>\r\n<h1>Heading 1 Example</h1>\r\n<h2>Heading 2 Example</h2>\r\n<h3>Heading 3 Example</h3>\r\n<h4>Heading 4 Example</h4>\r\n<p>This is an example of a <a href=\"#\">link</a></p>\r\n<p>This is an example of a <a class=\"readmorelarge\" href=\"#\">link</a> with the class=\"readmorelarge\"</p>",
-        "template": "default-left-sidebar.html",
-        "owner_username": "system_generated",
-        "allow_anonymous_view": true,
-        "status": true,
-        "design_notes": "",
-        "tags": "tendencidemo",
-        "status_detail": "active",
-        "syndicate": false,
-        "creator_username": "system_generated",
-        "slug": "left-sidebar-layout-example",
-        "contributor_type": 1,
-        "allow_user_edit": false,
-        "title": "Left Sidebar Layout Example",
-        "allow_member_view": false,
-        "allow_member_edit": false,
-        "header_image": null
-    },
-    "model": "pages.page",
-    "pk": 8
+    "pk": 6
 },
 {
     "fields": {
@@ -272,7 +206,7 @@
         "create_dt": "2015-08-31T17:10:22.520",
         "group": 1,
         "update_dt": "2015-11-13T12:59:21.584",
-        "content": "<p><strong>Tendenci - The Open Source AMS</strong>, this page will help you quickly get started on using the software. Don't forget to check out our <a title=\"Tendenci Blog\" href=\"https://blog.tendenci.com/\"><strong>blog posts</strong></a> for Tendenci news and updates.&nbsp;</p>\r\n<p>&nbsp;</p>\r\n<blockquote class=\"bg-success\"><strong><strong>REMINDER</strong>: </strong>To edit and work on the site you will need proper permissions.&nbsp;So, make sure you are logged in to see all the site has to offer:<strong>&nbsp;<a class=\"btn btn-primary\" style=\"padding: 1px 15px;\" href=\"/login\">LOGIN</a></strong></blockquote>\r\n<p>&nbsp;</p>\r\n<h2><strong><strong>An Introduction to Your Administrator Menu</strong></strong></h2>\r\n<p>After you <a title=\"Tendenci Login\" href=\"/login\">login</a>, the administrator menu aka Tendenci menu is where most of the software modules and settings are accessible.</p>\r\n<div style=\"position: relative; width: 100%; height: 0; padding-bottom: 56.25%;\"><iframe allowfullscreen=\"allowfullscreen\" height=\"150\" src=\"https://www.youtube.com/embed/IypBkRmNFCo?rel=0\" width=\"300\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\"></iframe></div>\r\n<p><br /><a href=\"https://www.youtube.com/watch?v=IypBkRmNFCo&amp;feature=youtu.be\" target=\"_blank\" rel=\"noopener\">https://www.youtube.com/watch?v=IypBkRmNFCo&amp;feature=youtu.be</a><br /><br /></p>\r\n<h2><strong>Discover Our Many Functionalities</strong></h2>\r\n<ol>\r\n<li>Scroll through your homepage and look for \"Edit ....... Box\" links.</li>\r\n<li>Click on these &nbsp;\"Edit ...Box\" links to edit parts of your homepage content.<br /><br /><img title=\"42.png\" src=\"/files/41/\" alt=\"42.png\" width=\"343\" height=\"93\" /></li>\r\n</ol>\r\n<p>&nbsp;</p>\r\n<h2><strong>Give it a Test Run</strong></h2>\r\n<ol>\r\n<li>Click on the Mission/Vision page in the navigation under the About Tab<br /><img title=\"43.png\" src=\"/files/42/\" alt=\"43.png\" width=\"400\" height=\"221.32796780684106\" /></li>\r\n<li>Scroll to the bottom and click \"Edit\" to update the content on the page.&nbsp; <br /><img title=\"45.png\" src=\"/files/43/\" alt=\"45.png\" width=\"383\" height=\"117\" /></li>\r\n</ol>\r\n<div class=\"t-pages-page-body\">&nbsp;</div>\r\n<div>\r\n<h3><strong>Check out these helpful modules:</strong></h3>\r\n<ol>\r\n<li><a title=\"/stories/\" href=\"/stories/\" target=\"_blank\" rel=\"noopener\">Stories : Click here to update your homepage rotator images and text </a>&nbsp;(<span style=\"color: #2ac0d4;\"><a title=\"Stories Helpfile\" href=\"https://www.tendenci.com/help-files/how-do-i-use-the-stories-module/\" target=\"_blank\" rel=\"noopener\"><span style=\"color: #2ac0d4;\">Helpfile</span></a></span>)<br /><br /></li>\r\n<li><a title=\"News\" href=\"/news/\" target=\"_blank\" rel=\"noopener\">News :&nbsp; Click here to add items to your homepage News Feed</a> (<span style=\"color: #2ac0d4;\"><a title=\"News Helpfile\" href=\"https://www.tendenci.com/help-files/add-edit-news/\" target=\"_blank\" rel=\"noopener\"><span style=\"color: #2ac0d4;\">Helpfile</span></a></span>)<br /><br /></li>\r\n<li><a title=\"Events\" href=\"/events/search/\" target=\"_blank\" rel=\"noopener\">Events : Click here to add events to your calendar</a> (<span style=\"color: #2ac0d4;\"><a title=\"Help File Events\" href=\"https://www.tendenci.com/help-files/adding-new-events-and-event-types-your-events-calendar/\" target=\"_self\"><span style=\"color: #2ac0d4;\">Helpfile</span></a></span>)<br /><br /></li>\r\n<li><a title=\"Membership\" href=\"/admin/memberships/membershipapp/\" target=\"_blank\" rel=\"noopener\">Memberships : Click here to set up automatic management of membership join/renewal</a> (<span style=\"color: #2ac0d4;\"><a title=\"Intro to Memberships\" href=\"https://www.tendenci.com/help-files/intro-memberships/\" target=\"_blank\" rel=\"noopener\"><span style=\"color: #2ac0d4;\">Helpfiles</span></a></span>)<br /><br /></li>\r\n<li><a href=\"/directories/\" target=\"_blank\" rel=\"noopener\">Business Directories : Click here to list sponsors, partners, paid business listings or other associations.</a>&nbsp;(<span style=\"color: #2ac0d4;\"><a title=\"Directories\" href=\"https://www.tendenci.com/help-files/directories-module-settings/\" target=\"_blank\" rel=\"noopener\"><span style=\"color: #2ac0d4;\">Helpfile</span></a></span>&nbsp;)<br /><br /></li>\r\n<li><a href=\"/admin/navs/nav/1/\" target=\"_blank\" rel=\"noopener\">Navigation: Click here to dynamically edit your navigation </a>&nbsp;(<span style=\"color: #2ac0d4;\"><a title=\"How to edit navigation\" href=\"https://www.tendenci.com/help-files/how-to-edit-your-navigation/\" target=\"_blank\" rel=\"noopener\"><span style=\"color: #2ac0d4;\">Helpfiles</span></a></span>)</li>\r\n</ol>\r\n</div>\r\n<div class=\"t-pages-page-body\">&nbsp;</div>\r\n<div class=\"t-pages-page-body\"><hr /></div>\r\n<div class=\"t-pages-page-body\" style=\"text-align: center;\">\r\n<h4><strong>Feel Free to Reach out to Tendenci</strong></h4>\r\nIf you have any questions or encountered a problem, feel free to reach out. You can post your issues on <a href=\"https://github.com/tendenci/tendenci\">Github</a>.</div>\r\n<div class=\"t-pages-page-body\" style=\"text-align: center;\">&nbsp;</div>\r\n<hr />\r\n<p style=\"text-align: center;\"><em><strong>Have questions? Interested in packages to build out your site? Does your website engage your members?</strong></em></p>\r\n<p style=\"text-align: center;\"><a class=\"btn btn-primary btn-lg\" title=\"Contact Form\" href=\"https://www.tendenci.com/contact/\" target=\"_blank\" rel=\"noopener\">Contact the Tendenci Team</a></p>\r\n<p><strong>&nbsp;</strong></p>\r\n<h3>&nbsp;</h3>",        "template": "default.html",
+        "content": "<p><strong>Tendenci - The Open Source AMS</strong>, this page will help you quickly get started on using the software. Don't forget to check out our <a title=\"Tendenci Blog\" href=\"https://blog.tendenci.com/\"><strong>blog posts</strong></a> for Tendenci news and updates.&nbsp;</p>\r\n<p>&nbsp;</p>\r\n<blockquote class=\"bg-success\"><strong><strong>REMINDER</strong>: </strong>To edit and work on the site you will need proper permissions.&nbsp;So, make sure you are logged in to see all the site has to offer:<strong>&nbsp;<a class=\"btn btn-primary\" style=\"padding: 1px 15px;\" href=\"/login\">LOGIN</a></strong></blockquote>\r\n<p>&nbsp;</p>\r\n<h2><strong><strong>An Introduction to Your Administrator Menu</strong></strong></h2>\r\n<p>After you <a title=\"Tendenci Login\" href=\"/login\">login</a>, the administrator menu aka Tendenci menu is where most of the software modules and settings are accessible.</p>\r\n<div style=\"position: relative; width: 100%; height: 0; padding-bottom: 56.25%;\"><iframe allowfullscreen=\"allowfullscreen\" height=\"150\" src=\"https://www.youtube.com/embed/IypBkRmNFCo?rel=0\" width=\"300\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\"></iframe></div>\r\n<p><br />Watch on Youtube: <a href=\"https://www.youtube.com/watch?v=IypBkRmNFCo&amp;feature=youtu.be\" target=\"_blank\" rel=\"noopener\">https://www.youtube.com/watch?v=IypBkRmNFCo&amp;feature=youtu.be</a><br /><br /></p>\r\n<h2><strong>Discover Our Many Functionalities</strong></h2>\r\n<ol>\r\n<li>Scroll through your homepage and look for \"Edit ....... Box\" links.</li>\r\n<li>Click on these &nbsp;\"Edit ...Box\" links to edit parts of your homepage content.<br /><br /><img title=\"42.png\" src=\"/files/41/\" alt=\"42.png\" width=\"343\" height=\"93\" /></li>\r\n</ol>\r\n<p>&nbsp;</p>\r\n<h2><strong>Give it a Test Run</strong></h2>\r\n<ol>\r\n<li>Click on the Mission/Vision page in the navigation under the About Tab<br /><img title=\"43.png\" src=\"/files/42/\" alt=\"43.png\" width=\"400\" height=\"221.32796780684106\" /></li>\r\n<li>Scroll to the bottom and click \"Edit\" to update the content on the page.&nbsp; <br /><img title=\"45.png\" src=\"/files/43/\" alt=\"45.png\" width=\"383\" height=\"117\" /></li>\r\n</ol>\r\n<div class=\"t-pages-page-body\">&nbsp;</div>\r\n<div>\r\n<h3><strong>Check out these helpful modules:</strong></h3>\r\n<ol>\r\n<li><a title=\"/stories/\" href=\"/stories/\" target=\"_blank\" rel=\"noopener\">Stories : Click here to update your homepage rotator images and text </a>&nbsp;(<span style=\"color: #2ac0d4;\"><a title=\"Stories Helpfile\" href=\"https://www.tendenci.com/help-files/how-do-i-use-the-stories-module/\" target=\"_blank\" rel=\"noopener\"><span style=\"color: #2ac0d4;\">Helpfile</span></a></span>)<br /><br /></li>\r\n<li><a title=\"News\" href=\"/news/\" target=\"_blank\" rel=\"noopener\">News :&nbsp; Click here to add items to your homepage News Feed</a> (<span style=\"color: #2ac0d4;\"><a title=\"News Helpfile\" href=\"https://www.tendenci.com/help-files/add-edit-news/\" target=\"_blank\" rel=\"noopener\"><span style=\"color: #2ac0d4;\">Helpfile</span></a></span>)<br /><br /></li>\r\n<li><a title=\"Events\" href=\"/events/search/\" target=\"_blank\" rel=\"noopener\">Events : Click here to add events to your calendar</a> (<span style=\"color: #2ac0d4;\"><a title=\"Help File Events\" href=\"https://www.tendenci.com/help-files/adding-new-events-and-event-types-your-events-calendar/\" target=\"_self\"><span style=\"color: #2ac0d4;\">Helpfile</span></a></span>)<br /><br /></li>\r\n<li><a title=\"Membership\" href=\"/admin/memberships/membershipapp/\" target=\"_blank\" rel=\"noopener\">Memberships : Click here to set up automatic management of membership join/renewal</a> (<span style=\"color: #2ac0d4;\"><a title=\"Intro to Memberships\" href=\"https://www.tendenci.com/help-files/intro-memberships/\" target=\"_blank\" rel=\"noopener\"><span style=\"color: #2ac0d4;\">Helpfiles</span></a></span>)<br /><br /></li>\r\n<li><a href=\"/directories/\" target=\"_blank\" rel=\"noopener\">Business Directories : Click here to list sponsors, partners, paid business listings or other associations.</a>&nbsp;(<span style=\"color: #2ac0d4;\"><a title=\"Directories\" href=\"https://www.tendenci.com/help-files/directories-module-settings/\" target=\"_blank\" rel=\"noopener\"><span style=\"color: #2ac0d4;\">Helpfile</span></a></span>&nbsp;)<br /><br /></li>\r\n<li><a href=\"/admin/navs/nav/1/\" target=\"_blank\" rel=\"noopener\">Navigation: Click here to dynamically edit your navigation </a>&nbsp;(<span style=\"color: #2ac0d4;\"><a title=\"How to edit navigation\" href=\"https://www.tendenci.com/help-files/how-to-edit-your-navigation/\" target=\"_blank\" rel=\"noopener\"><span style=\"color: #2ac0d4;\">Helpfiles</span></a></span>)</li>\r\n</ol>\r\n</div>\r\n<div class=\"t-pages-page-body\">&nbsp;</div>\r\n<div class=\"t-pages-page-body\"><hr /></div>\r\n<div class=\"t-pages-page-body\" style=\"text-align: center;\">\r\n<h4><strong>Feel Free to Reach out to Tendenci</strong></h4>\r\nIf you have any questions or encountered a problem, feel free to reach out. You can post your issues on <a href=\"https://github.com/tendenci/tendenci\">Github</a>.</div>\r\n<div class=\"t-pages-page-body\" style=\"text-align: center;\">&nbsp;</div>\r\n<hr />\r\n<p style=\"text-align: center;\"><em><strong>Have questions? Interested in packages to build out your site? Does your website engage your members?</strong></em></p>\r\n<p style=\"text-align: center;\"><a class=\"btn btn-primary btn-lg\" title=\"Contact Form\" href=\"https://www.tendenci.com/contact/\" target=\"_blank\" rel=\"noopener\">Contact the Tendenci Team</a></p>\r\n<p><strong>&nbsp;</strong></p>\r\n<h3>&nbsp;</h3>",        "template": "default.html",
         "owner_username": "system_generated",
         "allow_anonymous_view": true,
         "status": true,
@@ -290,7 +224,7 @@
         "header_image": null
     },
     "model": "pages.page",
-    "pk": 9
+    "pk": 7
 },
 {
     "fields": {
@@ -323,7 +257,7 @@
         "header_image": null
     },
     "model": "pages.page",
-    "pk": 10
+    "pk": 8
 },
 {
     "fields": {
@@ -356,7 +290,7 @@
         "header_image": null
     },
     "model": "pages.page",
-    "pk": 11
+    "pk": 9
 },
 {
     "fields": {
@@ -389,7 +323,7 @@
         "header_image": null
     },
     "model": "pages.page",
-    "pk": 12
+    "pk": 10
 },
 {
     "fields": {
@@ -422,7 +356,7 @@
         "header_image": null
     },
     "model": "pages.page",
-    "pk": 13
+    "pk": 11
 },
 {
     "fields": {
@@ -454,7 +388,7 @@
         "header_image": null
     },
     "model": "pages.page",
-    "pk": 14
+    "pk": 12
 },
 {
     "fields": {
@@ -487,7 +421,7 @@
         "header_image": null
     },
     "model": "pages.page",
-    "pk": 15
+    "pk": 13
 },
 {
     "fields": {
@@ -501,7 +435,7 @@
         "create_dt": "2016-04-14T11:34:32.298",
         "group": 1,
         "update_dt": "2016-04-19T13:02:02.135",
-        "content": "<div class=\"t-pages-page-body\">\r\n<p>Thank you for your continued participation in our organization!</p>\r\n<p>You may have received an email from us with a link to renew your membership.</p>\r\n<p>If you haven't received a renewal email, please follow the directions below to renew your membership.</p>\r\n<p>&nbsp;</p>\r\n<p><strong>Individual Members<br /></strong></p>\r\n<p>1. Log into the website at www.myurl.com/login</p>\r\n<p>2. If you are eligible to renew your membership, you will automatically be taken to your profile on login and will see a link to renew your membership as pictured below.</p>\r\n<p><img title=\"2016-04-04_1328.png\" src=\"http://gra.tendenci.net/files/102/\" alt=\"2016-04-04_1328.png\" width=\"293\" height=\"79\" /></p>\r\n<p>3. Click \"Renew your membership now\" and fill out the resulting form to renew your membership.</p>\r\n<h4>&nbsp;</h4>\r\n<h4><strong>Corporate/Group Membership:</strong></h4>\r\n<p>If you are responsible for a corporate/group membership, please follow the instructions below to renew.</p>\r\n<p>1. Log into the website at www.myurl.com/login</p>\r\n<p>2. Navigate to your corporate membership in the dropdown bar at the top of the page.</p>\r\n<p><img title=\"mycorporatemembership.png\" src=\"http://gra.tendenci.net/files/112/\" alt=\"mycorporatemembership.png\" width=\"269\" height=\"220\" /></p>\r\n<p>3. After you click the link \"My Corp. Memb.\", if you are eligible to renew your corporate/organizational membership, you will see a link to renew.</p>\r\n<p>&nbsp;</p>\r\n<p><img title=\"corpmembershiprenewal.png\" src=\"http://gra.tendenci.net/files/105/\" alt=\"corpmembershiprenewal.png\" width=\"400\" height=\"83.50634371395617\" /></p>\r\n<p>&nbsp;</p>\r\n<p>Please note that only your \"Corporate Member Representitive\" or \"Billing Representative\" will have access to renew your membership. Individuals who are part of the corporate membership but not designated as the \"Corporate Member Representitive\" or \"Billing Representative\" will not have access to renew.</p>\r\n<p><img title=\"Corp_Membership_Renewal.png\" src=\"/files/72/\" alt=\"Corp_Membership_Renewal.png\" width=\"400\" height=\"170.0502512562814\" /></p>\r\n<p>&nbsp;</p>\r\n<p>At the time of renewal you can choose to renew all individuals who are part of your corporate membership.</p>\r\n<p>If you have any trouble with membership renewal or need access to be set up as a representative for your corporate/group membership, please <a href=\"http://gra.tendenci.net/contact\" target=\"_blank\">contact us</a></p>\r\n<p>&nbsp;</p>\r\n</div>",
+        "content": "<div class=\"t-pages-page-body\">\r\n<p>Thank you for your continued participation in our organization!</p>\r\n<p>You may have received an email from us with a link to renew your membership.</p>\r\n<p>If you haven't received a renewal email, please follow the directions below to renew your membership.</p>\r\n<p>&nbsp;</p>\r\n<p><strong>Individual Members<br /></strong></p>\r\n<p>1. Log into the website at www.myurl.com/login</p>\r\n<p>2. If you are eligible to renew your membership, you will automatically be taken to your profile on login and will see a link to renew your membership.</p>\r\n<p>3. Click \"Renew your membership now\" and fill out the resulting form to renew your membership.</p>\r\n<h4>&nbsp;</h4>\r\n<h4><strong>Corporate/Group Membership:</strong></h4>\r\n<p>If you are responsible for a corporate/group membership, please follow the instructions below to renew.</p>\r\n<p>1. Log into the website at www.myurl.com/login</p>\r\n<p>2. Navigate to your corporate membership in the dropdown bar at the top of the page.</p>\r\n<p>3. After you click the link \"My Corp. Memb.\", if you are eligible to renew your corporate/organizational membership, you will see a link to renew.</p>\r\n<p>&nbsp;</p>\r\n<p>&nbsp;</p>\r\n<p>Please note that only your \"Corporate Member Representitive\" or \"Billing Representative\" will have access to renew your membership. Individuals who are part of the corporate membership but not designated as the \"Corporate Member Representitive\" or \"Billing Representative\" will not have access to renew.</p>\r\n<p><img title=\"Corp_Membership_Renewal.png\" src=\"/files/72/\" alt=\"Corp_Membership_Renewal.png\" width=\"400\" height=\"170.0502512562814\" /></p>\r\n<p>&nbsp;</p>\r\n<p>At the time of renewal you can choose to renew all individuals who are part of your corporate membership.</p>\r\n<p>If you have any trouble with membership renewal or need access to be set up as a representative for your corporate/group membership, please <a href=\"/contact\" target=\"_blank\">contact us</a></p>\r\n<p>&nbsp;</p>\r\n</div>",
         "template": "default.html",
         "owner_username": "system_generated",
         "allow_anonymous_view": true,
@@ -520,6 +454,6 @@
         "header_image": null
     },
     "model": "pages.page",
-    "pk": 16
+    "pk": 14
 }
 ]

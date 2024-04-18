@@ -29,3 +29,10 @@ def is_owner(directory, user):
     """
     return directory.is_owner(user)
 
+
+@register.filter
+def exclude_tags(directories, tags):
+    if tags:
+        for tag in tags.split(','):
+            directories = directories.exclude(tags__icontains=tag)
+    return directories

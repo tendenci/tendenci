@@ -1,10 +1,17 @@
 import subprocess
+import operator
+from functools import reduce
+from decimal import Decimal
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.admin import SimpleListFilter
+from django.db.models import OuterRef, Subquery, Q
+from django.db.models import Sum
+from django.db.models import F
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.theme.templatetags.static import static
@@ -12,7 +19,7 @@ from .models import (SchoolCategory, Certification,
                      CertCat, Course, Transcript,
                      TeachingActivity,
                      OutsideSchool,
-                     UserCertData,
+                     UserCertData, UserCredit,
                      Exam,
                      BluevoltExamImport)
 from .forms import CourseForm, UpdateTranscriptActionForm
@@ -342,11 +349,76 @@ class TranscriptAdmin(admin.ModelAdmin):
     show_user.admin_order_field = 'user__first_name'
 
 
+class CreditsFilter(SimpleListFilter):
+    title = 'Total Credits'
+    parameter_name = 'credits_check'
+
+    def lookups(self, request, model_admin):
+        return (
+            (1, '<= 3.5 more credits needed'),
+        )
+
+    # def queryset(self, request, queryset):
+    #     try:
+    #         value = int(self.value())
+    #     except:
+    #         value = None
+    #
+    #     if value is None:
+    #         return queryset
+    #
+    #     if value == 1:
+    #         required_credits_list = []
+    #         credits_needed = Decimal(3.5) # <=3.5 more credits needed towards any certification. hard-code it here for now 
+    #         filter_or_list = []
+    #         filter_exclude_list = []
+    #         for cert in Certification.objects.all():
+    #             required_credits = cert.cert_required_credits()
+    #             required_credits_list.append((cert.id, required_credits - credits_needed, required_credits))
+    #
+    #         if required_credits_list:
+    #             for required_credits in required_credits_list:
+    #                 filter_or_list.append(Q(certification_id=required_credits[0]) & Q(total_credits__gte=required_credits[1]))
+    #                 filter_exclude_list.append(Q(certification_id=required_credits[0]) & Q(total_credits__gte=required_credits[2]))
+    #         # build the q_filter_or
+    #         q_filter_or = reduce(operator.or_, filter_or_list)
+    #         transcript_subquery = Transcript.objects.filter(user=OuterRef('user'),
+    #                 certification_track=OuterRef('certification'),
+    #                 status='approved').order_by().values('user_id').annotate(
+    #                     total_credits=Sum('credits')).values('total_credits')
+    #         queryset = queryset.annotate(total_credits=Subquery(transcript_subquery)).filter(
+    #                 q_filter_or)
+    #         # exclude those already meet the required credits
+    #         for filter_exclude in filter_exclude_list:
+    #             queryset = queryset.exclude(filter_exclude)
+    #         #print(queryset.query)
+    #     return queryset
+
+    def queryset(self, request, queryset):
+        try:
+            value = int(self.value())
+        except:
+            value = None
+
+        if value is None:
+            return queryset
+
+        if value == 1:
+            credits_needed = Decimal(3.5) # <=3.5 more credits needed towards any certification. hard-code it here for now 
+            queryset = queryset.filter(applicable_credits__gte=F('certification__required_credits') - credits_needed)
+            queryset = queryset.exclude(applicable_credits__gte=F('certification__required_credits'))
+
+            #print(queryset.query)
+        return queryset
+
+
 class UserCertDataAdmin(admin.ModelAdmin):
     model = UserCertData
     list_display = ['id',
                     'show_user',
+                    'email',
                     'certification',
+                    'total_credits',
                     'certification_dt',
                     'diamond_1_dt',
                     'diamond_2_dt',
@@ -380,6 +452,10 @@ class UserCertDataAdmin(admin.ModelAdmin):
             'diamond_9_dt',
         )},),
     )
+    
+    def get_queryset(self, request):
+        qs = super(UserCertDataAdmin, self).get_queryset(request)
+        return qs.filter(certification__enable_diamond=True)
 
     def get_readonly_fields(self, request, obj=None):
         if obj: # editing
@@ -398,7 +474,7 @@ class UserCertDataAdmin(admin.ModelAdmin):
                 )
         return ""
     show_user.short_description = 'User'
-    
+   
     @mark_safe
     def show_transcript(self, instance):
         if instance.user:
@@ -406,6 +482,54 @@ class UserCertDataAdmin(admin.ModelAdmin):
             return f'<a href="{url}" title="View Transcript">View Transcript</a>'
         return ""
     show_transcript.short_description = 'Transcript'
+
+
+class UserCreditAdmin(UserCertDataAdmin):
+    list_display = ['id',
+                    'show_user',
+                    'email',
+                    'show_company',
+                    'certification',
+                    'show_total_credits',
+                    #'credits_required', # commenting it out now as it is too resource intensive
+                    'show_transcript',]
+    #list_editable = ('certification_dt', 'diamond_1_dt')
+    search_fields = ['user__first_name',
+                     'user__last_name',
+                     'user__email',
+                     'user__profile__company']
+    list_filter = ['certification', CreditsFilter]
+    can_delete = False
+    actions = None
+    list_display_links = ('show_transcript', )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_queryset(self, request):
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
+        return qs.filter(user__is_active=True)
+
+    def show_company(self, instance):
+        if instance.user and hasattr(instance.user, 'profile'):
+            return instance.user.profile.company
+    show_company.short_description = 'Company'
+
+    def show_total_credits(self, instance):
+        if instance:
+            return f'{instance.applicable_credits}/{instance.certification.required_credits}'    
+    show_total_credits.short_description = 'Applicable credits/Credits needed'
+    
+    # def credits_required(self, instance):
+    #     if instance.certification:
+    #         return instance.certification.cert_required_credits()
+    # credits_required.short_description = 'Credits Required'
 
 
 class BluevoltExamImportAdmin(admin.ModelAdmin):
@@ -477,5 +601,6 @@ admin.site.register(Transcript, TranscriptAdmin)
 admin.site.register(TeachingActivity, TeachingActivityAdmin)
 admin.site.register(OutsideSchool, OutsideSchoolAdmin)
 admin.site.register(UserCertData, UserCertDataAdmin)
+admin.site.register(UserCredit, UserCreditAdmin)
 if hasattr(settings, 'BLUEVOLT_API_KEY') and settings.BLUEVOLT_API_KEY:
     admin.site.register(BluevoltExamImport, BluevoltExamImportAdmin)

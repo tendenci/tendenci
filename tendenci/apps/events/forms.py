@@ -1539,6 +1539,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
 
         fields = [
             'title',
+            'position',
             'description',
             'quantity',
             'registration_cap',
@@ -1554,11 +1555,12 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
             'allow_anonymous',
             'allow_user',
             'allow_member',
-            'position'
+            
          ]
 
         fieldsets = [(_('Registration Pricing'), {
           'fields': ['title',
+                     'position',
                     'description',
                     'quantity',
                     'registration_cap',
@@ -1575,7 +1577,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
                     'allow_anonymous',
                     'allow_user',
                     'allow_member',
-                    'position'
+                   
                     ],
           'legend': '',
           'classes': ['boxy-grey'],
@@ -1966,7 +1968,7 @@ class RegistrationForm(forms.Form):
         else:
             display_discount = False
 
-        if not event.free_event:
+        if not event.free_event or event.has_addons_price:
             if reg_conf.can_pay_online:
                 payment_methods = reg_conf.payment_method.all()
             else:
@@ -2656,6 +2658,7 @@ class AddonForm(BetterModelForm):
             'price',
             'group',
             'default_yes',
+            'position',
             'allow_anonymous',
             'allow_user',
             'allow_member',)
@@ -2666,6 +2669,7 @@ class AddonForm(BetterModelForm):
                     'price',
                     'group',
                     'default_yes',
+                    'position',
                 ],'legend': ''
             }),
             (_('Permissions'), {

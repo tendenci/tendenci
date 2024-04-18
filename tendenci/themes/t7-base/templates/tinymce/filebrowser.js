@@ -1,30 +1,31 @@
-function tendenciFileManager(field_name, url, type, win) {
-	var app_label = tinymce.activeEditor.settings.storme_app_label;
-	var model = tinymce.activeEditor.settings.storme_model;
-	var object_id = tinymce.activeEditor.settings.app_instance_id;
-	
- 	var filebrowser = "/files/tinymce-fb/";
-	filebrowser += (filebrowser.indexOf("?") < 0) ? "?type=" + type : "&type=" + type;
-	if (app_label){
-		filebrowser += "&app_label=" + app_label;
+function tendenciFileManager(callback, value, type) {
+	var app_label = tinymce.activeEditor.getParam('storme_app_label');
+	var model = tinymce.activeEditor.getParam('storme_model');
+	var object_id = tinymce.activeEditor.getParam('app_instance_id');
+    var fbURL = '/files/tinymce-fb/';
+    fbURL += (fbURL.indexOf("?") < 0) ? "?type=" + type.filetype : "&type=" + type.filetype;
+
+    if (app_label){
+		fbURL += "&app_label=" + app_label;
 	}
 	if (model){
-		filebrowser += "&model=" + model;
+		fbURL += "&model=" + model;
 	}
 	if (object_id){
-		filebrowser += "&object_id=" + object_id;
+		fbURL += "&object_id=" + object_id;
 	}
 	
-	var title = (type == 'image') ? 'Image ' : 'File ';
+    var title = (type.filetype == 'image') ? 'Image ' : 'File ';
 	title += 'Gallery | Tendenci';
-	tinymce.activeEditor.windowManager.open({
-		title : title,
-		width : 800,
-		height : 550,
-		url : filebrowser
-		},  {
-		window : win,
-		input : field_name
-	});
-	return false;
- }
+    const instanceApi = tinyMCE.activeEditor.windowManager.openUrl({
+        title: title,
+        url: fbURL,
+        width: 850,
+        height: 500,
+        onMessage: function(dialogApi, data) {
+            callback(data.src, {alt: data.alt});
+            instanceApi.close();
+        }
+    });
+    return false;
+}

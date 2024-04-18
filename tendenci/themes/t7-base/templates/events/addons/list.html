@@ -29,6 +29,7 @@
             <a href="{% url "event.edit_addon" event.id addon.id %}">{% trans "Edit" %}</a>
             </div>
             <table class="addon-detail">
+            <tr><td><strong>{% trans "Position" %}</strong></td><td>{{ addon.position }}</td></tr>
             <tr><td><strong>{% trans "Price" %}</strong></td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }}</td></tr>
             <tr><td><strong>{% trans "Enabled" %}</strong></td><td>{{ addon.status }}</td></tr>
             {% if addon.options.all %}

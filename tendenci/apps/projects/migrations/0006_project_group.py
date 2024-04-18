@@ -8,7 +8,7 @@ import tendenci.apps.user_groups.utils
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user_groups', '0005_auto_20210916_1726'),
+        ('user_groups', '0006_group_logo'),
         ('projects', '0005_auto_20221226_1624'),
     ]
 

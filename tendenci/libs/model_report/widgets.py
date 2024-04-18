@@ -1,5 +1,4 @@
 from django import forms
-from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 from django.utils.encoding import force_str
 from django.forms.widgets import DateInput

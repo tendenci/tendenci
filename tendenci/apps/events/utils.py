@@ -40,7 +40,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.imports.utils import extract_from_excel
 from tendenci.apps.base.utils import (adjust_datetime_to_timezone,
-    format_datetime_range, UnicodeWriter, get_salesforce_access,
+    format_datetime_range, get_salesforce_access,
     create_salesforce_contact, validate_email, convert_absolute_urls)
 from tendenci.apps.exports.utils import full_model_to_dict
 from tendenci.apps.emails.models import Email
@@ -250,6 +250,12 @@ def render_event_email(event, email, registrants=None):
     return email
 
 
+def replace_qr_code(template_content):
+    template_content = '{% load qr_code %}\n' + template_content
+    qr_code_replacement = '{% include "events/email_badge.html" with registrants=registrants %}'
+    return template_content.replace('{{ qr_code }}', qr_code_replacement)
+
+
 def get_default_reminder_template(event):
     from tendenci.apps.events.forms import EMAIL_AVAILABLE_TOKENS
 
@@ -354,27 +360,72 @@ def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
             sheet.write(row+start, col, val, style=style)
 
 
-def get_ievent(request, d, event_id):
-    from tendenci.apps.events.models import Event
+def get_calendar_data():
+    """
+    Get data needed to return .ics calendar file.
+    """
+    p = re.compile(r'http(s)?://(www.)?([^/]+)')
+    d = {}
+    file_name = ''
 
+    d['site_url'] = get_setting('site', 'global', 'siteurl')
+
+    match = p.search(d['site_url'])
+    if match:
+        d['domain_name'] = match.group(3)
+    else:
+        d['domain_name'] = ""
+
+    if d['domain_name']:
+        file_name = '%s.ics' % (d['domain_name'])
+    else:
+        file_name = "event.ics"
+
+    return file_name, d
+
+def get_ics_defaults():
+    """
+    Create string for the default ics options
+    """
+    ics_str = "BEGIN:VCALENDAR\r\n"
+    ics_str += "VERSION:2.0\r\n"
+    ics_str += "METHOD:PUBLISH\r\n"
+    ics_str += foldline("PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci Codebase MIMEDIR//EN")
+    ics_str += "\r\n"
+
+    return ics_str
+
+def get_ievent(request, d, event_id):
     site_url = get_setting('site', 'global', 'siteurl')
 
     event = Event.objects.get(id=event_id)
     e_str = "BEGIN:VEVENT\r\n"
 
+    # organizer - Commenting it out for now
+    #  because the ORGANIZER property expects both name and email like ORGANIZER;CN=John Smith:mailto:jsmith@example.com.
+    #  If it is left as blank or name alone, it would make "Add to calendar" act as “meeting update” in outlook.
+    # organizers = event.organizer_set.all()
+    # if organizers:
+    #     organizer_name_list = [organizer.name for organizer in organizers]
+    #     e_str += foldline("ORGANIZER:%s" % (', '.join(organizer_name_list)))
+    #     e_str += "\r\n"
+
+    event_url = "%s%s" % (site_url, reverse('event', args=[event.pk]))
+    d['event_url'] = event_url
+    # text description
+    e_str += foldline("DESCRIPTION:%s" % (build_ical_text(event,d)))
+    e_str += "\r\n"
+
+    # uid
+    e_str += "UID:uid%d@%s\r\n" % (event.pk, d['domain_name'])
+
+    e_str += "SUMMARY:%s\r\n" % strip_tags(event.title)
+
     # date time
     time_zone = event.timezone
     if not time_zone:
         time_zone = settings.TIME_ZONE
-
-    e_str += "DTSTAMP:{}\r\n".format(adjust_datetime_to_timezone(datetime.now(), time_zone, 'UTC').strftime('%Y%m%dT%H%M%SZ'))
-
-    # organizer
-    organizers = event.organizer_set.all()
-    if organizers:
-        organizer_name_list = [organizer.name for organizer in organizers]
-        e_str += "ORGANIZER:%s\r\n" % (', '.join(organizer_name_list))
-
+        
     if event.start_dt:
         start_dt = adjust_datetime_to_timezone(event.start_dt, time_zone, 'UTC')
         start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
@@ -384,27 +435,24 @@ def get_ievent(request, d, event_id):
         end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
         e_str += "DTEND:%s\r\n" % (end_dt)
 
-    # location
-    if event.place:
-        e_str += "LOCATION:%s\r\n" % (event.place.name)
+    e_str += "CLASS:PUBLIC\r\n"
+    e_str += "PRIORITY:5\r\n"
+
+    e_str += "DTSTAMP:{}\r\n".format(adjust_datetime_to_timezone(datetime.now(), time_zone, 'UTC').strftime('%Y%m%dT%H%M%SZ'))
 
     e_str += "TRANSP:OPAQUE\r\n"
+
     e_str += "SEQUENCE:0\r\n"
 
-    # uid
-    e_str += "UID:uid%d@%s\r\n" % (event.pk, d['domain_name'])
+    # location
+    if event.place and event.place.name:
+        e_str += foldline("LOCATION:%s" % (event.place.name))
+        e_str += "\r\n"
 
-    event_url = "%s%s" % (site_url, reverse('event', args=[event.pk]))
-    d['event_url'] = event_url
-
-    # text description
-    e_str += "DESCRIPTION:%s\r\n" % (build_ical_text(event,d))
     #  html description
-    e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\r\n" % (build_ical_html(event,d))
+    e_str += foldline("X-ALT-DESC;FMTTYPE=text/html:%s" % (build_ical_html(event,d)))
+    e_str += "\r\n"
 
-    e_str += "SUMMARY:%s\r\n" % strip_tags(event.title)
-    e_str += "PRIORITY:5\r\n"
-    e_str += "CLASS:PUBLIC\r\n"
     e_str += "BEGIN:VALARM\r\n"
     e_str += "TRIGGER:-PT30M\r\n"
     e_str += "ACTION:DISPLAY\r\n"
@@ -416,8 +464,6 @@ def get_ievent(request, d, event_id):
 
 
 def get_vevents(user, d):
-    from tendenci.apps.events.models import Event
-
     site_url = get_setting('site', 'global', 'siteurl')
 
     e_str = ""
@@ -436,7 +482,8 @@ def get_vevents(user, d):
         organizers = event.organizer_set.all()
         if organizers:
             organizer_name_list = [organizer.name for organizer in organizers]
-            e_str += "ORGANIZER:%s\r\n" % (', '.join(organizer_name_list))
+            e_str += foldline("ORGANIZER:%s" % (', '.join(organizer_name_list)))
+            e_str += "\r\n"
 
         # date time
         time_zone = event.timezone
@@ -454,7 +501,8 @@ def get_vevents(user, d):
 
         # location
         if event.place:
-            e_str += "LOCATION:%s\r\n" % (event.place.name)
+            e_str += foldline("LOCATION:%s" % (event.place.name))
+            e_str += "\r\n"
 
         e_str += "TRANSP:OPAQUE\r\n"
         e_str += "SEQUENCE:0\r\n"
@@ -466,7 +514,8 @@ def get_vevents(user, d):
         d['event_url'] = event_url
 
         # text description
-        e_str += "DESCRIPTION:%s\r\n" % (build_ical_text(event,d))
+        e_str += foldline("DESCRIPTION:%s" % (build_ical_text(event,d)))
+        e_str += "\r\n"
         #  html description
         #e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\n" % (build_ical_html(event,d))
 
@@ -491,21 +540,21 @@ def build_ical_text(event, d):
     except:
         reg8n_id = 0
     if not (reg8n_guid and reg8n_id):
-        ical_text = "--- This iCal file does *NOT* confirm registration.\r\n"
+        ical_text = "--- This iCal file does *NOT* confirm registration.\n"
     else:
         ical_text = "--- "
-    ical_text += "Event details subject to change. ---\r\n"
-    ical_text += '%s\r\n\r\n' % d['event_url']
+    ical_text += "Event details subject to change. ---\n"
+    ical_text += '%s\n\n' % d['event_url']
 
     # title
-    ical_text += "Event Title: %s\r\n" % strip_tags(event.title)
+    ical_text += "Event Title: %s\n" % strip_tags(event.title)
 
     # start_dt
-    ical_text += 'Start Date / Time: %s %s\r\n' % (event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
+    ical_text += 'Start Date / Time: %s %s\n' % (event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
 
     # location
     if event.place:
-        ical_text += 'Location: %s\r\n' % (event.place.name)
+        ical_text += 'Location: %s\n' % (event.place.name)
 
 #    # sponsor
 #    sponsors = event.sponsor_set.all()
@@ -517,7 +566,7 @@ def build_ical_text(event, d):
     speakers = event.speaker_set.all()
     if speakers.count() > 0:
         speaker_name_list = [speaker.name for speaker in speakers]
-        ical_text += 'Speaker: %s\r\n' % (', '.join(speaker_name_list))
+        ical_text += 'Speaker: %s\n' % (', '.join(speaker_name_list))
 
     # maps
     show_map_link = False
@@ -525,7 +574,7 @@ def build_ical_text(event, d):
                 or (event.place and event.place.address and event.place.zip):
         show_map_link = True
     if show_map_link:
-        ical_text += "Google\r\n"
+        ical_text += "Google\n"
         ical_text += "http://maps.google.com/maps?q="
         ical_text += event.place.address.replace(" ", "+")
         if event.place.city:
@@ -538,29 +587,66 @@ def build_ical_text(event, d):
             ical_text += ','
             ical_text += event.place.zip
 
-        ical_text += "\r\n\r\nForecast\n"
-        ical_text += "http://www.weather.com/weather/monthly/%s\r\n\r\n" % (event.place.zip)
+        ical_text += "\n\nForecast\n"
+        ical_text += "http://www.weather.com/weather/monthly/%s\n\n" % (event.place.zip)
 
-    ical_text += strip_tags((event.description).replace('&nbsp;', " "))
+    ical_text += strip_tags((event.description).replace('&nbsp;', " ")) + '\n\n'
     
     if reg8n_guid and reg8n_id:
         if Registration.objects.filter(guid=reg8n_guid, id=reg8n_id, event_id=event.id).exists():
             registration_email_text = event.registration_configuration.registration_email_text
             if registration_email_text:
-                ical_text += '%s\r\n' % (strip_tags((event.registration_configuration.registration_email_text).replace('&nbsp;', " ")))
+                ical_text += '%s\n' % (strip_tags((event.registration_configuration.registration_email_text).replace('&nbsp;', " ")))
 
     if not (reg8n_guid and reg8n_id):
         ical_text += "--- This iCal file does *NOT* confirm registration."
     else:
         ical_text += "--- "
-    ical_text += "Event details subject to change. ---\r\n\r\n"
-    ical_text += "--- By Tendenci - The Open Source AMS for Associations ---\r\n"
+    ical_text += "Event details subject to change. ---\n\n"
+    ical_text += "--- By Tendenci - The Open Source AMS for Associations ---\n"
 
     ical_text  = ical_text.replace(';', '\\;')
     ical_text  = ical_text.replace('\n', '\\n')
-    ical_text  = ical_text.replace('\r', '\\r')
-
+    ical_text  = ical_text.replace('\r', '')
     return ical_text
+
+
+def foldline(line, limit=75, fold_sep='\r\n '):
+    """Make a string folded as defined in RFC5545
+    Lines of text SHOULD NOT be longer than 75 octets, excluding the line
+    break.  Long content lines SHOULD be split into a multiple line
+    representations using a line "folding" technique.  That is, a long
+    line can be split between any two characters by inserting a CRLF
+    immediately followed by a single linear white-space character (i.e.,
+    SPACE or HTAB).
+    
+    This function is copied from
+    https://github.com/collective/icalendar/blob/master/src/icalendar/parser.py
+    """
+    assert isinstance(line, str)
+    assert '\n' not in line
+
+    # Use a fast and simple variant for the common case that line is all ASCII.
+    try:
+        line.encode('ascii')
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        pass
+    else:
+        return fold_sep.join(
+            line[i:i + limit - 1] for i in range(0, len(line), limit - 1)
+        )
+
+    ret_chars = []
+    byte_count = 0
+    for char in line:
+        char_byte_len = len(char.encode('utf-8'))
+        byte_count += char_byte_len
+        if byte_count >= limit:
+            ret_chars.append(fold_sep)
+            byte_count = char_byte_len
+        ret_chars.append(char)
+
+    return ''.join(ret_chars)
 
 
 def build_ical_html(event, d):
@@ -643,6 +729,9 @@ def build_ical_html(event, d):
     ical_html += " - The Open Source AMS for Associations ---</div>"
 
     ical_html  = ical_html.replace(';', '\\;')
+    ical_html  = ical_html.replace('\r\n', ' ')
+    ical_html  = ical_html.replace('\r', ' ')
+    ical_html  = ical_html.replace('\n', ' ')
     #ical_html  = degrade_tags(ical_html.replace(';', '\\;'))
 
     return ical_html
@@ -2173,106 +2262,6 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
     max_organizers = events.annotate(num_organizers=Count('organizer')).aggregate(Max('num_organizers'))['num_organizers__max'] or 0
     max_pricings = events.annotate(num_pricings=Count('registration_configuration__regconfpricing')).aggregate(Max('num_pricings'))['num_pricings__max'] or 0
 
-    data_row_list = []
-
-    for event in events:
-        data_row = []
-        # event setup
-        event_d = full_model_to_dict(event, fields=event_fields)
-        for field in event_fields:
-            value = None
-            if field == 'entity':
-                if event.entity:
-                    value = event.entity.entity_name
-            elif field == 'type':
-                if event.type:
-                    value = event.type.name
-            elif field == 'group':
-                groups = event.groups.values_list('name', flat=True)
-                if groups:
-                    value = ', '.join(groups)
-            elif field in event_d:
-                value = event_d[field]
-            value = str(value).replace(os.linesep, ' ').rstrip()
-            value = escape_csv(value)
-            data_row.append(value)
-
-        if event.place:
-            # place setup
-            place_d = full_model_to_dict(event.place)
-            for field in place_fields:
-                value = place_d[field]
-                value = str(value).replace(os.linesep, ' ').rstrip()
-                value = escape_csv(value)
-                data_row.append(value)
-
-        if event.registration_configuration:
-            # config setup
-            conf_d = full_model_to_dict(event.registration_configuration)
-            for field in configuration_fields:
-                if field == "payment_method":
-                    value = event.registration_configuration.payment_method.all()
-                    value = value.values_list('human_name', flat=True)
-                else:
-                    value = conf_d[field]
-                value = str(value).replace(os.linesep, ' ').rstrip()
-                value = escape_csv(value)
-                data_row.append(value)
-
-        if event.speaker_set.all():
-            # speaker setup
-            for speaker in event.speaker_set.all():
-                speaker_d = full_model_to_dict(speaker)
-                for field in speaker_fields:
-                    value = speaker_d[field]
-                    value = str(value).replace(os.linesep, ' ').rstrip()
-                    value = escape_csv(value)
-                    data_row.append(value)
-
-        # fill out the rest of the speaker columns
-        if event.speaker_set.all().count() < max_speakers:
-            for i in range(0, max_speakers - event.speaker_set.all().count()):
-                for field in speaker_fields:
-                    data_row.append('')
-
-        if event.organizer_set.all():
-            # organizer setup
-            for organizer in event.organizer_set.all():
-                organizer_d = full_model_to_dict(organizer)
-                for field in organizer_fields:
-                    value = organizer_d[field]
-                    value = str(value).replace(os.linesep, ' ').rstrip()
-                    value = escape_csv(value)
-                    data_row.append(value)
-
-        # fill out the rest of the organizer columns
-        if event.organizer_set.all().count() < max_organizers:
-            for i in range(0, max_organizers - event.organizer_set.all().count()):
-                for field in organizer_fields:
-                    data_row.append('')
-
-        reg_conf = event.registration_configuration
-        if reg_conf and reg_conf.regconfpricing_set.all():
-            # pricing setup
-            for pricing in reg_conf.regconfpricing_set.all():
-                pricing_d = full_model_to_dict(pricing)
-                for field in pricing_fields:
-                    if field == 'groups':
-                        value = pricing.groups.values_list('name', flat=True)
-                    else:
-                        value = pricing_d[field]
-                    value = str(value).replace(os.linesep, ' ').rstrip()
-                    value = escape_csv(value)
-                    data_row.append(value)
-
-        # fill out the rest of the pricing columns
-        if reg_conf and reg_conf.regconfpricing_set.all().count() < max_pricings:
-            for i in range(0, max_pricings - reg_conf.regconfpricing_set.all().count()):
-                for field in pricing_fields:
-                    data_row.append('')
-
-        data_row_list.append(data_row)
-
     fields = event_fields + ["place %s" % f for f in place_fields]
     fields = fields + ["config %s" % f for f in configuration_fields]
     for i in range(0, max_speakers):
@@ -2283,21 +2272,110 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
         fields = fields + ["pricing %s %s" % (i, f) for f in pricing_fields]
 
     identifier = identifier or int(ttime.time())
-    file_name_temp = 'export/events/%s_temp.csv' % identifier
+    file_name = 'export/events/%s.csv' % identifier
 
-    with default_storage.open(file_name_temp, 'wb') as csvfile:
-        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
+    with default_storage.open(file_name, 'w') as csvfile:
+        csv_writer = csv.writer(csvfile)
         csv_writer.writerow(fields)
 
-        for row in data_row_list:
-            csv_writer.writerow(row)
+        for event in events:
+            data_row = []
+            # event setup
+            event_d = full_model_to_dict(event, fields=event_fields)
+            for field in event_fields:
+                value = None
+                if field == 'entity':
+                    if event.entity:
+                        value = event.entity.entity_name
+                elif field == 'type':
+                    if event.type:
+                        value = event.type.name
+                elif field == 'group':
+                    groups = event.groups.values_list('name', flat=True)
+                    if groups:
+                        value = ', '.join(groups)
+                elif field in event_d:
+                    value = event_d[field]
+                value = str(value).replace(os.linesep, ' ').rstrip()
+                value = escape_csv(value)
+                data_row.append(value)
+    
+            if event.place:
+                # place setup
+                place_d = full_model_to_dict(event.place)
+                for field in place_fields:
+                    value = place_d[field]
+                    value = str(value).replace(os.linesep, ' ').rstrip()
+                    value = escape_csv(value)
+                    data_row.append(value)
+    
+            if event.registration_configuration:
+                # config setup
+                conf_d = full_model_to_dict(event.registration_configuration)
+                for field in configuration_fields:
+                    if field == "payment_method":
+                        value = event.registration_configuration.payment_method.all()
+                        value = value.values_list('human_name', flat=True)
+                    else:
+                        value = conf_d[field]
+                    value = str(value).replace(os.linesep, ' ').rstrip()
+                    value = escape_csv(value)
+                    data_row.append(value)
+    
+            if event.speaker_set.all():
+                # speaker setup
+                for speaker in event.speaker_set.all():
+                    speaker_d = full_model_to_dict(speaker)
+                    for field in speaker_fields:
+                        value = speaker_d[field]
+                        value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
+                        data_row.append(value)
+    
+            # fill out the rest of the speaker columns
+            if event.speaker_set.all().count() < max_speakers:
+                for i in range(0, max_speakers - event.speaker_set.all().count()):
+                    for field in speaker_fields:
+                        data_row.append('')
+    
+            if event.organizer_set.all():
+                # organizer setup
+                for organizer in event.organizer_set.all():
+                    organizer_d = full_model_to_dict(organizer)
+                    for field in organizer_fields:
+                        value = organizer_d[field]
+                        value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
+                        data_row.append(value)
+    
+            # fill out the rest of the organizer columns
+            if event.organizer_set.all().count() < max_organizers:
+                for i in range(0, max_organizers - event.organizer_set.all().count()):
+                    for field in organizer_fields:
+                        data_row.append('')
+    
+            reg_conf = event.registration_configuration
+            if reg_conf and reg_conf.regconfpricing_set.all():
+                # pricing setup
+                for pricing in reg_conf.regconfpricing_set.all():
+                    pricing_d = full_model_to_dict(pricing)
+                    for field in pricing_fields:
+                        if field == 'groups':
+                            value = pricing.groups.values_list('name', flat=True)
+                        else:
+                            value = pricing_d[field]
+                        value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
+                        data_row.append(value)
+    
+            # fill out the rest of the pricing columns
+            if reg_conf and reg_conf.regconfpricing_set.all().count() < max_pricings:
+                for i in range(0, max_pricings - reg_conf.regconfpricing_set.all().count()):
+                    for field in pricing_fields:
+                        data_row.append('')
+    
+            csv_writer.writerow(data_row)
 
-    # rename the file name
-    file_name = 'export/events/%s.csv' % identifier
-    default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
-
-    # delete the temp file
-    default_storage.delete(file_name_temp)
 
     # notify user that export is ready to download
     [user] = User.objects.filter(pk=user_id)[:1] or [None]

@@ -1,0 +1,5 @@
+[General]
+name = Juniper
+description = Generic Bootstrap 3 Theme
+version = 1.0
+extends = t7-base

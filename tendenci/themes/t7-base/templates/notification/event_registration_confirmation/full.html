@@ -47,6 +47,9 @@
         {% else %}
             {% include "events/email_badge.html" with registrants=registrants %}
             {% trans "Registration Complete. Enjoy the Event!" %}
+            {% if event.zoom_integration_setup %}
+                <div><a href="{{ SITE_GLOBAL_SITEURL }}{% url 'event.zoom' event.id %}">{% trans "Join Zoom Meeting" %}</a></div>
+            {% endif %}
         {% endif %}
     </div>
 {% else %}
@@ -142,6 +145,9 @@
             {% else %}
                 {% include "events/email_badge.html" with registrants=registrants %}
                 {% trans "Registration Complete. Enjoy the Event!" %}
+                {% if event.zoom_integration_setup %}
+                <div><a href="{{ SITE_GLOBAL_SITEURL }}{% url 'event.zoom' event.id %}">{% trans "Join Zoom Meeting" %}</a></div>
+                {% endif %}
             {% endif %}
         </div>
     {% endif %}

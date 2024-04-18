@@ -201,16 +201,22 @@
     </div>
     <div class="row logos">
       <div class="left">
-        <div class="logo align-left">
-          {% if registrant.event.sponsor %}
-          <img  src="{% image_url registrant.event.sponsor.image %}" title="{{ registrant.event.sponsor.name }}" alt="{{ registrant.event.sponsor.name }}"/>
-        </div>
-        <div class="formatted-text">
-          <div class="name">{{ registrant.event.sponsor.name }}</div>
-          {{ registrant.event.sponsor.description|safe }}
-          {% else %}
-              &nbsp;
-          {% endif %}
+        <div class="logo align-left" style="text-align: center;">
+        {% with registrant.event.groups.all.0 as event_group %}
+      {% if event_group %}
+	      {% if event_group.logo %}
+	      <div style="margin-bottom: 1em;">
+	      <img src="{{ event_group.logo.url }}" title="{{ event_group.name }}" alt="{{ event_group.name }}"/>
+	      </div>
+	      {% endif %}
+	      <div class="formatted-text">
+	        <div class="name">{{ event_group.name }}</div>
+	          {{ event_group.description|safe }}
+	      </div>
+      {% else %}
+          &nbsp;
+      {% endif %}
+      {% endwith %}
         </div>
       </div>
       <div class="right">
@@ -231,10 +237,11 @@
     </div>
     <div class="row heading">
       <div class="col-md-3">
-      	{% if registrant.event.image %}
+         {# have to hard-code Symposiums here until we figured out a way #}
+      	{% if registrant.event.type.name == 'Symposiums' and registrant.event.image %}
         <img src="{% image_url registrant.event.image %}" title="{{ registrant.event.title }}" alt="{{ registrant.event.title }}"/>
         {% else %}
-        <span class="img-blank"></span>
+        <span class="img-blank">&nbsp;</span>
         {% endif %}
       </div>
       <div class="col-md-3 heading">
@@ -308,33 +315,7 @@
   </div>
 </div>
 
-{% if registrant.credits_by_sub_event %}
-<div class="certificate credits">
-  <div class="row heading">
-    <div class="title col-md-12">
-      {% trans "Class Title" %}
-    </div>
-    <div class="col-md-4">
-      <div>Credits</div>
-      <div>IRS CE ID</div>
-      <div>IRS CE Earned</div>
-    </div>
-  </div>
-  {% for day, events in registrant.credits_by_sub_event.items %}
-    <div class="row day"><span class="day">{{ day }}</span></div>
-    {% for event in events %}
-      <div class="row details">
-        <div class="col-100px">{{ event.event_code }}</div>
-        <div class="col-md-12">{{ event.title }}</div>
-        <div class="col-md-4">
-            <div class="col-47px">{{ event.credits }}</div>
-            <div class="col-166px">{{ event.alternate_ceu }}&nbsp;</div>
-            <div class="col-47px">{{ event.irs_credits }}</div>
-        </div>
-      </div>
-    {% endfor %}
-  {% endfor %}
-</div>
-{% endif %}
+{% include "events/registrants/certificate-sub-events-credits.html" %}
+
 {% endblock %}
 

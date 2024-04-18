@@ -3,19 +3,19 @@
               <div class="social-media-wrap">
               {% with name=profile.first_name %}
              {% if profile.linkedin %}
-              <a href="{{ profile.linkedin }}" title="{% blocktrans %}Follow {{ name }} on Linkedin{% endblocktrans %}"><span class="fa fa-linkedin-square"></span></a>
+              <a href="{{ profile.linkedin }}" title="{% blocktrans %}Follow {{ name }} on Linkedin{% endblocktrans %}"><span class="fa-brands fa-linkedin"></span></a>
              {% endif %}
              {% if profile.facebook %}
-              <a href="{{ profile.facebook }}" title="{% blocktrans %}Follow {{ name }} on Facebook{% endblocktrans %}"><span class="fa fa-facebook-square"></span></a>
+              <a href="{{ profile.facebook }}" title="{% blocktrans %}Follow {{ name }} on Facebook{% endblocktrans %}"><span class="fa-brands fa-square-facebook"></span></a>
              {% endif %}
              {% if profile.twitter %}
-              <a href="{{ profile.twitter }}" title="{% blocktrans %}Follow {{ name }} on Twitter{% endblocktrans %}"><span class="fa fa-twitter-square"></span></a>
+              <a href="{{ profile.twitter }}" title="{% blocktrans %}Follow {{ name }} on Twitter{% endblocktrans %}"><span class="fa-brands fa-square-x-twitter"></span></a>
              {% endif %}
              {% if profile.instagram %}
-              <a href="{{ profile.instagram }}" title="{% blocktrans %}Follow {{ name }} on Instagram{% endblocktrans %}"><span class="fa fa-instagram"></span></a>
+              <a href="{{ profile.instagram }}" title="{% blocktrans %}Follow {{ name }} on Instagram{% endblocktrans %}"><span class="fa-brands fa-square-instagram"></span></a>
              {% endif %}
              {% if profile.youtube %}
-              <a href="{{ profile.youtube }}" title="{% blocktrans %}Follow {{ name }} on YouTube {% endblocktrans %}"><span class="fa fa-youtube-square"></span></a>
+              <a href="{{ profile.youtube }}" title="{% blocktrans %}Follow {{ name }} on YouTube {% endblocktrans %}"><span class="fa-brands fa-square-youtube"></span></a>
              {% endif %}
              {% endwith %}
              </div>

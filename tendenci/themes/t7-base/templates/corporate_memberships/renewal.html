@@ -197,6 +197,21 @@ div.forms{
           {% if form.donation_option_value.help_text %}
           <div class="help-text">{{ form.donation_option_value.help_text }}</div>
           {% endif %}
+          
+          {% if 'donate_to_entity' in form.fields %}
+          <ul>
+          	<li>
+          	{{ form.donate_to_entity.label_tag }} {{ form.donate_to_entity }}
+          		{% if form.donate_to_entity.errors %}
+              	<div class="alert alert-danger" role="alert">
+                  {% for error in form.donate_to_entity.errors %}
+                  <div>{{ error }}</div>
+                  {% endfor %}
+              	</div>
+              	{% endif %}
+          	</li>
+          </ul>
+          {% endif %}
 	 </div>
 	{% endif %}	
 
@@ -565,10 +580,14 @@ div.forms{
         }else{
             $("#id_members").show();
         }
-        //$("input[name=members]").each(function()
-        //    {
-        //        IndUpdateSummary(this);
-        //});
+        
+        {% if not MODULE_MEMBERSHIPS_ORGMEMBERCANRENEW and request.method == 'GET' %}
+        $("input[name=members]").each(function()
+        {
+        	$(this).prop('checked', true);
+            IndUpdateSummary(this);
+        });
+        {% endif %}
 
         $("#id_select_all_members").on("click", function()
         {

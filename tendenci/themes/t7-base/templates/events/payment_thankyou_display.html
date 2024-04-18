@@ -3,7 +3,7 @@
 <h3>{% trans "What would you like to do now?" %}</h3>
 <ul>
 {% if not obj.canceled and obj.status != 'payment-required' %}
-	{% if obj.event.has_child_events %}
+	{% if obj.event.has_child_events and model_name != 'assetspurchase' %}
 	<li>
            <a class="btn btn-info" href="{% url "event.register_child_events" obj.pk %}">{% if request.user.is_authenticated and request.user == obj.registrant.user %}{% trans "Manage my Schedule" %}{% else %}{% trans "Manage Schedule" %}{% endif %}</a>
     </li>

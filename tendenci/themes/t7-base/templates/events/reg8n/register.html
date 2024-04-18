@@ -9,7 +9,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'css/events.css' %}" />
-<link rel="stylesheet" href="{% static 'css/event-registration.css' %}" />
+<link rel="stylesheet" href="{% static 'css/event-registration.css' %}?v=1.1" />
 <link rel="stylesheet" href="{% static 'css/event-addons.css' %}" />
 <link rel="stylesheet" href="{% static 'css/events-reg.css' %}" />
 
@@ -261,9 +261,13 @@
                                 <div class="form-field{% if field.name == 'override' %} admin-override{% endif %}">
                                     {% if field|is_checkbox %}
                                     <div class="checkbox-input">
+                                    	{% if field.errors %}
                                         <div class="error">{{ field.errors }}</div>
-                                        <div class="field">{{ field }}</div>
-                                        <div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
+                                        {% endif %}
+                                        <div class="field">
+                                        	<div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
+                                        	{{ field }}
+                                        </div>
                                         {% if field.help_text %}
                                         <div class="help-text">{{ field.help_text }}</div>
                                         {% endif %}
@@ -280,8 +284,9 @@
                                     {% if field.help_text %}
                                     <div class="help-text">{{ field.help_text }}</div>
                                     {% endif %}
+                                    {% endif %}
                                 </div>
-                                {% endif %}
+                                
                                 {% if field.name == 'attendance_dates' and event.requires_attendance_dates %}
                                 <div class="form-field attendance_dates">
                                     {% if field.errors %}
@@ -432,6 +437,17 @@
                     <p>Disclaimer: The availability of discount code is subject to
                     change without any warranty before confirming your registration.</p>
                 {% endif %}
+                
+                {% if addons and addon_formset.has_addon_selected %}
+                <div>{% trans "Addon(s)" %}</div>
+                <ul>
+	            {% for form in addon_formset.forms %}
+	            	{% if form.chosen_addon %}
+	            	<li>{{ form.chosen_addon.title }}: {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ form.chosen_addon.price|floatformat:2 }}</li>
+	            	{% endif %}
+				{% endfor %}
+				</ul>
+	            {% endif %}
                            
                            
                 {% if gratuity_form.gratuity or gratuity_form.gratuity_preferred %}
@@ -576,6 +592,9 @@ $(function () {
 	var myid;
 	var has_checked_addon = false;
 	
+	// hide the checkbox in front of the addons
+	$("input[name=add-addons]").hide();
+
  	if ($('input[id="id_addon-TOTAL_FORMS"]').attr('value') == "0") {
 	   $('input[name="add-addons"]').each(function() {
 	      i = $(this).attr('value');

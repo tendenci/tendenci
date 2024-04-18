@@ -544,4 +544,9 @@ div.small-font {
   // });
   });
 </script>
+
+{% if event.is_public and not event.is_over %}
+{% render_json_ld event.structured_data %}
+{% endif %}
+
 {% endblock %}

@@ -7,7 +7,7 @@ from tendenci.libs.model_report.highcharts.options import get_highchart_data
 
 from bs4 import BeautifulSoup
 
-import cgi
+import html
 
 
 def is_numeric(value):
@@ -33,7 +33,7 @@ def unicodeToHTMLEntities(text):
     if text is None:
         text = force_str(_('None'))
     if isinstance(text, str):
-        text = cgi.escape(text).encode('ascii', 'xmlcharrefreplace')
+        text = html.escape(text).encode('ascii', 'xmlcharrefreplace')
     return text
 
 

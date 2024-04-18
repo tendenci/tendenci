@@ -47,7 +47,7 @@ class GenerateForm(forms.Form):
     events =  forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, list(range(1920, THIS_YEAR+10))))
     event_end_dt = forms.DateField(initial=datetime.date.today() + datetime.timedelta(days=90), widget=SelectDateWidget(None, list(range(1920, THIS_YEAR+10))))
-    events_type = forms.ChoiceField(initial='', choices=get_type_choices(), required=False)
+    events_type = forms.ChoiceField(initial='', choices=(), required=False)
     articles = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     articles_days = forms.ChoiceField(initial=60, choices=DAYS_CHOICES)
     news = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
@@ -60,6 +60,9 @@ class GenerateForm(forms.Form):
     #Campaign Monitor Template
     template = forms.ModelChoiceField(queryset=NewsletterTemplate.objects.all())
 
+    def __init__(self, *args, **kwargs):
+        super(GenerateForm, self).__init__(*args, **kwargs)
+        self.fields['events_type'].choices = get_type_choices()
 
 class OldGenerateForm(forms.ModelForm):
     default_template = forms.ChoiceField(widget=forms.RadioSelect, choices=())

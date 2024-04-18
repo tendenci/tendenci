@@ -9,4 +9,5 @@ class ResumesConfig(AppConfig):
     def ready(self):
         super(ResumesConfig, self).ready()
         from tendenci.apps.resumes.signals import init_signals, create_notice_types
+        init_signals()
         post_migrate.connect(create_notice_types, sender=self)

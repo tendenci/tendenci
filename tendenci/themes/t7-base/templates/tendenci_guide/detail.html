@@ -11,7 +11,7 @@
 <h3>{{ guide.section }}</h3>
 <ul>
     {% for g in section_guides %}
-    <li><a {% ifequal guide.slug g.slug %}class="active" {% endifequal %}href="{% url "tendenci_guide.guide_page" g.slug %}">{{ g.title }}</a></li>
+    <li><a {% if guide.slug == g.slug %}class="active" {% endif %}href="{% url "tendenci_guide.guide_page" g.slug %}">{{ g.title }}</a></li>
     {% endfor %}
 </ul>
 </div>

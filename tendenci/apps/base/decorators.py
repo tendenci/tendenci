@@ -1,9 +1,9 @@
 import time
 import re
+from urllib.parse import quote as urlquote
 from django.conf import settings
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.utils.http import urlquote
 from django.shortcuts import redirect
 from tendenci.apps.site_settings.utils import get_setting
 

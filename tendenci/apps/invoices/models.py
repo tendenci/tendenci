@@ -720,6 +720,10 @@ class Invoice(models.Model):
             return obj.membership_type
         return obj
 
+    def obj_donation(self):
+        obj = self.get_object()
+        return hasattr(obj, 'donation') and obj.donation
+
     def cancel_registration(self, request, refund=False):
         """Cancel registration for this invoice"""
         if not self.registration:

@@ -3,5 +3,7 @@ User-agent: *
 Crawl-delay: 2
 Disallow: /admin/
 Disallow: /memberships/referer-url/
+Disallow: /photos/sizes/
+Disallow: /photos/download/
 
 Sitemap: {{ site_url }}/sitemap.xml

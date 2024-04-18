@@ -2,3 +2,9 @@ div.mce-fullscreen {
     top: 30px !important;
     z-index: 1050 !important;
 }
+.tox.tox-tinymce.tox-fullscreen {
+  left: 0;
+  position: fixed;
+  top: 30px;
+  z-index: 1050;
+}

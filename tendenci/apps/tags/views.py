@@ -8,7 +8,7 @@ from django.db.models import Count
 import simplejson
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
-
+from tendenci.apps.base.utils import is_ajax
 
 @login_required
 def tags_list(request, template_name="tags/list.html"):
@@ -37,7 +37,7 @@ def detail(request, id=None, template_name="tags/detail.html"):
 
 def autocomplete(request):
     q = request.GET.get('term', '')
-    if request.is_ajax() and q:
+    if is_ajax(request) and q:
         tags = Tag.objects.filter(name__istartswith=q)
         tag_list = [{'id':tag.pk, 'label':tag.name, 'value':tag.name} for tag in tags]
         return HttpResponse(simplejson.dumps(tag_list), content_type='application/json')

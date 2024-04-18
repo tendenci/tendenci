@@ -41,7 +41,7 @@
             <ul>
                 <li><a href="{% url 'video' %}">{% trans 'All' %}</a></li>
                 {% for cat in categories %}
-                    <li><a class="{% ifequal cat video.category %}active{% endifequal %}{% ifequal cat category %}active{% endifequal %}" href="{{ cat.get_absolute_url }}">{{ cat|title }}</a></li>
+                    <li><a class="{% if cat == video.category %}active{% endif %}{% if cat == category %}active{% endif %}" href="{{ cat.get_absolute_url }}">{{ cat|title }}</a></li>
                 {% endfor %}
             </ul>
         </li>

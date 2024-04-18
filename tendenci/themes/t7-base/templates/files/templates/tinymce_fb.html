@@ -45,7 +45,7 @@
             {% with file.get_absolute_url as absolute_url %}
             {% if size %}
             <tr>
-                <td><button type="button" class="insert-file btn btn-info btn-sm" data-src="{{ absolute_url }}">
+                <td><button type="button" class="insert-file btn btn-info btn-sm" data-src="{{ absolute_url }}" data-alt="{{ file.name }}">
                     <i class="glyphicon glyphicon-arrow-down"></i>
                     <span>Insert</span>
                     </button>

@@ -92,10 +92,18 @@ class Type(models.Model):
     An event can only be one type
     A type can have multiple events
     """
+    cert_tempt_choices = (
+        ('', ''),
+        ('events/registrants/certificate-symposium.html', 'certificate-symposium.html'),
+        ('events/registrants/certificate-single-event.html', 'certificate-single-event.html',
+    ))
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50, editable=False)
     color_set = models.ForeignKey('TypeColorSet', on_delete=models.CASCADE)
-
+    certificate_template = models.CharField(max_length=100,
+                                            blank=True, default='',
+                                            choices=cert_tempt_choices)
+    
     objects = EventTypeManager()
 
     class Meta:
@@ -773,7 +781,7 @@ class RegConfPricing(OrderingBaseModel):
 
     @property
     def timezone(self):
-        return self.reg_conf.event.timezone.zone
+        return self.reg_conf.event.timezone.key
 
     @staticmethod
     def get_access_filter(user, is_strict=False, spots_available=-1):
@@ -799,7 +807,7 @@ class RegConfPricing(OrderingBaseModel):
             filter_or = {'allow_anonymous': True,
                         'allow_user': True,
                         'allow_member': True}
-        if not user.is_anonymous and user.profile.is_member:
+        if not user.is_anonymous and user.group_member.exists():
             # get a list of groups for this user
             groups_id_list = user.group_member.values_list('group__id', flat=True)
             if groups_id_list:
@@ -1640,7 +1648,7 @@ class Registrant(models.Model):
 
             credits[date].append({
                 'event_code': event.event_code,
-                'title': event.title,
+                'title': event.title if len(event.title) <= 60 else event.short_name,
                 'credits': cpe_credits,
                 'irs_credits': irs_credits,
 
@@ -2625,6 +2633,65 @@ class Event(TendenciBaseModel):
             end_dt__lte=self.end_dt,
         )
 
+    @property
+    def structured_data(self):
+        site_url = get_setting('site', 'global', 'siteurl')
+        url = site_url + self.get_absolute_url()
+        data = {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": self.title,
+          "description": self.description,
+          "startDate": self.start_dt.isoformat(),
+          "endDate": self.end_dt.isoformat(),
+          "eventStatus": "https://schema.org/EventScheduled",
+          }
+        if self.image:
+            data['image'] = site_url + reverse('file', args=[self.image.pk])
+        
+        if self.place:
+            if self.place.virtual:
+                data['eventAttendanceMode'] = "https://schema.org/OnlineEventAttendanceMode"
+                data['location'] = {"@type": "VirtualLocation"}
+                if self.place.url:
+                    data['location']['url'] = self.place.url
+            else:
+                data['eventAttendanceMode'] = "https://schema.org/OfflineEventAttendanceMode"
+                if self.place.name or self.place.address:
+                    data['location'] = {"@type": "Place",}
+                    if self.place.name:
+                        data['location']['name'] = self.place.name
+                    if self.place.address:
+                        data['location']['address'] = {"@type": "PostalAddress",
+                                                       "streetAddress": self.place.address,
+                                                       "addressLocality": self.place.city,
+                                                       "addressRegion": self.place.state,
+                                                       "postalCode": self.place.zip,
+                                                       "addressCountry": self.place.country}
+        pricings = RegConfPricing.objects.filter(
+                    reg_conf=self.registration_configuration,
+                    status=True
+                    ).filter(Q(allow_anonymous=True) | Q(allow_user=True) | Q(allow_member=True))
+        if pricings.count() > 0:
+            offers_list = []
+            for pricing in pricings:
+                offers_list.append({
+                "@type": "Offer",
+                "name": pricing.title,
+                "price": str(pricing.price),
+                "priceCurrency": get_setting("site", "global", "currency"),
+                "validFrom": pricing.start_dt.isoformat(),
+                "url": url,
+              })
+
+            if pricings.count() == 1:
+                data['offers'] = offers_list[0]
+            else:
+                data['offers'] = offers_list
+
+        return data
+        
+
     def sub_event_datetimes(self, child_events=None):
         """Returns list of start_dt for available sub events"""
         datetimes = dict()
@@ -2682,6 +2749,15 @@ class Event(TendenciBaseModel):
             start_dt__date__gt=datetime.now().date(),
             registration_configuration__enabled=True
         )
+
+    def get_certificate_template(self):
+        template_name = self.type and self.type.certificate_template
+        if not template_name:
+            if self.has_child_events:
+                template_name='events/registrants/certificate-symposium.html'
+            else:
+                template_name = 'events/registrants/certificate-single-event.html'
+        return template_name
 
     @property
     def events_with_credits(self):
@@ -3164,8 +3240,41 @@ class Event(TendenciBaseModel):
             # If registrant credit was found, but hasn't been released, allow
             # it to update the credit count
             if not r_credit.released and r_credit.credits != credits:
-               r_credit.credits = credits
-               r_credit.save(update_fields=['credits'])
+                r_credit.credits = credits
+                r_credit.save(update_fields=['credits'])
+
+    def sync_credits(self):
+        """
+        Sync credits with the checked-in registrant.
+
+        If a credit is removed from an event, it will be removed
+        from registrant credits as well unless it is already released.
+        """
+        if self.parent: # a child event
+            for c_registrant in RegistrantChildEvent.objects.filter(
+                                    child_event=self,
+                                    checked_in=True):
+                self.assign_credits(c_registrant.registrant)
+        else: # single event
+            for registrant in Registrant.objects.filter(
+                        registration__event=self,
+                        checked_in=True,
+                        checked_out=True,
+                        cancel_dt__isnull=True):
+                reg8n = registrant.registration
+                if reg8n.status() == 'registered':
+                    self.assign_credits(registrant)
+
+        # remove registrant credits that are no longer available for this event
+        # except for those already released
+        available_credit_ids = EventCredit.objects.filter(event=self,
+                                                       available=True
+                                                       ).values_list('id', flat=True)
+        registrant_credits = RegistrantCredits.objects.filter(event=self, released=False)
+        if available_credit_ids:
+            registrant_credits = registrant_credits.exclude(
+                    event_credit_id__in=available_credit_ids)
+        registrant_credits.delete()
 
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
@@ -3236,6 +3345,14 @@ class Event(TendenciBaseModel):
         return Addon.objects.filter(
             event=self,
             status=True
+            ).exists()
+
+    @property
+    def has_addons_price(self):
+        return Addon.objects.filter(
+            event=self,
+            status=True,
+            price__gt=0
             ).exists()
 
     @property
@@ -3973,7 +4090,7 @@ class CustomRegFieldEntry(models.Model):
     class Meta:
         app_label = 'events'
 
-class Addon(models.Model):
+class Addon(OrderingBaseModel):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
 

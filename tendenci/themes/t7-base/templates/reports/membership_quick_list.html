@@ -1,5 +1,6 @@
 {% extends "reports/base.html" %}
 {% load membership_tags %}
+{% load bootstrap_pagination_tags %}
 
 {% block content %}
 <div class="page-header">
@@ -10,6 +11,7 @@
 </h1>
 
 </div>
+{% autopaginate members 50 %}
 <div class="mems-wrap">
 
 <p class="pull-left">
@@ -38,6 +40,6 @@
 {% else %}
 {% trans "No active members." %}
 {% endif %}
-
+{% paginate %}
 </div>
 {% endblock content %}

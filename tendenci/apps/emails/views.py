@@ -42,6 +42,23 @@ def view(request, id, template_name="emails/view.html"):
     return render_to_resp(request=request, template_name=template_name,
         context={'email':email})
 
+
+def _move_style_to_body(email):
+    """
+    Move the <style> block from html header to body.
+    
+    This is because html header will be removed by tinymce editor.
+    This process will preserve the style for the newsletters
+    that were created prior to tinymce version 6.
+    """
+    import re
+    p = re.compile(r'<head>[\d\D\s\S\w\W]*?(<style[^>]*>[\d\D\s\S\w\W]*?</style>)[\d\D\s\S\w\W]*?</head>', re.IGNORECASE)
+    match_obj = p.search(email.body)
+    if match_obj:
+        style_block = match_obj.group(1)
+        email.body = email.body.replace('<body>', f'<body>\n{style_block}')
+    return email
+
 @login_required
 def edit(request, id, form_class=EmailForm, template_name="emails/edit.html"):
     email = get_object_or_404(Email, pk=id)
@@ -60,6 +77,10 @@ def edit(request, id, form_class=EmailForm, template_name="emails/edit.html"):
 
             return HttpResponseRedirect(next_url)
     else:
+        if email.newsletter_set.exists():
+            if email.body.find('<html>') != -1 and email.body.find('<style>') != -1:
+                email = _move_style_to_body(email)
+            
         form = form_class(instance=email)
 
     return render_to_resp(request=request, template_name=template_name,

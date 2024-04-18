@@ -1,56 +1,89 @@
-(function ($) {
-	var callbacks = {
-	    'tendenciFileManager' : tendenciFileManager
-	};
+'use strict';
 
-  function initTinyMCE($e) {
-    if ($e.parents('.empty-form').length == 0) {  // Don't do empty inlines
-      var mce_conf = JSON.parse($e.attr('data-mce-conf'));
-      if ('media_alt_source' in mce_conf && mce_conf['media_alt_source'] == 'false'){
-      	mce_conf['media_alt_source'] = false;
-      }
-      if ('media_poster' in mce_conf && mce_conf['media_poster'] == 'false'){
-      	mce_conf['media_poster'] = false;
-      }
-      if ('convert_urls' in mce_conf && mce_conf['convert_urls'] == 'false'){
-        	mce_conf['convert_urls'] = false;
+{
+  function initTinyMCE(el) {
+    if (el.closest('.empty-form') === null) {  // Don't do empty inlines
+      var mce_conf = JSON.parse(el.dataset.mceConf);
+
+      // There is no way to pass a JavaScript function as an option
+      // because all options are serialized as JSON.
+      const fns = [
+        'color_picker_callback',
+        'file_picker_callback',
+        'images_dataimg_filter',
+        'images_upload_handler',
+        'paste_postprocess',
+        'paste_preprocess',
+        'setup',
+        'urlconverter_callback',
+      ];
+      fns.forEach((fn_name) => {
+      	//console.log(fn_name, mce_conf[fn_name]);
+        if (typeof mce_conf[fn_name] != 'undefined') {
+          if ( fn_name == 'file_picker_callback'){
+      	    // have to convert the string to function, otherwise it won't work'
+      	    mce_conf['file_picker_callback'] = tendenciFileManager;
+         }else{
+            if (mce_conf[fn_name].includes('(')) {
+              mce_conf[fn_name] = eval('(' + mce_conf[fn_name] + ')');
+            }
+            else {
+              mce_conf[fn_name] = window[mce_conf[fn_name]];
+            }
         }
+        }
+      });
 
-      if ('file_browser_callback' in mce_conf && mce_conf['file_browser_callback'] == 'tendenciFileManager'){
-      	// have to convert the string to function, otherwise it won't work'
-      	mce_conf['file_browser_callback'] = callbacks['tendenciFileManager'];
+      // replace default prefix of 'empty-form' if used in selector
+      if (mce_conf.selector && mce_conf.selector.includes('__prefix__')) {
+        mce_conf.selector = `#${el.id}`;
       }
-      var id = $e.attr('id');
-      if ('elements' in mce_conf && mce_conf['mode'] == 'exact') {
-        mce_conf['elements'] = id;
+      else if (!('selector' in mce_conf)) {
+        mce_conf['target'] = el;
       }
-      if ($e.attr('data-mce-gz-conf')) {
-        tinyMCE_GZ.init(JSON.parse($e.attr('data-mce-gz-conf')));
+      
+      if (el.dataset.mceGzConf) {
+        tinyMCE_GZ.init(JSON.parse(el.dataset.mceGzConf));
       }
-      if (!tinyMCE.editors[id]) {
+      if (!tinyMCE.get(el.id)) {
         tinyMCE.init(mce_conf);
       }
     }
   }
 
-  $(function () {
-    // initialize the TinyMCE editors on load
-    $('.tinymce').each(function () {
-      initTinyMCE($(this));
-    });
+  // Call function fn when the DOM is loaded and ready. If it is already
+  // loaded, call the function now.
+  // https://youmightnotneedjquery.com/#ready
+  function ready(fn) {
+    if (document.readyState !== 'loading') {
+      fn();
+    } else {
+      document.addEventListener('DOMContentLoaded', fn);
+    }
+  }
 
-    // initialize the TinyMCE editor after adding an inline
-    // XXX: We don't use jQuery's click event as it won't work in Django 1.4
-    document.body.addEventListener("click", function(ev) {
-      if(!ev.target.parentNode || ev.target.parentNode.className.indexOf("add-row") === -1) {
-        return;
-      }
-      var $addRow = $(ev.target.parentNode);
-      setTimeout(function() {  // We have to wait until the inline is added
-        $('textarea.tinymce', $addRow.parent()).each(function () {
-          initTinyMCE($(this));
-        });
-      }, 0);
-    }, true);
+  function initializeTinyMCE(element, formsetName) {
+    Array.from(element.querySelectorAll('.tinymce')).forEach(area => initTinyMCE(area));
+  }
+
+  ready(function() {
+    if (!tinyMCE) {
+      throw 'tinyMCE is not loaded. If you customized TINYMCE_JS_URL, double-check its content.';
+    }
+    // initialize the TinyMCE editors on load
+    initializeTinyMCE(document);
+
+    // initialize the TinyMCE editor after adding an inline in the django admin context.
+    if (typeof(django) !== 'undefined' && typeof(django.jQuery) !== 'undefined') {
+      django.jQuery(document).on('formset:added', (event, $row, formsetName) => {
+        if (event.detail && event.detail.formsetName) {
+          // Django >= 4.1
+          initializeTinyMCE(event.target);
+        } else {
+          // Django < 4.1, use $row
+          initializeTinyMCE($row.get(0));
+        }
+      });
+    }
   });
-}((typeof django === 'undefined' || typeof django.jQuery === 'undefined') && jQuery || django && django.jQuery));
+}

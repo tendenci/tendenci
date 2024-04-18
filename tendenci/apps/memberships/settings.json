@@ -220,5 +220,22 @@
         "scope_category": "memberships",
         "store": false,
         "updated_by": ""
+    },
+    {
+        "default_value": "true",
+        "description": "If true, organizational members can renew for themselves. Otherwise, only admin or corp reps can renew the individual memberships.",
+        "data_type": "boolean",
+        "update_dt": "2024-01-29 21:50:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "orgmembercanrenew",
+        "value": "true",
+        "label": "Allow Organizational Members Renew",
+        "input_value": "true, false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "memberships",
+        "store": true,
+        "updated_by": ""
     }
 ]

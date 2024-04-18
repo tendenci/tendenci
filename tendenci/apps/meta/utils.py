@@ -2,7 +2,7 @@ from re import compile
 from operator import itemgetter
 
 from django.utils.html import strip_tags
-from django.utils.text import unescape_entities
+from html import unescape
 from django.utils.translation import gettext_lazy as _
 
 STOP_WORDS = ['able','about','across','after','all','almost','also','am',
@@ -37,7 +37,7 @@ def generate_meta_keywords(value):
         value = strip_tags(value)
 
         # get rid of the html entities
-        value = unescape_entities(value)
+        value = unescape(value)
 
         # lower case the value
         value = value.lower()

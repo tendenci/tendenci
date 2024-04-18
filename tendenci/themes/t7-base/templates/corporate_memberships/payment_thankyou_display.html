@@ -3,6 +3,9 @@
 
 <h3>{% trans "What would you like to do now?" %}</h3>
 <ul>
+	{% if obj.donation and obj.donation.invoice and obj.donation.invoice.balance >= 0 %}
+	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "payment.pay_online" obj.donation.invoice.id obj.donation.invoice.guid %}" class="links"><span class="text-warning"><big>{% trans "Make payment for my donation" %}</big></span></a></li>
+	{% endif %}
     <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "membership_default.add_under_corp" obj.id %}" class="links">{% trans "Add memberships under this corporate membership" %}</a></li>
     <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.edit_corp_reps" obj.id %}" class="links">{% trans "Designate representatives for this corporate membership" %}</a></li>
     <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" obj.id %}" class="links">{% trans "View Corporate Membership" %}</a></li>

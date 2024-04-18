@@ -51,7 +51,12 @@
             {# <link href="{% static 'css/theme_bar.css' %}" rel="stylesheet" type="text/css"> #}
         {% endif %}
 
-        <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="{% static 'font-awesome/css/fontawesome.min.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'font-awesome/css/brands.min.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'font-awesome/css/solid.min.css' %}" type="text/css">
+        <!-- support v4 icon references/syntax -->
+        <link href="{% static 'font-awesome/css/v4-shims.min.css' %}" rel="stylesheet" />
+        <link href="{% static 'font-awesome/css/v4-font-face.min.css' %}" rel="stylesheet" />
 
         <link href="{% static 'css/tendenci.css' %}?v=11.1.3" rel="stylesheet" type="text/css" media="screen">
         <link href="{% static 'css/labels.css' %}" rel="stylesheet" type="text/css">

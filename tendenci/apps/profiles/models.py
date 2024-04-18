@@ -515,7 +515,7 @@ class Profile(Person):
     @property
     def membership(self):
         [membership] = self.user.membershipdefault_set.exclude(
-                    status_detail='archive').order_by('-create_dt')[:1] or [None]
+                    status_detail__in=['archive', 'disapproved']).order_by('-create_dt')[:1] or [None]
         return membership
 
     @property

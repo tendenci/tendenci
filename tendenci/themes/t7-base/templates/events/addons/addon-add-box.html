@@ -1,5 +1,6 @@
 
 <h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
+<div class="text-info">{% trans 'Please enter a number in the Quantity box and select an available option if not already, then click the button "Add Addons".' %}</div>
 <div id="addon-choices" >
     <table>
     {% for addon in addons %}
@@ -9,7 +10,7 @@
         {{ addon.title }} ({{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }})
     </td>
     <td>
-        <strong>{% trans "Quantity" %}:</strong> <input id="add-addon-{{ addon.pk }}-count" type="text" value="{% if addon.default_yes %}1{% else %}0{% endif %}" {% if anon_pricing and not addon.allow_anonymous %}{% trans "DISABLED" %}{% endif %} />
+        <strong>{% trans "Quantity" %}:</strong> <input id="add-addon-{{ addon.pk }}-count" type="text" value="{% if addon.default_yes and not do_confirmation %}1{% else %}0{% endif %}" {% if anon_pricing and not addon.allow_anonymous %}{% trans "DISABLED" %}{% endif %} />
     </td>
     </tr>
     <tr {% if anon_pricing and not addon.allow_anonymous %}gray-text{% endif %}>

@@ -35,7 +35,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 
 from tendenci.apps.base.decorators import ssl_required, password_required
-from tendenci.apps.base.utils import get_pagination_page_range
+from tendenci.apps.base.utils import get_pagination_page_range, is_ajax
 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
@@ -92,7 +92,7 @@ def profile_photo_upload(request, id=None, template_name='profiles/upload_photo.
             profile = upload_form.save()
  
             EventLog.objects.log()
-            if request.is_ajax():
+            if is_ajax(request):
                 return JsonResponse({
                         'status': 'success',
                         'message': 'Profile Photo Uploaded Successfully'
@@ -105,7 +105,7 @@ def profile_photo_upload(request, id=None, template_name='profiles/upload_photo.
                 err = upload_form.errors.as_data()['photo'][0].messages[0]
             else:
                 err = ''
-            if request.is_ajax():
+            if is_ajax(request):
                 return JsonResponse({
                             'status': 'failed',
                             'message': 'Invalid Photo: ' + err

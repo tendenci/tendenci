@@ -1,0 +1,54 @@
+Upgrade 12.X to 14.0
+====================
+
+.. note:: If you have addons on your site, make sure you have your addons upgraded to be Django 3.2 LTS compatible before upgrading your site to Tendenci 14.
+
+
+Step 1: Prepare for Upgrade
+---------------------------
+
+Back up your site and database!
+
+Replace the content of the ``requirements/tendenci.txt`` with the following:
+::
+
+    tendenci>=14,<15
+
+
+We recommend to create a new virtual env instead of using the existing one.
+
+
+Step 2: Upgrade Tendenci
+------------------------
+
+Run:
+::
+
+    cd /var/www/mysite/
+    source /srv/mysite/bin/activate
+    # For production sites, run
+    pip install -r requirements/prod.txt --upgrade
+    # For dev sites on your local, run
+    pip install -r requirements/dev.txt --upgrade
+    python manage.py migrate
+    python manage.py deploy
+    python manage.py clear_cache
+
+
+If you have Google reCAPTCHA set up, please rename these two settings:
+
+    Rename `NORECAPTCHA_SITE_KEY` to `RECAPTCHA_PUBLIC_KEY`
+
+    Rename `NORECAPTCHA_SECRET_KEY` to `RECAPTCHA_PRIVATE_KEY`
+
+
+Step 3: Upgrade System Commands
+-------------------------------
+
+Replace the virtualenv in:
+    - cron jobs 
+    - systemd unit file. 
+
+After update is done, restart your site.
+
+

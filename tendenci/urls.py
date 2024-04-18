@@ -79,7 +79,6 @@ urlpatterns += [
     re_path(r'^discounts/', include('tendenci.apps.discounts.urls')),
     re_path(r'^versions/', include('tendenci.apps.versions.urls')),
     re_path(r'^reports/', include('tendenci.apps.reports.urls')),
-    #re_path(r'social_auth/', include('tendenci.apps.social_auth.urls')),  # Does not support Python 3
     re_path(r'navs/', include('tendenci.apps.navs.urls')),
     re_path(r'tendenci/', include('tendenci.apps.tendenci_guide.urls')),
     re_path(r'^api_tasty/', include('tendenci.apps.api_tasty.urls')),

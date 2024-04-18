@@ -42,7 +42,7 @@ from tendenci.apps.memberships.models import (MembershipType,
                                                 MembershipAppField,
                                                 MembershipFile,
                                                 VALID_MEMBERSHIP_STATUS_DETAIL)
-from tendenci.apps.base.utils import normalize_newline, UnicodeWriter
+from tendenci.apps.base.utils import normalize_newline
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.apps.emails.models import Email

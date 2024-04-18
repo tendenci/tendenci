@@ -1,5 +1,5 @@
-from django.conf.urls import url
-from django.utils.http import urlquote
+from urllib.parse import quote
+from django.urls import re_path
 from django.views.generic import RedirectView
 from tendenci.apps.redirects.models import Redirect
 
@@ -15,7 +15,7 @@ def get_redirect_patterns():
 
         # use urlquote so we can support '?' in the redirect
         if not redirect.uses_regex:
-            pattern = r'^%s/?$' % urlquote(redirect.from_url)
+            pattern = r'^%s/?$' % quote(redirect.from_url)
         else:
             pattern = r'^%s/?$' % redirect.from_url
 
@@ -28,8 +28,8 @@ def get_redirect_patterns():
 
         if redirect.http_status == 302:
             extra.update({'permanent': False})
-            url_list.append(url(pattern, RedirectView.as_view(**extra)))
+            url_list.append(re_path(pattern, RedirectView.as_view(**extra)))
         else:
-            url_list.append(url(pattern, RedirectView.as_view(**extra)))
+            url_list.append(re_path(pattern, RedirectView.as_view(**extra)))
 
     return url_list

@@ -3,6 +3,7 @@ from datetime import datetime, date, time
 from io import BytesIO
 from PIL import Image
 import time as ttime
+import csv
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -15,7 +16,6 @@ from django.utils.translation import gettext
 
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.emails.models import Email
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.site_settings.utils import get_setting
@@ -202,20 +202,12 @@ def process_export(export_fields='all_fields', export_status_detail='',
     file_name_temp = 'export/directories/%s_temp.csv' % identifier
 
     with default_storage.open(file_name_temp, 'wb') as csvfile:
-        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
-        fields_names = list(field_list)
-        for i, item in enumerate(fields_names):
-            if item == 'headline':
-                fields_names[i] = 'name'
-            if item == 'body':
-                fields_names[i] = 'description'
-        csv_writer.writerow(fields_names)
-
+        csv_writer = csv.DictWriter(csvfile, fieldnames=field_list)
         directories = Directory.objects.all()
         if export_status_detail:
             directories = directories.filter(status_detail__icontains=export_status_detail)
         for directory in directories:
-            items_list = []
+            row_dict = {}
             for field_name in field_list:
                 item = getattr(directory, field_name)
                 if item is None:
@@ -232,8 +224,8 @@ def process_export(export_fields='all_fields', export_status_detail='',
                         item = 'Total: %d / Balance: %d' % (item.total, item.balance)
                     elif isinstance(item, str):
                         item = escape_csv(item)
-                items_list.append(item)
-            csv_writer.writerow(items_list)
+                row_dict[field_name] = item
+            csv_writer.writerow(row_dict)
 
     # rename the file name
     file_name = 'export/directories/%s.csv' % identifier
