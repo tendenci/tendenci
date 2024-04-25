@@ -1,6 +1,6 @@
 {% extends "corporate_memberships/base-wide.html" %}
 {% load bootstrap_pagination_tags %}
-
+{% load base_filters %}
 {% block extra_head %}
 {{ block.super }}
 
@@ -40,7 +40,36 @@
         	{% endif %}
         </td>
         <td>{{ cm.create_dt|date:"F j, Y" }}</td>
-        <td>{{ cm.status_detail }}</td>
+        {% if cm.donation and cm.donation.invoice %}
+        <td {% if cm.donation.invoice.balance %}class="body-copy-yellow"{% endif %}>
+	    {% if cm.donation.invoice.balance == 0 %}
+	    	{% if cm.donation.invoice.is_void %}
+	    	{% comment %}Translators: Void adjective {% endcomment %}
+	    	<span class="text-warning">{% trans 'Void' %}</span>
+	    	{% else %}
+	    	{% trans 'Paid' %}
+	    	{% endif %}
+	    {% else %}
+	    <span class="text-danger">Balance:
+	      {{ cm.donation.invoice.balance|format_currency }}</span>
+	    {% endif %}
+	   </td>
+	   {% elif cm.invoice %}
+	   <td {% if cm.invoice.balance %}class="body-copy-yellow"{% endif %}>
+	    {% if cm.invoice.balance == 0 %}
+	    	{% if cm.invoice.is_void %}
+	    	{% comment %}Translators: Void adjective {% endcomment %}
+	    	<span class="text-warning">{% trans 'Void' %}</span>
+	    	{% else %}
+	    	{% trans 'Paid' %}
+	    	{% endif %}
+	    {% else %}
+	    <span class="text-danger">{% trans 'Not Paid' %}</span>
+	    {% endif %}
+	   </td>
+	   {% else %}
+	   <td>&nbsp;</td>
+	   {% endif %}
     </tr>
     {% endfor %}
 
