@@ -135,6 +135,11 @@ class Resume(TendenciBaseModel):
 
     @property
     def is_linkedin_url(self):
-        o = urlparse(self.resume_url)
-        return o.hostname.lower() == 'www.linkedin.com' or o.hostname.lower() == 'linkedin.com'
+        if self.resume_url:
+            self.resume_url = self.resume_url.lower()
+            if not self.resume_url[:7] in ('https:/', 'http://'):
+                self.resume_url = f'https://{self.resume_url}'
+            o = urlparse(self.resume_url)
+            return o.hostname and o.hostname in ('www.linkedin.com', 'linkedin.com')
+        return False
                 
