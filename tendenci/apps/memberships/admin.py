@@ -458,6 +458,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             return dt.strftime('%m/%d/%Y')
         return u''
     get_expire_dt.short_description = u'Expire Date'
+    get_expire_dt.admin_order_field = 'expire_dt'
 
     def get_actions(self, request):
         actions = super(MembershipDefaultAdmin, self).get_actions(request)
