@@ -76,6 +76,9 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 ORIENTATION_EXIF_TAG_KEY = 274
 
 
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
 def get_us_state_name(state_abbr):
     """
     Given a state abbreiation, 
@@ -414,7 +417,7 @@ def generate_meta_keywords(value):
         from re import compile
         from operator import itemgetter
 
-        from django.utils.text import unescape_entities
+        from html import unescape
         from django.utils.translation import gettext_lazy as _
 
         # translate the stop words
@@ -425,7 +428,7 @@ def generate_meta_keywords(value):
         value = strip_tags(value)
 
         # get rid of the html entities
-        value = unescape_entities(value)
+        value = unescape(value)
 
         # lower case the value
         value = value.lower()
@@ -871,53 +874,6 @@ class UTF8Recoder(object):
 
     def __next__(self):
         return next(self.reader).encode("utf-8")
-
-
-class UnicodeReader(object):
-    """
-    A CSV reader which will iterate over lines in the CSV file "f",
-    which is encoded in the given encoding.
-    """
-
-    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
-        f = UTF8Recoder(f, encoding)
-        self.reader = csv.reader(f, dialect=dialect, **kwds)
-
-    def __next__(self):
-        row = next(self.reader)
-        return [str(s, "utf-8") for s in row]
-
-    def __iter__(self):
-        return self
-
-
-class UnicodeWriter:
-    """
-    A CSV writer which will write rows to CSV file "f",
-    which is encoded in the given encoding.
-    """
-
-    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
-        # Redirect output to a queue
-        self.queue = StringIO()
-        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
-        self.stream = f
-        self.encoder = codecs.getincrementalencoder(encoding)()
-
-    def writerow(self, row):
-        self.writer.writerow(row)
-        # Fetch output from the queue ...
-        data = self.queue.getvalue()
-        # ... and encode it into the target encoding
-        data = self.encoder.encode(data)
-        # write to the target stream
-        self.stream.write(data)
-        # empty queue
-        self.queue.truncate(0)
-
-    def writerows(self, rows):
-        for row in rows:
-            self.writerow(row)
 
 
 def get_salesforce_access():

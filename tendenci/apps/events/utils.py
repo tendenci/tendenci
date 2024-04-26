@@ -40,7 +40,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.imports.utils import extract_from_excel
 from tendenci.apps.base.utils import (adjust_datetime_to_timezone,
-    format_datetime_range, UnicodeWriter, get_salesforce_access,
+    format_datetime_range, get_salesforce_access,
     create_salesforce_contact, validate_email, convert_absolute_urls)
 from tendenci.apps.exports.utils import full_model_to_dict
 from tendenci.apps.emails.models import Email
@@ -2262,106 +2262,6 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
     max_organizers = events.annotate(num_organizers=Count('organizer')).aggregate(Max('num_organizers'))['num_organizers__max'] or 0
     max_pricings = events.annotate(num_pricings=Count('registration_configuration__regconfpricing')).aggregate(Max('num_pricings'))['num_pricings__max'] or 0
 
-    data_row_list = []
-
-    for event in events:
-        data_row = []
-        # event setup
-        event_d = full_model_to_dict(event, fields=event_fields)
-        for field in event_fields:
-            value = None
-            if field == 'entity':
-                if event.entity:
-                    value = event.entity.entity_name
-            elif field == 'type':
-                if event.type:
-                    value = event.type.name
-            elif field == 'group':
-                groups = event.groups.values_list('name', flat=True)
-                if groups:
-                    value = ', '.join(groups)
-            elif field in event_d:
-                value = event_d[field]
-            value = str(value).replace(os.linesep, ' ').rstrip()
-            value = escape_csv(value)
-            data_row.append(value)
-
-        if event.place:
-            # place setup
-            place_d = full_model_to_dict(event.place)
-            for field in place_fields:
-                value = place_d[field]
-                value = str(value).replace(os.linesep, ' ').rstrip()
-                value = escape_csv(value)
-                data_row.append(value)
-
-        if event.registration_configuration:
-            # config setup
-            conf_d = full_model_to_dict(event.registration_configuration)
-            for field in configuration_fields:
-                if field == "payment_method":
-                    value = event.registration_configuration.payment_method.all()
-                    value = value.values_list('human_name', flat=True)
-                else:
-                    value = conf_d[field]
-                value = str(value).replace(os.linesep, ' ').rstrip()
-                value = escape_csv(value)
-                data_row.append(value)
-
-        if event.speaker_set.all():
-            # speaker setup
-            for speaker in event.speaker_set.all():
-                speaker_d = full_model_to_dict(speaker)
-                for field in speaker_fields:
-                    value = speaker_d[field]
-                    value = str(value).replace(os.linesep, ' ').rstrip()
-                    value = escape_csv(value)
-                    data_row.append(value)
-
-        # fill out the rest of the speaker columns
-        if event.speaker_set.all().count() < max_speakers:
-            for i in range(0, max_speakers - event.speaker_set.all().count()):
-                for field in speaker_fields:
-                    data_row.append('')
-
-        if event.organizer_set.all():
-            # organizer setup
-            for organizer in event.organizer_set.all():
-                organizer_d = full_model_to_dict(organizer)
-                for field in organizer_fields:
-                    value = organizer_d[field]
-                    value = str(value).replace(os.linesep, ' ').rstrip()
-                    value = escape_csv(value)
-                    data_row.append(value)
-
-        # fill out the rest of the organizer columns
-        if event.organizer_set.all().count() < max_organizers:
-            for i in range(0, max_organizers - event.organizer_set.all().count()):
-                for field in organizer_fields:
-                    data_row.append('')
-
-        reg_conf = event.registration_configuration
-        if reg_conf and reg_conf.regconfpricing_set.all():
-            # pricing setup
-            for pricing in reg_conf.regconfpricing_set.all():
-                pricing_d = full_model_to_dict(pricing)
-                for field in pricing_fields:
-                    if field == 'groups':
-                        value = pricing.groups.values_list('name', flat=True)
-                    else:
-                        value = pricing_d[field]
-                    value = str(value).replace(os.linesep, ' ').rstrip()
-                    value = escape_csv(value)
-                    data_row.append(value)
-
-        # fill out the rest of the pricing columns
-        if reg_conf and reg_conf.regconfpricing_set.all().count() < max_pricings:
-            for i in range(0, max_pricings - reg_conf.regconfpricing_set.all().count()):
-                for field in pricing_fields:
-                    data_row.append('')
-
-        data_row_list.append(data_row)
-
     fields = event_fields + ["place %s" % f for f in place_fields]
     fields = fields + ["config %s" % f for f in configuration_fields]
     for i in range(0, max_speakers):
@@ -2372,21 +2272,110 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
         fields = fields + ["pricing %s %s" % (i, f) for f in pricing_fields]
 
     identifier = identifier or int(ttime.time())
-    file_name_temp = 'export/events/%s_temp.csv' % identifier
+    file_name = 'export/events/%s.csv' % identifier
 
-    with default_storage.open(file_name_temp, 'wb') as csvfile:
-        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
+    with default_storage.open(file_name, 'w') as csvfile:
+        csv_writer = csv.writer(csvfile)
         csv_writer.writerow(fields)
 
-        for row in data_row_list:
-            csv_writer.writerow(row)
+        for event in events:
+            data_row = []
+            # event setup
+            event_d = full_model_to_dict(event, fields=event_fields)
+            for field in event_fields:
+                value = None
+                if field == 'entity':
+                    if event.entity:
+                        value = event.entity.entity_name
+                elif field == 'type':
+                    if event.type:
+                        value = event.type.name
+                elif field == 'group':
+                    groups = event.groups.values_list('name', flat=True)
+                    if groups:
+                        value = ', '.join(groups)
+                elif field in event_d:
+                    value = event_d[field]
+                value = str(value).replace(os.linesep, ' ').rstrip()
+                value = escape_csv(value)
+                data_row.append(value)
+    
+            if event.place:
+                # place setup
+                place_d = full_model_to_dict(event.place)
+                for field in place_fields:
+                    value = place_d[field]
+                    value = str(value).replace(os.linesep, ' ').rstrip()
+                    value = escape_csv(value)
+                    data_row.append(value)
+    
+            if event.registration_configuration:
+                # config setup
+                conf_d = full_model_to_dict(event.registration_configuration)
+                for field in configuration_fields:
+                    if field == "payment_method":
+                        value = event.registration_configuration.payment_method.all()
+                        value = value.values_list('human_name', flat=True)
+                    else:
+                        value = conf_d[field]
+                    value = str(value).replace(os.linesep, ' ').rstrip()
+                    value = escape_csv(value)
+                    data_row.append(value)
+    
+            if event.speaker_set.all():
+                # speaker setup
+                for speaker in event.speaker_set.all():
+                    speaker_d = full_model_to_dict(speaker)
+                    for field in speaker_fields:
+                        value = speaker_d[field]
+                        value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
+                        data_row.append(value)
+    
+            # fill out the rest of the speaker columns
+            if event.speaker_set.all().count() < max_speakers:
+                for i in range(0, max_speakers - event.speaker_set.all().count()):
+                    for field in speaker_fields:
+                        data_row.append('')
+    
+            if event.organizer_set.all():
+                # organizer setup
+                for organizer in event.organizer_set.all():
+                    organizer_d = full_model_to_dict(organizer)
+                    for field in organizer_fields:
+                        value = organizer_d[field]
+                        value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
+                        data_row.append(value)
+    
+            # fill out the rest of the organizer columns
+            if event.organizer_set.all().count() < max_organizers:
+                for i in range(0, max_organizers - event.organizer_set.all().count()):
+                    for field in organizer_fields:
+                        data_row.append('')
+    
+            reg_conf = event.registration_configuration
+            if reg_conf and reg_conf.regconfpricing_set.all():
+                # pricing setup
+                for pricing in reg_conf.regconfpricing_set.all():
+                    pricing_d = full_model_to_dict(pricing)
+                    for field in pricing_fields:
+                        if field == 'groups':
+                            value = pricing.groups.values_list('name', flat=True)
+                        else:
+                            value = pricing_d[field]
+                        value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
+                        data_row.append(value)
+    
+            # fill out the rest of the pricing columns
+            if reg_conf and reg_conf.regconfpricing_set.all().count() < max_pricings:
+                for i in range(0, max_pricings - reg_conf.regconfpricing_set.all().count()):
+                    for field in pricing_fields:
+                        data_row.append('')
+    
+            csv_writer.writerow(data_row)
 
-    # rename the file name
-    file_name = 'export/events/%s.csv' % identifier
-    default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
-
-    # delete the temp file
-    default_storage.delete(file_name_temp)
 
     # notify user that export is ready to download
     [user] = User.objects.filter(pk=user_id)[:1] or [None]

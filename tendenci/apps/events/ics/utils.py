@@ -25,7 +25,7 @@ def create_ics(user):
 
         #Create ics file for user
         ics_str = "BEGIN:VCALENDAR\n"
-        ics_str += "PRODID:-//Tendenci/Tendenci Codebase 11.0 MIMEDIR//EN\n"
+        ics_str += "PRODID:-//Tendenci/Tendenci Codebase MIMEDIR//EN\n"
         ics_str += "VERSION:2.0\n"
         ics_str += "METHOD:PUBLISH\n"
 

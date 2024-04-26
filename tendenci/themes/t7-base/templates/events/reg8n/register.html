@@ -176,7 +176,7 @@
                                         <div class="error">{{ field.errors }}</div>
                                         {% endif %}
                                         <div class="field">
-                                            <div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
+                                        	<div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
                                         	{{ field }}
                                         </div>
                                         {% if field.help_text %}
@@ -593,7 +593,7 @@ $(function () {
 	
 	// hide the checkbox in front of the addons
 	$("input[name=add-addons]").hide();
-	
+
  	if ($('input[id="id_addon-TOTAL_FORMS"]').attr('value') == "0") {
 	   $('input[name="add-addons"]').each(function() {
 	      i = $(this).attr('value');

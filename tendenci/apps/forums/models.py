@@ -18,7 +18,6 @@ from . import defaults
 from .profiles import PybbProfile
 from .util import unescape, FilePathGenerator, _get_markup_formatter
 
-from annoying.fields import AutoOneToOneField
 
 
 class Category(TendenciBaseModel):

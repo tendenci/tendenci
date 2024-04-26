@@ -16,7 +16,7 @@
         <label for='saved_query'>{% trans "Select Query:" %}</label>
         <select name='saved_query'>
             <option value="">--------</option>{% for q in user_saved_queries_ %}
-            <option value="{{ q.id }}"{% ifequal saved_query q %} selected{% endifequal %}>{{ q.title }}</option>{% endfor %}
+            <option value="{{ q.id }}"{% if saved_query == q %} selected{% endif %}>{{ q.title }}</option>{% endfor %}
         </select>
         <input class="btn btn-primary" type='submit' value='{% trans "Filter Report" %}'>
     </form>
@@ -48,13 +48,13 @@
     <script type="text/javascript" src="{% static "helpdesk/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js" %}"></script>
 
 
- {% ifequal charttype "date" %}
+ {% if charttype == "date" %}
 <script type='text/javascript'>
     $.jqplot.config.enablePlugins = true;
     var dataset = [];
 
     {% for d in data %}
-    dataset[{{ forloop.counter0 }}] = [{% for f in d %}{% if not forloop.first %}['{% for h in headings %}{% ifequal forloop.counter0 forloop.parentloop.counter0 %}{{ h }}{% endifequal %}{% endfor %}', {{ f }}]{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}];{% endfor %}
+    dataset[{{ forloop.counter0 }}] = [{% for f in d %}{% if not forloop.first %}['{% for h in headings %}{% if forloop.counter0 == forloop.parentloop.counter0 %}{{ h }}{% endif %}{% endfor %}', {{ f }}]{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}];{% endfor %}
 
     plot = $.jqplot('placeholder', dataset, {
         legend: {show: true, location: 'nw', xoffset: 55},
@@ -77,8 +77,8 @@
     });
 
 </script>
-{% endifequal %}
-{% ifequal charttype "bar" %}
+{% endif %}
+{% if charttype == "bar" %}
 <script type='text/javascript'>
     $.jqplot.config.enablePlugins = true;
     var dataset = [];
@@ -108,7 +108,7 @@
     });
 
 </script>
-{% endifequal %}
+{% endif %}
 
 
 {% endblock %}

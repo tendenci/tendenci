@@ -18,6 +18,7 @@ from django.db.models import Q
 from django.http import Http404
 
 from tendenci.apps.base.http import Http403
+from tendenci.apps.base.utils import is_ajax
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm
@@ -333,7 +334,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
 @is_enabled('jobs')
 @login_required
 def get_subcategories(request):
-    if request.is_ajax() and request.method == "POST":
+    if is_ajax(request) and request.method == "POST":
         category = request.POST.get('category', None)
         if category:
             sub_categories = JobCategory.objects.filter(parent=category)

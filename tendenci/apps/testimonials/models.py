@@ -63,6 +63,8 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         photo_upload = kwargs.pop('photo', None)
+        if self.website and self.website.startswith('http://'):
+            self.website = self.website.replace('http://', 'https://')
 
         if self.pk is None:
             # Append to top of the list on add

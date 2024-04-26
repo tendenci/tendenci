@@ -26,7 +26,14 @@
   </table>
   {% endif %}
   {% endwith %}
-  <div id="total-amount">{% trans 'Total' %}: {{ payment.amount|format_currency }}</div>
+  {% with payment.invoice.obj_donation as obj_donation %}
+  {% if obj_donation and not obj_donation.is_paid %}
+  <div id="total-amount">{% trans 'Total' %}: {{ payment.amount|format_currency }} <span class="text-warning">*</span></div>
+  <div class="text-warning"><big>* {% blocktrans with donation_amount=obj_donation.donation_amount|format_currency %} Note: The donation amount {{ donation_amount }} you made will need to be paid separately with another invoice, because it is allocated differently.{% endblocktrans %}</big></div>
+  {% else %}
+    <div id="total-amount">{% trans 'Total' %}: {{ payment.amount|format_currency }}</div>
+  {% endif %}
+  {% endwith %}
 </div>
 
 <div class="forms">

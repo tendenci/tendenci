@@ -64,7 +64,7 @@
                         {% if inline_admin_form.original.field_type in fields_to_check and field.field.name in excluded_fields%}
                             {{ field.field }}
                         {% else %}
-                            <div{% if not line.fields|length_is:"1" %} class="field-box"{% endif %}>
+                            <div{% if line.fields|length != 1 %} class="field-box"{% endif %}>
                                 {% if field.field.name == "field_function" %}<div class="field_function">{% endif %}
                                 {% if field.field.name == "function_params" %}<div class="function_params">{% endif %}
                                 {% if field.field.name == "field_type" %}<div class="field_type">{% endif %}

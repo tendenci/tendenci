@@ -9,7 +9,7 @@ env:
 
 # command to install dependencies
 install:
-  - pip install "Django>=3.2,<4.0"
+  - pip install "Django>=4.2,<5.0"
 
 # TODO: command to run tests
 # for now, run command to push source and translation files to Transifex

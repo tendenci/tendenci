@@ -1,7 +1,7 @@
 import os
 
 from django.conf import settings
-from django.conf.urls import include, url
+from django.urls import include, re_path
 
 
 def update_addons(installed_apps, addon_folder_path):
@@ -46,7 +46,7 @@ def get_url_patterns():
     for addon in addons:
         try:
             __import__('.'.join([addon, 'urls']))
-            items.append(url(r'', include('%s.urls' % addon,)))
+            items.append(re_path(r'', include('%s.urls' % addon,)))
         except ImportError:
             pass
     return items

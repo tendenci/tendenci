@@ -48,22 +48,22 @@
     <div class='thumbnail filterBox{% if query_params.sorting %} filterBoxShow{% endif %}' id='filterBoxSort'>
     <label for='id_sort'>{% trans "Sorting" %}</label>
     <select id='id_sort' name='sort'>
-        <option value='created'{% ifequal query_params.sorting "created"%} selected='selected'{% endifequal %}>
+        <option value='created'{% if query_params.sorting == "created"%} selected='selected'{% endif %}>
             {% trans "Created" %}
         </option>
-        <option value='title'{% ifequal query_params.sorting "title"%} selected='selected'{% endifequal %}>
+        <option value='title'{% if query_params.sorting == "title"%} selected='selected'{% endif %}>
             {% trans "Title" %}
         </option>
-        <option value='queue'{% ifequal query_params.sorting "queue"%} selected='selected'{% endifequal %}>
+        <option value='queue'{% if query_params.sorting == "queue"%} selected='selected'{% endif %}>
             {% trans "Queue" %}
         </option>
-        <option value='status'{% ifequal query_params.sorting "status"%} selected='selected'{% endifequal %}>
+        <option value='status'{% if query_params.sorting == "status"%} selected='selected'{% endif %}>
             {% trans "Status" %}
         </option>
-        <option value='priority'{% ifequal query_params.sorting "priority"%} selected='selected'{% endifequal %}>
+        <option value='priority'{% if query_params.sorting == "priority"%} selected='selected'{% endif %}>
             {% trans "Priority" %}
         </option>
-        <option value='assigned_to'{% ifequal query_params.sorting "assigned_to"%} selected='selected'{% endifequal %}>
+        <option value='assigned_to'{% if query_params.sorting == "assigned_to"%} selected='selected'{% endif %}>
             {% trans "Owner" %}
         </option>
     </select>
@@ -78,7 +78,7 @@
     <select id='id_owners' name='assigned_to' multiple='selected' size='5'>
         {% for u in user_choices %}
         <option value='{{ u.id }}'{% if u.id|in_list:query_params.filtering.assigned_to__id__in %} selected='selected'{% endif %}>
-            {{ u.get_username }}{% ifequal u user %} {% trans "(ME)" %}{% endifequal %}
+            {{ u.get_username }}{% if u == user %} {% trans "(ME)" %}{% endif %}
         </option>
         {% endfor %}
     </select>
@@ -171,7 +171,7 @@
     <form method='get' action='{% url 'helpdesk_list' %}'>
     <p><label for='id_query_selector'>{% trans "Query" %}</label> <select name='saved_query' id='id_query_selector'>
         {% for q in user_saved_queries %}
-        <option value='{{ q.id }}'>{{ q.title }}{% if q.shared %} (Shared{% ifnotequal user q.user %} by {{ q.user.get_username }}{% endifnotequal %}){% endif %}</option>
+        <option value='{{ q.id }}'>{{ q.title }}{% if q.shared %} (Shared{% if user != q.user %} by {{ q.user.get_username }}{% endif %}){% endif %}</option>
         {% endfor %}
     </select></p>
     <input class="btn btn-primary" type='submit' value='{% trans "Run Query" %}'>

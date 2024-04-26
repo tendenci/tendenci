@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.core.files.storage import default_storage
 from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
+#from django.conf import settings
 
 # from captcha.fields import CaptchaField
 #from tendenci.apps.base.forms import SimpleMathField
@@ -51,6 +51,7 @@ from tendenci.apps.files.models import File
 from tendenci.apps.products.models import Product, Category as ProductCategory
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.entities.models import Entity
 
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -726,6 +727,7 @@ class CorpMembershipRenewForm(forms.ModelForm):
         model = CorpMembership
         fields = ('corporate_membership_type',
                   'payment_method',
+                  'donate_to_entity'
                   )
 
     def __init__(self, *args, **kwargs):
@@ -753,6 +755,18 @@ class CorpMembershipRenewForm(forms.ModelForm):
             self.fields['donation_option_value'].label = self.corpmembership_app.donation_label
             self.fields['donation_option_value'].widget = DonationOptionAmountWidget(attrs={},
                                                 default_amount=self.corpmembership_app.donation_default_amount)
+            entity_qs = Entity.objects.filter(show_for_donation=True)
+            if entity_qs.exists():
+                self.fields['donate_to_entity'].widget = forms.RadioSelect()
+                self.fields['donate_to_entity'].queryset = entity_qs
+                self.fields['donate_to_entity'].empty_label = None
+                self.fields['donate_to_entity'].label = _('Contribute to')
+                if entity_qs.count() == 1:
+                    self.fields['donate_to_entity'].initial = entity_qs[0]
+            else:
+                del self.fields['donate_to_entity']
+        else:
+            del self.fields['donate_to_entity']
 
         #if not self.instance.corporate_membership_type.membership_type.renewal_price:
         self.fields['select_all_members'].initial = False
@@ -776,6 +790,13 @@ class CorpMembershipRenewForm(forms.ModelForm):
                 if count_members > cmt.membership_cap:
                     raise forms.ValidationError(
                         _("You've selected {count} individual members, but the maximum allowed is {cap}.".format(count=count_members,  cap=cmt.membership_cap)) )
+
+        if 'donation_option_value' in self.cleaned_data \
+            and 'donate_to_entity' in self.cleaned_data \
+            and self.cleaned_data['donation_option_value'] != ['', '']:
+            if not self.cleaned_data['donate_to_entity']:
+                raise forms.ValidationError({'donate_to_entity': _("Please select where we should allocate your donation.")
+                                             })
 
         return cleaned_data
 

@@ -379,7 +379,7 @@ class HigherLogicAPI:
                 "EndDate": self.dt_isoformat(event.end_dt),
                 }
             if event.timezone:
-                event_dict['TimeZone'] = event.timezone.zone
+                event_dict['TimeZone'] = event.timezone.key
             reg_conf = event.registration_configuration
             if reg_conf.enabled:
                 reg_start_dt = event.reg_start_dt()

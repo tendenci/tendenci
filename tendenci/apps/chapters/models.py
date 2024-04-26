@@ -47,7 +47,6 @@ from tendenci.apps.base.utils import fieldify
 from tendenci.apps.base.utils import validate_email
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.models import BaseImport, BaseImportData
-from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.base.utils import correct_filename, get_us_state_name
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.libs.utils import python_executable
@@ -2077,26 +2076,28 @@ class ChapterMembershipImport(BaseImport):
         return header_row, first_row
 
     def generate_recap(self):
+        import csv
         if not self.recap_file and self.header_line:
             file_name = 'chapter_memberships_import_%d_recap.csv' % self.id
             file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
                                    file_name)
-            f = default_storage.open(file_path, 'wb')
-            recap_writer = UnicodeWriter(f, encoding='utf-8')
             header_row = self.header_line.split(',')
             if 'status' in header_row:
                 header_row.remove('status')
             if 'status_detail' in header_row:
                 header_row.remove('status_detail')
             header_row.extend(['action', 'error'])
-            recap_writer.writerow(header_row)
-            data_list = ChapterMembershipImportData.objects.filter(
-                mimport=self).order_by('row_num')
-            for idata in data_list:
-                data_dict = idata.row_data
-                row = [data_dict[k] for k in header_row if k in data_dict]
-                row.extend([idata.action_taken, idata.error])
-                recap_writer.writerow(row)
+            with default_storage.open(file_path, 'w') as f:
+                recap_writer = csv.DictWriter(f, fieldnames=header_row)
+            
+                data_list = ChapterMembershipImportData.objects.filter(
+                    mimport=self).order_by('row_num')
+                for idata in data_list:
+                    data_dict = idata.row_data
+                    data_dict['action'] = idata.action_taken
+                    data_dict['error'] = idata.error
+
+                    recap_writer.writerow(data_dict)
 
             f.close()
             self.recap_file.name = file_path

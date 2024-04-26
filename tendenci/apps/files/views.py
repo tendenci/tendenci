@@ -34,6 +34,7 @@ from django.views.decorators.csrf import csrf_protect
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.http import Http403
+from tendenci.apps.base.utils import is_ajax
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.decorators import admin_required, is_enabled
 from tendenci.apps.perms.object_perms import ObjectPermission
@@ -627,7 +628,7 @@ def tinymce_fb(request, template_name="files/templates/tinymce_fb.html"):
 @csrf_exempt
 @login_required
 def tinymce_get_files(request):
-    if request.is_ajax() and request.method == "POST":
+    if is_ajax(request) and request.method == "POST":
         all_files = File.objects.order_by('-create_dt')
         paginator = Paginator(all_files, 10)
         page_num = request.POST.get('page_num', '')
@@ -740,7 +741,7 @@ class JSONResponse(HttpResponse):
 
 @csrf_exempt
 def get_categories(request):
-    if request.is_ajax() and request.method == "POST":
+    if is_ajax(request) and request.method == "POST":
         main_category = request.POST.get('category', None)
         if main_category:
             sub_categories = FilesCategory.objects.filter(parent=main_category)

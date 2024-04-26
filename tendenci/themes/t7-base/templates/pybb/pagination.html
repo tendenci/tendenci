@@ -15,7 +15,7 @@
     </li>
     {% for page in page_obj.pages %}
     {% if page %}
-    <li {% ifequal page page_obj.number %}class="disabled"{% endifequal %}>
+    <li {% if page == page_obj.number %}class="disabled"{% endif %}>
       <a href="?{{ page.querystring }}" class="page">{{ page }}</a>
     </li>
     {% else %}

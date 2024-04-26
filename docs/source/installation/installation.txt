@@ -15,7 +15,7 @@ recommend installing Tendenci within a virtual environment, which will enable yo
 System Requirements
 -------------------
 
-These instructions cover the installation of Tendenci on a system running Ubuntu 22.04 LTS, Ubuntu 20.04 LTS and Ubuntu 18.04 LTS. Unless specified, all commands apply for these Ubuntu versions. 
+These instructions cover the installation of Tendenci on a system running Ubuntu 24.04 LTS, Ubuntu 22.04 LTS and Ubuntu 20.04 LTS. Unless specified, all commands apply for these Ubuntu versions. 
 
 It should technically be possible to install Tendenci on nearly any Linux, Mac, or Windows system,
 and some partial instructions for installing on macOS are included below.  However, we generally
@@ -32,7 +32,7 @@ If necessary, you may be able to run Tendenci on a VM with as little as 1 CPU co
 3GB of storage, but you will likely find that to be too slow/constrained even for testing purposes.
 
 
-Please note that Tendenci 14 requires Python 3.8 or newer. 
+Please note that Tendenci 15 requires Python 3.8 or newer. 
 
 
 System Preparation
@@ -51,7 +51,6 @@ Also ensure that Ubuntu is configured to automatically install security updates:
     sudo dpkg-reconfigure -plow unattended-upgrades
 
 
-**Ubuntu 22.04 LTS and 20.04 LTS**
 
 Install the required system dependencies (Ubuntu 20.04 LTS comes with Python 3.8. Ubuntu 22.04 LTS comes with Python 3.10. So there is no need to install Python 3):
 ::
@@ -60,37 +59,11 @@ Install the required system dependencies (Ubuntu 20.04 LTS comes with Python 3.8
       libpq-dev python3-dev
 
 
-**Ubuntu 18.04 LTS Only**
-
-Install the required system dependencies:
-::
-
-    sudo apt install build-essential \
-      libevent-dev libpq-dev \
-      libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
-
-
 Add the universe repository:
 ::
 
     sudo add-apt-repository universe
 
-
-Install Python 3.8:
-::
-
-    sudo add-apt-repository ppa:deadsnakes/ppa
-    sudo apt update
-    sudo apt install python3.8
-    
-
-Install ``python3.8-dev`` and ``pip``:
-::
-
-    sudo apt install python3.8-dev --upgrade
-    # The python3-distutils is missing in Ubuntu 18.04 https://github.com/pypa/get-pip/issues/43. Install it before proceeding.
-    sudo apt-get install python3-distutils
-    curl "https://bootstrap.pypa.io/get-pip.py" | sudo python3.8
 
 
 System Preparation on macOS
@@ -290,13 +263,12 @@ Set ``TIME_ZONE`` to the local time zone configured on the system running Tenden
 Setting up the Site
 -------------------
 
-Copy "tendenci2020" theme to the themes directory (adjust your path if your venv path is different or you're running a different python version rather than python 3.8):
+Copy "juniper" theme to the themes directory (adjust your path if your venv path is different or you're running a different python version rather than python 3.8):
 ::
 
-    mkdir /var/www/mysite/themes/tendenci2020
-    cp -r /srv/venv_mysite/lib/python3.8/site-packages/tendenci/themes/t7-tendenci2020/* /var/www/mysite/themes/tendenci2020/
-    # for ubuntu 22.04 LTS
-    cp -r /srv/venv_mysite/lib/python3.10/site-packages/tendenci/themes/t7-tendenci2020/* /var/www/mysite/themes/tendenci2020/
+    mkdir /var/www/mysite/themes/juniper
+    # replace 3.10 with your python version
+    cp -r /srv/venv_mysite/lib/python3.10/site-packages/tendenci/themes/juniper/* /var/www/mysite/themes/juniper/
 
 
 Initialize the database and load some default data:
@@ -369,7 +341,7 @@ Clone the Tendenci repository:
     cd /srv/
     git clone https://github.com/tendenci/tendenci.git tendenci-git
 
-Edit ``/var/www/mysite/requirements/tendenci.txt`` and comment out ``tendenci>=14,<15``
+Edit ``/var/www/mysite/requirements/tendenci.txt`` and comment out ``tendenci>=15,<16``
 
 Edit ``/var/www/mysite/requirements/common.txt`` and add:
 ::

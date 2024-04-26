@@ -1,7 +1,11 @@
 import uuid
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.donations.managers import DonationManager
@@ -28,6 +32,8 @@ class Donation(models.Model):
     payment_method = models.CharField(max_length=50, default='cc')
     invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
     donate_to_entity = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.SET_NULL)
+    object_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.CASCADE)
+    object_id = models.IntegerField(default=0, blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, null=True,  related_name="donation_creator", on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=150, null=True)
@@ -35,6 +41,7 @@ class Donation(models.Model):
     owner_username = models.CharField(max_length=150, null=True)
     status_detail = models.CharField(max_length=50, default='estimate')
     status = models.BooleanField(default=True, null=True)
+    from_object = GenericForeignKey('object_type', 'object_id')
 
     objects = DonationManager()
     
@@ -70,10 +77,10 @@ class Donation(models.Model):
         The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
-        return 'Tendenci Invoice %d Payment for Donation %d' % (
-            inv.id,
-            inv.object_id,
-        )
+        description = f'Tendenci Invoice {inv.id} Payment for Donation {inv.object_id}'
+        if self.from_object:
+            description += f" from {str(self.from_object)}"
+        return description
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """
@@ -104,6 +111,10 @@ class Donation(models.Model):
         """
         Update the object after online payment is received.
         """
+        if self.from_object:
+            # skip the notification if donation is made from corp membership renewal
+            return
+
         # email to admin
         try:
             from tendenci.apps.notifications import models as notification
@@ -120,3 +131,56 @@ class Donation(models.Model):
                     'request': request,
                 }
                 notification.send_emails(recipients,'donation_added', extra_context)
+
+    def is_paid(self):
+        return self.invoice and self.invoice.balance <= 0
+
+    def inv_add(self, user, **kwargs):
+        inv = Invoice()
+        inv.title = "Donation Invoice"
+        inv.bill_to = self.first_name + ' ' + self.last_name
+        inv.bill_to_first_name = self.first_name
+        inv.bill_to_last_name = self.last_name
+        inv.bill_to_company = self.company
+        inv.bill_to_address = self.address
+        inv.bill_to_city = self.city
+        inv.bill_to_state = self.state
+        inv.bill_to_zip_code = self.zip_code
+        inv.bill_to_country = self.country
+        inv.bill_to_phone = self.phone
+        inv.bill_to_email = self.email
+        inv.ship_to = self.first_name + ' ' + self.last_name
+        inv.ship_to_first_name = self.first_name
+        inv.ship_to_last_name = self.last_name
+        inv.ship_to_company = self.company
+        inv.ship_to_address = self.address
+        inv.ship_to_city = self.city
+        inv.ship_to_state = self.state
+        inv.ship_to_zip_code = self.zip_code
+        inv.ship_to_country = self.country
+        inv.ship_to_phone = self.phone
+        #self.ship_to_fax = make_payment.fax
+        inv.ship_to_email = self.email
+        inv.terms = "Due on Receipt"
+        inv.due_date = datetime.now()
+        inv.ship_date = datetime.now()
+        inv.message = 'Thank You.'
+        inv.status = True
+        
+        if self.donate_to_entity:
+            inv.entity = self.donate_to_entity
+    
+        inv.estimate = True
+        inv.status_detail = 'tendered'
+        inv.object_type = ContentType.objects.get(app_label=self._meta.app_label,
+                                                  model=self._meta.model_name)
+        inv.object_id = self.id
+        inv.subtotal = self.donation_amount
+        inv.total = self.donation_amount
+        inv.balance = self.donation_amount
+    
+        inv.save(user)
+        self.invoice = inv
+        self.save()
+    
+        return inv

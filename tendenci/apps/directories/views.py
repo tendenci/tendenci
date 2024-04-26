@@ -21,6 +21,7 @@ from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.http import Http403
+from tendenci.apps.base.utils import is_ajax
 from tendenci.apps.base.views import file_display
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import (get_notice_recipients,
@@ -337,7 +338,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
 @is_enabled('directories')
 @login_required
 def get_subcategories(request):
-    if request.is_ajax() and request.method == "POST":
+    if is_ajax(request) and request.method == "POST":
         categories = request.POST.get('categories', None)
         categories = [int(cat) for cat in categories.split(',') if cat.isdigit()]
         count = 0

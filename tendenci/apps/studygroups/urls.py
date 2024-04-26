@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import re_path
 from tendenci.apps.site_settings.utils import get_setting
 from . import views
 from .feeds import LatestEntriesFeed

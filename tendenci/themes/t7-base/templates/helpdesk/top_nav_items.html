@@ -24,7 +24,7 @@
                             {% for q in user_saved_queries_ %}
                                 <li><a href="{% url 'helpdesk_list' %}?saved_query={{ q.id }}">{{ q.title }}
                                     {% if q.shared %}
-                                        (Shared{% ifnotequal user q.user %} by {{ q.user.get_username }}{% endifnotequal %})
+                                        (Shared{% if user != q.user %} by {{ q.user.get_username }}{% endif %})
                                     {% endif %}</a></li>
                             {% endfor %}
                         </ul>

@@ -18,20 +18,20 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.models import UpdateTracker
-from tendenci.apps.base.utils import get_template_list, checklist_update
+from tendenci.apps.base.utils import get_template_list, checklist_update, is_ajax
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.theme.utils import (get_theme, get_active_theme, get_theme_root, is_valid_theme,
                                        is_base_theme, theme_choices, get_theme_search_order)
 from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
-from tendenci.apps.theme_editor.forms import (FileForm, ThemeNameForm, ThemeSelectForm,
+from tendenci.apps.theme_editor.forms import (FileForm, ThemeNameForm,
                                               UploadForm, AddTemplateForm)
 from tendenci.apps.theme_editor.utils import (is_valid_path, is_theme_read_only, ThemeInfo,
                                               app_templates, get_dir_list, get_file_list,
                                               get_file_content, get_all_files_list,
                                               copy_file_to_theme)
-from tendenci.libs.boto_s3.utils import save_file_to_s3
+#from tendenci.libs.boto_s3.utils import save_file_to_s3
 from tendenci.libs.uploader import uploader
 
 DEFAULT_FILE = 'templates/homepage.html'
@@ -59,7 +59,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
 
     theme_read_only = is_theme_read_only(selected_theme)
 
-    if request.is_ajax() and request.method == "POST":
+    if is_ajax(request) and request.method == "POST":
         if theme_read_only:
             raise Http403
         file_form = form_class(request.POST)
@@ -572,7 +572,7 @@ def theme_color(request):
     if not request.user.profile.is_superuser:
         raise Http403
 
-    if request.is_ajax() and request.method == 'POST':
+    if is_ajax(request) and request.method == 'POST':
         if request.POST.get('colors', None):
             color_setting = Setting.objects.get(scope='module',
                                                 scope_category='theme',
@@ -593,7 +593,7 @@ def get_themes(request, template_name="theme_editor/get_themes.html"):
     if not request.user.profile.is_superuser:
         raise Http403
 
-    if request.is_ajax():
+    if is_ajax(request):
         tracker = UpdateTracker.get_or_create_instance()
         return HttpResponse(tracker.is_updating)
 

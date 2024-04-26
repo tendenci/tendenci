@@ -4,7 +4,7 @@ from functools import reduce
 
 from django.db.models import Manager
 from django.db.models import Q
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import slugify
 
 from tendenci.apps.perms.managers import TendenciBaseManager

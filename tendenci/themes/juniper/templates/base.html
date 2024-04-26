@@ -1,0 +1,163 @@
+{% load announcement_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+
+{# admin left for deprecation for custom templates/themes #}
+{% is_admin request.user as admin %}
+
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <!-- Juniper Theme Powered by Tendenci — The Open Source AMS
+    Fork us at github.com/tendenci  -->
+    
+    {% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', '{{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}');
+        </script>
+     <!-- End Google Analytics -->
+     {% endif %}
+    
+    {% block full_title %}
+        <title>{% block title %}{{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblock %}</title>
+    {% endblock %}
+    
+    {% block full_meta_description %}
+        <meta name="description" content="{% block meta_description %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}" />
+    {% endblock %}
+    
+    {% block full_meta_keywords %}
+        <meta name="keywords"  content="{% block meta_keywords %}{{ SITE_GLOBAL_SITEDISPLAYNAME }}, {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}" />
+    {% endblock %}
+    
+    <meta name="generator" content="Tendenci" />
+    
+    {% block meta_canonical_url %}{% endblock %}
+    
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/">
+    <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
+    
+    {% block jquery_script %}
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-migrate-3.3.2.min.js"></script>
+    {% endblock jquery_script %}
+    
+    {% block includebootstrap3css %}
+        {# Let's try using Bootstrap 3 in all sites #}
+        <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    {% endblock %}
+    
+    {% if request.user.is_authenticated %}{% endif %}
+    
+    <link href="{% static 'yamm/yamm.css' %}" rel="stylesheet" type="text/css">
+    
+    <link href="{% static 'css/websymbols.css' %}" rel="stylesheet" type="text/css">
+    
+    {% block extra_head %}{% endblock %}
+
+    <!-- Starts Tendenci Head Tag
+    ============================================================================ -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Custom styles for this template
+    ============================================================================ -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=2" type="text/css">
+    
+    <!-- To change Bootswatch Theme, use this link  
+    ============================================================================ -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/flatly/bootstrap.min.css" type="text/css">
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon.ico' %}">
+    
+    <!-- Custom Fonts -->
+     <link rel="stylesheet" href="{% static 'font-awesome/css/fontawesome.min.css' %}" type="text/css">
+     <link rel="stylesheet" href="{% static 'font-awesome/css/brands.min.css' %}" type="text/css">
+     <link rel="stylesheet" href="{% static 'font-awesome/css/solid.min.css' %}" type="text/css">
+    <!-- support v4 icon references/syntax -->
+    <link href="{% static 'font-awesome/css/v4-shims.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'font-awesome/css/v4-font-face.min.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Frank+Ruhl+Libre:300,400,700|Montserrat|Montserrat+Alternates:400,500" rel="stylesheet">
+    
+    {% if SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID %}
+        <!-- Google Tag Manager -->
+            <script>
+                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                })(window,document,'script','dataLayer','{{ SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID }}');
+            </script>
+        <!-- End Google Tag Manager -->
+    {% endif %}
+  </head>
+  
+  <body id="{% block body_ids %}{% endblock %}" class="{% if request.user.is_superuser %}t-auth-admin-loggedin {% endif %}{% block body_classes %}{% endblock %}">
+    
+    {% if SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID %}
+        <!-- Google Tag Manager (noscript) -->
+          <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID }}"
+          height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+    {% endif %} 
+  
+    {% block top_bar %}
+        {% if request.user.is_authenticated %}
+            {% if request.user.is_superuser  %}
+                {% include "top_menu/admin_top-new.html" %}
+                {% if request.session.theme %}
+                    {% include "themes/theme_top.html" %}
+                {% endif %}
+            {% else %}
+                {% include "top_menu/user_top-new.html" %}
+            {% endif %}
+        {% endif %}
+    {% endblock %}
+
+    {% emergency_announcement request.user %}
+    
+    {% block html_body %}{% endblock %}
+    
+    {% include "credits.html" %}
+    
+    {% if request.user.is_superuser %}{# include "admin_menu/admin_bottom.html" #}{% endif %}
+    
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            jQuery('#t-megamenu-lang-dd a').on("click", function (e) {
+                var lang = jQuery(this).data('lang');
+                jQuery('#t-megamenu-lang-input').attr('value', lang);
+                jQuery('#t-megamenu-lang-form').submit();
+            });
+            jQuery('body').css('margin-top', jQuery('#t-admin-megamenu').outerHeight(true) + 'px' );
+        });
+    </script>
+    
+    <script type="text/javascript" src="{% static 'bootstrap3/js/bootstrap.min.js' %}"></script>
+    
+    {% if request.user.is_superuser %}
+        <script type="text/javascript" src="{% static 'js/admin_menu.js' %}"></script>
+    {% endif %}
+    
+    {% if user.is_authenticated %}
+        <script type="text/javascript" src="{% static 'js/global/authenticated.js' %}"></script>
+    {% endif %}
+    
+    {% block extra_body %}{% endblock %}
+    
+    <script type="text/javascript">
+        jQuery(document).on('click', '.yamm .dropdown-menu', function (e) {
+            e.stopPropagation()
+        })
+    </script>
+  </body>
+</html>

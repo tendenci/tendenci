@@ -19,6 +19,7 @@ from django.utils.safestring import mark_safe
 from django.db.models import Q
 from django.db.models.signals import post_delete
 from django.template.defaultfilters import slugify
+from django.contrib.contenttypes.models import ContentType
 
 #from django.contrib.contenttypes.models import ContentType
 from tendenci.libs.tinymce import models as tinymce_models
@@ -65,6 +66,7 @@ from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.user_groups.models import Group
 from tendenci.libs.utils import python_executable
 from tendenci.apps.products.models import Product
+from tendenci.apps.donations.models import Donation
 
 
 FIELD_CHOICES = (
@@ -622,6 +624,8 @@ class CorpMembership(TendenciBaseModel):
 
     invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
     donation_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    donate_to_entity = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.SET_NULL)
+    donation = models.ForeignKey(Donation, blank=True, null=True, on_delete=models.SET_NULL)
 
     anonymous_creator = models.ForeignKey('Creator', null=True, on_delete=models.SET_NULL)
     admin_notes = models.TextField(_('Admin notes'),
@@ -669,6 +673,39 @@ class CorpMembership(TendenciBaseModel):
         Returns admin change_form page.
         """
         return reverse('corpmembership.view', args=[self.pk])
+
+    def donation_add(self, request_user):
+        """
+        Add a donation record, along with its invoice.
+        """
+        if self.donation_amount and \
+            get_setting('module', 'corporate_memberships', 'donationsepinv'):
+            if not self.donation:
+                donation = Donation(user=request_user,
+                                    first_name=request_user.first_name,
+                                    last_name=request_user.last_name,
+                                    email=request_user.email,
+                                    phone=self.corp_profile.phone,
+                                    company=self.corp_profile.name,
+                                    address=self.corp_profile.address,
+                                    address2=self.corp_profile.address2,
+                                    city=self.corp_profile.city,
+                                    state=self.corp_profile.state,
+                                    zip_code=self.corp_profile.zip,
+                                    donation_amount=self.donation_amount,
+                                    donate_to_entity=self.donate_to_entity,
+                                    object_type=ContentType.objects.get_for_model(self),
+                                    object_id=self.id,
+                                    comments=f'Made from corp membership {self.corp_profile.name} (ID: {self.id}) renewal')
+                donation.save(user=request_user)
+                donation.inv_add(request_user)
+                self.donation = donation
+                self.save(update_fields=['donation'])
+
+    def donation_not_paid(self):
+        if self.donation and self.donation.invoice:
+            return self.donation.invoice.balance > 0
+        return False
 
     @property
     def group(self):
@@ -966,7 +1003,7 @@ class CorpMembership(TendenciBaseModel):
         field_names = [field.name for field in self.__class__._meta.fields]
         ignore_fields = ['id', 'renewal', 'renew_dt', 'status', 'donation_amount',
                          'status_detail', 'approved', 'approved_denied_dt',
-                         'approved_denied_user', 'anonymous_creator']
+                         'approved_denied_user', 'anonymous_creator', 'donation']
         for field in ignore_fields:
             field_names.remove(field)
 

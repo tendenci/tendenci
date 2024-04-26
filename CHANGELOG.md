@@ -1,3 +1,17 @@
+### 15.0 [2024-3-30]
+ 
+* **Breaking Changes: Requires Django 4.2 LTS**. Django 3.2 LTS is not supported. For migrating T14 sites to T15, please follow the guide in https://tendenci.readthedocs.io/en/latest/upgrade/upgrade-to-tendenci.html.
+* Implemented json-ld as structured data on event view for events to show in Google events search.
+* Added bulk checkout feature on events roster report.
+* Adjusted the format for event certifications.
+* Fixed an error on skillset edit due to openstreetmap search requires user agent specified.
+* Fixed an issue regarding photo size too large for photos batch edit.
+* Fixed some broken links in tendenci default fixtures.
+* Fixed a format issue for profile top menu. 
+* Removed "\r" from ical description to prevent it from showing in google calendar.
+* Other minor fixes.
+
+
 ### 14.8.2 [2024-2-21]
 
 * Added Region filter option to member_quick_list report. (Thanks to @rob-hills)

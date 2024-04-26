@@ -5,7 +5,7 @@
 #
 # run once for a batch of jobs, and only on master branch
 echo $TRAVIS_JOB_NUMBER | grep "\.1$"
-if [ $? -eq 0 ] && [ $TRAVIS_BRANCH == master ]; then
+if [ $? -eq 0 ] && [ $TRAVIS_BRANCH == main ]; then
     echo "Submitting translation files to Transifex"
     cd tendenci
     django-admin.py makemessages -a

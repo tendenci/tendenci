@@ -1,12 +1,10 @@
 from collections import OrderedDict
 from ast import literal_eval
-from urllib.parse import urlparse
 
 from django import forms
 from django.conf import settings as django_settings
 from django.core.files import File
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site
 from django.utils.encoding import force_str, DjangoUnicodeDecodeError
 from django_countries import countries as COUNTRIES
 from django.utils.safestring import mark_safe

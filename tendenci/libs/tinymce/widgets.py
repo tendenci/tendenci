@@ -47,8 +47,8 @@ class TinyMCE(forms.Textarea):
         mce_attrs = mce_attrs or {}
         mce_attrs['language'] = settings.TINYMCE_DEFAULT_CONFIG.get('language', None)
         self.mce_attrs = mce_attrs
-        if 'mode' not in self.mce_attrs:
-            self.mce_attrs['mode'] = 'exact'
+        # if 'mode' not in self.mce_attrs:
+        #     self.mce_attrs['mode'] = 'exact'
         self.mce_attrs['strict_loading_mode'] = 1
         if content_language is None:
             content_language = mce_attrs.get('language', None)
@@ -58,13 +58,15 @@ class TinyMCE(forms.Textarea):
         mce_config = tinymce_settings.DEFAULT_CONFIG.copy()
         mce_config.update(get_language_config(self.content_language))
         if tinymce_settings.USE_FILEBROWSER:
-            mce_config['file_browser_callback'] = "tendenciFileManager"
+            mce_config['file_picker_callback'] = "tendenciFileManager"
+
         if self.mce_attrs.get('fullpage', False):
-            mce_config['plugins'] = mce_config['plugins'] + ' fullpage'
-            mce_config['fullpage_default_doctype'] = '<!DOCTYPE html>'
-        mce_config.update(self.mce_attrs)
-        if mce_config['mode'] == 'exact':
-            mce_config['elements'] = attrs['id']
+            #mce_config['plugins'].append('fullpage')
+            # allow style tag for newsletter
+            mce_config['valid_children'] = '+body[style]'
+        # mce_config.update(self.mce_attrs)
+        # if mce_config['mode'] == 'exact':
+        #     mce_config['elements'] = attrs['id']
         return mce_config
 
     def get_mce_json(self, mce_config):

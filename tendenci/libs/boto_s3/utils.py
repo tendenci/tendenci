@@ -1,15 +1,14 @@
 from __future__ import print_function
-from builtins import str
-import os
-from datetime import datetime
-import mimetypes
-import boto3
+# import os
+# from datetime import datetime
+# import mimetypes
+# import boto3
 #from boto.s3.key import Key
 from django.conf import settings
-import dateutil.parser as dparser
-from django.core.files.storage import default_storage
+# import dateutil.parser as dparser
+# from django.core.files.storage import default_storage
 from storages.backends.s3boto3 import S3Boto3Storage, S3Boto3StorageFile
-from tendenci.apps.base.utils import adjust_datetime_to_timezone
+#from tendenci.apps.base.utils import adjust_datetime_to_timezone
 
 
 class StaticStorage(S3Boto3Storage):
