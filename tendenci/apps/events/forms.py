@@ -1486,7 +1486,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
     end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available for registration'))
     price = PriceField(label=_('Price'), max_digits=21, decimal_places=2, initial=0.00)
     #dates = Reg8nDtField(label=_("Start and End"), required=False)
-    groups = forms.ModelMultipleChoiceField(required=False, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
+    groups = forms.ModelMultipleChoiceField(required=False, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one. If you have selected one but want to leave groups unselected, hold down "Control" +Z, or "Command" +Z on Mac, then click on the selected group.'))
     payment_required = forms.ChoiceField(required=False,
                                          choices=(('True', _('Yes')), ('False', _('No'))),
                                          initial='True')
