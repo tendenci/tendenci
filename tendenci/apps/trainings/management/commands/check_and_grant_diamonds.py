@@ -18,10 +18,11 @@ class Command(BaseCommand):
 
         for cert in Certification.objects.filter(enable_diamond=True):
             print('Processing ', cert)
-            users = User.objects.filter(id__in=Transcript.objects.filter(certification_track=cert,
-                                                                         ).values_list('user_id', flat=True))
+            users = User.objects.all()
             for user in users:
-                print('.... for ', user)
+                if not Transcript.objects.filter(certification_track=cert, user=user).exists():
+                    continue
+
                 cert_data, created = UserCertData.objects.get_or_create(
                                         user=user,
                                         certification=cert)
@@ -31,6 +32,7 @@ class Command(BaseCommand):
                         cert_data.certification_dt = date.today()
                         cert_data.save()
                     continue
+                continue # skip the diamond for now
                 
                 d_number = cert_data.get_next_d_number()
                 if cert.is_requirements_met(user, diamond_number=d_number):
