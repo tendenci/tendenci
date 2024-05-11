@@ -1,17 +1,32 @@
-{% extends "projects/base.html" %}
+{% extends "projects/base-wide.html" %}
 {% load project_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load file_tags %}
 
 {% block content %}
 <div class="t">
   <div class="project-wrap">
+  <div class="view-all"><p><a href="/projects">View All Projects</a></p></div>
     <h1>{{ project.project_name }}</h1>
-
-    {% if project.end_dt  %}
-    <h3>{% trans "Year Completed:" %}</h3> <p>{{ project.end_dt }}</p>
+    
+    {% if can_edit %}
+    <div class="pull-right clearfix">
+    <a href="{% url 'projects.edit' project.id %}" class="btn btn-default">{% trans "Edit" %}</a>
+    	{% if request.user.is_superuser and project.status_detail == 'pending' %}
+     	<a href="{% url 'projects.approve' project.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% if project.start_dt %}
+    <p>{{ project.start_dt }} - {% if project.end_dt %}{{ project.end_dt }}{% endif %}</p>
     {% endif %}
 
+	{% if project.company_name %}
+    <h3>{% trans "Company:" %}</h3> <p>{{ project.company_name}}</p>
+    {% endif %}
+    
     {% if project.client %}
     <h3>{% trans "Client:" %}</h3> <p>{{ project.client|safe}}</p>
     {% endif %}
@@ -23,7 +38,6 @@
 
     {% if project_photos %}
     <div class="project-inline clearfix">
-      <h2>{% trans "Pictures" %}</h2>
       {% for picture in project_photos %}
       <div class="project-picture">
         <a href="{% image_url picture %}" rel="lightbox"><img src="{% image_url picture size=150x150 crop=True %}" /></a>
@@ -44,9 +58,40 @@
       {{ project.video_embed_code|safe }}
     {% endif %}
 
-    <div class="view-all"><p><a href="/projects">View All Projects</a></p></div>
+	{% if team_members %}
+	 <hr>
+    <div class="project-teammembers">
+    	<h3>{% trans "Team Members" %}</h3>
+      <div id="teammembers-wrap" class="clearfix">
+          {% for team_member in team_members %}
+          <div style="float: left; margin: 15px;">
+            <img src="{% image_url team_member size=150x150 crop=True %}" /> 
+            {{ team_member.first_name }} {{ team_member.last_name }}
+             {% if team_member.title %}- {{ team_member.title }}{% endif %}
+		  </div>
+          {% endfor %}
+      </div>
+    </div>
+     {% endif %}
+     
+     {% if documents %}
+     <hr>
+    <div class="project-documents">
+    	<h3>{% trans "Documents" %}</h3>
+      	<table class="table">
+          {% for document in documents %}
+          <tr class="project-document">
+	          <td style="width: 5em;">
+	          	<img class="pull-left" src="{{ document.icon }}" alt="{{ document|truncatechars:123 }}" title="{{ document|truncatechars:123 }}" />
+	          </td>
+          	  <td><a href="{% url 'file' document.pk %}">{{ document.get_name|truncatechars:50 }}</a> 
+          	  {% if document.document_dt %}{{ document.document_dt }}{% endif %}</td>
+          </tr>
+          {% endfor %}
+          </table>
+    </div>
+     {% endif %}
 
-    <div class="view-all"><p><a href="javascript:history.back()">Go Back</a></p></div>
 
     {% include "projects/meta.html" %}
 
@@ -57,17 +102,5 @@
 
 {% block extra_body %}
 {{ block.super }}
-    <script src="{% static 'js/jquery.cycle.all.min.js' %}" type="text/javascript"></script>
-<script src="{% static 'js/lightbox.js' %}"></script>
 
-    <script type="text/javascript">
-    $(document).ready(function() {
-        $("#project-photos").cycle({
-            timeout: 2000,
-            speed: 2000,
-            next: '.right-arrow',
-            prev: '.left-arrow'
-        });
-});
-</script>
 {% endblock %}

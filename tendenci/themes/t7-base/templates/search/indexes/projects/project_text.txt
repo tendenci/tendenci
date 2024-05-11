@@ -8,6 +8,7 @@
 {{ object.pk }}
 {{ object.slug }}
 {{ object.project_name }}
+{{ object.company_name }}
 {{ object.project_number }}
 {{ object.project_status }}
 {{ object.start_dt }}

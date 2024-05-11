@@ -229,6 +229,14 @@ def get_member_reminders(user, view_self=False):
                     my_msg, membership.expire_dt.strftime('%d-%b-%Y'), renew_link)
                 reminders += ((message, renew_link, 'Renew Here'),)
 
+        if membership.is_active():
+            if membership.corporate_membership_id and membership.renewal and membership.renew_dt:
+                if not get_setting('module', 'memberships', 'orgmembercanrenew'):
+                    if membership.renew_dt.date() == membership.update_dt.date():
+                        # Prompt user to update their membership
+                        message = format_html('{} has been renewed. Keep your member information accurate and up to date – ', my_msg)
+                        edit_link = reverse('membership_default.edit', kwargs={'id': membership.id})
+                        reminders += ((message, edit_link, 'Update it Now!'),)
     return reminders
 
 

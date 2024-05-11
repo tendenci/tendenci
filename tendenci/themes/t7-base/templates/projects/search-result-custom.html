@@ -1,0 +1,32 @@
+{% load base_tags %}
+{% load file_tags %}
+{% load project_tags %}
+{% load base_filters %}
+<a href="{{ project.get_absolute_url }}">
+<div class="wrap-search-item col-lg-3 col-md-3 col-xs-6">
+   <div class="search-item projects-search-item">
+           <h2>
+           <div class="project-end-date">{% trans "Ends" %} {{ project.end_dt|date:'F j, Y' }}</div>
+           <span>{% if project.company_name|length <= 40 %}{{ project.company_name|safe }}{% else %}{{ project.company_name|truncatewords:6|safe }}{% endif %}</span>
+           <div class="project-name">{% if project.project_name|length <= 40 %}{{ project.project_name|safe }}{% else %}{{ project.project_name|truncatewords:6|safe }}{% endif %}</div>
+           {% if project.start_dt %}
+		    <div class="project-date">{{ project.start_dt|date:'F j' }} - {% if project.end_dt %}{{ project.end_dt|date:'F j' }}{% endif %}</div>
+		   {% endif %}
+           </h2>
+           
+        <div class="project-inline">
+            {% for picture in project.projects_photo_related.all|slice:"1" %}
+                <div class="search-project-picture">
+                  <a href="{{ project.get_absolute_url }}"><img src="{% image_url picture size=225x285 crop=True %}" alt="{{ project.project_name }}"/></a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!--{% if project.end_dt %}
+           <div><h5><strong>{% trans "  Promotion Dates: " %}{{ project.start_dt }} - {{ project.end_dt }}</strong></h5></div>
+        {% endif %}-->
+    </div>
+ <!-- {% comment %} {% include "projects/meta.html" %} {% endcomment %} -->
+  </div>
+ 
+  </a>

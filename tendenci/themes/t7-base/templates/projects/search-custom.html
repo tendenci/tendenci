@@ -1,0 +1,139 @@
+{% extends "projects/base-wide.html" %}
+
+{% load search_tags %}
+{% load pagination_tags %}
+{% load project_tags %}
+{% load project_filters %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Projects' %}" href="{% url 'projects.feed' %}" />
+
+<style>
+.t.project-search-info {margin-bottom: 90px;}
+.t.project-search-info .section {
+	border-bottom: 1px solid #ccc;
+  	padding: 15px 0;
+}
+.projects-wrapper .search-project-picture {
+  height: 250px;
+}
+.projects-wrapper .search-project-picture img{
+	max-height: 100%;
+}
+.projects-wrapper .search-item img {
+  width: 100%;
+  margin: auto;
+  display: block;
+  
+}
+.projects-wrapper .wrap-search-item {
+  position: relative;
+  padding: 0;
+  margin: 20px 0;
+  border: 5px solid #fff;
+  background: #fff;
+  min-height: 250px;
+  width: 225px;
+  height: 250px;
+}
+.projects-wrapper .search-item h2 {
+  color: #fff;
+  background: rgba(38, 40, 42, 0.6);
+  font-size: 18px;
+  font-weight: 700;
+  position: absolute;
+  top: 0;
+  bottom:-35px;
+  right:0;
+  left:0;
+  margin: 0; 
+}
+.projects-wrapper .search-item h2 span{
+  text-shadow: unset;
+  text-decoration: none;
+  width: 100%;
+  display: block;
+  padding: 12px 12px;
+  margin: 25% 0 0;
+}
+.projects-wrapper .search-item h2 .project-date{
+  font-weight: 100;
+  font-size: small;
+  padding-left: 12px;
+  padding-top: 12px;
+}
+.projects-wrapper .search-item h2 .project-end-date{
+  padding-left: 12px;
+  margin-top: 20%;
+}
+.projects-wrapper .search-item h2 .project-name{
+  padding-left: 12px;
+}
+.projects-wrapper .search-item h2:hover {
+  text-shadow: unset;
+  background: rgba(255, 255, 255, 0.6)!important;
+  transform: scale(1.1);
+  transition: transform 2s;
+  padding: 20px;
+  background:transparent;
+  color: #000;
+  position: absolute;
+  top: 0;
+  bottom:-22px;
+  margin: 0;
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+    {% autopaginate projects 30 %}
+
+    <div class="t project-search-info">
+        <h1>{{ MODULE_PROJECTS_LABEL_PLURAL }}</h1>
+        {% project_search %}
+		{% if can_add_project %}
+	  	<div class="form-group pull-right">
+	    	<a href="{% url "projects.add" %}">{% trans "Add" %} {% firstof MODULE_PROJECTS_LABEL trans 'Project' %}</a>
+	  	</div>
+	  	{% endif %}
+        {% with projects|filter_by_featured as featured_projects %}
+        {% if featured_projects %}
+        	<h3 class="section">{% trans 'Featured' %} {{ MODULE_PROJECTS_LABEL_PLURAL }}</h3>
+        	<div class="projects-wrapper clearfix">
+        	{% for project in featured_projects %}
+        		{% search_result project %}
+        	{% endfor %}
+        	</div>
+        {% endif %}
+        {% endwith %}
+        
+        {% for category in categories %}
+        {% with projects|filter_by_category:category.id as category_projects %}
+			{% if category_projects %}
+			    <h3 class="section">{{ category.name }}</h3>
+			    <div class="projects-wrapper clearfix">
+        		{% for project in category_projects %}
+        		   {% search_result project %}
+        		{% endfor %}
+        		</div>
+        	{% endif %}
+        {% endwith %}
+        {% endfor %}
+        
+        {% with projects|filter_by_other as other_projects %}
+        {% if other_projects %}
+        	<h3 class="section">{{ MODULE_PROJECTS_LABEL_PLURAL }}</h3>
+        	<div class="projects-wrapper clearfix">
+        	{% for project in other_projects %}
+        		{% search_result project %}
+        	{% endfor %}
+        	</div>
+        {% endif %}
+        {% endwith %}
+        
+      {% paginate %}  
+        
+    </div>
+{% endblock %}

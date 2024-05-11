@@ -57,6 +57,7 @@ from tendenci.apps.files.validators import FileValidator
 
 from .fields import UseCustomRegField
 from .widgets import UseCustomRegWidget
+from gevent.libev.corecext import NONE
 
 ALLOWED_LOGO_EXT = (
     '.jpg',

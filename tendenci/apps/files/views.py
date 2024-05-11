@@ -70,7 +70,8 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             # log an event
             EventLog.objects.log(instance=file)
         if settings.USE_S3_STORAGE:
-            #return redirect(default_storage.url(cached_image))
+            if default_storage.exists(cached_image):
+                return redirect(default_storage.url(cached_image))
             return redirect(cached_image)
         return redirect('%s%s' % (get_setting('site', 'global', 'siteurl'), cached_image))
 

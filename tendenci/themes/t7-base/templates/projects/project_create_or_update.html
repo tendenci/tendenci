@@ -1,0 +1,267 @@
+{% extends "projects/base-wide.html" %}
+{% load project_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}">
+<style>
+#item-teammembers .form-group{
+	margin: 5px 10px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_PROJECTS_LABEL 'Project' %} {% if edit_mode %}{% trans "Edit" %}{% else %}{% trans "Add" %}{% endif %}</h1>
+
+    <form id="t-projects-form" class="form-horizontal" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+        
+      {{ form|styled_form }}
+      
+    <!-- inline form for Photos start -->
+
+    {% with named_formsets.photos as photo_formset %}  
+        {{ photo_formset.management_form }}
+        <script type="text/html" id="photos-template">  
+            <tr id="photos-__prefix__" class= hide_all>  
+                {% for fields in photo_formset.empty_form.hidden_fields %}
+                    {{ fields }}
+                {% endfor %}
+            
+                {% for fields in photo_formset.empty_form.visible_fields %}
+                    <td>{{fields}}</td>
+                {% endfor %}
+            </tr>
+        </script>
+
+        <fieldset>
+            <legend>{% trans "Photos" %}</legend>
+            <table class="table table-bordered">
+                <thead class="text-secondary">
+                    <th>{% trans "Title" %}</th>
+                    <th>{% trans "Upload" %}</th>
+                    <th>{% trans "Delete?" %}</th>
+                </thead>
+                <tbody id="item-photos">  <!-- id="item-inlineformsetname" -->
+                    <!-- formset non forms errors -->
+                    {% for error in photo_formset.non_form_errors %}
+                        <span style="color: red">{{ error }}</span>
+                    {% endfor %}
+                    {% for photo_form in photo_formset.forms %}
+				      {% for hidden in photo_form.hidden_fields %}
+				            {{hidden}}
+				      {% endfor %}
+                        <tr id="photos-{{ forloop.counter0 }}" class= hide_all>  <!-- id="inlineformsetname-counter" -->
+                            {{ photo_form.id }}
+                            {% for field in photo_form.visible_fields %}
+                                <td>
+                                    {{ field }}
+                                    {% for error in field.errors %}
+                                        <span style="color: red">{{ error }}</span>
+                                    {% endfor %}
+                                </td>
+                            {% endfor %}
+                           
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="#" id="add-photo-button" class="add-photos">Add another Photo</a> <!-- id="add-inlineformsetname-button" -->
+        </fieldset>
+    {% endwith %}
+    <!-- inline form for Photos end -->
+    
+    <!-- inline form for Documents start -->
+
+    {% with named_formsets.documents as document_formset %}  
+        {{ document_formset.management_form }}
+        <script type="text/html" id="documents-template">  
+            <tr id="documents-__prefix__" class= hide_all>  
+                {% for fields in document_formset.empty_form.hidden_fields %}
+                    {{ fields }}
+                {% endfor %}
+            
+                {% for fields in document_formset.empty_form.visible_fields %}
+                    <td>{{fields}}</td>
+                {% endfor %}
+            </tr>
+        </script>
+
+		<br />
+        <fieldset>
+            <legend>{% trans "Documents" %}</legend>
+            <table class="table table-bordered">
+                <thead class="text-secondary">
+                    <th>{% trans "Document Date" %}</th>
+                    <th>{% trans "Upload" %}</th>
+                    <th>{% trans "Delete?" %}</th>
+                </thead>
+                <tbody id="item-documents">  <!-- id="item-inlineformsetname" -->
+                    <!-- formset non forms errors -->
+                    {% for error in document_formset.non_form_errors %}
+                        <span style="color: red">{{ error }}</span>
+                    {% endfor %}
+                    {% for document_form in document_formset.forms %}
+				        {% for hidden in document_form.hidden_fields %}
+				            {{hidden}}
+				        {% endfor %}
+                        <tr id="documents-{{ forloop.counter0 }}" class= hide_all>  <!-- id="inlineformsetname-counter" -->
+                            {{ document_form.id }}
+                            {% for field in document_form.visible_fields %}
+                                <td>
+                                    {{ field }}
+                                    {% for error in field.errors %}
+                                        <span style="color: red">{{ error }}</span>
+                                    {% endfor %}
+                                </td>
+                            {% endfor %}
+                           
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="#" id="add-document-button" class="add-documents">Add another Document</a> <!-- id="add-inlineformsetname-button" -->
+        </fieldset>
+    {% endwith %}
+    <!-- inline form for Documents end -->
+    
+    
+    <!-- inline form for teammembers start -->
+
+    {% with named_formsets.teammembers as teammembers_formset %}  
+        {{ teammembers_formset.management_form }}
+        <script type="text/html" id="teammembers-template">  
+            <div id="teammembers-__prefix__" class="well well-small">  
+                {% for fields in teammembers_formset.empty_form.hidden_fields %}
+                    {{ fields }}
+                {% endfor %}
+
+				{% for field in teammembers_formset.empty_form.visible_fields %}
+                   <div class="form-group">
+                     <label>{{ field.label }}</label>
+                       {{ field }}
+                   </div>
+               {% endfor %}
+            </div>
+        </script>
+
+		<br />
+        <fieldset>
+            <legend>{% trans "Team Members" %}</legend>
+             
+                <div id="item-teammembers">  <!-- id="item-inlineformsetname" -->
+                    <!-- formset non forms errors -->
+                    {% for error in teammembers_formset.non_form_errors %}
+                        <span style="color: red">{{ error }}</span>
+                    {% endfor %}
+                    {% for teammember_form in teammembers_formset.forms %}
+				        {% for hidden in teammember_form.hidden_fields %}
+				            {{hidden}}
+				        {% endfor %}
+                        <div id="teammembers-{{ forloop.counter0 }}" class="well well-small">  <!-- id="inlineformsetname-counter" -->
+                            {{ teammember_form.id }}
+                            {% for field in teammember_form.visible_fields %}
+                                <div class="form-group">
+                                   <label for="{{ field.id_for_label }}" >{{ field.label }}</label>
+                                    {{ field }}
+                                    {% for error in field.errors %}
+                                        <span style="color: red">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                           
+                        </div>
+                    {% endfor %}
+                </div>
+
+            <a href="#" id="add-teammember-button" class="add-teammembers">Add another Team Member</a> <!-- id="add-inlineformsetname-button" -->
+        </fieldset>
+    {% endwith %}
+    <!-- inline form for Teammembers end -->
+      
+      
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary text-capitalize">
+                        {% trans "Submit" %}
+                </button>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+ <link href="{% static 'tiny_mce/custom.css' %}" type="text/css" media="all" rel="stylesheet">
+ <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
+ <script type="text/javascript" src="{% url 'tinymce-filebrowser' %}"></script>
+ <script type="text/javascript" src="{% static 'tiny_mce/init_tinymce.js' %}"></script>
+ <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+ <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+ <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
+ <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+ 
+ <script type="text/javascript">
+        $(document).ready(function () {
+            // Slugify
+            var slugit = new Slugify({
+                input_element : '#id_project_name',
+                slug_element : '#id_slug',
+                submit_element : 'button[type="submit"]',
+                help: false,
+                limit : 150
+            });
+
+            // Release Datetime
+            $('#id_start_dt').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('#id_end_dt').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('.documents-date').datepicker({ dateFormat: 'yy-mm-dd' });
+
+			// Add a Photo
+			$('.add-photos').click(function(ev) {
+	          ev.preventDefault();
+	          var count = $('#item-photos').children().length;
+	          var tmplMarkup = $('#photos-template').html();
+	          var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+	          $('#item-photos').append(compiledTmpl);
+	  
+	          // update form count
+	          $('#id_photos-TOTAL_FORMS').attr('value', count+1);
+            });
+            
+            // Add a Document
+			$('.add-documents').click(function(ev) {
+	          ev.preventDefault();
+	          var count = $('#item-documents').children().length;
+	          var tmplMarkup = $('#documents-template').html();
+	          var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+	          $('#item-documents').append(compiledTmpl);
+	  
+	          // update form count
+	          $('#id_documents-TOTAL_FORMS').attr('value', count+1);
+            });
+            
+            // Add a Team Member
+			$('.add-teammembers').click(function(ev) {
+	          ev.preventDefault();
+	          var count = $('#item-teammembers').children("div").length;
+	          var tmplMarkup = $('#teammembers-template').html();
+	          var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+	          $('#item-teammembers').append(compiledTmpl);
+	  
+	          // update form count
+	          $('#id_teammembers-TOTAL_FORMS').attr('value', count+1);
+            });
+
+        });
+    </script>
+ 
+{% endblock %}

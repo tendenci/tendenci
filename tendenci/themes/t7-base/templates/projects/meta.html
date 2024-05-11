@@ -57,7 +57,7 @@
 
                 <ul class="nav navbar-nav navbar-right t-meta-options-links">
                     <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?application=projects&object_id={{ project.pk }}">{% trans "Eventlogs" %}</a></li>
-                    <li><a class="t-meta-edit-link" href="{% url 'admin:projects_project_change' project.pk %}">{% trans "Edit" %}</a></li>
+                    <li><a class="t-meta-edit-link" href="{% url 'projects.edit' project.pk %}">{% trans "Edit" %}</a></li>
                     <li class="dropup">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
                             {% trans "Options" %} <span class="caret"></span>
