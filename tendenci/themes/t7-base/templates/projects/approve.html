@@ -1,0 +1,22 @@
+{% extends "projects/base.html" %}
+{% load project_tags %}
+
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Approve" %} {% firstof MODULE_PROJECTS_LABEL trans 'Project' %}</h1>
+
+    <div class="project-wrap">
+    <p><a href="{{ project.get_absolute_url }}" title="{{ project.project_name }}">
+    {{ project.project_name }}
+    </a></p>
+    <p>{% trans "Are you sure you want to approve this" %} {{ MODULE_PROJECTS_LABEL|lower }}?</p>
+    <form action="{% url "projects.approve" project.pk %}" method="post">{% csrf_token %}
+    <div class="forms">
+        <input class="btn btn-primary" type="submit" value="{% trans 'Yes, approve it.' %}" /> or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+    </div>
+    </form>
+    </div>
+	<p>&nbsp;</p>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ MODULE_PROJECTS_LABEL }} {% trans "Add Notice" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<p>{% blocktrans with projects_label=MODULE_PROJECTS_LABEL|lower author=request.user.get_full_name %}The following {{ projects_label }} was
+  added by {{ author }}{% endblocktrans %}.
+  {% if request.user.is_superuser %}(superuser){% else %} {% trans "It needs to be approved" %}{% endif %}:</p>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans 'Name:' %}</td>
+    <td width="75%"><b>{{ object.project_name }}</b></td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans 'Company:' %}</td>
+    <td width="75%"><b>{{ object.company }}</b></td>
+  </tr>
+</table>
+<p>{% blocktrans with projects_label=MODULE_PROJECTS_LABEL|lower %}To view the details of this {{ projects_label }}, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
+
+{% if not request.user.is_superuser %}
+  <br>
+<p>{% blocktrans with projects_label=MODULE_PROJECTS_LABEL|lower %}TTo approve this {{ projects_label }}, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b> </p>
+{% endif %}
+
+<P>{% trans 'Time submitted:' %}  {% now "D d M Y P" %}</P>
+
+</body>
+</html>

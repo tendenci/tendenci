@@ -2,10 +2,15 @@ import imghdr
 from os.path import splitext, basename
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from django.forms import inlineformset_factory
 
+#from tendenci.libs.form_utils.forms import BetterModelForm
 from tendenci.apps.projects.models import Project, Photo, TeamMembers, Documents, Category
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
+from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.files.validators import FileValidator
+from tendenci.apps.site_settings.utils import get_setting
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -14,12 +19,16 @@ ALLOWED_LOGO_EXT = (
     '.png'
 )
 
+
 class ProjectForm(TendenciBaseForm):
     class Meta:
         model = Project
         fields = (
                 'project_name',
                 'slug',
+                'company_name',
+                'start_dt',
+                'end_dt',
                 'project_number',
                 'project_status',
                 'category',
@@ -32,10 +41,9 @@ class ProjectForm(TendenciBaseForm):
                 'video_title',
                 'video_description',
                 'video_embed_code',
-                'start_dt',
-                'end_dt',
                 'resolution',
                 'client',
+                'group',
                 'tags',
                 'website_title',
                 'website_url',
@@ -43,9 +51,51 @@ class ProjectForm(TendenciBaseForm):
                 'user_perms',
                 'group_perms',
                 'member_perms',
-                'status',
+                'featured',
                 'status_detail',
         )
+        
+        fieldsets = (
+        (None,
+            {'fields': (
+                'project_name',
+                'slug',
+                'company_name',
+                'start_dt',
+                'end_dt',
+                'project_number',
+                'project_status',
+                'category',
+                'cost',
+                'location',
+                'city',
+                'state',
+                'project_manager',
+                'project_description',
+                'video_title',
+                'video_description',
+                'video_embed_code',
+                'resolution',
+                'client',
+                'website_url',
+                'website_title',
+                'group',
+                'tags'
+            )}
+        ),
+        (_('Permissions'), {
+          'fields': ['allow_anonymous_view',
+                     'user_perms',
+                     'member_perms',
+                     'group_perms',
+                     ],
+          'classes': ['permissions'],
+          }),
+         (_('Administrator Only'), {
+          'fields': ['featured', 'status_detail'],
+          'classes': ['admin-only'],
+        })
+    )
 
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
     project_description = forms.CharField(required=False,
@@ -71,7 +121,20 @@ class ProjectForm(TendenciBaseForm):
             }))
 
     def __init__(self, *args, **kwargs):
+        self.request_user = kwargs.pop('request_user', None)
         super(ProjectForm, self).__init__(*args, **kwargs)
+
+        self.fields['project_name'].label = get_setting('module', 'projects', 'projectnamelabel') or _('Project Name')
+        self.fields['company_name'].label = get_setting('module', 'projects', 'companynamelabel') or _('Company Name')
+        if self.request_user:
+            if not self.request_user.is_superuser:
+                del self.fields['allow_anonymous_view']
+                del self.fields['user_perms']
+                del self.fields['member_perms']
+                del self.fields['group_perms']
+                del self.fields['status_detail']
+                del self.fields['featured']
+            
         if self.instance.pk:
             self.fields['project_description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['video_description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -81,6 +144,18 @@ class ProjectForm(TendenciBaseForm):
             self.fields['video_description'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['resolution'].widget.mce_attrs['app_instance_id'] = 0
 
+
+class ProjectFrontForm(ProjectForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectFrontForm, self).__init__(*args, **kwargs)
+        exclude_fields = get_setting('module', 'projects', 'excludefields').split(',')
+        for field_name in exclude_fields:
+            field_name = field_name.strip()
+            if field_name in self.fields:
+                del self.fields[field_name]
+
+
 class PhotoForm(forms.ModelForm):
     class Meta:
         model = Photo
@@ -89,8 +164,27 @@ class PhotoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PhotoForm, self).__init__(*args, **kwargs)
         self.fields['file'].label = _("Photo")
+        self.fields['file'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
+        self.fields['file'].widget.attrs.update({'accept': "image/*"})
 
-class DocumentsForm(forms.ModelForm):
+
+class PhotoFrontForm(FormControlWidgetMixin, PhotoForm):
+
+    def __init__(self, *args, **kwargs):
+        super(PhotoFrontForm, self).__init__(*args, **kwargs)
+        self.fields['title'].required = False
+        del self.fields['photo_description']
+        #self.fields['file'].required = False
+
+
+PhotoFormSet = inlineformset_factory(
+    Project, Photo, form=PhotoFrontForm,
+    max_num=5, validate_max=True,
+    extra=1, can_delete=True, can_delete_extra=True
+)
+
+
+class DocumentsForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = Documents
         fields = ['doc_type', 'document_dt', 'other', 'file']
@@ -98,14 +192,50 @@ class DocumentsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DocumentsForm, self).__init__(*args, **kwargs)
         self.fields['file'].label = _("File")
+        self.fields['file'].validators = [FileValidator()]
+        
 
-class TeamMembersForm(forms.ModelForm):
+class DocumentsFrontForm(DocumentsForm):
+
+    def __init__(self, *args, **kwargs):
+        super(DocumentsFrontForm, self).__init__(*args, **kwargs)
+        self.fields['document_dt'].widget.attrs.update({'class': "form-control documents-date"})
+        del self.fields['doc_type']
+        del self.fields['other']
+
+
+DocumentsFormSet = inlineformset_factory(
+    Project, Documents, form=DocumentsFrontForm,
+    max_num=3, validate_max=True,
+    extra=1, can_delete=True, can_delete_extra=True
+)
+
+
+class TeamMembersForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = TeamMembers
-        fields = ['first_name', 'last_name', 'title', 'role', 'team_description', 'file']
+        fields = ['first_name', 'last_name', 'title', 'email', 'phone', 'role', 'team_description', 'file']
 
     def __init__(self, *args, **kwargs):
         super(TeamMembersForm, self).__init__(*args, **kwargs)
+        self.fields['file'].label = _("Picture")
+        self.fields['file'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
+        self.fields['file'].widget.attrs.update({'accept': "image/*"})
+
+
+class TeamMembersFrontForm(TeamMembersForm):
+
+    def __init__(self, *args, **kwargs):
+        super(TeamMembersFrontForm, self).__init__(*args, **kwargs)
+        del self.fields['role']
+        del self.fields['team_description']
+
+
+TeamMembersFormSet = inlineformset_factory(
+    Project, TeamMembers, form=TeamMembersFrontForm,
+    max_num=3, validate_max=True,
+    extra=1, can_delete=True, can_delete_extra=True
+)
 
 
 class CategoryAdminForm(forms.ModelForm):

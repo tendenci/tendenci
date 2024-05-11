@@ -1,0 +1,1 @@
+{% blocktrans with object.project_name|safe as project_name %}Your {{ MODULE_PROJECTS_LABEL }} "{{ project_name }}" Approved on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

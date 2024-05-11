@@ -86,6 +86,8 @@ class TeamMembersAdmin(admin.StackedInline):
             'first_name',
             'last_name',
             'title',
+            'email',
+            'phone',
             'role',
             'team_description',
             'file',
@@ -108,9 +110,9 @@ class DocumentsAdmin(admin.StackedInline):
     form = DocumentsForm
 
 class ProjectAdmin(TendenciBaseModelAdmin):
-    list_display = ['edit_link', 'view_on_site', 'project_name', 'group_link',  'tags']
-    list_filter = []
-    search_fields = []
+    list_display = ['edit_link', 'view_on_site', 'project_name', 'group_link', 'featured', 'start_dt', 'end_dt',  'tags']
+    list_filter = ['status_detail']
+    search_fields = ['project_name', 'company_name']
     actions = []
     inlines = (PhotoAdmin, TeamMembersAdmin, DocumentsAdmin,)
     prepopulated_fields = {'slug': ['project_name']}
@@ -122,6 +124,8 @@ class ProjectAdmin(TendenciBaseModelAdmin):
             {'fields': (
                 'project_name',
                 'slug',
+                'company_name',
+                'featured',
                 'project_number',
                 'project_status',
                 'category',
@@ -151,8 +155,7 @@ class ProjectAdmin(TendenciBaseModelAdmin):
             'group_perms',
         )}),
         ('Publishing Status', {'fields': (
-            'status',
-            'status_detail'
+            'status_detail',
         )}),
     )
 

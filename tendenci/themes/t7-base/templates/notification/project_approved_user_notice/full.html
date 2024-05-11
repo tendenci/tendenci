@@ -1,0 +1,12 @@
+
+<p>{% blocktrans with project_name=object.project_name projects_label=MODULE_PROJECTS_LABEL|lower %}Your {{ projects_label }} "{{ project_name }}" has been approved.{% endblocktrans %}
+</p>
+
+<p>
+{% blocktrans with projects_label=MODULE_PROJECTS_LABEL|lower %}To view this {{ projects_label }} , go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a>
+</p>
+
+<p>{% trans "Thanks!" %}</p>
+
+<p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
+<p>{% now "D d M Y P" %}</p>

@@ -8,6 +8,7 @@ class ProjectIndex(TendenciBaseSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     slug = indexes.CharField(model_attr='slug')
     project_name = indexes.CharField(model_attr='project_name')
+    company_name = indexes.CharField(model_attr='company_name')
     project_status = indexes.CharField(model_attr='project_status',)
     location = indexes.CharField(model_attr='location', null=True)
     city = indexes.CharField(model_attr='city', null=True)
