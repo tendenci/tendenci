@@ -110,7 +110,9 @@ class DocumentsAdmin(admin.StackedInline):
     form = DocumentsForm
 
 class ProjectAdmin(TendenciBaseModelAdmin):
-    list_display = ['edit_link', 'view_on_site', 'project_name', 'group_link', 'featured', 'start_dt', 'end_dt',  'tags']
+    list_display = ['edit_link', 'view_on_site', 'project_name',
+                    'group_link', 'featured', 'start_dt', 'end_dt', 
+                    'tags', 'status_detail']
     list_filter = ['status_detail']
     search_fields = ['project_name', 'company_name']
     actions = []

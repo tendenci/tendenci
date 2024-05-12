@@ -9,11 +9,14 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Q
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.projects.models import Project, Category
-from tendenci.apps.projects.forms import ProjectFrontForm, PhotoFormSet, DocumentsFormSet, TeamMembersFormSet
+from tendenci.apps.projects.forms import (ProjectFrontForm, PhotoFormSet,
+                                          DocumentsFormSet, TeamMembersFormSet,
+                                          ProjectSearchForm)
 from tendenci.apps.perms.utils import has_perm, get_query_filters
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
@@ -290,23 +293,20 @@ def detail(request, slug=None, template_name="projects/detail.html"):
 
 
 def search(request, template_name="projects/search.html"):
-    query = request.GET.get('q', None)
+    filters = get_query_filters(request.user, 'projects.view_project')
+    projects = Project.objects.filter(filters).distinct()
 
-    if get_setting('site', 'global', 'searchindex') and query:
-        projects = Project.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'projects.view_project')
-        projects = Project.objects.filter(filters).distinct()
+    form = ProjectSearchForm(request.GET)
+    if form.is_valid():
+        query = form.cleaned_data.get('q')
+        if query:
+            if 'tag:' in query:
+                tag = query.strip('tag:')
+                projects = projects.filter(tags__icontains=tag)
+            else:
+                projects = projects.filter(Q(project_name__icontains=query) | Q(company_name__icontains=query))
 
-    categories = Category.objects.all()
-    category_id = request.GET.get('category', None)
-
-    if category_id:
-        try:
-            category = Category.objects.get(pk=category_id)
-        except:
-            category = None
-
+        category = form.cleaned_data.get('category')
         if category:
             projects = projects.filter(category=category)
 
@@ -327,8 +327,9 @@ def search(request, template_name="projects/search.html"):
     EventLog.objects.log(**log_defaults)
 
     return render_to_resp(request=request, template_name=template_name,
-        context={'projects':projects, 
-                 'categories': categories,
+        context={'projects':projects,
+                 'categories': Category.objects.all(), # needed for some custom projects
+                 'form': form,
                  'can_add_project': has_perm(request.user, 'projects.add_project')
         })
 
