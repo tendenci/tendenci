@@ -20,6 +20,17 @@ ALLOWED_LOGO_EXT = (
 )
 
 
+class ProjectSearchForm(FormControlWidgetMixin, forms.Form):
+    q = forms.CharField(label=_("Search"), required=False, max_length=200,)
+    category = forms.ModelChoiceField(label=_("Category"),
+                                      queryset=None,
+                                      required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectSearchForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.all()
+
+
 class ProjectForm(TendenciBaseForm):
     class Meta:
         model = Project
