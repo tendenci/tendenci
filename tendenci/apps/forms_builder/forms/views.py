@@ -255,7 +255,7 @@ def memories(request, id, template_name="forms/memories.html"):
     if not has_perm(request.user,'forms.view_formentry',form):
         raise Http403
 
-    key_pattern = re.compile(f"{form.slug}.field_(?P<field_id>\d+)")
+    key_pattern = re.compile(fr"{form.slug}.field_(?P<field_id>\d+)")
 
     # Not sure how well this scales and if perhaps a server side query (filter) is better
     s_mem = [s for s in Session.objects.all()

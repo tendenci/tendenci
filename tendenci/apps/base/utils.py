@@ -118,7 +118,7 @@ def escape_csv(payload):
     if payload and isinstance(payload, str): 
         if payload[0] in ('@','+','-', '=', '|'):
             payload = "'" + payload
-            payload = payload.replace("|", "\|")
+            payload = payload.replace("|", r"\|")
     return payload
 
 
