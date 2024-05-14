@@ -137,6 +137,7 @@ class ProjectForm(TendenciBaseForm):
 
         self.fields['project_name'].label = get_setting('module', 'projects', 'projectnamelabel') or _('Project Name')
         self.fields['company_name'].label = get_setting('module', 'projects', 'companynamelabel') or _('Company Name')
+        self.fields['allow_anonymous_view'].initial = False
         if self.request_user:
             if not self.request_user.is_superuser:
                 del self.fields['allow_anonymous_view']

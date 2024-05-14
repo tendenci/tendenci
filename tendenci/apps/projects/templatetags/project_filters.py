@@ -16,7 +16,7 @@ def filter_by_featured(projects):
 def filter_by_category(projects, category_id):
     cat_projects = []
     for project in projects:
-        if not project.featured and category_id in project.category.all().values_list('id', flat=True):
+        if category_id in project.category.all().values_list('id', flat=True):
             cat_projects.append(project)
     return cat_projects
 

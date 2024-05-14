@@ -23,6 +23,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import get_notice_recipients
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.utils import validate_email
+from tendenci.apps.perms.utils import update_perms_and_save
 
 
 class ProjectInline():
@@ -45,19 +46,13 @@ class ProjectInline():
         if not all((x.is_valid() for x in named_formsets.values())):
             return self.render_to_response(ctx)
 
-        self.object = form.save()
-        if not self.object.creator:
-            self.object.creator = self.request.user
-            self.object.creator_username = self.request.user.username
-
-        self.object.owner = self.request.user
-        self.object.owner_username = self.request.user.username
-
+        self.object = form.save(commit=False)
         # set to pending for non-admins
         if not edit_mode and not self.request.user.is_superuser:
             self.object.status_detail = 'pending'
-        
-        self.object.save()
+            self.object.allow_anonymous_view = False
+
+        self.object = update_perms_and_save(self.request, form, self.object, log=False)
 
         # for each formset, use custom formset save func if available
         for name, formset in named_formsets.items():
@@ -88,7 +83,16 @@ class ProjectInline():
                          get_setting('module', 'projects', 'label')
                 })
 
-        
+        # log an event
+        log_defaults = {
+            'instance': self.object,
+        }
+        if not edit_mode:
+            log_defaults['action'] = "add"
+        else:
+            log_defaults['action'] = "edit"
+        EventLog.objects.log(**log_defaults)
+
         return HttpResponseRedirect(self.get_success_url())
 
     def formset_photos_valid(self, formset):
