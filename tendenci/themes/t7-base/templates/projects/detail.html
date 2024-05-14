@@ -7,7 +7,7 @@
 {% block content %}
 <div class="t">
   <div class="project-wrap">
-  <div class="view-all"><p><a href="/projects">View All Projects</a></p></div>
+  <div class="view-all"><p><a href="{% url 'projects.search' %}">View All Projects</a></p></div>
     <h1>{{ project.project_name }}</h1>
     
     {% if can_edit %}
@@ -19,20 +19,33 @@
     </div>
     {% endif %}
     
-    {% if project.start_dt %}
-    <p>{{ project.start_dt }} - {% if project.end_dt %}{{ project.end_dt }}{% endif %}</p>
+    {% if project.video_title %}
+    <h2>{{ project.video_title }}</h2>
+    {% endif %}
+
+    {% if project.video_description %}
+       {{ project.video_description|safe }}
+    {% endif %}
+
+    {% if project.video_embed_code %}
+      {{ project.video_embed_code|safe }}
     {% endif %}
 
 	{% if project.company_name %}
     <h3>{% trans "Company:" %}</h3> <p>{{ project.company_name}}</p>
     {% endif %}
     
-    {% if project.client %}
-    <h3>{% trans "Client:" %}</h3> <p>{{ project.client|safe}}</p>
+    {% with project.category.all as cats %}
+    {% if cats %}
+    <h3>{% trans "Category:" %}</h3> <p>{{ cats.0.name}}</p>
+    {% endif %}
+    {% endwith %}
+    
+    {% if project.end_dt  %}
+    <h3>{% trans "Dates:" %}</h3><p>{{ project.start_dt }} - {{ project.end_dt }}</p>
     {% endif %}
 
     {% if project.project_description %}
-    <h3>{% trans "Project Description:" %}</h3>
     {{ project.project_description|safe }}
     {% endif %}
 
@@ -46,18 +59,7 @@
     </div>
     {% endif %}
 
-    {% if project.video_title %}
-    <h2>{{ project.video_title }}</h2>
-    {% endif %}
-
-    {% if project.video_description %}
-       {{ project.video_description|safe }}
-    {% endif %}
-
-    {% if project.video_embed_code %}
-      {{ project.video_embed_code|safe }}
-    {% endif %}
-
+    
 	{% if team_members %}
 	 <hr>
     <div class="project-teammembers">
