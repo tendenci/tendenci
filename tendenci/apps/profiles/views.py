@@ -56,7 +56,7 @@ from tendenci.apps.profiles.forms import (ProfileForm, ExportForm,
 UserPermissionForm, UserGroupsForm, ValidatingPasswordChangeForm,
 UserMembershipForm, ProfileMergeForm, ProfileSearchForm, UserUploadForm,
 ActivateForm, PhotoUploadForm)
-from tendenci.apps.profiles.utils import get_member_reminders, ImportUsers
+from tendenci.apps.profiles.utils import get_member_reminders, ImportUsers, get_corp_uc_invoices
 from tendenci.apps.events.models import Registrant
 from tendenci.apps.memberships.models import MembershipType
 from tendenci.apps.memberships.forms import EducationForm
@@ -235,6 +235,12 @@ def index(request, username='', template_name="profiles/index.html"):
     directories = set([m.directory for m in memberships.exclude(directory_id__isnull=True) if m.directory])
     corps_list = user_this.corpmembershiprep_set.filter(corp_profile__status=True
                             ).values_list('corp_profile__id', 'corp_profile__name')
+    if corps_list and get_setting('module', 'corporate_memberships', 'donationsepinv'):
+        # a list of unpaid invoices [(id, balance)] for the contribution (donation)
+        # made during corp renewal.
+        corp_uc_invoices = get_corp_uc_invoices(user_this, [corp[0] for corp in corps_list])
+    else:
+        corp_uc_invoices = None
     recurring_payments = user_this.recurring_payments.filter(status=True, status_detail='active')
 
     # industry
@@ -260,6 +266,7 @@ def index(request, username='', template_name="profiles/index.html"):
         'membership_apps': membership_apps,
         'multiple_apps': multiple_apps,
         'membership_reminders': membership_reminders,
+        'corp_uc_invoices': corp_uc_invoices,
         'can_auto_renew': can_auto_renew,
         'auto_renew_is_set': auto_renew_is_set,
         'recurring_payments': recurring_payments,
