@@ -271,7 +271,7 @@ def detail(request, slug=None, template_name="projects/detail.html"):
         return HttpResponseRedirect(reverse('projects.search'))
 
     project = get_object_or_404(Project, slug=slug)
-    if not has_perm(request.user, 'project.view_project', project):
+    if not has_perm(request.user, 'projects.view_project', project):
         raise Http403
 
     project_photos = project.projects_photo_related.all()
@@ -297,8 +297,12 @@ def detail(request, slug=None, template_name="projects/detail.html"):
 
 
 def search(request, template_name="projects/search.html"):
-    filters = get_query_filters(request.user, 'projects.view_project')
-    projects = Project.objects.filter(filters).distinct()
+    if request.user.is_authenticated and has_perm(request.user, 'projects.view_project'):
+        projects = Project.objects.filter(status=True,
+                                           status_detail__in=['active', 'published'])
+    else:
+        filters = get_query_filters(request.user, 'projects.view_project')
+        projects = Project.objects.filter(filters).distinct()
 
     form = ProjectSearchForm(request.GET)
     if form.is_valid():

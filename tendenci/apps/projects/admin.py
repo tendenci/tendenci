@@ -127,7 +127,6 @@ class ProjectAdmin(TendenciBaseModelAdmin):
                 'project_name',
                 'slug',
                 'company_name',
-                'featured',
                 'project_number',
                 'project_status',
                 'category',
@@ -156,7 +155,8 @@ class ProjectAdmin(TendenciBaseModelAdmin):
             'member_perms',
             'group_perms',
         )}),
-        ('Publishing Status', {'fields': (
+        ('Administrator Only', {'fields': (
+            'featured',
             'status_detail',
         )}),
     )
