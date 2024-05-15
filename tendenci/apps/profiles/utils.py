@@ -241,6 +241,23 @@ def get_member_reminders(user, view_self=False):
     return reminders
 
 
+def get_corp_uc_invoices(user, corp_profile_ids):
+    """
+    Get a list of unpaid invoices [(id, balance)] for the contribution (donation) made during corp renewal.
+    """
+    from tendenci.apps.corporate_memberships.models import CorpMembership
+    invoices_list = []
+    corp_memberships = CorpMembership.objects.filter(
+                        corp_profile_id__in=corp_profile_ids).exclude(status_detail='archive')
+    for corp_membership in corp_memberships:
+        if corp_membership.donation_not_paid():
+            invoices_list.append((corp_membership.donation.invoice.id,
+                                  corp_membership.donation.invoice.guid,
+                                  corp_membership.donation.invoice.balance))
+         
+    return invoices_list
+
+
 def clean_username(username):
     """
     Removes improper characters from a username

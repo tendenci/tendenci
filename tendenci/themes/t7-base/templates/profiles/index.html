@@ -41,6 +41,18 @@
     </div>
     {% endfor %}
     
+    {% if corp_uc_invoices %}
+    <div class="alert alert-warning alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <p>{% trans "Thank you for your generous contribution. If you wish to complete your transaction, your invoice is available here." %}</p>
+      {% for corp_uc_invoice in corp_uc_invoices %}
+      <div class="alert-link">
+        <a class="btn" href="{% url 'invoice.view' corp_uc_invoice.0 corp_uc_invoice.1 %}">{% trans "View Invoice (Balance: " %}{{ corp_uc_invoice.2|format_currency }})</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
     <div id="profile-view">
       <div>
         
