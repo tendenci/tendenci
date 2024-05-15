@@ -26,7 +26,7 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.perms.utils import get_notice_recipients, has_perm
 from tendenci.apps.files.managers import FileManager
 from tendenci.apps.base.utils import extract_pdf, correct_filename
 from tendenci.apps.categories.models import CategoryItem
@@ -374,6 +374,17 @@ class File(TendenciBaseModel):
 
         binary = build_image(self.file, size, 'FILE_IMAGE_PRE_KEY')
         return b64encode(binary)
+
+    def has_obj_view_perm(self, request_user):
+        """
+        Check if `request_user` has view_xxx perm for the associated object.
+        """
+        if self.content_type and self.object_id:
+            obj = self.content_type.get_all_objects_for_this_type(pk=self.object_id).first()
+            if obj:
+                if has_perm(request_user, f'{self.content_type.app_label}.view_{self.content_type.model}'):
+                    return True
+        return False
 
 
 class MultipleFile(models.Model):
