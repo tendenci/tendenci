@@ -77,7 +77,10 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
     # basic permissions
     if not has_view_perm(request.user, 'files.view_file', file):
-        raise Http403
+        # check if this user has the perm to view the associated object.
+        # if they can view the associated object, they should be able to view this file.
+        if not file.has_obj_view_perm(request.user):     
+            raise Http403
 
     # extra permission
     if not file.is_public:
