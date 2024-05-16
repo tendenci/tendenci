@@ -74,10 +74,10 @@ from tendenci.apps.events.models import (
     Event,
     EventStaff,
     CEUCategory,
-    RegistrantChildEvent,
     Registration,
     Registrant,
     RegistrantChildEvent,
+    RegistrantCredits,
     Speaker,
     Organizer,
     Sponsor,
@@ -2335,6 +2335,9 @@ def sessions_edit(request, registrant_id, template_name="events/reg8n/register_c
             messages.add_message(request, messages.ERROR, e.args[0])
 
         if not has_error:
+            # Drop credits if a course is removed from this registration
+            RegistrantCredits.objects.filter(registrant=registrant
+                                ).exclude(event_id__in=child_event_pks).delete()
             return HttpResponseRedirect(redirect_url)
 
     forms = []
