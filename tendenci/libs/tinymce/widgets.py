@@ -64,7 +64,7 @@ class TinyMCE(forms.Textarea):
             #mce_config['plugins'].append('fullpage')
             # allow style tag for newsletter
             mce_config['valid_children'] = '+body[style]'
-        # mce_config.update(self.mce_attrs)
+        mce_config.update(self.mce_attrs)
         # if mce_config['mode'] == 'exact':
         #     mce_config['elements'] = attrs['id']
         return mce_config
@@ -106,14 +106,15 @@ class TinyMCE(forms.Textarea):
         return mark_safe('\n'.join(html))
 
     def _media(self):
+        cache_suffix = settings.TINYMCE_DEFAULT_CONFIG['cache_suffix']
         if tinymce_settings.USE_COMPRESSOR:
             js = [reverse('tinymce-compressor')]
         else:
             js = [tinymce_settings.JS_URL]
         if tinymce_settings.USE_FILEBROWSER:
-            js.append(reverse('tinymce-filebrowser'))
-        js.append(static('tiny_mce/init_tinymce.js'))
-        css = {'all': (static('tiny_mce/custom.css'),)}
+            js.append(reverse('tinymce-filebrowser') + cache_suffix)
+        js.append(static('tiny_mce/init_tinymce.js') + cache_suffix)
+        css = {'all': (static('tiny_mce/custom.css') + cache_suffix,)}
         return forms.Media(js=js, css=css)
     media = property(_media)
 

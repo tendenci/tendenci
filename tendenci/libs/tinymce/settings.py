@@ -18,4 +18,5 @@ else:
     JS_URL = getattr(settings, 'TINYMCE_JS_URL', '%sjs/tiny_mce/tiny_mce.js' % settings.MEDIA_URL)
     JS_ROOT = getattr(settings, 'TINYMCE_JS_ROOT', os.path.join(settings.MEDIA_ROOT, 'js/tiny_mce'))
 
+JS_URL = f"{JS_URL}{settings.TINYMCE_DEFAULT_CONFIG['cache_suffix']}"
 JS_BASE_URL = JS_URL[:JS_URL.rfind('/')]

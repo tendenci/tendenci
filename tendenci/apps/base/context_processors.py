@@ -8,7 +8,8 @@ from tendenci.apps.theme.templatetags.static import static
 def static_url(request):
     context = {}
     context['STOCK_STATIC_URL'] = settings.STOCK_STATIC_URL
-    context['TINYMCE_JS_URL'] = static(settings.TINYMCE_JS_URL)
+    context['TINYMCE_CACHE_SUFFIX'] = settings.TINYMCE_DEFAULT_CONFIG['cache_suffix']
+    context['TINYMCE_JS_URL'] = static(settings.TINYMCE_JS_URL) + context['TINYMCE_CACHE_SUFFIX']
 
     # Backward compatibility for old themes
     def warn_static_url(value=settings.STATIC_URL):

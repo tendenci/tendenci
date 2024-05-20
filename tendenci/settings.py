@@ -647,7 +647,7 @@ TINYMCE_COMPRESSOR = False
 TINYMCE_FILEBROWSER = True
 
 TINYMCE_DEFAULT_CONFIG = {
-    'tinymce_version': '6',
+    'tinymce_version': '6.8.2',
     'theme': "silver",
     'plugins': ["image", 'advlist', 'autolink', 'lists', 'link', 'charmap',
                 'preview', 'anchor', 'searchreplace', 'visualblocks', 'code',  
@@ -660,6 +660,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'image_title': True,
     'media_alt_source': False,
     'media_poster': False,
+    'cache_suffix': '?v=6.8.2',
     'quickbars_insert_toolbar': False,
     'quickbars_selection_toolbar': True,
     'quickbars_image_toolbar': False,

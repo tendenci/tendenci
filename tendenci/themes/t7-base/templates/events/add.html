@@ -50,9 +50,9 @@
 {% block extra_body %}
     {{ block.super }}
     <link href="{% static 'tiny_mce/custom.css' %}" type="text/css" media="all" rel="stylesheet">
-    <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
-    <script type="text/javascript" src="{% url 'tinymce-filebrowser' %}"></script>
-    <script type="text/javascript" src="{% static 'tiny_mce/init_tinymce.js' %}"></script>
+    <script type="text/javascript" src="{{ TINYMCE_JS_URL }}{{ TINYMCE_CACHE_SUFFIX }}"></script>
+    <script type="text/javascript" src="{% url 'tinymce-filebrowser' %}{{ TINYMCE_CACHE_SUFFIX }}"></script>
+    <script type="text/javascript" src="{% static 'tiny_mce/init_tinymce.js' %}{{ TINYMCE_CACHE_SUFFIX }}"></script>
     <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
