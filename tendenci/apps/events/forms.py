@@ -1075,9 +1075,12 @@ class EventForm(TendenciBaseForm):
         
         # If nested events is not enabled, remove it from the form
         if not nested_events:
-            del self.fields['event_relationship']
-            del self.fields['parent']
-            del self.fields['repeat_of']
+            if 'event_relationship' in self.fields:
+                del self.fields['event_relationship']
+            if 'parent' in self.fields:
+                del self.fields['parent']
+            if 'repeat_of' in self.fields:
+                del self.fields['repeat_of']
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
