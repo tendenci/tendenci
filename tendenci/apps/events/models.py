@@ -3604,7 +3604,7 @@ class Event(TendenciBaseModel):
         e.g. s['start_dt'], s['end_dt'], s['same_date']
         """
 
-        if self.on_weekend:
+        if self.on_weekend or self.has_any_child_events:
             same_date = self.start_dt.date() == self.end_dt.date()
             yield {'start_dt':self.start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
             return
