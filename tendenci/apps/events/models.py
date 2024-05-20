@@ -1602,6 +1602,68 @@ class Registrant(models.Model):
         """Credits earned by name"""
         return '; '.join(self.released_cpe_credits.values_list(
             'event_credit__ceu_subcategory__name', flat=True))
+    
+    @property
+    def should_check_in_to_sub_event(self):
+        """
+        Registrant should check into sub event:
+        1) Nested Events are enabled
+        2) Registrant is checked into the main event
+        3) There are sub events today
+        """
+        return (
+            self.event.nested_events_enabled and
+            self.checked_in and 
+            self.event.has_child_events_today
+        )
+    
+    def is_valid_check_in(self, request, current_check_in):
+        """
+        Verifies check in is valid for registrant.
+        Returns reason it isn't valid if applicable.
+        """
+        # Check if authenticated user has current check in event set
+        # If not, return an error message
+        name = self.get_name()
+        if not current_check_in:
+            error_message = "You are not set to check in registrants to any Event"
+            messages.add_message(request, messages.ERROR, error_message)
+            return False, error_message
+            
+        # Check if registrant is able to check in to this event.
+        # If not return an error.
+        if not self.child_events.filter(child_event__pk=current_check_in).exists():
+            error_message = f"{name} is not eligible to check in to {request.session.get('current_checkin_name')}"
+            messages.add_message(request, messages.ERROR, error_message)  
+            return False, error_message
+        
+        # Check if registrant is already checked in
+        event = self.child_events.get(child_event__pk=current_check_in)
+        if event.checked_in:
+            error_message = f"{name} is already checked into {request.session.get('current_checkin_name')}"
+            messages.add_message(request, messages.INFO, error_message)  
+            return False, error_message 
+                
+        # Check if registrant is currently able to check in to this event.
+        # If not return an error.
+        if not self.child_events_available_for_check_in.filter(child_event__pk=current_check_in).exists():
+            error_message = f"{request.session.get('current_checkin_name')} isn't scheduled for today."
+            messages.add_message(request, messages.ERROR, error_message)  
+            return False, error_message
+        
+        return True, None
+    
+    def try_get_check_in_event(self, request):
+        """
+        Tries to get check in event if it's valid.
+        Returns reason for failure if applicable.
+        """
+        current_check_in = request.session.get('current_checkin')
+        is_valid, error_message = self.is_valid_check_in(request, current_check_in)
+        if not is_valid:
+            return None, error_message
+
+        return self.child_events_available_for_check_in.get(child_event__pk=current_check_in), None
 
     def get_cpe_credits_by_event(self, event):
         """Total CPE credits by event"""
@@ -2248,6 +2310,13 @@ class RegistrantChildEvent(models.Model):
         event = self.child_event
         return f'{event.title} {event.start_dt.time().strftime("%I:%M %p")} - ' \
                f'{event.end_dt.time().strftime("%I:%M %p")}'
+    
+    def check_in(self):
+        """Check in this registrant to this child event"""
+        self.checked_in = True
+        self.checked_in_dt = datetime.now()
+        self.save()
+        self.child_event.assign_credits(self.registrant)
 
 
 class RegistrantCredits(models.Model):
@@ -2632,6 +2701,18 @@ class Event(TendenciBaseModel):
             start_dt__gte=self.start_dt,
             end_dt__lte=self.end_dt,
         )
+    
+    @property
+    def child_events_today(self):
+        """
+        Child events available that are upcoming today.
+        """
+        return self.child_events.filter(start_dt__date=datetime.today())
+    
+    @property
+    def has_child_events_today(self):
+        """Indicate whether event has child events today"""
+        return self.child_events_today.exists()
 
     @property
     def structured_data(self):

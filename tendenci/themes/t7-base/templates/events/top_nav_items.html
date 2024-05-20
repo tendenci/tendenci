@@ -180,6 +180,12 @@
 
                         <li class="content-item">
                             <span class="app-name">
+                                <a href="{% url 'event.set_current_check_in' app_object.pk %}">{% trans "Start Check In" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
                                 <a href="{% url 'event.sub_event_check_in' app_object.parent.pk %}">{% trans "Session Check In Grid" %}</a>
                             </span>
                         </li>
