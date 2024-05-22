@@ -7,7 +7,7 @@ Pillow==10.3.0
 django-countries==7.5.1
 django-localflavor==4.0
 dj-pagination>=2.5.0
-django-picklefield>=3.1
+django-picklefield>=3.2
 django-simple-captcha==0.6.0
 #django-nocaptcha-recaptcha==0.0.20
 tendenci-django-tagging==0.6
@@ -62,7 +62,7 @@ Authlib==1.3.0
 django-admin-rangefilter==0.12.0
 # for forums tests
 lxml==5.1.0
-django-q2==1.6.1
+django-q2==1.6.2
 # memcached client
 pymemcache>=4.0.0
 # two factor
