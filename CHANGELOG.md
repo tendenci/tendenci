@@ -1,3 +1,13 @@
+### 15.1 [2024-5-22]
+
+* Upgraded font awesome from v4 to v6.
+* Removed UnicodeWriter from exports for invoices, articles, chapters and events to significantly reduce the size of the exported files.
+* Added donation allocation to corporate memberships renewal, and have the option to create a separate invoice for donation.
+* Projects update: added frontend add/edit pages.
+* Resolved some issues in tinymce 6.8.
+* Other minor updates and fixes.
+
+
 ### 15.0 [2024-3-30]
  
 * **Breaking Changes: Requires Django 4.2 LTS**. Django 3.2 LTS is not supported. For migrating T14 sites to T15, please follow the guide in https://tendenci.readthedocs.io/en/latest/upgrade/upgrade-to-tendenci.html.

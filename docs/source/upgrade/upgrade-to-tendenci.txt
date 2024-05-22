@@ -53,6 +53,27 @@ Replace the virtualenv in:
     - cron jobs 
     - systemd unit file. 
 
+
+Step 4: Update Your Template base.html for Font Awesome v6
+----------------------------------------------------------
+
+Find:
+::
+
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.css' %}" type="text/css">
+
+   
+Replace with:
+::
+
+    <link rel="stylesheet" href="{% static 'font-awesome/css/fontawesome.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/brands.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/solid.min.css' %}" type="text/css">
+    <!-- support v4 icon references/syntax -->
+    <link href="{% static 'font-awesome/css/v4-shims.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'font-awesome/css/v4-font-face.min.css' %}" rel="stylesheet" />
+
+
 After update is done, restart your site.
 
 
