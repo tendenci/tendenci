@@ -1,8 +1,13 @@
 # coming soon
 # import logging
+from datetime import datetime, timedelta
 from model_bakery import baker
+from unittest.mock import patch
 
 from django.test import Client, TestCase
+from django.test.client import RequestFactory
+from django.contrib import messages
+from django.contrib.sessions.middleware import SessionMiddleware
 # from django.contrib.auth.models import User
 # from django.urls import reverse
 # 
@@ -108,6 +113,17 @@ from tendenci.apps.events.utils import copy_event
 #         logger.info('Complete.')
 
 class EventTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def _add_session_to_request(self, request):
+        # Initialize session middleware
+        middleware = SessionMiddleware()
+        # Process the request to add a session
+        middleware.process_request(request)
+        # Save the session
+        request.session.save()
+
     def test_repeat_of_relationship(self):
         original_event = baker.make('events.Event')
         user = baker.make('auth.User')
@@ -122,3 +138,68 @@ class EventTest(TestCase):
     
         self.assertEqual(original_event, another_repeat_event.repeat_of)
         self.assertEqual(original_event.repeat_uuid, another_repeat_event.repeat_uuid)
+
+    @patch('django.contrib.messages.add_message')
+    def test_check_in_validation(self, mock_add_message):
+        # Setup the scenario
+        user = baker.make('auth.User', is_superuser=True)
+        
+        event = baker.make('events.Event')
+        child_event = baker.make('events.Event', parent=event, start_dt=datetime.now(), end_dt=datetime.now())
+        registrant = baker.make('events.Registrant')
+        registrant.registration.event = event
+
+        # The specific request here doesn't matter, but we need one to test the validation method.
+        request = self.factory.get(f'/events/{event.pk}')
+        request.user = user
+        self._add_session_to_request(request)
+
+        # not set to check-in registrants. This should return an error
+        error_level, _ = registrant.is_valid_check_in(request, False)
+        self.assertEqual(error_level, messages.ERROR)
+
+        # registrant not registered for this session. This should return an error
+        child_event.set_check_in(request)
+        error_level, _ = registrant.is_valid_check_in(request, child_event.pk)
+        self.assertEqual(error_level, messages.ERROR)
+
+        # registrant is registered for this session. There should not be an error
+        registrant_child_event = baker.make('events.RegistrantChildEvent', child_event=child_event, registrant=registrant)
+        error_level, _ = registrant.is_valid_check_in(request, child_event.pk)
+        self.assertEqual(error_level, messages.SUCCESS)
+
+        # registrant is already checked-in. This should return a warning
+        registrant_child_event.checked_in = True
+        registrant_child_event.save()
+        error_level, _ = registrant.is_valid_check_in(request, child_event.pk)
+        self.assertEqual(error_level, messages.WARNING)
+
+        # registrant is registered, but event isn't today. This should return an error
+        child_event.start_dt = datetime.now() + timedelta(days=1)
+        child_event.save()
+        registrant_child_event.checked_in = False
+        registrant_child_event.save()
+        error_level, _ = registrant.is_valid_check_in(request, child_event.pk)
+        self.assertEqual(error_level, messages.ERROR)        
+
+
+    @patch('tendenci.apps.events.models.Event.nested_events_enabled', True)
+    def test_should_check_in(self):
+        start_dt = datetime.now()
+        end_dt = datetime.now() + timedelta(days=1)
+        event = baker.make('events.Event', start_dt=start_dt, end_dt=end_dt)
+
+        # Registrant is not checked in, so shouldn't check in to sub events
+        registrant = baker.make('events.Registrant', checked_in=False)
+        registrant.registration.event = event
+        self.assertFalse(registrant.should_check_in_to_sub_event)
+
+        # Registrant is checked in, but there aren't any sub events, so shouldn't check in to sub events.
+        registrant.checked_in = True
+        registrant.save()
+        self.assertFalse(registrant.should_check_in_to_sub_event)
+
+        # Registrant is checked in and there are sub events today, so should check in to sub events
+        baker.make('events.Event', parent=event, start_dt=datetime.now(), end_dt=datetime.now())
+
+        self.assertTrue(registrant.should_check_in_to_sub_event)
