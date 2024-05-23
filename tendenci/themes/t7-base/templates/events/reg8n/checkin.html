@@ -1,6 +1,6 @@
 {% extends "events/base.html" %}
 {% load styled_forms %}
-
+{% load event_tags %}
 {% block title %}{{ block.super }}{% trans "Check-In Registrant" %}{% endblock %}
 
 {% block extra_head %}
@@ -56,17 +56,23 @@
   {% endif %}
 
   {% if form %}
-  <form action="{% url 'event.digital_check_in' registrant.pk %}" method="post">
-    {% csrf_token %}
-    <div class="forms">
-      <div class="session_form">
-        <label for="{{ form.event.id_for_label }}">{{ form.event.label }}:</label><br />
-          {{ form.event }}
-      </div>
-      <input class="btn btn-primary" type="submit" value="{% trans "Check In" %}" />
-    </div>
-  </form>
+    <!-- Check-in Modal  -->
+    <div id="checkInModal" class="modal fade" role="dialog">
+      {% event_check_in_modal registrant.pk form error %}
+   </div>
   {% endif %}
   </div>
 </div>
+{% endblock %}
+
+{% block extra_body %}
+  <script type="text/javascript">
+    // If a form to switch sub-events is in the request,
+    // display a modal to allow the user to switch sub-events.
+    $(document).ready(function(){
+      {% if form %}
+        $('#checkInModal').modal('show');
+      {% endif %}
+    });
+  </script>
 {% endblock %}

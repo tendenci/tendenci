@@ -4305,9 +4305,11 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 def set_current_check_in(request, event_id):
     """Set current Event to check in registrants"""
     event = get_object_or_404(Event.objects.get_all(), pk=event_id)
-    request.session["current_checkin"] = event.pk
-    request.session["current_checkin_name"] = event.title
-    messages.add_message(request, messages.SUCCESS, f"Ready to check in to {event.title}!")
+
+    if not has_view_perm(request.user, 'events.view_event', event):
+        raise Http403
+
+    event.set_check_in(request)
     return HttpResponseRedirect(reverse('event', args=([event_id])))
 
 @is_enabled('events')
@@ -4351,18 +4353,42 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
             messages.add_message(request, messages.ERROR, error_message)
 
     confirm_session_check_in = False
+    form = None
     if should_check_in_to_sub_event:
         # Try to get check in for registrant. 
         # Check in registrant if successful (display error if fails)
-        child_event, error_message = registrant.try_get_check_in_event(request)
+        child_event, error_level, error_message = registrant.try_get_check_in_event(request)
         if child_event:
             child_event.check_in()
             messages.add_message(request, messages.SUCCESS, f"{name} checked in to {child_event.child_event.title}")
             confirm_session_check_in = child_event.child_event.title
 
+        # Add form to allow user to switch event to check registrants in to
+        # Do this when there's an error since this indicates the user might have
+        # the wrong event set.
+        if error_message and error_level == messages.ERROR:
+            form = EventCheckInForm(event=event, request=request)
+
+    # Switch event to check-in registrants
+    if request.POST:
+        update_form = EventCheckInForm(event, request, request.POST)
+        if update_form.is_valid():
+            # Clear previous messages. There's no other way to do this than to 
+            # consume each message. 
+            list(messages.get_messages(request))
+
+            # Set check in to the event selected and redirect. This will attempt to check the
+            # registrant in to the selected event and will allow the authenticated user to
+            # continue to check in users to that event.
+            checkin_event = update_form.cleaned_data.get('event')
+            checkin_event.set_check_in(request)
+
+        return HttpResponseRedirect(reverse('event.digital_check_in', args=([registrant_id])))
+
     return render_to_resp(request=request, template_name=template_name, context={
         'registrant': registrant,
         'parent_event': event,
+        'form': form,
         'error': error_message,
         'confirm_session_check_in': confirm_session_check_in
     })

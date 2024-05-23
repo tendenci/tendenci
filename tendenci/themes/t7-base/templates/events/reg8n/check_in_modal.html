@@ -1,0 +1,36 @@
+<style>
+    .modal-body {
+        text-wrap: pretty;
+    }
+</style>
+<div class="modal-dialog modal-md">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">{% trans "Switch Check-in Session?" %}</h4>
+        </div>
+        <div class="modal-body">
+            {{ message }} <br />
+            {% trans "Do you need to switch sessions?" %}
+            <div class="form-wrap">
+                <form action="{% url 'event.digital_check_in' registrant_id %}" method="post">
+                    {% csrf_token %}
+                    <div class="forms">
+                        <div class="session_form">
+                            <label for="{{ form.event.id_for_label }}">{{ form.event.label }}:</label><br />
+                            {{ form.event }}
+                        </div>
+                        <div class="grid">
+                            <div class="forms grid-item" style="margin-right: 10px;">
+                                <button type="submit" class="btn " data-dismiss="modal">{% trans "Exit and Continue" %}</button>
+                            </div>
+                            <div class="grid-item">
+                                <input class="btn btn-primary" type="submit" value="{% trans "Switch Session" %}" />
+                            </div>
+                        </div>
+                    </div>
+                  </form> 
+            </div>
+        </div>
+    </div>
+</div>

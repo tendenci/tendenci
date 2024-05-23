@@ -98,6 +98,16 @@ def event_current_app(context, user, event=None):
     return context
 
 
+@register.inclusion_tag("events/reg8n/check_in_modal.html", takes_context=True)
+def event_check_in_modal(context, registrant_id, form, message):
+    context.update({
+        "registrant_id": registrant_id, 
+        "form": form, 
+        "message": message,
+        })
+    return context
+
+
 @register.inclusion_tag("events/clone_modal.html", takes_context=True)
 def event_clone_modal(context, event):
     context.update({"event": event})

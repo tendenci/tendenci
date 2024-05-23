@@ -2061,21 +2061,22 @@ class FreePassCheckForm(forms.Form):
 
 class EventCheckInForm(forms.Form):
     """
-    Form for digital check in for events and sub-events
+    Form to change sub-event to check-in registrants to
     """
-    def __init__(self, registrant, *args, **kwargs):
+    def __init__(self, event, request, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if not registrant.child_events.exists():
+        if not event.has_child_events_today:
             self.fields['event'] = forms.HiddenInput()
         else:
-            queryset = registrant.child_events_available_for_check_in
-            default = queryset.filter(child_event__end_dt__gt=datetime.now()).first()
+            current = request.session.get('current_checkin')
+            queryset = event.child_events_today
+            default = current if current and queryset.filter(pk=current).exists() else queryset.first()
             self.fields['event'] = forms.ModelChoiceField(
                 queryset=queryset,
                 widget=forms.Select,
                 initial=default,
-                label=_("Check into Session"),
+                label=_("Check Registrants into Session"),
             )
 
 

@@ -1620,7 +1620,7 @@ class Registrant(models.Model):
     def is_valid_check_in(self, request, current_check_in):
         """
         Verifies check in is valid for registrant.
-        Returns reason it isn't valid if applicable.
+        Returns reason it isn't valid if applicable and level (error, warning, success)
         """
         # Check if authenticated user has current check in event set
         # If not, return an error message
@@ -1628,42 +1628,41 @@ class Registrant(models.Model):
         if not current_check_in:
             error_message = "You are not set to check in registrants to any Event"
             messages.add_message(request, messages.ERROR, error_message)
-            return False, error_message
+            return messages.ERROR, error_message
             
         # Check if registrant is able to check in to this event.
         # If not return an error.
         if not self.child_events.filter(child_event__pk=current_check_in).exists():
             error_message = f"{name} is not eligible to check in to {request.session.get('current_checkin_name')}"
             messages.add_message(request, messages.ERROR, error_message)  
-            return False, error_message
+            return messages.ERROR, error_message
         
         # Check if registrant is already checked in
         event = self.child_events.get(child_event__pk=current_check_in)
         if event.checked_in:
             error_message = f"{name} is already checked into {request.session.get('current_checkin_name')}"
             messages.add_message(request, messages.INFO, error_message)  
-            return False, error_message 
+            return messages.WARNING, error_message 
                 
         # Check if registrant is currently able to check in to this event.
         # If not return an error.
         if not self.child_events_available_for_check_in.filter(child_event__pk=current_check_in).exists():
             error_message = f"{request.session.get('current_checkin_name')} isn't scheduled for today."
             messages.add_message(request, messages.ERROR, error_message)  
-            return False, error_message
-        
-        return True, None
+            return messages.ERROR, error_message
+        return messages.SUCCESS, None
     
     def try_get_check_in_event(self, request):
         """
         Tries to get check in event if it's valid.
-        Returns reason for failure if applicable.
+        Returns error level (error, warning, success) and error message if applicable
         """
         current_check_in = request.session.get('current_checkin')
-        is_valid, error_message = self.is_valid_check_in(request, current_check_in)
-        if not is_valid:
-            return None, error_message
+        error_level, error_message = self.is_valid_check_in(request, current_check_in)
+        if not error_level == messages.SUCCESS:
+            return None, error_level, error_message
 
-        return self.child_events_available_for_check_in.get(child_event__pk=current_check_in), None
+        return self.child_events_available_for_check_in.get(child_event__pk=current_check_in), error_level, None
 
     def get_cpe_credits_by_event(self, event):
         """Total CPE credits by event"""
@@ -3356,6 +3355,18 @@ class Event(TendenciBaseModel):
             registrant_credits = registrant_credits.exclude(
                     event_credit_id__in=available_credit_ids)
         registrant_credits.delete()
+
+    def set_check_in(self, request):
+        """
+        Save this Event to the authenticated session.
+        This will allow registrants to be checked-in to this Event.
+        """
+        if not request.user.is_superuser:
+            return
+        
+        request.session["current_checkin"] = self.pk
+        request.session["current_checkin_name"] = self.title
+        messages.add_message(request, messages.SUCCESS, f"Ready to check in to {self.title}!")
 
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
