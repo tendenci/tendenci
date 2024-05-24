@@ -1443,5 +1443,22 @@
         "scope_category": "events",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "0",
+        "description": "Number of minutes after a session's start to remind users to switch check-in sessions. If 0, reminders are turned off.",
+        "data_type": "string",
+        "update_dt": "2024-05-23 14:50:00",
+        "input_type": "text",
+        "client_editable": false,
+        "name": "reminder_minutes",
+        "value": "0",
+        "label": "Switch Check-in Session Reminder Minutes",
+        "input_value": "",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]

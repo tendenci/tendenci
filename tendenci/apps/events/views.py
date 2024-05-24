@@ -4346,7 +4346,7 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
             messages.add_message(
                 request, 
                 messages.SUCCESS, 
-                f"{name} checked {'in to ' if check_in else 'out of '} {event.title}",
+                _(f"{name} checked {'in to ' if check_in else 'out of '} {event.title}"),
             )
         except Exception as e:
             error_message = e.args[0]
@@ -4360,13 +4360,24 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
         child_event, error_level, error_message = registrant.try_get_check_in_event(request)
         if child_event:
             child_event.check_in()
-            messages.add_message(request, messages.SUCCESS, f"{name} checked in to {child_event.child_event.title}")
+            messages.add_message(request, messages.SUCCESS, _(f"{name} checked in to {child_event.child_event.title}"))
             confirm_session_check_in = child_event.child_event.title
+
+        # Show reminders to switch session if applicable. Include link to use form to switch sessions.
+        current_check_in = Event.objects.get(pk=request.session.get("current_checkin")) if request.session.get("current_checkin") else None
+        if current_check_in and current_check_in.should_show_check_in_reminder:
+            reminder_url = f"{reverse('event.digital_check_in', args=([registrant_id]))}?show_reminder=True"
+            reminder_message = _(
+                f"{current_check_in.title} started more than " +
+                f"{current_check_in.check_in_reminders} minutes ago. " +
+                f"<a class='alert-link' href={reminder_url}> Do you want to switch sessions? </a>"
+                )
+            messages.add_message(request, messages.WARNING, reminder_message)  
 
         # Add form to allow user to switch event to check registrants in to
         # Do this when there's an error since this indicates the user might have
         # the wrong event set.
-        if error_message and error_level == messages.ERROR:
+        if error_message and error_level == messages.ERROR or request.GET.get("show_reminder"):
             form = EventCheckInForm(event=event, request=request)
 
     # Switch event to check-in registrants

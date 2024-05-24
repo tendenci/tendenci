@@ -118,7 +118,10 @@ class EventTest(TestCase):
 
     def _add_session_to_request(self, request):
         # Initialize session middleware
-        middleware = SessionMiddleware()
+        def get_response():
+            return
+        
+        middleware = SessionMiddleware(get_response=get_response)
         # Process the request to add a session
         middleware.process_request(request)
         # Save the session

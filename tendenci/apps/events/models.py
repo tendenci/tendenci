@@ -1626,28 +1626,28 @@ class Registrant(models.Model):
         # If not, return an error message
         name = self.get_name()
         if not current_check_in:
-            error_message = "You are not set to check in registrants to any Event"
+            error_message = _("You are not set to check in registrants to any Event")
             messages.add_message(request, messages.ERROR, error_message)
             return messages.ERROR, error_message
-            
+                    
         # Check if registrant is able to check in to this event.
         # If not return an error.
         if not self.child_events.filter(child_event__pk=current_check_in).exists():
-            error_message = f"{name} is not eligible to check in to {request.session.get('current_checkin_name')}"
+            error_message = _(f"{name} is not eligible to check in to {request.session.get('current_checkin_name')}")
             messages.add_message(request, messages.ERROR, error_message)  
             return messages.ERROR, error_message
         
         # Check if registrant is already checked in
         event = self.child_events.get(child_event__pk=current_check_in)
         if event.checked_in:
-            error_message = f"{name} is already checked into {request.session.get('current_checkin_name')}"
+            error_message = _(f"{name} is already checked into {request.session.get('current_checkin_name')}")
             messages.add_message(request, messages.INFO, error_message)  
             return messages.WARNING, error_message 
                 
         # Check if registrant is currently able to check in to this event.
         # If not return an error.
         if not self.child_events_available_for_check_in.filter(child_event__pk=current_check_in).exists():
-            error_message = f"{request.session.get('current_checkin_name')} isn't scheduled for today."
+            error_message = _(f"{request.session.get('current_checkin_name')} isn't scheduled for today.")
             messages.add_message(request, messages.ERROR, error_message)  
             return messages.ERROR, error_message
         return messages.SUCCESS, None
@@ -3446,6 +3446,33 @@ class Event(TendenciBaseModel):
             status=True,
             price__gt=0
             ).exists()
+
+    @property
+    def check_in_reminders(self):
+        """
+        Gets minutes after event start to send reminders for 
+        switching check-in session.
+        """
+        return get_setting("module", "events", "reminder_minutes")
+    
+    @property
+    def check_in_reminders_due(self):
+        """Time to show reminder to switch check-in session."""
+        if not self.check_in_reminders:
+            return None
+        return datetime.now() >= self.start_dt + timedelta(minutes=int(self.check_in_reminders))
+    
+    @property
+    def should_show_check_in_reminder(self):
+        """
+        If reminders are enabled and the specified
+        number of minutes has passed since the event's start,
+        show reminders.
+        """
+        return (
+            self.check_in_reminders and
+            self.check_in_reminders
+        )
 
     @property
     def nested_events_enabled(self):
