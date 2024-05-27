@@ -1,7 +1,6 @@
 import datetime
 import re
-#import chardet
-import cchardet as chardet
+import chardet
 
 from django import forms
 from django.contrib import auth

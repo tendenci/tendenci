@@ -817,7 +817,7 @@ def normalize_newline(file_path):
 
     ```file_path``` is a relative path.
     """
-    import cchardet as chardet
+    import chardet
     with default_storage.open(file_path, 'rb') as f:
         data = f.read()
         char_det = chardet.detect(data)

@@ -36,7 +36,6 @@ django-ses==3.5.2
 django-tastypie==0.14.6
 docutils==0.20
 chardet==5.2.0
-cchardet==2.1.7
 psycopg2==2.9.9
 gunicorn==22.0.0
 gevent==23.9.1
