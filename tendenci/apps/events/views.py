@@ -4378,6 +4378,10 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
         # Do this when there's an error since this indicates the user might have
         # the wrong event set.
         if error_message and error_level == messages.ERROR or request.GET.get("show_reminder"):
+            # Display the reminder message instead of any other error messages if applicable.
+            if request.GET.get("show_reminder"):
+                error_message = _(f"{current_check_in.title} started more than " +
+                                f"{current_check_in.check_in_reminders} minutes ago. ")
             form = EventCheckInForm(event=event, request=request)
 
     # Switch event to check-in registrants

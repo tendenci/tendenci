@@ -2059,6 +2059,11 @@ class FreePassCheckForm(forms.Form):
     member_number = forms.CharField(max_length=50, required=False)
 
 
+class EventTitleChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.title} {obj.start_dt.strftime('%I:%M %p').lstrip('0').replace(':00', '')} - {obj.end_dt.strftime('%I:%M %p').lstrip('0').replace(':00', '')}"
+    
+
 class EventCheckInForm(forms.Form):
     """
     Form to change sub-event to check-in registrants to
@@ -2072,7 +2077,7 @@ class EventCheckInForm(forms.Form):
             current = request.session.get('current_checkin')
             queryset = event.child_events_today
             default = current if current and queryset.filter(pk=current).exists() else queryset.first()
-            self.fields['event'] = forms.ModelChoiceField(
+            self.fields['event'] = EventTitleChoiceField(
                 queryset=queryset,
                 widget=forms.Select,
                 initial=default,
