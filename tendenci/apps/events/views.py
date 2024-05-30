@@ -4379,7 +4379,7 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
         # the wrong event set.
         if error_message and error_level == messages.ERROR or request.GET.get("show_reminder"):
             # Display the reminder message instead of any other error messages if applicable.
-            if request.GET.get("show_reminder"):
+            if request.GET.get("show_reminder") and current_check_in:
                 error_message = _(f"{current_check_in.title} started more than " +
                                 f"{current_check_in.check_in_reminders} minutes ago. ")
             form = EventCheckInForm(event=event, request=request)
@@ -4405,7 +4405,8 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
         'parent_event': event,
         'form': form,
         'error': error_message,
-        'confirm_session_check_in': confirm_session_check_in
+        'confirm_session_check_in': confirm_session_check_in,
+        'is_session_set': request.session.get('current_checkin', False) != False
     })
 
 @csrf_exempt
@@ -4434,7 +4435,6 @@ def registrant_check_in(request):
             if registrant:
                 if checked_in == 'true':
                     if not registrant.checked_in:
-                        print("CHECKING IN!")
                         registrant.checked_in = True
                         registrant.checked_in_dt = datetime.now()
                         registrant.save()

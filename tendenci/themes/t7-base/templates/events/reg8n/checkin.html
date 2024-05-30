@@ -58,7 +58,7 @@
   {% if form %}
     <!-- Check-in Modal  -->
     <div id="checkInModal" class="modal fade" role="dialog">
-      {% event_check_in_modal registrant.pk form error %}
+      {% event_check_in_modal registrant.pk form error is_session_set %}
    </div>
   {% endif %}
   </div>

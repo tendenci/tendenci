@@ -99,11 +99,12 @@ def event_current_app(context, user, event=None):
 
 
 @register.inclusion_tag("events/reg8n/check_in_modal.html", takes_context=True)
-def event_check_in_modal(context, registrant_id, form, message):
+def event_check_in_modal(context, registrant_id, form, message, is_session_set):
     context.update({
         "registrant_id": registrant_id, 
         "form": form, 
         "message": message,
+        "is_session_set": is_session_set
         })
     return context
 
