@@ -2711,7 +2711,9 @@ class Event(TendenciBaseModel):
     def sessions_availble_to_switch_to(self, request):
         """Sessions available for check-in other than the one currently selected"""
         available_sessions = self.child_events_today.count()
-        if available_sessions and request.session.get('current_checkin'):
+        current_checkin = request.session.get('current_checkin')
+        if available_sessions and current_checkin and \
+            self.child_events_today.filter(id=current_checkin).exists():
             available_sessions -= 1
         return available_sessions
     
