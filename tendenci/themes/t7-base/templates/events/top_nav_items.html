@@ -178,11 +178,13 @@
                             </span>
                         </li>
 
+                        {% if request.mobile_browser and request.user.is_superuser %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'event.set_current_check_in' app_object.pk %}">{% trans "Start Check In" %}</a>
                             </span>
                         </li>
+                        {% endif %}
 
                         <li class="content-item">
                             <span class="app-name">
