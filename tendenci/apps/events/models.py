@@ -2708,6 +2708,13 @@ class Event(TendenciBaseModel):
         """
         return self.child_events.filter(start_dt__date=datetime.today())
     
+    def sessions_availble_to_switch_to(self, request):
+        """Sessions available for check-in other than the one currently selected"""
+        available_sessions = self.child_events_today.count()
+        if available_sessions and request.session.get('current_checkin'):
+            available_sessions -= 1
+        return available_sessions
+    
     @property
     def has_child_events_today(self):
         """Indicate whether event has child events today"""
@@ -3469,9 +3476,10 @@ class Event(TendenciBaseModel):
         number of minutes has passed since the event's start,
         show reminders.
         """
+
         return (
             self.check_in_reminders and
-            self.check_in_reminders
+            self.check_in_reminders_due
         )
 
     @property

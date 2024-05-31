@@ -4365,7 +4365,8 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
 
         # Show reminders to switch session if applicable. Include link to use form to switch sessions.
         current_check_in = Event.objects.get(pk=request.session.get("current_checkin")) if request.session.get("current_checkin") else None
-        if current_check_in and current_check_in.should_show_check_in_reminder:
+        available_sessions = event.sessions_availble_to_switch_to(request)
+        if current_check_in and current_check_in.should_show_check_in_reminder and available_sessions:
             reminder_url = f"{reverse('event.digital_check_in', args=([registrant_id]))}?show_reminder=True"
             reminder_message = _(
                 f"{current_check_in.title} started more than " +
@@ -4377,7 +4378,7 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
         # Add form to allow user to switch event to check registrants in to
         # Do this when there's an error since this indicates the user might have
         # the wrong event set.
-        if error_message and error_level == messages.ERROR or request.GET.get("show_reminder"):
+        if available_sessions and (error_message and error_level == messages.ERROR or request.GET.get("show_reminder")):
             # Display the reminder message instead of any other error messages if applicable.
             if request.GET.get("show_reminder") and current_check_in:
                 error_message = _(f"{current_check_in.title} started more than " +
