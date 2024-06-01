@@ -1,0 +1,73 @@
+<style>
+    .modal-dialog {
+        margin-top: 50px;
+    }
+    .modal-body {
+        text-wrap: pretty;
+    }
+    #id_event {
+        width: 100%
+    }
+    .grid {
+        width: 100%;
+    }
+    .modal-btn {
+        max-width: 50%;
+    }
+    .modal-btn .btn{
+        width: 100%;
+        font-size: 1em;
+    }
+    @media (max-width: 400px) {
+        .modal-btn .btn{
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+    }
+    @media (max-width: 360px) {
+        .modal-btn .btn{
+            font-size: .9em;
+        }
+    }
+</style>
+<div class="modal-dialog modal-md">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">{% trans "Switch Check-in Session?" %}</h4>
+        </div>
+        <div class="modal-body">
+            {{ message }} <br />
+            {% if is_session_set %}
+              {% trans "Do you need to switch sessions?" %}
+            {% else %}
+              {% trans "Do you need to set a check-in session?" %}
+            {% endif %}
+            <div class="form-wrap">
+                <form action="{% url 'event.digital_check_in' registrant_id %}" method="post">
+                    {% csrf_token %}
+                    <div class="forms">
+                        <div class="session_form">
+                            <label for="{{ form.event.id_for_label }}">{{ form.event.label }}:</label><br />
+                            {{ form.event }}
+                        </div>
+                        <div class="grid">
+                            {% if is_session_set %}
+                            <div class="forms grid-item modal-btn" style="margin-right: 10px;">
+                                <button type="submit" class="btn btn-default" data-dismiss="modal">{% trans "Continue with Session" %}</button>
+                            </div>
+                            {% endif %}
+                            <div class="grid-item modal-btn">
+                                {% if is_session_set %}
+                                <input class="btn btn-primary" type="submit" value="{% trans "Switch Session" %}" />
+                                {% else %}
+                                <input class="btn btn-primary" type="submit" value="{% trans "Start Check-in Session" %}" />
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                  </form> 
+            </div>
+        </div>
+    </div>
+</div>

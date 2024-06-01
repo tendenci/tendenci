@@ -4302,6 +4302,18 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 
 @is_enabled('events')
 @login_required
+def set_current_check_in(request, event_id):
+    """Set current Event to check in registrants"""
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
+
+    if not has_view_perm(request.user, 'events.view_event', event):
+        raise Http403
+
+    event.set_check_in(request)
+    return HttpResponseRedirect(reverse('event', args=([event_id])))
+
+@is_enabled('events')
+@login_required
 def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin.html'):
     """
     Check in a registrant (To be used with QR code scan).
@@ -4313,6 +4325,11 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
     error_message = None
     event = registrant.registration.event
 
+    # Determine if sub event check in should be attempted. This must be 
+    # done before checking in to the main event since it depends on current 
+    # check in status.
+    should_check_in_to_sub_event = registrant.should_check_in_to_sub_event
+
     # If not yet checked into parent event, check in.
     # This also applies to single meeting events.
     check_in = not error_message and not registrant.checked_in
@@ -4322,35 +4339,75 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
     # registrant is already checked in, check out.
     check_out = registrant.checked_in and registrant.check_out_enabled
 
+    name = registrant.get_name()
     if check_in or check_out:
         try:
             registrant.check_in_or_out(check_in)
+            messages.add_message(
+                request, 
+                messages.SUCCESS, 
+                _(f"{name} checked {'in to ' if check_in else 'out of '} {event.title}"),
+            )
         except Exception as e:
             error_message = e.args[0]
             messages.add_message(request, messages.ERROR, error_message)
 
+    confirm_session_check_in = False
     form = None
-    if event.nested_events_enabled and registrant.child_events_available_for_check_in.exists():
-        form = EventCheckInForm(registrant=registrant)
-
-    confirm_session_check_in = None
-    if request.POST:
-        update_form = EventCheckInForm(registrant, request.POST)
-        if update_form.is_valid():
-            child_event = update_form.cleaned_data.get('event')
-            child_event.checked_in = True
-            child_event.checked_in_dt = datetime.now()
-            child_event.save()
-            child_event.child_event.assign_credits(child_event.registrant)
-            form = None
+    if should_check_in_to_sub_event:
+        # Try to get check in for registrant. 
+        # Check in registrant if successful (display error if fails)
+        child_event, error_level, error_message = registrant.try_get_check_in_event(request)
+        if child_event:
+            child_event.check_in()
+            messages.add_message(request, messages.SUCCESS, _(f"{name} checked in to {child_event.child_event.title}"))
             confirm_session_check_in = child_event.child_event.title
+
+        # Show reminders to switch session if applicable. Include link to use form to switch sessions.
+        current_check_in = Event.objects.get(pk=request.session.get("current_checkin")) if request.session.get("current_checkin") else None
+        available_sessions = event.sessions_availble_to_switch_to(request)
+        if current_check_in and current_check_in.should_show_check_in_reminder and available_sessions:
+            reminder_url = f"{reverse('event.digital_check_in', args=([registrant_id]))}?show_reminder=True"
+            reminder_message = _(
+                f"{current_check_in.title} started more than " +
+                f"{current_check_in.check_in_reminders} minutes ago. " +
+                f"<a class='alert-link' href={reminder_url}> Do you want to switch sessions? </a>"
+                )
+            messages.add_message(request, messages.WARNING, reminder_message)  
+
+        # Add form to allow user to switch event to check registrants in to
+        # Do this when there's an error since this indicates the user might have
+        # the wrong event set.
+        if available_sessions and (error_message and error_level == messages.ERROR or request.GET.get("show_reminder")):
+            # Display the reminder message instead of any other error messages if applicable.
+            if request.GET.get("show_reminder") and current_check_in:
+                error_message = _(f"{current_check_in.title} started more than " +
+                                f"{current_check_in.check_in_reminders} minutes ago. ")
+            form = EventCheckInForm(event=event, request=request)
+
+    # Switch event to check-in registrants
+    if request.POST:
+        update_form = EventCheckInForm(event, request, request.POST)
+        if update_form.is_valid():
+            # Clear previous messages. There's no other way to do this than to 
+            # consume each message. 
+            list(messages.get_messages(request))
+
+            # Set check in to the event selected and redirect. This will attempt to check the
+            # registrant in to the selected event and will allow the authenticated user to
+            # continue to check in users to that event.
+            checkin_event = update_form.cleaned_data.get('event')
+            checkin_event.set_check_in(request)
+
+        return HttpResponseRedirect(reverse('event.digital_check_in', args=([registrant_id])))
 
     return render_to_resp(request=request, template_name=template_name, context={
         'registrant': registrant,
         'parent_event': event,
-        'error': error_message,
         'form': form,
-        'confirm_session_check_in': confirm_session_check_in
+        'error': error_message,
+        'confirm_session_check_in': confirm_session_check_in,
+        'is_session_set': request.session.get('current_checkin', False) != False
     })
 
 @csrf_exempt
@@ -4379,7 +4436,6 @@ def registrant_check_in(request):
             if registrant:
                 if checked_in == 'true':
                     if not registrant.checked_in:
-                        print("CHECKING IN!")
                         registrant.checked_in = True
                         registrant.checked_in_dt = datetime.now()
                         registrant.save()

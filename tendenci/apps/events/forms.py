@@ -2056,23 +2056,29 @@ class FreePassCheckForm(forms.Form):
     member_number = forms.CharField(max_length=50, required=False)
 
 
+class EventTitleChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.title} {obj.start_dt.strftime('%I:%M %p').lstrip('0').replace(':00', '')} - {obj.end_dt.strftime('%I:%M %p').lstrip('0').replace(':00', '')}"
+    
+
 class EventCheckInForm(forms.Form):
     """
-    Form for digital check in for events and sub-events
+    Form to change sub-event to check-in registrants to
     """
-    def __init__(self, registrant, *args, **kwargs):
+    def __init__(self, event, request, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if not registrant.child_events.exists():
+        if not event.has_child_events_today:
             self.fields['event'] = forms.HiddenInput()
         else:
-            queryset = registrant.child_events_available_for_check_in
-            default = queryset.filter(child_event__end_dt__gt=datetime.now()).first()
-            self.fields['event'] = forms.ModelChoiceField(
+            current = request.session.get('current_checkin')
+            queryset = event.child_events_today
+            default = current if current and queryset.filter(pk=current).exists() else queryset.first()
+            self.fields['event'] = EventTitleChoiceField(
                 queryset=queryset,
                 widget=forms.Select,
                 initial=default,
-                label=_("Check into Session"),
+                label=_("Check Registrants into Session"),
             )
 
 
