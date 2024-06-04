@@ -59,7 +59,7 @@ class RedirectToLoginMixin(object):
                 from django.contrib.auth.views import redirect_to_login
                 return redirect_to_login(self.get_login_redirect_url())
             else:
-                return HttpResponseForbidden()
+                raise
 
     def get_login_redirect_url(self):
         """ get the url to which we redirect after the user logs in. subclasses should override this """
