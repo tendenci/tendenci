@@ -2061,7 +2061,7 @@ class FreePassCheckForm(forms.Form):
 
 class EventTitleChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return f"{obj.title} {obj.start_dt.strftime('%I:%M %p').lstrip('0').replace(':00', '')} - {obj.end_dt.strftime('%I:%M %p').lstrip('0').replace(':00', '')}"
+        return f"{obj.short_name} {obj.start_dt.strftime('%I:%M %p').lstrip('0').replace(':00', '')} - {obj.end_dt.strftime('%I:%M %p').lstrip('0').replace(':00', '')}"
     
 
 class EventCheckInForm(forms.Form):
