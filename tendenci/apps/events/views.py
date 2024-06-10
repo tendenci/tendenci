@@ -4325,11 +4325,6 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
     error_message = None
     event = registrant.registration.event
 
-    # Determine if sub event check in should be attempted. This must be 
-    # done before checking in to the main event since it depends on current 
-    # check in status.
-    should_check_in_to_sub_event = registrant.should_check_in_to_sub_event
-
     # If not yet checked into parent event, check in.
     # This also applies to single meeting events.
     check_in = not error_message and not registrant.checked_in
@@ -4354,7 +4349,7 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
 
     confirm_session_check_in = False
     form = None
-    if should_check_in_to_sub_event:
+    if registrant.should_check_in_to_sub_event:
         # Try to get check in for registrant. 
         # Check in registrant if successful (display error if fails)
         child_event, error_level, error_message = registrant.try_get_check_in_event(request)
