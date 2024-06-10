@@ -110,6 +110,42 @@ def iter_child_event_registrants(child_event_registrants):
         yield writer.writerow(dict(zip(field_labels, values_list)))
 
 
+def iter_registrant_credits(registrant_credits):
+    field_labels = [_('First Name'),
+                    _('Last Name'), 
+                    _('Event Code'),
+                    _('Event'),
+                    _('Credit Name'),
+                    _('Credits'),
+                    _('Alt CEU ID')]
+    if get_setting('module', 'events', 'showmembernumber2'):
+        field_labels.append(get_setting('module', 'users', 'membernumber2label'))
+    field_labels.append(_('Released'))
+    
+    writer = csv.DictWriter(Echo(), fieldnames=field_labels)
+    # write headers - labels
+    yield writer.writerow(dict(zip(field_labels, field_labels)))
+
+    for rc in registrant_credits:
+        registrant = rc.registrant
+        values_list = [registrant.first_name,
+                       registrant.last_name,
+                       rc.event.event_code,
+                       rc.event.title,
+                       rc.credit_name,
+                       rc.credits,
+                       rc.alternate_ceu_id,]
+        if get_setting('module', 'events', 'showmembernumber2'):
+            if registrant.user and hasattr(registrant.user, 'profile'):
+                member_number_2 = registrant.user.profile.member_number_2
+            else:
+                member_number_2 = ''
+            values_list.append(member_number_2)
+        values_list.append(rc.released)
+
+        yield writer.writerow(dict(zip(field_labels, values_list)))
+
+
 def do_events_financial_export(**kwargs):
     identifier = kwargs['identifier']
     user_id = kwargs['user_id']
