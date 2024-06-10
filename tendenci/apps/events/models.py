@@ -2351,6 +2351,10 @@ class RegistrantCredits(models.Model):
     def credit_name(self):
         return self.event_credit and self.event_credit.ceu_subcategory.name
 
+    @property
+    def alternate_ceu_id(self):
+        return self.event_credit and self.event_credit.alternate_ceu_id
+
 
 class Payment(models.Model):
     """
