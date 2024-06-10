@@ -19,8 +19,8 @@
   {% if obj %}
   <table class="table">
   <tr>
-  	<th>{% trans 'Item' %}</th>
-  	<th>{% trans 'Amount' %}</th>
+    <th>{% trans 'Item' %}</th>
+    <th>{% trans 'Amount' %}</th>
   </tr>
   {% include 'events/invoice_view_display.html' %}
   </table>
@@ -29,7 +29,7 @@
   {% with payment.invoice.obj_donation as obj_donation %}
   {% if obj_donation and not obj_donation.is_paid %}
   <div id="total-amount">{% trans 'Total' %}: {{ payment.amount|format_currency }} <span class="text-warning">*</span></div>
-  <div class="text-warning"><big>* {% blocktrans with donation_amount=obj_donation.donation_amount|format_currency %} Note: The donation amount {{ donation_amount }} you made will need to be paid separately with another invoice, because it is allocated differently.{% endblocktrans %}</big></div>
+  <div class="text-warning"><big>*  {% blocktrans with  donation_amount=obj_donation.donation_amount|format_currency %} Note:  The donation amount {{ donation_amount }} you made will need to be paid  separately with another invoice, because it is allocated differently.{%  endblocktrans %}</big></div>
   {% else %}
     <div id="total-amount">{% trans 'Total' %}: {{ payment.amount|format_currency }}</div>
   {% endif %}
@@ -65,6 +65,7 @@
     <div class="form-group">
         <label for="card-element" class="col-sm-3 control-label">
           Credit or debit card:
+          <br><a href="https://stripe.com" target="_blank" rel="noopener"><img src="/static/themes/t7-base/images/Powered-by-Stripe.png" align="right" alt="Powered by Stripe" style="width: 150px"></a>
         </label>
         <div id="card-element" class="col-sm-9">
           <!-- a Stripe Element will be inserted here. -->
