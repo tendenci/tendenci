@@ -25,7 +25,7 @@
 
                 {% include 'top_menu/_apps_dropdown.html' %}
 
-                {% if USER_IS_SUPERUSER %}
+                {% if USER_IS_SUPERUSER or request.user.is_staff %}
                 {% include 'top_menu/_reports_dropdown.html' %}
                 {% endif %}
 
