@@ -853,7 +853,62 @@ class MembershipDefault(TendenciBaseModel):
                                   body=body)
                     email.send()
 
-    def approve(self, request_user=AnonymousUser()):
+    def apply_a_chapter_membership(self, chapter, app, membership_type, request=None):
+        """
+        Apply a chapter membership.
+        """
+        from tendenci.apps.chapters.models import ChapterMembership
+        
+        if not ChapterMembership.objects.filter(chapter=chapter, user=self.user).exists():
+            params = {'chapter': chapter,
+                      'app':  app,
+                      'user': self.user,
+                      'guid': str(uuid.uuid4()),
+                      'membership_type': membership_type,
+                      'member_number': self.member_number,
+                      'admin_notes': 'Auto-applied from membership join/renewal.',
+                      'allow_anonymous_view': self.allow_anonymous_view,
+                      'allow_user_view': self.allow_user_view,
+                      'allow_member_view': self.allow_member_view,
+                      'creator': self.creator,
+                      'creator_username': self.creator_username,
+                      'owner': self.owner,
+                      'owner_username': self.owner_username,
+                      'status_detail': 'pending'
+                      }
+            chapter_membership = ChapterMembership.objects.create(**params)
+            chapter_membership.save_invoice(creator=self.creator)
+            # set pending
+            chapter_membership.pend()
+            chapter_membership.save()
+            # send email to admin
+            chapter_membership.email_admin_join_notice(request)
+
+    def auto_apply_chapter_memberships(self, request):
+        """
+        Auto-apply chapter memberships.
+        """
+        from tendenci.apps.chapters.models import Chapter, ChapterMembershipApp
+        if self.chapter:
+            if get_setting('module',  'memberships', 'autoapplychapter'):
+                app = ChapterMembershipApp.objects.current_app()
+                membership_type = app.membership_types.first()
+                if app and membership_type:
+                    chapter_names = [self.chapter]
+                    if '[' in self.chapter and ']' in self.chapter:
+                        try:
+                            chapter_names = literal_eval(self.chapter)
+                        except ValueError:
+                            pass
+                        except:
+                            pass
+                    chapter_names = [chapter_name.strip() for chapter_name in chapter_names]
+                    for chapter_name in chapter_names:
+                        chapter = Chapter.objects.first(title=chapter_name)
+                        if chapter:
+                            self.apply_a_chapter_membership(chapter, app, membership_type, request=request)
+
+    def approve(self, request):
         """
         Approve this membership.
             - Assert user is in group.
@@ -885,6 +940,7 @@ class MembershipDefault(TendenciBaseModel):
         self.application_approved_dt = \
             self.application_approved_dt or NOW
 
+        request_user = request.user
         if request_user and request_user.is_authenticated:  # else: don't set
             self.application_approved_user = request_user
             self.application_approved_denied_user = request_user
@@ -950,6 +1006,11 @@ class MembershipDefault(TendenciBaseModel):
                 if self.directory.status_detail != 'active':
                     self.directory.status_detail = 'active'
                     self.directory.save()
+
+        # auto-apply chapter membership, if enabled
+        if self.chapter:
+            if get_setting('module',  'memberships', 'autoapplychapter'):
+                self.auto_apply_chapter_memberships(request)
 
         return self
 
@@ -1926,7 +1987,7 @@ class MembershipDefault(TendenciBaseModel):
             if created:
                 send_welcome_email(self.user)
 
-            self.approve(request.user)
+            self.approve(request)
             Notice.send_notice(
                 request=request,
                 emails=self.user.email,
