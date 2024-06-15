@@ -97,7 +97,7 @@ def approve_selected(modeladmin, request, queryset):
 
     for membership in memberships:
         is_renewal = membership.is_renewal()
-        membership.approve(request_user=request.user)
+        membership.approve(request)
         membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
         if membership.corporate_membership_id:
             # notify corp reps
@@ -557,7 +557,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
         m = get_object_or_404(MembershipDefault, pk=pk)
         is_renewal = m.is_renewal()
-        m.approve(request_user=request.user)
+        m.approve(request)
         m.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
         if m.corporate_membership_id:
             # notify corp reps

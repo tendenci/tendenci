@@ -265,7 +265,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
         if 'approve' in GET_KEYS:
             is_renewal = membership.is_renewal()
-            membership.approve(request_user=request.user)
+            membership.approve(request)
             membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
             messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
 
@@ -1592,7 +1592,7 @@ def membership_default_add(request, slug='', membership_id=None,
                             memberships_join_notified.append(membership)
                 else:
                     is_renewal = membership.is_renewal()
-                    membership.approve(request_user=customer)
+                    membership.approve(request)
                     if get_setting('module', 'corporate_memberships', 'notificationson'):
                         notice_sent = membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
 
