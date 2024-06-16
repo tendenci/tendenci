@@ -225,8 +225,8 @@ class ListNode(Node):
                 items = items.filter(tag_query)
 
             if exclude_tags: # exclude_tags is a comma delimited list of tags to exclude
-                exclude_tag_queries = [Q(tags_icontains="," + et.strip()) for et in exclude_tags]
-                exclude_tag_query = reduce(and_, exclude_tag_queries)
+                exclude_tag_queries = [Q(tags__icontains="," + et.strip()) for et in exclude_tags]
+                exclude_tag_query = reduce(or_, exclude_tag_queries)
                 items = items.exclude(exclude_tag_query)
 
             if hasattr(self.model, 'group') and group:
