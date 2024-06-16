@@ -88,6 +88,7 @@ class ListNode(Node):
         limit = 3
         order = u''
         exclude = u''
+        exclude_tags = u''
         randomize = False
         group = u''
         status_detail = u'active'
@@ -105,6 +106,16 @@ class ListNode(Node):
 
             tags = tags.replace('"', '')
             tags = tags.split(',')
+
+        if 'exclude_tags' in self.kwargs:
+            try:
+                exclude_tags = Variable(self.kwargs['exclude_tags'])
+                exclude_tags = str(exclude_tags.resolve(context))
+            except:
+                exclude_tags = self.kwargs['exclude_tags']
+
+            exclude_tags = exclude_tags.replace('"', '')
+            exclude_tags = exclude_tags.split(',')
 
         if 'filters' in self.kwargs:
             try:
@@ -212,6 +223,11 @@ class ListNode(Node):
                 tag_queries += [Q(tags__icontains="," + t.strip() + ",") for t in tags]
                 tag_query = reduce(or_, tag_queries)
                 items = items.filter(tag_query)
+
+            if exclude_tags: # exclude_tags is a comma delimited list of tags to exclude
+                exclude_tag_queries = [Q(tags_icontains="," + et.strip()) for et in exclude_tags]
+                exclude_tag_query = reduce(and_, exclude_tag_queries)
+                items = items.exclude(exclude_tag_query)
 
             if hasattr(self.model, 'group') and group:
                 items = items.filter(group=group)
