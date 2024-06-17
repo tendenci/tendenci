@@ -80,6 +80,18 @@ class ListNode(Node):
                 value = None
             return value
         return None
+
+    def build_tag_queries(self, tags):
+        # this is fast; but has one hole
+        # it finds words inside of other words
+        # e.g. "prev" is within "prevent"
+        tag_queries = [Q(tags__iexact=t.strip()) for t in tags]
+        tag_queries += [Q(tags__istartswith=t.strip() + ",") for t in tags]
+        tag_queries += [Q(tags__iendswith=", " + t.strip()) for t in tags]
+        tag_queries += [Q(tags__iendswith="," + t.strip()) for t in tags]
+        tag_queries += [Q(tags__icontains=", " + t.strip() + ",") for t in tags]
+        tag_queries += [Q(tags__icontains="," + t.strip() + ",") for t in tags]
+        return tag_queries
     
     def render(self, context):
         tags = u''
@@ -212,21 +224,11 @@ class ListNode(Node):
                 items = items.distinct()
 
             if tags:  # tags is a comma delimited list
-                # this is fast; but has one hole
-                # it finds words inside of other words
-                # e.g. "prev" is within "prevent"
-                tag_queries = [Q(tags__iexact=t.strip()) for t in tags]
-                tag_queries += [Q(tags__istartswith=t.strip() + ",") for t in tags]
-                tag_queries += [Q(tags__iendswith=", " + t.strip()) for t in tags]
-                tag_queries += [Q(tags__iendswith="," + t.strip()) for t in tags]
-                tag_queries += [Q(tags__icontains=", " + t.strip() + ",") for t in tags]
-                tag_queries += [Q(tags__icontains="," + t.strip() + ",") for t in tags]
-                tag_query = reduce(or_, tag_queries)
+                tag_query = reduce(or_, build_tag_queries(tags))
                 items = items.filter(tag_query)
 
             if exclude_tags: # exclude_tags is a comma delimited list of tags to exclude
-                exclude_tag_queries = [Q(tags__icontains="," + et.strip()) for et in exclude_tags]
-                exclude_tag_query = reduce(or_, exclude_tag_queries)
+                exclude_tag_query = reduce(or_, build_tag_queries(exclude_tags))
                 items = items.exclude(exclude_tag_query)
 
             if hasattr(self.model, 'group') and group:
