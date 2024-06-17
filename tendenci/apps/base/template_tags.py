@@ -224,11 +224,11 @@ class ListNode(Node):
                 items = items.distinct()
 
             if tags:  # tags is a comma delimited list
-                tag_query = reduce(or_, build_tag_queries(tags))
+                tag_query = reduce(or_, self.build_tag_queries(tags))
                 items = items.filter(tag_query)
 
             if exclude_tags: # exclude_tags is a comma delimited list of tags to exclude
-                exclude_tag_query = reduce(or_, build_tag_queries(exclude_tags))
+                exclude_tag_query = reduce(or_, self.build_tag_queries(exclude_tags))
                 items = items.exclude(exclude_tag_query)
 
             if hasattr(self.model, 'group') and group:
