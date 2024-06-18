@@ -331,11 +331,19 @@
                                     </span>
                                 </li>
 
+								{% if event.nested_events_enabled and event.parent %}
+								<li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.registrant.sub_event.roster' app_object.pk %}">{% trans "Roster Report" %}</a>
+                                    </span>
+                                </li>
+								{% else %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'event.registrant.roster' app_object.pk %}">{% trans "Roster Report" %}</a>
                                     </span>
                                 </li>
+                                {% endif %}
                             {% endif %}
 
                             {% if can_edit_event %}
