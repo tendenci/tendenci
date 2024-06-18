@@ -2432,6 +2432,9 @@ class Sponsor(ImageUploader, models.Model):
     class Meta:
         app_label = 'events'
 
+    def logo_exists(self):
+        return self.image and File.objects.filter(pk=self.image.pk).exists()
+
 
 class Discount(models.Model):
     """

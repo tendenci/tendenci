@@ -124,9 +124,11 @@
             {% qr_from_text registrant.check_in_url size="s" %}
           </div>
           <div class="col-md-6 logo">
-            {% if registrant.registration.event.sponsor_set.first %}
+            {% with registrant.registration.event.sponsor_set.first as sponsor %}
+            {% if sponsor.logo_exists %}
               <img class="logo" src="{% image_url registrant.registration.event.sponsor_set.first.image %}" />
             {% endif %}
+            {% endwith %}
           </div>
         </div>
         <div class="row">
