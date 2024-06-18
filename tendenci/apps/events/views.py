@@ -4419,6 +4419,7 @@ def registrant_check_in(request):
         registrant_id = request.POST.get('id', None)
         checked_in = request.POST.get('checked_in', None)
         checked_out = request.POST.get('checked_out', None)
+        # Confusing! - here the child_event should be named as child_event_registrant to avoid the confusion 
         child_event = request.POST.get('child_event', None)
         if registrant_id:
             registrant_id = int(registrant_id)
@@ -4445,6 +4446,15 @@ def registrant_check_in(request):
                     if registrant.checked_in:
                         registrant.checked_in = False
                         registrant.save()
+                        # Drop credits if check-in is reversed
+                        if child_event:
+                            RegistrantCredits.objects.filter(
+                                        registrant=registrant.registrant,
+                                        event=registrant.child_event).delete()
+                        else:
+                            RegistrantCredits.objects.filter(
+                                registrant=registrant,
+                                event=registrant.event).delete()
                     response_d['checked_in_dt'] = ''
 
                 if checked_out == 'true':
