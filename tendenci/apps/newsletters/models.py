@@ -512,7 +512,7 @@ class Newsletter(models.Model):
         return members
 
     def send_to_recipients(self):
-        subprocess.Popen([python_executable(), "manage.py",
+        subprocess.Popen(["django-admin",
                               "send_newsletter",
                               str(self.pk)])
 

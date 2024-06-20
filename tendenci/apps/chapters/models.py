@@ -349,7 +349,7 @@ class CoordinatingAgency(models.Model):
 
     def _populate_group(self):
         if self.group and self.group.members.count() == 0:
-            subprocess.Popen([python_executable(), "manage.py",
+            subprocess.Popen(["django-admin",
                           "sync_chapter_coord_groups",
                           "--coord_agency_id",
                           str(self.pk)])
