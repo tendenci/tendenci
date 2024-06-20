@@ -38,10 +38,11 @@ from tendenci.apps.base.fields import SlugField, CountrySelectField
 from tendenci.apps.regions.models import Region
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.utils import get_notice_recipients
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.files.validators import FileValidator
-from tendenci.apps.base.utils import tcurrency, day_validate
+from tendenci.apps.base.utils import tcurrency, day_validate, send_email_notification
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import fieldify
 from tendenci.apps.base.utils import validate_email
@@ -1325,6 +1326,25 @@ class ChapterMembership(TendenciBaseModel):
             )
 
         return notice_sent
+
+    def email_admin_join_notice(self, request):
+        # Who should be notified? site admin or chapter leaders?
+        if self.chapter.contact_email:
+            recipients = self.chapter.contact_email.split(',')
+            recipients = [email.strip() for email in recipients if email]
+        else:
+            recipients = get_notice_recipients(
+                            'module', 'chapters',
+                            'chapterrecipients')
+        if recipients:
+            send_email_notification(
+                    'chapter_membership_joined_to_admin',
+                    recipients,
+                    {'chapter_membership': self,
+                        'app': self.app,
+                        'request': request
+                    })
+                
 
     def auto_update_paid_object(self, request, payment):
         """

@@ -1,5 +1,6 @@
 from csv import writer
 from datetime import datetime
+import time as ttime
 
 from django import forms
 from django.contrib import admin, messages
@@ -7,7 +8,7 @@ from django.db import models
 from django.db.models import Count
 from django.urls import reverse
 from django.urls import path, re_path
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect, StreamingHttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.utils.encoding import iri_to_uri
 from django.template.defaultfilters import slugify
@@ -25,6 +26,7 @@ from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, St
                                          AssetsPurchase)
 from tendenci.apps.events.forms import (CustomRegFormAdminForm, CustomRegFormForField, TypeForm,
                                         StandardRegAdminForm)
+from tendenci.apps.events.utils import iter_registrant_credits
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import delete_settings_cache, get_setting
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -366,13 +368,37 @@ class RegistrantCreditsEventFilter(admin.SimpleListFilter):
             return queryset
 
 
+class CreditNameFilter(admin.SimpleListFilter):
+    """Filter by credit name"""
+    title = _('Credit Name')
+    parameter_name = 'ceu_subcategory'
+
+    def lookups(self, request, model_admin):
+        ceu_categories = CEUCategory.objects.filter(parent__isnull=False
+                                    ).order_by('parent', 'name')
+        ceu_cats_list = []
+        for ceu_cat in ceu_categories:
+            ceu_cats_list.append((str(ceu_cat.id), f'{ceu_cat.parent.name} - {ceu_cat.name}'))
+                                    
+        return ceu_cats_list
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(event_credit__ceu_subcategory=self.value())
+        else:
+            return queryset
+
+
 class RegistrantCreditsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'registrant', 'event_code', 'event_link', 'credit_name', 'credits', 'released')
+    list_display = ('id', 'registrant', 'event_code', 'event_link', 'credit_name', 'credits', 'alternate_ceu_id',)
+    if get_setting('module', 'events', 'showmembernumber2'):
+        list_display += ('show_member_number_2',)
+    list_display += ('released',)
     list_editable = ('credits', 'released')
     search_fields = ('event__title', 'event__event_code',)
     readonly_fields = ('registrant', 'event_credit', 'event_link')
-    list_filter = ('released', RegistrantCreditsEventFilter)
-    actions = ["release"]
+    list_filter = ('released', CreditNameFilter, RegistrantCreditsEventFilter)
+    actions = ["release", "export_selected"]
 
 
     def event_link(self, obj):
@@ -386,6 +412,25 @@ class RegistrantCreditsAdmin(admin.ModelAdmin):
         """Release all credits"""
         queryset.update(released=True)
     release.short_description=_("Release selected credits")
+
+    def show_member_number_2(self, obj):
+        user = obj.registrant.user
+        if user and hasattr(user, 'profile'):
+            return user.profile.member_number_2
+        return ""
+    show_member_number_2.short_description = get_setting('module', 'users', 'membernumber2label')
+
+    def export_selected(self, request, queryset):
+        """
+        Exports the selected credits.
+        """
+        response = StreamingHttpResponse(
+        streaming_content=(iter_registrant_credits(queryset)),
+        content_type='text/csv',)
+        response['Content-Disposition'] = f'attachment;filename=registrant_credits_export_{ttime.time()}.csv'
+        return response
+
+    export_selected.short_description = 'Export selected credits'
 
     def has_delete_permission(self, request, obj=None):
         """Don't allow deleting released credits"""

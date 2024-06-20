@@ -4325,11 +4325,6 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
     error_message = None
     event = registrant.registration.event
 
-    # Determine if sub event check in should be attempted. This must be 
-    # done before checking in to the main event since it depends on current 
-    # check in status.
-    should_check_in_to_sub_event = registrant.should_check_in_to_sub_event
-
     # If not yet checked into parent event, check in.
     # This also applies to single meeting events.
     check_in = not error_message and not registrant.checked_in
@@ -4354,7 +4349,7 @@ def digital_check_in(request, registrant_id, template_name='events/reg8n/checkin
 
     confirm_session_check_in = False
     form = None
-    if should_check_in_to_sub_event:
+    if registrant.should_check_in_to_sub_event:
         # Try to get check in for registrant. 
         # Check in registrant if successful (display error if fails)
         child_event, error_level, error_message = registrant.try_get_check_in_event(request)
@@ -4424,6 +4419,7 @@ def registrant_check_in(request):
         registrant_id = request.POST.get('id', None)
         checked_in = request.POST.get('checked_in', None)
         checked_out = request.POST.get('checked_out', None)
+        # Confusing! - here the child_event should be named as child_event_registrant to avoid the confusion 
         child_event = request.POST.get('child_event', None)
         if registrant_id:
             registrant_id = int(registrant_id)
@@ -4450,6 +4446,15 @@ def registrant_check_in(request):
                     if registrant.checked_in:
                         registrant.checked_in = False
                         registrant.save()
+                        # Drop credits if check-in is reversed
+                        if child_event:
+                            RegistrantCredits.objects.filter(
+                                        registrant=registrant.registrant,
+                                        event=registrant.child_event).delete()
+                        else:
+                            RegistrantCredits.objects.filter(
+                                registrant=registrant,
+                                event=registrant.event).delete()
                     response_d['checked_in_dt'] = ''
 
                 if checked_out == 'true':
