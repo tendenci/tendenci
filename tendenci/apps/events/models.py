@@ -34,7 +34,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.utils import get_notice_recipients, get_query_filters
+from tendenci.apps.perms.utils import has_perm, get_notice_recipients, get_query_filters
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
@@ -2432,6 +2432,9 @@ class Sponsor(ImageUploader, models.Model):
     class Meta:
         app_label = 'events'
 
+    def logo_exists(self):
+        return self.image and File.objects.filter(pk=self.image.pk).exists()
+
 
 class Discount(models.Model):
     """
@@ -3374,7 +3377,7 @@ class Event(TendenciBaseModel):
         Save this Event to the authenticated session.
         This will allow registrants to be checked-in to this Event.
         """
-        if not request.user.is_superuser:
+        if not has_perm(request.user, 'events.view_registrant'):
             return
         
         request.session["current_checkin"] = self.pk

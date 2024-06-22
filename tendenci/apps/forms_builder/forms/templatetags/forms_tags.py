@@ -120,7 +120,7 @@ def embed_form(context, pk, *args, **kwargs):
 
     try:
         context['embed_form'] = form_obj
-        context['embed_form_for_form'] = FormForForm(form_obj, AnonymousUser())
+        context['embed_form_for_form'] = FormForForm(form_obj, context.request.user) 
         if 'captcha' in context['embed_form_for_form'].fields and 'gsize' in kwargs:
 #             if hasattr(context['embed_form_for_form'].fields['captcha'].widget, 'gtag_attrs'):
             context['embed_form_for_form'].fields['captcha'].widget.attrs.update(
