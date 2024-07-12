@@ -18,9 +18,9 @@ img.cr-image{
 <div>
 
 {% if profile_upload.user == request.user %}
- <h1>{% trans 'Change Your Phofile Photo'%}</h1>
+ <h1>{% trans 'Change Your Profile Photo'%}</h1>
 {% else %}
- <h1>{% trans 'Change Phofile Photo for '%} <a href="{% url 'profile' profile_upload.user.username %}">{{ profile_upload.user.username }}</a></h1>
+ <h1>{% trans 'Change Profile Photo for '%} <a href="{% url 'profile' profile_upload.user.username %}">{{ profile_upload.user.username }}</a></h1>
 {% endif %}
 	
 	<form method="post" enctype="multipart/form-data">{% csrf_token %}
