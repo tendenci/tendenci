@@ -1316,10 +1316,9 @@ class Registration(models.Model):
         invoice.admin_notes = admin_notes
         invoice.gratuity = self.gratuity
 
-        tax = 0
+        price_tax_rate_list = []
         if self.reg_conf_price and self.reg_conf_price.include_tax:
-            tax = self.reg_conf_price.tax_rate * self.amount_paid
-            invoice.tax = tax
+            price_tax_rate_list.append((self.amount_paid, self.reg_conf_price.tax_rate))
         else:
             # generally non-table registration
             if self.registrant_set.filter(pricing__include_tax=True).exists():
@@ -1329,11 +1328,12 @@ class Registration(models.Model):
                             'pricing__price', 'pricing__tax_rate'):
                     if override:
                         price = override_price
-                    tax += price * tax_rate
-                invoice.tax = tax
+                    price_tax_rate_list.append((price, tax_rate))
+
+        invoice.assign_tax(price_tax_rate_list, primary_registrant.user)
 
         invoice.subtotal = self.amount_paid
-        invoice.total = invoice.subtotal + tax
+        invoice.total = invoice.subtotal + invoice.tax + invoice.tax_2
             
         if invoice.gratuity:
             invoice.total += invoice.subtotal * invoice.gratuity
@@ -2233,8 +2233,9 @@ class AssetsPurchase(models.Model):
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
 
+        invoice.assign_tax([(self.amount, 0)], request_user)
         invoice.subtotal = self.amount
-        invoice.total = invoice.subtotal
+        invoice.total = self.amount + invoice.tax + invoice.tax_2
         invoice.balance = invoice.total
         invoice.save()
 

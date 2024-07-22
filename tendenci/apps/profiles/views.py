@@ -454,6 +454,8 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         if search_criteria in ['username', 'first_name', 'last_name', 'email']:
             search_filter = {'user__%s%s' % (search_criteria,
                                              search_type): search_text}
+        elif search_criteria == 'region':
+            search_filter = {f'region__region_name{search_type}': search_text}
         else:
             search_filter = {'%s%s' % (search_criteria,
                                          search_type): search_text}

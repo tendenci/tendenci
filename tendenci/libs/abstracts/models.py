@@ -1,15 +1,10 @@
 from django.db import models
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
-from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
 
-from timezone_field import TimeZoneField
-
-from tendenci.apps.base.utils import get_timezone_choices
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.perms.object_perms import ObjectPermission
+
 
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):
@@ -96,60 +91,6 @@ class TendenciBaseModel(models.Model):
 class UnsavedOneToOne(models.OneToOneField):
     # A ForeignKey which can point to an unsaved object
     allow_unsaved_instance_assignment = True
-
-class Person(TendenciBaseModel):
-    user = UnsavedOneToOne(User, related_name="profile", verbose_name=_('user'), on_delete=models.CASCADE)
-    phone = models.CharField(_('phone'), max_length=50, blank=True)
-    address = models.CharField(_('address'), max_length=150, blank=True)
-    address2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
-    member_number = models.CharField(_('member number'), max_length=50, blank=True)
-    city = models.CharField(_('city'), max_length=50, blank=True)
-    region = models.CharField(_('region'), max_length=50, blank=True, default='')
-    state = models.CharField(_('state'), max_length=50, blank=True)
-    zipcode = models.CharField(_('zipcode'), max_length=50, blank=True)
-    county = models.CharField(_('county'), max_length=50, blank=True)
-    country = models.CharField(_('country'), max_length=255, blank=True)
-    is_billing_address = models.BooleanField(_('Is billing address'), default=True)
-
-    # fields to be used for the alternate address
-    address_2 = models.CharField(_('address'), max_length=150, blank=True)
-    address2_2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
-    member_number_2 = models.CharField(_('member number'), max_length=50, blank=True)
-    city_2 = models.CharField(_('city'), max_length=50, blank=True)
-    state_2 = models.CharField(_('state'), max_length=50, blank=True)
-    zipcode_2 = models.CharField(_('zipcode'), max_length=50, blank=True)
-    county_2 = models.CharField(_('county'), max_length=50, blank=True)
-    country_2 = models.CharField(_('country'), max_length=255, blank=True)
-    is_billing_address_2 = models.BooleanField(_('Is billing address'), default=False)
-
-    url = models.CharField(_('url'), max_length=100, blank=True)
-
-    time_zone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
-    language = models.CharField(_('language'), max_length=10, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
-
-    perms = GenericRelation(ObjectPermission,
-        object_id_field="object_id", content_type_field="content_type")
-
-    class Meta:
-        abstract = True
-
-    def get_address(self):
-        """
-        Returns full address depending on which attributes are available.
-        """
-        state_zip = ' '.join([s for s in (self.state, self.zipcode) if s])
-        city_state_zip = ', '.join([s for s in (self.city, state_zip, self.country) if s])
-
-        return '%s %s %s' % (self.address, self.address2, city_state_zip)
-
-    def get_alternate_address(self):
-        """
-        Returns full alternate address depending on which attributes are available.
-        """
-        state_zip = ' '.join([s for s in (self.state_2, self.zipcode_2) if s])
-        city_state_zip = ', '.join([s for s in (self.city_2, state_zip, self.country_2) if s])
-
-        return '%s %s %s' % (self.address_2, self.address2_2, city_state_zip)
 
 
 class Address(models.Model):

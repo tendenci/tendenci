@@ -22,6 +22,11 @@ from tendenci.apps.base.utils import strip_entities, strip_html
 register = Library()
 
 
+@register.filter
+def percentage(value):
+    return f'{value * 100:3.3f}%'
+
+
 @register.filter(name="localize_date")
 def localize_date(value, to_tz=None):
     from tendenci.apps.base.utils import adjust_datetime_to_timezone

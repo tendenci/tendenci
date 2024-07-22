@@ -70,20 +70,16 @@ def job_set_inv_payment(user, job, pricing):
             inv.message = _('Thank You.')
             inv.status = True
 
-            inv.total = get_job_price(user, job, pricing)
-            inv.subtotal = inv.total
-            inv.balance = inv.total
+            amount = get_job_price(user, job, pricing)
             inv.estimate = True
             inv.status_detail = 'estimate'
 
-            tax = 0
             if pricing.include_tax:
-                tax = inv.total * pricing.tax_rate
-                total = tax + inv.total
-                inv.tax = tax
-                inv.total = total
-                inv.subtotal = total
-                inv.balance = total
+                inv.assign_tax([(amount, pricing.tax_rate)], user)
+
+            inv.subtotal = amount
+            inv.total = amount + inv.tax + inv.tax_2
+            inv.balance = inv.total
 
             if user and not user.is_anonymous:
                 inv.set_creator(user)

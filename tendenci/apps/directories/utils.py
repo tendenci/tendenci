@@ -92,8 +92,10 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.message = 'Thank You.'
             inv.status = True
 
-            inv.total = get_directory_price(user, directory, pricing)
-            inv.subtotal = inv.total
+            amount = get_directory_price(user, directory, pricing)
+            inv.assign_tax([(amount, 0)], user)
+            inv.subtotal = amount
+            inv.total = amount + inv.tax + inv.tax_2
             inv.balance = inv.total
             inv.estimate = True
             inv.status_detail = 'estimate'

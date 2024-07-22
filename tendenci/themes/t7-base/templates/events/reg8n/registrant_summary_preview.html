@@ -16,7 +16,11 @@
                     	{% with registrant.cleaned_data.pricing as pricing %}
                         <li>{% trans 'Price:' %}  {{ currency_symbol }}{{ registrant.cleaned_data.pricing.price }}
                         {% if pricing.include_tax %}
+                        {% if MODULE_INVOICES_TAXRATEUSEREGIONS %}
+                        ({% trans 'tax will be applied based on your region' %})
+                        {% else %}
                         ({% trans '+tax:' %} {{ currency_symbol }}{{ pricing.tax_amount }})
+                        {% endif %}
                         {% endif %}
                         </li>
                         {% endwith %}

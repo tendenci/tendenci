@@ -38,8 +38,14 @@
 
   {% if invoice.tax %}
   <tr>
-    <td>{% trans "Tax:" %}</td>
+    <td>{% if MODULE_INVOICES_TAXLABEL %}{{ MODULE_INVOICES_TAXLABEL }}{% else %}{% trans "Tax" %}{% endif %}{% if invoice.tax_rate %} {{ invoice.tax_rate|percentage }}{% endif %}:</td>
     <td class="td-right">{{ invoice.tax|format_currency }}</td>
+  </tr>
+  {% endif %}
+  {% if invoice.tax_2 %}
+  <tr>
+    <td>{{ invoice.tax_label_2 }}{% if invoice.tax_rate_2 %} {{ invoice.tax_rate_2|percentage }}{% endif %}:</td>
+    <td class="td-right">{{ invoice.tax_2|format_currency }}</td>
   </tr>
   {% endif %}
   <tr>

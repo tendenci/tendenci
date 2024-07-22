@@ -14,6 +14,9 @@
 {% block content %}
 <div class="t">
   {% has_perm request.user invoices.change_invoice as can_edit_invoice %}
+  {% if invoice.region and invoice.region.invoice_header %}
+  {{ invoice.region.invoice_header|safe }}
+  {% else %}
   <div class="page-header">
     <h1>{% if obj_name %}{{ obj_name|capfirst }}{% endif %} {% trans 'Invoice' %}</h1>
   </div>
@@ -21,7 +24,8 @@
   {% if SITE_GLOBAL_SITEMAILINGADDRESS %}
   <p><address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address></p>
   {% endif %}
-
+ {% endif %} 
+ 
   {% if invoice.balance > 0 and can_pay %}
   {% if SITE_GLOBAL_MERCHANTACCOUNT and SITE_GLOBAL_MERCHANTACCOUNT != 'asdf asdf asdf' %}
   <div class="invoice-options">
@@ -220,5 +224,9 @@
   <div class="payment-table">
     {% payment_history_display request invoice %}
   </div>
+  
+   {% if invoice.region and invoice.region.invoice_footer %}
+   {{ invoice.region.invoice_footer|safe  }}
+   {% endif %}
 </div>
 {% endblock %}
