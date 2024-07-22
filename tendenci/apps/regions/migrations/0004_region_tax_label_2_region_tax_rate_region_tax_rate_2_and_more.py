@@ -8,8 +8,6 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entities', '0006_alter_entity_creator_alter_entity_owner'),
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('regions', '0003_auto_20200902_1545'),
     ]
 
@@ -28,20 +26,5 @@ class Migration(migrations.Migration):
             model_name='region',
             name='tax_rate_2',
             field=models.DecimalField(blank=True, decimal_places=5, default=0, help_text='Example: 0.0825 for 8.25%.', max_digits=6),
-        ),
-        migrations.AlterField(
-            model_name='region',
-            name='creator',
-            field=models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_creator', to=settings.AUTH_USER_MODEL),
-        ),
-        migrations.AlterField(
-            model_name='region',
-            name='entity',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_entity', to='entities.entity'),
-        ),
-        migrations.AlterField(
-            model_name='region',
-            name='owner',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_owner', to=settings.AUTH_USER_MODEL),
         ),
     ]
