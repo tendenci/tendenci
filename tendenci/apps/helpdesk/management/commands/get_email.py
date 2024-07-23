@@ -390,6 +390,17 @@ def ticket_from_message(message, queue, quiet):
                 fail_silently=True,
                 )
 
+        for cc in t.ticketcc_set.all():
+            cc_email_address = cc.email_address or (cc.user and cc.user.email)
+            if cc_email_address:
+                send_templated_mail(
+                    'updated_cc',
+                    context,
+                    recipients=cc_email_address,
+                    sender=queue.from_address,
+                    fail_silently=True,
+                    )
+
         if queue.updated_ticket_cc:
             send_templated_mail(
                 'updated_cc',
