@@ -587,6 +587,14 @@ class DirectoryPricing(models.Model):
 
         super(DirectoryPricing, self).save(*args, **kwargs)
 
+    def duration_display(self):
+        if self.duration < 365:
+            return _(f'{self.duration} days')
+        if self.duration == 365:
+            return _('1 year')
+        if self.duration == 1826:
+            return _('5 years')
+
     def get_price_for_user(self, user=AnonymousUser(), list_type='regular'):
         if not user.is_anonymous and user.profile.is_member:
             if list_type == 'regular':
