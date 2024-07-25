@@ -24,6 +24,7 @@ from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.files.utils import get_allowed_upload_file_exts
 from tendenci.apps.files.models import File
 from tendenci.apps.perms.utils import assign_files_perms
+from tendenci.apps.site_settings.utils import get_setting
 
 
 request_duration_defaults = {
@@ -422,6 +423,12 @@ class JobPricingForm(forms.ModelForm):
             'show_member_pricing',
             'status',
         )
+
+    def __init__(self, *args, **kwargs):
+        super(JobPricingForm, self).__init__(*args, **kwargs)
+        # tax rate
+        if get_setting('module', 'invoices', 'taxrateuseregions'):
+            self.fields['tax_rate'].help_text += "<br />Note that this rate will be served as the default rate. Please go to <a href='/admin/regions/region/'>Regions</a> to configure more tax rates."
 
 
 class JobSearchForm(FormControlWidgetMixin, forms.Form):

@@ -1518,6 +1518,11 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
             self.fields['days_price_covers'].widget = forms.HiddenInput()
 
         self.fields['groups'].queryset = default_groups
+        
+        # tax rate
+        if get_setting('module', 'invoices', 'taxrateuseregions'):
+            if self.user and self.user.is_superuser:
+                self.fields['tax_rate'].help_text += "<br />Note that this rate will be served as the default rate. Please go to <a href='/admin/regions/region/'>Regions</a> to configure more tax rates."
 
     def clean_tax_rate(self):
         tax_rate = self.cleaned_data['tax_rate']

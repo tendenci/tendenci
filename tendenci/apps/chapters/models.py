@@ -882,10 +882,10 @@ class ChapterMembership(TendenciBaseModel):
     
             # price information ----------
             price = self.get_price()
-
+            invoice.assign_tax([(price, 0)], self.user)
             invoice.subtotal = price
-            invoice.total = price
-            invoice.balance = price
+            invoice.total = price + invoice.tax + invoice.tax_2
+            invoice.balance = invoice.total
     
             invoice.due_date = datetime.now()
             invoice.ship_date = datetime.now()

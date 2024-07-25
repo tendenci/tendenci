@@ -116,14 +116,11 @@ def make_invoice_for_entry(entry, **kwargs):
     inv.due_date = now
     inv.ship_date = now
 
-    tax = 0
-    if entry.pricing and entry.pricing.taxable:
-        tax = amount * entry.pricing.tax_rate
-        total = tax + amount
-        inv.tax = tax
-        inv.subtotal = total
-        inv.total = total
-        inv.balance = total
+    if entry.pricing and entry.pricing.taxable:        
+        inv.assign_tax([(amount, entry.pricing.tax_rate)], entry.creator)
+        inv.subtotal = amount
+        inv.total = amount + inv.tax + inv.tax_2
+        inv.balance = inv.total
 
     if entry.creator and not entry.creator.is_anonymous:
         inv.set_owner(entry.creator)

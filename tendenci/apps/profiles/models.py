@@ -16,19 +16,23 @@ from django.core.files import File
 from django.conf import settings
 from django.db import connection, ProgrammingError
 from django.db.models import Max
+from django.contrib.contenttypes.fields import GenericRelation
+from timezone_field import TimeZoneField
 
 from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.base.models import BaseImport, BaseImportData
 from tendenci.apps.base.utils import correct_filename
-from tendenci.libs.abstracts.models import Person
+from tendenci.libs.abstracts.models import TendenciBaseModel, UnsavedOneToOne
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.industries.models import Industry
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.base.utils import get_timezone_choices
 #from tendenci.apps.user_groups.models import Group
-
+from tendenci.apps.regions.models import Region
 
 ALLOWED_PHOTO_SIZES = [128, 56, 100, 80, 48]
 
@@ -43,6 +47,62 @@ def profile_directory(instance, filename):
     hex_digest = m.hexdigest()[:8]
 
     return f'profiles/photos/{hex_digest}{instance.user.id}/{filename}'
+
+
+class Person(TendenciBaseModel):
+    user = UnsavedOneToOne(User, related_name="profile", verbose_name=_('user'), on_delete=models.CASCADE)
+    phone = models.CharField(_('phone'), max_length=50, blank=True)
+    address = models.CharField(_('address'), max_length=150, blank=True)
+    address2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
+    member_number = models.CharField(_('member number'), max_length=50, blank=True)
+    city = models.CharField(_('city'), max_length=50, blank=True)
+    #region = models.CharField(_('region'), max_length=50, blank=True, default='')
+    region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
+    state = models.CharField(_('state'), max_length=50, blank=True)
+    zipcode = models.CharField(_('zipcode'), max_length=50, blank=True)
+    county = models.CharField(_('county'), max_length=50, blank=True)
+    country = models.CharField(_('country'), max_length=255, blank=True)
+    is_billing_address = models.BooleanField(_('Is billing address'), default=True)
+
+    # fields to be used for the alternate address
+    address_2 = models.CharField(_('address'), max_length=150, blank=True)
+    address2_2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
+    member_number_2 = models.CharField(_('member number'), max_length=50, blank=True)
+    city_2 = models.CharField(_('city'), max_length=50, blank=True)
+    state_2 = models.CharField(_('state'), max_length=50, blank=True)
+    zipcode_2 = models.CharField(_('zipcode'), max_length=50, blank=True)
+    county_2 = models.CharField(_('county'), max_length=50, blank=True)
+    country_2 = models.CharField(_('country'), max_length=255, blank=True)
+    is_billing_address_2 = models.BooleanField(_('Is billing address'), default=False)
+
+    url = models.CharField(_('url'), max_length=100, blank=True)
+
+    time_zone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
+    language = models.CharField(_('language'), max_length=10, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
+
+    perms = GenericRelation(ObjectPermission,
+        object_id_field="object_id", content_type_field="content_type")
+
+    class Meta:
+        abstract = True
+
+    def get_address(self):
+        """
+        Returns full address depending on which attributes are available.
+        """
+        state_zip = ' '.join([s for s in (self.state, self.zipcode) if s])
+        city_state_zip = ', '.join([s for s in (self.city, state_zip, self.country) if s])
+
+        return '%s %s %s' % (self.address, self.address2, city_state_zip)
+
+    def get_alternate_address(self):
+        """
+        Returns full alternate address depending on which attributes are available.
+        """
+        state_zip = ' '.join([s for s in (self.state_2, self.zipcode_2) if s])
+        city_state_zip = ', '.join([s for s in (self.city_2, state_zip, self.country_2) if s])
+
+        return '%s %s %s' % (self.address_2, self.address2_2, city_state_zip)
 
 
 class Profile(Person):
@@ -295,20 +355,7 @@ class Profile(Person):
         return self.display_name or name or user.email or user.username
 
     def get_region_name(self):
-        """
-        Get the region name if the region field stores the value of region id.
-        
-        The region field is a char field in Profile. It is currently assigned
-        on memberships join and edit as the value of a region id. So, the id
-        needs to be converted to region_name to display on user profile. 
-        """
-        if self.region and self.region.isdigit():
-            from tendenci.apps.regions.models import Region
-            region_id = int(self.region)
-            if Region.objects.filter(id=region_id).exists():
-                region = Region.objects.get(id=region_id)
-                return region.region_name
-        return self.region
+        return self.region.region_name if self.region else ''
 
     def delete_old_photo(self):
         """

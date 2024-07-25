@@ -571,6 +571,8 @@ class MembershipAppForm(TendenciBaseForm):
         else:
             self.fields['confirmation_text'].widget.mce_attrs[
                                     'app_instance_id'] = 0
+        if get_setting('module', 'invoices', 'taxrateuseregions'):
+            self.fields['tax_rate'].help_text += "<br />Note that this rate will be served as the default rate. Please go to <a href='/admin/regions/region/'>Regions</a> to configure more tax rates."
 
 
 class AutoRenewSetupForm(forms.Form):
@@ -1319,9 +1321,13 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             mt_choices = mt_choices.exclude(renewal=True)
 
         self.fields['membership_type'].queryset = mt_choices
-        if self.membership_app.include_tax and self.membership_app.tax_rate:
-            tax_rate = self.membership_app.tax_rate * 100
-            self.fields['membership_type'].help_text = f'{tax_rate:3.2f}% tax will be applied'
+        if self.membership_app.include_tax:
+            if get_setting('module', 'invoices', 'taxrateuseregions'):
+                self.fields['membership_type'].help_text = f'Tax will be applied based on your area'
+            else:
+                if self.membership_app.tax_rate:
+                    tax_rate = self.membership_app.tax_rate * 100
+                    self.fields['membership_type'].help_text = f'{tax_rate:3.2f}% tax will be applied'
 
         if multiple_membership:
             self.fields['membership_type'].widget = forms.widgets.CheckboxSelectMultiple(

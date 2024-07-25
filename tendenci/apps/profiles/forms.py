@@ -161,6 +161,7 @@ class ProfileForm(TendenciBaseForm):
     zipcode = forms.CharField(label=_("Zipcode"), max_length=50, required=False,
                               error_messages={'required': _('Zipcode is a required field.')},
                                widget=forms.TextInput(attrs={'size':'10'}))
+    region = forms.ModelChoiceField(required=True, queryset=None)
     country = CountrySelectField(label=_("Country"), required=False)
 
     address_2 = forms.CharField(label=_("Address"), max_length=64, required=False,
@@ -242,6 +243,7 @@ class ProfileForm(TendenciBaseForm):
                   'state',
                   'zipcode',
                   'county',
+                  'region',
                   'country',
                   'is_billing_address',
                   'address_2',
@@ -358,6 +360,15 @@ class ProfileForm(TendenciBaseForm):
         if get_setting('module', 'users', 'showmembernumber2'):
             self.fields['member_number_2'].label = get_setting('module', 'users', 'membernumber2label')
             self.fields['member_number_2'].required = False
+
+        # region
+        from tendenci.apps.regions.models import Region
+        region_queryset = Region.objects.filter(status_detail='active').order_by('position')
+        if region_queryset.count() == 0:
+            del self.fields['region']
+        else:
+            self.fields['region'].queryset = region_queryset
+
 
     def clean_username(self):
         """

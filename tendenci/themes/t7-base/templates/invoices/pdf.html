@@ -42,6 +42,9 @@ div.invoice-meta{
 
 
   <div class="page-header">
+  {% if invoice.region and invoice.region.invoice_header %}
+  {{ invoice.region.invoice_header_with_absurl|safe  }}
+  {% else %}
     <h1>{% if obj_name %}{{ obj_name|capfirst}} {% endif %} {% trans "Invoice" %}</h1>
   </div>
   <table>
@@ -62,6 +65,8 @@ div.invoice-meta{
       </tr>
   </table>
     <br />
+ {% endif %}
+ 
   {% with invoice.get_object as object %}
   <div class="invoice-meta">
     <table class="table table-tendenci-reports" border="0" cellspacing="0" cellpadding="0">
@@ -167,6 +172,10 @@ div.invoice-meta{
     </div>
   </div>
   <div style="clear: both"></div>
+  
+  {% if invoice.region and invoice.region.invoice_footer %}
+   {{ invoice.region.invoice_header_with_absurl|safe  }}
+ {% endif %}
 </div>
 </body>
 

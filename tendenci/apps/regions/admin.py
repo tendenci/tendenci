@@ -9,7 +9,9 @@ from tendenci.apps.theme.templatetags.static import static
 
 class RegionAdmin(TendenciBaseModelAdmin):
     list_display = ['region_name', 'region_code',
-                    'owner_link', 'admin_perms',
+                    'tax_rate',
+                    'tax_label_2', 'tax_rate_2',
+                    'admin_perms',
                     'admin_status', 'position']
     list_filter = ['status_detail', 'owner_username']
     search_fields = ['region_name', 'region_code']
@@ -19,6 +21,14 @@ class RegionAdmin(TendenciBaseModelAdmin):
             'fields': ('region_name',
                        'region_code',
                        'description',
+                )
+        }),
+        (_('Region Tax'), {
+            'fields': ('tax_rate',
+                       'tax_label_2',
+                       'tax_rate_2',
+                       'invoice_header',
+                       'invoice_footer'
                 )
         }),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
