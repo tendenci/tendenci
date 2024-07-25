@@ -389,15 +389,15 @@ class MembershipSet(models.Model):
         for membership in memberships:
             price += membership.get_price()
 
-        tax = 0
+        default_tax_rate = 0
         if app and app.include_tax:
-            invoice.tax_rate = app.tax_rate
-            tax = app.tax_rate * price
-            invoice.tax = tax
+            default_tax_rate = app.tax_rate
+
+        invoice.assign_tax([(price, default_tax_rate)], memberships[0].user)
 
         invoice.subtotal = price
-        invoice.total = price + tax
-        invoice.balance = price + tax
+        invoice.total = price + invoice.tax + invoice.tax_2
+        invoice.balance = invoice.total
 
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
@@ -1656,15 +1656,14 @@ class MembershipDefault(TendenciBaseModel):
         # Only set for new invoices
         if not invoice.pk:
             price = self.get_price()
-            tax = 0
+            default_tax_rate = 0
             if self.app and self.app.include_tax:
-                invoice.tax_rate = self.app.tax_rate
-                tax = self.app.tax_rate * price
-                invoice.tax = tax
+                default_tax_rate = self.app.tax_rate
+            invoice.assign_tax([(price, default_tax_rate)], self.user)
 
             invoice.subtotal = price
-            invoice.total = price + tax
-            invoice.balance = price + tax
+            invoice.total = price + invoice.tax + invoice.tax_2
+            invoice.balance = invoice.total
 
             invoice.object_type = content_type
             invoice.object_id = self.pk

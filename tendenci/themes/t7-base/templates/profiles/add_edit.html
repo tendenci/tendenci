@@ -465,6 +465,21 @@
 	   </div>
 	   
 	   <div class="form-group">
+		    <label for="id_region" class="col-sm-3 control-label">{{ form.region.label }}{%if from.region.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-5">
+		      {% if form.region.errors %}
+		         <div class="text-danger">{{ form.region.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.region }}
+		      
+		      {% if form.region.help_text %}
+		      <div class="help-block">{{ form.region.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
 		    <label for="id_country" class="col-sm-3 control-label">{{ form.country.label }}{%if from.country.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.country.errors %}

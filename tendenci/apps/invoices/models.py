@@ -26,6 +26,8 @@ from tendenci.apps.accountings.utils import (
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.stripe.models import StripeAccount
+from tendenci.apps.regions.models import Region
+
 
 STATUS_DETAIL_CHOICES = (
     ('estimate', _('Estimate')),
@@ -86,8 +88,12 @@ class Invoice(models.Model):
     tax_exempt = models.BooleanField(default=True)
     tax_exemptid = models.CharField(max_length=50, blank=True, null=True)
     tax_rate = models.FloatField(blank=True, default=0)
+    tax_rate_2 = models.DecimalField(blank=True, max_digits=6, decimal_places=5, default=0)
     taxable = models.BooleanField(default=False)
     tax = models.DecimalField(max_digits=15, decimal_places=4, default=0)
+    tax_2 = models.DecimalField(max_digits=15, decimal_places=4, default=0)
+    tax_label_2 = models.CharField(max_length=6, blank=True, default='')
+    region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
     bill_to = models.CharField(max_length=120, blank=True)
     bill_to_first_name = models.CharField(max_length=100, blank=True, null=True)
     bill_to_last_name = models.CharField(max_length=100, blank=True, null=True)
@@ -141,6 +147,39 @@ class Invoice(models.Model):
         """
         self.owner = user
         self.owner_username = user.username
+
+    def assign_tax(self, price_tax_rate_list, user):
+        """
+        Calculate and assign tax to this invoice.
+        
+        If site uses regions for tax, 
+        
+        price_tax_rate_list is a list of (price, default_tax_rate) tuples,
+        example: [(10.50, 0.0825), ..]
+        """
+        if get_setting('module', 'invoices', 'taxrateuseregions')\
+            and user and not user.is_anonymous and hasattr(user, 'profile') \
+            and user.profile.region:
+            region = user.profile.region
+            self.region = region
+            self.tax_rate = region.tax_rate
+            if region.tax_rate_2:
+                self.tax_rate_2 = region.tax_rate_2
+            if region.tax_label_2:
+                self.tax_label_2 = region.tax_label_2
+            for (price, _) in price_tax_rate_list:
+                if price:
+                    if self.tax_rate:
+                        self.tax += self.tax_rate * price
+                    if region.tax_rate_2:
+                        self.tax_2 += self.tax_rate_2 * price
+        else:
+            for (price, default_tax_rate) in price_tax_rate_list:
+                if price and default_tax_rate:
+                    self.tax_rate = default_tax_rate
+                    self.tax += self.tax_rate * price
+
+        return self
 
     def bill_to_user(self, user):
         """

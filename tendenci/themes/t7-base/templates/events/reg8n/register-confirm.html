@@ -279,7 +279,10 @@
             {% endif %}
             {% if registration.invoice.tax %}
             <div>{% trans 'Subtotal' %} {{ registration.invoice.subtotal|format_currency }}</div>
-            <div>{% trans 'Tax' %} {{ registration.invoice.tax|floatformat:"2" }}</div>
+            <div>{% if MODULE_INVOICES_TAXLABEL %}{{ MODULE_INVOICES_TAXLABEL }}{% else %}{% trans "Tax" %}{% endif %}{% if registration.invoice.tax_rate %} {{ registration.invoice.tax_rate|percentage }}{% endif %} {{ registration.invoice.tax|format_currency }}</div>
+            {% endif %}
+            {% if registration.invoice.tax_2 %}
+            <div>{{ registration.invoice.tax_label_2 }}{% if registration.invoice.tax_rate_2 %} {{ registration.invoice.tax_rate_2|percentage }}{% endif %}: {{ registration.invoice.tax_2|format_currency }}</div>
             {% endif %}
             <div>{% trans 'Total' %} {{ registration.invoice.total|format_currency }}</div>
             <div><strong>{% trans 'Balance' %} {{ registration.invoice.balance|format_currency }}</strong></div>

@@ -35,6 +35,12 @@ class PricingAdminForm(PricingForm):
                    'due_sore',
                   )
 
+    def __init__(self, *args, **kwargs):
+        super(PricingAdminForm, self).__init__(*args, **kwargs)
+        # tax rate
+        if get_setting('module', 'invoices', 'taxrateuseregions'):
+            self.fields['tax_rate'].help_text += "<br />Note that this rate will be served as the default rate. Please go to <a href='/admin/regions/region/'>Regions</a> to configure more tax rates."
+
 
 class PricingAdmin(admin.StackedInline):
     model = Pricing

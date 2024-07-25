@@ -318,20 +318,16 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
         inv.status = True
 
         if not renewal:
-            inv.total = corp_memb.corporate_membership_type.price
+            amount = corp_memb.corporate_membership_type.price
         else:
-            inv.total = renewal_total
-        inv.subtotal = inv.total
-        inv.balance = inv.total
+            amount = renewal_total
 
-        tax = 0
         if app and app.include_tax:
-            tax = inv.total * app.tax_rate
-            inv.tax = tax
-            total = inv.total + tax
-            inv.subtotal =total
-            inv.total = total
-            inv.balance = total
+            inv.assign_tax([(amount, app.tax_rate)], user)
+
+        inv.subtotal = amount
+        inv.total = amount + inv.tax + inv.tax_2
+        inv.balance = inv.total
 
         # Check for donation
         if include_donation:

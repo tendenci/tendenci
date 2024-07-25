@@ -96,8 +96,8 @@ def invoice_object_display(request, invoice):
     return context
 
 # display invoice total on invoice view
-@register.inclusion_tag("invoices/total_display.html")
-def invoice_total_display(request, invoice):
+@register.inclusion_tag("invoices/total_display.html", takes_context=True)
+def invoice_total_display(context, request, invoice):
     tmp_total = 0
     payment_method = ""
 
@@ -123,13 +123,13 @@ def invoice_total_display(request, invoice):
 
     merchant_login = get_setting("site", "global", "merchantaccount") != 'asdf asdf asdf'
 
-    context = {
+    context.update({
         'request': request,
         'invoice': invoice,
         'tmp_total': tmp_total,
         'payment_method': payment_method,
         'merchant_login': merchant_login
-    }
+    })
     return context
 
 # display payment history on invoice view
