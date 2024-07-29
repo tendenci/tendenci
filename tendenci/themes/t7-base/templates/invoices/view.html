@@ -82,12 +82,14 @@
     </ul>
   </div>
   {% if not invoice.is_void %}
-  
+
+  {% if request.user.is_superuser or can_edit %}
   <div class="invoice-options">
     <ul>
       <li><a href="{% url "invoice.download" invoice.id %}">{% trans 'Download PDF' %}</a></li>
     </ul>
   </div>
+  {% endif %}
 
  {% if request.user.is_superuser %}
   <div class="invoice-options">
