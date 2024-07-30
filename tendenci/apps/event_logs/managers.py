@@ -116,6 +116,10 @@ class EventLogManager(Manager):
         if 'pingdom.com' in request.META.get('HTTP_USER_AGENT', ''):
             return None
 
+        # skip if aws ELB-HealthChecker
+        if 'ELB-HealthChecker' in request.META.get('HTTP_USER_AGENT', ''):
+            return None
+
         event_log = self.model()
 
         # Set the following fields to blank
