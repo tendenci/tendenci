@@ -126,6 +126,10 @@ def search(request, my_directories_only=False, template_name="directories/search
             search_filter = {'%s%s' % (search_category, search_type): query}
             directories = directories.filter( **search_filter)
 
+    if not request.user.is_superuser:
+        directories = directories.exclude(activation_dt__gt=datetime.now())
+        directories = directories.exclude(expiration_dt__lt=datetime.now())
+
     directories = directories.order_by('headline')
 
     EventLog.objects.log()

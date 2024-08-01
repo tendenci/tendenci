@@ -11,7 +11,7 @@ django-picklefield>=3.2
 django-simple-captcha==0.6.0
 #django-nocaptcha-recaptcha==0.0.20
 tendenci-django-tagging==0.6
-django-haystack==3.2.1
+django-haystack==3.3.0
 django-debug-toolbar>=3.4.0
 django-sql-explorer==3.2.1
 django-apptemplates>=1.5
