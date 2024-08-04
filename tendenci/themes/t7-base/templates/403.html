@@ -7,6 +7,8 @@
   {{ MODULE_USERS_USERSSECURITYMESSAGE }}
 {% else %}
 {% if user.is_authenticated %}
+<h1>403</h1>
+<h2>{% trans "Access Denied" %}</h2>
 <p>{% trans "You can't go to this page right now because you do not have the correct access rights." %}</p>
 <p>{% trans "Please contact the site administrator to request access to this page." %}</p>
 {% else %}
