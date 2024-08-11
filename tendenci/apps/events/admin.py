@@ -69,7 +69,18 @@ class EventPlaceAdmin(TendenciBaseModelAdmin):
     search_fields = ("name",)
     list_filter = ('name', 'address',)
     ordering = ['name','address', 'city']
+    actions = ['merge']
 
+    def merge(self, request, queryset):
+        main = queryset[0]
+        tail = queryset[1:]
+        for place_to_merge in tail:
+            Event.objects.filter(place=place_to_merge).update(place=main)
+            place.delete()
+
+    merge.short_description = "Merge places"
+
+  
     def has_add_permission(self, request):
         return False
     
