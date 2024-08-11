@@ -76,7 +76,7 @@ class EventPlaceAdmin(TendenciBaseModelAdmin):
         tail = queryset[1:]
         for place_to_merge in tail:
             Event.objects.filter(place=place_to_merge).update(place=main)
-            place.delete()
+            place_to_merge.delete()
 
     merge.short_description = "Merge places"
 
