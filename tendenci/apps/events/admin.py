@@ -48,7 +48,7 @@ class EventAdmin(TendenciBaseModelAdmin):
 
     def has_add_permission(self, request):
         return False
-    
+
     def change_view(self, request, object_id, form_url='',
                     extra_context=None):
         return HttpResponseRedirect(
@@ -59,6 +59,7 @@ class EventAdmin(TendenciBaseModelAdmin):
 class EventPlaceAdmin(TendenciBaseModelAdmin):
 
     list_display = (
+        'id',
         'name',
         'description',
         'address',
@@ -66,6 +67,7 @@ class EventPlaceAdmin(TendenciBaseModelAdmin):
         'state',
         'is_zoom_webinar',
     )
+    list_display_links = ('id',)
     search_fields = ("name",)
     list_filter = ('name', 'address',)
     ordering = ['name','address', 'city']
@@ -80,15 +82,17 @@ class EventPlaceAdmin(TendenciBaseModelAdmin):
 
     merge.short_description = "Merge places"
 
-  
+
     def has_add_permission(self, request):
         return False
-    
+
+    '''
     def change_view(self, request, object_id, form_url='',
                     extra_context=None):
         return HttpResponseRedirect(
                     reverse('place.edit', args=[object_id])
                 )
+    '''
 
 admin.site.register(Place, EventPlaceAdmin)
 
