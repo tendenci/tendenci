@@ -86,14 +86,6 @@ class EventPlaceAdmin(TendenciBaseModelAdmin):
     def has_add_permission(self, request):
         return False
 
-    '''
-    def change_view(self, request, object_id, form_url='',
-                    extra_context=None):
-        return HttpResponseRedirect(
-                    reverse('place.edit', args=[object_id])
-                )
-    '''
-
 admin.site.register(Place, EventPlaceAdmin)
 
 
