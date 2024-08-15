@@ -1800,6 +1800,11 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             del self.fields['gratuity_custom_option']
         if not get_setting('module', 'events', 'usethirdpartypayment'):
             del self.fields['external_payment_link']
+
+        # make reply_to a required field
+        # Commenting it out because this doesn't work when Registration is not enabled
+        #self.fields['reply_to'].required = True
+         
         self.add_form_control_class()
 
     def clean_use_custom_reg(self):
