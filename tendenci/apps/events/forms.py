@@ -2664,11 +2664,12 @@ class PendingEventForm(EventForm):
             self.fields.pop('all_day')
 
 
-class AddonForm(BetterModelForm):
+class AddonForm(FormControlWidgetMixin, BetterModelForm):
     class Meta:
         model = Addon
         fields = ('title',
             'price',
+            'description',
             'group',
             'default_yes',
             'position',
@@ -2680,6 +2681,7 @@ class AddonForm(BetterModelForm):
                 'fields': [
                     'title',
                     'price',
+                    'description',
                     'group',
                     'default_yes',
                     'position',
@@ -2694,7 +2696,7 @@ class AddonForm(BetterModelForm):
             }),
         ]
 
-class AddonOptionForm(BetterModelForm):
+class AddonOptionForm(FormControlWidgetMixin, BetterModelForm):
     label = _('Option')
 
     class Meta:
