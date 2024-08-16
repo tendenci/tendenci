@@ -1477,5 +1477,22 @@
         "scope_category": "events",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, an event can assign to multiple groups.",
+        "data_type": "boolean",
+        "update_dt": "2024-08-16 13:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "allowmultigroups",
+        "value": "false",
+        "label": "Event Can Assign to More Than One Group",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]

@@ -937,7 +937,7 @@ class Registration(models.Model):
 
     @property
     def group(self):   
-        return self.event.groups.first()
+        return self.event.primary_group
 
     @property
     def hash(self):
@@ -2646,7 +2646,7 @@ class Event(TendenciBaseModel):
         help_text=_('Photo that represents this event.'), null=True, blank=True, on_delete=models.SET_NULL)
     certificate_image = models.ForeignKey(CertificateImage,
         help_text=_('Optional photo to display on certificate.'), null=True, blank=True, on_delete=models.SET_NULL)
-    groups = models.ManyToManyField(Group, default=get_default_group, related_name='events')
+    groups = models.ManyToManyField(Group, through='EventGroup')
     tags = TagField(blank=True)
     priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the event calendar day list and single day list. They will be featured with a star icon on the monthly calendar and the list view."))
 
@@ -3984,6 +3984,20 @@ class Event(TendenciBaseModel):
                     status=True).order_by('-end_dt')[:1] or [None]
         if pricing:
             return pricing.end_dt
+
+    @property
+    def primary_group(self):
+        primary_eventgroup = self.group_relations.filter(is_primary=True).first()
+        return primary_eventgroup.group if primary_eventgroup else None
+
+
+class EventGroup(models.Model):
+    event = models.ForeignKey(Event, related_name="group_relations", on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    is_primary = models.BooleanField(default=True)
+    
+    class Meta:
+        unique_together = ['event', 'group']
 
 
 class StandardRegForm(models.Model):

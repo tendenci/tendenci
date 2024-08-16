@@ -809,6 +809,7 @@ class EventForm(TendenciBaseForm):
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
     groups = forms.ModelMultipleChoiceField(required=True, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
+    primary_group = forms.ModelChoiceField(required=False, queryset=None)
 
     FREQUENCY_CHOICES = (
         (1, '1'),
@@ -875,6 +876,7 @@ class EventForm(TendenciBaseForm):
             'priority',
             'type',
             'groups',
+            'primary_group',
             'external_url',
             'photo_upload',
             'certificate_image',
@@ -919,6 +921,7 @@ class EventForm(TendenciBaseForm):
                                   'delivery_method',
                                   'type',
                                   'groups',
+                                  'primary_group',
                                   'external_url',
                                   'photo_upload',
                                   'certificate_image',
@@ -1061,6 +1064,20 @@ class EventForm(TendenciBaseForm):
         #self.fields['groups'].choices = groups_list
         self.fields['groups'].queryset = default_groups
         self.fields['timezone'].initial = settings.TIME_ZONE
+
+        if get_setting('module', 'events', 'allowmultigroups'):
+            self.fields['primary_group'].queryset = self.fields['groups'].queryset
+            self.fields['primary_group'].empty_label = None
+            if self.instance and self.instance.pk:
+                self.fields['primary_group'].initial = self.instance.primary_group
+            self.fields['primary_group'].help_text = _("Primary group's entity will be associated with the invoices created from event registration. ")
+            # if self.instance.pk:
+            #     primary_group = self.instance.primary_group
+            #     if primary_group:
+            #         self.fields['primary_group'].queryset = self.fields['groups'].queryset.filter(id=primary_group.id)
+                    
+        else:
+            del self.fields['primary_group']
         
         self.fields['type'].required = True
 
@@ -1165,6 +1182,12 @@ class EventForm(TendenciBaseForm):
 
         if self.cleaned_data.get('remove_photo'):
             event.image = None
+            
+        primary_group = self.cleaned_data.get('primary_group', None)
+        if primary_group:
+            for groupevent in event.group_relations.exclude(group=primary_group):
+                groupevent.is_primary = False
+                groupevent.save()
         return event
 
 
@@ -2612,6 +2635,8 @@ class EmailForm(forms.ModelForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
 class PendingEventForm(EventForm):
+    primary_group = forms.ModelChoiceField(required=False, queryset=None)
+
     class Meta:
         model = Event
         fields = (
