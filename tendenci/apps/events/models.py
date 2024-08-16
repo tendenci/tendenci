@@ -4230,6 +4230,7 @@ class CustomRegFieldEntry(models.Model):
 class Addon(OrderingBaseModel):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
+    description = models.TextField(blank=True, default='')
 
     class Meta:
         app_label = 'events'

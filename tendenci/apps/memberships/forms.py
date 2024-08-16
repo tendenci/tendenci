@@ -41,6 +41,7 @@ from tendenci.apps.notifications.utils import send_welcome_email
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.payments.fields import PaymentMethodModelChoiceField
 from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import tcurrency
@@ -1422,6 +1423,11 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                     if auto_renew_discount:
                         self.fields['auto_renew'].help_text = _('A {} discount will be applied immediately if you opt in Auto Renew').format(
                                                                     tcurrency(auto_renew_discount))
+        # regions - show active only
+        if 'region' in self.fields:
+            self.fields['region'].queryset = self.fields['region'].queryset.filter(status_detail='active')
+            filters = get_query_filters(request_user, 'regions.view_region')
+            self.fields['region'].queryset = self.fields['region'].queryset.filter(filters).distinct()
 
         self.add_form_control_class()
 

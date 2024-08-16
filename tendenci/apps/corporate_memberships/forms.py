@@ -21,6 +21,7 @@ from django.contrib.contenttypes.models import ContentType
 from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.industries.models import Industry
 from tendenci.apps.memberships.fields import (NoticeTimeTypeField, DonationOptionAmountField)
 from tendenci.apps.memberships.widgets import DonationOptionAmountWidget
@@ -540,6 +541,11 @@ class CorpProfileForm(CorpProfileBaseForm):
             del self.fields['status']
         if 'status_detail' in self.fields:
             del self.fields['status_detail']
+        # regions - show active only
+        if 'region' in self.fields:
+            self.fields['region'].queryset = self.fields['region'].queryset.filter(status_detail='active')
+            filters = get_query_filters(self.request_user, 'regions.view_region')
+            self.fields['region'].queryset = self.fields['region'].queryset.filter(filters).distinct()
 
         # assign the selected parent_entities to the drop down
         f = self.fields.get('parent_entity', None)
