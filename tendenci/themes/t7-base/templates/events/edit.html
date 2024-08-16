@@ -168,9 +168,6 @@
     	}
     
         $(document).ready(function() {
-        	// Remove multi-select option from groups
-            $('select#id_groups').prop('multiple', false );
-            $('#id_groups').next('span.help-block').hide();
         	// Date and time picker for start_dt and end_dt
             $('#id_start_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
             $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
@@ -209,6 +206,10 @@
 
             $('.regconfpricing_formset .section-description').addClass('well');
         });
+    </script>
+    
+    <script type="text/javascript">
+        {% include 'events/include/event_handle_groups.js' %}
     </script>
     
     <script type="text/javascript">

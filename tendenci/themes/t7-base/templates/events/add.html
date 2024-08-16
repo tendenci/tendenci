@@ -93,9 +93,7 @@
         //script for hiding and showing the 'On weekend' field
         //when nesessary.
         $(document).ready(function() {
-        	// Remove multi-select option from groups
-            $('select#id_groups').prop('multiple', false );
-            $('#id_groups').next('span.help-block').hide();
+            
         	// Date and time picker for start_dt and end_dt
             $('#id_start_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
             $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
@@ -159,6 +157,10 @@
             $('input#id_regconf-enabled').change(hide_forms_on_enabled_fn);
             hide_forms_on_enabled_fn();
         });
+    </script>
+    
+    <script type="text/javascript">
+        {% include 'events/include/event_handle_groups.js' %}
     </script>
     
     <script type="text/javascript">
