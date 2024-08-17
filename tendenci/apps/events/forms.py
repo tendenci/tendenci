@@ -1277,8 +1277,8 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
         super(PlaceForm, self).__init__(*args, **kwargs)
         # Populate place
         places = Place.objects.all().order_by(
-            'address', 'city', 'state', 'zip', 'country', '-pk').distinct(
-            'address', 'city', 'state', 'zip', 'country')
+            'name', 'address', 'city', 'state', 'zip', 'country', '-pk').distinct(
+            'name', 'address', 'city', 'state', 'zip', 'country')
 
         choices = [('', '------------------------------')]
         for p in places:

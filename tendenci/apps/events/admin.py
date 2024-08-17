@@ -23,7 +23,7 @@ from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, St
                                          CEUCategory, SignatureImage, CertificateImage,
                                          RegistrantCredits, VirtualEventCreditsLogicConfiguration,
                                          ZoomAPIConfiguration,
-                                         AssetsPurchase)
+                                         AssetsPurchase, Place)
 from tendenci.apps.events.forms import (CustomRegFormAdminForm, CustomRegFormForField, TypeForm,
                                         StandardRegAdminForm)
 from tendenci.apps.events.utils import iter_registrant_credits
@@ -48,12 +48,45 @@ class EventAdmin(TendenciBaseModelAdmin):
 
     def has_add_permission(self, request):
         return False
-    
+
     def change_view(self, request, object_id, form_url='',
                     extra_context=None):
         return HttpResponseRedirect(
                     reverse('event.edit', args=[object_id])
                 )
+
+
+class EventPlaceAdmin(TendenciBaseModelAdmin):
+
+    list_display = (
+        'id',
+        'name',
+        'description',
+        'address',
+        'city',
+        'state',
+        'is_zoom_webinar',
+    )
+    list_display_links = ('id',)
+    search_fields = ("name",)
+    list_filter = ('name', 'address',)
+    ordering = ['name','address', 'city']
+    actions = ['merge']
+
+    def merge(self, request, queryset):
+        main = queryset[0]
+        tail = queryset[1:]
+        for place_to_merge in tail:
+            Event.objects.filter(place=place_to_merge).update(place=main)
+            place_to_merge.delete()
+
+    merge.short_description = "Merge places"
+
+
+    def has_add_permission(self, request):
+        return False
+
+admin.site.register(Place, EventPlaceAdmin)
 
 
 class EventTypeAdmin(admin.ModelAdmin):
