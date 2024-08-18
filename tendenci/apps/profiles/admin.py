@@ -1,9 +1,11 @@
+from datetime import datetime, timedelta
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 from django.contrib import messages
+from django.contrib.admin import SimpleListFilter
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -122,6 +124,36 @@ class ProfileAdmin(TendenciBaseModelAdmin):
 admin.site.register(Profile, ProfileAdmin)
 
 
+class LastLoginFilter(SimpleListFilter):
+    title = 'Last Login'
+    parameter_name = 'last_login'
+
+    def lookups(self, request, model_admin):
+        return (
+            (1, '1 year ago'),
+            (5, '5 years ago'),
+            (10, '10 years ago'),
+            (999, 'Never Logged in'),
+        )
+
+    def queryset(self, request, queryset):
+        try:
+            value = int(self.value())
+        except:
+            value = None
+
+        if value is None:
+            return queryset
+
+        if value == 999:
+            queryset = queryset.filter(last_login__isnull=True)
+        else:
+            dt = datetime.now() - timedelta(days=365 * value)
+            queryset = queryset.filter(last_login__lt=dt)
+
+            #print(queryset.query)
+        return queryset
+
 class MyUserAdmin(UserAdmin):
     list_display = ('id', 'username', 'email', 'first_name', 'last_name',
                     'show_member_number', 'is_staff', 'is_superuser', 'is_active', 'last_login')
@@ -133,6 +165,7 @@ class MyUserAdmin(UserAdmin):
         (_('Permissions'), {'fields': ('user_permissions',)}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
+    list_filter = ("is_staff", "is_superuser", "is_active", LastLoginFilter)
     ordering = ('-id',)
     
     def show_member_number(self, instance):

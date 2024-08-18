@@ -3235,6 +3235,54 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     })
 
 
+def _can_edit_attendance_dates(request, reg8n, registrant):
+    return registrant.can_edit_attendance_dates or \
+            (request.user.is_superuser and reg8n.event.can_edit_attendance_dates_admin)
+    
+
+def _validate_attendance_dates(request, reg8n, registrants, updated_attendance_dates):
+    is_valid = True
+    total_available_days = len(reg8n.event.full_event_days)
+    for index, registrant in enumerate(registrants):
+        # Don't updage attendance dates or child events if registration is closed (non admin users)
+        # or if nested events is not enabled, or event has no child events
+        if not _can_edit_attendance_dates(request, reg8n, registrant):
+            continue
+
+        pricing = registrant.pricing
+        
+
+        past_dates = len(registrant.past_attendance_dates)
+        registrants_updated_dates = list()
+        if len(updated_attendance_dates):
+            registrants_updated_dates = updated_attendance_dates[index]
+
+        total_attendance_dates = len(registrants_updated_dates) + past_dates
+        if request.user.is_superuser:
+            total_attendance_dates = len(registrants_updated_dates)
+
+        if pricing and pricing.days_price_covers:
+            if pricing.days_price_covers > total_available_days:
+                pricing.days_price_covers = total_available_days
+            if request.user.is_superuser:
+                allowed_dates = pricing.days_price_covers
+            else:
+                allowed_dates = pricing.days_price_covers - past_dates
+
+            message = ''
+            if allowed_dates == 0:
+                # no more dates can be selected
+                message = "You have used up the attendance dates covered for this pricing. Please contact event organizer if you'd like to sign up for more sessions."
+            elif total_attendance_dates > allowed_dates:
+                message = f'Select up to { allowed_dates } dates for {registrant.first_name } { registrant.last_name}'
+            if message:
+                messages.set_level(request, messages.ERROR)
+                messages.add_message(request, messages.ERROR, _(message))
+                is_valid = False
+
+    return is_valid
+
+
 @is_enabled('events')
 def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/reg8n_edit.html"):
     from tendenci.apps.trainings.models import Certification
@@ -3344,7 +3392,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
     if request.method == 'POST':
         redirect = True
-        if formset.is_valid():
+        is_valid_attendance_dates = _validate_attendance_dates(request, reg8n, registrants, updated_attendance_dates)
+        if formset.is_valid() and is_valid_attendance_dates:
             updated = False
             if custom_reg_form:
                 for form in formset.forms:
@@ -3369,43 +3418,13 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
 
             attendance_dates_changed = False
-            total_available_days = len(reg8n.event.full_event_days)
             for index, registrant in enumerate(registrants):
-                # Don't updage attendance dates or child events if registration is closed (non admin users)
-                # or if nested events is not enabled, or event has no child events
-                can_edit_attendance_dates = (
-                    registrant.can_edit_attendance_dates or
-                    (request.user.is_superuser and reg8n.event.can_edit_attendance_dates_admin)
-                )
-                if not can_edit_attendance_dates:
+                if not _can_edit_attendance_dates(request, reg8n, registrant):
                     continue
 
-                pricing = registrant.pricing
-                
-
-                past_dates = len(registrant.past_attendance_dates)
                 registrants_updated_dates = list()
                 if len(updated_attendance_dates):
                     registrants_updated_dates = updated_attendance_dates[index]
-
-                total_attendance_dates = len(registrants_updated_dates) + past_dates
-                if request.user.is_superuser:
-                    total_attendance_dates = len(registrants_updated_dates)
-
-                if pricing and pricing.days_price_covers:
-                    if pricing.days_price_covers > total_available_days:
-                        pricing.days_price_covers = total_available_days
-                    if request.user.is_superuser:
-                        allowed_dates = pricing.days_price_covers
-                    else:
-                        allowed_dates = pricing.days_price_covers - past_dates
-                    if total_attendance_dates > allowed_dates:
-                        message = f'Select up to { allowed_dates } dates for {registrant.first_name } { registrant.last_name}'
-                        messages.set_level(request, messages.ERROR)
-                        messages.add_message(request, messages.ERROR, _(message))
-                        redirect = False
-                        break
-
                 original_dates = registrant.attendance_dates if request.user.is_superuser else registrant.upcoming_attendance_dates
                 if registrants_updated_dates != original_dates:
                     updated_dates = list()
