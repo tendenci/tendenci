@@ -243,6 +243,7 @@ class JobForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         if hasattr(self, 'user'):
             kwargs.update({'user': self.user})
+        self.admin_backend = kwargs.pop('admin_backend', False)
         super(JobForm, self).__init__(*args, **kwargs)
         self.fields['slug'].help_text = 'Letters, numbers or hyphens only. ex: my-job'
         if self.instance.header_image:
@@ -326,6 +327,12 @@ class JobForm(TendenciBaseForm):
             if f in self.fields:
                 self.fields.pop(f)
 
+        # not to show list_type field if no premium price
+        if not self.admin_backend:
+            if not JobPricing.objects.filter(status=True).filter(premium_price__gt=0).exists():
+                if 'list_type' in self.fields:
+                    del self.fields['list_type']
+
     def clean_syndicate(self):
         """
         clean method for syndicate added due to the update
@@ -379,6 +386,7 @@ class JobAdminForm(JobForm):
     def __init__(self, *args, **kwargs):
         if hasattr(self, 'user'):
             kwargs.update({'user': self.user})
+        kwargs.update({'admin_backend': True})
         super(JobAdminForm, self).__init__(*args, **kwargs)
 
         if hasattr(self, 'user'):
