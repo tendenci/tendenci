@@ -13,7 +13,7 @@
 
 {% block content %}
 <div class="t">
-    <h1>Add {% firstof MODULE_JOBS_LABEL trans 'Job' %}</h1>
+    <h1>{% trans "Add" %} {% firstof MODULE_JOBS_LABEL trans "Job" %}</h1>
 
     <div class="job-wrap">
     <form action="{% url "job.add" %}" class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
@@ -29,7 +29,8 @@
             {% endif %}
             {{ form|styled_form }}
 
-            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}" />
+            <input class="btn btn-primary" type="submit" value="{% trans 'Add' %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}" />
+ 		<p>&nbsp;</p>
         </div>
     </form>
 
