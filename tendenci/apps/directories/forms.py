@@ -393,7 +393,11 @@ class DirectoryForm(TendenciBaseForm):
                 self.fields['cats'].help_text += mark_safe('<br /><a href="{0}">{1}</a>'.format(
                             reverse('admin:directories_category_changelist'),
                             _('Manage Categories'),))
-            
+ 
+        # not to show list_type field if no premium price
+        if not DirectoryPricing.objects.filter(status=True).filter(premium_price__gt=0).exists():
+            if 'list_type' in self.fields:
+                del self.fields['list_type']      
 
     def clean_syndicate(self):
         """

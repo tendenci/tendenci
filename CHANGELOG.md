@@ -1,3 +1,23 @@
+### 15.2 [2024-8-24]
+
+* New feature: option to use region for tax rate. It can be turned on with the setting "Use Regions for Tax Rate" at /settings/module/invoices/#id_taxrateuseregions. The header and footer of an invoice can be customized for a specific region.
+* Added the option to auto apply chapter memberships upon membership approval.
+* Added the option to allow event select multiple groups with one primary group. If multiple groups are selected, the primary group is used for financial reports.
+* Updated forums view to raise HttpResponseForbidden to avoid a blank page when an authenticated user gets permission denied. (Thanks to @CraigeHales)
+* Suppressed captcha for logged users on embeded forms. (Thanks to @CraigeHales)
+* Updated digital check-in process so that the user scanning in registrants doesn't have to select a session and click "confirm". (Thanks to @ssimmons42)
+* Added 'Powered by Stripe' logo to Stripe payments page. (Thanks to @b-davies24) 
+* Updated events credits report - Added a filter by credit name and added export feature to the report.
+* Corrected the roster report link on child event view to point to child event roster.
+* Updated 403 and 404 pages to include error codes. (Thanks to @b-davies24)
+* Added the filter by "Last Login" at users admin backend. 
+* Made "Registration email reply to" a required field on events add/edit.
+* Added the description field to event Addon.
+* Added Event Place admin facility to allow sorting and mergeing event places. (Thanks to @rob-hills)
+* Updated jobs and directories add/edit to not show list type dropdown if no premium listing.
+* Other minor updates and fixes.
+
+
 ### 15.1 [2024-5-22]
 
 * Upgraded font awesome from v4 to v6.
