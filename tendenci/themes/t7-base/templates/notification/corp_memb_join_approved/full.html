@@ -17,6 +17,13 @@
 {% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "membership_default.add_under_corp" object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url "membership_default.add_under_corp" object.id %}</a>
 </p>
 
+{% if membership_added %}
+<p>
+{% trans 'Note that an individual membership has been automatically added under your corporate:' %} 
+<a href="{{ SITE_GLOBAL_SITEURL }}{% url "membership.details" membership_added.id %}">{{ SITE_GLOBAL_SITEURL }}{% url "membership.details" membership_added.id %}</a>
+</p>
+{% endif %}
+
 {% if object.authentication_method == 'secret_code' %}
 <p>
 {% blocktrans %}<b>secret code</b>:{% endblocktrans %}<br />

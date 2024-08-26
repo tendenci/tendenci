@@ -253,5 +253,22 @@
         "scope_category": "corporate_memberships",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, it allows individual who submits a corp membership application to automatically become member under the organization if individual memberships are free.",
+        "data_type": "boolean",
+        "update_dt": "2024-08-26 10:30:30",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "autojoinsubmitter",
+        "value": "false",
+        "label": "Allow Submitter to Auto-Join Org",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "corporate_memberships",
+        "store": false,
+        "updated_by": ""
     }
 ]

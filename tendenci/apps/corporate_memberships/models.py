@@ -117,8 +117,9 @@ NOTICE_TYPES = (
 
 class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
     REQUIRE_APPROVAL_CHOICES = (
-        ("for_all", _("for ALL (Paid & Non-Paid)")),
-        ("for_non_paid_only", _("for Non-Paid Only")),
+        ("for_all", _("Join, Renewal")),
+        ("for_non_paid_only", _("Join for Non-Paid, Renewal for Non-Paid")),
+        ("renew_non_paid_only", _("Join, Renewal for Non-Paid")),
     )
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
@@ -951,8 +952,9 @@ class CorpMembership(TendenciBaseModel):
         from tendenci.apps.perms.utils import get_notice_recipients
 
         # approve it
-        if request.user.profile.is_superuser or \
-                self.corporate_membership_type.require_approval == 'for_non_paid_only':
+        if request.user.is_superuser or \
+            self.corporate_membership_type.require_approval == 'for_non_paid_only' or \
+            (self.renewal and self.corporate_membership_type.require_approval == 'renew_non_paid_only'):
             if self.renewal:
                 self.approve_renewal(request)
             else:
@@ -1058,6 +1060,69 @@ class CorpMembership(TendenciBaseModel):
             return True
         return False
 
+    def auto_join_submitter(self, request):
+        """
+        Automatically join submitter under this corp if individual memberships are free.
+        Return an individual membership.
+        """
+        membership = None
+        creator = self.corp_profile.creator
+        if creator and not creator.is_superuser:
+            if not creator.membershipdefault_set.exclude(
+                        status_detail__in=['archive', 'disapproved']).exists():
+                group = self.corporate_membership_type.membership_type.group
+                membership = MembershipDefault()
+                membership.user = creator
+                membership.join_dt = datetime.now()
+                membership.expire_dt = self.expiration_dt
+                membership.corporate_membership_id = self.id
+                membership.corp_profile_id = self.corp_profile.id
+                membership.membership_type = \
+                    self.corporate_membership_type.membership_type
+                membership.status = True
+                membership.status_detail = 'active'
+                membership.admin_notes = 'Auto joined with corp membership'
+                membership.application_approved = True
+                membership.application_approved_dt = self.approved_denied_dt
+                if not request.user.is_anonymous:
+                    membership.owner_id = request.user.id
+                    membership.owner_username = request.user.username
+                    membership.application_approved_user = request.user
+
+                if membership.get_price() <= 0:
+                    membership.save()
+                    # archive old memberships
+                    membership.archive_old_memberships()
+    
+                    # show member_number on profile
+                    membership.profile_refresh_member_number()
+    
+                    # check and add member to the group if not exist
+                    [gm] = GroupMembership.objects.filter(group=group,
+                                                        member=membership.user
+                                                        )[:1] or [None]
+                    if gm:
+                        if gm.status_detail != 'active':
+                            gm.status_detail = 'active'
+                            gm.save()
+                    else:
+                        opt = {
+                            'group': group,
+                            'member': membership.user,
+                            'status': True,
+                            'status_detail': 'active',
+                            }
+                        if not request.user.is_anonymous:
+                            opt.update({
+                                    'creator_id': request.user.id,
+                                    'creator_username': request.user.username,
+                                    'owner_id': request.user.id,
+                                    'owner_username': request.user.username,
+                                       })
+                        GroupMembership.objects.create(**opt)
+
+        return membership
+
     def approve_join(self, request, **kwargs):
         self.approved = True
         self.approved_denied_dt = datetime.now()
@@ -1074,6 +1139,11 @@ class CorpMembership(TendenciBaseModel):
         if get_setting('module',  'corporate_memberships', 'adddirectory'):
             # add a directory entry for this corp
             self.corp_profile.add_directory()
+
+        if get_setting('module',  'corporate_memberships', 'autojoinsubmitter'):
+            membership_added = self.auto_join_submitter(request)
+        else:
+            membership_added = None
 
         # create salesforce lead if applicable
         sf = get_salesforce_access()
@@ -1118,7 +1188,8 @@ class CorpMembership(TendenciBaseModel):
                     'invoice': self.invoice,
                     'created': created,
                     'username': username,
-                    'password': password
+                    'password': password,
+                    'membership_added': membership_added
                 }
                 send_email_notification('corp_memb_join_approved',
                                     recipients, extra_context)
