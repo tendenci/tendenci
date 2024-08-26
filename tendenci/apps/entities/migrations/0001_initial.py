@@ -39,9 +39,9 @@ class Migration(migrations.Migration):
                 ('owner_username', models.CharField(max_length=50)),
                 ('status', models.BooleanField(default=True, verbose_name='Active')),
                 ('status_detail', models.CharField(default='active', max_length=50)),
-                ('creator', models.ForeignKey(related_name='entity_creator', on_delete=django.db.models.deletion.SET_NULL, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity_parent', models.ForeignKey(related_name='entity_children', blank=True, to='entities.Entity', null=True, on_delete=django.db.models.deletion.CASCADE)),
-                ('owner', models.ForeignKey(related_name='entity_owner', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+                ('owner', models.ForeignKey(related_name='%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'ordering': ('entity_name',),
