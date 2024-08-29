@@ -1,3 +1,9 @@
+### 15.2.1 [2024-8-27]
+
+* Corporate memberships update: 1) Added an option to require admin approval upon joining (Corp members) but allow them to renew upon payment without having to go through admin approval. 2) Added a setting to allow individual who submits a corp membership application to automatically become member under the org upon approval.
+* Fixed a TypeError for membership approve method called from recurring memberships.
+
+
 ### 15.2 [2024-8-24]
 
 * New feature: option to use region for tax rate. It can be turned on with the setting "Use Regions for Tax Rate" at /settings/module/invoices/#id_taxrateuseregions. The header and footer of an invoice can be customized for a specific region.

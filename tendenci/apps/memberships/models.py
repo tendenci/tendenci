@@ -908,7 +908,7 @@ class MembershipDefault(TendenciBaseModel):
                         if chapter:
                             self.apply_a_chapter_membership(chapter, app, membership_type, request=request)
 
-    def approve(self, request):
+    def approve(self, request=None):
         """
         Approve this membership.
             - Assert user is in group.
@@ -940,11 +940,12 @@ class MembershipDefault(TendenciBaseModel):
         self.application_approved_dt = \
             self.application_approved_dt or NOW
 
-        request_user = request.user
-        if request_user and request_user.is_authenticated:  # else: don't set
-            self.application_approved_user = request_user
-            self.application_approved_denied_user = request_user
-            self.action_taken_user = request_user
+        if request:
+            request_user = request.user
+            if request_user and request_user.is_authenticated:  # else: don't set
+                self.application_approved_user = request_user
+                self.application_approved_denied_user = request_user
+                self.action_taken_user = request_user
 
         # application approved/denied ---------------
         self.application_approved_denied_dt = \
@@ -1008,7 +1009,7 @@ class MembershipDefault(TendenciBaseModel):
                     self.directory.save()
 
         # auto-apply chapter membership, if enabled
-        if self.chapter:
+        if request and self.chapter:
             if get_setting('module',  'memberships', 'autoapplychapter'):
                 self.auto_apply_chapter_memberships(request)
 

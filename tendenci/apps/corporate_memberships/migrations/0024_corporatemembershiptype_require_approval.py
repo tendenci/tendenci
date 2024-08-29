@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='corporatemembershiptype',
             name='require_approval',
-            field=models.CharField(choices=[('for_all', 'for ALL (Paid & Non-Paid)'), ('for_non_paid_only', 'for Non-Paid Only')], default='for_non_paid_only', max_length=20, verbose_name='Require Approval'),
+            field=models.CharField(choices=[("for_all", "Join, Renewal"), ('for_non_paid_only', 'Join for Non-Paid, Renewal for Non-Paid'), ('renew_non_paid_only', 'Join, Renewal for Non-Paid')], default='for_non_paid_only', max_length=20, verbose_name='Require Approval'),
         ),
     ]
