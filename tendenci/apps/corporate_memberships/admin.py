@@ -396,14 +396,10 @@ class NoticeAdmin(admin.ModelAdmin):
 
     list_display = ['id', 'notice_name', notice_log, 'content_type',
                      'corporate_membership_type', 'status_detail']
+    if get_setting('module', 'invoices', 'taxrateuseregions'):
+        list_display += ['region', 'excluded_regions']
     list_display_links  = ['notice_name']
     list_filter = ['notice_type', 'status_detail']
-
-    fieldsets = (
-        (None, {'fields': ('notice_name', 'notice_time_type', 'corporate_membership_type')}),
-        (_('Email Fields'), {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
-        (_('Other Options'), {'fields': ('status_detail',)}),
-    )
 
     form = NoticeForm
 
@@ -412,6 +408,19 @@ class NoticeAdmin(admin.ModelAdmin):
             "//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js",
             static('js/global/tinymce.event_handlers.js'),
         )
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = (
+            (None, {'fields': ['notice_name', 'notice_time_type', 'corporate_membership_type',
+                               'region', 'regions_to_exclude']}),
+            (_('Email Fields'), {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
+            (_('Other Options'), {'fields': ('status_detail',)}),
+            )
+        if not get_setting('module', 'invoices', 'taxrateuseregions'):
+            fieldsets[0][1]['fields'].remove('region')
+            fieldsets[0][1]['fields'].remove('regions_to_exclude')
+        return fieldsets
+        
 
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)

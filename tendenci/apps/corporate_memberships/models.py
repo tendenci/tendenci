@@ -2278,6 +2278,10 @@ class Notice(models.Model):
         null=True,
         on_delete=models.SET_NULL,
         help_text=_("Note that if you don't select a corporate membership type, the notice will go out to all members."))
+    region = models.ForeignKey(Region, related_name="corp_notices", blank=True, null=True, on_delete=models.SET_NULL,
+                               help_text=_('If a region is selected, the notice will go out to members in this region. <br />Skip the next field "Regions to exclude" if this field is selected.'))
+    regions_to_exclude = models.ManyToManyField(Region, related_name="corp_notices_excluded", blank=True,
+                               help_text=_("Select regions you want to exclude so that members in those regions won't receive this notice."))
 
     subject = models.CharField(max_length=255)
     content_type = models.CharField(_("Content Type"),
@@ -2309,6 +2313,9 @@ class Notice(models.Model):
 
     def __str__(self):
         return self.notice_name
+
+    def excluded_regions(self):
+        return ', '.join([region.region_name for region in self.regions_to_exclude.all()])
 
     def get_default_context(self, corporate_membership=None,
                             recipient=None, **kwargs):
@@ -2487,9 +2494,19 @@ class Notice(models.Model):
             'status': True,
             'status_detail': 'active',
         }
+        
+        notices = Notice.objects.filter(**field_dict)
+        
+        region = corporate_membership.corp_profile.region
 
+        is_sent = False
         # send to applicant
-        for notice in Notice.objects.filter(**field_dict):
+        for notice in notices:
+
+            # skip if this notice doesn't include the region of this corp
+            regions_to_exclude = list(notice.regions_to_exclude.all())
+            if region and region in regions_to_exclude:
+                continue
 
             notice_requirments = (
                 notice.corporate_membership_type == corp_membership_type,
@@ -2516,7 +2533,8 @@ class Notice(models.Model):
                     notification.send_emails(
                         [recipient.user.email],
                         'corp_memb_notice_email', extra_context)
-        return True
+                    is_sent = True
+        return is_sent
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
