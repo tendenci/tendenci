@@ -177,6 +177,11 @@ class Command(BaseCommand):
             if notice.corporate_membership_type:
                 memberships = memberships.filter(
                                 corporate_membership_type=notice.corporate_membership_type)
+            if notice.region:
+                memberships = memberships.filter(corp_profile__region_id=notice.region.id)
+            else:
+                if notice.regions_to_exclude.all():
+                    memberships = memberships.exclude(corp_profile__region__in=list(notice.regions_to_exclude.all()))
 
             memberships_count = memberships.count()
 

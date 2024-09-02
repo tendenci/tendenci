@@ -1304,15 +1304,18 @@ class NoticeForm(forms.ModelForm):
             'notice_name',
             'notice_time_type',
             'corporate_membership_type',
+            'region',
+            'regions_to_exclude',
             'subject',
             'content_type',
             'sender',
             'sender_display',
             'email_content',
             'status_detail',)
-
+        
     def __init__(self, *args, **kwargs):
         super(NoticeForm, self).__init__(*args, **kwargs)
+
         if self.instance.pk:
             self.fields['email_content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
@@ -1327,6 +1330,11 @@ class NoticeForm(forms.ModelForm):
         self.fields['notice_time_type'].initial = initial_list
 
         self.fields['email_content'].help_text = get_notice_token_help_text(self.instance)
+
+        if 'region' in self.fields:
+            self.fields['region'].queryset = self.fields['region'].queryset.filter(status_detail='active')
+            self.fields['regions_to_exclude'].queryset = self.fields['regions_to_exclude'].queryset.filter(status_detail='active')
+
 
     def clean_notice_time_type(self):
         value = self.cleaned_data['notice_time_type']
