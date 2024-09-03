@@ -184,13 +184,14 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
 
     if not require_payment:
         del form.fields['payment_method']
-        del form.fields['list_type']
+        if 'list_type' in form.fields:
+            del form.fields['list_type']
 
     if request.method == "POST":
         if require_payment:
             is_free = is_free_listing(request.user,
                                request.POST.get('pricing', 0),
-                               request.POST.get('list_type'))
+                               request.POST.get('list_type', ''))
             if is_free:
                 del form.fields['payment_method']
 
