@@ -178,13 +178,14 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
     # adjust the fields depending on user type
     if not require_payment:
         del form.fields['payment_method']
-        del form.fields['list_type']
+        if 'list_type' in form.fields:
+            del form.fields['list_type']
 
     if request.method == "POST":
         if require_payment:
             is_free = is_free_listing(request.user,
                                request.POST.get('pricing', 0),
-                               request.POST.get('list_type'))
+                               request.POST.get('list_type', ''))
             if is_free:
                 del form.fields['payment_method']
 
