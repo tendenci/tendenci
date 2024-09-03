@@ -13,6 +13,15 @@
     <article id="t-jobs-job-{{ job.pk }}" class="t-jobs-job">
         <div class="page-header">
             <h1>{{ job.title }}</h1>
+            
+            {% if job.status_detail == 'pending' %}
+				<div class="pull-right clearfix">
+             	{% if request.user.is_superuser %}
+		     	<a href="{% url 'job.approve' job.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
+             	{% endif %}
+				</div>
+			{% endif %}
+            
         </div>
 	{% if job.header_image %}
     <img src="{% url 'file' job.header_image.id %}" alt="job header" title="job header" class="img-responsive" />
