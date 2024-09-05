@@ -60,8 +60,10 @@ class BaseJob(TendenciBaseModel):
     skills = models.TextField(blank=True)
     experience = models.TextField(blank=True)
     education = models.TextField(blank=True)
-    level = models.CharField(max_length=50, blank=True)  # e.g. entry, part-time, permanent, contract
-    period = models.CharField(max_length=50, blank=True)  # full time, part time, contract
+    level = models.CharField(max_length=50, blank=True,
+                             help_text=_('i.e. entry-level, mid-level, senior or executive level, etc'))  # e.g. entry, part-time, permanent, contract
+    period = models.CharField(max_length=50, blank=True,
+                              help_text=_('i.e. seasonal, part-time, full-time, etc'))  # full time, part time, contract
     is_agency = models.BooleanField(default=False)  # defines if the job posting is by a third party agency
 
     contact_method = models.TextField(blank=True)  # preferred method - email, phone, fax. leave open field for user to define
