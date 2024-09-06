@@ -524,6 +524,7 @@ class CorpProfile(TendenciBaseModel):
                           'phone': self.phone,
                           'email': self.email,
                           'website': self.url,
+                          'body': self.description.replace('\r\n', '<br />') if self.description else '',
                           'allow_anonymous_view': self.allow_anonymous_view,
                           'allow_user_view': self.allow_user_view,
                           'allow_member_view': self.allow_member_view,
