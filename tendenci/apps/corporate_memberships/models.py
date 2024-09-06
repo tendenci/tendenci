@@ -515,6 +515,7 @@ class CorpProfile(TendenciBaseModel):
                           'logo_file': self.logo,
                           'slug': self.get_directory_slug(),
                           'guid': str(uuid.uuid4()),
+                          'requested_duration': 365,
                           'address': self.address,
                           'address2': self.address2,
                           'city': self.city,

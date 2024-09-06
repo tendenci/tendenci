@@ -2140,6 +2140,7 @@ class MembershipDefault(TendenciBaseModel):
                           'headline':  directory_entity.entity_name,
                           'slug': self.get_directory_slug(),
                           'guid': str(uuid.uuid4()),
+                          'requested_duration': 365,
                           'address': profile.address,
                           'address2': profile.address2,
                           'city': profile.city,
