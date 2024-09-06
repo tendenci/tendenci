@@ -302,7 +302,8 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
     # delete admin only fields for non-admin on edit - GJQ 8/25/2010
     if not request.user.profile.is_superuser:
         del form.fields['pricing']
-        del form.fields['list_type']
+        if 'list_type' in form.fields:
+            del form.fields['list_type']
         if 'activation_dt' in form.fields:
             del form.fields['activation_dt']
         if 'post_dt' in form.fields:
