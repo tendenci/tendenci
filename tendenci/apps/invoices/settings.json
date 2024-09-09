@@ -109,7 +109,7 @@
         "client_editable": true,
         "name": "taxrateuseregions",
         "value": "false",
-        "label": "Use Regions for Tax Rate",
+        "label": "Use Regions for Tax Rate For All Modules",
         "input_value": "true,false",
         "parent_id": 0,
         "scope": "module",

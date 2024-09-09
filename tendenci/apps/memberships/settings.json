@@ -254,5 +254,22 @@
         "scope_category": "memberships",
         "store": false,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, please specify tax rate(s) for each region in the Regions module. <a href=\"/admin/regions/region/\">View Regions</a>",
+        "data_type": "boolean",
+        "update_dt": "2024-09-09 10:30:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "taxrateuseregions",
+        "value": "false",
+        "label": "Use Regions for Tax Rate For Members and Corp Members",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "memberships",
+        "store": true,
+        "updated_by": ""
     }
 ]

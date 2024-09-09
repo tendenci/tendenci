@@ -323,7 +323,8 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
             amount = renewal_total
 
         if app and app.include_tax:
-            inv.assign_tax([(amount, app.tax_rate)], user)
+            inv.assign_tax([(amount, app.tax_rate)], user,
+                module_tax_rate_use_regions=get_setting('module', 'memberships', 'taxrateuseregions'))
 
         inv.subtotal = amount
         inv.total = amount + inv.tax + inv.tax_2
