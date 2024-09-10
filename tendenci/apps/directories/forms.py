@@ -499,6 +499,8 @@ class DirectoryPricingForm(forms.ModelForm):
                   'regular_price_member',
                   'premium_price_member',
                   'show_member_pricing',
+                  'include_tax',
+                  'tax_rate',
                   'status',)
 
     def __init__(self, *args, **kwargs):

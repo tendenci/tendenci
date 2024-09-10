@@ -556,6 +556,9 @@ class DirectoryPricing(models.Model):
     regular_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     premium_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     show_member_pricing = models.BooleanField(default=False)
+    include_tax = models.BooleanField(default=False)
+    tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
+                                   help_text=_('Example: 0.0825 for 8.25%.'))
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="directory_pricing_creator",  null=True, on_delete=models.SET_NULL)

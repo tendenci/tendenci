@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('guid', models.CharField(max_length=40)),
-                ('duration', models.IntegerField(blank=True, choices=[(0, 'Unlimited'), (14, '14 Days from Activation date'), (30, '30 Days from Activation date'), (60, '60 Days from Activation date'), (90, '90 Days from Activation date'), (120, '120 Days from Activation date'), (365, '1 Year from Activation date')])),
+                ('duration', models.IntegerField(blank=True, choices=[(0, 'Unlimited'), (14, '14 Days from Activation date'), (30, '30 Days from Activation date'), (60, '60 Days from Activation date'), (90, '90 Days from Activation date'), (120, '120 Days from Activation date'), (365, '1 Year from Activation date'), (1826, '5 Years from Activation date')])),
                 ('regular_price', models.DecimalField(default=0, max_digits=15, decimal_places=2, blank=True)),
                 ('premium_price', models.DecimalField(default=0, max_digits=15, decimal_places=2, blank=True)),
                 ('regular_price_member', models.DecimalField(default=0, max_digits=15, decimal_places=2, blank=True)),

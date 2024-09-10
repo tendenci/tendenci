@@ -43,10 +43,20 @@
             <div class="col-xs-5 col-md-3 text-right">{% trans "Member Premium Price:" %}</div>
             <div><b>{{ directory_pricing.premium_price_member|format_currency }}</b></div>
         </div>
+        
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Include Tax:" %}</div>
+            <div><b>{{ directory_pricing.include_tax|yesno }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Tax Rate:" %}</div>
+            <div><b>{{ directory_pricing.tax_rate }}</b></div>
+        </div>
 
         <div class="row">
             <div class="col-xs-5 col-md-3 text-right">{% trans "Show Member Pricing:" %}</div>
-            <div><b>{{ directory_pricing.show_member_pricing }}</b></div>
+            <div><b>{{ directory_pricing.show_member_pricing|yesno }}</b></div>
         </div>
 
         <div class="sep-line"></div>
