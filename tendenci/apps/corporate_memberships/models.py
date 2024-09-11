@@ -2388,10 +2388,16 @@ class Notice(models.Model):
                         context={'corp_membership': corporate_membership,
                          'corp_app': corp_app})
 
+        if recipient:
+            rep_first_name = recipient.user.first_name
+        elif corporate_membership.anonymous_creator:
+            rep_first_name = corporate_membership.anonymous_creator.first_name
+        else:
+            rep_first_name = ''
         context.update({
             'expire_dt': expire_dt,
             'payment_method': payment_method,
-            'rep_first_name': recipient.user.first_name,
+            'rep_first_name': rep_first_name,
             'renewed_individuals_list': renewed_individuals_list,
             'total_individuals_renewed': total_individuals_renewed,
             'name': corporate_membership.corp_profile.name,
@@ -2487,7 +2493,7 @@ class Notice(models.Model):
             return False
 
         # recipients list required
-        if not recipients:
+        if not (recipients or corporate_membership.anonymous_creator):
             return False
 
         field_dict = {
@@ -2516,26 +2522,45 @@ class Notice(models.Model):
             )
 
             if any(notice_requirments):
-                for recipient in recipients:
-                    extra_context = {
-                        'subject': notice.get_subject(
-                                    corporate_membership=corporate_membership,
-                                    recipient=recipient),
-                        'content': notice.get_content(
-                                    corporate_membership=corporate_membership,
-                                    recipient=recipient,
-                                    anonymous_join_login_info=anonymous_join_login_info),
-                        'corporate_membership_total': CorpMembership.objects.count(),
-                        'sender': get_setting('site', 'global', 'siteemailnoreplyaddress'),
-                        'sender_display': notice.sender_display,
-                    }
-                    if notice.sender:
-                        extra_context.update({'reply_to': notice.sender})
-
-                    notification.send_emails(
-                        [recipient.user.email],
-                        'corp_memb_notice_email', extra_context)
-                    is_sent = True
+                if recipients:
+                    for recipient in recipients:
+                        extra_context = {
+                            'subject': notice.get_subject(
+                                        corporate_membership=corporate_membership,
+                                        recipient=recipient),
+                            'content': notice.get_content(
+                                        corporate_membership=corporate_membership,
+                                        recipient=recipient,
+                                        anonymous_join_login_info=anonymous_join_login_info),
+                            'corporate_membership_total': CorpMembership.objects.count(),
+                            'sender': get_setting('site', 'global', 'siteemailnoreplyaddress'),
+                            'sender_display': notice.sender_display,
+                        }
+                        if notice.sender:
+                            extra_context.update({'reply_to': notice.sender})
+    
+                        notification.send_emails(
+                            [recipient.user.email],
+                            'corp_memb_notice_email', extra_context)
+                        is_sent = True
+                else:
+                    if notice_type == 'join' and corporate_membership.anonymous_creator:
+                        extra_context = {
+                            'subject': notice.get_subject(
+                                        corporate_membership=corporate_membership),
+                            'content': notice.get_content(
+                                        corporate_membership=corporate_membership),
+                            'corporate_membership_total': CorpMembership.objects.count(),
+                            'sender': get_setting('site', 'global', 'siteemailnoreplyaddress'),
+                            'sender_display': notice.sender_display,
+                        }
+                        if notice.sender:
+                            extra_context.update({'reply_to': notice.sender})
+    
+                        notification.send_emails(
+                            [corporate_membership.anonymous_creator.email],
+                            'corp_memb_notice_email', extra_context)
+                        is_sent = True
         return is_sent
 
     def save(self, *args, **kwargs):
