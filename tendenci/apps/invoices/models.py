@@ -148,7 +148,7 @@ class Invoice(models.Model):
         self.owner = user
         self.owner_username = user.username
 
-    def assign_tax(self, price_tax_rate_list, user, module_tax_rate_use_regions=False):
+    def assign_tax(self, price_tax_rate_list, user, module_tax_rate_use_regions=False, corp_profile=None):
         """
         Calculate and assign tax to this invoice.
         
@@ -157,10 +157,14 @@ class Invoice(models.Model):
         price_tax_rate_list is a list of (price, default_tax_rate) tuples,
         example: [(10.50, 0.0825), ..]
         """
+        region = None
+        if corp_profile:
+            region = corp_profile.region
+        else:
+            if user and not user.is_anonymous and hasattr(user, 'profile'):
+                region = user.profile.region
         if (module_tax_rate_use_regions or get_setting('module', 'invoices', 'taxrateuseregions'))\
-            and user and not user.is_anonymous and hasattr(user, 'profile') \
-            and user.profile.region:
-            region = user.profile.region
+            and region:
             self.region = region
             self.tax_rate = region.tax_rate
             if region.tax_rate_2:
