@@ -1324,7 +1324,8 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
 
         self.fields['membership_type'].queryset = mt_choices
         if self.membership_app.include_tax:
-            if get_setting('module', 'invoices', 'taxrateuseregions'):
+            if (get_setting('module', 'invoices', 'taxrateuseregions') \
+                or get_setting('module', 'memberships', 'taxrateuseregions')):
                 self.fields['membership_type'].help_text = f'Tax will be applied based on your area'
             else:
                 if self.membership_app.tax_rate:
