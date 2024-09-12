@@ -133,5 +133,22 @@
         "scope_category": "invoices",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, please specify a setting ALTERNATIVE_REGIONS_MAP in conf/settings.py to map one or more region ids to their corresponding alternative region ids. This setting works together with the above setting \"Use Regions for Tax Rate For All Modules\" ",
+        "data_type": "boolean",
+        "update_dt": "2024-07-16 15:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "usealtregions",
+        "value": "false",
+        "label": "Use the Alternative Regions for Tax Rate Except for Memberships",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "invoices",
+        "store": true,
+        "updated_by": ""
     }
 ]
