@@ -39,8 +39,6 @@ div.invoice-meta{
 
 <body>
 <div class="t">
-
-
   <div class="page-header">
   {% if invoice.region and invoice.region.invoice_header %}
   {{ invoice.region.invoice_header_with_absurl|safe  }}
@@ -174,7 +172,9 @@ div.invoice-meta{
   <div style="clear: both"></div>
   
   {% if invoice.region and invoice.region.invoice_footer %}
-   {{ invoice.region.invoice_header_with_absurl|safe  }}
+   {{ invoice.region.invoice_footer_with_absurl|safe  }}
+  {% else %}
+  {% include "invoices/include/default_invoice_footer.html" %}
  {% endif %}
 </div>
 </body>
