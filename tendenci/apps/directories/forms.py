@@ -291,16 +291,14 @@ class DirectoryForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-#                       (_('Category'), {
-#                         'fields': ['cats',
-#                                    'sub_cats'
-#                                    ],
-#                         'classes': ['boxy-grey job-category'],
-#                       }),
-                     (_('Administrator Only'), {
+                    (_('Category'), {
                       'fields': ['cats',
-                                 'sub_cats',
-                                 'syndicate',
+                                 'sub_cats'
+                                 ],
+                      'classes': ['boxy-grey job-category'],
+                    }),
+                     (_('Administrator Only'), {
+                      'fields': ['syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -376,8 +374,6 @@ class DirectoryForm(TendenciBaseForm):
                 'post_dt',
                 'activation_dt',
                 'syndicate',
-                'cats',
-                'sub_cats',
                 'status_detail'
             ]
 
