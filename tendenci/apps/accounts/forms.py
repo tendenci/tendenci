@@ -70,6 +70,7 @@ class RegistrationCustomForm(RegistrationForm):
     state = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'size':'10', 'class': 'form-control'}), required=False)
     country = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     zipcode = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    region = forms.ModelChoiceField(required=False, queryset=None, widget=forms.Select(attrs={'class': 'form-control'}))
     captcha = CustomCatpchaField(label=_('Type the letters you see in the box'), widget=CaptchaTextInput(attrs={'class': 'form-control'}))
 
     allow_same_email = None
@@ -92,6 +93,14 @@ class RegistrationCustomForm(RegistrationForm):
                 self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
 
         self.fields['password1'].help_text = self.password_help_text
+
+        # region
+        from tendenci.apps.regions.models import Region
+        region_queryset = Region.objects.filter(status_detail='active').order_by('position')
+        if region_queryset.count() == 0:
+            del self.fields['region']
+        else:
+            self.fields['region'].queryset = region_queryset
 
     def clean_password1(self):
         password1 = self.cleaned_data.get('password1')
@@ -136,6 +145,7 @@ class RegistrationCustomForm(RegistrationForm):
                               state=self.cleaned_data['state'],
                               country=self.cleaned_data['country'],
                               zipcode=self.cleaned_data['zipcode'],
+                              region=self.cleaned_data.get('region', None),
                               )
         user_hide_default = get_setting('module', 'users', 'usershidedefault')
         if user_hide_default:
