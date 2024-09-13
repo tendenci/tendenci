@@ -54,6 +54,10 @@
                     {% if job.period %}
                         <li><strong>{% trans "Period:" %}</strong> <span>{{ job.period }}</span></li>
                     {% endif %}
+                    
+                    {% if job.type_of_work %}
+                        <li><strong>{% trans "Type of Work:" %}</strong> <span>{{ job.type_of_work }}</span></li>
+                    {% endif %}
 
                     {% if job.position_reports_to %}
                         <li><strong>{% trans "Position Reports To:" %}</strong> <span>{% blocktrans with job.position_reports_to as job_report %}{{ job_report }}{% endblocktrans %}</span></li>

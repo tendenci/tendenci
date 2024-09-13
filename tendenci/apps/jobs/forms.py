@@ -125,6 +125,7 @@ class JobForm(TendenciBaseForm):
             'education',
             'level',
             'period',
+            'type_of_work',
             'is_agency',
             'contact_method',
             'position_reports_to',
@@ -178,6 +179,7 @@ class JobForm(TendenciBaseForm):
                     'education',
                     'level',
                     'period',
+                    'type_of_work',
                     'contact_method',
                     'position_reports_to',
                     'salary_from',
@@ -332,6 +334,11 @@ class JobForm(TendenciBaseForm):
             if not JobPricing.objects.filter(status=True).filter(premium_price__gt=0).exists():
                 if 'list_type' in self.fields:
                     del self.fields['list_type']
+        self.fields['type_of_work'] = forms.ChoiceField(required=False,
+                                        choices=(('On-site', _('On-site')),
+                                                 ('Hybrid', _('Hybrid')),
+                                                 ('Off-site', _('Off-site')),),
+                                                 widget = forms.RadioSelect())
 
     def clean_syndicate(self):
         """

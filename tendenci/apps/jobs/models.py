@@ -71,6 +71,7 @@ class BaseJob(TendenciBaseModel):
     salary_from = models.CharField(max_length=50, blank=True)
     salary_to = models.CharField(max_length=50, blank=True)
     computer_skills = models.TextField(blank=True)
+    type_of_work = models.CharField(max_length=10, blank=True, default='')
 
     # date related fields
     requested_duration = models.IntegerField()  # 30, 60, 90 days - should be relational table
