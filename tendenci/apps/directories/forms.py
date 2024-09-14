@@ -336,6 +336,8 @@ class DirectoryForm(TendenciBaseForm):
             self.fields['payment_method'] = forms.ChoiceField(widget=forms.RadioSelect, choices=get_payment_method_choices(self.user))
         if 'pricing' in self.fields:
             self.fields['pricing'].choices = get_duration_choices(self.user)
+            if not self.user.is_superuser:
+                self.fields['pricing'].help_text = ''
 
         self.fields['timezone'].initial = settings.TIME_ZONE
 
