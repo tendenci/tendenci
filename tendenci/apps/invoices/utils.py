@@ -63,7 +63,8 @@ def invoice_pdf(request, invoice):
                              'payment_method': payment_method,
                              'tmp_total': tmp_total,
                              'pdf_version': True,
-                             'logo_base64_src': logo_base64_src
+                             'logo_base64_src': logo_base64_src,
+                             'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl')
                             }, request=request)
     result = BytesIO()
     pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)
