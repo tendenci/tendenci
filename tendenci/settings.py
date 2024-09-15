@@ -608,6 +608,9 @@ SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
 # if True, show alert for tendenci update (if needed) for superuser on login
 SHOW_UPDATE_ALERT = False
 
+
+ALTERNATIVE_REGIONS_MAP = {}
+
 #------------------------------------
 # OAuth2 client
 OAUTH2_REMOTE_APP_NAME = ''

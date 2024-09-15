@@ -178,13 +178,14 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
     # adjust the fields depending on user type
     if not require_payment:
         del form.fields['payment_method']
-        del form.fields['list_type']
+        if 'list_type' in form.fields:
+            del form.fields['list_type']
 
     if request.method == "POST":
         if require_payment:
             is_free = is_free_listing(request.user,
                                request.POST.get('pricing', 0),
-                               request.POST.get('list_type'))
+                               request.POST.get('list_type', 'regular'))
             if is_free:
                 del form.fields['payment_method']
 
@@ -301,7 +302,8 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
     # delete admin only fields for non-admin on edit - GJQ 8/25/2010
     if not request.user.profile.is_superuser:
         del form.fields['pricing']
-        del form.fields['list_type']
+        if 'list_type' in form.fields:
+            del form.fields['list_type']
         if 'activation_dt' in form.fields:
             del form.fields['activation_dt']
         if 'post_dt' in form.fields:

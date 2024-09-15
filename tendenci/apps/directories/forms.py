@@ -291,16 +291,14 @@ class DirectoryForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-#                       (_('Category'), {
-#                         'fields': ['cats',
-#                                    'sub_cats'
-#                                    ],
-#                         'classes': ['boxy-grey job-category'],
-#                       }),
-                     (_('Administrator Only'), {
+                    (_('Category'), {
                       'fields': ['cats',
-                                 'sub_cats',
-                                 'syndicate',
+                                 'sub_cats'
+                                 ],
+                      'classes': ['boxy-grey job-category'],
+                    }),
+                     (_('Administrator Only'), {
+                      'fields': ['syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -338,6 +336,8 @@ class DirectoryForm(TendenciBaseForm):
             self.fields['payment_method'] = forms.ChoiceField(widget=forms.RadioSelect, choices=get_payment_method_choices(self.user))
         if 'pricing' in self.fields:
             self.fields['pricing'].choices = get_duration_choices(self.user)
+            if not self.user.is_superuser:
+                self.fields['pricing'].help_text = ''
 
         self.fields['timezone'].initial = settings.TIME_ZONE
 
@@ -376,8 +376,6 @@ class DirectoryForm(TendenciBaseForm):
                 'post_dt',
                 'activation_dt',
                 'syndicate',
-                'cats',
-                'sub_cats',
                 'status_detail'
             ]
 
@@ -499,6 +497,8 @@ class DirectoryPricingForm(forms.ModelForm):
                   'regular_price_member',
                   'premium_price_member',
                   'show_member_pricing',
+                  'include_tax',
+                  'tax_rate',
                   'status',)
 
     def __init__(self, *args, **kwargs):

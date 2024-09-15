@@ -13,7 +13,7 @@
 {% block content %}
 
 <div class="well basic-info">
-  <div>{% trans 'Invoice #' %}: {{ payment.invoice.id }}</div>
+  <div>{% trans 'Invoice #' %}: <a href="{% url "invoice.view" payment.invoice.id %}">{{ payment.invoice.id }}</a></div>
   <div>{% trans 'Description' %}: {{ payment.description }}</div>
   {% with payment.invoice.registration as obj %}
   {% if obj %}

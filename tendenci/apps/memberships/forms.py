@@ -572,7 +572,8 @@ class MembershipAppForm(TendenciBaseForm):
         else:
             self.fields['confirmation_text'].widget.mce_attrs[
                                     'app_instance_id'] = 0
-        if get_setting('module', 'invoices', 'taxrateuseregions'):
+        if get_setting('module', 'memberships', 'taxrateuseregions') \
+            or get_setting('module', 'invoices', 'taxrateuseregions'):
             self.fields['tax_rate'].help_text += "<br />Note that this rate will be served as the default rate. Please go to <a href='/admin/regions/region/'>Regions</a> to configure more tax rates."
 
 
@@ -1323,7 +1324,8 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
 
         self.fields['membership_type'].queryset = mt_choices
         if self.membership_app.include_tax:
-            if get_setting('module', 'invoices', 'taxrateuseregions'):
+            if (get_setting('module', 'invoices', 'taxrateuseregions') \
+                or get_setting('module', 'memberships', 'taxrateuseregions')):
                 self.fields['membership_type'].help_text = f'Tax will be applied based on your area'
             else:
                 if self.membership_app.tax_rate:

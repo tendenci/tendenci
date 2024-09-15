@@ -393,7 +393,8 @@ class MembershipSet(models.Model):
         if app and app.include_tax:
             default_tax_rate = app.tax_rate
 
-        invoice.assign_tax([(price, default_tax_rate)], memberships[0].user)
+        invoice.assign_tax([(price, default_tax_rate)], memberships[0].user,
+                           module_tax_rate_use_regions=get_setting('module', 'memberships', 'taxrateuseregions'))
 
         invoice.subtotal = price
         invoice.total = price + invoice.tax + invoice.tax_2
@@ -1660,7 +1661,8 @@ class MembershipDefault(TendenciBaseModel):
             default_tax_rate = 0
             if self.app and self.app.include_tax:
                 default_tax_rate = self.app.tax_rate
-            invoice.assign_tax([(price, default_tax_rate)], self.user)
+            invoice.assign_tax([(price, default_tax_rate)], self.user,
+                               module_tax_rate_use_regions=get_setting('module', 'memberships', 'taxrateuseregions'))
 
             invoice.subtotal = price
             invoice.total = price + invoice.tax + invoice.tax_2
@@ -2140,6 +2142,7 @@ class MembershipDefault(TendenciBaseModel):
                           'headline':  directory_entity.entity_name,
                           'slug': self.get_directory_slug(),
                           'guid': str(uuid.uuid4()),
+                          'requested_duration': 365,
                           'address': profile.address,
                           'address2': profile.address2,
                           'city': profile.city,

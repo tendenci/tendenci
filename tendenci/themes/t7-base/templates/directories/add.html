@@ -20,7 +20,9 @@
              <div class="pricing-table-block">
              <h4>{% trans 'Directory Pricing' %}</h4>
             {% directory_pricing_table %}
+            {% if request.user.is_superuser %}
             <a href="{% url "directory_pricing.add" %}">{% trans "Add pricing options" %}</a>
+            {% endif %}
             </div>
             {% endif %}
             {{ form|styled_form }}

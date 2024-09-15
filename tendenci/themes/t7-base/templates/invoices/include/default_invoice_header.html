@@ -1,0 +1,7 @@
+<div class="page-header">
+  <h1>{% if obj_name %}{{ obj_name|capfirst }}{% endif %} {% trans 'Invoice' %}</h1>
+</div>
+
+{% if SITE_GLOBAL_SITEMAILINGADDRESS %}
+<p><address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address></p>
+{% endif %}

@@ -443,24 +443,25 @@ def corpmembership_add(request, slug='',
             # if authentication_method == 'secret_code'
 
             # send notification to user
-            if get_setting('module', 'corporate_memberships', 'notificationson'):
-                if creator:
-                    recipients = [creator.email]
-                else:
-                    recipients = [request.user.email]
-                    
-                if request.user.is_authenticated and Notice.objects.filter(
-                                     notice_time='attimeof',
-                                     notice_type='join',
-                                     status_detail='active'
-                                     ).exists():
-                    corp_membership.send_notice_email(request, 'join')
-                else:
+            if get_setting('module', 'corporate_memberships', 'notificationson'):    
+                # if Notice.objects.filter(
+                #                      notice_time='attimeof',
+                #                      notice_type='join',
+                #                      status_detail='active'
+                #                      ).exists():
+                # Try to send the notices that are configured at admin backend
+                # If no notices sent, send a generic notice
+                notice_to_user_sent = corp_membership.send_notice_email(request, 'join')
+                if not notice_to_user_sent:
                     extra_context = {
                         'object': corp_membership,
                         'request': request,
                         'invoice': inv,
                     }
+                    if creator:
+                        recipients = [creator.email]
+                    else:
+                        recipients = [request.user.email]
                     send_email_notification('corp_memb_added_user',
                                             recipients, extra_context)
 
@@ -1344,13 +1345,15 @@ def corp_renew(request, id,
                 # send an email to dues reps
                 if get_setting('module', 'corporate_memberships', 'notificationson'):
                     recipients = dues_rep_emails_list(new_corp_membership)
-                    if Notice.objects.filter(notice_time='attimeof',
-                                     notice_type='renewal',
-                                     status=True,
-                                     status_detail='active'
-                                     ).exists():
-                        new_corp_membership.send_notice_email(request, 'renewal')
-                    else:
+                    # if Notice.objects.filter(notice_time='attimeof',
+                    #                  notice_type='renewal',
+                    #                  status=True,
+                    #                  status_detail='active'
+                    #                  ).exists():
+                    # Try to send the notices that are configured at admin backend
+                    # If no notices sent, send a generic notice
+                    notice_sent = new_corp_membership.send_notice_email(request, 'renewal')
+                    if not notice_sent:
                         send_email_notification('corp_memb_renewed_user',
                                                 recipients, extra_context)
     

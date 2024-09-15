@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models.signals import post_save
+from django.conf import settings
 
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.perms.utils import has_perm, get_notice_recipients
@@ -148,7 +149,7 @@ class Invoice(models.Model):
         self.owner = user
         self.owner_username = user.username
 
-    def assign_tax(self, price_tax_rate_list, user):
+    def assign_tax(self, price_tax_rate_list, user, module_tax_rate_use_regions=False, corp_profile=None):
         """
         Calculate and assign tax to this invoice.
         
@@ -157,10 +158,21 @@ class Invoice(models.Model):
         price_tax_rate_list is a list of (price, default_tax_rate) tuples,
         example: [(10.50, 0.0825), ..]
         """
-        if get_setting('module', 'invoices', 'taxrateuseregions')\
-            and user and not user.is_anonymous and hasattr(user, 'profile') \
-            and user.profile.region:
-            region = user.profile.region
+        region = None
+        if module_tax_rate_use_regions or get_setting('module', 'invoices', 'taxrateuseregions'):
+            if corp_profile:
+                region = corp_profile.region
+            else:
+                if user and not user.is_anonymous and hasattr(user, 'profile'):
+                    region = user.profile.region
+        if region:
+            # check if we need to use alternative region
+            if get_setting('module', 'invoices', 'usealtregions') and \
+                self.object_type.app_label not in ['corporate_memberships', 'memberships']:
+                region_id = settings.ALTERNATIVE_REGIONS_MAP.get(region.id, region.id)
+                if region_id != region.id:
+                    region = Region.objects.filter(id=region_id).first() or region
+
             self.region = region
             self.tax_rate = region.tax_rate
             if region.tax_rate_2:

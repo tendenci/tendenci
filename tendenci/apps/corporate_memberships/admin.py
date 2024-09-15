@@ -396,7 +396,8 @@ class NoticeAdmin(admin.ModelAdmin):
 
     list_display = ['id', 'notice_name', notice_log, 'content_type',
                      'corporate_membership_type', 'status_detail']
-    if get_setting('module', 'invoices', 'taxrateuseregions'):
+    if (get_setting('module', 'invoices', 'taxrateuseregions') \
+        or get_setting('module', 'memberships', 'taxrateuseregions')):
         list_display += ['region', 'excluded_regions']
     list_display_links  = ['notice_name']
     list_filter = ['notice_type', 'status_detail']
@@ -416,7 +417,8 @@ class NoticeAdmin(admin.ModelAdmin):
             (_('Email Fields'), {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
             (_('Other Options'), {'fields': ('status_detail',)}),
             )
-        if not get_setting('module', 'invoices', 'taxrateuseregions'):
+        if not (get_setting('module', 'invoices', 'taxrateuseregions') \
+                or get_setting('module', 'memberships', 'taxrateuseregions')):
             fieldsets[0][1]['fields'].remove('region')
             fieldsets[0][1]['fields'].remove('regions_to_exclude')
         return fieldsets

@@ -16,10 +16,12 @@ class DirectoryAdmin(admin.ModelAdmin):
 
 class DirectoryPricingAdmin(admin.ModelAdmin):
     list_display = ['duration', 'regular_price', 'premium_price',
-                    'regular_price_member', 'premium_price_member', 'status']
+                    'regular_price_member', 'premium_price_member',
+                    'include_tax', 'tax_rate', 'status']
     fieldsets = (
         (None, {'fields': ('duration', 'regular_price', 'premium_price',
-                           'regular_price_member', 'premium_price_member', 'status',)}),
+                           'regular_price_member', 'premium_price_member',
+                           'include_tax', 'tax_rate', 'status',)}),
     )
     form = DirectoryPricingForm
 

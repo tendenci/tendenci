@@ -112,6 +112,12 @@ class Article(TendenciBaseModel):
         self.assign_release_dt_local()
         super(Article, self).save(*args, **kwargs)
 
+    @property
+    def is_released(self):
+        if not self.release_dt_local:
+            self.assign_release_dt_local()
+        return self.release_dt_local <= datetime.now()
+
     def assign_release_dt_local(self):
         """
         convert release_dt to the corresponding local time
