@@ -41,7 +41,7 @@ gunicorn==22.0.0
 gevent==23.9.1
 django-storages==1.14.2
 Whoosh==2.7.4
-simple-salesforce==1.12.5
+simple-salesforce==1.12.6
 selenium==4.16.0
 raven==6.10.0
 tendenci-django-admin-bootstrapped>=5.2
@@ -60,7 +60,6 @@ nameparser
 Authlib==1.3.1
 django-admin-rangefilter==0.13.2
 # for forums tests
-lxml==5.1.0
 django-q2==1.6.2
 # memcached client
 pymemcache>=4.0.0
