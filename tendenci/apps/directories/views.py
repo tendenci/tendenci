@@ -180,7 +180,23 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
 
     require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
 
-    form = form_class(request.POST or None, request.FILES or None, user=request.user)
+    initial = {}
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        initial = {'first_name': request.user.first_name,
+                   'last_name': request.user.last_name,
+                   'address': profile.address,
+                   'address2': profile.address2,
+                   'city': profile.city,
+                   'state': profile.state,
+                   'zip_code': profile.zipcode,
+                   'country': profile.country,
+                   'phone': profile.work_phone,
+                   'email': request.user.email,
+                   'website': profile.url}
+
+    form = form_class(request.POST or None, request.FILES or None, user=request.user,
+                      initial=initial)
 
     if not require_payment:
         del form.fields['payment_method']

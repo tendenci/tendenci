@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ('status', models.BooleanField(default=True, verbose_name='Active')),
                 ('status_detail', models.CharField(default='active', max_length=50)),
                 ('guid', models.CharField(max_length=40)),
-                ('title', models.CharField(max_length=250)),
+                ('title', models.CharField(verbose_name="Job title", max_length=250)),
                 ('slug', tendenci.apps.base.fields.SlugField(unique=True, max_length=100, verbose_name='URL Path', db_index=True)),
                 ('description', tendenci.libs.tinymce.models.HTMLField()),
                 ('list_type', models.CharField(max_length=50)),

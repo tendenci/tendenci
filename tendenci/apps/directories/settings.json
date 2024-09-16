@@ -270,5 +270,22 @@
         "scope_category": "directories",
         "store": false,
         "updated_by": ""
+    },
+    {
+        "default_value": "headline,timezone,pricing",
+        "description": "A list of required fields on directories add. Comma delimited.",
+        "data_type": "string",
+        "update_dt": "2024-09-16 15:00:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "requiredfields",
+        "value": "headline,timezone,pricing",
+        "label": "Required Fields",
+        "input_value": "",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "directories",
+        "store": true,
+        "updated_by": ""
     }
 ]

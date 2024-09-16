@@ -21,7 +21,7 @@ from tendenci.apps.directories.utils import (get_payment_method_choices,
     get_duration_choices)
 from tendenci.apps.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
-from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField
+from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField, StateSelectField
 from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.regions.models import Region
 from tendenci.apps.site_settings.utils import get_setting
@@ -207,7 +207,6 @@ class DirectoryForm(TendenciBaseForm):
             'country',
             'phone',
             'phone2',
-            'fax',
             'email',
             'email2',
             'website',
@@ -267,7 +266,6 @@ class DirectoryForm(TendenciBaseForm):
                                   'country',
                                   'phone',
                                   'phone2',
-                                  'fax',
                                   'email',
                                   'email2',
                                   'website'
@@ -397,6 +395,19 @@ class DirectoryForm(TendenciBaseForm):
             if 'list_type' in self.fields:
                 del self.fields['list_type']      
 
+        if get_setting('site', 'global', 'stateusesdropdown'):
+            self.fields['state'] = StateSelectField(label=self.fields['state'].label,
+                                                    required=self.fields['state'].required)
+            self.fields['state'].widget.attrs.update({'class': 'form-control'})
+
+        # check required fields
+        required_fields = get_setting('module', 'directories', 'requiredfields')
+        if required_fields:
+            required_fields_list = [field.strip() for field in required_fields.split(',') if field.strip()]
+            for field_name in required_fields_list:
+                if field_name in self.fields:
+                    self.fields[field_name].required = True
+
     def clean_syndicate(self):
         """
         clean method for syndicate added due to the update
@@ -473,9 +484,9 @@ class DirectoryForm(TendenciBaseForm):
 
         # clear logo; if box checked
         if self.cleaned_data['logo'] is False:
-          directory.logo_file = None
-          directory.save(log=False)
-          File.objects.filter(
+            directory.logo_file = None
+            directory.save(log=False)
+            File.objects.filter(
             content_type=content_type,
             object_id=directory.pk).delete()
 

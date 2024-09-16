@@ -13,7 +13,7 @@ from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.jobs.models import Job
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField
+from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField, StateSelectField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.jobs.models import JobPricing
 from tendenci.apps.jobs.models import Category as JobCategory
@@ -150,7 +150,6 @@ class JobForm(TendenciBaseForm):
             'contact_zip_code',
             'contact_country',
             'contact_phone',
-            'contact_fax',
             'contact_email',
             'contact_website',
             'tags',
@@ -211,7 +210,6 @@ class JobForm(TendenciBaseForm):
                     'contact_zip_code',
                     'contact_country',
                     'contact_phone',
-                    'contact_fax',
                     'contact_email',
                     'contact_website'
                 ],
@@ -314,6 +312,7 @@ class JobForm(TendenciBaseForm):
 
         if not self.user.profile.is_superuser:
             fields_to_pop += [
+                'slug',
                 'entity',
                 'group',
                 'allow_anonymous_view',
@@ -341,6 +340,21 @@ class JobForm(TendenciBaseForm):
                                                  ('Hybrid', _('Hybrid')),
                                                  ('Off-site', _('Off-site')),),
                                                  widget = forms.RadioSelect())
+        self.fields['is_agency'].label = _('Is agency posting')
+        self.fields['is_agency'].help_text = _('i.e. Hiring agency')
+
+        if get_setting('site', 'global', 'stateusesdropdown'):
+            self.fields['contact_state'] = StateSelectField(label=self.fields['contact_state'].label,
+                                                    required=self.fields['contact_state'].required)
+            self.fields['contact_state'].widget.attrs.update({'class': 'form-control'})
+
+        # check required fields
+        required_fields = get_setting('module', 'jobs', 'requiredfields')
+        if required_fields:
+            required_fields_list = [field.strip() for field in required_fields.split(',') if field.strip()]
+            for field_name in required_fields_list:
+                if field_name in self.fields:
+                    self.fields[field_name].required = True
 
     def clean_syndicate(self):
         """

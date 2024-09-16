@@ -174,7 +174,23 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
         model=object_type._meta.model_name
     )
 
-    form = form_class(request.POST or None, request.FILES or None, user=request.user)
+    initial = {}
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        initial = {'contact_name': request.user.get_full_name(),
+                   'contact_company': profile.company,
+                   'contact_address': profile.address,
+                   'contact_address2': profile.address2,
+                   'contact_city': profile.city,
+                   'contact_state': profile.state,
+                   'contact_zip_code': profile.zipcode,
+                   'contact_country': profile.country,
+                   'contact_phone': profile.work_phone,
+                   'contact_email': request.user.email,
+                   'contact_website': profile.url}
+
+    form = form_class(request.POST or None, request.FILES or None, user=request.user,
+                      initial=initial)
     # adjust the fields depending on user type
     if not require_payment:
         del form.fields['payment_method']
@@ -195,6 +211,9 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
             if require_payment and is_free:
                 job.payment_method = 'paid - cc'
+
+            if not job.slug:
+                job.set_slug()
 
             # set it to pending if the user is anonymous or not an admin
             if not can_add_active:
