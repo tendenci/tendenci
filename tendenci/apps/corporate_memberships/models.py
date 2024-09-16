@@ -2516,6 +2516,10 @@ class Notice(models.Model):
             if region and region in regions_to_exclude:
                 continue
 
+            # skip if this the region specifed for the notice is not the region associated with this corp. 
+            if notice.region and notice.region != region:
+                continue
+
             notice_requirments = (
                 notice.corporate_membership_type == corp_membership_type,
                 notice.corporate_membership_type is None
