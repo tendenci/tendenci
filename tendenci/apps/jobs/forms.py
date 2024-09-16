@@ -281,6 +281,8 @@ class JobForm(TendenciBaseForm):
                 self.fields['sub_cat'].queryset = JobCategory.objects.filter(parent=cat)
 
         self.fields['pricing'].choices = pricing_choices(self.user)
+        if not self.user.is_superuser:
+            self.fields['pricing'].help_text = ''
 
         if 'payment_method' in self.fields:
             choices=get_payment_method_choices(self.user)
