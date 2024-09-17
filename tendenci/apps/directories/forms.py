@@ -338,6 +338,7 @@ class DirectoryForm(TendenciBaseForm):
                 self.fields['pricing'].help_text = ''
 
         self.fields['timezone'].initial = settings.TIME_ZONE
+        self.fields['timezone'].required = False
 
         # cat and sub_cat
         self.fields['sub_cats'].queryset = DirectoryCategory.objects.exclude(parent=None)
