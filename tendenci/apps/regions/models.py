@@ -46,6 +46,10 @@ class Region(OrderingBaseModel, TendenciBaseModel):
 #    def get_absolute_url(self):
 #        return reverse('industry', args=[self.pk])
 
+    @classmethod
+    def get_region_by_name(cls, region_name):
+        return cls.objects.filter(region_name=region_name).order_by('status_detail').first()
+
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
 

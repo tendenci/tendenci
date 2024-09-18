@@ -26,6 +26,7 @@ from tendenci.apps.emails.models import Email
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.forms import ProhibitNullCharactersValidatorMixin
 from tendenci.apps.base.utils import get_latest_version
+from tendenci.apps.base.fields import StateSelectField
 from tendenci import __version__ as version
 
 PASSWORD_REGEX_DEFAULT = r'^(?=.*(\d|[!@#\$%\^&\*_\-\+])).{8,}$'
@@ -93,6 +94,11 @@ class RegistrationCustomForm(RegistrationForm):
                 self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
 
         self.fields['password1'].help_text = self.password_help_text
+
+        # state
+        if get_setting('site', 'global', 'stateusesdropdown'):
+            self.fields['state'] = StateSelectField(label=self.fields['state'].label,
+                                                    required=self.fields['state'].required)
 
         # region
         from tendenci.apps.regions.models import Region

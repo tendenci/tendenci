@@ -936,6 +936,23 @@
     },
     {
         "default_value": "false",
+        "description": "If true, the state field dropdown will be using a list of regions.",
+        "data_type": "boolean",
+        "update_dt": "2024-09-17 16:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "stateusesregion",
+        "value": "false",
+        "label": "State Field Uses Region",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": true,
+        "updated_by": ""
+    },
+    {
+        "default_value": "false",
         "description": "If TRUE, overrides to CSS bootstrap will be applied",
         "data_type": "boolean",
         "update_dt": "2014-09-26 03:47:02",
