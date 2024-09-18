@@ -401,6 +401,9 @@ class DirectoryForm(TendenciBaseForm):
                                                     required=self.fields['state'].required)
             self.fields['state'].widget.attrs.update({'class': 'form-control'})
 
+        if get_setting('site', 'global', 'stateusesregion'):
+            del self.fields['region']
+
         # check required fields
         required_fields = get_setting('module', 'directories', 'requiredfields')
         if required_fields:
