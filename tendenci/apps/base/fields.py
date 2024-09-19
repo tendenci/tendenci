@@ -146,7 +146,7 @@ class StateSelectField(fields.ChoiceField):
             if regions_to_exclude and self.app_name not in ['memberships', 'corporate_memberships']:
                 regions = regions.exclude(id__in=regions_to_exclude)
 
-            choices = [(region.region_name, region.region_name) for region in regions]
+            choices = (('',empty_label),) +tuple((region.region_name, region.region_name) for region in regions)
         else:
             if get_setting('site', 'global', 'usstatesonly'):
                 choices = (('',empty_label),) + tuple((state, state_f.title()) for state, state_f in US_STATES)
