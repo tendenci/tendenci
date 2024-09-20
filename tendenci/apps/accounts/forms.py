@@ -99,6 +99,7 @@ class RegistrationCustomForm(RegistrationForm):
         if get_setting('site', 'global', 'stateusesdropdown'):
             self.fields['state'] = StateSelectField(label=self.fields['state'].label,
                                                     required=self.fields['state'].required)
+            self.fields['state'].widget.attrs.update({'class': 'form-control'})
 
         # region
         from tendenci.apps.regions.models import Region
