@@ -195,7 +195,10 @@ class Place(models.Model):
     def __str__(self):
         str_place = '%s %s %s %s %s' % (
             self.name, self.address, ', '.join(self.city_state()), self.zip, self.country)
-        return str(str_place.strip())
+        str_place = str_place.strip()
+        if str_place == '':
+            str_place = f'Place (id:{self.id})'
+        return str_place
 
     def city_state(self):
         return [s for s in (self.city, self.state) if s]

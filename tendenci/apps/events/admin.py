@@ -43,7 +43,7 @@ class EventAdmin(TendenciBaseModelAdmin):
         'status_detail',
     )
     search_fields = ("title",)
-    list_filter = ('enable_private_slug',)
+    list_filter = ('enable_private_slug', 'place')
     ordering = ['-start_dt']
 
     def has_add_permission(self, request):
@@ -56,7 +56,7 @@ class EventAdmin(TendenciBaseModelAdmin):
                 )
 
 
-class EventPlaceAdmin(TendenciBaseModelAdmin):
+class EventPlaceAdmin(admin.ModelAdmin):
 
     list_display = (
         'id',
@@ -66,6 +66,7 @@ class EventPlaceAdmin(TendenciBaseModelAdmin):
         'city',
         'state',
         'is_zoom_webinar',
+        'event_counts'
     )
     list_display_links = ('id',)
     search_fields = ("name",)
@@ -82,6 +83,15 @@ class EventPlaceAdmin(TendenciBaseModelAdmin):
 
     merge.short_description = "Merge places"
 
+    @mark_safe
+    def event_counts(self, obj):
+        if obj:
+            counts = obj.event_set.all().count()
+            if counts > 0:
+                events_url = reverse('admin:events_event_changelist')
+                return f'<a href="{events_url}?place__id__exact={obj.id}">{counts}</a>'
+        return '0'
+    event_counts.short_description = _('Events')
 
     def has_add_permission(self, request):
         return False
