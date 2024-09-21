@@ -1,4 +1,4 @@
-Running and Writting Tests
+Running and Writing Tests
 ==========================
 
 .. note:: Please consider adding tests when **adding or fixing** code in Tendenci!

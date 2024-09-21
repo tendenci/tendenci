@@ -384,6 +384,9 @@ class MembershipSet(models.Model):
         invoice.set_creator(memberships[0].user)
         invoice.set_owner(memberships[0].user)
 
+        invoice.object_type = ContentType.objects.get(
+            app_label=self._meta.app_label, model=self._meta.model_name)
+
         # price information ----------
         price = 0
         for membership in memberships:
@@ -406,10 +409,7 @@ class MembershipSet(models.Model):
         invoice.save()
         self.invoice = invoice
         self.save()
-
-        self.invoice.object_type = ContentType.objects.get(
-            app_label=self._meta.app_label, model=self._meta.model_name)
-
+        
         self.invoice.object_id = self.pk
         self.invoice.save()
 
@@ -1657,6 +1657,9 @@ class MembershipDefault(TendenciBaseModel):
         # price information and bind invoice to membership ----------
         # Only set for new invoices
         if not invoice.pk:
+            invoice.object_type = content_type
+            invoice.object_id = self.pk
+
             price = self.get_price()
             default_tax_rate = 0
             if self.app and self.app.include_tax:
@@ -1667,9 +1670,6 @@ class MembershipDefault(TendenciBaseModel):
             invoice.subtotal = price
             invoice.total = price + invoice.tax + invoice.tax_2
             invoice.balance = invoice.total
-
-            invoice.object_type = content_type
-            invoice.object_id = self.pk
 
         invoice.due_date = invoice.due_date or datetime.now()
         invoice.ship_date = invoice.ship_date or datetime.now()

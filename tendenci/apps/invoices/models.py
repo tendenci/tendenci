@@ -168,7 +168,7 @@ class Invoice(models.Model):
         if region:
             # check if we need to use alternative region
             if get_setting('module', 'invoices', 'usealtregions') and \
-                self.object_type.app_label not in ['corporate_memberships', 'memberships']:
+                self.object_type and self.object_type.app_label not in ['corporate_memberships', 'memberships']:
                 region_id = settings.ALTERNATIVE_REGIONS_MAP.get(region.id, region.id)
                 if region_id != region.id:
                     region = Region.objects.filter(id=region_id).first() or region

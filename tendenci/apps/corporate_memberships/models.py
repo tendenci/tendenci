@@ -45,7 +45,7 @@ from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.payments.models import PaymentMethod, Payment
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.base.fields import DictField, CountrySelectField
+from tendenci.apps.base.fields import DictField, CountrySelectField, StateSelectField
 
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.utils import send_email_notification, fieldify, get_salesforce_access, correct_filename
@@ -323,6 +323,13 @@ class CorpProfile(TendenciBaseModel):
                 self.parent_entity = self.entity.entity_parent
             else:
                 self.parent_entity = Entity.objects.first()
+
+        # check and assign region if needed
+        if get_setting('site', 'global', 'stateusesregion'):
+            if self.state:
+                region = Region.get_region_by_name(self.state)
+                if region and region != self.region:
+                    self.region = region
 
         super(CorpProfile, self).save(*args, **kwargs)
 
@@ -1956,6 +1963,10 @@ class CorpMembershipAppField(OrderingBaseModel):
             Generate the form field class for this field.
         """
         if self.field_type and self.id:
+            field_args = {"label": self.label,
+                          "required": self.required,
+                          'help_text': self.help_text}
+
             if "/" in self.field_type:
                 field_class, field_widget = self.field_type.split("/")
             else:
@@ -1964,14 +1975,15 @@ class CorpMembershipAppField(OrderingBaseModel):
                 field_class = 'CharField'
             if field_class == 'CountrySelectField':
                 field_class = CountrySelectField
+            elif self.field_name in ['state',] and get_setting('site', 'global', 'stateusesdropdown'):
+                field_class = StateSelectField
+                field_args.update({'app_name': 'corporate_memberships'})
             else:
                 if self.field_name in ['tax_exempt'] and not self.choices:
                     field_class = forms.BooleanField
                 else:
                     field_class = getattr(forms, field_class)
-            field_args = {"label": self.label,
-                          "required": self.required,
-                          'help_text': self.help_text}
+            
             arg_names = field_class.__init__.__code__.co_varnames
             if initial:
                 field_args['initial'] = initial
@@ -1983,7 +1995,8 @@ class CorpMembershipAppField(OrderingBaseModel):
             if "choices" in arg_names:
                 if self.field_name not in [
                             'corporate_membership_type',
-                            'payment_method']:
+                            'payment_method',
+                            'state']:
                     if self.choices == 'yesno':
                         field_args["choices"] = ((True, _('Yes')), (False, _('No')),)
                         if self.default_value:
@@ -2514,6 +2527,10 @@ class Notice(models.Model):
             # skip if this notice doesn't include the region of this corp
             regions_to_exclude = list(notice.regions_to_exclude.all())
             if region and region in regions_to_exclude:
+                continue
+
+            # skip if this the region specifed for the notice is not the region associated with this corp. 
+            if notice.region and notice.region != region:
                 continue
 
             notice_requirments = (

@@ -43,12 +43,22 @@
 	}
 
 	function createToken() {
+			var address_state = "";
+			try {
+			    address_state = form.querySelector('input[name=state]').value;
+			}
+			catch(err) {
+				try {
+			  		address_state = form.querySelector('select[name=state]').options[form.querySelector('select[name=state]').options.selectedIndex].value;
+			  	}
+				catch(err) {}
+			} 
 			var extraDetails = {
 				    name: form.querySelector('input[id=id_card_name]').value,
 				    address_line1: form.querySelector('input[name=address]').value,
 				    address_line2: form.querySelector('input[name=address2]').value,
 				    address_city: form.querySelector('input[name=city]').value,
-				    address_state: form.querySelector('input[name=state]').value,
+				    address_state: address_state,
 				    address_zip: form.querySelector('input[name=zip]').value,
 				    address_country: form.querySelector('input[name=country]').value,
 				    email: form.querySelector('input[name=email]').value,

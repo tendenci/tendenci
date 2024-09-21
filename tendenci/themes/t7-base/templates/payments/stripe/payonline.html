@@ -13,7 +13,7 @@
 {% block content %}
 
 <div class="well basic-info">
-  <div>{% trans 'Invoice #' %}: <a href="{% url "invoice.view" payment.invoice.id %}">{{ payment.invoice.id }}</a></div>
+  <div>{% trans 'Invoice #' %}: <a href="{% url "invoice.view" payment.invoice.id %}" target="_blank">{{ payment.invoice.id }}</a></div>
   <div>{% trans 'Description' %}: {{ payment.description }}</div>
   {% with payment.invoice.registration as obj %}
   {% if obj %}
@@ -115,5 +115,5 @@
 
 {% set_stripe_key %}
 
-<script type="text/javascript" src="{% static 'js/stripe_payment.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/stripe_payment.js' %}?v=1.2"></script>
 {% endblock %}

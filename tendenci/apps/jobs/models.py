@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import AnonymousUser
+from django.template.defaultfilters import slugify
 
 from tendenci.apps.categories.models import CategoryItem
 from tagging.fields import TagField
@@ -49,7 +50,7 @@ class Category(models.Model):
 
 class BaseJob(TendenciBaseModel):
     guid = models.CharField(max_length=40)
-    title = models.CharField(max_length=250)
+    title = models.CharField(_('Job title'), max_length=250)
     slug = SlugField(_('URL Path'), unique=True)
     header_image = models.ForeignKey(File, null=True, on_delete=models.SET_NULL)
     description = tinymce_models.HTMLField()
@@ -220,6 +221,15 @@ class Job(BaseJob):
 
     def get_approve_url(self):
         return reverse('job.approve', args=[self.id])
+
+    def set_slug(self):
+        if not self.slug:
+            slug = slugify(self.title)
+            count = str(Job.objects.count())
+            if len(slug) + len(count) >= 99:
+                self.slug = '%s-%s' % (slug[:99-len(count)], count)
+            else:
+                self.slug = '%s-%s' % (slug, count)
 
 
 class JobPricing(models.Model):

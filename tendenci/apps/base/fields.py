@@ -7,6 +7,7 @@ from django.forms import fields, ValidationError
 from django.db.models import CharField
 from django.utils.translation import gettext_lazy as _
 from django.db import models
+from django.conf import settings
 import simplejson
 from django.core import exceptions
 from django_countries import countries as COUNTRIES
@@ -132,17 +133,29 @@ class CountrySelectField(fields.ChoiceField):
 
 
 class StateSelectField(fields.ChoiceField):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, app_name='', label="", **kwargs):
         empty_label = kwargs.pop('empty_label', '-----------')
-        super(StateSelectField, self).__init__(*args, **kwargs)
-        if get_setting('site', 'global', 'usstatesonly'):
-            choices = (('',empty_label),) + tuple((state, state_f.title()) for state, state_f in US_STATES)
+        self.app_name = app_name
+        if get_setting('site', 'global', 'stateusesregion'):
+            label = get_setting('module', 'regions', 'label')
+        super(StateSelectField, self).__init__(*args, label=label, **kwargs)
+        from tendenci.apps.regions.models import Region
+        if get_setting('site', 'global', 'stateusesregion'):
+            regions = Region.objects.filter(status_detail='active').order_by('position')
+            regions_to_exclude = [int(region_id) for region_id in settings.ALTERNATIVE_REGIONS_MAP.keys()]
+            if regions_to_exclude and self.app_name not in ['memberships', 'corporate_memberships']:
+                regions = regions.exclude(id__in=regions_to_exclude)
+
+            choices = (('',empty_label),) +tuple((region.region_name, region.region_name) for region in regions)
         else:
-            choices = (('',empty_label),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
-                + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
-        choices = sorted(choices)
-        # add non-us
-        choices = choices + [('Non-US', _('Non-US')),]
+            if get_setting('site', 'global', 'usstatesonly'):
+                choices = (('',empty_label),) + tuple((state, state_f.title()) for state, state_f in US_STATES)
+            else:
+                choices = (('',empty_label),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
+                    + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
+            choices = sorted(choices)
+            # add non-us
+            choices = choices + [('Non-US', _('Non-US')),]
         self.choices = choices
         self.initial = ''
 

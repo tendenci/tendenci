@@ -399,12 +399,19 @@ class Profile(Person):
         else:
             self.allow_member_view = True
 
+        # check and assign region if needed
+        if get_setting('site', 'global', 'stateusesregion'):
+            if self.state:
+                region = Region.get_region_by_name(self.state)
+                if region and region != self.region:
+                    self.region = region
+
         super(Profile, self).save(*args, **kwargs)
 
         if self.photo and self._original_photo:
             if self._original_photo != self.photo:
                 # remove existing photo from storage
-                self.delete_old_photo()
+                self.delete_old_photo()  
 
         # try:
         #     from tendenci.apps.campaign_monitor.utils import update_subscription

@@ -3,6 +3,8 @@ from tendenci.apps.payments.models import Payment
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.entities.models import Entity
 from .models import StripeAccount
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.fields import StateSelectField
 #from form_utils.forms import BetterModelForm
 
 
@@ -53,3 +55,8 @@ class BillingInfoForm(FormControlWidgetMixin, forms.ModelForm):
         self.fields['state'].width = 5
         self.fields['zip'].required = True
         self.fields['zip'].width = 7
+        # state
+        if get_setting('site', 'global', 'stateusesdropdown'):
+            self.fields['state'] = StateSelectField(label=self.fields['state'].label,
+                                                    required=self.fields['state'].required)
+            self.fields['state'].widget.attrs.update({'class': 'form-control'})

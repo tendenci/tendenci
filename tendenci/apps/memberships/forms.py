@@ -703,7 +703,7 @@ def assign_fields(form, app_field_objs):
             else:
                 if obj.field_name in ['state', 'state_2']:
                     if get_setting('site', 'global', 'stateusesdropdown'):
-                        form.fields[obj.field_name] = StateSelectField()
+                        form.fields[obj.field_name] = StateSelectField(app_name='memberships',)
                 field = form.fields[obj.field_name]
                 field.label = obj.label
                 field.required = obj.required
@@ -1930,9 +1930,11 @@ class MembershipDefaultForm(TendenciBaseForm):
 
         # state
         if get_setting('site', 'global', 'stateusesdropdown'):
-            self.fields['state'] = StateSelectField(label=self.fields['state'].label,
+            self.fields['state'] = StateSelectField(app_name='memberships',
+                                                    label=self.fields['state'].label,
                                                     required=self.fields['state'].required)
-            self.fields['state_2'] = StateSelectField(label=self.fields['state_2'].label,
+            self.fields['state_2'] = StateSelectField(app_name='memberships',
+                                                      label=self.fields['state_2'].label,
                                                     required=self.fields['state_2'].required)
         # -----------------------------------------------------
 

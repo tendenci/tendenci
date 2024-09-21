@@ -237,8 +237,7 @@
     </div>
     <div class="row heading">
       <div class="col-md-3">
-         {# have to hard-code Symposiums here until we figured out a way #}
-      	{% if registrant.event.type.name == 'Symposiums' and registrant.event.image %}
+      	{% if registrant.event.image %}
         <img src="{% image_url registrant.event.image %}" title="{{ registrant.event.title }}" alt="{{ registrant.event.title }}"/>
         {% else %}
         <span class="img-blank">&nbsp;</span>

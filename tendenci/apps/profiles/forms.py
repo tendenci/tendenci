@@ -357,18 +357,22 @@ class ProfileForm(TendenciBaseForm):
                                                     required=self.fields['state_2'].required)
             self.fields['state'].widget.attrs.update({'class': 'form-control'})
             self.fields['state_2'].widget.attrs.update({'class': 'form-control'})
+
         if get_setting('module', 'users', 'showmembernumber2'):
             self.fields['member_number_2'].label = get_setting('module', 'users', 'membernumber2label')
             self.fields['member_number_2'].required = False
 
         # region
-        from tendenci.apps.regions.models import Region
-        region_queryset = Region.objects.filter(status_detail='active').order_by('position')
-        if region_queryset.count() == 0:
+        if get_setting('site', 'global', 'stateusesregion'):
+            # remove region
             del self.fields['region']
         else:
-            self.fields['region'].queryset = region_queryset
-
+            from tendenci.apps.regions.models import Region
+            region_queryset = Region.objects.filter(status_detail='active').order_by('position')
+            if region_queryset.count() == 0:
+                del self.fields['region']
+            else:
+                self.fields['region'].queryset = region_queryset
 
     def clean_username(self):
         """

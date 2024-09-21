@@ -172,6 +172,13 @@ class Directory(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid4())
 
+        # check and assign region if needed
+        if get_setting('site', 'global', 'stateusesregion'):
+            if self.state:
+                region = Region.get_region_by_name(self.state)
+                if region and region != self.region:
+                    self.region = region
+
         super(Directory, self).save(*args, **kwargs)
         if self.logo:
             if self.is_public():
