@@ -314,6 +314,10 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                 except IOError:
                     pass
                     #directory.logo = None
+            
+            # set the expiration date in case activation date and/or requested_duration have changed
+            directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
+
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
             form.save_m2m()
