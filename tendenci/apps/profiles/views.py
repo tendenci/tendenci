@@ -633,15 +633,16 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/add_edit.h
                 user_edit.is_staff = 0
 
             # interactive
-            interactive = form.cleaned_data['interactive']
-            try:
-                interactive = int(interactive)
-            except:
-                interactive = 0
-            if interactive == 1:
-                user_edit.is_active = 1
-            else:
-                user_edit.is_active = 0
+            if 'interactive' in form.cleaned_data:
+                interactive = form.cleaned_data['interactive']
+                try:
+                    interactive = int(interactive)
+                except:
+                    interactive = 0
+                if interactive == 1:
+                    user_edit.is_active = True
+                else:
+                    user_edit.is_active = False
 
             user_edit.save()
             profile.save()
