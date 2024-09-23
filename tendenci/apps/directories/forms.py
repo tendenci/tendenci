@@ -303,7 +303,7 @@ class DirectoryForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(DirectoryForm, self).__init__(*args, **kwargs)
-        self.fields['headline'].help_text = _('Company or Organization name')
+        #self.fields['headline'].help_text = _('Company or Organization name')
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if self.user.profile.is_superuser:

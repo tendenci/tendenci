@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='directory',
             name='headline',
-            field=models.CharField(max_length=200, verbose_name='Name', blank=True),
+            field=models.CharField(max_length=200, verbose_name='Company/Organization name', blank=True),
         ),
     ]

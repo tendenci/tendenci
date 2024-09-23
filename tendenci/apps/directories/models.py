@@ -61,7 +61,7 @@ class Directory(TendenciBaseModel):
     entity = models.OneToOneField(Entity, blank=True, null=True,
                                   on_delete=models.SET_NULL,)
     timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
-    headline = models.CharField(_('Name'), max_length=200, blank=True)
+    headline = models.CharField(_('Company/Organization name'), max_length=200, blank=True)
     summary = models.TextField(blank=True)
     body = tinymce_models.HTMLField(_('Description'))
     source = models.CharField(max_length=300, blank=True)
