@@ -581,7 +581,7 @@ class DirectoryPricing(models.Model):
     def __str__(self):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
         price = "%s%s(R)/%s(P)" % (currency_symbol, self.regular_price, self.premium_price)
-        return "%d days for %s" % (self.duration, price)
+        return "%s days for %s" % (self.duration_display(), price)
 
     def save(self, user=None, *args, **kwargs):
         if not self.id:

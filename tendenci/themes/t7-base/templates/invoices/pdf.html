@@ -65,52 +65,10 @@ div.invoice-meta{
     <br />
  {% endif %}
  
-  {% with invoice.get_object as object %}
-  <div class="invoice-meta">
-    <table class="table table-tendenci-reports" border="0" cellspacing="0" cellpadding="0">
-      <tr>
-        <td>{% trans "Invoice #" %}</td>
-        <td class="td-right">{{ invoice.id }}</td>
-      </tr>
-      {% if object %}
-      <tr>
-        <td>{% trans "Invoice For" %}</td>
-        <td class="td-right">
-          {% if object.event.pk %}
-          <a href="{% url 'event.registration_confirmation' object.event.pk object.pk %}">{{ object }}</a><br>
-          <strong>{% trans 'Event Date' %}:</strong> {{ object.event.start_dt }}
-          {% else %}
-		  {% if object.corp_profile %}
-		  {{ object.corp_profile.name }}
-		  {% endif %}
-          <br>
-          {% if invoice.bill_to_first_name %} {{ invoice.bill_to_first_name }} {% endif %} {% if invoice.bill_to_last_name %}{{ invoice.bill_to_last_name }}<br> {% endif %}
-          {% if invoice.bill_to_address %} {{ invoice.bill_to_address }}<br>{% endif %}
-          {% if invoice.bill_to_city %}{{ invoice.bill_to_city}},{% endif %} {% if invoice.bill_to_state %}{{ invoice.bill_to_state }}{% endif %} {% if invoice.bill_to_zip_code %}{{ invoice.bill_to_zip_code }}{% endif %}
-          {% endif %}
-        </td>
-      </tr>
-      {% endif %}
-      <tr>
-        <td>{% trans "Invoice Date" %}</td>
-        <td class="td-right">{{ invoice.create_dt|date:'N j, Y h:i a' }}</td>
-      </tr>
-      <tr>
-        <td>{% trans "Invoice Status" %}</td>
-        {% if invoice.is_tendered %}
-        <td class="invoice-status td-right">{% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %}Tendered {{ tenddate }}{% endblocktrans %}</td>
-        {% else %}
-        <td class="invoice-status-red td-right">{% trans "Estimate" %}</td>
-        {% endif %}
-      </tr>
-      <tr class="invoice-meta-amount">
-        <td><strong>{% trans "Invoice Amount" %}</strong></td>
-        <td class="td-right"><strong>{{ invoice.total|format_currency }}</strong></td>
-      </tr>
-    </table>
-  </div>
-  {% endwith %}
-<p>&nbsp;</p>
+  
+{% include "invoices/include/invoice_view_display.html" %}
+<br />
+
   <div class="invoice-table">
     <table class="table table-tendenci-reports" border="0" cellspacing="0" cellpadding="0">
       <tr>
@@ -130,6 +88,12 @@ div.invoice-meta{
     <td class="td-right">{% trans "Method:" %} &nbsp;&nbsp;&nbsp;{{ payment_method }}</td>
   </tr>
   {% endif%}
+  
+  <tr>
+    <td></td>
+    <td class="td-right">{% trans "Sub Total:" %} &nbsp;&nbsp;&nbsp;{{ invoice.subtotal|add_decimal:invoice.discount_amount|format_currency }}</td>
+  </tr>
+  
   {% if invoice.variance and invoice.variance != 0 %}
   {% if invoice.total != tmp_total %}
   <tr>
@@ -138,20 +102,31 @@ div.invoice-meta{
   </tr>
   {% endif%}
   {% endif%}
-  <tr>
-    <td></td>
-    <td class="td-right">{% trans "Sub Total:" %} &nbsp;&nbsp;&nbsp;{{ invoice.subtotal|add_decimal:invoice.discount_amount|format_currency }}</td>
-  </tr>
+  
   {% if invoice.discount_amount > 0 %}
   <tr>
     <td></td>
     <td class="td-right">{% trans "Discount Applied (discount code" %} &nbsp;&nbsp;&nbsp;-{{ invoice.discount_amount|format_currency }}</td>
   </tr>
   {% endif %}
+  
+  {% if invoice.gratuity %}
+  <tr>
+    <td></td>
+    <td class="td-right">{% trans "Gratuity:" %} &nbsp;&nbsp;&nbsp;{{ invoice.graguity_in_percentage }}</td>
+  </tr>
+  {% endif %}
+  
   {% if invoice.tax %}
   <tr>
     <td></td>
     <td class="td-right">{% trans "Tax:" %} &nbsp;&nbsp;&nbsp;{{ invoice.tax|format_currency }}</td>
+  </tr>
+  {% endif %}
+  {% if invoice.tax_2 %}
+  <tr>
+    <td></td>
+    <td class="td-right">{{ invoice.tax_label_2 }}{% if invoice.tax_rate_2 %} {{ invoice.tax_rate_2|percentage }}{% endif %}:&nbsp;&nbsp;&nbsp;{{ invoice.tax_2|format_currency }}</td>
   </tr>
   {% endif %}
   <tr>
@@ -162,10 +137,16 @@ div.invoice-meta{
     <td></td>
     <td class="td-right">{% trans "Payments/Credits:" %} &nbsp;&nbsp;&nbsp;{{ invoice.payments_credits|format_currency }}</td>
   </tr>
+  {% if invoice.refunds %}
+  <tr>
+    <td></td>
+    <td class="td-right">{% trans "Refunds:" %}&nbsp;&nbsp;&nbsp;{{ invoice.net_refunds|format_currency }}</td>
+  </tr>
+  {% endif %}
   <tr class="invoice-total-balance">
     <td></td>
     <td class="td-right"><strong>{% trans "Balance due:" %} &nbsp;&nbsp;&nbsp;{{ invoice.balance|format_currency }}</strong></td>
-  </tr>
+  </tr> 
 </table>
     </div>
   </div>

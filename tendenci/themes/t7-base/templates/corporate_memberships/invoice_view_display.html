@@ -3,10 +3,10 @@
 <tr>
     <td>
         {% if obj %}
+        	{{ obj|truncatewords:10 }}
+        	{% trans 'for' %}
             {{ obj.corporate_membership_type.name|truncatewords:30 }}
             #<a href="{% url "corpmembership.view" obj.id %}" title="Corporate Membership">{{ obj.id }}</a>
-
-            &nbsp;{{ obj|truncatewords:5 }}
 
         {% else %}
             {% trans "Corporate Membership information not available" %}
