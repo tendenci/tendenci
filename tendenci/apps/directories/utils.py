@@ -86,6 +86,19 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.bill_to_user(user)
             inv.ship_to_user(user)
 
+            inv.bill_to_company = directory.headline
+            if directory.address2:
+                inv.bill_to_address = directory.address
+                if directory.address2:
+                    inv.bill_to_address += ', ' + directory.address2
+            inv.bill_to_city = directory.city
+            inv.bill_to_state = directory.state
+            inv.bill_to_zip_code = directory.zip_code
+            inv.bill_to_country = directory.country
+            inv.bill_to_phone = directory.phone
+            inv.bill_to_fax = directory.fax
+            inv.bill_to_email = directory.email
+
             inv.terms = "Due on Receipt"
             inv.due_date = datetime.now()
             inv.ship_date = datetime.now()
