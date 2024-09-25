@@ -1,4 +1,5 @@
 {% load base_tags %}
+{% load base_filters %}
 {% load perm_tags %}
 
 
@@ -103,10 +104,10 @@
                                     </li>
                                 {% endif %}
 
-                                {% if app_object.allow_self_add and user.is_authenticated or can_add_member %}
+                                {% if app_object.allow_self_add and user.is_authenticated and not request.user|in_group:app_object.id %}
                                     <li class="content-item">
                                         <span class="app-name">
-                                            <a href="{% url 'group.selfadd' app_object.slug user.id %}">{% trans "Add Myself to Group" %}</a>
+                                            <a href="{% url 'group.selfadd' app_object.slug %}">{% trans "Add Myself to Group" %}</a>
                                         </span>
                                     </li>
                                 {% endif %}

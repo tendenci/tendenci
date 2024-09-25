@@ -69,7 +69,7 @@
                 <li><a href="{% url "group.adduser" nav_object.slug %}">{% trans "Add Users" %}</a></li>
                 {% endif %}
                 {% if nav_object.allow_self_add and user.is_authenticated or can_add_member %}
-                <li><a href="{% url "group.selfadd" nav_object.slug user.id %}">{% trans "Add Myself to Group" %}</a></li>
+                <li><a href="{% url "group.selfadd" nav_object.slug %}">{% trans "Add Myself to Group" %}</a></li>
                 {% endif %}
                 {% if is_group_member and gm %}
                     {% if gm.is_newsletter_subscribed %}
