@@ -2381,8 +2381,11 @@ class Notice(models.Model):
             total_individuals_renewed = ''
 
         if corporate_membership.invoice:
-            invoice_link = '%s%s' % (site_url,
-                                     corporate_membership.invoice.get_absolute_url())
+            if kwargs.get('anonymous_join', False):
+                invoice_link = corporate_membership.invoice.get_absolute_url_with_guid()
+            else:
+                invoice_link = corporate_membership.invoice.get_absolute_url()
+            invoice_link = f'{site_url}{invoice_link}'
         else:
             invoice_link = ''
             
@@ -2566,7 +2569,8 @@ class Notice(models.Model):
                             'subject': notice.get_subject(
                                         corporate_membership=corporate_membership),
                             'content': notice.get_content(
-                                        corporate_membership=corporate_membership),
+                                        corporate_membership=corporate_membership,
+                                        anonymous_join=True),
                             'corporate_membership_total': CorpMembership.objects.count(),
                             'sender': get_setting('site', 'global', 'siteemailnoreplyaddress'),
                             'sender_display': notice.sender_display,
