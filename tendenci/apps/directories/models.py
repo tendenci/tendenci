@@ -226,6 +226,13 @@ class Directory(TendenciBaseModel):
             inv.object_id,
         )
 
+    def get_description(self):
+        """
+        The description that can be displayed on invoice.
+        """
+        return f'{self.headline} {self.pricing.duration_display()}' if self.pricing else self.title
+
+
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """
         Make the accounting entries for the directory sale
