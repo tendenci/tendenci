@@ -653,6 +653,7 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
             directory = update_perms_and_save(request, form, directory)
 
             # create invoice
+            directory.invoice = None
             directory_set_inv_payment(request.user, directory, pricing)
             msg_string = 'Successfully renewed %s' % directory
             messages.add_message(request, messages.SUCCESS, _(msg_string))
@@ -670,7 +671,7 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
 
             if directory.payment_method.lower() in ['credit card', 'cc']:
                 if directory.invoice and directory.invoice.balance > 0:
-                    return HttpResponseRedirect(reverse('payments.views.pay_online', args=[directory.invoice.id, directory.invoice.guid]))
+                    return HttpResponseRedirect(reverse('payment.pay_online', args=[directory.invoice.id, directory.invoice.guid]))
             if can_add_active:
                 return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
             else:

@@ -36,8 +36,8 @@ urlpatterns = [
     re_path(r'^%s/(?P<group_slug>[\w\-\/]+)/edit/$' % urlpath, views.group_add_edit, name='group.edit'),
     re_path(r'^%s/(?P<group_slug>[\w\-\/]+)/adduser/$' % urlpath, views.groupmembership_bulk_add, name='group.adduser'),
     re_path(r'^%s/(?P<group_slug>[\w\-\/]+)/edituser/(?P<user_id>\d+)/$' % urlpath, views.groupmembership_add_edit, name='group.edituser'),
-    re_path(r'^%s/(?P<slug>[\w\-\/]+)/selfadd/(?P<user_id>\d+)/$' % urlpath, views.group_membership_self_add, name='group.selfadd'),
-    re_path(r'^%s/(?P<slug>[\w\-\/]+)/selfremove/(?P<user_id>\d+)/$' % urlpath, views.group_membership_self_remove, name='group.selfremove'),
+    re_path(r'^%s/(?P<slug>[\w\-\/]+)/selfadd/$' % urlpath, views.group_membership_self_add, name='group.selfadd'),
+    re_path(r'^%s/(?P<slug>[\w\-\/]+)/selfremove/$' % urlpath, views.group_membership_self_remove, name='group.selfremove'),
     re_path(r'^%s/(?P<group_slug>[\w\-\/]+)/deleteuser/(?P<user_id>\d+)/$' % urlpath, views.groupmembership_delete, name='group.deleteuser'),
     re_path(r'^%s/(?P<group_slug>[\w\-\/]+)/import/status/(?P<task_id>[-\w]+)/$' % urlpath, views.subscribers_import_status, name='subscribers_import_status'),
 

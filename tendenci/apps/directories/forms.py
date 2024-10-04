@@ -303,7 +303,7 @@ class DirectoryForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(DirectoryForm, self).__init__(*args, **kwargs)
-        self.fields['headline'].help_text = _('Company or Organization name')
+        #self.fields['headline'].help_text = _('Company or Organization name')
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if self.user.profile.is_superuser:
@@ -553,7 +553,8 @@ class DirectoryRenewForm(TendenciBaseForm):
         super(DirectoryRenewForm, self).__init__(*args, **kwargs)
 
         if 'payment_method' in self.fields:
-            self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
+            self.fields['payment_method'].widget = forms.RadioSelect()
+            self.fields['payment_method'].choices = get_payment_method_choices(self.user)
         if 'pricing' in self.fields:
             self.fields['pricing'].choices = get_duration_choices(self.user)
 

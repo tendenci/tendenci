@@ -331,24 +331,24 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
 
 
 @login_required
-def group_membership_self_add(request, slug, user_id):
+def group_membership_self_add(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    user = get_object_or_404(User, pk=user_id)
 
-    if not has_view_perm(request.user,'user_groups.view_group', group) and not group.allow_self_add:
+    if not (has_view_perm(request.user,'user_groups.view_group', group) and group.allow_self_add):
         raise Http403
 
-    group_membership = GroupMembership.objects.filter(member=user, group=group)
+    group_membership = GroupMembership.objects.filter(member=request.user,
+                                                      group=group).first()
 
     if not group_membership:
         group_membership = GroupMembership()
 
         group_membership.group = group
-        group_membership.member = user
-        group_membership.creator_id = user.id
-        group_membership.creator_username = user.username
-        group_membership.owner_id =  user.id
-        group_membership.owner_username = user.username
+        group_membership.member = request.user
+        group_membership.creator_id = request.user.id
+        group_membership.creator_username = request.user.username
+        group_membership.owner_id =  request.user.id
+        group_membership.owner_username = request.user.username
 
         group_membership.save()
 
@@ -358,6 +358,7 @@ def group_membership_self_add(request, slug, user_id):
             group_membership.subscribe_to_newsletter()
 
         messages.add_message(request, messages.SUCCESS, _('Successfully added yourself to group %(grp)s' % {'grp':group}))
+        return HttpResponseRedirect(group.get_absolute_url())
     else:
         messages.add_message(request, messages.INFO, _('You are already in the group %(grp)s' % {'grp': group}))
 
@@ -365,23 +366,22 @@ def group_membership_self_add(request, slug, user_id):
 
 
 @login_required
-def group_membership_self_remove(request, slug, user_id):
+def group_membership_self_remove(request, slug):
     group = get_object_or_404(Group, slug=slug)
 
-    if not has_view_perm(request.user,'user_groups.view_group', group) and not group.allow_self_remove:
+    if not (has_view_perm(request.user,'user_groups.view_group', group) and group.allow_self_remove):
         raise Http403
 
-    user = get_object_or_404(User, pk=user_id)
-
-    group_membership = GroupMembership.objects.filter(member=user, group=group)
+    group_membership = GroupMembership.objects.filter(member=request.user,
+                                                      group=group).first()
 
     if group_membership:
-        group_membership = group_membership[0]
-        if group_membership.member == user:
+        if group_membership.member == request.user:
 
             EventLog.objects.log(instance=group_membership)
             group_membership.delete()
             messages.add_message(request, messages.SUCCESS, _('Successfully removed yourself from group %(grp)s' % {'grp':group}))
+            return HttpResponseRedirect(group.get_absolute_url())
     else:
         messages.add_message(request, messages.INFO, _('You are not in the group %(grp)s' % {'grp': group}))
 

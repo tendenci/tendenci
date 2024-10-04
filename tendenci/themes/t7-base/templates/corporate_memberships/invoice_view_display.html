@@ -3,11 +3,10 @@
 <tr>
     <td>
         {% if obj %}
-            {{ obj.corporate_membership_type.name|truncatewords:30 }}
-            #<a href="{% url "corpmembership.view" obj.id %}" title="Corporate Membership">{{ obj.id }}</a>
-
-            &nbsp;{{ obj|truncatewords:5 }}
-
+            {% trans 'Corporate Membership for' %}
+        	{{ obj|truncatewords:10 }}
+        	#<a href="{% url "corpmembership.view" obj.id %}" title="Corporate Membership">{{ obj.id }}</a>
+        	({% if obj.renewal %}{{ obj.renew_dt|date:'N d, Y' }}{% else %}{{ obj.join_dt|date:'N d, Y' }}{% endif %} - {% if obj.expiration_dt %}{{ obj.expiration_dt|date:'N d, Y' }}{% endif %})
         {% else %}
             {% trans "Corporate Membership information not available" %}
         {% endif%}

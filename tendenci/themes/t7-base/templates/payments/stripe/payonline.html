@@ -13,7 +13,12 @@
 {% block content %}
 
 <div class="well basic-info">
+  {% if request.user.is_authenticated %}
   <div>{% trans 'Invoice #' %}: <a href="{% url "invoice.view" payment.invoice.id %}" target="_blank">{{ payment.invoice.id }}</a></div>
+  {% else %}
+  	<div>{% trans 'Invoice #' %}: {{ payment.invoice.id }}</div>
+  	<div><i>{% trans "Please check your inbox for invoice details." %}</i></div>
+  {% endif %}
   <div>{% trans 'Description' %}: {{ payment.description }}</div>
   {% with payment.invoice.registration as obj %}
   {% if obj %}
