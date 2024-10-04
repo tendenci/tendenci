@@ -230,7 +230,7 @@ class Directory(TendenciBaseModel):
         """
         The description that can be displayed on invoice.
         """
-        return f'{self.headline} {self.pricing.duration_display()}' if self.pricing else self.title
+        return f'{self.headline} {self.pricing.duration_display()}' if self.pricing else self.headline
 
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
