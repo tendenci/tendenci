@@ -70,9 +70,9 @@ def create_notice_types(sender, **kwargs):
         verbosity=verbosity)
     
     notification.create_notice_type(
-        'event_low_attendance_rate_notice',
-        _('Notice to Members with Low Event Attendance Rate'),
-        _('Notice to members who have NOT attended at least 3 out of 5 of past conferences with a certain event type.'),
+        'event_low_attendance_notice',
+        _('Notice to Members with Low Event Attendance'),
+        _('Notice to members who have NOT attended at least 3 out of 5 of past conferences'),
         verbosity=verbosity)
 
 def init_signals():
