@@ -553,7 +553,8 @@ class DirectoryRenewForm(TendenciBaseForm):
         super(DirectoryRenewForm, self).__init__(*args, **kwargs)
 
         if 'payment_method' in self.fields:
-            self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
+            self.fields['payment_method'].widget = forms.RadioSelect()
+            self.fields['payment_method'].choices = get_payment_method_choices(self.user)
         if 'pricing' in self.fields:
             self.fields['pricing'].choices = get_duration_choices(self.user)
 
