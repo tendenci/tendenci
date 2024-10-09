@@ -560,6 +560,29 @@ class CorpProfile(TendenciBaseModel):
         csz = ' '.join([a for a in [self.city, self.state, self.zip] if a.strip()])
         return ', '.join([a for a in [self.address, self.address2, csz, self.country] if a.strip()])
 
+    def get_tax_rate_display(self, corp_app):
+        tax_rate_display = ''
+        if corp_app.include_tax:
+            tax_rate_label = get_setting('module', 'invoices', 'taxlabel') or 'Tax'
+            if get_setting('module', 'invoices', 'usealtregions') and self.region:
+                tax_rate = self.region.tax_rate
+                tax_rate_2 = self.region.tax_rate_2
+                tax_label_2 = self.region.tax_label_2
+                if tax_rate or tax_rate_2:
+                    if tax_rate:
+                        tax_rate = '{:.3%}'.format(tax_rate)
+                        tax_rate_display += f'{tax_rate} {tax_rate_label}'
+                        if tax_rate_2:
+                            tax_rate_display += ", "
+                    if tax_rate_2:
+                        tax_rate_2 = '{:.3%}'.format(tax_rate_2)
+                        tax_rate_display += f'{tax_rate_2} {tax_label_2}'
+            elif corp_app.tax_rate:
+                tax_rate_display += '{:.3%}'.format(corp_app.tax_rate)
+                tax_rate_display += ' ' + tax_rate_label
+        return tax_rate_display
+
+
 class CorpProduct(models.Model):
     corp_profile = models.ForeignKey(CorpProfile, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

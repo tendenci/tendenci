@@ -328,6 +328,9 @@ div.forms{
                         <span id="total-amount">{{ summary_data.total_amount }}</span>
                     </td>
                 </tr>
+                {% if tax_rate_display %}
+                <tr><td></td><td align="right">** {{ tax_rate_display }} {% trans 'will be applied' %}</td></tr>
+                {% endif %}
             </table>
             <div class="text-danger" id="cap-error-msg"></div>
             <noscript>

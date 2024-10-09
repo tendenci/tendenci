@@ -1271,7 +1271,8 @@ def corp_renew(request, id,
 
                 opt_d = {'renewal': True,
                          'renewal_total': renewal_total,
-                         'include_donation': not get_setting('module', 'corporate_memberships', 'donationsepinv')}
+                         'include_donation': not get_setting('module', 'corporate_memberships', 'donationsepinv'),
+                         'app': corpmembership_app}
                 if corpmembership_app.donation_enabled:
                     # check for donation
                     donation_option, donation_amount = form.cleaned_data.get('donation_option_value', (None, None))
@@ -1421,12 +1422,15 @@ def corp_renew(request, id,
     summary_data['total_amount'] = summary_data['individual_total'
                                     ] + summary_data['above_cap_individual_total'] + summary_data['corp_price']
     cap_enabled = corpmembership_app.corp_memb_type.filter(apply_cap=True).count() > 0
+    tax_rate_display = corp_membership.corp_profile.get_tax_rate_display(corpmembership_app)
+        
     context = {"corp_membership": corp_membership,
                'corp_profile': corp_membership.corp_profile,
                'corp_app': corpmembership_app,
                'form': form,
                'summary_data': summary_data,
-               'cap_enabled': cap_enabled
+               'cap_enabled': cap_enabled,
+               'tax_rate_display': tax_rate_display
                }
     return render_to_resp(request=request, template_name=template, context=context)
 
