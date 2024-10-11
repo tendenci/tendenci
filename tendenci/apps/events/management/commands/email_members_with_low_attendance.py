@@ -4,8 +4,9 @@ from django.core.management.base import BaseCommand
 class Command(BaseCommand):
     """
     Check and notify the members who have the low event attendance
-         - NOT attended at least 3 out of 5 of past conferences
+         - NOT attended at least 3 in any five year period.
          (with a certain event type).
+         Condition: To join (membership) you have to attend the conference.
     
     Usage:
     
@@ -25,6 +26,7 @@ class Command(BaseCommand):
             help='The id of the membership type to exclude')
 
     def handle(self, *args, **options):
+        from datetime import datetime, timedelta
         from tendenci.apps.base.utils import validate_email
         from tendenci.apps.emails.models import Email
         from tendenci.apps.memberships.models import MembershipDefault
@@ -39,14 +41,21 @@ class Command(BaseCommand):
             return
 
         # get latest 5 events with this event type
-        event_ids = Event.objects.filter(type_id=event_type_id
+        event_ids = Event.objects.filter(type_id=event_type_id,
+                                         start_dt__lt=datetime.now(),
+                                         start_dt__gt=datetime.now() - timedelta(days=5*365+1)
                                          ).order_by('-start_dt'
-                                        ).values_list('id', flat=True)[:5]
+                                        ).values_list('id', flat=True)
         exclude_m_type_id = options.get('exclude_m_type_id', None)
         if exclude_m_type_id:
             exclude_m_type_id = int(exclude_m_type_id)
-        # members only
-        memberships = MembershipDefault.objects.filter(status_detail='active', status=True)
+        # Members who joined at least 3 years ago. This excludes those who just joined lately. 
+        # (It assumes to join, you have to attend the conference.
+        # So, you attended conference in the first year, you might miss the 2nd and 3rd year.) 
+        memberships = MembershipDefault.objects.filter(
+                        join_dt__lt=datetime.now() - timedelta(days=3*365),
+                        status_detail='active',
+                        status=True)
         if exclude_m_type_id:
             memberships = memberships.exclude(membership_type_id=exclude_m_type_id)
         memberships = memberships.order_by('user__last_name')
