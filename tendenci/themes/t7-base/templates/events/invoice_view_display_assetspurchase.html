@@ -1,0 +1,37 @@
+{% load base_filters %}
+
+<!--<a href="">{% trans 'View Assets Purchase' %}</a>-->
+
+  {% if obj %}
+  	<tr>
+  		<td>{% blocktrans with event_title=obj.event.title event_start_dt=obj.event.start_dt|date:'N d, Y' %}Assets Purchase for: "{{ event_title }}" held on {{ event_start_dt }}{% endblocktrans %}</td>
+  	</tr>
+    <tr>
+        <td>
+            {% if obj.user %}
+                <a href="{% url 'profile' obj.user.username %}">{{ obj.first_name }} {{ obj.last_name }}</a>
+            {% else %}
+                {{ obj.first_name }} {{ obj.last_name }}
+            {% endif %}
+            
+            {% with obj.pricing as price_title  %}
+            {% if price_title %}
+             <br />{% trans "Purchased for:" %} {{ price_title}}
+            {% endif %}
+            {% endwith %}
+        </td>
+        <td class="td-right">
+            {{ obj.amount|format_currency }}
+        </td>
+    </tr>
+    {% for line in invoice.invoicelineitem_set.all %}
+        <tr>
+            <td>
+                {{ line.description }}
+            </td>
+            <td class="td-right">
+                {{ line.total|format_currency }}
+            </td>
+        </tr>
+    {% endfor %}
+  {% endif %}
