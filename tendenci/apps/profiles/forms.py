@@ -324,6 +324,9 @@ class ProfileForm(TendenciBaseForm):
 
             if self.user_current.profile.is_superuser and self.user_current == self.user_this:
                 self.fields['security_level'].choices = (('superuser',_('Superuser')),)
+            
+            if self.user_current == self.user_this:
+                del self.fields['interactive']
 
         if not self.user_current.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')

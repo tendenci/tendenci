@@ -76,6 +76,8 @@ def invoice_object_display(request, invoice):
         # since membership app has 2 different associated invoices
         if app_label == 'memberships' and model == 'membershipset':
             template_name = "%s/invoice_view_display2.html" % (app_label)
+        elif app_label == 'events' and model == 'assetspurchase':
+            template_name = "%s/invoice_view_display_assetspurchase.html" % (app_label)
         else:
             template_name = "%s/invoice_view_display.html" % (app_label)
         try:

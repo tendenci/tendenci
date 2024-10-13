@@ -2275,7 +2275,7 @@ class AssetsPurchase(models.Model):
 
         if recipients:
             notification.send_emails(
-                [self.email],  # recipient(s)
+                recipients,  # recipient(s)
                 'event_assets_purchase_confirmation',  # template
                 {
                     'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
@@ -2285,6 +2285,7 @@ class AssetsPurchase(models.Model):
                     'assets_purchase': self,
                     'event': self.event,
                     'reply_to': reply_to,
+                    'for_admin': to_admin,
                 },
                 True,  # notice saved in db
             )

@@ -742,7 +742,7 @@
 	   </div>
 	   {% endif %}
 
-	   
+	   {% if form.interactive %}
 	   <div class="form-group">
 		    <label for="id_interactive" class="col-sm-3 control-label">{{ form.interactive.label }}{%if from.interactive.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
@@ -757,6 +757,7 @@
 		      {% endif %}
 		    </div>
 	   </div>
+	   {% endif %}
 	   
 	   <div class="form-group">
 		    <label for="id_status_detail" class="col-sm-3 control-label">{{ form.status_detail.label }}{%if from.status_detail.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>

@@ -837,7 +837,9 @@ class MembershipDefault(TendenciBaseModel):
                 reps = corp_membership.corp_profile.reps.all()
                 params = {
                         'corp_membership': corp_membership,
-                        'membership': self
+                        'membership': self,
+                        'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+                        'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
                           }
                 for rep in reps:
                     params.update({'user': rep.user})

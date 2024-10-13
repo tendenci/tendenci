@@ -33,6 +33,22 @@
       <h1>{{ group.name }}</h1>
     </div>
     
+    {% if request.user.is_authenticated %}
+    {% if request.user|in_group:group.id %}
+        {% if group.allow_self_remove %}
+        	<div>{% trans "You are subscribed to this group. If you would like to unsubscribe, please click the button below." %}</div>
+            <a href="{% url "group.selfremove" group.slug %}" title="Unsubscribe myself from group"><button class="btn btn-default btn-sm">{% trans "Unsubscribe" %}</button></a>
+        {% else %}
+        <div>{% trans "You are subscribed to this group. If you would like to unsubscribe, please contact your site administrator." %}</div>
+        {% endif %}
+    {% else %}
+        {% if group.allow_self_add %}
+            <a href="{% url "group.selfadd" group.slug %}" title="Subscribe myself to group"><button class="btn btn-default btn-sm">{% trans "Subscribe" %}</button></a>
+        {% endif %}
+   {% endif %}
+   {% endif %}
+    
+    
     {% if can_edit and group.type == 'system_generated' %}
     <div class="system-generated">{% trans 'System generated groups can not be deleted.' %}</div>
     {% endif %}

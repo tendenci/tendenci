@@ -8,7 +8,7 @@
 {% has_perm user event_logs.view_eventlog as can_view_eventlog %}
 
 <ul class="list-unstyled t-meta-data">
-    {% if user.is_authenticated %}
+    {% if request.user.is_superuser %}
         <li>{% blocktrans with group.create_dt|date:"long" as create_date %}Created on {{ create_date }}
         by:{% endblocktrans %} <a href="{{ group.creator.get_absolute_url }}">
         {% if group.creator.first_name %}{{ group.creator.first_name }} {{ group.creator.last_name }}
@@ -59,11 +59,11 @@
                             {% endif %}
                             {% if user|in_group:group.id %}
                                 {% if group.allow_self_remove and user.is_authenticated or can_add_member %}
-                                    <li><a href="{% url "group.selfremove" group.slug user.id %}" title="Remove myself from group">{% trans "Remove myself from group" %}</a></li>
+                                    <li><a href="{% url "group.selfremove" group.slug %}" title="Remove myself from group">{% trans "Remove myself from group" %}</a></li>
                                 {% endif %}
                                 {% else %}
                                     {% if group.allow_self_add and user.is_authenticated or can_add_member %}
-                                        <li><a href="{% url "group.selfadd" group.slug user.id %}" class="option-link addmember" title="Add myself to group">{% trans "Add Myself to Group" %}</a></li>
+                                        <li><a href="{% url "group.selfadd" group.slug %}" class="option-link addmember" title="Add myself to group">{% trans "Add Myself to Group" %}</a></li>
                                     {% endif %}
                             {% endif %}
 

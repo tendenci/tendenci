@@ -3,7 +3,7 @@
 <tr>
     <td>
         {% if obj %}
-            {% trans 'Job' %} #<a href="{% url "job" obj.slug %}">{{ obj.pk }}</a> {{ obj.title|truncatewords:5 }}
+            {% trans 'Job posting' %} #<a href="{% url "job" obj.slug %}">{{ obj.pk }}</a> {{ obj.get_description }}
         {% else %}
             {% trans 'Job information not available' %}
         {% endif%}

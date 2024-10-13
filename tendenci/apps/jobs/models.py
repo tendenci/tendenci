@@ -155,6 +155,12 @@ class BaseJob(TendenciBaseModel):
             inv.object_id,
         )
 
+    def get_description(self):
+        """
+        The description that can be displayed on invoice.
+        """
+        return f'{self.title} {self.pricing.duration_display()}' if self.pricing else self.title
+
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """
         Make the accounting entries for the job sale
@@ -266,6 +272,12 @@ class JobPricing(models.Model):
         if self.title:
             return self.title
         return "Untitled"
+
+    def duration_display(self):
+        if self.duration < 365:
+            return _(f'{self.duration} days')
+        if self.duration == 365:
+            return _('1 year')
 
     def save(self, user=None, *args, **kwargs):
         if not self.id:

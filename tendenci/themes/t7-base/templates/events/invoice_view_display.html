@@ -4,6 +4,9 @@
 
 {% with obj.registrant_set.all as registrants %}
     {% if registrants %}
+    	<tr>
+    		<td>{% blocktrans with event_title=obj.event.title event_start_dt=obj.event.start_dt|date:'N d, Y' %}Registration(s) for: "{{ event_title }}" held on {{ event_start_dt }}{% endblocktrans %}</td>
+    	</tr>
         {% for reg in registrants %}
             <tr>
                 <td>
