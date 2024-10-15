@@ -1244,6 +1244,7 @@ def corp_renew(request, id,
                 new_corp_membership.creator_username = request.user.username
                 new_corp_membership.owner = request.user
                 new_corp_membership.owner_username = request.user.username
+                new_corp_membership.expiration_dt = new_corp_membership.get_expiration_dt()
 
                 # archive old corp_memberships
                 new_corp_membership.archive_old()
