@@ -915,7 +915,7 @@ class CorpMembership(TendenciBaseModel):
         on invoice.
         If not supplied, the default description will be generated.
         """
-        return 'Tendenci Invoice %d for Corp. Memb. (%d): %s. ' % (
+        return 'Invoice %d for Corp. Memb. (%d): %s. ' % (
             inv.id,
             inv.object_id,
             self,

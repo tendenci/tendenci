@@ -220,7 +220,7 @@ class Directory(TendenciBaseModel):
         The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
-        return 'Tendenci Invoice %d for Directory: %s (%d).' % (
+        return 'Invoice %d for Directory: %s (%d).' % (
             inv.id,
             self.headline,
             inv.object_id,

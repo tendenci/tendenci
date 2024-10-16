@@ -149,7 +149,7 @@ class BaseJob(TendenciBaseModel):
         The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
-        return 'Tendenci Invoice %d for Job: %s (%d).' % (
+        return 'Invoice %d for Job: %s (%d).' % (
             inv.id,
             self.title,
             inv.object_id,
