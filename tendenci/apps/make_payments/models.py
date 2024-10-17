@@ -67,7 +67,7 @@ class MakePayment(models.Model):
         If not supplied, the default description will be generated.
         """
         if self.comments:
-            return 'Tendenci Invoice %d (Payment %d) %s' % (
+            return 'Invoice %d (Payment %d) %s' % (
                 inv.id,
                 inv.object_id,
                 self.comments,

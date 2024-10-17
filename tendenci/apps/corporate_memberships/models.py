@@ -915,7 +915,7 @@ class CorpMembership(TendenciBaseModel):
         on invoice.
         If not supplied, the default description will be generated.
         """
-        return 'Tendenci Invoice %d for Corp. Memb. (%d): %s. ' % (
+        return 'Invoice %d for Corp. Memb. (%d): %s. ' % (
             inv.id,
             inv.object_id,
             self,
@@ -1036,7 +1036,7 @@ class CorpMembership(TendenciBaseModel):
         corp_membership = self.__class__()
         field_names = [field.name for field in self.__class__._meta.fields]
         ignore_fields = ['id', 'renewal', 'renew_dt', 'status', 'donation_amount',
-                         'status_detail', 'approved', 'approved_denied_dt',
+                         'status_detail', 'approved', 'approved_denied_dt', 'expiration_dt',
                          'approved_denied_user', 'anonymous_creator', 'donation']
         for field in ignore_fields:
             field_names.remove(field)
@@ -1241,6 +1241,21 @@ class CorpMembership(TendenciBaseModel):
         if get_setting('module', 'corporate_memberships', 'notificationson'):
             self.send_notice_email(request, 'disapprove_join')
 
+    def get_previous_expire_dt(self):
+        if self.renew_from_id:
+            [previous_expire_dt] = CorpMembership.objects.filter(
+                                        id=self.renew_from_id).values_list(
+                                        'expiration_dt', flat=True)[:1] or [None]
+            return previous_expire_dt
+
+    def get_expiration_dt(self):
+        corp_memb_type = self.corporate_membership_type
+        return corp_memb_type.get_expiration_dt(renewal=self.renewal,
+                                        join_dt=self.join_dt,
+                                        renew_dt=self.renew_dt,
+                                        previous_expire_dt=self.get_previous_expire_dt())
+        
+
     def approve_renewal(self, request, **kwargs):
         """
         Approve the corporate membership renewal, and
@@ -1258,18 +1273,7 @@ class CorpMembership(TendenciBaseModel):
             self.status = True
             self.status_detail = 'active'
             # calculate the expiration date
-            if self.renew_from_id:
-                [previous_expire_dt] = CorpMembership.objects.filter(
-                                            id=self.renew_from_id).values_list(
-                                            'expiration_dt', flat=True)[:1] or [None]
-            else:
-                previous_expire_dt = None
-            corp_memb_type = self.corporate_membership_type
-            self.expiration_dt = corp_memb_type.get_expiration_dt(
-                                            renewal=True,
-                                            join_dt=self.join_dt,
-                                            renew_dt=self.renew_dt,
-                                            previous_expire_dt=previous_expire_dt)
+            self.expiration_dt = self.get_expiration_dt()
             if not request_user.is_anonymous:
                 self.owner = request_user
                 self.owner_username = request_user.username

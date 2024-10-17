@@ -77,7 +77,7 @@ class Donation(models.Model):
         The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
-        description = f'Tendenci Invoice {inv.id} Payment for Donation {inv.object_id}'
+        description = f'Invoice {inv.id} Payment for Donation {inv.object_id}'
         if self.from_object:
             description += f" from {str(self.from_object)}"
         return description
