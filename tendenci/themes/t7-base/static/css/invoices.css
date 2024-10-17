@@ -137,8 +137,9 @@ div.invoice-meta table tr.invoice-meta-amount td {
 
 div.invoice-meta-logo {
     margin: 20px 0 20px 0;
-    width: 300px;
-    float: right;
+    max-width: 300px;
+    text-align: center;
+    /*float: right;*/
 }
 
 div.invoice-meta-logo.print-view {
@@ -147,7 +148,7 @@ div.invoice-meta-logo.print-view {
 }
 
 div.invoice-meta-logo img {
-    width: 100%;
+    max-width: 100%;
 }
 
 div.invoice-meta-clear {

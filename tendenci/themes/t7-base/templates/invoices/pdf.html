@@ -31,9 +31,6 @@ div.invoice-meta{
 .invoice-table-header{
     font-style: bold;
 }
-#invoice-meta-logo{
-    text-align: right;
-}
 </style>
 </head>
 
@@ -42,27 +39,7 @@ div.invoice-meta{
   {% if invoice.region and invoice.region.invoice_header %}
   {{ invoice.region.invoice_header_with_absurl|safe  }}
   {% else %}
-  <div class="page-header">
-    <h1>{% if obj_name %}{{ obj_name|capfirst}} {% endif %} {% trans "Invoice" %}</h1>
-  </div>
-  <table>
-      <tr>
-          <td style="width: 50%;">
-            <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</div>
-          {% if SITE_GLOBAL_SITEMAILINGADDRESS %}
-          <address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address>
-          {% endif %}
-          </td>
-          <td class="td-right" style="width: 30%;">
-             {% if MODULE_INVOICES_INVOICELOGO %}
-              <div id="invoice-meta-logo print-view">
-                <img src="{{ logo_base64_src }}" width="50" height="50" alt="{% trans 'invoice logo' %}" title="{% trans 'invoice logo' %}" />
-              </div>
-              {% endif %}
-          </td>
-      </tr>
-  </table>
-    <br />
+  {% include "invoices/include/default_invoice_header.html" %}
  {% endif %}
  
   

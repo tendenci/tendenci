@@ -2,6 +2,23 @@
   <h1>{% if obj_name %}{{ obj_name|capfirst }}{% endif %} {% trans 'Invoice' %}</h1>
 </div>
 
+<table width="100%">
+<tr>
 {% if SITE_GLOBAL_SITEMAILINGADDRESS %}
+<td width="50%">
 <p><address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address></p>
+</td>
 {% endif %}
+{% if MODULE_INVOICES_INVOICELOGO %}
+    {% with invoice.get_invoice_logo_url as logo_url  %}
+    {% if logo_url %}
+    <td width="50%" align="right">
+    <div class="invoice-meta-logo">
+      <img src="{{ logo_url }}" alt="{% trans 'invoice logo' %}" title="{% trans 'invoice logo' %}" />
+    </div>
+    </td>
+    {% endif %}
+    {% endwith %}
+{% endif %}
+</tr>
+</table>
