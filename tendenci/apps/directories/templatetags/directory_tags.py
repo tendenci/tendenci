@@ -111,6 +111,8 @@ def list_directories(parser, token):
            The text to search for items. Will not affect order.
         ``tags``
            The tags required on items to be included.
+        ``exclude_tags``
+           Exclude items containing any of these tags.
         ``random``
            Use this with a value of true to randomize the items included.
 
