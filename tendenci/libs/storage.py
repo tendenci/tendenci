@@ -1,18 +1,19 @@
 from django.conf import settings
-from django.core.files.storage import get_storage_class
+from django.core.files.storage import default_storage
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 
 def get_default_storage():
     """
     Get a default storage class.
     """
-    return get_storage_class(settings.DEFAULT_FILE_STORAGE)()
+    return default_storage
 
 def get_static_storage():
     """
     Get a static storage class.
     """
-    return get_storage_class(settings.STATICFILES_STORAGE)()
+    return staticfiles_storage
 
 
 def get_file_content(name, storage_type='default'):
