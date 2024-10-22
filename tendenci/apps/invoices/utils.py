@@ -42,19 +42,6 @@ def invoice_pdf(request, invoice):
         if invoice.box_and_packing:
             tmp_total += invoice.box_and_packing
 
-    # base64 encoded logo image
-    invoice_logo_file_id = get_setting('module', 'invoices', 'invoicelogo')
-    logo_base64_src = ''
-    if invoice_logo_file_id:
-        try:
-            invoice_logo_file_id = int(invoice_logo_file_id)
-        except ValueError:
-            invoice_logo_file_id = 0
-        if invoice_logo_file_id:
-            [file] = File.objects.filter(id=invoice_logo_file_id)[:1] or [None]
-            if file:
-                logo_base64_src = f"data:{file.mime_type()};base64,{file.get_binary(size=(300, 150))}"
-    
     template_name="invoices/pdf.html"
     template = get_template(template_name)
     html  = template.render(context={
@@ -63,13 +50,12 @@ def invoice_pdf(request, invoice):
                              'payment_method': payment_method,
                              'tmp_total': tmp_total,
                              'pdf_version': True,
-                             'logo_base64_src': logo_base64_src,
                              'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl')
                             }, request=request)
     result = BytesIO()
-    pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)
-    #pisa.pisaDocument(BytesIO(html.encode("utf-8")), result,
-    #                  path=get_setting('site', 'global', 'siteurl'))
+    #pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)
+    pisa.pisaDocument(BytesIO(html.encode("utf-8")), result,
+                      path=get_setting('site', 'global', 'siteurl'))
     return result
 
 def process_invoice_export(start_dt=None, end_dt=None,

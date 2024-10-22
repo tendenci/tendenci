@@ -920,6 +920,19 @@ class Invoice(models.Model):
     def get_stripe_application_fee(self, amount):
         return Decimal(amount) * Decimal(0.029) + Decimal(0.30)
 
+    def get_invoice_logo_url(self):
+        from tendenci.apps.files.models import File
+        try:
+            file_id = int(get_setting('module', 'invoices', 'invoicelogo'))
+        except ValueError:
+            file_id = 0
+        if file_id:
+            file = File.objects.filter(id=file_id).first()
+            if file:
+                return file.get_full_url()
+        return ''
+
+
 class InvoiceLineItem(models.Model):
     """
     Extra line items on an invoice.
