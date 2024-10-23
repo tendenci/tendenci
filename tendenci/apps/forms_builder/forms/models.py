@@ -309,7 +309,10 @@ class Field(OrderingBaseModel):
         elif self.field_function == 'Recipients':
             choices = [(label + ':' + val, label) for label, val in (i.split(":") for i in self.choices.split(","))]
         else:
-            choices = [(val, val) for val in self.choices.split(",")]
+            choices = [(val.strip(), val.strip()) for val in self.choices.split(",")]
+            if not self.default and self.field_type == 'ChoiceField':
+                choices = [('', '-----------'),] + choices
+                
         return choices
 
     def execute_function(self, entry, value, user=None):
