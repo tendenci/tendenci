@@ -27,7 +27,7 @@
       height: 100%;
   }
   .badge-section .col-md-6.info {
-      margin-top: 15px;
+      margin-top: 9px;
       width: 100%;
       text-align: center;
   }
@@ -36,20 +36,20 @@
   } 
   .badge-section .qr svg {
       width: 39mm !important;
-      height: 39mm !important;
+      height: 38mm !important;
       margin-top: -9px;
   }
   .badge-section .event_name {
-      font-size: 1.8em;
-      width: 100%;
+      font-size: 1.2em;
+      width: 70%;
       text-align: center;
       font-weight: bold;
-      margin-top: 10px;
-      height: 50px;
+      margin: 10px auto;
+      height: 28px;
   }
   .badge-section .name {
       font-weight: bold;
-      font-size: 1.2em;
+      font-size: 2.6em;
   }
   .badge-section .logo {
       width: fit-content;
@@ -108,16 +108,18 @@
 
     <div class="contents">
       <div class="row">
-        <div class="col-md-6 info">
-          <div class="name">
-            {{ registrant.first_name }} {{ registrant.last_name }}
-          </div>
-          <div>
-            {{ registrant.company_name }}
-          </div>
-          <div>
-            {{ registrant.pricing.title }}
-          </div>
+      	<div class="row">
+	        <div class="col-md-6 info">
+	          <div class="name">
+	            {{ registrant.first_name }} {{ registrant.last_name }}
+	          </div>
+	          <div>
+	            {{ registrant.company_name }}
+	          </div>
+	          <div>
+	            {{ registrant.pricing.title }}
+	          </div>
+	        </div>
         </div>
         <div class="row">
           <div class="col-md-6 qr">
@@ -134,8 +136,8 @@
         <div class="row">
           <div class="col-md-6 registration">
             {% trans "Registrant ID:" %} {{ registrant.pk }} <br/>
-            {% if registrant.registration.owner and registrant.registration.owner.account_id %}
-              {% trans "Account ID:" %} {{ registrant.registration.owner.account_id }}<br/>
+            {% if registrant.user and registrant.user.profile and registrant.user.profile.account_id %}
+              {% trans "Account ID:" %} {{ registrant.user.profile.account_id }}<br/>
             {% endif %}
           </div>
         </div>
