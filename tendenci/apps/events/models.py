@@ -10,6 +10,7 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 from dateutil.parser import parse
 from functools import reduce
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
@@ -2439,6 +2440,12 @@ class Sponsor(ImageUploader, models.Model):
 
     def logo_exists(self):
         return self.image and File.objects.filter(pk=self.image.pk).exists()
+
+    def image_urls(self):
+        if self.description:
+            soup = BeautifulSoup(self.description, 'html.parser')
+            return [img['src'] for img in soup.find_all('img')]
+        return None
 
 
 class Discount(models.Model):
