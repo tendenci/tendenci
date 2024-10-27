@@ -2,6 +2,7 @@ from decimal import Decimal
 import django
 from django.core.cache import cache
 from django.conf import settings as d_settings
+from django.apps import apps
 
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
@@ -81,7 +82,7 @@ def get_setting(scope, scope_category, name):
     """
     key = get_setting_key([scope, scope_category, name])
 
-    if django.apps.apps.models_ready:
+    if apps.ready:
         setting = cache.get(key)
     else:
         setting = None
@@ -95,7 +96,19 @@ def get_setting(scope, scope_category, name):
                 'scope_category': scope_category,
                 'name': name
             }
-            setting = Setting.objects.get(**filters)
+            
+            if not apps.ready and not apps.stored_app_configs:
+                # If a RuntimeWarning of APPS_NOT_READY_WARNING_MSG would be issued, 
+                # suppress that warning for this settings request. Premises that the 
+                # settings model is read and Settings.objects can deliver. Can we 
+                # test/confirm that? 
+                stored_app_configs = apps.stored_app_configs
+                apps.stored_app_configs = True
+                setting = Setting.objects.get(**filters)
+                apps.stored_app_configs = stored_app_configs
+            else:
+                setting = Setting.objects.get(**filters)
+                
             cache_setting(setting.scope, setting.scope_category, setting.name, setting)
         except Exception:
             setting = None
