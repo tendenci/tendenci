@@ -97,11 +97,9 @@ def get_setting(scope, scope_category, name):
                 'name': name
             }
             
-            if not apps.ready and not apps.stored_app_configs:
+            if not apps.ready and not apps.stored_app_configs and 'site_settings' in list(apps.app_configs.keys()):
                 # If a RuntimeWarning of APPS_NOT_READY_WARNING_MSG would be issued, 
-                # suppress that warning for this settings request. Premises that the 
-                # settings model is read and Settings.objects can deliver. Can we 
-                # test/confirm that? 
+                # suppress that warning for this settings request.  
                 stored_app_configs = apps.stored_app_configs
                 apps.stored_app_configs = True
                 setting = Setting.objects.get(**filters)
