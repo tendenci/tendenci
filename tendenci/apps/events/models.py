@@ -1326,13 +1326,8 @@ class Registration(models.Model):
         else:
             # generally non-table registration
             if self.registrant_set.filter(pricing__include_tax=True).exists():
-                for override, override_price, price, tax_rate in self.registrant_set.filter(
-                                pricing__include_tax=True).values_list(
-                            'override', 'override_price',
-                            'pricing__price', 'pricing__tax_rate'):
-                    if override:
-                        price = override_price
-                    price_tax_rate_list.append((price, tax_rate))
+                for registrant in self.registrant_set.all(): 
+                    price_tax_rate_list.append((registrant.amount, registrant.pricing.tax_rate))
 
         invoice.assign_tax(price_tax_rate_list, primary_registrant.user)
 
