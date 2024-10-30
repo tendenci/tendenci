@@ -42,7 +42,7 @@
 	        {% endfor %}
 	        
           {% if not event.all_day %}
-            {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }} {{ event.timezone.zone|timezone_label }}
+            {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }} {{ event.timezone.key|timezone_label }}
          {% endif %}
 
             </font>
