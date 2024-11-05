@@ -53,6 +53,7 @@ class ProjectInline():
             self.object.allow_anonymous_view = False
 
         self.object = update_perms_and_save(self.request, form, self.object, log=False)
+        form.save_m2m()
 
         # for each formset, use custom formset save func if available
         for name, formset in named_formsets.items():

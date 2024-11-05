@@ -57,7 +57,7 @@
 	 		{% endif %}
 	 		{% endwith %}
 	 		<div>
-	 		<span class="sub-event-time">{{ child_event.start_dt|date:'h:i A' }} - {{ child_event.end_dt|date:'h:i A' }}</span> {{ event.timezone.zone }}
+	 		<span class="sub-event-time">{{ child_event.start_dt|date:'h:i A' }} - {{ child_event.end_dt|date:'h:i A' }}</span> {{ event.timezone.key }}
 			&nbsp;&nbsp;{% if reg_child_event.checked_in %}<span title="checked in" class="glyphicon glyphicon-ok-sign"></span>{% endif %}
 	 		</div>
 	 	</div>

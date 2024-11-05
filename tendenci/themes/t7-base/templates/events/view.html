@@ -331,7 +331,7 @@ div.small-font {
           {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}
           <br />
           {% if not event.all_day %}
-          {{ event.timezone.zone|timezone_label }}</p>
+          {{ event.timezone.key|timezone_label }}</p>
         {% endif %}
         
       </div>

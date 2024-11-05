@@ -296,6 +296,8 @@ INSTALLED_APPS = [
 USE_TWO_FACTOR_AUTH = False
 
 LOGIN_REDIRECT_URL = '/dashboard'
+# redirect 403 to login for anonymous users
+REDIRECT_403_TO_LOGIN = True
 AUTHENTICATION_BACKENDS = [
     'tendenci.apps.perms.backend.ObjectPermBackend',
     #'tendenci.apps.social_auth.backends.facebook.FacebookBackend',  # Does not support Python 3
