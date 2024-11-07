@@ -563,15 +563,18 @@ def get_allowed_mimetypes(file_exts):
     allowed_mimetypes = []
     # Add the od mimetypes map here because those OpenOffice / LibreOffice file extensions
     # are not included in builtin mimetypes.types_map.
-    od_types_map = {
+    other_types_map = {
     '.odt': 'application/vnd.oasis.opendocument.text',
     '.ods': 'application/vnd.oasis.opendocument.spreadsheet',
-    '.odp': 'application/vnd.oasis.opendocument.presentation'}
+    '.odp': 'application/vnd.oasis.opendocument.presentation',
+    '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation'}
     for ext in file_exts:
         if ext in types_map:
             mime_type = types_map[ext]
             if mime_type not in allowed_mimetypes:
                 allowed_mimetypes.append(types_map[ext])
-        elif ext in od_types_map:
-            allowed_mimetypes.append(od_types_map[ext])
+        elif ext in other_types_map:
+            allowed_mimetypes.append(other_types_map[ext])
     return allowed_mimetypes
