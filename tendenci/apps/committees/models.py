@@ -1,4 +1,5 @@
 from datetime import date
+from bs4 import BeautifulSoup
 
 from django.db import models
 from django.urls import reverse
@@ -79,6 +80,12 @@ class Committee(BasePage):
 
             self.featured_image = image
             self.save()
+
+    def sponsor_image_urls(self):
+        if self.sponsors:
+            soup = BeautifulSoup(self.sponsors, 'html.parser')
+            return [img['src'] for img in soup.find_all('img')]
+        return None
 
     def update_group_perms(self, **kwargs):
         """
