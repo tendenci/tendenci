@@ -45,6 +45,7 @@
       <th>{% trans 'City' %}</th>
       <th>{% trans 'State' %}</th>
       <th>{% trans 'Country' %}</th>
+      <th>{% trans 'Join Date' %}</th>
       <th>{% trans 'Renew Date' %}</th>
     </tr>
     {% for member in members %}
@@ -55,6 +56,7 @@
       <td>{{ member.user.profile.city }}</td>
       <td>{{ member.user.profile.state }}</td>
       <td>{{ member.user.profile.country }}</td>
+      <td>{{ member.join_dt }}</td>
       <td>{{ member.renew_dt }}</td>
     </tr>
     {% endfor %}

@@ -2623,6 +2623,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
             'city',
             'state',
             'country',
+            'join date',
             'renew date'
         ]
 
@@ -2638,6 +2639,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
                 mem.user.profile.city,
                 mem.user.profile.state,
                 mem.user.profile.country,
+                mem.join_dt,
                 mem.renew_dt
             ])
 
