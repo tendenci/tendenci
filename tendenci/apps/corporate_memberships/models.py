@@ -1516,6 +1516,9 @@ class CorpMembership(TendenciBaseModel):
 
         return False
 
+    def allow_view_invoice_by(self, this_user):
+        return self.allow_edit_by(this_user)
+
     def allow_edit_by(self, this_user):
         if not this_user.is_authenticated:
             return False
