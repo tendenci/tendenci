@@ -20,6 +20,7 @@ from django.db.models import Q
 from django.db.models.signals import post_delete
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 
 #from django.contrib.contenttypes.models import ContentType
 from tendenci.libs.tinymce import models as tinymce_models
@@ -507,6 +508,11 @@ class CorpProfile(TendenciBaseModel):
             slug = '{slug}-corp-{id}'.format(slug=slug, id=self.id)
         return slug
 
+    def get_directory_region_id(self):
+        if self.region:
+            return settings.ALTERNATIVE_REGIONS_MAP.get(self.region.id, self.region.id)
+        return None
+
     def add_directory(self):
         if get_setting('module',  'corporate_memberships', 'adddirectory'):
             if not self.directory:
@@ -517,6 +523,15 @@ class CorpProfile(TendenciBaseModel):
                                     entity_parent = self.entity,
                                     email=self.email,
                                     allow_anonymous_view=False)
+                # Get state and region_id for the directory to be added
+                #  - they might be different from the ones of this corp profile
+                region_id = self.get_directory_region_id()
+                state = self.state
+                # If directory's region is a different , we might need to retrieve its state name if state uses region
+                if self.region and self.region.id != region_id:
+                    if get_setting('site', 'global', 'stateusesregion'):
+                        if Region.objects.filter(id=region_id).exists():
+                            state = Region.objects.filter(id=region_id).values_list('region_name', flat=True)[0]
                 params = {'entity': directory_entity,
                           'headline':  self.name,
                           'logo_file': self.logo,
@@ -526,10 +541,10 @@ class CorpProfile(TendenciBaseModel):
                           'address': self.address,
                           'address2': self.address2,
                           'city': self.city,
-                          'state': self.state,
+                          'state': state,
                           'zip_code': self.zip,
                           'country': self.country,
-                          'region': self.region,
+                          'region_id': region_id,
                           'phone': self.phone,
                           'email': self.email,
                           'website': self.url,

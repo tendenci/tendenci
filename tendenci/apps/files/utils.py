@@ -567,6 +567,12 @@ def get_allowed_mimetypes(file_exts):
     '.odt': 'application/vnd.oasis.opendocument.text',
     '.ods': 'application/vnd.oasis.opendocument.spreadsheet',
     '.odp': 'application/vnd.oasis.opendocument.presentation'}
+    # Add some mimetypes for ms office. For example, mime type for .xlsx files can be either 
+    # application/ms-excel or application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    ms_types_map = {
+    '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation'}
     for ext in file_exts:
         if ext in types_map:
             mime_type = types_map[ext]
@@ -574,4 +580,6 @@ def get_allowed_mimetypes(file_exts):
                 allowed_mimetypes.append(types_map[ext])
         elif ext in od_types_map:
             allowed_mimetypes.append(od_types_map[ext])
+        if ext in ms_types_map:
+            allowed_mimetypes.append(ms_types_map[ext])
     return allowed_mimetypes

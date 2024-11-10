@@ -28,6 +28,7 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.base.utils import validate_email
+from tendenci.apps.regions.models import Region
 
 # STATUS_DRAFT = 1
 # STATUS_PUBLISHED = 2
@@ -308,7 +309,10 @@ class Field(OrderingBaseModel):
         elif self.field_function == 'Recipients':
             choices = [(label + ':' + val, label) for label, val in (i.split(":") for i in self.choices.split(","))]
         else:
-            choices = [(val, val) for val in self.choices.split(",")]
+            choices = [(val.strip(), val.strip()) for val in self.choices.split(",")]
+            if not self.default and self.field_type == 'ChoiceField':
+                choices = [('', '-----------'),] + choices
+                
         return choices
 
     def execute_function(self, entry, value, user=None):
@@ -529,7 +533,10 @@ class FormEntry(models.Model):
         return self.get_value_of("country")
 
     def get_region(self):
-        return self.get_value_of("region")
+        value = self.get_value_of("region")
+        if value:
+            return Region.get_region_by_name(value)
+        return None
 
     def get_state(self):
         return self.get_value_of("state")

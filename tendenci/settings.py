@@ -149,7 +149,9 @@ TEMPLATES = [
   }
 ]
 def disable_template_cache():  # For use in site-specific settings.py
-    TEMPLATES[0]['OPTIONS']['loaders'] = TEMPLATES[0]['OPTIONS']['loaders'][0][1]
+    if TEMPLATES[0]['OPTIONS']['loaders'][0][0] == 'tendenci.apps.theme.template_loaders.CachedLoader':
+        TEMPLATES[0]['OPTIONS']['loaders'] = TEMPLATES[0]['OPTIONS']['loaders'][0][1]
+        
 # The form renderer does not use the TEMPLATES setting by default.  Configure it to use the
 # TEMPLATES setting so that form widget templates can be overridden in themes.
 # This requires either adding 'django.forms' to INSTALLED_APPS or adding
@@ -294,6 +296,8 @@ INSTALLED_APPS = [
 USE_TWO_FACTOR_AUTH = False
 
 LOGIN_REDIRECT_URL = '/dashboard'
+# redirect 403 to login for anonymous users
+REDIRECT_403_TO_LOGIN = True
 AUTHENTICATION_BACKENDS = [
     'tendenci.apps.perms.backend.ObjectPermBackend',
     #'tendenci.apps.social_auth.backends.facebook.FacebookBackend',  # Does not support Python 3

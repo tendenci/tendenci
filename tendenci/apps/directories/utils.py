@@ -220,8 +220,9 @@ def process_export(export_fields='all_fields', export_status_detail='',
     identifier = identifier or int(ttime.time())
     file_name_temp = 'export/directories/%s_temp.csv' % identifier
 
-    with default_storage.open(file_name_temp, 'wb') as csvfile:
+    with default_storage.open(file_name_temp, 'w') as csvfile:
         csv_writer = csv.DictWriter(csvfile, fieldnames=field_list)
+        csv_writer.writeheader()
         directories = Directory.objects.all()
         if export_status_detail:
             directories = directories.filter(status_detail__icontains=export_status_detail)

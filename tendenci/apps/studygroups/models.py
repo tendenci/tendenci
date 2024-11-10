@@ -1,4 +1,5 @@
 from builtins import str
+from bs4 import BeautifulSoup
 
 from django.db import models
 from django.urls import reverse
@@ -53,6 +54,12 @@ class StudyGroup(BasePage):
 
     def officers(self):
         return Officer.objects.filter(study_group=self).order_by('pk')
+
+    def sponsor_image_urls(self):
+        if self.sponsors:
+            soup = BeautifulSoup(self.sponsors, 'html.parser')
+            return [img['src'] for img in soup.find_all('img')]
+        return None
 
 
 class Position(models.Model):
