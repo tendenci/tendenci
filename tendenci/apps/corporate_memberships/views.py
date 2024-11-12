@@ -744,7 +744,7 @@ def corp_membership_add_directory(request, id):
     """
     corp_profile = get_object_or_404(CorpProfile, pk=id)
     corp_membership = corp_profile.corp_membership
-    if not corp_membership or not corp_membership.is_active or corp_profile.directory:
+    if not corp_membership or not corp_membership.is_active:
         raise Http404
     
     if not get_setting('module',  'corporate_memberships', 'adddirectory'):

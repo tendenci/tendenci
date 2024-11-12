@@ -1,5 +1,5 @@
 {% if MODULE_CORPORATE_MEMBERSHIPS_ADDDIRECTORY %}
-        {% if corp_profile.directory %}
+        {% if corp_profile.directory and corp_profile.directory.status %}
              <a href="{% url 'directory' corp_profile.directory.slug  %}">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}: {{ corp_profile.directory }}</a>
         {% else %}
                 {% if request.user.is_superuser and corporate_membership.status_detail == 'active' %}

@@ -560,6 +560,10 @@ class CorpProfile(TendenciBaseModel):
                           }
                 self.directory = Directory.objects.create(**params)
                 self.save()
+            else:
+                if self.directory.status == False:
+                    self.directory.status = True
+                    self.directory.save()
 
     def get_active_indiv_memberships(self):
         """
