@@ -16,7 +16,7 @@
                 {% for field in fieldset %}
                     {% if field.errors %}
                     {% for error in field.errors %}
-                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
+                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{{ field.label }}</a> - {{ error }}</p>
                     {% endfor %}
                     {% endif %}
                 {% endfor %}
@@ -25,7 +25,7 @@
             {% for field in form %}
                 {% if field.errors %}
                       {% for error in field.errors %}
-                          <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
+                          <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{{ field.label }}</a> - {{ error }}</p>
                       {% endfor %}
                 {% endif %}
             {% endfor %}
