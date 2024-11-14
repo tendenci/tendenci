@@ -1,6 +1,7 @@
 from builtins import str
 from django.template import Library, TemplateSyntaxError, Variable, Node
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.perms.utils import get_query_filters
 from django.contrib.auth.models import AnonymousUser, User
@@ -129,17 +130,21 @@ def nav(context, nav_id, show_title=False, is_site_map=False):
     except:
         pass
 
+    lang = None
     try:
         filters = get_query_filters(user, 'navs.view_nav')
         navs = Nav.objects.filter(filters).filter(id=nav_id)
         if user.is_authenticated:
+            if user.profile.lang != settings.LANGUAGE_CODE:
+                if not (settings.LANGUAGE_CODE == 'en-us' and user.profile.lang == 'en'):
+                    lang = user.profile.lang
             if not user.profile.is_superuser:
                 navs = navs.distinct()
 
         nav_object = navs[0]
-        nav = get_nav(nav_object.pk, is_site_map=is_site_map)
+        nav = get_nav(nav_object.pk, is_site_map=is_site_map, lang=lang)
         if not nav:
-            nav = cache_nav(nav_object, show_title, is_site_map=is_site_map)
+            nav = cache_nav(nav_object, show_title, is_site_map=is_site_map, lang=lang)
     except:
         return None
 

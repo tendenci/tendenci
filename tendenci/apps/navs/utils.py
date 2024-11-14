@@ -10,11 +10,13 @@ def get_pre_key(is_site_map=False):
         return 'site_map'
     return NAV_PRE_KEY
 
-def cache_nav(nav, show_title=False, is_site_map=False):
+def cache_nav(nav, show_title=False, is_site_map=False, lang=None):
     """
     Caches a nav's rendered html code
     """
     keys = [settings.CACHE_PRE_KEY, get_pre_key(is_site_map), str(nav.id)]
+    if lang:
+        keys.append(str(lang))
     key = '.'.join(keys)
     value = render_to_string(template_name="navs/render_nav.html",
                         context={'nav':nav,
@@ -23,11 +25,13 @@ def cache_nav(nav, show_title=False, is_site_map=False):
     cache.set(key, value, 432000) #5 days
     return value
 
-def get_nav(id, is_site_map=False):
+def get_nav(id, is_site_map=False, lang=None):
     """
     Get the nav from the cache.
     """
     keys = [settings.CACHE_PRE_KEY, get_pre_key(is_site_map), str(id)]
+    if lang:
+        keys.append(str(lang))
     key = '.'.join(keys)
     nav = cache.get(key)
     return nav
