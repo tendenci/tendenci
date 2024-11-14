@@ -16,43 +16,32 @@
 {% block content %}
 <div class="t">
 <div class="corp-reps">
-     <h1>{% trans "Representatives for: " %} <a href="{% url "corpmembership.view" corp_membership.id %}">{{ corp_membership.corp_profile.name }}</a></h1>
+     <h1>{% trans "Add/Edit Representatives " %}<br />
+     <small>&nbsp;&nbsp;&nbsp; <a href="{% url "corpmembership.view" corp_membership.id %}">{{ corp_membership.corp_profile.name }}</a></small></h1>
      {% if reps %}
-     <table width="90%">
-            <tr>
-                <td class="header" width="55%">{% trans "Representative." %}</td>
-                <td class="header" width="20%">{% trans "Is Dues Rep." %}</td>
-                <td class="header" width="20%">{% trans "Is Member Rep." %}</td>
-                <td class="header" width="5%">&nbsp;</td>
-            </tr>
-            {% for rep in reps %}
-                <tr class="corp-rep">
-                <td><a href="{% url "profile" rep.user.username %}">{{ rep.user.get_full_name }} ({{ rep.user.email  }})</a>
+     <table class="table">
+         <tr>
+             <td class="header" width="55%">{% trans "Rep." %}</td>
+             <td class="header" width="20%">{% trans "Is Dues Rep." %}</td>
+             <td class="header" width="20%">{% trans "Is Member Rep." %}</td>
+             <td class="header" width="5%">&nbsp;</td>
+         </tr>
+       {% for rep in reps %}
+           <tr class="corp-rep">
+           <td><a href="{% url "profile" rep.user.username %}">{{ rep.user.get_full_name }} ({{ rep.user.email  }})</a>
 
-                </td>
-                <td>
-                    {% if rep.is_dues_rep %}
-                        {% trans "True" %}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>
-                {% if rep.is_member_rep %}
-                        {% trans "True" %}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td><a href="{% url "corp_membership.delete_rep" rep.pk %}"><small class="delete">{% trans "Delete" %}</small></a>
-                <!-- delete-corp_memb form -->
-                    <form name="corp-memb-rep-delete" method="POST" action="{% url "corp_membership.delete_rep" rep.pk %}">{% csrf_token %}
-                        <input type="hidden" name="action" value="delete">
-                    </form>
-                </td>
-                </tr>
-            {% endfor %}
-            </table>
+           </td>
+           <td>{{ rep.is_dues_rep|yesno }}</td>
+           <td>{{ rep.is_member_rep|yesno }}</td>
+           <td><a href="{% url "corp_membership.delete_rep" rep.pk %}"><small class="delete">{% trans "Delete" %}</small></a>
+           <!-- delete-corp_memb form -->
+               <form name="corp-memb-rep-delete" method="POST" action="{% url "corp_membership.delete_rep" rep.pk %}">{% csrf_token %}
+                   <input type="hidden" name="action" value="delete">
+               </form>
+           </td>
+           </tr>
+       {% endfor %}
+     </table>
      {% else %}
         <div>{% trans "No representative designated yet." %}</div>
      {% endif %}
@@ -61,8 +50,8 @@
     <form action="" method="post">{% csrf_token %}
     <div class="forms">
         {{ form|styled_form }}
-            <input type="submit" name="submit" value="{% trans 'Save and Continue Add Another' %}" />
-            <input type="submit" name="submit" value="{% trans 'Save' %}" />
+            <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Save and Continue Add Another' %}" />
+            <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Save' %}" />
     </div>
 
     </form>
@@ -94,14 +83,14 @@
             return false;   // cancel
         });
 
-        $( "#id_user_display" ).autocomplete({
-            source: "{% url "corp_membership.reps_lookup" %}",
-            selectFirst:true,
-            minLength:2,
-            select:function(event,ui) {
-                $("#id_user").val(ui.item.id)
-            }
-        });
+       // $( "#id_user_display" ).autocomplete({
+       //     source: "{% url "corp_membership.reps_lookup" %}",
+       //     selectFirst:true,
+       //     minLength:2,
+       //     select:function(event,ui) {
+       //         $("#id_user").val(ui.item.id)
+      //      }
+       // });
 
     });
    </script>

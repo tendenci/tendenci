@@ -1956,13 +1956,20 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 
     if request.method == "POST":
         if form.is_valid():
-            rep = form.save(commit=False)
-            rep.corp_profile = corp_memb.corp_profile
-            rep.save()
+            email = form.cleaned_data['email']
+            is_dues_rep = form.cleaned_data['is_dues_rep']
+            is_member_rep = form.cleaned_data['is_member_rep']
+
+            for user in User.objects.filter(email__iexact=email):
+                rep = CorpMembershipRep(
+                    user=user,
+                    corp_profile = corp_memb.corp_profile,
+                    is_dues_rep=is_dues_rep,
+                    is_member_rep=is_member_rep)
+                rep.save()
+                EventLog.objects.log(instance=rep)
 
             corp_membership_update_perms(corp_memb)
-
-            EventLog.objects.log(instance=rep)
 
             if (request.POST.get('submit', '')).lower() == 'save':
                 return HttpResponseRedirect(reverse('corpmembership.view',
