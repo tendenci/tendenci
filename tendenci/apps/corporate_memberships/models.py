@@ -907,7 +907,7 @@ class CorpMembership(TendenciBaseModel):
             else:
                 q_obj = q_obj_or
         if q_obj:
-            return CorpMembership.objects.filter(q_obj)
+            return CorpMembership.objects.filter(q_obj).distinct()
         else:
             return CorpMembership.objects.all()
 
