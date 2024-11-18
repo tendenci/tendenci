@@ -39,7 +39,7 @@
 
 			{% if directory.corpprofile %}
 			{% if user.profile.is_superuser or user == directory.creator or user == directory.owner or directory_owner_with_membership %}
-			<p><a href="{% url 'corpmembership.view_profile' directory.corpprofile.id %}">{% trans "View Corp Member Profile" %}</a></p>
+			<p><a href="{% url 'corpmembership.view_profile' directory.corpprofile.id %}" style="text-wrap: nowrap;">{% trans "View Corp Member Profile" %}</a></p>
 			{% endif %}
 			{% endif %}
         </div>
