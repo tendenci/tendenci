@@ -46,8 +46,6 @@
         {% endwith %}
 		{% endif %}
 
-		{% include "corporate_memberships/directory_link.html" %}
-
         {% if corp_profile.logo %}
          <div class="t-corp-membership-logo">
              <img class="img-responsive" src="{{ corp_profile.get_logo_url }}" alt="{{ corp_profile.name }}" title="{{ corp_profile.name }}">
@@ -212,7 +210,8 @@
     
         </table>
 
-		 {% include "corporate_memberships/timeline.html" %}
+		{% include "corporate_memberships/directory_link.html" %}
+		{% include "corporate_memberships/timeline.html" %}
         {% include "corporate_memberships/applications/meta.html" %}
     </article>
     <br />

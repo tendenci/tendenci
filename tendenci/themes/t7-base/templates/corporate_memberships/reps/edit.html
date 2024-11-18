@@ -33,7 +33,7 @@
            </td>
            <td>{{ rep.is_dues_rep|yesno }}</td>
            <td>{{ rep.is_member_rep|yesno }}</td>
-           <td><a href="{% url "corp_membership.delete_rep" rep.pk %}"><small class="delete">{% trans "Delete" %}</small></a>
+           <td><a href="{% url "corp_membership.delete_rep" rep.pk %}" style="text-wrap: nowrap;"><small class="delete">{% trans "Delete" %}</small></a>
            <!-- delete-corp_memb form -->
                <form name="corp-memb-rep-delete" method="POST" action="{% url "corp_membership.delete_rep" rep.pk %}">{% csrf_token %}
                    <input type="hidden" name="action" value="delete">

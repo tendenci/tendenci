@@ -96,7 +96,7 @@ from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.utils import escape_csv
+from tendenci.apps.base.utils import escape_csv, get_next_url
 from tendenci.apps.emails.models import Email
 
 
@@ -679,8 +679,13 @@ def corpmembership_edit(request, id,
                     send_email_notification('corp_memb_edited',
                                             recipients,
                                             extra_context)
+            msg_string = f'Successfully edited {str(corp_membership)}'
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
             # log an event
             EventLog.objects.log(instance=corp_membership)
+            next_page = get_next_url(request)
+            if next_page:
+                return HttpResponseRedirect(next_page)
             # redirect to view
             return HttpResponseRedirect(reverse('corpmembership.view',
                                                 args=[corp_membership.id]))
@@ -1971,6 +1976,9 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 
             corp_membership_update_perms(corp_memb)
 
+            msg_string = _('Representative added successfully')
+            messages.add_message(request, messages.SUCCESS, msg_string)
+            
             if (request.POST.get('submit', '')).lower() == 'save':
                 return HttpResponseRedirect(reverse('corpmembership.view',
                                                     args=[corp_memb.id]))
