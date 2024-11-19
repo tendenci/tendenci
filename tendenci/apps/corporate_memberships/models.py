@@ -40,7 +40,8 @@ from tendenci.apps.corporate_memberships.managers import (
                                                 CorpMembershipManager,
                                                 CorpMembershipAppManager,
                                                 CorpProfileManager,
-                                                CorpMembershipTypeManager)
+                                                CorpMembershipTypeManager,
+                                                CorpMembershipRepManager)
 #from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.payments.models import PaymentMethod, Payment
@@ -2124,6 +2125,7 @@ class CorpMembershipRep(models.Model):
                                       default=True, blank=True)
     is_member_rep = models.BooleanField(_('is member rep?'),
                                     default=True, blank=True)
+    objects = CorpMembershipRepManager()
 
     class Meta:
         verbose_name = _("Corporate Membership Representative")

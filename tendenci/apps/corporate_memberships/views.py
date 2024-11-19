@@ -961,6 +961,8 @@ def corpmembership_search(request, my_corps_only=False,
         if not my_corps_only and not is_superuser:
             corp_members = corp_members.exclude(status_detail='expired')
 
+        corp_members = corp_members.filter(corp_profile__status=True)
+
     if not corp_members.exists():
         del search_form.fields['cp_id']
     else:

@@ -24,6 +24,14 @@ class CorpMembershipAppManager(Manager):
         return current_app
 
 
+class CorpMembershipRepManager(Manager):
+    def active(self, **kwargs):
+        """
+        Returns corp reps with corps that are not soft deleted.
+        """
+        return self.filter(corp_profile__status=True)
+
+
 class CorpProfileManager(TendenciBaseManager):
     pass
 

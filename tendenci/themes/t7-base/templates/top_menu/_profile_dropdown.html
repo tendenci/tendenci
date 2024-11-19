@@ -77,11 +77,17 @@
                             {% endif %}
 
                             {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
-                            {% if user.corpmembershiprep_set.count > 0 %}
+                            {% with request.user.corpmembershiprep_set.active as corp_reps %}
+                            {% if corp_reps %}
                             <li class="content-item">
-                                <a href="{% url 'corpmembership.mycorps' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/user_suit.png' %}"/><span class="nav-label">{% trans 'My Corp. Membership' %}</span></a>
+                                {% if corp_reps.count == 1 %}
+                                <a href="{% url 'corpmembership.view_profile' corp_reps.0.corp_profile.id %}"><img class="nav-icon" src="{% static 'famfamfam/icons/user_suit.png' %}"/><span class="nav-label">{% trans 'My Corp. Membership' %}</span></a>
+                                {% else %}
+                                <a href="{% url 'corpmembership.mycorps' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/user_suit.png' %}"/><span class="nav-label">{% trans 'My Corp. Memberships' %}</span></a>
+								{% endif %}
                             </li>
                             {% endif %}
+                            {% endwith %}
                              {% endif %}
 
                             <li class="content-item">
