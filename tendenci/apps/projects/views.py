@@ -321,7 +321,7 @@ def search(request, template_name="projects/search.html"):
 
     if get_setting('module', 'projects', 'availableonly'):
         now = datetime.now()
-        projects = projects.filter(start_dt__lte=now, end_dt__gt=now)
+        projects = projects.filter(start_dt__lte=now).filter(Q(end_dt__isnull=True) | Q(end_dt__gt=now))
         projects = projects.filter(status_detail='active')
         projects = projects.order_by('-start_dt')
 
