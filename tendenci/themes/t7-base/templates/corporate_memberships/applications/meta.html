@@ -9,7 +9,7 @@
 {% has_perm user corporate_memberships.delete_corpmembership as can_delete %}
 
 {% if user.is_authenticated %}
-    {% if user.profile.is_superuser or user == corporate_membership.creator or user == corporate_membership.owner %}
+    {% if user.profile.is_superuser %}
     	<ul class="list-unstyled t-meta-data">
         {% if corporate_membership.is_pending and corporate_membership.anonymous_creator and corporate_membership.anonymous_creathor.first_name %}
             {% blocktrans with create_date=corporate_membership.create_dt|date:"long" first_name=corporate_membership.anonymous_creator.first_name last_name=corporate_membership.anonymous_creator.last_name email=corporate_membership.anonymous_creator.email %}
