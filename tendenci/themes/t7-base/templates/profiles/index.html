@@ -264,7 +264,9 @@
         {% else %}
         <p>{% trans 'Not in any groups.' %}</p>
         {% endif %}
-      </div>
+        
+      {% endif %}  
+     </div> 
       
       <div class="col-md-8">
         {% if request.user == user_this or can_edit %}
@@ -368,8 +370,7 @@
 	                  <li><a href="{% url 'corpmembership.view_profile' id %}">{{ name }}</a></li>
 	              {% endfor %}
 	              </ul>
-			  {% endif %}
-          {% endif %}
+			{% endif %}
 
           <!-- chapter -->
 	        {% if memberships and memberships.0.chapter %}
