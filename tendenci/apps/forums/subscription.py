@@ -62,6 +62,7 @@ def notify_forum_subscribers(topic):
             'manage_url': reverse('pybb:forum_subscription', kwargs={'pk': forum.id}),
             'topic': topic,
             'site_url': get_setting('site', 'global', 'siteurl'),
+            'site_name': get_setting('site', 'global', 'sitedisplayname')
         }
         
         headers = get_email_headers(topic.user)
@@ -80,6 +81,7 @@ def notify_topic_subscribers(post):
     # Define constants for templates rendering
     context_vars = {'delete_url': reverse('pybb:delete_subscription', args=[post.topic.id]),
                     'site_url': get_setting('site', 'global', 'siteurl'),
+                    'site_name': get_setting('site', 'global', 'sitedisplayname'),
                     'is_new_topic': post == topic.head,
                     'post': post,
                     'topic': topic,
@@ -97,6 +99,7 @@ def notify_topic_subscribers(post):
 
     subject = render_to_string(template_name=subject_template,
                                    context={'site_url': context_vars['site_url'],
+                                    'site_name': context_vars['site_name'],
                                     'post': post,
                                     'topic': topic})
     # Email subject *must not* contain newlines
