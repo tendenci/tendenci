@@ -96,7 +96,7 @@ from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.utils import escape_csv
+from tendenci.apps.base.utils import escape_csv, get_next_url
 from tendenci.apps.emails.models import Email
 
 
@@ -679,8 +679,13 @@ def corpmembership_edit(request, id,
                     send_email_notification('corp_memb_edited',
                                             recipients,
                                             extra_context)
+            msg_string = f'Successfully edited {str(corp_membership)}'
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
             # log an event
             EventLog.objects.log(instance=corp_membership)
+            next_page = get_next_url(request)
+            if next_page:
+                return HttpResponseRedirect(next_page)
             # redirect to view
             return HttpResponseRedirect(reverse('corpmembership.view',
                                                 args=[corp_membership.id]))
@@ -744,7 +749,7 @@ def corp_membership_add_directory(request, id):
     """
     corp_profile = get_object_or_404(CorpProfile, pk=id)
     corp_membership = corp_profile.corp_membership
-    if not corp_membership or not corp_membership.is_active or corp_profile.directory:
+    if not corp_membership or not corp_membership.is_active:
         raise Http404
     
     if not get_setting('module',  'corporate_memberships', 'adddirectory'):
@@ -955,6 +960,8 @@ def corpmembership_search(request, my_corps_only=False,
         corp_members = corp_members.exclude(status_detail='archive').order_by('corp_profile__name')
         if not my_corps_only and not is_superuser:
             corp_members = corp_members.exclude(status_detail='expired')
+
+        corp_members = corp_members.filter(corp_profile__status=True)
 
     if not corp_members.exists():
         del search_form.fields['cp_id']
@@ -1956,14 +1963,24 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 
     if request.method == "POST":
         if form.is_valid():
-            rep = form.save(commit=False)
-            rep.corp_profile = corp_memb.corp_profile
-            rep.save()
+            email = form.cleaned_data['email']
+            is_dues_rep = form.cleaned_data['is_dues_rep']
+            is_member_rep = form.cleaned_data['is_member_rep']
+
+            for user in User.objects.filter(email__iexact=email):
+                rep = CorpMembershipRep(
+                    user=user,
+                    corp_profile = corp_memb.corp_profile,
+                    is_dues_rep=is_dues_rep,
+                    is_member_rep=is_member_rep)
+                rep.save()
+                EventLog.objects.log(instance=rep)
 
             corp_membership_update_perms(corp_memb)
 
-            EventLog.objects.log(instance=rep)
-
+            msg_string = _('Representative added successfully')
+            messages.add_message(request, messages.SUCCESS, msg_string)
+            
             if (request.POST.get('submit', '')).lower() == 'save':
                 return HttpResponseRedirect(reverse('corpmembership.view',
                                                     args=[corp_memb.id]))

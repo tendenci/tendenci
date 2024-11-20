@@ -15,17 +15,17 @@
 	{% with directory|is_directory_owner_with_membership:user as directory_owner_with_membership %}
         <div class="page-header">
             <h1>{{ directory.headline }}</h1>
-           
-		   {% if directory.status_detail == 'pending' %}
-				<div class="pull-right clearfix">
-				{% if directory_owner_with_membership %}
-             	<a href="{% url 'directory.edit' directory.id %}" class="btn btn-default">{% trans "Edit" %}</a>
+			<div class="pull-right clearfix">
+				{% trans 'Status:' %} <span class="{% if directory.status_detail == 'active' %}text-success{% else %}text-warning{% endif %}">{{ directory.status_detail }}</span>
+				{% if request.user.is_superuser or directory_owner_with_membership %}
+	           	<a href="{% url 'directory.edit' directory.id %}" class="btn btn-default">{% trans "Edit" %}</a>
+	            {% endif %}
+                {% if directory.status_detail == 'pending' %}
+            	{% if request.user.is_superuser %}
+	     	     <a href="{% url 'directory.approve' directory.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
+            	{% endif %}
                 {% endif %}
-             	{% if request.user.is_superuser %}
-		     	<a href="{% url 'directory.approve' directory.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
-             	{% endif %}
-				</div>
-			{% endif %}
+			</div>
         </div>
 
         <div class="t-directories-directory-body">
@@ -39,7 +39,7 @@
 
 			{% if directory.corpprofile %}
 			{% if user.profile.is_superuser or user == directory.creator or user == directory.owner or directory_owner_with_membership %}
-			<p><a href="{% url 'corpmembership.view_profile' directory.corpprofile.id %}">{% trans "View Corp Member Profile" %}</a></p>
+			<p><a href="{% url 'corpmembership.view_profile' directory.corpprofile.id %}" style="text-wrap: nowrap;">{% trans "View Corp Member Profile" %}</a></p>
 			{% endif %}
 			{% endif %}
         </div>

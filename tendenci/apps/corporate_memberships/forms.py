@@ -14,6 +14,8 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.core.files.storage import default_storage
 from django.contrib.contenttypes.models import ContentType
+from django.urls.base import reverse
+from django.utils.safestring import mark_safe
 #from django.conf import settings
 
 # from captcha.fields import CaptchaField
@@ -1129,37 +1131,35 @@ class CorpApproveForm(forms.Form):
             self.fields.pop('users')
 
 
-class CorpMembershipRepForm(forms.ModelForm):
-    user_display = forms.CharField(max_length=800,
-                        required=False,
-                        help_text=_('Rep must be a valid user on the website. Enter name or username or email, then press the down arrow key to select a suggestion'))
+class CorpMembershipRepForm(FormControlWidgetMixin, forms.ModelForm):
+    email = forms.EmailField(label=_("Add a Representative"),
+                        required=True,
+                        help_text=_('Please enter an email address. In order to add a representative, they must be registered. '))
 
     class Meta:
         model = CorpMembershipRep
-        fields = ('user_display',
-                 'user',
+        fields = ('email',
                 'is_dues_rep',
                 'is_member_rep',)
 
     def __init__(self, corp_membership, *args, **kwargs):
         self.corp_membership = corp_membership
         super(CorpMembershipRepForm, self).__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs.update({'placeholder': _('example@email.com')})
 
-        self.fields['user_display'].label = _("Add a Representative")
-        self.fields['user'].widget = forms.HiddenInput()
-        self.fields['user'].error_messages['required'
-                                ] = _('Please enter a valid user.')
-
-    def clean_user(self):
-        value = self.cleaned_data['user']
-        try:
-            CorpMembershipRep.objects.get(
-                corp_profile=self.corp_membership.corp_profile,
-                user=value)
+    def clean_email(self):
+        value = self.cleaned_data['email']
+        if not User.objects.filter(email__iexact=value).exists():
+            register_url = reverse('registration_register')
             raise forms.ValidationError(
-                _("This user is already a representative."))
-        except CorpMembershipRep.DoesNotExist:
-            pass
+                mark_safe(_(f'The email address you entered is not registered, please check for errors or request that your representative <a href="{register_url}" target="_blank">register a new account</a>. Once registered, you may add them here.')))
+
+        if CorpMembershipRep.objects.filter(
+                corp_profile=self.corp_membership.corp_profile,
+                user__email=value).exists():
+            raise forms.ValidationError(
+                _(f"The user with this email {value} is already a representative."))
+
         return value
 
 

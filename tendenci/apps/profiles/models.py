@@ -475,6 +475,10 @@ class Profile(Person):
             if chapter_membership.chapter.is_chapter_leader(user2_compare):
                 return True
 
+        # corp reps can view
+        if self.in_corp_with_this_rep(user2_compare):
+            return True
+
         # False for everythin else
         return False
 
@@ -500,6 +504,10 @@ class Profile(Person):
         for chapter_membership in self.chapter_memberships():
             if chapter_membership.chapter.is_chapter_leader(user2_compare):
                 return True
+
+        # corp reps can edit
+        # if self.in_corp_with_this_rep(user2_compare):
+        #     return True
 
         return False
 
@@ -828,6 +836,19 @@ class Profile(Person):
             return corpmembershipreps[0].corp_profile
 
         return None
+
+    def in_corp_with_this_rep(self, request_user):
+        """
+        Check if this user is in a corp that the request_user
+        is a rep of.
+        """
+        membership = self.membership
+        if membership and membership.corp_profile_id:
+            if request_user.corpmembershiprep_set.filter(
+                corp_profile_id=membership.corp_profile_id).exists():
+                    return True
+        return False
+
 
 def get_import_file_path(instance, filename):
     return "imports/profiles/{uuid}/{filename}".format(

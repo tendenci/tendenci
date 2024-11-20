@@ -416,6 +416,10 @@ class Invoice(models.Model):
             # example: chapter leaders can view/adjust invoices for their chapter memberships.
             if obj.allow_adjust_invoice_by(user2_compare):
                 return True
+        if obj and hasattr(obj, 'allow_view_invoice_by'):
+            # example: corp reps can view the invoices of their corp memberships.
+            if obj.allow_view_invoice_by(user2_compare):
+                return True
 
         if user2_compare.is_authenticated:
             if user2_compare in [self.creator, self.owner] or \

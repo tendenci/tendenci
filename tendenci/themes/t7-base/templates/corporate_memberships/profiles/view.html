@@ -50,6 +50,9 @@
 <div class="row corp-profile-detail">
     <div class="col-md-5 profile-left">
         <h3>{% trans 'Company Details' %}</h3>
+        {% if request.user.is_superuser or is_rep %}
+        <div class="text-right"><a href="{% url 'corpmembership.edit' corp_membership.pk %}?next={{ request.path }}">{% trans 'Edit' %}</a></div>
+        {% endif %}
         <div class="row">
             <div class="col-xs-4">
                 {% trans 'Parent Entity' %}
@@ -274,9 +277,16 @@
 
 {% include "corporate_memberships/directory_link.html" %}
 
-    </div>
-
+  </div>
+</div> 
+  {% if request.user.is_superuser or is_rep %}
+  {% with corp_membership as corporate_membership %}
+  <p>
+  {% include "corporate_memberships/applications/meta.html" %} 
+  </p>
+  {% endwith %}
+  {% endif %}
 </div>
 
-</div>
+
 {% endblock %}

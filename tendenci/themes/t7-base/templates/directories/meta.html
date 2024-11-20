@@ -108,14 +108,13 @@
     {% if user.is_authenticated %}
         {% if not user.profile.is_superuser %}
             {% if user == directory.creator or user == directory.owner %}
-                <li><strong>{% trans "Owned by you" %}</strong></li>
                 {% if not directory.status_detail == "active" %}
                     <li><strong>{% trans "Status:" %}</strong> <span class="text-warning">{{ directory.status_detail|capfirst }}</span></li>
                 {% endif %}
             {% endif %}
         {% endif %}
 
-        {% if user.profile.is_superuser or user == directory.creator or user == directory.owner %}
+        {% if user.profile.is_superuser %}
             {% meta_creator_owner directory %}
         {% endif %}
     {% endif %}

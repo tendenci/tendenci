@@ -40,7 +40,8 @@ from tendenci.apps.corporate_memberships.managers import (
                                                 CorpMembershipManager,
                                                 CorpMembershipAppManager,
                                                 CorpProfileManager,
-                                                CorpMembershipTypeManager)
+                                                CorpMembershipTypeManager,
+                                                CorpMembershipRepManager)
 #from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.payments.models import PaymentMethod, Payment
@@ -560,6 +561,10 @@ class CorpProfile(TendenciBaseModel):
                           }
                 self.directory = Directory.objects.create(**params)
                 self.save()
+            else:
+                if self.directory.status == False:
+                    self.directory.status = True
+                    self.directory.save()
 
     def get_active_indiv_memberships(self):
         """
@@ -903,7 +908,7 @@ class CorpMembership(TendenciBaseModel):
             else:
                 q_obj = q_obj_or
         if q_obj:
-            return CorpMembership.objects.filter(q_obj)
+            return CorpMembership.objects.filter(q_obj).distinct()
         else:
             return CorpMembership.objects.all()
 
@@ -1516,6 +1521,9 @@ class CorpMembership(TendenciBaseModel):
 
         return False
 
+    def allow_view_invoice_by(self, this_user):
+        return self.allow_edit_by(this_user)
+
     def allow_edit_by(self, this_user):
         if not this_user.is_authenticated:
             return False
@@ -2117,6 +2125,7 @@ class CorpMembershipRep(models.Model):
                                       default=True, blank=True)
     is_member_rep = models.BooleanField(_('is member rep?'),
                                     default=True, blank=True)
+    objects = CorpMembershipRepManager()
 
     class Meta:
         verbose_name = _("Corporate Membership Representative")

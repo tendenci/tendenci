@@ -9,9 +9,10 @@ from . import util, defaults, compat
 from .permissions import perms
 
 
-def topic_saved(instance, **kwargs):
-    if kwargs['created']:
-        notify_forum_subscribers(instance)
+# Comment it out because post is not available yet to display in the notification emails
+# def topic_saved(instance, **kwargs):
+#     if kwargs['created']:
+#         notify_forum_subscribers(instance)
 
 
 def post_saved(instance, **kwargs):
@@ -27,6 +28,8 @@ def post_saved(instance, **kwargs):
         if pybb_profile:
             pybb_profile.post_count = instance.user.posts.count()
             pybb_profile.save()
+        if instance.topic.head == instance:
+            notify_forum_subscribers(instance.topic)
 
 
 def post_deleted(instance, **kwargs):
@@ -89,7 +92,7 @@ def setup():
     pre_save.connect(pre_save_category_slug, sender=Category)
     pre_save.connect(pre_save_forum_slug, sender=Forum)
     pre_save.connect(pre_save_topic_slug, sender=Topic)
-    post_save.connect(topic_saved, sender=Topic)
+    #post_save.connect(topic_saved, sender=Topic)
     post_save.connect(post_saved, sender=Post)
     post_delete.connect(post_deleted, sender=Post)
     if defaults.PYBB_AUTO_USER_PERMISSIONS:

@@ -12,6 +12,7 @@ from django.db.models import OneToOneField
 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.site_settings.utils import get_setting
 
 from .compat import get_user_model_path, get_username_field, get_atomic_func, slugify
 from . import defaults
@@ -364,6 +365,11 @@ class Post(RenderableItem):
         Used in templates for breadcrumb building
         """
         return self.topic.forum.category, self.topic.forum, self.topic,
+
+    def body_html_abs_urls(self):
+        site_url = get_setting('site', 'global', 'siteurl')
+        body_html_abs = self.body_html.replace("src=\"/", f"src=\"{site_url}/")
+        return body_html_abs.replace("href=\"/", f"href=\"{site_url}/")
 
 
 class Profile(PybbProfile):
