@@ -1,3 +1,25 @@
+### 15.3 [2024-11-21]
+
+* Updated add/edit corp reps to remove the auto-complete with a list of possible email addresses.
+* Added a setting "REDIRECT_403_TO_LOGIN" to allow your site to turn off the "403 to login redirection" for anonymous users. If this setting is turned off (default on), whenever a permission is required, anonymous users will see the 403 page immediately instead of being redirected to the login page. 
+* Updated directory expiration date after directory edit. (Thanks to @rob-hills)
+* Added a check to avoid the "disable_template_cache" from crashing the site. (Thanks to @bernd-wechner)
+* Upgraded zoom to the latest SDK (v3.9.0). 
+* Added an unsubscribe button to group view if user is allowed to remove themselves from the group.
+* Resolved some issues in invoice view.
+* Removed the interactive field from profile edit as the regular users should not change their interactive status.
+* Made some updates for jobs and directories, including a setting to specify the required fields on add/edit.
+* Added an option to set up notices for corp memberships in different regions.
+* Added the tax option to directory pricing.
+* Users can now assign category/subcategory to their directory listings.
+* Added mime types for .xlsx, .docx and .pptx to the allowed list.
+* Allowed the corp reps view their invoices.
+* Updated forum notifications.
+* Fixed invoice logo not showing on invoice PDF.
+* Fixed tax being applied before discount for event registration.
+* Many other updates and fixes.
+
+
 ### 15.2.1 [2024-8-27]
 
 * Corporate memberships update: 1) Added an option to require admin approval upon joining (Corp members) but allow them to renew upon payment without having to go through admin approval. 2) Added a setting to allow individual who submits a corp membership application to automatically become member under the org upon approval.
