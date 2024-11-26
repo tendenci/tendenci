@@ -22,6 +22,7 @@ from django.urls import reverse
 from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.contrib import messages
 
 # from captcha.fields import CaptchaField
 from tendenci.apps.events.models import (
@@ -57,7 +58,7 @@ from tendenci.apps.files.validators import FileValidator
 
 from .fields import UseCustomRegField
 from .widgets import UseCustomRegWidget
-from gevent.libev.corecext import NONE
+from tendenci.apps.base.http import Http403
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -367,6 +368,7 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
         instance and its related field model instances.
         """
         self.user = kwargs.pop('user', AnonymousUser)
+        self.request = kwargs.pop('request', None)
         self.custom_reg_form = kwargs.pop('custom_reg_form', None)
         self.event = kwargs.pop('event', None)
         self.entry = kwargs.pop('entry', None)
@@ -562,6 +564,7 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
 
                 currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
                 err_msg = ""
+                redirect_to_403 = False
                 if not email:
                     err_msg = 'An email address is required for this price %s%s %s. ' % (
                         currency_symbol, pricing.price, pricing.title)
@@ -571,6 +574,9 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                     else:
                         if pricing.allow_member:
                             err_msg = "We do not detect %s as the member." % email
+                            if len(self.pricings) == 1:
+                                redirect_to_403 = True
+                                messages.add_message(self.request, messages.ERROR, err_msg)
                         else:
                             if pricing.groups.all():
                                 err_msg = "We do not detect %s as a member of any of the following %s." % (email, ', '.join(pricing.groups.values_list('name', flat=True)))
@@ -582,6 +588,8 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                             pricing.title,)
 
                     err_msg += ' Please choose another price option.'
+                if redirect_to_403:
+                    raise Http403
                 raise forms.ValidationError(_(err_msg))
 
         return pricing
@@ -2180,6 +2188,7 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', AnonymousUser)
+        self.request = kwargs.pop('request', None)
         self.event = kwargs.pop('event', None)
         self.form_index = kwargs.pop('form_index', None)
         self.pricings = kwargs.pop('pricings', None)
@@ -2357,6 +2366,7 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
 
                 currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
                 err_msg = ""
+                redirect_to_403 = False
                 if not email:
                     err_msg = 'An email address is required for this price %s%s %s.' \
                                 % (currency_symbol, pricing.price, pricing.title)
@@ -2366,6 +2376,9 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
                     else:
                         if pricing.allow_member:
                             err_msg = "We do not detect %s as the member." % email
+                            if len(self.pricings) == 1:
+                                redirect_to_403 = True
+                                messages.add_message(self.request, messages.ERROR, err_msg)
                         else:
                             if pricing.groups.all():
                                 err_msg = "We do not detect %s as a member of any of the following %s." % (email, ', '.join(pricing.groups.values_list('name', flat=True)))
@@ -2373,6 +2386,8 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
                         err_msg = 'Not eligible for the price.%s%s %s.' \
                                     % (currency_symbol, pricing.price, pricing.title)
                     err_msg += ' Please choose another price option.'
+                if redirect_to_403:
+                    raise Http403
                 raise forms.ValidationError(_(err_msg))
 
         return pricing
@@ -2434,6 +2449,7 @@ class RegistrantBaseFormSet(BaseFormSet):
                  initial=None, error_class=ErrorList, **kwargs):
         self.event = kwargs.pop('event', None)
         self.user = kwargs.pop('user', None)
+        self.request = kwargs.pop('request', None)
         self.is_table = kwargs.pop('is_table', None)
         self.default_pricing = kwargs.pop('default_pricing', None)
         self.validate_pricing = kwargs.pop('validate_pricing', True)
@@ -2460,6 +2476,7 @@ class RegistrantBaseFormSet(BaseFormSet):
 
         defaults['event'] = self.event
         defaults['user'] = self.user
+        defaults['request'] = self.request
         defaults['is_table'] = self.is_table
         #if self.default_pricing:
         defaults['default_pricing'] =self.default_pricing

@@ -2615,6 +2615,7 @@ def register(request, event_id=0,
     params = {'prefix': 'registrant',
               'event': event,
               'user': request.user,
+              'request': request,
               'is_table': is_table, # for table reg
               'default_pricing': default_pricing
               }

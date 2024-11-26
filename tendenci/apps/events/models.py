@@ -871,6 +871,33 @@ class RegConfPricing(OrderingBaseModel):
 
         return target_str
 
+    def can_register_by(self, user):
+        """
+        The perms set on this pricing allows it to be registered by the user.
+        """
+        if self.allow_anonymous:
+            return True
+
+        if not user.is_anonymous:
+            if user.is_superuser:
+                return True
+ 
+            if self.allow_user:
+                return True
+
+            if hasattr(user, 'profile'):
+                profile = user.profile
+                if profile.is_member:
+                    return True
+
+                groups_id_list = user.group_member.values_list('group__id', flat=True)
+                if groups_id_list:
+                    for group in self.groups.all():
+                        if group.id in groups_id_list:
+                            return True
+
+        return False
+
 
 class Registration(models.Model):
 

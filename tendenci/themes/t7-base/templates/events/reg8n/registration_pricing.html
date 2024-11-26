@@ -1,5 +1,6 @@
 {% load base_filters %}
 {% load perm_tags %}
+{% load event_filters %}
 
 <span itemprop="offers" itemscope itemtype="https://schema.org/Offer">
   {% if registration.enabled %}
@@ -37,7 +38,7 @@
   <div class="pricing-list-wrap">
     <form action="{% url "event.register" event.pk %}" method="get">
       
-      {% if pricing|length == 1 and pricing.0.price == 0 %}
+      {% if pricing|length == 1 and pricing.0.price == 0 and pricing.0|can_register_by:request.user %}
       <input class="btn btn-success" type="submit" name="submit" value="{% trans 'RSVP Now' %}" />
       {% else %}
       <ul class="list-unstyled">

@@ -24,3 +24,11 @@ def is_registrant(event, user):
         return user.registrant_set.filter(
             registration__event=event, cancel_dt__isnull=True).exists()
     return False
+
+
+@register.filter
+def can_register_by(pricing, user):
+    """
+    Check if perms set on this pricing allows it to be registered by the user.
+    """
+    return pricing.can_register_by(user)
