@@ -2372,16 +2372,16 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
                                 % (currency_symbol, pricing.price, pricing.title)
                 else:
                     if pricing.allow_user:
-                        err_msg = 'We do not detect %s as a site user.' % email
+                        err_msg = 'We do not recognize %s as a site user.' % email
                     else:
                         if pricing.allow_member:
-                            err_msg = "We do not detect %s as the member." % email
+                            err_msg = "We do not recognize %s as a member." % email
                             if len(self.pricings) == 1:
                                 redirect_to_403 = True
                                 messages.add_message(self.request, messages.ERROR, err_msg)
                         else:
                             if pricing.groups.all():
-                                err_msg = "We do not detect %s as a member of any of the following %s." % (email, ', '.join(pricing.groups.values_list('name', flat=True)))
+                                err_msg = "We do not recognize %s as a member of any of the following %s." % (email, ', '.join(pricing.groups.values_list('name', flat=True)))
                     if not err_msg:
                         err_msg = 'Not eligible for the price.%s%s %s.' \
                                     % (currency_symbol, pricing.price, pricing.title)
