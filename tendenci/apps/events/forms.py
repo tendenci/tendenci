@@ -3029,13 +3029,14 @@ def add_months(sourcedate, months):
     return date(year,month,day)
 
 
-class EventReportFilterForm(forms.Form):
+class EventReportFilterForm(FormControlWidgetMixin, forms.Form):
     start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), required=False,
                                         input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
                                         input_time_formats=['%I:%M %p', '%H:%M:%S'])
     end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), required=False,
                                       input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
                                       input_time_formats=['%I:%M %p', '%H:%M:%S'])
+    event_type = forms.CharField(required=False,)
     sort_by = forms.ChoiceField(required=False, choices=[('start_dt', _('Start Date')),
                                                          ('groups__name', _('Group Name')),],
                                 initial='start_dt')
@@ -3050,6 +3051,9 @@ class EventReportFilterForm(forms.Form):
         self.initial_end_dt = self.initial_start_dt + relativedelta(months=2)
         self.fields['start_dt'].initial = self.initial_start_dt
         self.fields['end_dt'].initial = self.initial_end_dt
+        type_choices = Type.objects.all().order_by('name').values_list('id', 'name')
+        self.fields['event_type'].widget = forms.Select(choices=[('','All')] + list(type_choices))
+        self.fields['event_type'].widget.attrs.update({'class': 'form-control'})
 
     def clean(self):
         data = self.cleaned_data

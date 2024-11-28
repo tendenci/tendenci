@@ -13,14 +13,27 @@
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
 <link rel="stylesheet" href="{% static 'css/events.css' %}">
+<style>
+input#id_start_dt_0, input#id_start_dt_1, 
+input#id_end_dt_0, input#id_end_dt_1,
+select#id_sort_by, select#id_sort_direction{
+	display: inline !important;
+	width: 40%;
+}
+select#id_event_type{
+	width: 80%;
+}
+
+</style>
 {% endblock %}
 
 {% block content %}
 
 <div class="t">
     <h1>{% trans 'Events Financial Report' %}</h1>
-   <form action='' method="GET">
-        <div class="form">
+    <hr>
+   	<form class="form-horizontal" action='' method="GET">
+        <div id="ef_search-fields" class="form collapse in">
         <div class="form-group">
 		    <label for="start_dt" class="col-sm-3 control-label">{{ form.start_dt.label }}</label>
 		    <div class="col-sm-9">
@@ -34,17 +47,31 @@
 		    </div>
 	  	</div>
 	  	<div class="form-group">
+		    <label for="event_type" class="col-sm-3 control-label">{{ form.event_type.label }}</label>
+		    <div class="col-sm-9">
+		      {{ form.event_type }}
+		    </div>
+	  	</div>
+	  	<div class="form-group">
 		    <label for="sort_by" class="col-sm-3 control-label">{{ form.sort_by.label }}</label>
 		    <div class="col-sm-9">
 		      {{ form.sort_by }} {{ form.sort_direction }}
 		    </div>
 	  	</div>
+	  	
+	  	<div class="form-group">
+		    <div class="col-sm-3">&nbsp;</div>
+		    <div class="col-sm-9">
+		      <input class="btn btn-default" type="submit" value="{% trans 'Run' %}" />
+              <input class="btn btn-success" type="submit" name="export" value="{% trans 'Export' %}" />
+		    </div>
+	  	</div>
 
-        <div class="text-right">
-        <input class="btn btn-default" type="submit" value="{% trans 'Filter by Date' %}" />
-        <input class="btn btn-success" type="submit" name="export" value="{% trans 'Export' %}" />
         </div>
-        </div>
+        
+      <div class="pull-right">
+		<a href="#ef_search-fields" data-toggle="collapse">Hide/Show Search Form</a>
+		</div>  
    </form>
    {% autopaginate events 20 %}
    {% with events|discount_used as show_discount_count %}
