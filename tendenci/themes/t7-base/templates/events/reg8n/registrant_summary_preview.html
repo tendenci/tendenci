@@ -7,7 +7,7 @@
         {% for field in registrant %}
 
             {% if field.name == "email" %}
-                <li>{{ email_label }}:  {{ field.value.0 }}</li>
+                <li>{{ email_label }}:  {{ field.value }}</li>
             {% elif field.name in flat_ignore_fields %}
 
             {% elif field.name == "pricing" %}
