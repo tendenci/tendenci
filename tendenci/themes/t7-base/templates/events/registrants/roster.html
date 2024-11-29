@@ -92,8 +92,9 @@
             <tr>
                 <th width="2%">#</th>
 
-                <th width="22%" title="{% trans "Name and Phone Number" %}">{% trans "Name & Phone" %}</th>
-                <th width="30%" title="{% trans "Company and Title" %}">{% trans "Title &amp; Company" %}</th>
+                <th width="20%" title="{% trans "Name and Phone Number" %}">{% trans "Name & Phone" %}</th>
+                <th width="20%" title="{% trans "Company and Title" %}">{% trans "Title &amp; Company" %}</th>
+                <th width="12%" title="{% trans "Pricing" %}">{% trans "Pricing" %}</th>
                 <th width="8%" title="{% trans "Invoice Number" %}">{% trans "Inv#" %}</th>
                 <th width="8%" title="{% trans "Invoice Amount" %}">{% trans "Inv$" %}</th>
                 <th width="8%" title="{% trans "Registration Number" %}">{% trans "Reg#" %}</th>
@@ -152,6 +153,10 @@
                         {{ registrant.position_title }}{% endif %}
                 </div>
 
+            </td>
+            
+	         <td> <!-- Pricing -->
+                <div>{% firstof registrant.price_title 'Untitled' %}</div>
             </td>
 
             <td>
@@ -232,8 +237,8 @@
             </td>
             <td>
                 {% if registrant.email %}{{ registrant.email }}{% endif %}
-                <div>{% trans "Registered as" %}: {% firstof registrant.price_title 'Untitled' %}</div>
             </td>
+            <td>&nbsp;</td>
             <td colspan="{% if has_addons %}5{% else %}4{% endif %}">
 
                 {% if registrant.invoice_dict.tender_date %}
