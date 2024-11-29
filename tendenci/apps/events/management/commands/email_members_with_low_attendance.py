@@ -143,7 +143,7 @@ class Command(BaseCommand):
                 m_txt = f'{total_sent} members'
             email.body = f"""The Conference Attendance Notice has been distributed to {m_txt}.<br />"""
             email.body += '<br />'.join(members_list)
-            email.body += """<br /><br />Thanks!<br /><br />{site_label}"""
+            email.body += f"""<br /><br />Thanks!<br /><br />{site_label}"""
             email.send()
 
         print('Done')
