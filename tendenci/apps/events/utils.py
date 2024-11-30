@@ -166,6 +166,12 @@ def do_events_financial_export(**kwargs):
             end_dt = dparser.parse(end_dt)
         except:
             end_dt = None
+    event_type = kwargs['event_type']
+    if event_type:
+        try:
+            event_type = int(event_type)
+        except:
+            event_type = None
     sort_by = kwargs['sort_by']
     if sort_by not in ['start_dt', 'groups__name']:
         sort_by = 'start_dt'
@@ -177,6 +183,8 @@ def do_events_financial_export(**kwargs):
 
     if start_dt and end_dt:
         events = events.filter(Q(start_dt__gte=start_dt) & Q(start_dt__lte=end_dt))
+    if event_type:
+        events = events.filter(type_id=event_type)
     events = events.order_by('{0}{1}'.format(sort_direction, sort_by))
     
     show_discount_count = False

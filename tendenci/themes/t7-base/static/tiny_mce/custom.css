@@ -5,6 +5,8 @@ div.mce-fullscreen {
 .tox.tox-tinymce.tox-fullscreen {
   left: 0;
   position: fixed;
-  top: 30px;
-  z-index: 999999;
+  top: 30px !important;
+}
+#t-admin-megamenu .navbar-brand{
+	max-height: 30px;
 }

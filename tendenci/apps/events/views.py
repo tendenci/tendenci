@@ -2615,6 +2615,7 @@ def register(request, event_id=0,
     params = {'prefix': 'registrant',
               'event': event,
               'user': request.user,
+              'request': request,
               'is_table': is_table, # for table reg
               'default_pricing': default_pricing
               }
@@ -5824,7 +5825,9 @@ def reports_financial(request, template_name="events/financial_reports.html"):
     form = EventReportFilterForm(request.GET or None)
     sort_by = 'start_dt'
     sort_direction = ''
+    event_type = None
     if form.is_valid():
+        event_type = form.cleaned_data['event_type']
         if 'export' in request.GET:
             identifier = int(time.time())
             start_dt = form.cleaned_data['start_dt']
@@ -5839,6 +5842,7 @@ def reports_financial(request, template_name="events/financial_reports.html"):
                               '--identifier=%s' % identifier,
                               '--start_dt={}'.format(start_dt),
                               '--end_dt={}'.format(end_dt),
+                              '--event_type={}'.format(event_type),
                               '--sort_by={}'.format(sort_by),
                               '--sort_direction={}'.format(sort_direction),
                               '--user=%s' % request.user.id])
@@ -5851,6 +5855,9 @@ def reports_financial(request, template_name="events/financial_reports.html"):
         sort_direction = form.cleaned_data.get('sort_direction')
     else:
         events = events.filter(Q(start_dt__gte=form.initial_start_dt) & Q(start_dt__lte=form.initial_end_dt))
+
+    if event_type:
+        events = events.filter(type_id=event_type)
     events = events.order_by('{0}{1}'.format(sort_direction, sort_by))
 
     context = {'events' : events,

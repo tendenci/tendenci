@@ -45,6 +45,12 @@ class Command(BaseCommand):
             default='',
             help='End date')
         parser.add_argument(
+            '--event_type',
+            action='store',
+            dest='event_type',
+            default='',
+            help='Event Type')
+        parser.add_argument(
             '--sort_by',
             action='store',
             dest='sort_by',
@@ -67,6 +73,7 @@ class Command(BaseCommand):
         user_id = options['user']
         start_dt = options['start_dt']
         end_dt = options['end_dt']
+        event_type = options['event_type']
         sort_by = options['sort_by']
         sort_direction = options['sort_direction']
 
@@ -74,6 +81,7 @@ class Command(BaseCommand):
             identifier=identifier,
             start_dt=start_dt,
             end_dt=end_dt,
+            event_type=event_type,
             sort_by=sort_by,
             sort_direction=sort_direction,
             user_id=user_id,
