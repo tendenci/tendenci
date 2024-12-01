@@ -558,6 +558,12 @@ TENDENCI_USER_AGENT = 'Tendenci/14 (+https://www.tendenci.com)'
 # Google Static Maps URL signing secret used to generate a digital signature
 GOOGLE_SMAPS_URL_SIGNING_SECRET = ''
 
+#------------------------------------
+# Localisation Settings
+
+# The assumed phone number region (ISO 3116-1) where an international code isn't specified
+PHONE_NUMBER_REGION = 'US'
+
 # Files App
 ALLOW_MP3_UPLOAD = False
 
