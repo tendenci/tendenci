@@ -468,7 +468,7 @@ def add_decimal(value, arg):
 def phonenumber(value):
     if value:
         number = ''
-        number_object = phonenumber.parse(value, settings.PHONE_NUMBER_REGION)
+        number_object = phonenumbers.parse(value, settings.PHONE_NUMBER_REGION)
         # iterate backwards through number and pattern so we can pad with zeroes if the number is shorter than the pattern
         reversed_number = reversed(str(number_object.national_number))
         for ch in reversed(settings.PHONE_NUMBER_PATTERN):
@@ -482,34 +482,7 @@ def phonenumber(value):
             number = '+{} {}'.format(number_object.country_code, number)
 
         return number
-
         
-        # split number from extension or any text
-        '''
-        x = re.split(r'([a-zA-Z]+)', value)
-        # clean number
-        y = ''.join(i for i in x[0] if i.isdigit())
-
-        if len(y) > 10:    # has country code
-            code = y[:len(y)-10]
-            number = y[len(y)-10:]
-            if code == '1':
-                number = "(%s) %s-%s" %(number[:3], number[3:6], number[6:])
-            else:
-                number = "+%s %s %s %s" %(code, number[:3], number[3:6], number[6:])
-        else:    # no country code
-            number = "(%s) %s-%s" %(y[:3], y[3:6], y[6:])
-
-        # attach additional text extension
-        ext = ''
-        for i in range(1, len(x)):
-            ext = ''.join((ext, x[i]))
-        if ext:
-            return ' '.join((number, ext))
-        else:
-            return number
-        '''
-
 @register.filter
 def timezone_label(value):
     try:
