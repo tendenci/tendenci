@@ -3,6 +3,7 @@ import re
 import os
 import pytz
 import codecs
+import phonenumbers
 from PIL import Image
 from dateutil.parser import parse
 from datetime import datetime, time
@@ -466,7 +467,25 @@ def add_decimal(value, arg):
 @register.filter
 def phonenumber(value):
     if value:
+        number = ''
+        number_object = phonenumber.parse(value, settings.PHONE_NUMBER_REGION)
+        # iterate backwards through number and pattern so we can pad with zeroes if the number is shorter than the pattern
+        reversed_number = reversed(str(number_object.national_number))
+        for ch in reversed(settings.PHONE_NUMBER_PATTERN):
+            if ch == '#': # use the next digit from the phone number
+                number = next(reversed_number, '0') + number # prepend '0' if we run out of digits
+            else: # Use a literal from the PHONE_NUMBER_PATTERN
+                number = ch + number
+        if number_object.extension:
+            number = '+{} {} ext. {}'.format(number_object.country_code, number, number_object.extension)
+        else:
+            number = '+{} {}'.format(number_object.country_code, number)
+
+        return number
+
+        
         # split number from extension or any text
+        '''
         x = re.split(r'([a-zA-Z]+)', value)
         # clean number
         y = ''.join(i for i in x[0] if i.isdigit())
@@ -489,7 +508,7 @@ def phonenumber(value):
             return ' '.join((number, ext))
         else:
             return number
-
+        '''
 
 @register.filter
 def timezone_label(value):
