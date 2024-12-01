@@ -563,6 +563,8 @@ GOOGLE_SMAPS_URL_SIGNING_SECRET = ''
 
 # The assumed phone number region (ISO 3116-1) where an international code isn't specified
 PHONE_NUMBER_REGION = 'US'
+# All '#' characters are replaced with a phone number digit, all other characters are treated as literals
+PHONE_NUMBER_PATTERN = '(###) ###-####'
 
 # Files App
 ALLOW_MP3_UPLOAD = False
