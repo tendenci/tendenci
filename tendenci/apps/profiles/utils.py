@@ -26,7 +26,31 @@ from tendenci.apps.base.utils import normalize_newline
 from tendenci.apps.emails.models import Email
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.utils import escape_csv
+from tendenci.apps.base.utils import escape_csv, Echo
+
+
+def iter_users(users_queryset):
+    field_labels = ['id', 'first_name', 'last_name', 'username', 'email', 'member_number',
+                    'is_staff', 'is_superuser', 'is_active', 'last_login']
+    
+    writer = csv.DictWriter(Echo(), fieldnames=field_labels)
+    # write headers - labels
+    yield writer.writerow(dict(zip(field_labels, field_labels)))
+
+    for user in users_queryset:
+        member_number = ''
+        if hasattr(user, 'profile'):
+            profile = user.profile
+            member_number = profile.member_number
+        values_list = [user.id, user.first_name, user.last_name, user.username,
+                       user.email, member_number, user.is_staff, user.is_superuser,
+                       user.is_active]
+        if user.last_login:
+            values_list.append(user.last_login.strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            values_list.append('')
+
+        yield writer.writerow(dict(zip(field_labels, values_list)))
 
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
