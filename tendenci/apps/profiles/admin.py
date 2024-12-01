@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+import time as ttime
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
@@ -6,12 +8,14 @@ from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
+from django.http import StreamingHttpResponse
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.forms import ProfileAdminForm
+from tendenci.apps.profiles.utils import iter_users
 
 
 class ProfileAdmin(TendenciBaseModelAdmin):
@@ -154,6 +158,18 @@ class LastLoginFilter(SimpleListFilter):
             #print(queryset.query)
         return queryset
 
+
+def export_selected_users(modeladmin, request, queryset):
+    """
+    Exports the selected users.
+    """
+    response = StreamingHttpResponse(
+    streaming_content=(iter_users(queryset)),
+    content_type='text/csv',)
+    response['Content-Disposition'] = f'attachment;filename=users_export_{ttime.time()}.csv'
+    return response
+
+
 class MyUserAdmin(UserAdmin):
     list_display = ('id', 'username', 'email', 'first_name', 'last_name',
                     'show_member_number', 'is_staff', 'is_superuser', 'is_active', 'last_login')
@@ -167,6 +183,9 @@ class MyUserAdmin(UserAdmin):
     )
     list_filter = ("is_staff", "is_superuser", "is_active", LastLoginFilter)
     ordering = ('-id',)
+    actions = [
+        export_selected_users
+    ]
     
     def show_member_number(self, instance):
         [member_number] = Profile.objects.filter(user=instance).values_list('member_number', flat=True)[:1] or ['']
