@@ -4,7 +4,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save, post_delete, pre_save
 from .models import Post, Category, Topic, Forum, create_or_check_slug
-from .subscription import notify_topic_subscribers, notify_forum_subscribers
+from .subscription import NotifyThread, notify_topic_subscribers, notify_forum_subscribers
 from . import util, defaults, compat
 from .permissions import perms
 
@@ -17,7 +17,8 @@ from .permissions import perms
 
 def post_saved(instance, **kwargs):
     if not defaults.PYBB_DISABLE_NOTIFICATIONS:
-        notify_topic_subscribers(instance)
+        #notify_topic_subscribers(instance)
+        NotifyThread(instance).start()
 
         pybb_profile = util.get_pybb_profile(instance.user)
         if pybb_profile and pybb_profile.autosubscribe and \
@@ -29,7 +30,8 @@ def post_saved(instance, **kwargs):
             pybb_profile.post_count = instance.user.posts.count()
             pybb_profile.save()
         if instance.topic.head == instance:
-            notify_forum_subscribers(instance.topic)
+            #notify_forum_subscribers(instance.topic)
+            NotifyThread(instance.topic, post_type='topic').start()
 
 
 def post_deleted(instance, **kwargs):
