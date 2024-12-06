@@ -1947,6 +1947,7 @@ def corpmembership_export(request,
 
 
 @is_enabled('corporate_memberships')
+@login_required
 def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
                    template_name="corporate_memberships/reps/edit.html"):
     corp_memb = get_object_or_404(CorpMembership, pk=id)
@@ -1987,47 +1988,14 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 
     return render_to_resp(request=request, template_name=template_name,
         context={'corp_membership': corp_memb,
-                                              'form': form,
-                                              'reps': reps})
+                  'form': form,
+                  'join_under_corp_url': reverse('membership_default.add_under_corp', args=[corp_memb.id]),
+                  'reps': reps})
 
 
 @is_enabled('corporate_memberships')
 def corp_reps_lookup(request):
-    q = request.GET['term']
-    #use_search_index = (get_setting('site', 'global', 'searchindex') in ('true', True))
-    # TODO: figure out a way of assigning search permission to dues_reps.
-    use_search_index = False
-    if use_search_index:
-        profiles = Profile.objects.search(
-                            q,
-                            user=request.user
-                            ).order_by('last_name_exact')
-    else:
-        # they don't have search index, probably just check username only
-        # for the performance sake
-        profiles = Profile.objects.filter(
-                                 Q(user__first_name__istartswith=q)
-                               | Q(user__last_name__istartswith=q)
-                               | Q(user__username__istartswith=q)
-                               | Q(user__email__istartswith=q))
-        profiles = profiles.order_by('user__last_name')
-
-    if profiles and len(profiles) > 10:
-        profiles = profiles[:10]
-
-    if use_search_index:
-        users = [p.object.user for p in profiles]
-    else:
-        users = [p.user for p in profiles]
-
-    results = []
-    for u in users:
-        value = '%s, %s (%s) - %s' % (u.last_name, u.first_name,
-                                      u.username, u.email)
-        u_dict = {'id': u.id, 'label': value, 'value': value}
-        results.append(u_dict)
-    return HttpResponse(simplejson.dumps(results),
-                        content_type='application/json')
+    pass
 
 
 @is_enabled('corporate_memberships')

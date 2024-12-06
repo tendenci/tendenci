@@ -18,6 +18,7 @@
 <div class="corp-reps">
      <h1>{% trans "Add/Edit Representatives " %}<br />
      <small>&nbsp;&nbsp;&nbsp; <a href="{% url "corpmembership.view" corp_membership.id %}">{{ corp_membership.corp_profile.name }}</a></small></h1>
+     <i>{% blocktrans %}Adding an administrative representative does not grant membership benefits, <a href="{{ join_under_corp_url }}">join as a Member</a> instead.{% endblocktrans %}</i>
      {% if reps %}
      <table class="table">
          <tr>
@@ -49,14 +50,67 @@
 
     <form action="" method="post">{% csrf_token %}
     <div class="forms">
-        {{ form|styled_form }}
+   	{% if form.errors.values %}
+        <div class="alert alert-danger" role="alert">
+            <p>{% trans 'Unable to process your request, see below.' %}</p>
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+
+            {% for field in form %}
+                {% if field.errors %}
+                      {% for error in field.errors %}
+                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                      {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {% for field in form %}
+        {% if field.is_hidden %}
+            {{ field }}
+        {% elif field|is_header %}
+            <h3 class="section-header">{{ field.label }}</h3>
+        {% elif field|is_description %}
+            <p class="section-description">{{ field.label }}</p>
+        {% else %}
+            <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classses }}{% endif %}">
+                <label for="{{ field.id_for_label }}" class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{{ field.label }}</label>
+
+                <div class="col-sm-9">
+                    {% if field|is_checkbox %}
+                        <div class="checkbox">
+                            <label>{{ field }}</label>
+                        </div>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if field.help_text %}
+                        <span class="help-block">{{ field.help_text|safe }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    
+   	<div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
             <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Save and Continue Add Another' %}" />
             <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Save' %}" />
+        </div>
+    </div>
+    
     </div>
 
     </form>
-
-
 
 </div>
 </div>
@@ -82,15 +136,6 @@
             if(delete_corp_memb_rep) $(this).parents('.corp-rep').find('form[name="corp-memb-rep-delete"]').submit() // delete: if OK
             return false;   // cancel
         });
-
-       // $( "#id_user_display" ).autocomplete({
-       //     source: "{% url "corp_membership.reps_lookup" %}",
-       //     selectFirst:true,
-       //     minLength:2,
-       //     select:function(event,ui) {
-       //         $("#id_user").val(ui.item.id)
-      //      }
-       // });
 
     });
    </script>
