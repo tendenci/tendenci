@@ -61,7 +61,7 @@ from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipien
 from tendenci.apps.perms.fields import has_groups_perms
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.notifications import models as notification
-from tendenci.apps.base.utils import Echo
+from tendenci.apps.base.utils import Echo, tcurrency
 from tendenci.apps.chapters.utils import (get_chapter_membership_field_values,
                                           ImportChapterMembership,
                                           email_chapter_members)
@@ -530,6 +530,9 @@ def chapter_memberships_search(request, chapter_id=0,
                 field_labels += [_('Phone'), _('Address'), _('County'), _('State'), _('Zip Code'),]
                 field_labels += [field.label for field in app_fields]
                 field_labels += [_('Membership Type')]
+                field_labels += [_('Chapter Dues/Balance')]
+                field_labels += [_('National Membership Type')]
+                field_labels += [_('National Dues/Balance')]
                 field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
                                 _('Expire Date'), _('Status Detail')]
                 field_labels.insert(0, _('Chapter'))
@@ -550,6 +553,20 @@ def chapter_memberships_search(request, chapter_id=0,
                         values_list += ['', '', '', '', '']
                     values_list += get_chapter_membership_field_values(chapter_membership, app_fields)
                     values_list.append(chapter_membership.membership_type.name)
+                    if chapter_membership.invoice:
+                        values_list.append(tcurrency(chapter_membership.invoice.balance))
+                    else:
+                        values_list.append('')
+                    national_m_type_name = chapter_membership.national_membership_type
+                    if national_m_type_name:
+                        values_list.append(national_m_type_name)
+                    else:
+                        values_list.append('')
+                    national_invoice = chapter_membership.national_membership_invoice
+                    if national_invoice:
+                        values_list.append(tcurrency(national_invoice.balance))
+                    else:
+                        values_list.append('')
                     if chapter_membership.create_dt:
                         values_list.append(chapter_membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
                     else:
