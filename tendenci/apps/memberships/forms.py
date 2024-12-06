@@ -871,9 +871,14 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                 [u] = User.objects.filter(username=un)[:1] or [None]
                 # assert username
                 if u:
-                    raise forms.ValidationError(
-                        _('This username exists. If it\'s yours, please provide your password.')
-                    )
+                    if not self.request.user.is_authenticated:
+                        raise forms.ValidationError(
+                           mark_safe(_(f'This username exists. If it\'s yours, {login_link}.'))
+                        )
+                    else:
+                        raise forms.ValidationError(
+                            _('This username is taken. Please choose a new username.')
+                        )
 
             if not u and not self.is_renewal:
                 # we didn't find user, check if email address is already in use
@@ -892,7 +897,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                             # user is logged in
                             if 'username' in data:
                                 # username is presented on form
-                                raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
+                                raise forms.ValidationError(_('This email "%s" is taken. Please check username and/or enter a different email address.') % email)
                         else:
                             # user is not logged in. prompt them to log in if the user record with this email address is active
                             u = User.objects.filter(email__iexact=email).order_by('-is_active')[0]
@@ -903,6 +908,21 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                             # at this point, user is not logged in and user record with this email is inactive
                             # let them activate the account before applying for membership
                             raise forms.ValidationError(inactive_user_err_msg)
+
+        if not self.is_renewal:
+            if self.request.user.is_authenticated:
+                # check if they have already submitted a membership
+                m = MembershipDefault.objects.filter(user__email__iexact=email,
+                                                    status=True,
+                                                    status_detail__in=('active', 'pending')).first()
+                if m:
+                    if m.user == self.request.user:
+                        if m.status_detail == 'pending':
+                            raise forms.ValidationError(_('You have already signed up. Your membership status: Pending for admin approval.'))
+                        else:
+                            raise forms.ValidationError(_('You have already signed up.'))
+                    else:
+                        raise forms.ValidationError(_(f'Duplicate submissions. Please check your email address.'))
 
         return data
 

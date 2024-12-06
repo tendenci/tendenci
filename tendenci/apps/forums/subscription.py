@@ -1,3 +1,5 @@
+import threading
+
 from django.conf import settings
 from django.urls import reverse
 from django.core.validators import validate_email
@@ -169,3 +171,16 @@ def send_notification(users, template, headers, context={}):
 
     # Reactivate previous language
     translation.activate(old_lang)
+
+
+class NotifyThread(threading.Thread):
+    def __init__(self, obj, post_type='post', **kwargs):
+        self.obj = obj
+        self.post_type = post_type
+        super(NotifyThread, self).__init__(**kwargs)
+
+    def run(self):
+        if self.post_type == 'post':
+            notify_topic_subscribers(self.obj)
+        else:
+            notify_forum_subscribers(self.obj)
