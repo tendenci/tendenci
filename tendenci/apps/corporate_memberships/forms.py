@@ -1153,7 +1153,7 @@ class CorpMembershipRepForm(FormControlWidgetMixin, forms.ModelForm):
         if not User.objects.filter(email__iexact=value).exists():
             register_url = reverse('registration_register')
             raise forms.ValidationError(
-                mark_safe(_(f'Add a Representative - the email you entered is not registered. Please check for errors or <a href="{register_url}" target="_blank">click here</a> to register them as a user first. Once registered, you may add them here.')))
+                mark_safe(_(f'Add a Representative - the email you entered is not registered. Please check for errors or <a href="{register_url}" target="_blank" style="color: white; text-decoration: underline;" title="register">click here</a> to register them as a user first. Once registered, you may add them here.')))
 
         if CorpMembershipRep.objects.filter(
                 corp_profile=self.corp_membership.corp_profile,
