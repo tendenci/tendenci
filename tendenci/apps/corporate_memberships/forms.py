@@ -1134,7 +1134,7 @@ class CorpApproveForm(forms.Form):
 class CorpMembershipRepForm(FormControlWidgetMixin, forms.ModelForm):
     email = forms.EmailField(label=_("Add a Representative"),
                         required=True,
-                        help_text=_('Please enter an email address. In order to add a representative, they must be registered. '))
+                        help_text=_('Please enter an email address. In order to add a representative, This email must be registered. '))
 
     class Meta:
         model = CorpMembershipRep
@@ -1147,12 +1147,13 @@ class CorpMembershipRepForm(FormControlWidgetMixin, forms.ModelForm):
         super(CorpMembershipRepForm, self).__init__(*args, **kwargs)
         self.fields['email'].widget.attrs.update({'placeholder': _('example@email.com')})
 
-    def clean_email(self):
+    def clean(self):
+        cleaned_data = super(CorpMembershipRepForm, self).clean()
         value = self.cleaned_data['email']
         if not User.objects.filter(email__iexact=value).exists():
             register_url = reverse('registration_register')
             raise forms.ValidationError(
-                mark_safe(_(f'The email address you entered is not registered, please check for errors or request that your representative <a href="{register_url}" target="_blank">register a new account</a>. Once registered, you may add them here.')))
+                mark_safe(_(f'Add a Representative - the email you entered is not registered. Please check for errors or <a href="{register_url}" target="_blank" style="color: white; text-decoration: underline;" title="register">click here</a> to register them as a user first. Once registered, you may add them here.')))
 
         if CorpMembershipRep.objects.filter(
                 corp_profile=self.corp_membership.corp_profile,
@@ -1160,7 +1161,23 @@ class CorpMembershipRepForm(FormControlWidgetMixin, forms.ModelForm):
             raise forms.ValidationError(
                 _(f"The user with this email {value} is already a representative."))
 
-        return value
+        return cleaned_data
+
+
+    # def clean_email(self):
+    #     value = self.cleaned_data['email']
+    #     if not User.objects.filter(email__iexact=value).exists():
+    #         register_url = reverse('registration_register')
+    #         raise forms.ValidationError(
+    #             mark_safe(_(f'The email address you entered is not registered, please check for errors or request that your representative <a href="{register_url}" target="_blank">register a new account</a>. Once registered, you may add them here.')))
+    #
+    #     if CorpMembershipRep.objects.filter(
+    #             corp_profile=self.corp_membership.corp_profile,
+    #             user__email=value).exists():
+    #         raise forms.ValidationError(
+    #             _(f"The user with this email {value} is already a representative."))
+    #
+    #     return value
 
 
 class RosterSearchForm(forms.Form):
