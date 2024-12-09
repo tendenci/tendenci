@@ -1,10 +1,14 @@
+from os.path import basename
+
 from django import forms
 from django.forms import BaseInlineFormSet
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.studygroups.models import StudyGroup, Officer
 from tendenci.apps.user_groups.models import GroupMembership, Group
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
+from tendenci.apps.files.validators import FileValidator
 
 
 class OfficerBaseFormSet(BaseInlineFormSet):
@@ -35,6 +39,10 @@ class StudyGroupForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':StudyGroup._meta.app_label,
         'storme_model':StudyGroup._meta.model_name.lower()}))
+    photo_upload = forms.FileField(label=_('Header Image'),
+                                   required=False,
+                                   validators=[FileValidator(
+                                    allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],)
 
     class Meta:
         model = StudyGroup
@@ -46,6 +54,7 @@ class StudyGroupForm(TendenciBaseForm):
         'content',
         'notes',
         'sponsors',
+        'photo_upload',
         'contact_name',
         'contact_email',
         'join_link',
@@ -62,6 +71,7 @@ class StudyGroupForm(TendenciBaseForm):
                                  'content',
                                  'notes',
                                  'sponsors',
+                                 'photo_upload',
                                  'contact_name',
                                  'contact_email',
                                  'join_link',
@@ -87,6 +97,9 @@ class StudyGroupForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(StudyGroupForm, self).__init__(*args, **kwargs)
+        if self.instance.header_image:
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.header_image.pk, basename(self.instance.header_image.file.name))
+
         if self.instance.pk:
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -95,6 +108,15 @@ class StudyGroupForm(TendenciBaseForm):
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
+
+    def save(self, *args, **kwargs):
+        study_group = super(StudyGroupForm, self).save(*args, **kwargs)
+        # save photo
+        if 'photo_upload' in self.cleaned_data:
+            photo = self.cleaned_data['photo_upload']
+            if photo:
+                study_group.save(photo=photo)
+        return study_group
 
 
 class StudyGroupAdminForm(TendenciBaseForm):
@@ -110,6 +132,10 @@ class StudyGroupAdminForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':StudyGroup._meta.app_label,
         'storme_model':StudyGroup._meta.model_name.lower()}))
+    photo_upload = forms.FileField(label=_('Header Image'),
+                                   required=False,
+                                   validators=[FileValidator(
+                                   allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],)
 
     group = forms.ModelChoiceField(required=False, queryset=Group.objects.filter(status=True, status_detail="active").order_by('name'))
 
@@ -126,6 +152,7 @@ class StudyGroupAdminForm(TendenciBaseForm):
         'mission',
         'content',
         'notes',
+        'photo_upload',
         'sponsors',
         'contact_name',
         'contact_email',
@@ -146,7 +173,9 @@ class StudyGroupAdminForm(TendenciBaseForm):
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
-
+        if self.instance.header_image:
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.header_image.pk, basename(self.instance.header_image.file.name))
+            self.fields['photo_upload'].required = False
 
 class StudyGroupAdminChangelistForm(TendenciBaseForm):
     group = forms.ModelChoiceField(required=True, queryset=Group.objects.filter(status=True, status_detail="active").order_by('name'))
