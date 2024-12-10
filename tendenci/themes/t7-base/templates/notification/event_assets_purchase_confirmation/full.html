@@ -44,7 +44,7 @@
 	<h1 style="margin-bottom:0;">{% blocktrans with event.title as title and event.start_dt|date:"N j, Y \a\t f A" as start_dt %}{{ title }} on {{ start_dt }}{% endblocktrans %}</h1>
 	<h3 style="margin:0;">{% trans "Event Assets Purchased for event " %} {{ event.title }}</h3>
 
-	<h3 style="margin-top:0;">{% blocktrans with assets_purchase.amount|format_currency as priceflo %}Total Amount: {{ priceflo }}{% endblocktrans %} </h3>	
+	<h3 style="margin-top:0;">{% blocktrans with assets_purchase.invoice.total|format_currency as priceflo %}Total Amount: {{ priceflo }}{% endblocktrans %} </h3>	
 	<div><a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" assets_purchase.invoice.pk %}">{% trans "Download Invoice"%}</a></div>
 
 {% endif %}
