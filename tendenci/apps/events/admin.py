@@ -441,7 +441,7 @@ class RegistrantCreditsAdmin(admin.ModelAdmin):
     search_fields = ('event__title', 'event__event_code',)
     readonly_fields = ('registrant', 'event_credit', 'event_link')
     list_filter = ('released', CreditNameFilter, RegistrantCreditsEventFilter)
-    actions = ["release", "export_selected"]
+    actions = ["release", 'unrelease', "export_selected"]
 
 
     def event_link(self, obj):
@@ -455,6 +455,11 @@ class RegistrantCreditsAdmin(admin.ModelAdmin):
         """Release all credits"""
         queryset.update(released=True)
     release.short_description=_("Release selected credits")
+    
+    def unrelease(self, request, queryset):
+        """Un-Release all selected credits"""
+        queryset.update(released=False)
+    unrelease.short_description=_("Unrelease selected credits")
 
     def show_member_number_2(self, obj):
         user = obj.registrant.user
