@@ -19,6 +19,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.files.storage import default_storage
 
 from tendenci.apps.base.utils import strip_entities, strip_html
+from tendenci.apps.site_settings.utils import get_setting
 
 register = Library()
 
@@ -468,10 +469,11 @@ def add_decimal(value, arg):
 def phonenumber(value):
     if value:
         number = ''
-        number_object = phonenumbers.parse(value, settings.PHONE_NUMBER_REGION)
+        number_object = phonenumbers.parse(value, get_setting('site', 'global', 'phone_number_region'))
         # iterate backwards through number and pattern so we can pad with zeroes if the number is shorter than the pattern
         reversed_number = reversed(str(number_object.national_number))
-        for ch in reversed(settings.PHONE_NUMBER_PATTERN):
+        # for ch in reversed(settings.PHONE_NUMBER_PATTERN):
+        for ch in reversed(get_setting('site', 'global', 'phone_number_pattern')):
             if ch == '#': # use the next digit from the phone number
                 number = next(reversed_number, '0') + number # prepend '0' if we run out of digits
             else: # Use a literal from the PHONE_NUMBER_PATTERN
