@@ -139,6 +139,7 @@ class Command(BaseCommand):
                                     status=True,
                                     status_detail__in=status_detail_list
                                     )
+
             if notice.notice_type in ['approve_join', 'disapprove_join'
                                       'approve_renewal', 'disapprove_renewal']:
                 filters = {'approved_denied_dt__year': start_dt.year,
@@ -286,8 +287,6 @@ class Command(BaseCommand):
                 'directory_url': directory_url,
                 'directory_edit_url': directory_edit_url,
             })
-            
-            
 
             for recipient in representatives:
                 body = notice.email_content
@@ -297,7 +296,12 @@ class Command(BaseCommand):
 
                 context.update({
                     'rep_first_name': recipient.user.first_name,
+                    'rep_last_name': recipient.user.last_name,
                 })
+                if hasattr(recipient.user, 'profile') and recipient.user.profile.salutation:
+                    context.update({
+                        'rep_salutation': recipient.user.profile.salutation,
+                    })
 
                 body = fieldify(body)
 

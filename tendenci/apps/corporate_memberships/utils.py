@@ -691,6 +691,8 @@ def get_notice_token_help_text(notice=None):
                     'view_link',
                     'renew_link',
                     'rep_first_name',
+                    'rep_last_name',
+                    'rep_salutation',
                     'total_individuals_renewed',
                     'renewed_individuals_list',
                     'invoice_link',

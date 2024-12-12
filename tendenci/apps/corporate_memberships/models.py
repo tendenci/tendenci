@@ -2455,16 +2455,24 @@ class Notice(models.Model):
                         context={'corp_membership': corporate_membership,
                          'corp_app': corp_app})
 
+        rep_first_name = ''
+        rep_last_name = ''
+        rep_salutation = ''
         if recipient:
             rep_first_name = recipient.user.first_name
+            rep_last_name = recipient.user.last_name
+            if hasattr(recipient.user, 'profile') and recipient.user.profile.salutation:
+                rep_salutation = recipient.user.profile.salutation
         elif corporate_membership.anonymous_creator:
             rep_first_name = corporate_membership.anonymous_creator.first_name
-        else:
-            rep_first_name = ''
+            rep_last_name = corporate_membership.anonymous_creator.last_name
+
         context.update({
             'expire_dt': expire_dt,
             'payment_method': payment_method,
             'rep_first_name': rep_first_name,
+            'rep_last_name': rep_last_name,
+            'rep_salutation': rep_salutation,
             'renewed_individuals_list': renewed_individuals_list,
             'total_individuals_renewed': total_individuals_renewed,
             'name': corporate_membership.corp_profile.name,

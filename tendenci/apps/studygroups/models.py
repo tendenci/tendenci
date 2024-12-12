@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
 
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.pages.models import BasePage
@@ -13,6 +14,7 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.studygroups.managers import StudyGroupManager
 from tendenci.apps.studygroups.module_meta import StudyGroupMeta
 from tendenci.apps.user_groups.models import Group, GroupMembership
+from tendenci.apps.files.models import File
 
 
 class StudyGroup(BasePage):
@@ -23,6 +25,10 @@ class StudyGroup(BasePage):
     mission = tinymce_models.HTMLField(null=True, blank=True)
     notes = tinymce_models.HTMLField(null=True, blank=True)
     sponsors =tinymce_models.HTMLField(blank=True, default='')
+    header_image = models.ForeignKey(File, null=True, default=None,
+                              related_name='studiygroups',
+                              help_text=_('Only jpg, gif, or png images.'),
+                              on_delete=models.SET_NULL)
     contact_name = models.CharField(max_length=200, null=True, blank=True)
     contact_email = models.CharField(max_length=200, null=True, blank=True)
     join_link = models.CharField(max_length=200, null=True, blank=True)
@@ -40,6 +46,24 @@ class StudyGroup(BasePage):
     class Meta:
 #         permissions = (("view_studygroup", "Can view studygroup"),)
         app_label = 'studygroups'
+
+    def save(self, *args, **kwargs):
+        photo_upload = kwargs.pop('photo', None)
+
+        super(StudyGroup, self).save(*args, **kwargs)
+        if photo_upload and self.pk:
+            image = File(content_type=ContentType.objects.get_for_model(self.__class__),
+                         object_id=self.pk,
+                         creator=self.creator,
+                         creator_username=self.creator_username,
+                         owner=self.owner,
+                         owner_username=self.owner_username)
+            photo_upload.file.seek(0)
+            image.file.save(photo_upload.name, photo_upload)
+            image.save()
+
+            self.header_image = image
+            self.save()
 
     def get_absolute_url(self):
         return reverse('studygroups.detail', args=[self.slug])
