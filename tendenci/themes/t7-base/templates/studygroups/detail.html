@@ -9,6 +9,12 @@
       <h1>{{ study_group.title }}</h1>
     </div>
     
+    {% if study_group.header_image %}
+    <div class="studygroup-featured-image">
+        <img src="{% url 'file' study_group.header_image.id %}" alt="{{ study_group.title }}" title="{{ study_group.title  }}">
+    </div>
+	{% endif %}
+    
     <div class="studygroup-mission">
       <p>{{ study_group.mission|safe }}</p>
     </div>
