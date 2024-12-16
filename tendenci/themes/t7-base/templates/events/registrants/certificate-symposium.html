@@ -89,7 +89,7 @@
       font-size: 1.2em;
   }
   .certificate .event span.dates {
-      font-size: .75em;
+      /*font-size: .85em;*/
   }
   .certificate .staff div.staff {
       width: 30%;
@@ -267,7 +267,7 @@
     </div>
     <div class="row event">
       <div class="col-md-3">&nbsp;</div>
-      <div class="col-md-3 event">
+      <div class="col-md-3 event" style="line-height: 1.3em;">
         <strong>{{ registrant.event.title }}</strong> <br />
         <span class="dates">{{ registrant.event_dates_display }}</span> <br />
         {% if registrant.event.delivery_method %}{{ registrant.event.delivery_method }}{% endif %} <br />
