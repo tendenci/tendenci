@@ -3845,7 +3845,7 @@ class Event(TendenciBaseModel):
 
     @property
     def event_dates_display(self):
-        return ', '.join([x.strftime('%b %d, %Y') for x in self.full_event_days])
+        return ' - '.join([x.strftime('%b %d, %Y') for x in self.full_event_days])
 
     def get_spots_status(self):
         """
