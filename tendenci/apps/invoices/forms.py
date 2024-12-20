@@ -13,7 +13,7 @@ from tendenci.apps.base.forms import FormControlWidgetMixin
 class EmailInvoiceForm(FormControlWidgetMixin, forms.ModelForm):
     subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
     recipient = forms.EmailField(label=_('Recipient'))
-    cc = forms.EmailField(label=_('CC'), required=False)
+    cc = forms.CharField(label=_('CC'), required=False, help_text=_('One or more email addresses. Comma separated'))
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.model_name.lower()}),
