@@ -1157,6 +1157,28 @@ def membership_default_add(request, slug='', membership_id=None,
                 join_under_corporate = True
         is_renewal = True
 
+        # check if this is a duplicate submission on renewal
+        # redirect to online payment or profile if already submitted
+        membership_renewed = MembershipDefault.objects.filter(
+                renewal=True,
+                renew_from_id=membership_id,
+                status_detail__in=['pending', 'active']
+                ).order_by('-create_dt').first()
+
+        if membership_renewed:
+            inv = membership_renewed.get_invoice()
+            if inv and inv.balance > 0:
+                return HttpResponseRedirect(reverse(
+                        'payment.pay_online',
+                        args=[inv.pk, inv.guid]))
+            view_url = membership_renewed.get_absolute_url()
+            if membership_renewed.status_detail == 'pending':
+                msg_string = _(f'Your membership renewal application is pending for admin approval. <a href="{view_url}">View Membership</a>')
+            else:
+                msg_string = _(f'Your membership has been renewed. <a href="{view_url}">View Membership</a>')
+            messages.add_message(request, messages.INFO, msg_string)
+            return HttpResponseRedirect(reverse('profile', args=[membership_renewed.user.username]))
+
     membership_type_id = request.GET.get('membership_type_id', u'')
     if membership_type_id.isdigit():
         membership_type_id = int(membership_type_id)
