@@ -1086,13 +1086,15 @@ class EventForm(TendenciBaseForm):
             if 'course' in self.fields:
                 del self.fields['course']
         else:
-            self.fields['course'].queryset = self.fields['course'].queryset.filter(
-                location_type='onsite',
-                status_detail='enabled').order_by('name') # onsite courses only
+            if 'course' in self.fields:
+                self.fields['course'].queryset = self.fields['course'].queryset.filter(
+                    location_type='onsite',
+                    status_detail='enabled').order_by('name') # onsite courses only
         
         # If nested events is not enabled, remove it from the form
         if not nested_events:
-            del self.fields['event_relationship']
+            if 'event_relationship' in self.fields:
+                del self.fields['event_relationship']
             del self.fields['parent']
             del self.fields['repeat_of']
 
