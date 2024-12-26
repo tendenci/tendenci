@@ -52,9 +52,9 @@ tendenci-django-admin-bootstrapped>=5.0
 django-bootstrap3==15.0.0
 django-annoying==0.10.6
 unidecode
-Markdown==3.3.4
-bleach>=3.3.1
 unicodecsv
+Markdown==3.7
+bleach>=6.1.0
 # dependencies for helpdesk
 django-bootstrap-form>=3.1,<4
 email-reply-parser
