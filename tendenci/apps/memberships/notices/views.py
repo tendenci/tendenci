@@ -17,20 +17,24 @@ def membership_notice_log_search(request, template_name="memberships/notices/log
     form = NoticeLogSearchForm(request.GET or None)
     logs = NoticeLog.objects.all()
     if form.is_valid():
-        notice_id = form.cleaned_data['notice_id']
+        try:
+            notice_id = int(form.cleaned_data['notice_id'])
+        except ValueError:
+            notice_id = None
         if notice_id:
             notice = Notice.objects.get(id=notice_id)
             logs = logs.filter(notice=notice)
         start_dt = form.cleaned_data['start_dt']
         end_dt = form.cleaned_data['end_dt']
         if start_dt:
-            start_dt = datetime(*(time.strptime(start_dt, '%Y-%m-%d %H:%M')[0:6]))
+            #start_dt = datetime(*(time.strptime(start_dt, '%Y-%m-%d %H:%M')[0:6]))
             logs = logs.filter(notice_sent_dt__gte=start_dt)
         if end_dt:
-            end_dt = datetime(*(time.strptime(end_dt, '%Y-%m-%d %H:%M')[0:6]))
+            #end_dt = datetime(*(time.strptime(end_dt, '%Y-%m-%d %H:%M')[0:6]))
             logs = logs.filter(notice_sent_dt__lte=end_dt)
-
-    logs = logs.order_by('-notice_sent_dt')
+        logs = logs.order_by('-notice_sent_dt')
+    else:
+        logs = logs.none()
 
     return render_to_resp(request=request, template_name=template_name,
         context={'logs': logs, 'form':form})
