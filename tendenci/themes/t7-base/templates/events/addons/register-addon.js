@@ -88,7 +88,7 @@ function addAddon(prefix, addon, container){
     // Set option_title_display if title is not None
     var option_title_display = '';
     var option_title = addon['option_title'];
-    if (option_title != 'None') {
+    if (option_title != 'None' && option_title != undefined) {
             option_title_display = ': ' + option_title;
         }
     addon_input.parent().parent().find('label').html(addon['title'] + ': ' + option_title_display + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + addon['price']  + ')');
