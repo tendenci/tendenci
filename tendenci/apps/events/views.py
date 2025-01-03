@@ -4274,25 +4274,11 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     # assign addons
     addon_total_sum = Decimal('0')
     if has_addons:
-        reg8n_to_addons_list = RegAddonOption.objects.filter(
-            regaddon__registration__in=registrations).values_list(
-                'regaddon__registration__id',
-                'regaddon__addon__title',
-                'option__title',
-                'regaddon__amount')
-
-        if reg8n_to_addons_list:
-            addon_total_sum = sum([item[3] for item in reg8n_to_addons_list])
-            for registrant in registrants:
-                if registrant.is_primary:
-                    registrant.addons = ''
-                    registrant.addons_amount = Decimal('0')
-                    for addon_item in reg8n_to_addons_list:
-                        if addon_item[0] == registrant.registration_id:
-                            registrant.addons += addon_item[1]
-                            if addon_item[2]:
-                                registrant.addons += f'({addon_item[2]})'
-                            registrant.addons_amount += addon_item[3]
+        for registrant in registrants:
+            if registrant.is_primary:
+                registrant.addons, registrant.addons_amount = registrant.registration.get_addons_with_amount()
+                if registrant.addons_amount:
+                    addon_total_sum += registrant.addons_amount
 
     total_sum = float(0)
     balance_sum = float(0)

@@ -28,10 +28,11 @@ class RegAddonForm(forms.Form):
         # dynamically create an option field for each addon
         for addon in self.addons:
             field_name = addon.field_name()
-            self.fields[field_name] = forms.ModelChoiceField(
-                label=_("Options"), required=False, empty_label=None,
-                queryset=addon.options.all(),
-                widget=forms.HiddenInput(attrs={'class': 'option-hidden'}))
+            if addon.has_options():
+                self.fields[field_name] = forms.ModelChoiceField(
+                    label=_("Options"), required=False, empty_label=None,
+                    queryset=addon.options.all(),
+                    widget=forms.HiddenInput(attrs={'class': 'option-hidden'}))
 
     def get_form_label(self):
         return self.form_index + 1
@@ -48,8 +49,8 @@ class RegAddonForm(forms.Form):
         data = self.cleaned_data
         if 'addon' in data:
             addon = data['addon']
-            option = data[addon.field_name()]
-            if not option:
+            option = data.get(addon.field_name(), None)
+            if addon.has_options() and not option:
                 raise forms.ValidationError(_('Option required for %s' % (addon.title)))
 
         return data
@@ -63,10 +64,11 @@ class RegAddonForm(forms.Form):
                 addon=addon,
                 amount=addon.price,
             )
-            option = data[addon.field_name()]
-            RegAddonOption.objects.create(
-                option = option,
-                regaddon = regaddon,
-            )
+            option = data.get(addon.field_name(), None)
+            if option:
+                RegAddonOption.objects.create(
+                    option = option,
+                    regaddon = regaddon,
+                )
             return regaddon
         return None
