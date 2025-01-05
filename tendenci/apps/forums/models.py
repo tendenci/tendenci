@@ -1,5 +1,5 @@
 
-
+import bleach
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.db import models, transaction, DatabaseError
@@ -295,6 +295,8 @@ class RenderableItem(models.Model):
         text = strip_tags(self.body_html)
         # Unescape entities which was generated with the markup processor
         self.body_text = unescape(text)
+        # sanitize to avoid XSS
+        self.body_html = unescape(bleach.clean(self.body_html))
 
 
 class Post(RenderableItem):

@@ -29,6 +29,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.files.base import ContentFile
 from django.template import Context, Template
 from django.template.loader import get_template
+from django.utils.html import escape
 
 from tendenci.apps.theme.shortcuts import _strip_content_above_doctype
 from tendenci.apps.newsletters.utils import get_newsletter_connection, is_newsletter_relay_set
@@ -2121,8 +2122,7 @@ def email_pending_members(email, **kwargs):
     
                 email.send()
                 total_sent += 1
-
-                msg += f'{total_sent}. Email sent to {first_name} {last_name} {email.recipient}<br />'
+                msg += f'{total_sent}. Email sent to {escape(first_name)} {escape(last_name)} {escape(email.recipient)}<br />'
 
                 if total_sent % 10 == 0:
                     yield msg
@@ -2252,7 +2252,7 @@ def email_membership_members(email, memberships, **kwargs):
             email.send(connection)
             total_sent += 1
 
-            msg += f'{total_sent}. Email sent to {first_name} {last_name} {email.recipient}<br />'
+            msg += f'{total_sent}. Email sent to {escape(first_name)} {escape(last_name)} {escape(email.recipient)}<br />'
 
             if total_sent % 10 == 0:
                 yield msg
