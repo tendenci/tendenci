@@ -4353,7 +4353,7 @@ class RegAddon(models.Model):
 
     def get_option(self):
         if self.regaddonoption_set.exists():
-            return self.regaddonoption_set.first().title
+            return self.regaddonoption_set.first().option.title
         return ''
 
 class RegAddonOption(models.Model):
