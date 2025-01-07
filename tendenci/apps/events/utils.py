@@ -511,9 +511,9 @@ def get_vevents(user, d):
     site_url = get_setting('site', 'global', 'siteurl')
 
     e_str = ""
-    # load only upcoming events by default
+    # load both upcoming and ongoing events
     filters = get_query_filters(user, 'events.view_event')
-    events = Event.objects.filter(filters).filter(start_dt__gte=datetime.now())
+    events = Event.objects.filter(filters).filter(end_dt__gte=datetime.now())
     events = events.order_by('start_dt')
     
     dtstamp = adjust_datetime_to_timezone(datetime.now(), settings.TIME_ZONE, 'UTC').strftime('%Y%m%dT%H%M%SZ')
