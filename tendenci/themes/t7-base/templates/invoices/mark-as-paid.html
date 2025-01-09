@@ -73,7 +73,7 @@
       <table>
         <tr>
           <td style="padding-bottom: 5px;" class="field-label">{{ field.label_tag }}</td>
-          <td style="padding-bottom: 5px;" class="field-widget">{{ field }}</td>
+          <td style="padding-bottom: 5px;" class="field-widget">{{ field }}{% if field.help_text %}<br>{{ field.help_text}}{% endif %}</td>
         </tr>
       </table>
       {% endfor %}
