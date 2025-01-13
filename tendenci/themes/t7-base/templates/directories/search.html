@@ -64,7 +64,7 @@
 
     <section class="clearfix">
         {% for directory in directories %}
-            {% search_result directory %}
+        	{% include 'directories/search-result.html' %}
         {% empty %}
             {% if user.profile.is_superuser %}
                 <p><a href="{% url 'directory.add' %}">

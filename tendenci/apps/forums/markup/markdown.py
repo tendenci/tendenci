@@ -32,7 +32,7 @@ class MarkdownParser(BaseParser):
     widget_class = MarkdownWidget
 
     def __init__(self):
-        self._parser = Markdown()
+        self._parser = Markdown(safe_mode='escape')
 
     def format(self, text):
         return smile_it(self._parser.convert(bleach.clean(text)))

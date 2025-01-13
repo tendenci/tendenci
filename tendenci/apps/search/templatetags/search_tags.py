@@ -52,6 +52,8 @@ class SearchResultNode(IncludeNode):
             elif var_name == 'application_entry':
                 var_name = 'entry'
                 template_name = "memberships/entries/search-result.html"
+            elif var_name == 'directory':
+                template_name = "directories/search-result-list.html"
             else:
                 template_name = "%s/search-result.html" % (result_object._meta.app_label)
 

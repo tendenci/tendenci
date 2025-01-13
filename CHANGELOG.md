@@ -1,3 +1,17 @@
+### 15.3.1 [2025-1-2]
+
+* **SECURITY**: Fixed a potential XSS vulnerability in forums.
+* Added the filter "Event Type" to event financial report.
+* Added the export option to /admin/auth/user/.
+* Added header image field to study groups.
+* Added 2 tokens, rep_last_name and rep_salutation, to corp notices
+* Added the “unrelease” option to the action dropdown for Registrant Credits.
+* Updated event registration to redirect non-members to 403 if the only pricing is for member-only.
+* Updated memberships to avoid duplicate memberships submissions on renewal.
+* Resolved tinymce menu inoperable in fullscreen.
+* Other minor updates and fixes.
+
+
 ### 15.3 [2024-11-21]
 
 * Updated add/edit corp reps to remove the auto-complete with a list of possible email addresses.
