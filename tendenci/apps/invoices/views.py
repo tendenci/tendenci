@@ -187,9 +187,10 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
         raise Http403
 
     if request.method == 'POST':
-        form = MarkAsPaidForm(request.POST)
+        form = MarkAsPaidForm(request.POST, request=request, invoice=invoice)
 
         if form.is_valid():
+            update_obj = form.cleaned_data.get('update_obj', None)
 
             # make payment record
             payment = form.save(
@@ -217,6 +218,10 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
                         obj.send_registrant_notification()
                 elif obj.__class__.__name__ == 'AssetsPurchase':
                     obj.auto_update_paid_object(request, payment)
+                else:
+                    if update_obj and request.user.is_superuser:
+                        if hasattr(obj, 'auto_update_paid_object'):
+                            obj.auto_update_paid_object(request, payment)
                 
                 EventLog.objects.log(instance=invoice)
                 messages.add_message(
@@ -227,7 +232,7 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
             return redirect(invoice)
 
     else:
-        form = MarkAsPaidForm(initial={
+        form = MarkAsPaidForm(invoice=invoice, request=request, initial={
             'amount': invoice.balance, 'submit_dt': datetime.now()})
 
     return render_to_resp(

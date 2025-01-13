@@ -1,5 +1,6 @@
 from datetime import datetime
 from django import forms
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.payments.models import Payment, PaymentMethod
@@ -29,10 +30,20 @@ class MarkAsPaidForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
+        self.invoice = kwargs.pop('invoice')
+        self.request = kwargs.pop('request')
+        self.invoice_object = self.invoice.get_object()
         super(MarkAsPaidForm, self).__init__(*args, **kwargs)
         self.fields['payment_method'].widget = forms.Select(
             choices=PaymentMethod.objects.filter().values_list(
                     'machine_name', 'human_name').exclude())
+        if self.request.user.is_superuser:
+            # a checkbox only show if it's admin and the associated object is in pending
+            if self.invoice_object and hasattr(self.invoice_object, 'status_detail') \
+                and 'pending' in self.invoice_object.status_detail.lower() \
+                and hasattr(self.invoice_object, 'auto_update_paid_object'):
+                self.fields['update_obj'] = forms.BooleanField(initial=False, required=False,
+                                                label=mark_safe(_(f'Approve <a href=\"{self.invoice_object.get_absolute_url()}\">{self.invoice.object_display(obj=self.invoice_object)} </a> (status: Pending)')))
 
     def save(self, user, invoice, *args, **kwargs):
         """

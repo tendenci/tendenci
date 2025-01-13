@@ -312,7 +312,7 @@ class Directory(TendenciBaseModel):
 
         if hasattr(self, 'corpprofile'):
             corp_membership = self.corpprofile.corp_membership
-            if corp_membership and corp_membership.status_detail == 'active':
+            if corp_membership and corp_membership.status_detail in ('active', 'pending'):
                 if any([this_user==self.creator,
                        this_user==self.owner,
                        self.corpprofile.is_rep(this_user)]):

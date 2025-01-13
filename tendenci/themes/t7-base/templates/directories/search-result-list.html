@@ -1,0 +1,23 @@
+<article class="panel {% if directory.list_type == 'premium'  %}panel-success{% else %}panel-default{% endif %} t-search-result">
+  
+  <div class="panel-heading t-search-result-heading">
+    <h3 class="panel-title">
+      {% if directory.list_type == 'premium'  %}<i class="fa fa-star"></i>{% endif %}
+      <a href="{{ directory.get_absolute_url }}">{{ directory.headline }}</a>
+    </h3>
+  </div>
+  
+  <div class="panel-body t-search-result-body">
+    <p class="item-content">
+	  {% if directory.logo %}
+         <img class="t-directories-directory-image img-responsive" src="{{ directory.get_logo_url  }}" alt="{{ directory.headline }}">
+      {% endif %}
+      {{ directory.body|striptags|truncatewords:80|safe }}
+    </p>
+  </div>
+  
+  <div class="panel-footer t-search-result-footer">
+  {% include "directories/meta.html" %}
+  </div>
+  
+</article>
