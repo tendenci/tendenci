@@ -163,24 +163,27 @@ def corp_membership_rows(corp_profile_field_names,
         row_items = []
         corp_profile = corp_membership.corp_profile
         for field_name in corp_profile_field_names:
-            if field_name in ['authorized_domains', 'dues_rep', 'member_rep']:
+            if field_name in ['authorized_domains', 'dues_rep', 'member_rep', 'region']:
                 if field_name == 'authorized_domains':
                     auth_domains = corp_profile.authorized_domains.values_list(
                                             'name', flat=True)
                     item = ', '.join(auth_domains)
-                if field_name == 'dues_rep':
+                elif field_name == 'dues_rep':
                     dues_reps = corp_profile.reps.filter(
                                         is_dues_rep=True
                                         ).values_list(
                                             'user__username', flat=True)
                     item = ', '.join(dues_reps)
-                if field_name == 'member_rep':
+                elif field_name == 'member_rep':
                     member_reps = corp_profile.reps.filter(
                                         is_member_rep=True
                                         ).values_list(
                                             'user__username', flat=True)
                     item = ', '.join(member_reps)
-
+                elif field_name == 'region':
+                    item = getattr(corp_profile, field_name)
+                    if item:
+                        item = item.region_name
             else:
                 item = getattr(corp_profile, field_name)
                 if item and field_name in foreign_keys:
