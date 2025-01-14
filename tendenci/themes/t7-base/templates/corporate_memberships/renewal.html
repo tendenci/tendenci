@@ -124,8 +124,8 @@ div.forms{
         {% if corp_profile.email %}
             {{ corp_profile.email }} <br />
         {% endif %}
-        {% trans "Join Date:" %} {{ corp_membership.join_dt }}<br />
-        <b>{% trans "Expiration Date" %}</b>: {{ corp_membership.expiration_dt }}
+        {% trans "Join Date:" %} {{ corp_membership.join_dt|date }}<br />
+        <b>{% trans "Expiration Date" %}</b>: {{ corp_membership.expiration_dt|date }}
         {% if corp_membership.is_expired %}
             {% if corp_membership.is_in_grace_period %}
                 <span style="color:#F79D3D">{% trans "(in grace period)" %}</span>
