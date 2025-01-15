@@ -24,3 +24,18 @@ def is_registrant(event, user):
         return user.registrant_set.filter(
             registration__event=event, cancel_dt__isnull=True).exists()
     return False
+
+
+@register.filter
+def event_speakers(event, position=None):
+    """
+    Get event speakers with certain position.
+    """
+    if position is not None:
+        try:
+            position = int(position)
+        except ValueError:
+            position = None
+    if position is not None:
+        return event.speaker_set.filter(position=position)   
+    return event.speaker_set.all()
