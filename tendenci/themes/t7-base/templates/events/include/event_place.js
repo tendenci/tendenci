@@ -90,3 +90,8 @@ virtual_field.on("change", function() {
 $('#id_place-use_zoom_integration').on("change", function() {
     toggleZoomMeetingInfo(virtual_field.is(':checked') && $(this).is(':checked'));
 });
+
+$('#id_place-zoom_meeting_id').on("change", function() {
+    // remove spaces
+    $('#id_place-zoom_meeting_id').val($('#id_place-zoom_meeting_id').val().replace(/ /g, ''));
+});

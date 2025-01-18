@@ -32,3 +32,18 @@ def can_register_by(pricing, user):
     Check if perms set on this pricing allows it to be registered by the user.
     """
     return pricing.can_register_by(user)
+
+
+@register.filter
+def event_speakers(event, position=None):
+    """
+    Get event speakers with certain position.
+    """
+    if position is not None:
+        try:
+            position = int(position)
+        except ValueError:
+            position = None
+    if position is not None:
+        return event.speaker_set.filter(position=position)   
+    return event.speaker_set.all()
