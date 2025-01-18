@@ -83,6 +83,9 @@
                     <div class="image-wrap">
                         {% gravatar registrant.user 80 %}
                     <span class="attendee-name">{% if registrant.first_name or registrant.last_name %}{% if registrant.first_name%}{{ registrant.first_name }}{% endif %} {% if registrant.last_name %}{{ registrant.last_name }}{% endif %}{% else %}{% trans "(Anonymous)" %}{% endif %}</span>
+					{% if request.user.is_superuser and registrant.user %}
+					<a href="{% url 'profile' registrant.user.username %}">{% trans "View" %}</a>
+					{% endif %}
                     </div>
                 </div>
                 {% endfor %}

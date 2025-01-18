@@ -2980,6 +2980,11 @@ class Event(TendenciBaseModel):
         return self.sponsor_set.first()
 
     @property
+    def featured_speakers(self):
+        """Featured speakers for this Event"""
+        return self.speaker_set.filter(featured=True)
+
+    @property
     def organizer(self):
         """Access Organizer for this Event"""
         return self.organizer_set.first()
