@@ -266,7 +266,7 @@
   {% else %}
       <div><em>{% trans "No representatives available" %}</em></div>
   {% endif %}
-  {% if corp_membership.status_detail != "archive" %}
+  {% if corp_membership and corp_membership.status_detail != "archive" %}
       <a href="{% url 'corpmembership.edit_corp_reps' corp_membership.id %}"><span class="glyphicon glyphicon-edit"></span> {% trans "Add/Edit Representatives" %}</a>
   {% endif %}
 
