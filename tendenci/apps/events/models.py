@@ -1587,9 +1587,9 @@ class Registrant(models.Model):
         nested events are enabled, event has child events
         """
         return (
-            not self.registration_closed and
             self.event.nested_events_enabled and
-            self.event.has_child_events
+            self.event.has_child_events and
+            not self.registration_closed
         )
     
     def sub_event_datetimes(self, is_admin=False):
