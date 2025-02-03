@@ -45,7 +45,7 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
             pricings = {}
             for registrant in obj.registrant_set.filter(cancel_dt__isnull=True):
                 pricing = registrant.pricing
-                if pricing.registration_cap:
+                if pricing and pricing.registration_cap:
                     if pricing not in pricings:
                         pricings[pricing] = 1
                     else:
