@@ -479,6 +479,36 @@
           
           
         </div>
+        {% elif can_view_memberships and memberships %}
+        <div>
+        	<h3>{% trans 'Memberships' %}</h3>
+        	<div class="table-responsive">
+            <table class="table">
+              {% for membership in memberships %}
+              <tr>
+                <td>
+                  <a href="{% url "membership.details" membership.pk %}">{{ membership.membership_type }}
+                  </a>
+                </td>
+                <td>
+                  {{ membership.join_dt|date:"M j, Y" }}
+                  
+                  {% if not membership.is_pending %} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
+                  
+                  &#43; (grace period:
+                  {{ membership.membership_type.expiration_grace_period }} days)
+                  
+                  {% endif %}
+                  
+                  <span class="inner-mitm">{{ membership.get_status|capfirst}}</span>
+                  
+                </td>
+                <td>&nbsp;</td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
         {% endif %}
         
 
