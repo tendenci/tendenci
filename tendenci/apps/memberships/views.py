@@ -253,11 +253,13 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
     has_approve_perm = has_perm(request.user, 'memberships.approve_membershipdefault') and \
                 has_perm(request.user, 'memberships.change_membershipdefault')
-    
+    has_view_perm = has_perm(request.user, 'memberships.view_membershipdefault')
+
     # allow only superuser, or owner or users with the approve permission to view this page
     if not any((request.user.profile.is_superuser,
             request.user == membership.user,
-            has_approve_perm)):
+            has_approve_perm,
+            has_view_perm)):
         raise Http403
 
     if request.user.profile.is_superuser or has_approve_perm:
