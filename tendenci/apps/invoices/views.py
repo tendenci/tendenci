@@ -41,8 +41,10 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
     today = date.today()
     first_date_of_year = date(today.year, 1, 1)
     is_y2d = False
-    form = ReportsOverviewForm(request.GET, initial={'start_dt': first_date_of_year,
-                                                     'end_dt': today})
+    start_dt = first_date_of_year
+    end_dt = today
+    form = ReportsOverviewForm(request.GET, initial={'start_dt': start_dt,
+                                                     'end_dt': end_dt})
     [earliest_dt] = Invoice.objects.order_by('create_dt').values_list('create_dt', flat=True)[:1] or [None]
     if earliest_dt:
         form.fields['start_dt'].help_text = _(f'Earliest date: {earliest_dt.strftime("%Y-%m-%d")}')
@@ -108,6 +110,17 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
         for item in total_cc_by_object_type:
             if item['sum']:
                 total_cc_d[item['invoice__object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/total_cc)]
+
+    else:
+        total_amount_d = {}
+        amount_paid_d = {}
+        balance_d = {}
+        total_cc_d = {}
+        invoice_total_amount = 0
+        invoice_total_amount_paid = 0
+        invoice_total_balance = 0
+        total_cc = 0
+        total_refunds = 0
 
     return render_to_resp(request=request, template_name=template_name,
         context={'form':form,
