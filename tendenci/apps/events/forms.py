@@ -593,14 +593,13 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                         else:
                             if pricing.groups.all():
                                 err_msg = "We do not recognize %s as a member of any of the following %s." % (email, ', '.join(pricing.groups.values_list('name', flat=True)))
-                    if not err_msg:
-
-                        err_msg = 'Not eligible for the price.%s%s %s.' % (
-                            currency_symbol,
-                            pricing.price,
-                            pricing.title,)
-                    if len(self.pricings) > 1:
-                        err_msg += ' Please choose another price option.'
+                        if not err_msg:
+                            err_msg = 'Not eligible for the price.%s%s %s.' % (
+                                currency_symbol,
+                                pricing.price,
+                                pricing.title,)
+                        if len(self.pricings) > 1:
+                            err_msg += ' Please choose another price option.'
                 if redirect_to_403:
                     raise Http403
                 raise forms.ValidationError(_(err_msg))
@@ -2409,11 +2408,11 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
                         else:
                             if pricing.groups.all():
                                 err_msg = "We do not recognize %s as a member of any of the following %s." % (email, ', '.join(pricing.groups.values_list('name', flat=True)))
-                    if not err_msg:
-                        err_msg = 'Not eligible for the price.%s%s %s.' \
-                                    % (currency_symbol, pricing.price, pricing.title)
-                    if len(self.pricings) > 1:
-                        err_msg += ' Please choose another price option.'
+                        if not err_msg:
+                            err_msg = 'Not eligible for the price.%s%s %s.' \
+                                        % (currency_symbol, pricing.price, pricing.title)
+                        if len(self.pricings) > 1:
+                            err_msg += ' Please choose another price option.'
                 if redirect_to_403:
                     raise Http403
                 raise forms.ValidationError(_(err_msg))
