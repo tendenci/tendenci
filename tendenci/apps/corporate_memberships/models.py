@@ -1122,6 +1122,9 @@ class CorpMembership(TendenciBaseModel):
         if creator and not creator.is_superuser:
             if not creator.membershipdefault_set.exclude(
                         status_detail__in=['archive', 'disapproved']).exists():
+                if not creator.is_active:
+                    creator.is_active = True
+                    creator.save()
                 group = self.corporate_membership_type.membership_type.group
                 membership = MembershipDefault()
                 membership.user = creator

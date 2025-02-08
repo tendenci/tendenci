@@ -7,6 +7,7 @@ from os.path import splitext, basename
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from dateutil.relativedelta import relativedelta
+import requests
 
 from django import forms
 from django.db.models import Q
@@ -570,7 +571,19 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                         currency_symbol, pricing.price, pricing.title)
                 else:
                     if pricing.allow_user:
-                        err_msg = 'We do not recognize %s as a site user.' % email
+                        if User.objects.filter(email__iexact=email, is_active=False).exists():  
+                            activation_link = _('<a href="{activate_link}?email={email}&next={next_path}">HERE</a>').format(
+                                                    activate_link=reverse('profile.activate_email'),
+                                                    email=requests.utils.quote(email),
+                                                    next_path=self.request.get_full_path())
+                            err_msg = "The email you entered is associated with an inactive account. "
+                            inactive_user_err_msg = err_msg + mark_safe(f'''
+                                If it is yours, please click {activation_link} and we'll send you an email to activate your account
+                                and then you will be returned to here to register this event.''')
+                            self.request.user.inactive_user_err_msg = inactive_user_err_msg
+                        else:
+                            # user doesn't exists in the system
+                            err_msg = f'We do not recognize {email} as a site user. Please check your email address or sign up to the site. '
                     else:
                         if pricing.allow_member:
                             err_msg = "We do not recognize %s as a member." % email
@@ -580,14 +593,13 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                         else:
                             if pricing.groups.all():
                                 err_msg = "We do not recognize %s as a member of any of the following %s." % (email, ', '.join(pricing.groups.values_list('name', flat=True)))
-                    if not err_msg:
-
-                        err_msg = 'Not eligible for the price.%s%s %s.' % (
-                            currency_symbol,
-                            pricing.price,
-                            pricing.title,)
-
-                    err_msg += ' Please choose another price option.'
+                        if not err_msg:
+                            err_msg = 'Not eligible for the price.%s%s %s.' % (
+                                currency_symbol,
+                                pricing.price,
+                                pricing.title,)
+                        if len(self.pricings) > 1:
+                            err_msg += ' Please choose another price option.'
                 if redirect_to_403:
                     raise Http403
                 raise forms.ValidationError(_(err_msg))
@@ -2373,7 +2385,20 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
                                 % (currency_symbol, pricing.price, pricing.title)
                 else:
                     if pricing.allow_user:
-                        err_msg = 'We do not recognize %s as a site user.' % email
+                        # found an inactive user account
+                        if User.objects.filter(email__iexact=email, is_active=False).exists():  
+                            activation_link = _('<a href="{activate_link}?email={email}&next={next_path}">HERE</a>').format(
+                                                    activate_link=reverse('profile.activate_email'),
+                                                    email=requests.utils.quote(email),
+                                                    next_path=self.request.get_full_path())
+                            err_msg = "The email you entered is associated with an inactive account. "
+                            inactive_user_err_msg = err_msg + mark_safe(f'''
+                                If it is yours, please click {activation_link} and we'll send you an email to activate your account
+                                and then you will be returned to here to register this event.''')
+                            self.request.user.inactive_user_err_msg = inactive_user_err_msg
+                        else:
+                            # user doesn't exists in the system
+                            err_msg = f'We do not recognize {email} as a site user. Please check your email address or sign up to the site. '
                     else:
                         if pricing.allow_member:
                             err_msg = "We do not recognize %s as a member." % email
@@ -2383,10 +2408,11 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
                         else:
                             if pricing.groups.all():
                                 err_msg = "We do not recognize %s as a member of any of the following %s." % (email, ', '.join(pricing.groups.values_list('name', flat=True)))
-                    if not err_msg:
-                        err_msg = 'Not eligible for the price.%s%s %s.' \
-                                    % (currency_symbol, pricing.price, pricing.title)
-                    err_msg += ' Please choose another price option.'
+                        if not err_msg:
+                            err_msg = 'Not eligible for the price.%s%s %s.' \
+                                        % (currency_symbol, pricing.price, pricing.title)
+                        if len(self.pricings) > 1:
+                            err_msg += ' Please choose another price option.'
                 if redirect_to_403:
                     raise Http403
                 raise forms.ValidationError(_(err_msg))
