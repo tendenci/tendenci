@@ -373,7 +373,7 @@ class MembershipSet(models.Model):
     def memberships(self):
         return MembershipDefault.objects.filter(membership_set=self).order_by('create_dt')
 
-    def save_invoice(self, memberships, app=None):
+    def save_invoice(self, memberships, app=None, discount_code=None, discount_amount=None):
         invoice = Invoice()
         invoice.title = "Membership Invoice"
         invoice.estimate = True
@@ -391,6 +391,12 @@ class MembershipSet(models.Model):
         price = 0
         for membership in memberships:
             price += membership.get_price()
+        if discount_code and discount_amount:
+            if price >= discount_amount:
+                if discount_code:
+                    invoice.discount_code = discount_code
+                invoice.discount_amount = discount_amount
+                price -= discount_amount
 
         default_tax_rate = 0
         if app and app.include_tax:

@@ -270,7 +270,8 @@ def index(request, username='', template_name="profiles/index.html"):
         'can_auto_renew': can_auto_renew,
         'auto_renew_is_set': auto_renew_is_set,
         'recurring_payments': recurring_payments,
-        'upcoming_events': upcoming_events
+        'upcoming_events': upcoming_events,
+        'can_view_memberships': has_perm(request.user, 'memberships.view_membershipdefault')
         })
 
 
