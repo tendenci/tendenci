@@ -967,7 +967,7 @@
         "scope_category": "global",
         "store": true,
         "updated_by": ""
-    }
+    },
     {
         "default_value": "US",
         "description": "Enter the assumed phone number region (ISO 3116-1) where an international code isn't specified",
