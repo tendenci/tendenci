@@ -105,14 +105,16 @@
             </div>
         </div>
 		{% endif %}
+		{% if corp_profile.url %}
         <div class="row">
             <div class="col-xs-4">
                 {% trans 'Website' %}
             </div>
-            <div class="col-xs-6">
-            {{ corp_profile.url }}
+            <div class="col-xs-6" style="overflow-wrap: break-word;">
+            {{ corp_profile.url|urlize }}
             </div>
         </div>
+        {% endif %}
         <div class="row">
             <div class="col-xs-4">
                 {% trans 'Address' %}
