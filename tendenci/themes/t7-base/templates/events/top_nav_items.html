@@ -71,6 +71,14 @@
                             </span>
                         </li>
                     {% else %}
+                   		{% if can_request_event %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'event.minimal_add' %}">{% trans "Submit an Event" %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
+                    {% endif %}
 
                     {% if request.user.is_superuser %}
                         <li class="content-item">
@@ -101,14 +109,7 @@
                     {% endif %}
 
 
-                        {% if can_request_event %}
-                            <li class="content-item">
-                                <span class="app-name">
-                                    <a href="{% url 'event.minimal_add' %}">{% trans "Submit an Event" %}</a>
-                                </span>
-                            </li>
-                        {% endif %}
-                    {% endif %}
+                        
 
                     {% if request.user.is_superuser %}
                         <li class="content-item">
