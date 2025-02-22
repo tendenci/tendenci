@@ -36,7 +36,7 @@
 
     <article id="t-corpmemberships-corpmembership-{{ corporate_membership.pk }}" class="t-corpmemberships-corpmembership">
         <div class="page-header">
-            <h1>{% trans "Corporate Membership" %}<br />&nbsp;<small>{{ corp_profile.name }}  &nbsp; &nbsp; &nbsp;{% if corporate_membership.status_detail == 'pending' or corporate_membership.status_detail == 'paid - pending approval'  %}<span class="text-warning">{{ corporate_membership.status_detail|capfirst }}</span>{% endif %}</small> </h1>
+            <h1>{% trans "Corporate Membership" %}<br />&nbsp;<small> {{ corp_profile.name }} (<a title="View Corporate Profile" target="_blank" rel="noopener" href="{{ corp_profile.get_absolute_url }}">{% trans "View Profile" %}</a>)  &nbsp; &nbsp; &nbsp;{% if corporate_membership.status_detail == 'pending' or corporate_membership.status_detail == 'paid - pending approval'  %}<span class="text-warning">{{ corporate_membership.status_detail|capfirst }}</span>{% endif %}</small> </h1>
         </div>
 		{% if request.user.is_authenticated %}
         {% with corporate_membership as corp_membership %}
