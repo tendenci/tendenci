@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
                 ('message', models.TextField()),
                 ('addresses', models.ManyToManyField(to='contacts.Address', blank=True)),
                 ('companies', models.ManyToManyField(to='contacts.Company', blank=True)),
-                ('creator', models.ForeignKey(related_name='contacts_contact_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
             },
@@ -98,12 +98,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='contact',
             name='entity',
-            field=models.ForeignKey(related_name='contacts_contact_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
         ),
         migrations.AddField(
             model_name='contact',
             name='owner',
-            field=models.ForeignKey(related_name='contacts_contact_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='contact',

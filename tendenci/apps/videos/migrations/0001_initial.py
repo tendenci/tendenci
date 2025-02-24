@@ -58,9 +58,9 @@ class Migration(migrations.Migration):
                 ('tags', tagging.fields.TagField(help_text='Tag 1, Tag 2, ...', max_length=255, blank=True)),
                 ('ordering', models.IntegerField(null=True, blank=True)),
                 ('category', models.ForeignKey(to='videos.Category', on_delete=django.db.models.deletion.CASCADE)),
-                ('creator', models.ForeignKey(related_name='videos_video_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='videos_video_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('owner', models.ForeignKey(related_name='videos_video_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'ordering': ('ordering',),

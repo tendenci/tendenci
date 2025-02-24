@@ -63,10 +63,10 @@ class Migration(migrations.Migration):
                 ('contact_email', models.CharField(max_length=300, blank=True)),
                 ('contact_website', models.CharField(max_length=300, blank=True)),
                 ('tags', tagging.fields.TagField(max_length=255, blank=True)),
-                ('creator', models.ForeignKey(related_name='resumes_resume_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='resumes_resume_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('meta', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, to='meta.Meta')),
-                ('owner', models.ForeignKey(related_name='resumes_resume_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
             },

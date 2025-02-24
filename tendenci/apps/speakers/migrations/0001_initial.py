@@ -45,9 +45,9 @@ class Migration(migrations.Migration):
                 ('slideshare', models.CharField(max_length=100, blank=True)),
                 ('personal_sites', models.TextField(help_text='List personal websites followed by a return', verbose_name='Personal Sites', blank=True)),
                 ('tags', tagging.fields.TagField(help_text='Tags separated by commas. E.g Tag1, Tag2, Tag3', max_length=255, blank=True)),
-                ('creator', models.ForeignKey(related_name='speakers_speaker_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='speakers_speaker_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('owner', models.ForeignKey(related_name='speakers_speaker_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'get_latest_by': '-start_date',

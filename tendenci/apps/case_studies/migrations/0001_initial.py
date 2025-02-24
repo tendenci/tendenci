@@ -39,9 +39,9 @@ class Migration(migrations.Migration):
                 ('execution', models.TextField(blank=True, null=True)),
                 ('results', models.TextField(blank=True, null=True)),
                 ('tags', tagging.fields.TagField(blank=True, help_text='Tags separated by commas. E.g Tag1, Tag2, Tag3', max_length=255)),
-                ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='case_studies_casestudy_creator', to=settings.AUTH_USER_MODEL)),
-                ('entity', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='case_studies_casestudy_entity', to='entities.entity')),
-                ('owner', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='case_studies_casestudy_owner', to=settings.AUTH_USER_MODEL)),
+                ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_creator', to=settings.AUTH_USER_MODEL)),
+                ('entity', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_entity', to='entities.entity')),
+                ('owner', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_owner', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'Case Study',
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Image',
             fields=[
-                ('file_ptr', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, related_name='case_studies_image_related', serialize=False, to='files.file')),
+                ('file_ptr', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, related_name='%(app_label)s_%(class)s_related', serialize=False, to='files.file')),
                 ('file_type', models.CharField(choices=[('featured', 'Featured Screenshot'), ('screenshot', 'Screenshot'), ('homepage', 'Homepage Image'), ('other', 'Other')], default='other', max_length=50, verbose_name='File type')),
                 ('position', models.IntegerField(blank=True)),
                 ('case_study', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='case_studies.casestudy')),
