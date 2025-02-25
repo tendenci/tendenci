@@ -2287,6 +2287,9 @@ class AssetsPurchase(models.Model):
     def is_paid(self):
         return self.invoice and self.invoice.balance <= 0
 
+    def is_free(self):
+        return self.invoice and self.invoice.total == 0
+
     def email_purchased(self, to_admin=False):
         """
         Email to user or admins that event assets purchased.

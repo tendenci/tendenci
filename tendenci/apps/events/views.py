@@ -2229,6 +2229,16 @@ def purchase_assets(request, event_id, form_class=AssetsPurchaseForm,
                 return HttpResponseRedirect(reverse('payment.pay_online',
                                     args=[assets_purchaser.invoice.id,
                                           assets_purchaser.invoice.guid]))
+            elif assets_purchaser.invoice.balance == 0:
+                assets_purchaser.status_detail = 'approved'
+                assets_purchaser.save()
+    
+                assets_purchaser.email_purchased()
+                assets_purchaser.email_purchased(to_admin=True)
+                msg_string = _('Successfully purchased event assets. Thank you!')
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
+                return HttpResponseRedirect(reverse('event', args=[event_id]))
+                
             return HttpResponseRedirect(reverse('invoice.view', args=[assets_purchaser.invoice.id]))
 
     
