@@ -86,9 +86,9 @@ class Migration(migrations.Migration):
                 ('video_title', models.CharField(max_length=200, verbose_name='Video Title', blank=True)),
                 ('video_description', models.TextField(verbose_name='Video Description', blank=True)),
                 ('client', models.ForeignKey(blank=True, to='projects.ClientList', null=True, on_delete=django.db.models.deletion.CASCADE)),
-                ('creator', models.ForeignKey(related_name='projects_project_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='projects_project_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('owner', models.ForeignKey(related_name='projects_project_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
             },
@@ -117,7 +117,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=200, verbose_name='Title', blank=True)),
                 ('role', models.CharField(max_length=200, verbose_name='Role', blank=True)),
                 ('team_description', models.TextField(null=True, verbose_name='Description', blank=True)),
-                ('project', models.ForeignKey(related_name='projects_teammembers_related', to='projects.Project', on_delete=django.db.models.deletion.CASCADE)),
+                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_%(class)s_related', to='projects.project')),
             ],
             options={
                 'abstract': False,
@@ -137,12 +137,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='photo',
             name='project',
-            field=models.ForeignKey(related_name='projects_photo_related', to='projects.Project', on_delete=django.db.models.deletion.CASCADE),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_%(class)s_related', to='projects.project'),
         ),
         migrations.AddField(
             model_name='documents',
             name='project',
-            field=models.ForeignKey(related_name='projects_documents_related', to='projects.Project', on_delete=django.db.models.deletion.CASCADE),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_%(class)s_related', to='projects.project'),
         ),
         migrations.AddField(
             model_name='documents',

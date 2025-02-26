@@ -50,8 +50,8 @@ class Migration(migrations.Migration):
                 ('tax_rate', models.DecimalField(default=0, help_text='Example: 0.0825 for 8.25%.', max_digits=5, decimal_places=4, blank=True)),
                 ('discount_eligible', models.BooleanField(default=False)),
                 ('use_for_corp', models.BooleanField(default=True, verbose_name='Use for Corporate Individuals')),
-                ('creator', models.ForeignKey(related_name='memberships_membershipapp_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='memberships_membershipapp_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
             ],
             options={
                 'verbose_name': 'Membership Application',
@@ -155,9 +155,9 @@ class Migration(migrations.Migration):
                 ('application_approved_denied_user', models.ForeignKey(related_name='application_approved_denied_set', to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('application_approved_user', models.ForeignKey(related_name='application_approved_set', to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('application_complete_user', models.ForeignKey(related_name='application_complete_set', to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE)),
-                ('creator', models.ForeignKey(related_name='memberships_membershipdefault_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('directory', models.ForeignKey(blank=True, to='directories.Directory', null=True, on_delete=django.db.models.deletion.CASCADE)),
-                ('entity', models.ForeignKey(related_name='memberships_membershipdefault_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('groups', models.ManyToManyField(to='user_groups.Group')),
                 ('industry', models.ForeignKey(blank=True, to='industries.Industry', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
@@ -300,10 +300,10 @@ class Migration(migrations.Migration):
                 ('renewal_period_start', models.IntegerField(default=30, help_text='How long (in days) before the memberships expires can the member renew their membership.', verbose_name='Renewal Period Start')),
                 ('renewal_period_end', models.IntegerField(default=30, help_text='How long (in days) after the memberships expires can the member renew their membership.', verbose_name='Renewal Period End')),
                 ('expiration_grace_period', models.IntegerField(default=0, help_text='The number of days (maximum 100) after the membership expires their membership is still active.', verbose_name='Expiration Grace Period')),
-                ('creator', models.ForeignKey(related_name='memberships_membershiptype_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='memberships_membershiptype_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('group', models.ForeignKey(related_name='membership_types', to='user_groups.Group', help_text='Members joined will be added to this group', on_delete=django.db.models.deletion.CASCADE)),
-                ('owner', models.ForeignKey(related_name='memberships_membershiptype_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'verbose_name': 'Membership Type',
@@ -374,7 +374,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='membershipdefault',
             name='owner',
-            field=models.ForeignKey(related_name='memberships_membershipdefault_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='membershipdefault',
@@ -399,7 +399,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='membershipapp',
             name='owner',
-            field=models.ForeignKey(related_name='memberships_membershipapp_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='membershipapp',

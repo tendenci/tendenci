@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='creator',
-            field=models.ForeignKey(related_name='forums_category_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='category',
@@ -64,12 +64,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='entity',
-            field=models.ForeignKey(related_name='forums_category_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
         ),
         migrations.AddField(
             model_name='category',
             name='owner',
-            field=models.ForeignKey(related_name='forums_category_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='category',

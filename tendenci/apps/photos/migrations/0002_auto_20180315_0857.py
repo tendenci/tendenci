@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='image',
             name='effect',
-            field=models.ForeignKey(related_name='image_related', on_delete=django.db.models.deletion.SET_NULL, verbose_name='effect', blank=True, to='photos.PhotoEffect', null=True),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_related', to='photos.photoeffect', verbose_name='effect'),
         ),
         migrations.AlterField(
             model_name='image',

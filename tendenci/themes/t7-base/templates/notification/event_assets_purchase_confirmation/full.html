@@ -11,7 +11,7 @@
 	
 	{% if assets_purchase.is_paid %}
 	    <div style="background-color:#CFFFCE; padding:10px; font-size:1.2em;">
-	            {% trans "Payment Received." %}
+	            {% if not assets_purchase.is_free %}{% trans "Payment Received." %}{% else %}{% trans "Free Purchase." %}{% endif %}
 	            <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" assets_purchase.invoice.pk %}">{% trans "View Invoice."%}</a>
 	            <div style="font-size:1.0em; margin-top:5px;">
 	                  <div>{{ assets_purchase.first_name }} {{ assets_purchase.last_name }}  ({{ assets_purchase.email }})</div>

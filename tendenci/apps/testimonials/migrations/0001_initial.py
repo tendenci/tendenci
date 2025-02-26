@@ -41,8 +41,8 @@ class Migration(migrations.Migration):
                 ('website', models.URLField(max_length=255, null=True, blank=True)),
                 ('testimonial', models.TextField(help_text='Supports &lt;strong&gt;, &lt;em&gt;, and &lt;a&gt; HTML tags.')),
                 ('tags', tagging.fields.TagField(help_text='Tags separated by commas. E.g Tag1, Tag2, Tag3', max_length=255, blank=True)),
-                ('creator', models.ForeignKey(related_name='testimonials_testimonial_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='testimonials_testimonial_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
             ],
             options={
                 'verbose_name': 'Testimonial',
@@ -67,6 +67,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='testimonial',
             name='owner',
-            field=models.ForeignKey(related_name='testimonials_testimonial_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
     ]
