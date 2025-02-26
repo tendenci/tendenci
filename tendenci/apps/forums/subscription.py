@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from django.utils import translation
 from django.contrib.sites.models import Site
 from django.core.mail.message import EmailMessage
+from django.db.models import Q
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import add_tendenci_footer
@@ -57,7 +58,7 @@ def get_email_headers(sender_display_user):
 def notify_forum_subscribers(topic):
     forum = topic.forum
     qs = ForumSubscription.objects.exclude(user=topic.user).filter(forum=topic.forum)
-    notifications = qs.filter(type=ForumSubscription.TYPE_NOTIFY)
+    notifications = qs.filter(Q(type=ForumSubscription.TYPE_NOTIFY) | Q(type=ForumSubscription.TYPE_SUBSCRIBE))
     if notifications.count():
         users = (n.user for n in notifications.select_related('user'))
         context = {
