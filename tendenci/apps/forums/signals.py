@@ -30,6 +30,7 @@ def post_saved(instance, **kwargs):
             pybb_profile.post_count = instance.user.posts.count()
             pybb_profile.save()
         if instance.topic.head == instance:
+            # new topic
             #notify_forum_subscribers(instance.topic)
             NotifyThread(instance.topic, post_type='topic').start()
 
