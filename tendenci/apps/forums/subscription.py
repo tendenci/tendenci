@@ -57,7 +57,8 @@ def get_email_headers(sender_display_user):
 
 def notify_forum_subscribers(topic):
     forum = topic.forum
-    qs = ForumSubscription.objects.exclude(user=topic.user).filter(forum=topic.forum)
+    #qs = ForumSubscription.objects.exclude(user=topic.user).filter(forum=topic.forum)
+    qs = ForumSubscription.objects.filter(forum=topic.forum)
     notifications = qs.filter(Q(type=ForumSubscription.TYPE_NOTIFY) | Q(type=ForumSubscription.TYPE_SUBSCRIBE))
     if notifications.count():
         users = (n.user for n in notifications.select_related('user'))
@@ -98,7 +99,8 @@ def notify_topic_subscribers(post):
         users = topic.forum.moderators.all()
     else:
         subject_template = 'pybb/mail_templates/subscription_email_subject.html'
-        users = topic.subscribers.exclude(pk=post.user.pk)
+        #users = topic.subscribers.exclude(pk=post.user.pk)
+        users = topic.subscribers.all()
 
     subject = render_to_string(template_name=subject_template,
                                    context={'site_url': context_vars['site_url'],
