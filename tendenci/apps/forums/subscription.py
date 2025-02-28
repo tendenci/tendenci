@@ -87,6 +87,7 @@ def notify_topic_subscribers(post):
                     'site_url': get_setting('site', 'global', 'siteurl'),
                     'site_name': get_setting('site', 'global', 'sitedisplayname'),
                     'is_new_topic': post == topic.head,
+                    'manage_url': reverse('pybb:forum_subscription', kwargs={'pk': topic.forum.id}),
                     'post': post,
                     'topic': topic,
                     'post_url': reverse('pybb:post', args=[post.id]),
