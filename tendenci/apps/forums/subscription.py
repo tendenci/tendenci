@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from django.utils import translation
 from django.contrib.sites.models import Site
 from django.core.mail.message import EmailMessage
+from django.db.models import Q
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import add_tendenci_footer
@@ -56,8 +57,9 @@ def get_email_headers(sender_display_user):
 
 def notify_forum_subscribers(topic):
     forum = topic.forum
-    qs = ForumSubscription.objects.exclude(user=topic.user).filter(forum=topic.forum)
-    notifications = qs.filter(type=ForumSubscription.TYPE_NOTIFY)
+    #qs = ForumSubscription.objects.exclude(user=topic.user).filter(forum=topic.forum)
+    qs = ForumSubscription.objects.filter(forum=topic.forum)
+    notifications = qs.filter(Q(type=ForumSubscription.TYPE_NOTIFY) | Q(type=ForumSubscription.TYPE_SUBSCRIBE))
     if notifications.count():
         users = (n.user for n in notifications.select_related('user'))
         context = {
@@ -85,6 +87,7 @@ def notify_topic_subscribers(post):
                     'site_url': get_setting('site', 'global', 'siteurl'),
                     'site_name': get_setting('site', 'global', 'sitedisplayname'),
                     'is_new_topic': post == topic.head,
+                    'manage_url': reverse('pybb:forum_subscription', kwargs={'pk': topic.forum.id}),
                     'post': post,
                     'topic': topic,
                     'post_url': reverse('pybb:post', args=[post.id]),
@@ -97,7 +100,8 @@ def notify_topic_subscribers(post):
         users = topic.forum.moderators.all()
     else:
         subject_template = 'pybb/mail_templates/subscription_email_subject.html'
-        users = topic.subscribers.exclude(pk=post.user.pk)
+        #users = topic.subscribers.exclude(pk=post.user.pk)
+        users = topic.subscribers.all()
 
     subject = render_to_string(template_name=subject_template,
                                    context={'site_url': context_vars['site_url'],

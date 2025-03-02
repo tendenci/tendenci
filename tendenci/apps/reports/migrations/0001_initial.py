@@ -30,9 +30,9 @@ class Migration(migrations.Migration):
                 ('status_detail', models.CharField(default='active', max_length=50)),
                 ('type', models.CharField(max_length=100)),
                 ('config', models.TextField(blank=True)),
-                ('creator', models.ForeignKey(related_name='reports_report_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='reports_report_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('owner', models.ForeignKey(related_name='reports_report_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'verbose_name': 'Report',

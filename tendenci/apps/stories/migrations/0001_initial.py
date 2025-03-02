@@ -51,8 +51,8 @@ class Migration(migrations.Migration):
                 ('expires', models.BooleanField(default=True, verbose_name='Expires')),
                 ('tags', tagging.fields.TagField(default='', max_length=255, blank=True)),
                 ('rotator_position', models.IntegerField(default=0, verbose_name='Rotator Position', blank=True)),
-                ('creator', models.ForeignKey(related_name='stories_story_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='stories_story_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
             ],
             options={
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='story',
             name='owner',
-            field=models.ForeignKey(related_name='stories_story_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='story',

@@ -61,9 +61,9 @@ class Migration(migrations.Migration):
                 ('credits', models.DecimalField(decimal_places=2, default=0, max_digits=5)),
                 ('min_score', models.DecimalField(decimal_places=1, default=80, max_digits=3)),
                 ('status_detail', models.CharField(choices=[('enabled', 'Enabled'), ('disabled', 'Disabled')], default='enabled', max_length=10, verbose_name='Status')),
-                ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='trainings_course_creator', to=settings.AUTH_USER_MODEL)),
-                ('entity', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='trainings_course_entity', to='entities.entity')),
-                ('owner', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='trainings_course_owner', to=settings.AUTH_USER_MODEL)),
+                ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_creator', to=settings.AUTH_USER_MODEL)),
+                ('entity', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_entity', to='entities.entity')),
+                ('owner', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_owner', to=settings.AUTH_USER_MODEL)),
                 ('school_category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='trainings.schoolcategory')),
             ],
             options={

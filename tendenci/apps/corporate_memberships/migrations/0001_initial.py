@@ -174,10 +174,10 @@ class Migration(migrations.Migration):
                 ('individual_threshold', models.IntegerField(default=0, null=True, verbose_name='Threshold Limit', blank=True)),
                 ('individual_threshold_price', models.DecimalField(decimal_places=2, default=0, max_digits=15, blank=True, help_text='All individual members applying under or equal to the threshold limit\nreceive the threshold prices. Additional employees can join but will be\ncharged the full individual corporate membership rate.\n', null=True, verbose_name='Threshold Price')),
                 ('number_passes', models.PositiveIntegerField(default=0, verbose_name='Number Passes', blank=True)),
-                ('creator', models.ForeignKey(related_name='corporate_memberships_corporatemembershiptype_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='corporate_memberships_corporatemembershiptype_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('membership_type', models.ForeignKey(help_text='Bind individual memberships to this membership type.', to='memberships.MembershipType', on_delete=django.db.models.deletion.CASCADE)),
-                ('owner', models.ForeignKey(related_name='corporate_memberships_corporatemembershiptype_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -227,10 +227,10 @@ class Migration(migrations.Migration):
                 ('ud6', models.TextField(default='', null=True, blank=True)),
                 ('ud7', models.TextField(default='', null=True, blank=True)),
                 ('ud8', models.TextField(default='', null=True, blank=True)),
-                ('creator', models.ForeignKey(related_name='corporate_memberships_corpprofile_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='corporate_memberships_corpprofile_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('industry', models.ForeignKey(blank=True, to='industries.Industry', null=True, on_delete=django.db.models.deletion.CASCADE)),
-                ('owner', models.ForeignKey(related_name='corporate_memberships_corpprofile_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
                 ('region', models.ForeignKey(blank=True, to='regions.Region', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
@@ -260,10 +260,10 @@ class Migration(migrations.Migration):
                 ('status', models.BooleanField(default=True, verbose_name='Active')),
                 ('status_detail', models.CharField(default='active', max_length=50)),
                 ('corp_membership', models.ForeignKey(related_name='passes_used', to='corporate_memberships.CorpMembership', on_delete=django.db.models.deletion.CASCADE)),
-                ('creator', models.ForeignKey(related_name='corporate_memberships_freepassesstat_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='corporate_memberships_freepassesstat_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('event', models.ForeignKey(related_name='passes_used', to='events.Event', on_delete=django.db.models.deletion.CASCADE)),
-                ('owner', models.ForeignKey(related_name='corporate_memberships_freepassesstat_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
                 ('registrant', models.ForeignKey(to='events.Registrant', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
@@ -363,12 +363,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='corpmembershipapp',
             name='creator',
-            field=models.ForeignKey(related_name='corporate_memberships_corpmembershipapp_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='corpmembershipapp',
             name='entity',
-            field=models.ForeignKey(related_name='corporate_memberships_corpmembershipapp_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
         ),
         migrations.AddField(
             model_name='corpmembershipapp',
@@ -378,7 +378,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='corpmembershipapp',
             name='owner',
-            field=models.ForeignKey(related_name='corporate_memberships_corpmembershipapp_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='corpmembershipapp',
@@ -408,12 +408,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='corpmembership',
             name='creator',
-            field=models.ForeignKey(related_name='corporate_memberships_corpmembership_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='corpmembership',
             name='entity',
-            field=models.ForeignKey(related_name='corporate_memberships_corpmembership_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
         ),
         migrations.AddField(
             model_name='corpmembership',
@@ -423,7 +423,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='corpmembership',
             name='owner',
-            field=models.ForeignKey(related_name='corporate_memberships_corpmembership_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='corpmembership',

@@ -31,9 +31,9 @@ class Migration(migrations.Migration):
                 ('object_id', models.PositiveIntegerField(verbose_name='object id', db_index=True)),
                 ('title', models.CharField(max_length=500, blank=True)),
                 ('content_type', models.ForeignKey(verbose_name='content type', to='contenttypes.ContentType', on_delete=django.db.models.deletion.CASCADE)),
-                ('creator', models.ForeignKey(related_name='contributions_contribution_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='contributions_contribution_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('owner', models.ForeignKey(related_name='contributions_contribution_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
             },

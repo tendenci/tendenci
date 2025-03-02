@@ -52,8 +52,8 @@ class Migration(migrations.Migration):
                 ('is_public', models.BooleanField(default=True)),
                 ('tags', tagging.fields.TagField(max_length=255, null=True, blank=True)),
                 ('content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True, on_delete=django.db.models.deletion.CASCADE)),
-                ('creator', models.ForeignKey(related_name='files_file_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='files_file_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
             ],
             options={
             },
@@ -88,6 +88,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='file',
             name='owner',
-            field=models.ForeignKey(related_name='files_file_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
     ]

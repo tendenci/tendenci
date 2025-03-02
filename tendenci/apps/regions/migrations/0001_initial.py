@@ -32,9 +32,9 @@ class Migration(migrations.Migration):
                 ('region_name', models.CharField(max_length=200, verbose_name='Name')),
                 ('region_code', models.CharField(max_length=200, verbose_name='Region Code')),
                 ('description', models.TextField(default='', blank=True)),
-                ('creator', models.ForeignKey(related_name='regions_region_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='regions_region_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('owner', models.ForeignKey(related_name='regions_region_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'verbose_name': 'Region',
