@@ -222,7 +222,7 @@ def get_raw_content(relative_path, type=''):
             theme_root = get_theme_root(theme)
         else:
             theme_root = get_theme_root()
-        if type is '':
+        if type == '':
             file_path = os.path.join(theme_root, relative_path)
         else:
             file_path = os.path.join(theme_root, type, relative_path)
@@ -232,7 +232,7 @@ def get_raw_content(relative_path, type=''):
                 raw_content = fp.read()
             break
         else:
-            warn("%s relative path %s not found" % type, relative_path)
+            warn("%s relative path %s not found" % (type, relative_path))
 
     return raw_content
 
@@ -242,7 +242,7 @@ def get_template_content_raw(template_relative_path):
     
     Example: get_template_content_raw('chapters/memberships/message/email-chapter-members-body.txt')
     """
-    return get_raw_content(template_relative_path, 'template')
+    return get_raw_content(template_relative_path, 'templates')
 
 def get_static_content_raw(static_relative_path):
     """
