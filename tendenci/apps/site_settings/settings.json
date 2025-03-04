@@ -967,5 +967,39 @@
         "scope_category": "global",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "US",
+        "description": "Enter the assumed phone number region (ISO 3116-1) where an international code isn't specified.  A list of codes can be found on <a href='https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes'>Wikipedia</a>",
+        "data_type": "string",
+        "update_dt": "2024-12-12 23:00:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "phone_number_region",
+        "value": "US",
+        "label": "Phone Number Region",
+        "input_value": "string",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": true,
+        "updated_by": ""
+    },
+    {
+        "default_value": "(###) ###-####",
+        "description": " All '#' characters are replaced with a phone number digit, all other characters are treated as literals",
+        "data_type": "string",
+        "update_dt": "2024-12-12 23:00:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "phone_number_pattern",
+        "value": "(###) ###-####",
+        "label": "Phone Number Pattern",
+        "input_value": "string",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": true,
+        "updated_by": ""
     }
 ]
