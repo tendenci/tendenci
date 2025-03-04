@@ -1170,9 +1170,12 @@ def membership_default_add(request, slug='', membership_id=None,
         if membership_renewed:
             inv = membership_renewed.get_invoice()
             if inv and inv.balance > 0:
-                return HttpResponseRedirect(reverse(
-                        'payment.pay_online',
-                        args=[inv.pk, inv.guid]))
+                # Check that this membership is paid online before launching online payment
+                # Additional check could be added to confirm that online payment configuration is in place
+                if membership.is_paid_online():
+                    return HttpResponseRedirect(reverse(
+                            'payment.pay_online',
+                            args=[inv.pk, inv.guid]))
             view_url = membership_renewed.get_absolute_url()
             if membership_renewed.status_detail == 'pending':
                 msg_string = _(f'Your membership renewal application is pending for admin approval. <a href="{view_url}">View Membership</a>')
