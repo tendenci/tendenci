@@ -296,12 +296,12 @@ class ForumSubscriptionForm(forms.Form):
                 _('be unsubscribe from this forum')
             ))
 
-        initial = ForumSubscription.TYPE_NOTIFY if not instance else instance.type
+        initial = ForumSubscription.TYPE_SUBSCRIBE if not instance else instance.type
         self.fields['type'] = forms.ChoiceField(
             label=_('You want to'), choices=type_choices, initial=initial,
             widget=forms.RadioSelect())
         self.fields['topics'] = forms.ChoiceField(
-            label=_('Concerned topics'), choices=topic_choices, initial=topic_choices[0][0],
+            label=_('Concerned topics'), choices=topic_choices, initial=topic_choices[1][0],
             widget=forms.RadioSelect())
     
     def process(self):

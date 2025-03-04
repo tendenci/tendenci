@@ -18,5 +18,6 @@
 {% trans "Add new topic:" %}  <a href="{{site_url}}{% url 'pybb:add_topic' post.topic.forum.id %}">{{site_url}}{% url 'pybb:add_topic' post.topic.forum.id %}</a><br>
 {% endif %}
 <br>
-{% trans "If you don't want to recive notifications on new messages in this topic visit the following link:" %} <a href="{{site_url}}{{ delete_url}}">{{site_url}}{{ delete_url }}</a><br>
+{% trans "To unsubscribe this topic, please visit the topic (linked above) and click the <strong>Unsubscribe</strong> link." %}<br>
+{% trans "To manage your subscription for this forum, please visit the following link:" %} <a href="{{ site_url }}{{ manage_url }}">{{ site_url }}{{ manage_url }}<br>
 {% endif %}
