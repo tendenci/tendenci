@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
                 ('tags', tagging.fields.TagField(help_text='Comma delimited (eg. mickey, donald, goofy)', max_length=255, blank=True)),
                 ('exif_data', tendenci.apps.base.fields.DictField(null=True, verbose_name='exif')),
                 ('photographer', models.CharField(max_length=100, null=True, verbose_name='Photographer', blank=True)),
-                ('creator', models.ForeignKey(related_name='photos_image_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
             },
@@ -116,10 +116,10 @@ class Migration(migrations.Migration):
                 ('publish_type', models.IntegerField(default=2, verbose_name='publish_type', choices=[(1, 'Private'), (2, 'Public')])),
                 ('tags', tagging.fields.TagField(help_text='Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3', max_length=255, blank=True)),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
-                ('creator', models.ForeignKey(related_name='photos_photoset_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='photos_photoset_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to='user_groups.Group', null=True)),
-                ('owner', models.ForeignKey(related_name='photos_photoset_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'verbose_name': 'Photo Album',
@@ -188,7 +188,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='entity',
-            field=models.ForeignKey(related_name='photos_image_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
         ),
         migrations.AddField(
             model_name='image',
@@ -213,7 +213,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='owner',
-            field=models.ForeignKey(related_name='photos_image_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='image',

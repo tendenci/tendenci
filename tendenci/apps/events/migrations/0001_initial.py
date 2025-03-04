@@ -164,8 +164,8 @@ class Migration(migrations.Migration):
                 ('is_recurring_event', models.BooleanField(default=False, verbose_name='Is Recurring Event')),
                 ('display_event_registrants', models.BooleanField(default=False, verbose_name='Display Attendees')),
                 ('display_registrants_to', models.CharField(default='admin', max_length=6, choices=[('public', 'Everyone'), ('user', 'Users Only'), ('member', 'Members Only'), ('admin', 'Admin Only')])),
-                ('creator', models.ForeignKey(related_name='events_event_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='events_event_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
             ],
             options={
@@ -441,7 +441,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='owner',
-            field=models.ForeignKey(related_name='events_event_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='event',

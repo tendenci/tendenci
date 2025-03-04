@@ -64,6 +64,17 @@
 	  		{% trans "You have already registered" %}
 			</div>
 		{% endif %}
+	{% else %}
+		{% if active_user_may_required %}
+		<div class="alert alert-warning">
+		{% trans "To register this event, an active user account is needed." %}<br />
+		{% if request.user.inactive_user_err_msg %}
+			{{ request.user.inactive_user_err_msg|safe }}
+		{% else %}
+		{% blocktrans with this_url=request.path %}Please <a class="btn btn-default btn-sm" href="/accounts/login/?next={{this_url}}">LOG IN</a> or <a class="btn btn-primary btn-sm" href="/accounts/register/?next={{this_url}}">SIGN UP</a> (if you're new to the site or don't have an account), then come back to this page!{% endblocktrans %}
+		{% endif %}
+		</div>
+		{% endif %}
 	{% endif %}
 
     {% if not event.registration_configuration.require_guests_info and event.anony_setting == 'open'  or event.is_table %}

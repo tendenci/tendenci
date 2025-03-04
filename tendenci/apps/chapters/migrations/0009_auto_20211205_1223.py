@@ -105,8 +105,8 @@ class Migration(migrations.Migration):
                 ('renewal_confirmation_text', tendenci.libs.tinymce.models.HTMLField(blank=True, default='')),
                 ('notes', models.TextField(blank=True, default='')),
                 ('use_captcha', models.BooleanField(default=True, verbose_name='Use Captcha')),
-                ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembershipapp_creator', to=settings.AUTH_USER_MODEL)),
-                ('entity', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembershipapp_entity', to='entities.Entity')),
+                ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_creator', to=settings.AUTH_USER_MODEL)),
+                ('entity', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_entity', to='entities.Entity')),
             ],
             options={
                 'verbose_name': 'Chapter Membership Application',
@@ -202,9 +202,9 @@ class Migration(migrations.Migration):
                 ('renewal_period_start', models.IntegerField(default=30, help_text='How long (in days) before the memberships expires can the member renew their membership.', verbose_name='Renewal Period Start')),
                 ('renewal_period_end', models.IntegerField(default=30, help_text='How long (in days) after the memberships expires can the member renew their membership.', verbose_name='Renewal Period End')),
                 ('expiration_grace_period', models.IntegerField(default=0, help_text='The number of days (maximum 100) after the membership expires their membership is still active.', verbose_name='Expiration Grace Period')),
-                ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembershiptype_creator', to=settings.AUTH_USER_MODEL)),
-                ('entity', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembershiptype_entity', to='entities.Entity')),
-                ('owner', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembershiptype_owner', to=settings.AUTH_USER_MODEL)),
+                ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_creator', to=settings.AUTH_USER_MODEL)),
+                ('entity', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_entity', to='entities.Entity')),
+                ('owner', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_owner', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'Chapter Membership Type',
@@ -315,7 +315,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='chaptermembershipapp',
             name='owner',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembershipapp_owner', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_owner', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='chaptermembershipapp',
@@ -340,12 +340,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='chaptermembership',
             name='creator',
-            field=models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembership_creator', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_creator', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='chaptermembership',
             name='entity',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembership_entity', to='entities.Entity'),
+            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_entity', to='entities.Entity'),
         ),
         migrations.AddField(
             model_name='chaptermembership',
@@ -360,7 +360,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='chaptermembership',
             name='owner',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='chapters_chaptermembership_owner', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_owner', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='chaptermembership',

@@ -77,9 +77,9 @@ class Migration(migrations.Migration):
                 ('intro_name', models.CharField(default='Intro', max_length=50, verbose_name='Intro Name', blank=True)),
                 ('fields_name', models.CharField(default='Fields', max_length=50, verbose_name='Fields Name', blank=True)),
                 ('pricing_name', models.CharField(default='Pricings', max_length=50, verbose_name='Pricing Name', blank=True)),
-                ('creator', models.ForeignKey(related_name='forms_form_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='forms_form_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('owner', models.ForeignKey(related_name='forms_form_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
                 ('payment_methods', models.ManyToManyField(to='payments.PaymentMethod', blank=True)),
             ],
             options={

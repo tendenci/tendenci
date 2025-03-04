@@ -89,7 +89,7 @@
     	{% endif %}
     </div>
     {% endif %}
-    <input class="btn btn-default" title='{% trans "Register for Sub-Events" %}' type="submit" value="{% if payment_required and registration.is_credit_card_payment %}{% trans "Save & Continue" %}{% else %}Submit{% endif %}" id="register_sub_events" >
+    <input class="btn btn-success" title='{% trans "Register for Sub-Events" %}' type="submit" value="{% if payment_required and registration.is_credit_card_payment %}{% trans "Save & Continue" %}{% else %}Complete Registration{% endif %}" id="register_sub_events" >
   </form>
 </div>
 {% endblock %}

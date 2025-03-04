@@ -37,8 +37,8 @@ class Migration(migrations.Migration):
                             "event",
                             models.ForeignKey(
                                 on_delete=django.db.models.deletion.CASCADE,
-                                to="events.event",
-                            ),
+                                related_name='group_relations',
+                                to='events.event'),
                         ),
                         (
                             "group",

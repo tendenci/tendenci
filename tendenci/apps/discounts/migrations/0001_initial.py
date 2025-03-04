@@ -35,9 +35,9 @@ class Migration(migrations.Migration):
                 ('value', models.DecimalField(help_text='Enter discount value as a positive number.', verbose_name='Discount Value', max_digits=10, decimal_places=2)),
                 ('cap', models.IntegerField(default=0, help_text='Enter 0 for unlimited discount code uses.', verbose_name='Maximum Uses')),
                 ('apps', models.ManyToManyField(help_text='Select the applications that can use this discount.', to='contenttypes.ContentType', verbose_name='Applications')),
-                ('creator', models.ForeignKey(related_name='discounts_discount_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='discounts_discount_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('owner', models.ForeignKey(related_name='discounts_discount_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('owner', models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
             },

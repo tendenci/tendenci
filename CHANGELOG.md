@@ -1,3 +1,17 @@
+### 15.3.2 [2025-2-24]
+
+* Allowed event addons to be added without options specified.
+* Updated "marks as paid" so that if an admin marks an invoice as paid, the associated object (membership, corporate membership, etc) will be automatically updated if needed.
+* Updated the ICS export to include ongoing events.
+* Updated corp export to make region field a name instead of ID.
+* Updated event registration to handle inactive or anonymous users register user-only events.
+* Fixed a format issue for directories on /search/.
+* Fixed the issue about tax is calculated before discount being applied for memberships.
+* Fixed the issue regarding members not being able to find member-only content in search.
+* Changed "Submit" to "Complete Registration" on register_child_events.html (Thanks to b-davies24).
+* Other minor fixes.
+
+
 ### 15.3.1 [2025-1-2]
 
 * **SECURITY**: Fixed a potential XSS vulnerability in forums.

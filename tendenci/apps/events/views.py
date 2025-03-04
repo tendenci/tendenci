@@ -2229,6 +2229,16 @@ def purchase_assets(request, event_id, form_class=AssetsPurchaseForm,
                 return HttpResponseRedirect(reverse('payment.pay_online',
                                     args=[assets_purchaser.invoice.id,
                                           assets_purchaser.invoice.guid]))
+            elif assets_purchaser.invoice.balance == 0:
+                assets_purchaser.status_detail = 'approved'
+                assets_purchaser.save()
+    
+                assets_purchaser.email_purchased()
+                assets_purchaser.email_purchased(to_admin=True)
+                msg_string = _('Successfully purchased event assets. Thank you!')
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
+                return HttpResponseRedirect(reverse('event', args=[event_id]))
+                
             return HttpResponseRedirect(reverse('invoice.view', args=[assets_purchaser.invoice.id]))
 
     
@@ -2577,6 +2587,10 @@ def register(request, event_id=0,
         event.free_event = not bool([p for p in pricings if p.price > 0])
         pricing = None
 
+    active_user_may_required = False
+    if anony_setting == 'validated' and pricings.filter(allow_anonymous=False, allow_user=True).exists():
+        active_user_may_required = True
+
     # check if using a custom reg form
     custom_reg_form = None
     if reg_conf.use_custom_reg_form:
@@ -2884,7 +2898,8 @@ def register(request, event_id=0,
         'grand_total': subtotal + total_tax,
         'add_more_registrants' : add_more_registrants,
         'flat_ignore_fields' : flat_ignore_fields,
-        'currency_symbol' : get_setting("site", "global", "currencysymbol") or '$'
+        'currency_symbol' : get_setting("site", "global", "currencysymbol") or '$',
+        'active_user_may_required': active_user_may_required
     })
 
 

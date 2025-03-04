@@ -45,8 +45,8 @@ class Migration(migrations.Migration):
                 ('auto_respond', models.BooleanField(default=False, verbose_name='Auto Responder')),
                 ('auto_respond_priority', models.FloatField(default=0, verbose_name='Priority', blank=True)),
                 ('notes', models.TextField(blank=True)),
-                ('creator', models.ForeignKey(related_name='user_groups_group_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='user_groups_group_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('group', models.OneToOneField(null=True, default=None, on_delete=django.db.models.deletion.CASCADE, to='auth.Group')),
             ],
             options={
@@ -87,7 +87,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='group',
             name='owner',
-            field=models.ForeignKey(related_name='user_groups_group_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='%(app_label)s_%(class)s_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='group',

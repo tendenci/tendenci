@@ -134,13 +134,17 @@ class SearchForm(forms.Form):
                             # (status+status_detail+(anon OR user)) OR (who_can_view__exact)
                             anon_query = Q(**{'allow_anonymous_view':True,})
                             user_query = Q(**{'allow_user_view':True,})
+                            member_query = Q(**{'allow_member_view':True,})
                             sec1_query = Q(**{
                                 'status_detail':'active',
                             })
                             sec2_query = Q(**{
                                 'owner__exact':user.username
                             })
-                            query = reduce(operator.or_, [anon_query, user_query])
+                            if user.profile.is_member:
+                                query = reduce(operator.or_, [anon_query, user_query, member_query])
+                            else:
+                                query = reduce(operator.or_, [anon_query, user_query])
                             query = reduce(operator.and_, [sec1_query, query])
                             query = reduce(operator.or_, [query, sec2_query])
 
