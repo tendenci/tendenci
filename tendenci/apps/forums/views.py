@@ -213,8 +213,8 @@ class ForumSubscriptionView(IsEnabledMixin, RedirectToLoginMixin, generic.FormVi
             ))
         elif result == 'delete-all':
             msg = _((
-                'You have been subscribed to all current topics in this forum and you won\'t'
-                'be auto-subscribed anymore for each new topic posted on this forum.'
+                'You have been unsubscribed to all current topics in this forum and you won\'t'
+                ' be auto-subscribed anymore for each new topic posted on this forum.'
             ))
         else:
             msg = _((
