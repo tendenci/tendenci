@@ -33,7 +33,7 @@ pycryptodome==3.20.0
 boto3==1.34.23
 django-timezone-field==6.1.0
 django-ses==3.5.2
-django-tastypie==0.14.6
+django-tastypie==0.15.1
 docutils==0.20
 chardet==5.2.0
 psycopg2==2.9.9
@@ -77,3 +77,5 @@ django-model-utils>=4.3.1
 # Create test data
 model-bakery==1.17.0
 httplib2==0.22.0
+# Phone Number parsing
+phonenumberslite
