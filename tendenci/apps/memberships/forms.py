@@ -744,6 +744,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request = kwargs.pop('request')
         self.is_corp_rep = kwargs.pop('is_corp_rep', None)
+        self.edit_mode = kwargs.pop('edit_mode', False)
         super(UserForm, self).__init__(*args, **kwargs)
 
         del self.fields['groups']
@@ -909,7 +910,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                             # let them activate the account before applying for membership
                             raise forms.ValidationError(inactive_user_err_msg)
 
-        if not self.is_renewal:
+        if not self.is_renewal and not self.edit_mode:
             if self.request.user.is_authenticated:
                 # check if they have already submitted a membership
                 m = MembershipDefault.objects.filter(user__email__iexact=email,
