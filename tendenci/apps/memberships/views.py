@@ -1739,7 +1739,8 @@ def membership_default_edit(request, id, template='memberships/applications/add.
         app_fields,
         request.POST or None,
         request=request,
-        instance=user)
+        instance=user,
+        edit_mode=True)
 
     profile_form = ProfileForm(
         app_fields,

@@ -1593,7 +1593,8 @@ class MembershipDefault(TendenciBaseModel):
             renew = {}
 
         if status == 'active':
-            actions.update(renew)
+            if self.can_renew():
+                actions.update(renew)
             actions.update({
                 # '?action=pend': u'Make Pending',
                 expire_link: u'Expire Membership'})
@@ -1608,6 +1609,7 @@ class MembershipDefault(TendenciBaseModel):
                 disapprove_link: u'Disapprove',
                 expire_link: u'Expire Membership'})
         elif status == 'expired':
+            actions.update(renew)
             actions.update({
                 approve_link: u'Approve Membership'})
 
