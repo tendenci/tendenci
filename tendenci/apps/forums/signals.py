@@ -15,24 +15,31 @@ from .permissions import perms
 #         notify_forum_subscribers(instance)
 
 
-def post_saved(instance, **kwargs):
-    if not defaults.PYBB_DISABLE_NOTIFICATIONS:
-        #notify_topic_subscribers(instance)
-        NotifyThread(instance).start()
+def post_saved(sender, instance, created, **kwargs):
+    if defaults.PYBB_DISABLE_NOTIFICATIONS:
+        return
 
+    if created:
         pybb_profile = util.get_pybb_profile(instance.user)
-        if pybb_profile and pybb_profile.autosubscribe and \
-            perms.may_subscribe_topic(instance.user, instance.topic):
-            instance.topic.subscribers.add(instance.user)
-
-    if kwargs['created']:
+            
         if pybb_profile:
             pybb_profile.post_count = instance.user.posts.count()
             pybb_profile.save()
         if instance.topic.head == instance:
-            # new topic
+            # This is a new topic
+            if pybb_profile and pybb_profile.autosubscribe and \
+            perms.may_subscribe_topic(instance.user, instance.topic):
+                instance.topic.subscribers.add(instance.user)
+            
             #notify_forum_subscribers(instance.topic)
             NotifyThread(instance.topic, post_type='topic').start()
+        else:
+            #notify_topic_subscribers(instance) on new post for the topic
+            NotifyThread(instance).start()
+    else:
+        pass
+        #notify_topic_subscribers(instance) on edit
+        #NotifyThread(instance).start()
 
 
 def post_deleted(instance, **kwargs):
