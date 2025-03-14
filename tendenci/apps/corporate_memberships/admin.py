@@ -283,10 +283,12 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def cm_type(self, instance):
-        return '<a href="%s">%s</a>' % (
-              reverse('admin:corporate_memberships_corporatemembershiptype_change',
-                      args=[instance.corporate_membership_type.id]),
-              instance.corporate_membership_type.name,)
+        if instance.corporate_membership_type:
+            return '<a href="%s">%s</a>' % (
+                  reverse('admin:corporate_memberships_corporatemembershiptype_change',
+                          args=[instance.corporate_membership_type.id]),
+                  instance.corporate_membership_type.name,)
+        return ''
     cm_type.short_description = _('Membership Type')
     cm_type.admin_order_field = 'corporate_membership_type'
 
