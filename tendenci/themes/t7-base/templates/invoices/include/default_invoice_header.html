@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h1>{% if obj_name %}{{ obj_name|capfirst }}{% endif %} {% trans 'Invoice' %}</h1>
+  <h1>{% if obj_name %}{% if obj_name == "Form entry" %}{{ obj.form }}{% else %}{{ obj_name|capfirst }}{% endif %}{% endif %} {% trans 'Invoice' %}</h1>
 </div>
 
 <table width="100%">
