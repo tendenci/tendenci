@@ -14,7 +14,7 @@ from tendenci.apps.discounts.managers import DiscountManager
 class Discount(TendenciBaseModel):
     discount_code = models.CharField(max_length=100, unique=True, help_text=_('Discount codes must be unique.'))
     start_dt = models.DateTimeField(_('Start Date/Time'))
-    end_dt = models.DateTimeField(_('Start Date/Time'))
+    end_dt = models.DateTimeField(_('End Date/Time'))
     apps = models.ManyToManyField(ContentType, verbose_name=_('Applications'), help_text=_('Select the applications that can use this discount.'))
     never_expires = models.BooleanField(_('Never Expires'), help_text=_('Check this box to make the discount code never expire.'), default=False)
     value = models.DecimalField(_('Discount Value'), max_digits=10, decimal_places=2, help_text=_('Enter discount value as a positive number.'))
