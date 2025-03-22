@@ -19,4 +19,7 @@ class Command(BaseCommand):
 
         if days_to_keep_eventlog > 0:
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days = days_to_keep_eventlog)
-            EventLog.objects.filter(create_dt__lte=cutoff_date).delete()
+            deleted_count = EventLog.objects.filter(create_dt__lte=cutoff_date).delete()
+            print("{} EventLog records were deleted as they were older than {}".format(deleted_count, cutoff_date))
+        else:
+            print("No EventLog record pruning skipped")
