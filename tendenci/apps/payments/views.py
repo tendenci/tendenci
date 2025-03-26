@@ -27,6 +27,13 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
     if not invoice.allow_view_by(request.user, guid):
         raise Http403
 
+    if get_setting('module', 'payments', 'requires_confirm'):
+        if not 'confirmed' in request.GET:
+            # Redirect to the page to get the confirm
+            redirect_url = request.get_full_path()
+            redirect_url = redirect_url.replace('payonline', 'payonline-pre')
+            return HttpResponseRedirect(redirect_url)
+
     # tender the invoice
     if not invoice.is_tendered:
         invoice.tender(request.user)
@@ -125,6 +132,21 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
         post_url = ""
     return render_to_resp(request=request, template_name=template_name, context={'form': form, 'post_url': post_url
         })
+
+
+def pay_online_pre(request, invoice_id, guid="", merchant_account=None, template_name="payments/pay_online_pre.html"):
+    # check if they have the right to view the invoice
+    invoice = get_object_or_404(Invoice, pk=invoice_id)
+    if not invoice.allow_view_by(request.user, guid):
+        raise Http403
+    redirect_url = request.get_full_path() + '?confirmed'
+    redirect_url = redirect_url.replace('payonline-pre', 'payonline')
+    merchant_account = merchant_account or (get_setting("site", "global", "merchantaccount")).lower()
+    return render_to_resp(request=request,
+                          template_name=template_name,
+                          context={'invoice': invoice,
+                                    'redirect_url': redirect_url,
+                                    'merchant_account': merchant_account})
 
 @login_required
 def view(request, id, guid=None, template_name="payments/view.html"):
