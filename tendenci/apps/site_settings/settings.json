@@ -1002,21 +1002,4 @@
         "store": true,
         "updated_by": ""
     },
-    {
-        "default_value": 0,
-        "description": "The number of days that Event Log entries should be kept for.  Set to 0 to keep all log entries indefinitely.",
-        "data_type": "int",
-        "update_dt": "2025-03-22 00:00:00",
-        "input_type": "text",
-        "client_editable": true,
-        "name": "keep_event_log_for_days",
-        "value": "0",
-        "label": "Event Log Retention",
-        "input_value": "int",
-        "parent_id": 0,
-        "scope": "site",
-        "scope_category": "global",
-        "store": true,
-        "updated_by": ""
-    }
 ]
