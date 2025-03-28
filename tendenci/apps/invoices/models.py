@@ -775,6 +775,16 @@ class Invoice(models.Model):
             return obj.membership_type
         return obj
 
+    def get_payment_description(self, obj=None):
+        desc = f'Invoice {self.id}'
+        if not obj:
+            obj = self.get_object()
+        if obj:
+            desc = obj.get_payment_description(self)
+            if not desc:
+                desc = f'Invoice {self.id} ({obj})'
+        return desc
+
     def obj_donation(self):
         obj = self.get_object()
         return hasattr(obj, 'donation') and obj.donation

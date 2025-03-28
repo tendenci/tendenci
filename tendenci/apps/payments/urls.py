@@ -4,6 +4,8 @@ from . import views
 urlpatterns = [
     re_path(r'^payonline/(?P<merchant_account>[\d\w-]+)/(?P<invoice_id>\d+)/(?P<guid>[\d\w-]+)?$', views.pay_online, name="payment.pay_online"),
     re_path(r'^payonline/(?P<invoice_id>\d+)/(?P<guid>[\d\w-]+)?$', views.pay_online, name="payment.pay_online"),
+    re_path(r'^payonline-pre/(?P<merchant_account>[\d\w-]+)/(?P<invoice_id>\d+)/(?P<guid>[\d\w-]+)?$', views.pay_online_pre, name="payment.pay_online_pre"),
+    re_path(r'^payonline-pre/(?P<invoice_id>\d+)/(?P<guid>[\d\w-]+)?$', views.pay_online_pre, name="payment.pay_online_pre"),
     re_path(r'^authorizenet/', include('tendenci.apps.payments.authorizenet.urls')),
     re_path(r'^firstdata/', include('tendenci.apps.payments.firstdata.urls')),
     re_path(r'^firstdatae4/', include('tendenci.apps.payments.firstdatae4.urls')),
