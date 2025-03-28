@@ -345,6 +345,10 @@ try:
 except ImportError:
     CACHES['default']['BACKEND'] = 'django.core.cache.backends.dummy.DummyCache'
 
+
+# The number of days that Event Log entries should be kept for.  Set to 0 to keep all log entries indefinitely.
+KEEP_EVENT_LOG_FOR_DAYS = 0
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
