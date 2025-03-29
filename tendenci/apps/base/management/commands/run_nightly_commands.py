@@ -31,6 +31,7 @@ class Command(BaseCommand):
                     'cleanup_expired_dbdumps',
                     'clearsessions',
                     'make_recurring_payment_transactions',
+                    'prune_event_log_records',
                     )
 
         if get_setting('module', 'chapters', 'membershipsenabled'):
