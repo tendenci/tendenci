@@ -18,6 +18,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic.edit import ModelFormMixin
 from django.views.decorators.csrf import csrf_protect
 from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.perms.decorators import is_enabled
@@ -175,7 +176,7 @@ class ForumView(IsEnabledMixin, RedirectToLoginMixin, PaginatorMixin, generic.Li
         return super(ForumView, self).get(*args, **kwargs)
 
 
-class ForumSubscriptionView(IsEnabledMixin, RedirectToLoginMixin, generic.FormView):
+class ForumSubscriptionView(IsEnabledMixin, LoginRequiredMixin, generic.FormView):
     template_name = 'pybb/forum_subscription.html'
     form_class = ForumSubscriptionForm
 

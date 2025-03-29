@@ -83,5 +83,22 @@
         "scope_category": "payments", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, online payment allows user to click the button to proceed. Otherwise it will be redirected to it immediately. Default false.",
+        "data_type": "boolean",
+        "update_dt": "2025-03-25 16:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "requires_confirm",
+        "value": "false",
+        "label": "Show Online Payment Pre Page",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "payments",
+        "store": true,
+        "updated_by": ""
     }
  ]
