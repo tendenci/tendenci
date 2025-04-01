@@ -129,7 +129,12 @@ div.small-font {
 			      {% endif %}
             {% if registrant_user and event.enable_zoom_meeting %}
             <div class="btn btn-success">
-              <a href="{% url 'event.zoom' event.pk %}" style="color:white;">{% trans "Join Meeting" %}</a>
+	       <a href="{% url 'event.zoom' event.pk %}" style="color:white;">
+		    {% if event.place.is_zoom_webinar %}
+		      {% trans "Join Webinar" %}
+		    {% else %}
+	       	      {% trans "Join Meeting" %}
+		</a>
             </div>
             {% else %}
             <div class="small-font">
