@@ -37,7 +37,7 @@ django-tastypie==0.15.1
 docutils==0.20
 chardet==5.2.0
 psycopg2==2.9.9
-gunicorn==22.0.0
+gunicorn==23.0.0
 gevent==23.9.1
 django-storages==1.14.2
 Whoosh==2.7.4

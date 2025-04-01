@@ -1,0 +1,87 @@
+{% extends "invoices/base.html" %}
+{% load base_filters %}
+
+{% block content %}
+
+<div class="well basic-info">
+  {% if request.user.is_authenticated %}
+  <div>{% trans 'Invoice #' %}: <a href="{% url "invoice.view" invoice.id %}" target="_blank">{{ invoice.id }}</a></div>
+  {% else %}
+  	<div>{% trans 'Invoice #' %}: {{ invoice.id }}</div>
+  	<div><i>{% trans "Please check your inbox for invoice details." %}</i></div>
+  {% endif %}
+  {% with invoice.registration as obj %}
+  {% if obj %}
+  <table class="table">
+  <tr>
+    <th>{% trans 'Item' %}</th>
+    <th>{% trans 'Amount' %}</th>
+  </tr>
+  {% include 'events/invoice_view_display.html' %}
+  </table>
+  {% else %}
+   <div>{{ invoice.get_payment_description }}</div>
+   <div>&nbsp;</div>
+   <div><strong>{% trans 'Total:' %}</strong> {{ invoice.total|format_currency }}</div>
+   {% if invoice.total != invoice.balance %}
+   <div><strong>{% trans 'Balance:' %}</strong> {{ invoice.balance|format_currency }}</div>
+   {% endif %}
+  {% endif %}
+  {% endwith %}
+</div>
+
+<div>
+	<h3>{% trans "Make an Online Payment" %}</h3>
+	<p>&nbsp;</p>
+	
+	{% if merchant_account == 'paypal' %}
+	<p class="row">
+		<!-- PayPal Logo -->
+		<div>
+		   <div><strong>{% trans "Pay via Credit Card" %}</strong></div>
+			   <img src="https://www.paypalobjects.com/webstatic/mktg/logo/AM_mc_vs_dc_ae.jpg" border="0" alt="PayPal Acceptance Mark">
+		    <div>
+	    		<a href="{{ redirect_url }}" title="Continue payment with PayPal"><span class="btn btn-primary">{% trans "Pay by PayPal" %}</span></a>
+			</div>
+		</div>
+		<!-- PayPal Logo -->
+	</p>
+	{% elif merchant_account == 'paypalpayflowlink' %}
+	<div><strong>{% trans "Pay via Credit Card with PayPal PayFlowLink" %}</strong></div>
+	<p><!-- Add PayPal PayFlowLink Logo here -->&nbsp;</p>
+	<div>
+	    <a href="{{ redirect_url }}" title="Continue payment with PayPal PayFlowLink"><span class="btn btn-primary">{% trans "Pay by Credit Card" %}</span></a>
+	</div>
+	{% elif merchant_account == 'stripe' %}
+	<div><strong>{% trans "Pay via Credit Card with Stripe" %}</strong></div>
+	<p>
+	 <img src="{% static 'images/Powered-by-Stripe.png' %}" alt="Pay with Stripe" style="max-width: 100%; height: auto; display: inline-block; width: 150px;">
+	</p>
+	<div>
+	    <a href="{{ redirect_url }}" title="Continue payment with Stripe"><span class="btn btn-primary">{% trans "Pay by Credit Card" %}</span></a>
+	</div>
+	{% elif merchant_account == 'authorizenet' %}
+	<div><strong>{% trans "Pay via Credit Card with Authorize.Net" %}</strong></div>
+	<p><!-- Add Authorize.Net Logo here -->&nbsp;</p>
+	<div>
+	    <a href="{{ redirect_url }}" title="Continue payment with Authorize.Net"><span class="btn btn-primary">{% trans "Pay by Credit Card" %}</span></a>
+	</div>
+	{% elif merchant_account == 'firstdata' %}
+	<div><strong>{% trans "Pay via Credit Card with First Data" %}</strong></div>
+	<p><!-- Add First Data Logo here -->&nbsp;</p>
+	<div>
+	    <a href="{{ redirect_url }}" title="Continue payment with First Data"><span class="btn btn-primary">{% trans "Pay by Credit Card" %}</span></a>
+	</div>
+	{% elif merchant_account == 'firstdatae4' %}
+	<div><strong>{% trans "Pay via Credit Card with First Data V4" %}</strong></div>
+	<p><!-- Add First Data V4 Logo here -->&nbsp;</p>
+	<div>
+	    <a href="{{ redirect_url }}" title="Continue payment with First Data V4"><span class="btn btn-primary">{% trans "Pay by Credit Card" %}</span></a>
+	</div>
+	{% endif %}
+</div>
+
+<p>&nbsp;</p>
+{% endblock %}
+
+

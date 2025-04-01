@@ -1186,6 +1186,13 @@ class Registration(models.Model):
             if registrant.amount:
                 refund_amount += registrant.amount
 
+        # check for tax and tax_2
+        if self.invoice:
+            if self.invoice.tax:
+                refund_amount += self.invoice.tax
+            if self.invoice.tax_2:
+                refund_amount += self.invoice.tax_2
+
         # Adjust and process cancellation fees if indicated
         if cancellation_fees is not None:
             self.process_adjusted_cancellation_fees(cancellation_fees, request.user)
