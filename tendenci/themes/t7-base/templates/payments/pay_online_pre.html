@@ -23,6 +23,9 @@
    <div>{{ invoice.get_payment_description }}</div>
    <div>&nbsp;</div>
    <div><strong>{% trans 'Total:' %}</strong> {{ invoice.total|format_currency }}</div>
+   {% if invoice.payments_credits %}
+   <div><strong>{% trans 'Payment Credits:' %}</strong> {{ invoice.payments_credits|format_currency }}</div>
+   {% endif %}
    {% if invoice.total != invoice.balance %}
    <div><strong>{% trans 'Balance:' %}</strong> {{ invoice.balance|format_currency }}</div>
    {% endif %}
