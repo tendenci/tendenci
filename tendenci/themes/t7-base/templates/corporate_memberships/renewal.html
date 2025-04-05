@@ -331,6 +331,9 @@ div.forms{
                 {% if tax_rate_display %}
                 <tr><td></td><td align="right">** {{ tax_rate_display }} {% trans 'will be applied' %}</td></tr>
                 {% endif %}
+                {% if payment_credits > 0 %}
+                <tr><td></td><td align="right">** {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ payment_credits }} {% trans 'payment credits will be applied' %}</td></tr>
+                {% endif %}
             </table>
             <div class="text-danger" id="cap-error-msg"></div>
             <noscript>

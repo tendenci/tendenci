@@ -344,6 +344,15 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
 
         inv.estimate = True
         inv.status_detail = 'estimate'
+        if renewal:
+            if get_setting('module', 'invoices', 'cancarryover'):
+                # check if they have payment credits that can be carried from their previous invoice
+                previous_invoice_id, previous_credits = corp_memb.get_previous_payment_credits()
+                if previous_credits:
+                    inv.payments_credits = previous_credits
+                    currency_symbol = get_setting('site', 'global', 'currencysymbol')
+                    inv.admin_notes = f'Payment credits {currency_symbol}{previous_credits} carried over from invoice <a href="/invoices/{previous_invoice_id}/">{previous_invoice_id}</a>.'
+                    inv.balance = inv.total - inv.payments_credits
         inv.save(user)
 
         if not corp_memb.payment_method:

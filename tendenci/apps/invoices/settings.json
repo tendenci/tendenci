@@ -150,5 +150,22 @@
         "scope_category": "invoices",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, a negative balance can be carried over to the new invoice on renewal for memberships and corporate memberships.",
+        "data_type": "boolean",
+        "update_dt": "2024-07-16 15:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "cancarryover",
+        "value": "false",
+        "label": "Allow Credits to be Carried over",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "invoices",
+        "store": true,
+        "updated_by": ""
     }
 ]
