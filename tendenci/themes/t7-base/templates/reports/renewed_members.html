@@ -41,6 +41,7 @@
     <tr>
       <th>{% trans 'ID' %}</th>
       <th>{% trans 'Member Number' %}</th>
+      <th>{% trans 'Member Type' %}</th>
       <th>{% trans 'Name' %}</th>
       <th>{% trans 'City' %}</th>
       <th>{% trans 'State' %}</th>
@@ -52,6 +53,7 @@
     <tr class="{% cycle 'even' 'odd' %}">
       <td>{{ member.id }}</td>
       <td>{{ member.member_number }}</td>
+      <td>{{ member.membership_type.name }}</td>
       <td>{{ member.user.last_name }}, {{ member.user.first_name }}</td>
       <td>{{ member.user.profile.city }}</td>
       <td>{{ member.user.profile.state }}</td>
