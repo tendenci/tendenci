@@ -2642,6 +2642,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
         table_header = [
             'id',
             'member number',
+            'member type',
             'last name',
             'first name',
             'email',
@@ -2658,6 +2659,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
             table_data.append([
                 mem.id,
                 mem.member_number,
+                mem.membership_type.name,
                 mem.user.last_name,
                 mem.user.first_name,
                 mem.user.email,
