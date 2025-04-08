@@ -84,18 +84,20 @@
             {% trans "Registration Number: " %}{{ registration.pk }}
         </h3>
 
-        {% if not registration.canceled and event.can_cancel %}
+        {% if not registration.canceled %}
             <div>
              <a href="{% if hash %}{% url "event.registration_edit" registration.pk hash %}{% else %}{% url "event.registration_edit" registration.pk %}{% endif %}">{% trans "Edit Registrant(s) Info" %}{% if event.nested_events_enabled and event.has_child_events %}{% trans " and Sessions" %}{% endif %}</a>
-            {% if registrants_count >= 1 or registration.reg_conf_price.quantity > 1 %}
-                    &nbsp;&nbsp;
-                  {% if user.is_authenticated %}
-                      <a href="{% url "event.cancel_registration" event.pk registration.pk %}">{% trans "Cancel Registration" %}</a>
-                  {% else %}
-                      <a href="{% url "event.cancel_registration" event.pk registration.pk registration.hash %}">{% trans "Cancel Registration" %}</a>
-                  {% endif %}
-             {% endif %}
-              </div>
+			 {% if event.can_cancel %}
+	            {% if registrants_count >= 1 or registration.reg_conf_price.quantity > 1 %}
+	                    &nbsp;&nbsp;
+	                  {% if user.is_authenticated %}
+	                      <a href="{% url "event.cancel_registration" event.pk registration.pk %}">{% trans "Cancel Registration" %}</a>
+	                  {% else %}
+	                      <a href="{% url "event.cancel_registration" event.pk registration.pk registration.hash %}">{% trans "Cancel Registration" %}</a>
+	                  {% endif %}
+	             {% endif %}
+	         {% endif %}
+           </div>
          {% endif %}
 
         {% if not registration.is_table %}
