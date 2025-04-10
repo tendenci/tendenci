@@ -176,6 +176,13 @@ class GroupForm(TendenciBaseForm):
         self.fields['logo'].validators = [FileValidator(allowed_extensions=('.jpeg', '.jpg', '.png', '.gif',))]
         self.fields['logo'].required = False
 
+    def clean_auto_respond_priority(self):
+        auto_respond_priority = self.cleaned_data['auto_respond_priority']
+        if auto_respond_priority is None:
+            return 0
+
+        return self.cleaned_data['auto_respond_priority']
+
     def clean_name(self):
         name = self.cleaned_data['name']
         if name:
