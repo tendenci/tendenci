@@ -1,3 +1,23 @@
+### 15.3.3 [2025-3-10]
+
+* Updated assets purchase to handle free purchase.
+* Forum subscription update. Notifications for new topics will be sent to all forum subscribers instead of those opted to the "only new topics".
+* Added the check that payment mode is online (#1343). When expired membership has submitted renewal, then we trigger online payment only if payment is online payment. (Thanks to @AnttiMJohansson)
+* Phone number formatting now uses Phonenumberslite library (#1340). (Thanks to @rob-hills)
+* Added a management command "prune_event_log_records" to prune event logs if the setting KEEP_EVENT_LOG_FOR_DAYS is set to a number greater than 0. (Thanks to @rob-hills)
+* Set the button label to "Join Webinar" if the Zoom event is a webinar and not a regular meeting. (Thanks to @bje-)
+* Added a method to include raw files within the static directory.  (#1342) (Thanks to @rockinrobstar)
+* Displayed the renew link for admin to renew a membership that is out of renewal period.
+* Updated invoice title for form entries.
+* Added an option to show online payment pre page.
+* Updated bluevolt API connections.
+* Added an option to allow payment credits to be carried over on renewal for both memberships and corporate memberships.
+* Included "member type" field to the renewed members report.
+* Fixed an issue about "taxes not included in refunds".
+* Resolved an issue about registration edit link not showing when event registration passed the cancellation date.
+* Other minor fixes.
+
+
 ### 15.3.2 [2025-2-24]
 
 * Allowed event addons to be added without options specified.
