@@ -1,0 +1,56 @@
+[build-system]
+requires = [
+    "setuptools",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tendenci"
+dynamic = ["version", "dependencies"]
+requires-python = ">= 3.8"
+authors = [
+  {name = "Tendenci", email = "programmers@tendenci.com"},
+]
+description = "Tendenci - The Open Source Association Management System (AMS)"
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'Framework :: Django :: 4.2',
+        'Intended Audience :: Developers',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Information Technology',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Internet :: WWW/HTTP :: WSGI',
+        'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+]
+
+[project.scripts]
+tendenci = "tendenci.bin.tendenci:main"
+
+[project.urls]
+Homepage = "https://github.com/tendenci/tendenci/"
+Documentation = "https://tendenci.readthedocs.io/en/latest/"
+Repository = "https://github.com/tendenci/tendenci/"
+Issues = "https://github.com/tendenci/tendenci/issues"
+Changelog = "https://github.com/tendenci/tendenci/blob/main/CHANGELOG.md"
+Funding = "https://www.tendenci.com/donations/"
+
+[tool.setuptools.dynamic]
+version = {attr = "tendenci.__version__"}
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+include = ["tendenci*"]
