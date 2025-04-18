@@ -1253,9 +1253,6 @@ def corp_renew(request, id,
                 new_corp_membership.owner_username = request.user.username
                 new_corp_membership.expiration_dt = new_corp_membership.get_expiration_dt()
 
-                # archive old corp_memberships
-                new_corp_membership.archive_old()
-
                 # calculate the total price for invoice
                 corp_memb_type = form.cleaned_data[
                                             'corporate_membership_type']

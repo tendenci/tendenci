@@ -468,6 +468,7 @@ class MembershipDefaultUploadForm(forms.ModelForm):
         self.fields['interactive'].initial = 1
         self.fields['interactive'].widget = forms.HiddenInput()
         self.fields['key'].initial = 'email/member_number/fn_ln_phone'
+        self.fields['upload_file'].validators = [FileValidator(allowed_extensions=('.csv',))]
 
     def clean_upload_file(self):
         key = self.cleaned_data['key']

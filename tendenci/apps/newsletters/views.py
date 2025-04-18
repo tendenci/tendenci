@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
-from django.template import engines
+from django.template import engines, TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView, FormView, UpdateView, DetailView, ListView, DeleteView
 from django.urls import reverse, reverse_lazy
@@ -506,7 +506,10 @@ def default_template_view(request):
     template_name = request.GET.get('template_name', '')
     if not template_name:
         raise Http404
-    return render_to_resp(request=request, template_name=template_name)
+    try:
+        return render_to_resp(request=request, template_name=template_name)
+    except TemplateDoesNotExist:
+        raise Http404
 
 
 def view_email_from_browser(request, pk):
