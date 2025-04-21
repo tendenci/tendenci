@@ -170,7 +170,7 @@ class Email(TendenciBaseModel):
                 if self.status:
                     boo = True
             else:
-                if user2_compare.has_perm('emails.edit_email', self):
+                if user2_compare.has_perm('emails.change_email', self):
                     if self.status:
                         boo = True
         return boo
