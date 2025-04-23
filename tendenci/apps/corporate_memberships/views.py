@@ -1905,6 +1905,10 @@ def corpmembership_export(request,
             corp_memb_field_list.remove('guid')
             corp_memb_field_list.remove('corp_profile')
             corp_memb_field_list.remove('anonymous_creator')
+            corp_memb_field_list.append('subtotal')
+            corp_memb_field_list.append('total')
+            corp_memb_field_list.append('tax')
+            corp_memb_field_list.append('balance')
 
             title_list = corp_profile_field_list + corp_memb_field_list
 
