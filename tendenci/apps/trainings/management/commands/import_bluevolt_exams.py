@@ -41,9 +41,9 @@ class Command(BaseCommand):
         # Currently, we have to use both v2 and v3 APIs to get what we need
         #score_url = api_endpoint_base_url + '/v3/modules/scores'
         #module_url = api_endpoint_base_url + '/v2/GetModule'
-        enrollment_url = api_endpoint_base_url + '/v3/enrollments'
-        course_url = api_endpoint_base_url + '/v2/GetCourse'
-        user_url = api_endpoint_base_url + '/v2/GetUser'
+        enrollment_url = api_endpoint_base_url + '/devapi3/webapi/v3/enrollments'
+        course_url = api_endpoint_base_url + '/devapi2/webapi/v2/GetCourse'
+        user_url = api_endpoint_base_url + '/devapi2/webapi/v2/GetUser'
         messages = []
         num_inserted = 0
 
@@ -75,11 +75,12 @@ class Command(BaseCommand):
         # ----------------
         
         # STEP 1: Get a list of enrollments - pull the Completed only
+        headers = {'ocp-apim-subscription-key': settings.BLUEVOLT_PRIMARY_KEY}
         payload = {'apiKey': api_key ,
                    'enrollmentStatus': 'Complete',
                    'lastUpdatedUTCStart': date_from.strftime('%Y-%m-%d') ,
                    'lastUpdatedUTCEnd': date_to.strftime('%Y-%m-%d')}
-        r = requests.get(enrollment_url, params=payload)
+        r = requests.get(enrollment_url, headers=headers, params=payload)
         if r.status_code == 200:
             enrollment_results = r.json()
             messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' - STARTED')
@@ -96,7 +97,7 @@ class Command(BaseCommand):
                 #    don't have to retrieve the same courses and users
                 course_payload = {'apiKey': api_key,
                                   'courseId': course_id}
-                course_r = requests.get(course_url, params=course_payload)
+                course_r = requests.get(course_url, headers=headers, params=course_payload)
                 if course_r.status_code == 200:
                     course_result = course_r.json()
                     course_code = course_result['ExternalCourseCode']
@@ -111,7 +112,7 @@ class Command(BaseCommand):
                     # STEP 3: Get user info to find username
                     user_payload = {'apiKey': api_key,
                                     'userID': user_id}
-                    user_r = requests.get(user_url, params=user_payload)
+                    user_r = requests.get(user_url, headers=headers, params=user_payload)
                     if user_r.status_code == 200:
                         user_result = user_r.json()[0]
                         username = user_result['UserName']

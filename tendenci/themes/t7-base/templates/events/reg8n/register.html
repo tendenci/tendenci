@@ -435,7 +435,7 @@
         <div class="forms" id="confirm-div">
             <div>
                 <p><strong>{% trans "Please review the following." %}</strong></p>
-                {% if not reg_conf.payment_required %}
+                {% if not reg_conf.payment_required or total_price <= 0 %}
                 <p class="cls-paragraph-warning"><strong>{% trans 'Your registration will not be completed until you click "Confirm My Details" at the bottom of this page.' %}</strong></p>
                 {% else %}
                 <p class="cls-paragraph-warning"><strong>{% trans 'Note: Your registration will not be completed until payment is received.' %}</strong></p>
@@ -526,7 +526,7 @@
              <br /><br />
              {% endif %}
             <div class="clear"></div>
-            <input class="btn btn-success" type="submit" name="commit" value="{% if not reg_conf.payment_required %}{% trans 'Confirm My Details' %}{% else %}{% trans 'Save & Continue' %}{% endif %}" />
+            <input class="btn btn-success" type="submit" name="commit" value="{% if not reg_conf.payment_required or total_price <= 0 %}{% trans 'Confirm My Details' %}{% else %}{% trans 'Save & Continue' %}{% endif %}" />
            <br /><br />
             <div class="clear"></div>
         </div>

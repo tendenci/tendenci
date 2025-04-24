@@ -1431,14 +1431,19 @@ def corp_renew(request, id,
                                     ] + summary_data['above_cap_individual_total'] + summary_data['corp_price']
     cap_enabled = corpmembership_app.corp_memb_type.filter(apply_cap=True).count() > 0
     tax_rate_display = corp_membership.corp_profile.get_tax_rate_display(corpmembership_app)
-        
+
+    payment_credits = 0
+    if get_setting('module', 'invoices', 'cancarryover'):
+        if corp_membership.invoice and corp_membership.invoice.balance < 0:
+            payment_credits = corp_membership.invoice.balance * (-1)  
     context = {"corp_membership": corp_membership,
                'corp_profile': corp_membership.corp_profile,
                'corp_app': corpmembership_app,
                'form': form,
                'summary_data': summary_data,
                'cap_enabled': cap_enabled,
-               'tax_rate_display': tax_rate_display
+               'tax_rate_display': tax_rate_display,
+               'payment_credits': payment_credits
                }
     return render_to_resp(request=request, template_name=template, context=context)
 

@@ -727,6 +727,14 @@ class CorpMembership(TendenciBaseModel):
         """
         return reverse('corpmembership.view', args=[self.pk])
 
+    def get_previous_payment_credits(self):
+        if self.renewal and self.renew_from_id:
+            from_corp_member = CorpMembership.objects.filter(id=self.renew_from_id).first()
+            if from_corp_member and from_corp_member.invoice:
+                if from_corp_member.invoice.balance < 0:
+                    return from_corp_member.invoice.id, from_corp_member.invoice.balance * (-1)
+        return 0, 0
+
     def donation_add(self, request_user):
         """
         Add a donation record, along with its invoice.

@@ -135,6 +135,12 @@
     {% payment_history_display request invoice %}
   </div>
   
+  {% if request.user.is_superuser %}
+  {% if invoice.admin_notes %}
+  <p><strong>{% trans "Admin notes: " %}</strong> {{ invoice.admin_notes|safe }}</p>
+  {% endif %}
+  {% endif %}
+  
    {% if invoice.region and invoice.region.invoice_footer %}
    {{ invoice.region.invoice_footer|safe  }}
    {% else %}
