@@ -209,8 +209,56 @@
  <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
  <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
  
+ <script>
+ function cal_total_size(){
+	//return $(item)[0].files[0].size;
+	var totalSize = 0;
+	console.log('totalSize=', totalSize);
+
+  	 $("#t-projects-form input[type=file]").each(function() {
+  	 	if (this.files.length > 0){
+  	 	    totalSize += this.files[0].size; 
+  	 	}
+  
+	 });
+	 
+	 var total_in_mb = Math.round(totalSize/1000000);
+	 if ( total_in_mb > 30){
+	 	alert("Total Size of the file(s) should be less than 30 MB. You have " + total_in_mb + "MB.");
+	 }
+	 
+	 return totalSize;
+ }
+ 
+ function delete_item($this){
+ 	// Delete a Photo, Document
+      	if ($this.prop('checked')){
+      	    if ($this.attr('id').startsWith('id_photos')){
+      		    $this.closest('tr').remove();
+      		    // update form count
+    			$('#id_photos-TOTAL_FORMS').attr('value', $('#item-photos').children().length);
+      	    }
+      	    else if ($this.attr('id').startsWith('id_documents')){
+      		    $this.closest('tr').remove();
+      		    // update form count
+    			$('#id_documents-TOTAL_FORMS').attr('value', $('#item-documents').children().length);
+      	    }
+      	    else if ($this.attr('id').startsWith('id_teammembers')){
+      	    	var myname = $this.attr('name');
+      	    	myname = myname.replace('-DELETE', '');
+      	    	console.log(myname);
+      		    $this.closest('div#' + myname).remove();
+      		    // update form count
+    			$('#id_teammembers-TOTAL_FORMS').attr('value', $('#item-teammembers').children().length);
+      	    }
+      	}
+ }
+ 
+ </script>
  <script type="text/javascript">
         $(document).ready(function () {
+        	var totalSize = 0;
+        	
             // Slugify
             var slugit = new Slugify({
                 input_element : '#id_project_name',
@@ -232,10 +280,18 @@
 	          var tmplMarkup = $('#photos-template').html();
 	          var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
 	          $('#item-photos').append(compiledTmpl);
+	          
+	          $('#item-photos').find('input[type=file]:last').on('change', function (e) {
+	          		cal_total_size();
+			  });
+			  $('#item-photos').find("input[id$='-DELETE']:last").on('change', function (e) {
+	          		delete_item($(this));
+			  });
 	  
 	          // update form count
 	          $('#id_photos-TOTAL_FORMS').attr('value', count+1);
             });
+          
             
             // Add a Document
 			$('.add-documents').click(function(ev) {
@@ -244,6 +300,13 @@
 	          var tmplMarkup = $('#documents-template').html();
 	          var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
 	          $('#item-documents').append(compiledTmpl);
+	          
+	          $('#item-documents').find('input[type=file]:last').on('change', function (e) {
+	          		cal_total_size();
+			   });
+			  $('#item-documents').find("input[id$='-DELETE']:last").on('change', function (e) {
+	          		delete_item($(this));
+			  });
 	  
 	          // update form count
 	          $('#id_documents-TOTAL_FORMS').attr('value', count+1);
@@ -256,11 +319,26 @@
 	          var tmplMarkup = $('#teammembers-template').html();
 	          var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
 	          $('#item-teammembers').append(compiledTmpl);
+	  		  $('#item-teammembers').find('input[type=file]:last').on('change', function (e) {
+	          		cal_total_size();
+			    });
+			  $('#item-teammembers').find("input[id$='-DELETE']:last").on('change', function (e) {
+	          		delete_item($(this));
+			  });
 	  
 	          // update form count
 	          $('#id_teammembers-TOTAL_FORMS').attr('value', count+1);
             });
-
+            
+            $("#t-projects-form input[type=file]").on('change', function() { 
+            	 cal_total_size();
+			}); 
+			
+			// Delete a Photo, Document
+            $("input[id$='-DELETE']").on('change', function (e) {
+            	delete_item($(this));
+            });
+           
         });
     </script>
  

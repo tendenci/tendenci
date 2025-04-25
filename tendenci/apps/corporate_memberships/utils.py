@@ -191,9 +191,19 @@ def corp_membership_rows(corp_profile_field_names,
                     item = item.id
             row_items.append(item)
         for field_name in corp_memb_field_names:
-            item = getattr(corp_membership, field_name)
-            if item and field_name in foreign_keys:
-                item = item.id
+            if field_name in ['subtotal', 'total', 'tax', 'balance']:
+                invoice = corp_membership.invoice
+                if invoice:
+                    if field_name == 'tax':
+                        item = invoice.tax + invoice.tax_2
+                    else:
+                        item = getattr(invoice, field_name)
+                else:
+                    item = ''
+            else:
+                item = getattr(corp_membership, field_name)
+                if item and field_name in foreign_keys:
+                    item = item.id
             row_items.append(item)
 
         yield row_items
