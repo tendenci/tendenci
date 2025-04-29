@@ -40,7 +40,7 @@
         </script>
 
         <fieldset>
-            <legend>{% trans "Photos" %}</legend>
+            <legend>{% trans "Photos" %} <small class="text-info">{% trans "(Limit 5)" %}</small></legend>
             <table class="table table-bordered">
                 <thead class="text-secondary">
                     <th>{% trans "Title" %}</th>
@@ -94,7 +94,7 @@
 
 		<br />
         <fieldset>
-            <legend>{% trans "Documents" %}</legend>
+            <legend>{% trans "Documents" %} <small class="text-info">{% trans "(Limit 3)" %}</small></legend>
             <table class="table table-bordered">
                 <thead class="text-secondary">
                     <th>{% trans "Document Date" %}</th>
@@ -152,7 +152,7 @@
 
 		<br />
         <fieldset>
-            <legend>{% trans "Team Members" %}</legend>
+            <legend>{% trans "Team Members" %} <small class="text-info">{% trans "(Limit 3)" %}</small></legend>
              
                 <div id="item-teammembers">  <!-- id="item-inlineformsetname" -->
                     <!-- formset non forms errors -->
@@ -231,17 +231,18 @@
  }
  
  function delete_item($this){
+
  	// Delete a Photo, Document
       	if ($this.prop('checked')){
       	    if ($this.attr('id').startsWith('id_photos')){
       		    $this.closest('tr').remove();
       		    // update form count
-    			$('#id_photos-TOTAL_FORMS').attr('value', $('#item-photos').children().length);
+    			$('#id_photos-TOTAL_FORMS').attr('value', $('#id_photos-TOTAL_FORMS').attr('value')-1);
       	    }
       	    else if ($this.attr('id').startsWith('id_documents')){
       		    $this.closest('tr').remove();
       		    // update form count
-    			$('#id_documents-TOTAL_FORMS').attr('value', $('#item-documents').children().length);
+    			$('#id_documents-TOTAL_FORMS').attr('value', $('#id_documents-TOTAL_FORMS').attr('value')-1);
       	    }
       	    else if ($this.attr('id').startsWith('id_teammembers')){
       	    	var myname = $this.attr('name');
@@ -249,7 +250,7 @@
       	    	console.log(myname);
       		    $this.closest('div#' + myname).remove();
       		    // update form count
-    			$('#id_teammembers-TOTAL_FORMS').attr('value', $('#item-teammembers').children().length);
+    			$('#id_teammembers-TOTAL_FORMS').attr('value', $('#id_teammembers-TOTAL_FORMS').attr('value')-1);
       	    }
       	}
  }
@@ -276,7 +277,7 @@
 			// Add a Photo
 			$('.add-photos').click(function(ev) {
 	          ev.preventDefault();
-	          var count = $('#item-photos').children().length;
+	          var count = $('#item-photos').children("tr").length;
 	          var tmplMarkup = $('#photos-template').html();
 	          var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
 	          $('#item-photos').append(compiledTmpl);
@@ -296,7 +297,7 @@
             // Add a Document
 			$('.add-documents').click(function(ev) {
 	          ev.preventDefault();
-	          var count = $('#item-documents').children().length;
+	          var count = $('#item-documents').children("tr").length;
 	          var tmplMarkup = $('#documents-template').html();
 	          var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
 	          $('#item-documents').append(compiledTmpl);
@@ -335,9 +336,9 @@
 			}); 
 			
 			// Delete a Photo, Document
-            $("input[id$='-DELETE']").on('change', function (e) {
-            	delete_item($(this));
-            });
+            //$("input[id$='-DELETE']").on('change', function (e) {
+            //	delete_item($(this));
+            //});
            
         });
     </script>
