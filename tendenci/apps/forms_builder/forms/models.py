@@ -164,7 +164,7 @@ class Form(TendenciBaseModel):
     class Meta:
         verbose_name = _("Form")
         verbose_name_plural = _("Forms")
-#         permissions = (("view_form", _("Can view form")),)
+        permissions = (("publish_form", _("Can publish form")),)
         app_label = 'forms'
         ordering = ('-id',)
 

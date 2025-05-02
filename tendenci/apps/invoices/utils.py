@@ -212,7 +212,7 @@ def get_invoice_data(invoice, field_names):
 
     obj = invoice.get_object()
     if obj:
-        data['Item'] = obj
+        data['Item'] = invoice.object_display(obj)
 
     data[f'Total Amount ({currency_symbol})'] = invoice.total
 

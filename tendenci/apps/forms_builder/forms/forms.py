@@ -18,6 +18,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.utils import has_perm
 # from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.utils import get_template_list, tcurrency
@@ -549,7 +550,7 @@ class FormForm(TendenciBaseForm):
                                     ],
                         'classes': ['permissions'],
                         }),
-                    (_('Administrator Only'), {
+                    (_('Publishing Status'), {
                         'fields': ['status_detail'],
                         'classes': ['admin-only'],
                     }),
@@ -561,7 +562,7 @@ class FormForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(FormForm, self).__init__(*args, **kwargs)
 
-        if not self.user.profile.is_superuser:
+        if not (self.user.profile.is_superuser or has_perm(self.user,'forms.publish_form')):
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
 
@@ -584,7 +585,7 @@ class FormForm(TendenciBaseForm):
 class FormForField(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = Field
-        exclude = ["position", 'remember']
+        exclude = ["summary_position", 'remember']
 
     def clean(self):
         cleaned_data = self.cleaned_data
