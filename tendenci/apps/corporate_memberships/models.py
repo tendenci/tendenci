@@ -292,6 +292,16 @@ class CorpProfile(TendenciBaseModel):
     ud6 = models.TextField(blank=True, default='', null=True)
     ud7 = models.TextField(blank=True, default='', null=True)
     ud8 = models.TextField(blank=True, default='', null=True)
+    ud9 = models.TextField(blank=True, default='', null=True)
+    ud10 = models.TextField(blank=True, default='', null=True)
+    ud11 = models.TextField(blank=True, default='', null=True)
+    ud12 = models.TextField(blank=True, default='', null=True)
+    ud13 = models.TextField(blank=True, default='', null=True)
+    ud14 = models.TextField(blank=True, default='', null=True)
+    ud15 = models.TextField(blank=True, default='', null=True)
+    ud16 = models.TextField(blank=True, default='', null=True)
+    ud17 = models.TextField(blank=True, default='', null=True)
+    ud18 = models.TextField(blank=True, default='', null=True)
 
     perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",

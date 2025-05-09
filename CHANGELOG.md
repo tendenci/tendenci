@@ -1,3 +1,13 @@
+### 15.3.4 [2025-5-7]
+
+* Updated the frontend add/edit to have wysiwyg editor for the custom forms.
+* Updated corp export to include some invoice fields (subtotal, total, tax, balance).
+* Added the perm "Can publish form" for custom forms.
+* Added 10 more UD fields to corp membership application.
+* Fixed some issues in projects documents upload.
+* Converted setup.py to pyproject.toml
+* Other minor fixes.
+
 ### 15.3.3 [2025-3-10]
 
 * Updated assets purchase to handle free purchase.
