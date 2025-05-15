@@ -688,7 +688,7 @@ def _get_price_labels(pricing):
         target_display = ''
 
     end_dt = '<br/>&nbsp;(ends ' + str(pricing.end_dt.date()) + ')'
-    description = '<br/>&nbsp;' + str(pricing.description)
+    description = '<br/>&nbsp;<span style="font-weight: normal;">' + str(pricing.description) + '</span>'
 
     return mark_safe('&nbsp;<strong><span data-price="%s">%s %s%s</span>%s</strong>%s' % (
                                       pricing.price,
