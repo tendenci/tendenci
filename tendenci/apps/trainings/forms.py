@@ -6,6 +6,7 @@ from django.contrib.admin.helpers import ActionForm
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.site_settings.utils import get_setting
 from .models import Course, Certification, TeachingActivity, OutsideSchool, Transcript
 
 
@@ -71,12 +72,16 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
         fields = ['school_name',
                   'date',
                   'certification_track',
+                  'training_hours',
                   'description']
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         super(OutsideSchoolForm, self).__init__(*args, **kwargs)
 
+        credits_per_hour = get_setting('module', 'trainings', 'creditsperhour')
+        if credits_per_hour:
+            self.fields['training_hours'].help_text = f'each hour = {credits_per_hour} credits'
         self.fields['certification_track'].required = False
         if hasattr(self.request.user, 'corp_profile'):
             corp_profile = self.request.user.corp_profile
@@ -99,6 +104,7 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
         kwargs = {'school_name': outside_school.school_name,
                   'date': outside_school.date,
                   'certification_track': outside_school.certification_track,
+                  'training_hours': outside_school.training_hours,
                   'description': outside_school.description,
                   'creator': self.request.user,
                   'owner': self.request.user}
