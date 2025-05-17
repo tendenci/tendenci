@@ -226,6 +226,23 @@
         "scope_category": "trainings",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "0",
+        "description": "Used for outside schools. It lets you specify the number credits that will be assigned for each training hour on outside school add page. For example, 0.086 - for each hour, 0.086 credits will be assigned.",
+        "data_type": "decimal",
+        "update_dt": "2025-05-16 10:48:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "creditsperhour",
+        "value": "0",
+        "label": "The Number of Credits Per Each Training Hour",
+        "input_value": " ",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "trainings",
+        "store": true,
+        "updated_by": ""
     }
    
 ]

@@ -88,6 +88,7 @@ class OutsideSchoolAdmin(admin.ModelAdmin):
             'school_name',
             'school_category',
             'date',
+            'training_hours',
             'credits',
             'certification_track',
             'status_detail',

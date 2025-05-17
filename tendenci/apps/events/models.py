@@ -807,15 +807,18 @@ class RegConfPricing(OrderingBaseModel):
                 # user is a member
                 filter_or = {'allow_member': True}
 
+            if not user.is_anonymous and user.group_member.exists():
+                # get a list of groups for this user
+                groups_id_list = user.group_member.values_list('group__id', flat=True)
+                if groups_id_list:
+                    filter_or.update({'groups__in': groups_id_list})
+
         else:
             filter_or = {'allow_anonymous': True,
                         'allow_user': True,
-                        'allow_member': True}
-        if not user.is_anonymous and user.group_member.exists():
-            # get a list of groups for this user
-            groups_id_list = user.group_member.values_list('group__id', flat=True)
-            if groups_id_list:
-                filter_or.update({'groups__in': groups_id_list})
+                        'allow_member': True,
+                        'groups__isnull': False}
+        
 
         filter_and = {'start_dt__lt': now,
                       'end_dt__gt': now,
