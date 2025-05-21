@@ -236,7 +236,7 @@
         "client_editable": true,
         "name": "creditsperhour",
         "value": "0",
-        "label": "The Number of Credits Per Each Training Hour",
+        "label": "The Number of Credits for Each Training Hour",
         "input_value": " ",
         "parent_id": 0,
         "scope": "module",
