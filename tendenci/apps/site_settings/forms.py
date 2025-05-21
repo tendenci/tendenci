@@ -141,7 +141,10 @@ def build_settings_form(user, settings):
                 choices = get_box_list(user)
                 required = False
             elif setting.input_value == '<group_list>':
-                choices, initial = get_group_list(user)
+                show_all = False
+                if setting.name == 'default_group' and setting.scope_category == 'global':
+                    show_all = True
+                choices, initial = get_group_list(user, show_all=show_all)
                 required = True
                 if not setting_value:
                     setting_value = initial
