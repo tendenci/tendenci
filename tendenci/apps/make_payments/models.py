@@ -72,6 +72,8 @@ class MakePayment(models.Model):
                 inv.object_id,
                 self.comments,
             )
+        elif self.reference_number:
+            return self.reference_number
         return
 
     def get_acct_number(self, discount=False):
