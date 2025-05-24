@@ -19,9 +19,9 @@ class MakePaymentForm(FormControlWidgetMixin, forms.ModelForm):
     address = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'size':'35'}))
     state = forms.CharField(max_length=50, required=False,  widget=forms.TextInput(attrs={'size':'5'}))
     zip_code = forms.CharField(max_length=20, required=False, widget=forms.TextInput(attrs={'size':'10'}))
-    reference_number = forms.CharField(max_length=20, required=False, widget=forms.TextInput(attrs={'size':'15'}))
+    reference_number = forms.CharField(label=_('Reference # / Notes'), max_length=20, required=False, widget=forms.TextInput(attrs={'size':'15'}))
     referral_source = forms.CharField(max_length=200, required=False, widget=forms.TextInput(attrs={'size':'40'}))
-    email = EmailVerificationField(label=_("Email"), help_text=_('A valid e-mail address, please.'))
+    email = EmailVerificationField(label=_("Email"), help_text=_('A valid e-mail address, please. A receipt will be automatically emailed to the email address provided above.'))
     email_receipt = forms.BooleanField(initial=True)
     country = forms.ChoiceField(label=_('Country'), choices=(('', '-----------'),) + tuple(COUNTRIES))
 
