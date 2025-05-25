@@ -11,12 +11,12 @@
 
 {% block content %}
 <div class="donation-view">
-<h1>{% trans 'View a Donation' %}</h1>
+<h1>View a {{ MODULE_DONATIONS_LABEL }}</h1>
 <div class="donation-view">
-<div class="label">{% trans 'Donation Amount' %}:</div><div><b>{{ donation.donation_amount }}</b></div>
+<div class="label">{% trans 'Amount' %}:</div><div><b>{{ donation.donation_amount }}</b></div>
 <div class="clear-left"></div>
 {% if donation.donate_to_entity %}
-<div class="label">{% trans 'Allocated to' %}:</div><div><a href="{% url 'entity' donation.donate_to_entity.id %}">{{donation.donate_to_entity }}</a></div>
+<div class="label">{% trans 'Contribute to' %}:</div><div><a href="{% url 'entity' donation.donate_to_entity.id %}">{{donation.donate_to_entity }}</a></div>
 <div class="clear-left"></div>
 {% endif %}
 {% if donation.allocation %}

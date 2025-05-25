@@ -17,6 +17,7 @@ from tendenci.apps.perms.utils import get_notice_recipients
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.base.utils import get_unique_username
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.entities.models import Entity
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -35,6 +36,9 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
 
         if form.is_valid() and captcha_form.is_valid():
             donation = form.save(commit=False)
+            donate_to_entity_id = form.cleaned_data['donate_to_entity_id']
+            if donate_to_entity_id:
+                donation.donate_to_entity = Entity.objects.filter(id=donate_to_entity_id).first()
             donation.payment_method = donation.payment_method.lower()
             # we might need to create a user record if not exist
             if request.user.is_authenticated:
