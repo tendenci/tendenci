@@ -1,5 +1,6 @@
 import re
 from urllib.request import urlopen
+from urllib.parse import urlencode
 from hashlib import md5
 
 from tagging.templatetags.tagging_tags import TagsForObjectNode
@@ -846,7 +847,6 @@ def stock_image_url(context, size):
     context.update({'size': size})
     return context
 
-
 @register.simple_tag
 def all_tags_list():
     """
@@ -856,7 +856,6 @@ def all_tags_list():
     tag_list = ",".join(['"%s"' % t.name for t in tags])
     return mark_safe(tag_list)
 
-
 @register.simple_tag
 def execute_method(obj, method_name, *args):
     """
@@ -865,3 +864,17 @@ def execute_method(obj, method_name, *args):
     """
     method = getattr(obj, method_name)
     return method(*args)
+
+@register.simple_tag()
+def order_by(request, current, field):
+    d = dict(request.GET.items())
+    
+    if field == current:
+        if current.startswith('-'):
+            field = field[1:]
+        else:
+            field = '-' + field
+            
+    d['order_by'] = field 
+    return f"{request.path}?{urlencode(d)}"
+

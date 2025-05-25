@@ -1,6 +1,7 @@
 {% extends "reports/base.html" %}
 {% load membership_tags %}
 {% load bootstrap_pagination_tags %}
+{% load base_tags %}
 
 {% block content %}
 <div class="page-header">
@@ -16,7 +17,7 @@
 
 <p class="pull-left">
 {% if members %}
-<a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv{{ region_url_param }}">
+    <a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv{{ region_url_param }}">
 
     {% trans 'Download CSV File' %}</a>
 {% endif %}
@@ -25,15 +26,37 @@
 {% if members %}
     <table class="table table-tendenci-reports">
         <tr>
-            <th>{% trans "Last Name" %}</th>
-            <th>{% trans "First Name" %}</th>
-            <th>{% trans "Company" %}</th>
+            <th><a href="{% order_by request order_by 'user__last_name' %}">{% trans "Last Name" %}</a></th>
+            <th><a href="{% order_by request order_by 'user__first_name' %}">{% trans "First Name" %}</a></th>
+            <th><a href="{% order_by request order_by 'member_number' %}">{% trans "Member Number" %}</a></th>
+            <th><a href="{% order_by request order_by 'membership_type' %}">{% trans "Membership Type" %}</a></th>
+            <th><a href="{% order_by request order_by 'expire_dt' %}">{% trans "Expiry Date" %}</a></th>
+            <th><a href="{% order_by request order_by 'user__profile__company' %}">{% trans "Company" %}</a></th>
+            <th>{% if member.user_group_list %}
+            		<a href="{% order_by request order_by 'user_group_list' %}">
+	            {% endif %}
+	            {% trans "Groups" %}
+	            {% if member.user_group_list %}
+	            	</a>
+	            {% endif %}
+	         </th>
         </tr>
         {% for member in members %}
         <tr>
             <td>{{ member.user.last_name }}</td>
             <td>{{ member.user.first_name }}</td>
+            <td>{{ member.member_number }}</td>
+            <td nowrap>{{ member.membership_type }}</td>
+            <td nowrap>{{ member.expire_dt }}</td>
             <td>{{ member.user.profile.company }}</td>
+            <td>{% if member.user_group_list %}
+	            	{{ member.user_group_list }}
+	            {% else %}
+					{% for group in member.user.user_groups.all %}
+					    {{ group.name }} {% if not forloop.last %}, {% endif %} 
+					{% endfor %}
+	            {% endif %}
+			</td>
         </tr>
         {% endfor %}
     </table>
