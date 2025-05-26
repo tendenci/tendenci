@@ -36,6 +36,14 @@
                             <a href="{% url 'donation.search' %}">{% trans 'Search' %}</a>
                         </span>
                     </li>
+                    
+                    {% if user.is_superuser %}
+                    	<li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:donations_donation_changelist' %}">{% trans 'Admin Backend' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
 
                     <li class="content-item">
                         <span class="app-name">

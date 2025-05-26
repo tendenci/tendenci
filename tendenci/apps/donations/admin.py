@@ -7,7 +7,7 @@ from tendenci.apps.donations.models import Donation
 from tendenci.apps.donations.forms import DonationAdminForm
 
 class DonationAdmin(admin.ModelAdmin):
-    list_display = ['id', 'first_name', 'last_name', 'show_user', 'donation_amount', 'payment_method']
+    list_display = ['id', 'first_name', 'last_name', 'show_user', 'donation_amount', 'donate_to_entity', 'payment_method']
     #list_display_links = ['first_name']
     list_filter = (('donate_to_entity', admin.RelatedOnlyFieldListFilter),
                   ('user', admin.RelatedOnlyFieldListFilter),
