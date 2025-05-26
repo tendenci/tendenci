@@ -8,6 +8,7 @@ from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.base.utils import tcurrency
 from tendenci.libs.form_utils.forms import BetterModelForm
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.base.fields import StateSelectField
 
 
 class DonationAdminForm(forms.ModelForm):
@@ -199,12 +200,18 @@ class DonationForm(FormControlWidgetMixin, BetterModelForm):
                 self.fields['donate_to_entity_id'].choices = [('', _("Select One"))] + self.get_entity_choices(entity_qs)
                 #self.fields['donate_to_entity_id'].empty_label = _("Select One")
                 self.fields['donate_to_entity_id'].label = _('Donate to')
-        
-        
+
         if preset_amount_str:
             self.fields['donation_amount'] = forms.ChoiceField(choices=get_preset_amount_choices(preset_amount_str))
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
         self.fields['donation_amount'].label = _(f'Donation amount ({currency_symbol})')
+
+        # state
+        if get_setting('site', 'global', 'stateusesdropdown'):
+            self.fields['state'] = StateSelectField(label=self.fields['state'].label,
+                                                    required=self.fields['state'].required)
+            self.fields['state'].widget.attrs.update({'class': 'form-control'})
+
 
     def get_entity_choices(self, entity_qs, preset_amount_list=None):
         from django.utils.safestring import mark_safe

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.http import HttpResponseRedirect
 
 from tendenci.apps.donations.models import Donation
 from tendenci.apps.donations.forms import DonationAdminForm
@@ -25,5 +26,11 @@ class DonationAdmin(admin.ModelAdmin):
     show_user.short_description = 'User'
     show_user.allow_tags = True
     show_user.admin_order_field = 'user__username'
+
+    def add_view(self, request, form_url='', extra_context=None):
+        return HttpResponseRedirect(
+                    reverse('donation.add')
+                )
+
 
 admin.site.register(Donation, DonationAdmin)

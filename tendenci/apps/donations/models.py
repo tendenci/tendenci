@@ -10,6 +10,9 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.donations.managers import DonationManager
 from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.regions.models import Region
+
 
 class Donation(models.Model):
     guid = models.CharField(max_length=50)
@@ -184,3 +187,9 @@ class Donation(models.Model):
         self.save()
     
         return inv
+
+    @property
+    def get_region(self):
+        if get_setting('site', 'global', 'stateusesregion'):
+            if self.state:
+                return Region.get_region_by_name(self.state)
