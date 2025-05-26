@@ -1,6 +1,7 @@
 {{ object.donation_amount }}
 {{ object.payment_method }}
 {{ object.allocation }}
+{{ object.donate_to_entity.entity_name }}
 {{ object.first_name }}
 {{ object.last_name }}
 {{ object.email }}
