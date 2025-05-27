@@ -80,9 +80,12 @@ class Donation(models.Model):
         The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
-        description = f'Invoice {inv.id} Payment for Donation {inv.object_id}'
+        label = get_setting('module', 'donations', 'label') 
+        description = f'Invoice {inv.id} Payment for {label} ({inv.object_id})'
         if self.from_object:
             description += f" from {str(self.from_object)}"
+        if self.donate_to_entity:
+            description += f" to {self.donate_to_entity.entity_name}"
         return description
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
