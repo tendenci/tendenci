@@ -200,6 +200,12 @@ def corp_membership_rows(corp_profile_field_names,
                         item = getattr(invoice, field_name)
                 else:
                     item = ''
+            elif field_name == 'corporate_membership_type_name':
+                corp_type = getattr(corp_membership, 'corporate_membership_type')
+                if corp_type:
+                    item = corp_type.name
+                else:
+                    item = ''
             else:
                 item = getattr(corp_membership, field_name)
                 if item and field_name in foreign_keys:
