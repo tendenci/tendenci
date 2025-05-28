@@ -8,6 +8,7 @@ from tendenci.apps.base.fields import EmailVerificationField, PriceField
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.base.fields import StateSelectField
 
 
 class MakePaymentForm(FormControlWidgetMixin, forms.ModelForm):
@@ -53,6 +54,12 @@ class MakePaymentForm(FormControlWidgetMixin, forms.ModelForm):
         self.fields['reference_number'].label = get_setting('module',
                                                             'make_payment',
                                                             'referencenumberlabel') or _('Reference #')
+        # state
+        if get_setting('site', 'global', 'stateusesdropdown'):
+            self.fields['state'] = StateSelectField(label=self.fields['state'].label,
+                                                    required=self.fields['state'].required)
+            self.fields['state'].widget.attrs.update({'class': 'form-control'})
+
         # populate the user fields
         if user and user.id:
             if 'captcha' in self.fields:

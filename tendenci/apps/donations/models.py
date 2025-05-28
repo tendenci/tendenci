@@ -10,6 +10,9 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.donations.managers import DonationManager
 from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.regions.models import Region
+
 
 class Donation(models.Model):
     guid = models.CharField(max_length=50)
@@ -77,9 +80,12 @@ class Donation(models.Model):
         The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
-        description = f'Invoice {inv.id} Payment for Donation {inv.object_id}'
+        label = get_setting('module', 'donations', 'label') 
+        description = f'Invoice {inv.id} Payment for {label} ({inv.object_id})'
         if self.from_object:
             description += f" from {str(self.from_object)}"
+        if self.donate_to_entity:
+            description += f" to {self.donate_to_entity.entity_name}"
         return description
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
@@ -184,3 +190,9 @@ class Donation(models.Model):
         self.save()
     
         return inv
+
+    @property
+    def get_region(self):
+        if get_setting('site', 'global', 'stateusesregion'):
+            if self.state:
+                return Region.get_region_by_name(self.state)
