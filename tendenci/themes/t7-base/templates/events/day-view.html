@@ -64,7 +64,7 @@
                 <div class="time-stamp">
                   {% if not event.all_day %}{{ event.start_dt|date:"f A" }} - {{ event.end_dt|date:"f A" }}{% endif %}
                 </div>
-                <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
+                <time style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</time>
             {% if event.start_dt|date:"D, M. j, Y" != event.end_dt|date:"D, M. j, Y" %}
                 <div class="ongoing-event">{% trans 'Multi-day Event' %}</div>
             {% endif %}

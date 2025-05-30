@@ -92,11 +92,11 @@ div.small-font {
           <h3>
             {% for span in event.date_spans %}
             {% if span.same_date %}
-            <span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"N j, Y" }}</span>
+            <time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"N j, Y" }}</time>
             {% if not forloop.last %} and {% endif %}
             {% else %}
-            <span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"M. j" }}</span> -
-            <span itemprop="endDate" datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"M. j, Y" }}</span>
+            <time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"M. j" }}</time> -
+            <time itemprop="endDate" datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"M. j, Y" }}</time>
             {% endif %}
             {% endfor %}
           </h3>
@@ -321,12 +321,12 @@ div.small-font {
         
         {% for span in event.date_spans %}
         {% if span.same_date %}
-        <p><span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, N j, Y" }}</span></p>
+        <p><time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, N j, Y" }}</time></p>
         
         {% if not forloop.last %} and {% endif %}
         {% else %}
-        <p><span datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, M. j" }}</span></p> -
-        <p><span datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"D, M. j, Y" }}</span></p>
+        <p><time datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, M. j" }}</time></p> -
+        <p><time datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"D, M. j, Y" }}</time></p>
         {% if not forloop.last %} and {% endif %}
         {% endif %}
         
