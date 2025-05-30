@@ -660,9 +660,9 @@ def membership_default_import_preview(request, mimport_id,
 
         # DateTime fields are sensitive to parse failures
         # They are not parsed in the preview yet, in fact all 
-        # data travens as strings to be cleaned and parsd just 
-        # before being saved to the respecive models. Datetimes 
-        # and dates are parsed with dateutil.parser, so we fo
+        # data travels as strings to be cleaned and parsed just 
+        # before being saved to the respective models. Datetimes 
+        # and dates are parsed with dateutil.parser, so we do
         # that here specifically so that someone importing dates
         # sees a preview of the parse success/failure before 
         # committing.
