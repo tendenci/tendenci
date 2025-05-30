@@ -100,7 +100,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                 if donation.payment_method in ['paid - check', 'paid - cc']:
                     # the admin accepted payment - mark the invoice paid
                     invoice.tender(request.user)
-                    invoice.make_payment(request.user, donation.donation_amount)
+                    invoice.make_payment(request.user, invoice.total)
 
             # send notification to administrators
             # get admin notice recipients
