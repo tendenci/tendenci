@@ -134,7 +134,7 @@
                 <a href="{{ event.get_absolute_url }}" class="time-stamp">
                   {% if not event.all_day %}{{ event.start_dt|date:"f A" }} - {{ event.end_dt|date:"f A" }}<br/>{% endif %}
                 </a>
-                <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
+                <time style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</time>
                 <a href="{{ event.get_absolute_url }}" class="event-title" itemprop="url">
                   <span itemprop="name">{{ event.title|truncatechars:15 }}</span>
                 </a>
