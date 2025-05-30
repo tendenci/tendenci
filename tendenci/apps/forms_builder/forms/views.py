@@ -5,6 +5,7 @@ import datetime
 import time
 import csv
 import re
+import operator
 
 from django.conf import settings
 from django.urls import reverse
@@ -31,7 +32,7 @@ from tendenci.apps.recurring_payments.models import RecurringPayment
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.forms_builder.forms.forms import (
-    FormForForm, FormForm, FormForField, PricingForm, BillingForm
+    FormForForm, FormForm, FormForField, PricingForm, BillingForm, FieldMemory
 )
 from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, Pricing
 from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
@@ -79,7 +80,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
 
 
 @is_enabled('forms')
-def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
+def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):  # @ReservedAssignment
     form_instance = get_object_or_404(Form, pk=id)
 
     if not has_perm(request.user,'forms.change_form',form_instance):
@@ -114,7 +115,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
 
 @is_enabled('forms')
 @login_required
-def update_fields(request, id, template_name="forms/update_fields.html"):
+def update_fields(request, id, template_name="forms/update_fields.html"):  # @ReservedAssignment
     form_instance = get_object_or_404(Form, id=id)
 
     if not has_perm(request.user,'forms.add_form',form_instance):
@@ -139,7 +140,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
 
 @is_enabled('forms')
 @login_required
-def delete(request, id, template_name="forms/delete.html"):
+def delete(request, id, template_name="forms/delete.html"):  # @ReservedAssignment
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -158,7 +159,7 @@ def delete(request, id, template_name="forms/delete.html"):
 
 @is_enabled('forms')
 @login_required
-def copy(request, id):
+def copy(request, id):  # @ReservedAssignment
     """
     Copies a form_instance and all the fields related to it.
     """
@@ -234,8 +235,15 @@ def copy(request, id):
 
 @is_enabled('forms')
 @login_required
+<<<<<<< HEAD
 def entries(request, id, template_name="forms/entries.html"):
     if not has_perm(request.user,'forms.view_formentry'):
+=======
+def entries(request, id, template_name="forms/entries.html"):  # @ReservedAssignment
+    form = get_object_or_404(Form, pk=id)
+
+    if not has_perm(request.user,'forms.change_form',form):
+>>>>>>> d3afae09e (Move form memories into own model)
         raise Http403
 
     form = get_object_or_404(Form, pk=id)
@@ -249,40 +257,59 @@ def entries(request, id, template_name="forms/entries.html"):
 
 @is_enabled('forms')
 @login_required
-def memories(request, id, template_name="forms/memories.html"):
+def memories(request, id, template_name="forms/memories.html"):  # @ReservedAssignment
     form = get_object_or_404(Form, pk=id)
 
     if not has_perm(request.user,'forms.view_formentry',form):
         raise Http403
 
-    key_pattern = re.compile(fr"{form.slug}.field_(?P<field_id>\d+)")
+    # Very important to order on 'user', 'session' as that is th eunique key that groups feild memories
+    # which grouping is premised in the form_memory reconstruction.
+    field_memories = FieldMemory.objects.filter(field__form=form).order_by('user', 'session', 'field__position')
 
-    # Not sure how well this scales and if perhaps a server side query (filter) is better
-    s_mem = [s for s in Session.objects.all()
-                if any([key for key in s.get_decoded() if re.match(key_pattern, key)])]
+    # form_memory is not saved explicitly in a model, instead we have saved individual field_memories.
+    #
+    # We provide a reconstructed form_memory to the memories view for convenience (to group the field_memories
+    # by the (user, session) they pertain to. As the field memories are sorted on (user, session) we can group
+    # them by this key into dicts for the form to render and the list (of field_memories has all of those for
+    # a given (user, session) are neighbouring in the list.
+    form_memories = []
 
-    memories = []
-    for s in s_mem:
-        memory = {"Expires": s.expire_date}
-        for key, val in s.get_decoded().items():
-            key_match = re.match(key_pattern, key)
-            if key_match:
-                field_id = key_match["field_id"]
-                try:
-                    field = form.fields.get(id=field_id)
-                    memory[field.label] = val
-                except Field.DoesNotExist:
-                    pass
+    previous_key = None
+    for memory in field_memories:
+        key = (memory.user, memory.session)
+        if key != previous_key:
+            form_memories.append({})
+            previous_key = key
 
-        memories.append(memory)
+            if "form_memory__user" in form_memories[-1]:
+                assert form_memories[-1]["form_memory__user"] == memory.user, "This is impossible"
+
+            if "form_memory__session" in form_memories[-1]:
+                assert form_memories[-1]["form_memory__session"] == memory.session, "This is impossible"
+
+            form_memories[-1]["form_memory__user"] = memory.user
+            form_memories[-1]["form_memory__session"] = memory.session
+
+            # The form save_dt is the latest of the field save_dts
+            if not "form_memory__save_dt" in form_memories[-1]:
+                form_memories[-1]["form_memory__save_dt"] = datetime.datetime.min
+
+            form_memories[-1]["form_memory__save_dt"] = max(form_memories[-1]["form_memory__save_dt"], memory.save_dt)
+            form_memories[-1]["form_memory__age"] = datetime.datetime.now() - form_memories[-1]["form_memory__save_dt"]
+
+        form_memories[-1][memory.field.label] = memory.value
+
+    # Now order the form memories. It's useful to see the most recent ones first.
+    form_memories.sort(key=lambda m: m.get("form_memory__age", datetime.timedelta.max))
 
     return render_to_resp(request=request, template_name=template_name,
-        context={'form':form,'memories': memories})
+        context={'form':form,'memories': form_memories, 'age_limit': datetime.timedelta(seconds=settings.SESSION_COOKIE_AGE)})
 
 
 @is_enabled('forms')
 @login_required
-def entry_delete(request, id, template_name="forms/entry_delete.html"):
+def entry_delete(request, id, template_name="forms/entry_delete.html"):  # @ReservedAssignment
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
@@ -301,7 +328,7 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
 
 @is_enabled('forms')
 @login_required
-def entry_detail(request, id, template_name="forms/entry_detail.html"):
+def entry_detail(request, id, template_name="forms/entry_detail.html"):  # @ReservedAssignment
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
@@ -318,7 +345,7 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
                  'form_template': form_template})
 
 @is_enabled('forms')
-def entries_export(request, id, include_files=False):
+def entries_export(request, id, include_files=False):  # @ReservedAssignment
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -453,7 +480,11 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
     else:
         billing_form = None
 
+<<<<<<< HEAD
     form_for_form = FormForForm(form, request.user, request.session, request.POST or None, request.FILES or None, instance=entry)
+=======
+    form_for_form = FormForForm(form, request.user, request.session, request.POST or None, request.FILES or None)
+>>>>>>> d3afae09e (Move form memories into own model)
 
     if get_setting('site', 'global', 'captcha'): # add captcha
         if billing_form:
@@ -492,9 +523,78 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                     description = "Email \"{0}\" blocked because it is listed in email_blocks.".format(email_to)
                     EventLog.objects.log(instance=form, description=description)
 
+<<<<<<< HEAD
                     if form.completion_url:
                         return HttpResponseRedirect(form.completion_url)
                     return redirect("form_sent", form.slug)
+=======
+                if form.completion_url:
+                    return HttpResponseRedirect(form.completion_url)
+                return redirect("form_sent", form.slug)
+
+            email = Email()
+            email.subject = subject
+            email.reply_to = form.email_from
+
+            if email_to and form.send_email and form.email_text:
+                # Send message to the person who submitted the form.
+                email.recipient = email_to
+                email.body = submitter_body
+                email.send(fail_silently=getattr(settings, 'EMAIL_FAIL_SILENTLY', True))
+                # log an event
+                EventLog.objects.log(instance=form, description='Confirmation email sent to {}'.format(email_to))
+
+            # Email copies to admin
+            admin_body = generate_admin_email_body(entry, form_for_form, user=request.user)
+            email_from = email_to or email_from # Send from the email entered.
+            email_headers = {}  # Reset the email_headers
+            email_headers.update({'Reply-To':email_from})
+            email_copies = [e.strip() for e in form.email_copies.split(',') if e.strip()]
+
+            subject = subject.encode(errors='ignore')
+            email_recipients = entry.get_function_email_recipients()
+            # reply_to of admin emails goes to submitter
+            email.reply_to = email_to
+
+            if email_copies or email_recipients:
+                # prepare attachments
+                attachments = []
+                # Commenting out the attachment block to not add attachments to the email for the reason below:
+                # According to SES message quotas https://docs.aws.amazon.com/ses/latest/DeveloperGuide/quotas.html,
+                # the maximum message size (including attachments) is 10 MB per message (after base64 encoding)
+                # which means the actual size should be less than 7.5 MB or so because text after encoded with the BASE64
+                # algorithm increases its size by 1/3. But the allowed upload size is much larger than 7.5 MB.
+#                 try:
+#                     for f in form_for_form.files.values():
+#                         f.seek(0)
+#                         attachments.append((f.name, f.read()))
+#                 except ValueError:
+#                     attachments = []
+#                     for field_entry in entry.fields.all():
+#                         if field_entry.field.field_type == 'FileField':
+#                             try:
+#                                 f = default_storage.open(field_entry.value)
+#                             except IOError:
+#                                 pass
+#                             else:
+#                                 f.seek(0)
+#                                 attachments.append((f.name.split('/')[-1], f.read()))
+
+                fail_silently = getattr(settings, 'EMAIL_FAIL_SILENTLY', True)
+                # Send message to the email addresses listed in the copies
+                if email_copies:
+                    email.body = admin_body
+                    email.recipient = email_copies
+#                     if request.user.is_anonymous or not request.user.is_active:
+#                         email.content_type = 'text'
+                    email.send(fail_silently=fail_silently, attachments=attachments)
+
+                # Email copies to recipient list indicated in the form
+                if email_recipients:
+                    email.body = admin_body
+                    email.recipient = email_recipients
+                    email.send(fail_silently=fail_silently, attachments=attachments)
+>>>>>>> d3afae09e (Move form memories into own model)
 
             # payment redirect
             if (form.custom_payment or form.recurring_payment) and entry.pricing:
@@ -732,7 +832,7 @@ def export(request, template_name="forms/export.html"):
 
 @is_enabled('forms')
 @login_required
-def files(request, id):
+def files(request, id):  # @ReservedAssignment
     """
     Returns file.  Allows us to handle privacy.
 

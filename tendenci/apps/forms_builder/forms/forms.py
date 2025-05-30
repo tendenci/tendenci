@@ -9,11 +9,14 @@ from importlib import import_module
 from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.core.exceptions import ObjectDoesNotExist
-from tendenci.apps.base.utils import validate_email
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.sessions.models import Session
+from django.contrib.sessions.backends.db import SessionStore
 
+from tendenci.apps.base.utils import validate_email
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -28,15 +31,14 @@ from tendenci.apps.base.utils import currency_check
 from tendenci.apps.payments.fields import PaymentMethodModelMultipleChoiceField
 from tendenci.apps.recurring_payments.fields import BillingCycleField
 from tendenci.apps.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
-from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
+from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, FieldMemory, Field, Form, Pricing
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.base.fields import CountrySelectField
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.utils import correct_filename
 
-
-#fs = FileSystemStorage(location=UPLOAD_ROOT)
+# fs = FileSystemStorage(location=UPLOAD_ROOT)
 
 FIELD_FNAME_LENGTH = 30
 FIELD_LNAME_LENGTH = 30
@@ -46,9 +48,10 @@ THIS_YEAR = datetime.today().year
 
 
 class FormForForm(FormControlWidgetMixin, forms.ModelForm):
+
     class Meta:
         model = FormEntry
-        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", 'custom_price',  "creator", 'quantity')
+        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", 'custom_price', "creator", 'quantity')
 
     def __init__(self, form, user, session=None, *args, **kwargs):
         """
@@ -74,7 +77,6 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
             for field in form_fields:
                 field_key = self.field_key(field)
-                gfield_key = form.form.slug + "." + field_key
 
                 if "/" in field.field_type:
                     field_class, field_widget = field.field_type.split("/")
@@ -104,7 +106,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     field_args["max_length"] = FIELD_MAX_LENGTH
                 if "choices" in arg_names and field.field_type != 'CountryField':
                     field_args["choices"] = field.get_choices()
-                    #field_args["choices"] = zip(choices, choices)
+                    # field_args["choices"] = zip(choices, choices)
 
                 if field_class == "BooleanField":
                     default = field.default.lower()
@@ -115,38 +117,29 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                         default = False
                     field.default = default
 
-                # Get the initial value of form field
-                got_initial = False
+                field.remembered = False
+                if field.remember:
+                    memory = None
+                    try:
+                        if self.user and not self.user.is_anonymous:
+                            memory = FieldMemory.objects.get(field=field, user=self.user)
+                            field_args["initial"] = memory.value
+                            field.remembered = True
+                    except ObjectDoesNotExist:
+                        pass
 
-                # If editing an existing object, that object defines the initial
-                if self.edit_mode:
-                    [instance_field] = self.instance.fields.filter(field_id=field.id)[:1] or [None]
+                    if not field.remembered and self.session:
+                        if not self.session.session_key:
+                            self.session.save()
+                        try:
+                            memory = FieldMemory.objects.get(field=field, session=self.session.session_key)
+                            field_args["initial"] = memory.value
+                            field.remembered = True
+                        except FieldMemory.DoesNotExist:
+                            pass
 
-                    if instance_field:
-                        instance_fields[field_key] = instance_field
-                        field_args["initial"] = instance_field.value
-                        field.remembered = False
-                        got_initial = True
-
-                        # As it's already been submitted (we have an instance) we don't require a
-                        # new file upload. Moreover the FileField cannot be given an initial value
-                        # (Django prohibits this for security reasons).
-                        if field.field_type == "FileField":
-                            field.required = False
-
-                # Otherwise, if the field has memory, that may define the initial
-                if not got_initial and field.remember:
-                    if field.remember and gfield_key in self.session:
-                        field_args["initial"] = session[gfield_key]
-                        field.remembered = True
-                    else:
-                        field_args["initial"] = field.default
-                        field.remembered = False
-
-                # Otherwise, the default value serves as an initial
-                if not got_initial:
+                if not field.remembered:
                     field_args["initial"] = field.default
-                    field.remembered = False
 
                 if field_widget is not None:
                     module, widget = field_widget.rsplit(".", 1)
@@ -187,7 +180,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             # include pricing options if any
             if (formforform.custom_payment or formforform.recurring_payment) and formforform.pricing_set.all():
 
-                #currency_symbol = get_setting('site', 'global', 'currencysymbol')
+                # currency_symbol = get_setting('site', 'global', 'currencysymbol')
 
                 pricing_options = []
                 for pricing in formforform.pricing_set.all():
@@ -196,7 +189,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                         pricing_options.append(
                             (pricing.pk, mark_safe(
                                 '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' %
-                                (pricing.pk, form.data.get('custom_price_%s' %pricing.pk, str()), pricing.label, pricing.description)))
+                                (pricing.pk, form.data.get('custom_price_%s' % pricing.pk, str()), pricing.label, pricing.description)))
                         )
                     else:
                         if formforform.recurring_payment:
@@ -216,7 +209,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
                 form.fields['pricing_option'] = forms.ChoiceField(
                     label=formforform.pricing_name or _('Pricing'),
-                    choices = pricing_options,
+                    choices=pricing_options,
                     widget=forms.RadioSelect(attrs={'class': 'pricing-field'})
                 )
                 if len(pricing_options) == 1:
@@ -288,20 +281,16 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
     def save(self, edit_mode=False, **kwargs):
         """
         Create a FormEntry instance and related FieldEntry instances for each
-        form field.
+        form field and related FieldMemory instances where requested (by Form
+        configuration)
         """
         entry = super(FormForForm, self).save(commit=False)
         entry.form = self.form
-
-        # Entry time recorded only when the form is originally submitted.
-        # Subsequent edits to the form entry do not alter the entry_time
-        if not edit_mode:
-            entry.entry_time = datetime.now()
+        entry.entry_time = datetime.now()
 
         entry.save()
         for field in self.form_fields:
             field_key = self.field_key(field)
-            gfield_key = self.form.slug + "." + field_key
 
             value = self.cleaned_data[field_key]
             entry_id = self.cleaned_data.get(field_key + "-id", None)
@@ -315,9 +304,9 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 value = self.handle_uploaded_file(value)
 
             # if the value is a list convert is to a comma delimited string
-            if isinstance(value,list):
+            if isinstance(value, list):
                 value = ','.join(value)
-            if not value: value=''
+            if not value: value = ''
 
             # make links not clickable if submitted by non-interactive user
             if isinstance(value, str) and (self.user.is_anonymous or not self.user.is_active):
@@ -333,15 +322,32 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 field_entry = FieldEntry(field_id = field.id, entry=entry, value = value)
                 field_entry.save()
 
-            if field.remember and self.session:
+            if field.remember and (self.user or self.session):
                 if not isinstance(value, str):
-                    self.session[gfield_key] = value.__str__()
-                else:
-                    self.session[gfield_key] = value
+                    value = value.__str__()
+
+                if self.user and not self.user.is_anonymous:
+                    FieldMemory.objects.update_or_create(field=field,
+                                                         user=self.user,
+                                                         defaults={'session': None,
+                                                                   'value': value,
+                                                                   'save_dt': datetime.now()})
+                elif self.session:
+                    # We fetch the Session object to which FieldMemories can link if needed
+                    if not self.session.session_key:
+                        self.session.create()
+
+                    session = Session.objects.get(session_key=self.session.session_key)
+
+                    FieldMemory.objects.update_or_create(field=field,
+                                                         session=session,
+                                                         defaults={'user': None,
+                                                                   'value': value,
+                                                                   'save_dt': datetime.now()})
 
         for field in self.auto_fields:
             value = field.choices
-            field_entry = FieldEntry(field_id = field.id, entry=entry, value=value)
+            field_entry = FieldEntry(field_id=field.id, entry=entry, value=value)
             field_entry.save()
 
         # save selected pricing and payment method if any
@@ -373,7 +379,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
 class FormAdminForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
-        choices=(('draft',_('Draft')),('published',_('Published')),))
+        choices=(('draft', _('Draft')), ('published', _('Published')),))
 
     intro = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
@@ -407,7 +413,7 @@ class FormAdminForm(TendenciBaseForm):
                   'response',
                   'group',
                   'template',
-                  'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
+                  'send_email',  # removed per ed's request, added back per Aaron's request 2011-10-14
                   'email_text',
                   'subject_template',
                   'completion_url',
@@ -471,6 +477,7 @@ class FormAdminForm(TendenciBaseForm):
             i += 1
         return slug
 
+
 class FormForm(TendenciBaseForm):
     # from django.utils.safestring import mark_safe
 
@@ -503,7 +510,7 @@ class FormForm(TendenciBaseForm):
             queryset=PaymentMethod.objects.all(),
             widget=forms.CheckboxSelectMultiple,
             required=False,
-            initial=[1,2,3]
+            initial=[1, 2, 3]
         )
 
     class Meta:
@@ -513,7 +520,7 @@ class FormForm(TendenciBaseForm):
             'slug',
             'intro',
             'response',
-            'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
+            'send_email',  # removed per ed's request, added back per Aaron's request 2011-10-14
             'email_text',
             'completion_url',
             'subject_template',
@@ -555,9 +562,9 @@ class FormForm(TendenciBaseForm):
                         'classes': ['admin-only'],
                     }),
                     (_('Payments'), {
-                        'fields':['custom_payment','recurring_payment','payment_methods'],
+                        'fields':['custom_payment', 'recurring_payment', 'payment_methods'],
                         'legend':''
-                    }),]
+                    }), ]
 
     def __init__(self, *args, **kwargs):
         super(FormForm, self).__init__(*args, **kwargs)
@@ -582,7 +589,7 @@ class FormForm(TendenciBaseForm):
             i += 1
         return slug
 
-class FormForField(FormControlWidgetMixin, forms.ModelForm):
+class FormForField(forms.ModelForm):
     class Meta:
         model = Field
         exclude = ["summary_position", 'remember']
@@ -592,7 +599,7 @@ class FormForField(FormControlWidgetMixin, forms.ModelForm):
         field_function = cleaned_data.get("field_function")
         choices = cleaned_data.get("choices")
         field_type = cleaned_data.get("field_type")
-        #required = cleaned_data.get("required")
+        # required = cleaned_data.get("required")
         visible = cleaned_data.get("visible")
 
         if field_function == "GroupSubscription":
@@ -605,9 +612,9 @@ class FormForField(FormControlWidgetMixin, forms.ModelForm):
                     try:
                         g = Group.objects.get(name=val.strip())
                         if not g.allow_self_add:
-                            raise forms.ValidationError(_("The group \"%(val)s\" does not allow self-add." % { 'val' : val }))
+                            raise forms.ValidationError(_("The group \"%(val)s\" does not allow self-add." % { 'val': val }))
                     except Group.DoesNotExist:
-                        raise forms.ValidationError(_("The group \"%(val)s\" does not exist" % { 'val' : val }))
+                        raise forms.ValidationError(_("The group \"%(val)s\" does not exist" % { 'val': val }))
 
         if field_function == "GroupSubscriptionAuto":
             # field_type doesn't matter since this field shouldn't be rendered anyway.
@@ -620,9 +627,9 @@ class FormForField(FormControlWidgetMixin, forms.ModelForm):
                     try:
                         g = Group.objects.get(name=val.strip())
                         if not g.allow_self_add:
-                            raise forms.ValidationError(_("The group \"%(val)s\" does not allow self-add." % { 'val' : val }))
+                            raise forms.ValidationError(_("The group \"%(val)s\" does not allow self-add." % { 'val': val }))
                     except Group.DoesNotExist:
-                        raise forms.ValidationError(_("The group \"%(val)s\" does not exist" % { 'val' : val }))
+                        raise forms.ValidationError(_("The group \"%(val)s\" does not exist" % { 'val': val }))
 
         if field_function == "Recipients":
             if (field_type != "MultipleChoiceField/django.forms.CheckboxSelectMultiple" and
@@ -630,7 +637,7 @@ class FormForField(FormControlWidgetMixin, forms.ModelForm):
                 field_type != "BooleanField" and
                 field_type != "ChoiceField"):
                 raise forms.ValidationError(_("The \"Email to Recipients\" function requires Multi-select - Checkboxes "
-                                            + "or Multi-select - Select Many as field type"))
+                                            +"or Multi-select - Select Many as field type"))
 
             if field_type == "BooleanField":
                 if not choices:
@@ -654,7 +661,7 @@ class FormForField(FormControlWidgetMixin, forms.ModelForm):
             if field_type != "CharField":
                 raise forms.ValidationError(_("This field's function requires Text as a field type"))
 
-        #unrequire the display only fields
+        # unrequire the display only fields
         if field_type == "CharField/tendenci.apps.forms_builder.forms.widgets.Description":
             cleaned_data['required'] = False
         elif field_type == "CharField/tendenci.apps.forms_builder.forms.widgets.Header":
@@ -695,9 +702,9 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
                         }),
                     (_('Trial Period'), {
                         'fields': [ 'has_trial_period',
-                                    'trial_period_days',],
+                                    'trial_period_days', ],
                         'legend': '',
-                        }),]
+                        }), ]
 
     def __init__(self, *args, **kwargs):
         if kwargs.get('empty_permitted', True):
@@ -740,8 +747,9 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
             cycle = self.cleaned_data.get('billing_cycle').split(',')
             pricing.billing_frequency = cycle[0]
             pricing.billing_period = cycle[1]
-        #pricing.save()
+        # pricing.save()
         return pricing
+
 
 class BillingForm(FormControlWidgetMixin, forms.Form):
     first_name = forms.CharField(required=False)

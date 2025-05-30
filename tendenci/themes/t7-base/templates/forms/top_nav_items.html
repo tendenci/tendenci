@@ -50,7 +50,7 @@
                         </li>
                     {% else %}
                         <li class="content-item">
-                            <span class="app-name">
+                            <span class="app-name">app_object
                                 <a href="{% url 'form_add' %}">{% trans "Add Form" %}</a>
                             </span>
                         </li>
@@ -85,6 +85,14 @@
                                         <a href="{% url 'form_entries' app_object.pk %}">{% trans "View Entries" %}</a>
                                     </span>
                                 </li>
+
+				                {% if app_object.has_memory %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'form_memories' app_object.pk %}">{% trans "View Memories" %}</a>
+                                    </span>
+                                </li>
+                                {% endif %}
 
                                 {% if request.user.is_staff %}
                                 <li class="content-item">

@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.core import validators
 from django.utils.translation import gettext, gettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
@@ -215,6 +216,17 @@ class Form(TendenciBaseModel):
                 return True
         return False
 
+    @property
+    def has_memory(self):
+        '''
+        Returns True if any of the forms fields have the remember flag set.
+
+        Useful for a template to make decisions base don whether this is a form that has memory or not.
+        '''
+        for field in self.fields.all():
+            if field.remember:
+                return True
+        return False
 
 class FieldManager(models.Manager):
     """
@@ -725,3 +737,29 @@ class Pricing(models.Model):
         if not currency_symbol:
             currency_symbol = '$'
         return "%s - %s%s" % (self.label, currency_symbol, self.price,)
+
+class FieldMemory(models.Model):
+    """
+    Field memory for forms, enabling (optional) prepopulation of forms repeatedly used.
+
+    Public forms, don't need a user to be logged in to submit. If a user is logged in then
+    the user is noted if no-one is logged in the the session is noted. if sessions have
+    long life (SESSION_COOKIE_AGE) then they can store form memory for a long time as well.
+
+    If a user is deleted, all their form memories can be deleted too (CASCADE)
+    If a session is deleted, all its form memories can be deleted too (CADCADE)
+    If a field is deleted, all its form memories can be deleted too (CASCADE
+    The value stores the same data as FieldEntry.value.
+
+    We do not use a ForeignKey to FieldEntry, because a memory can and should
+    outlive a FieldEntry. That is, a valid use case is that a user enters a
+    completed form (creating FieldEntry instances and FieldMemory instances,
+    then the form entry (and it's associated FieldEntries is processed, no longer
+    required and deleted, but the user still wants their form to remember their last
+    entry).
+    """
+    user = models.ForeignKey(User, related_name="form_memories", null=True, on_delete=models.CASCADE)
+    session = models.ForeignKey(Session, related_name="form_memories", null=True, on_delete=models.CASCADE)
+    field = models.ForeignKey(Field, related_name="form_memories", on_delete=models.CASCADE)
+    value = models.CharField(max_length=FIELD_MAX_LENGTH)
+    save_dt = models.DateTimeField()
