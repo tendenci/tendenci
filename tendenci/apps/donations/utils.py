@@ -45,9 +45,18 @@ def donation_inv_add(user, donation, **kwargs):
     inv.object_type = ContentType.objects.get(app_label=donation._meta.app_label,
                                               model=donation._meta.model_name)
     inv.object_id = donation.id
+
     inv.subtotal = donation.donation_amount
-    inv.total = donation.donation_amount
-    inv.balance = donation.donation_amount
+    inv.total = inv.subtotal
+    
+    # tax
+    if get_setting('module', 'donations', 'apply_tax'):
+        region = donation.get_region
+        if region:
+            inv.assign_tax([(donation.donation_amount, region.tax_rate)], user, region=region)
+            inv.total += inv.tax + inv.tax_2
+
+    inv.balance = inv.total
 
     inv.save(user)
     donation.invoice = inv

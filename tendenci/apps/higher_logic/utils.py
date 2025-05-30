@@ -54,7 +54,7 @@ class HigherLogicAPI:
         if profile.member_number:
             # member group
             membership = profile.membership
-            if membership:
+            if membership and membership.is_active():
                 member_group = {"GroupId": get_setting('module', 'higher_logic', 'membergroupkey'),
                                 "GroupName": get_setting('module', 'higher_logic', 'membergroupname'),
                                 "GroupType": "Membership",
