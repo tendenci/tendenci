@@ -1905,6 +1905,7 @@ def corpmembership_export(request,
             corp_memb_field_list.remove('guid')
             corp_memb_field_list.remove('corp_profile')
             corp_memb_field_list.remove('anonymous_creator')
+            corp_memb_field_list.append('corporate_membership_type_name')
             corp_memb_field_list.append('subtotal')
             corp_memb_field_list.append('total')
             corp_memb_field_list.append('tax')

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from tendenci.apps.donations.models import Donation
@@ -171,7 +172,11 @@ class DonationForm(FormControlWidgetMixin, BetterModelForm):
                     self.fields['phone'].initial = profile.phone
             except:
                 pass
-        self.fields['payment_method'] = forms.ChoiceField(choices=get_payment_method_choices(self.user), widget=forms.RadioSelect()) 
+        payment_method_choices = get_payment_method_choices(self.user)
+        self.fields['payment_method'] = forms.ChoiceField(choices=payment_method_choices, widget=forms.RadioSelect()) 
+        if len(payment_method_choices) == 1:
+            self.fields['payment_method'].initial = payment_method_choices[0][0]
+            self.fields['payment_method'].widget = forms.HiddenInput()
         # donate_to_entity or allocation
         filters = Entity.get_search_filter(self.user)
         entity_qs = Entity.objects.filter(show_for_donation=True)
@@ -188,8 +193,7 @@ class DonationForm(FormControlWidgetMixin, BetterModelForm):
                 del self.fields['allocation']
         else:
             del self.fields['allocation']
-            if preset_amount_list:
-                from decimal import Decimal
+            if preset_amount_list and get_setting('module', 'donations', 'hide_amount'):
                 preset_amount_list = [Decimal(amount) for amount in preset_amount_list]
                 self.hide_amount = True
                 self.fields['donate_to_entity_id'] = forms.ChoiceField(widget=forms.RadioSelect(), choices=self.get_entity_choices(entity_qs, preset_amount_list))
