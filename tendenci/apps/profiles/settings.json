@@ -423,5 +423,22 @@
         "scope_category": "users",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "",
+        "description": "Specify the extra required fields on profiles add/edit forms. Comma delimited.",
+        "data_type": "string",
+        "update_dt": "2025-06-02 13:30:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "usersrequiredfields",
+        "value": "",
+        "label": "User Extra Required Fields",
+        "input_value": "",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "users",
+        "store": true,
+        "updated_by": ""
     }
 ]
