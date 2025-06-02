@@ -319,7 +319,7 @@ class NewsletterCloneView(NewsletterPermissionMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         newsletter = get_object_or_404(Newsletter, pk=kwargs['pk'])
-        cloned_newsletter = newsletter.clone()
+        cloned_newsletter = newsletter.clone(request_user=request.user)
 
         EventLog.objects.log(instance=cloned_newsletter)
         msg_string = 'Sucessfully cloned newsletter: {}. You can edit the new newsletter now.'.format(str(newsletter))
