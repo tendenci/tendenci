@@ -620,6 +620,9 @@ class Profile(Person):
                 membership.set_member_number()
                 membership.save()
             self.member_number = membership.member_number
+            # this is an active membership, check if it's user profile is active. 
+            if self.status_detail != 'active':
+                self.status_detail = 'active'
 
         self.save()
         return self.member_number

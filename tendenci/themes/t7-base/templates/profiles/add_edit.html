@@ -36,7 +36,7 @@
     	<legend>A) {% trans 'Name Information'%}</legend>
     
 	    <div class="form-group">
-		    <label for="id_salutation" class="col-sm-3 control-label">{{ form.salutation.label }}{%if from.salutation.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_salutation" class="col-sm-3 control-label">{{ form.salutation.label }}{% if form.salutation.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-4">
 		      {% if form.salutation.errors %}
 		         <div class="text-danger">{{ form.salutation.errors }}</div>
@@ -66,7 +66,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_initials" class="col-sm-3 control-label">{{ form.initials.label }}{% if from.initials.label in required_fields_list %}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_initials" class="col-sm-3 control-label">{{ form.initials.label }}{% if form.initials.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-4">
 		      {% if form.initials.errors %}
 		         <div class="text-danger">{{ form.initials.errors }}</div>
@@ -96,7 +96,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_position_title" class="col-sm-3 control-label">{{ form.position_title.label }}{% if from.position_title.label in required_fields_list %}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_position_title" class="col-sm-3 control-label">{{ form.position_title.label }}{% if form.position_title.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-9">
 		      {% if form.position_title.errors %}
 		         <div class="text-danger">{{ form.position_title.errors }}</div>
@@ -111,7 +111,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_display_name" class="col-sm-3 control-label">{{ form.display_name.label }}{% if from.display_name.label in required_fields_list %}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_display_name" class="col-sm-3 control-label">{{ form.display_name.label }}{% if form.display_name.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-9">
 		      {% if form.display_name.errors %}
 		         <div class="text-danger">{{ form.display_name.errors }}</div>
@@ -141,7 +141,7 @@
     	<legend>B) {% trans 'Phone Information'%}</legend>
     
 	    <div class="form-group">
-		    <label for="id_phone" class="col-sm-3 control-label">{{ form.phone.label }}{%if from.phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_phone" class="col-sm-3 control-label">{{ form.phone.label }}{% if form.phone.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-8">
 		      {% if form.phone.errors %}
 		         <div class="text-danger">{{ form.phone.errors }}</div>
@@ -155,7 +155,7 @@
 		    </div>
 	   </div>
 	   <div class="form-group">
-		    <label for="id_phone2" class="col-sm-3 control-label">{{ form.phone2.label }}{%if from.phone2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_phone2" class="col-sm-3 control-label">{{ form.phone2.label }}{% if form.phone2.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-8">
 		      {% if form.phone2.errors %}
 		         <div class="text-danger">{{ form.phone2.errors }}</div>
@@ -169,7 +169,7 @@
 		    </div>
 	   </div>
 	   <div class="form-group">
-		    <label for="id_home_phone" class="col-sm-3 control-label">{{ form.home_phone.label }}{%if from.home_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_home_phone" class="col-sm-3 control-label">{{ form.home_phone.label }}{% if form.home_phone.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-8">
 		      {% if form.home_phone.errors %}
 		         <div class="text-danger">{{ form.home_phone.errors }}</div>
@@ -183,7 +183,7 @@
 		    </div>
 	   </div>
 	   <div class="form-group">
-		    <label for="id_work_phone" class="col-sm-3 control-label">{{ form.work_phone.label }}{%if from.work_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_work_phone" class="col-sm-3 control-label">{{ form.work_phone.label }}{%if form.work_phone.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-8">
 		      {% if form.work_phone.errors %}
 		         <div class="text-danger">{{ form.work_phone.errors }}</div>
@@ -197,7 +197,7 @@
 		    </div>
 	   </div>
 	   <div class="form-group">
-		    <label for="id_fax" class="col-sm-3 control-label">{{ form.fax.label }}{%if from.fax.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_fax" class="col-sm-3 control-label">{{ form.fax.label }}{% if form.fax.field.required%}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-8">
 		      {% if form.fax.errors %}
 		         <div class="text-danger">{{ form.fax.errors }}</div>
@@ -211,7 +211,7 @@
 		    </div>
 	   </div>
 	   <div class="form-group">
-		    <label for="id_mobile_phone" class="col-sm-3 control-label">{{ form.mobile_phone.label }}{%if from.mobile_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_mobile_phone" class="col-sm-3 control-label">{{ form.mobile_phone.label }}{% if form.mobile_phone.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-8">
 		      {% if form.mobile_phone.errors %}
 		         <div class="text-danger">{{ form.mobile_phone.errors }}</div>
@@ -254,7 +254,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_direct_mail" class="col-sm-3 control-label">{% trans 'Receive Email?'%}{%if from.direct_mail.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_direct_mail" class="col-sm-3 control-label">{% trans 'Receive Email?'%}{% if form.direct_mail.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-3">
 		      {% if form.direct_mail.errors %}
 		         <div class="text-danger">{{ form.direct_mail.errors }}</div>
@@ -269,7 +269,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_email2" class="col-sm-3 control-label">{{ form.email2.label }}{%if from.email2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_email2" class="col-sm-3 control-label">{{ form.email2.label }}{% if form.email2.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-6">
 		      {% if form.email2.errors %}
 		         <div class="text-danger">{{ form.email2.errors }}</div>
@@ -284,7 +284,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_url" class="col-sm-3 control-label">{{ form.url.label }}{%if from.url.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_url" class="col-sm-3 control-label">{{ form.url.label }}{% if form.url.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-9">
 		      {% if form.url.errors %}
 		         <div class="text-danger">{{ form.url.errors }}</div>
@@ -313,7 +313,7 @@
      <fieldset>
     	<legend>D) {% trans 'Company Information'%}</legend>
 		<div class="form-group">
-		    <label for="id_company" class="col-sm-3 control-label">{{ form.industry.label }}{%if from.industry.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_company" class="col-sm-3 control-label">{{ form.industry.label }}{% if form.industry.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-9">
 		      {% if form.industry.errors %}
 		         <div class="text-danger">{{ form.industry.errors }}</div>
@@ -327,7 +327,7 @@
 		    </div>
 	   </div>
 	   <div class="form-group">
-		    <label for="id_company" class="col-sm-3 control-label">{{ form.company.label }}{%if from.company.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_company" class="col-sm-3 control-label">{{ form.company.label }}{% if form.company.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-9">
 		      {% if form.company.errors %}
 		         <div class="text-danger">{{ form.company.errors }}</div>
@@ -342,7 +342,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_department" class="col-sm-3 control-label">{{ form.department.label }}{%if from.department.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_department" class="col-sm-3 control-label">{{ form.department.label }}{% if form.department.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-8">
 		      {% if form.department.errors %}
 		         <div class="text-danger">{{ form.department.errors }}</div>
@@ -360,7 +360,7 @@
     <fieldset>
     	<legend>E) {% trans 'Address Information'%}</legend>
 	   <div class="form-group">
-		    <label for="id_mailing_name" class="col-sm-3 control-label">{{ form.mailing_name.label }}{%if from.mailing_name.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_mailing_name" class="col-sm-3 control-label">{{ form.mailing_name.label }}{% if form.mailing_name.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-9">
 		      {% if form.mailing_name.errors %}
 		         <div class="text-danger">{{ form.mailing_name.errors }}</div>
@@ -375,7 +375,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_address" class="col-sm-3 control-label">{{ form.address.label }}{%if from.address.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_address" class="col-sm-3 control-label">{{ form.address.label }}{% if form.address.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-9">
 		      {% if form.address.errors %}
 		         <div class="text-danger">{{ form.address.errors }}</div>
@@ -390,7 +390,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_address2" class="col-sm-3 control-label">{{ form.address2.label }}{%if from.address2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_address2" class="col-sm-3 control-label">{{ form.address2.label }}{% if form.address2.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-6">
 		      {% if form.address2.errors %}
 		         <div class="text-danger">{{ form.address2.errors }}</div>
@@ -405,7 +405,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_city" class="col-sm-3 control-label">{{ form.city.label }}{%if from.city.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_city" class="col-sm-3 control-label">{{ form.city.label }}{% if form.city.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.city.errors %}
 		         <div class="text-danger">{{ form.city.errors }}</div>
@@ -420,7 +420,7 @@
 	   </div>
 
 		<div class="form-group">
-		    <label for="id_county" class="col-sm-3 control-label">{{ form.county.label }}{%if from.county.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_county" class="col-sm-3 control-label">{{ form.county.label }}{% if form.county.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.county.errors %}
 		         <div class="text-danger">{{ form.county.errors }}</div>
@@ -435,7 +435,7 @@
 	   </div>
 
 	   <div class="form-group">
-		    <label for="id_state" class="col-sm-3 control-label">{{ form.state.label }}{%if from.state.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_state" class="col-sm-3 control-label">{{ form.state.label }}{% if form.state.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.state.errors %}
 		         <div class="text-danger">{{ form.state.errors }}</div>
@@ -450,7 +450,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_zipcode" class="col-sm-3 control-label">{{ form.zipcode.label }}{%if from.zipcode.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_zipcode" class="col-sm-3 control-label">{{ form.zipcode.label }}{% if form.zipcode.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-4">
 		      {% if form.zipcode.errors %}
 		         <div class="text-danger">{{ form.zipcode.errors }}</div>
@@ -465,7 +465,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_region" class="col-sm-3 control-label">{{ form.region.label }}{%if from.region.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_region" class="col-sm-3 control-label">{{ form.region.label }}{% if form.region.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.region.errors %}
 		         <div class="text-danger">{{ form.region.errors }}</div>
@@ -480,7 +480,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_country" class="col-sm-3 control-label">{{ form.country.label }}{%if from.country.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_country" class="col-sm-3 control-label">{{ form.country.label }}{% if form.country.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.country.errors %}
 		         <div class="text-danger">{{ form.country.errors }}</div>
@@ -521,7 +521,7 @@
 	   
 	   
 	   <div class="form-group">
-		    <label for="id_address_2" class="col-sm-3 control-label">{{ form.address_2.label }}{%if from.address_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_address_2" class="col-sm-3 control-label">{{ form.address_2.label }}{% if form.address_2.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-9">
 		      {% if form.address_2.errors %}
 		         <div class="text-danger">{{ form.address_2.errors }}</div>
@@ -536,7 +536,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_address2_2" class="col-sm-3 control-label">{{ form.address2_2.label }}{%if from.address2_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_address2_2" class="col-sm-3 control-label">{{ form.address2_2.label }}{% if form.address2_2.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-6">
 		      {% if form.address2_2.errors %}
 		         <div class="text-danger">{{ form.address2_2.errors }}</div>
@@ -551,7 +551,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_city_2" class="col-sm-3 control-label">{{ form.city_2.label }}{%if from.city_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_city_2" class="col-sm-3 control-label">{{ form.city_2.label }}{%if form.city_2.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.city_2.errors %}
 		         <div class="text-danger">{{ form.city_2.errors }}</div>
@@ -581,7 +581,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_state_2" class="col-sm-3 control-label">{{ form.state_2.label }}{%if from.state_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_state_2" class="col-sm-3 control-label">{{ form.state_2.label }}{%if form.state_2.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.state_2.errors %}
 		         <div class="text-danger">{{ form.state_2.errors }}</div>
@@ -596,7 +596,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_zipcode_2" class="col-sm-3 control-label">{{ form.zipcode_2.label }}{%if from.zipcode_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_zipcode_2" class="col-sm-3 control-label">{{ form.zipcode_2.label }}{%if form.zipcode_2.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-4">
 		      {% if form.zipcode_2.errors %}
 		         <div class="text-danger">{{ form.zipcode_2.errors }}</div>
@@ -611,7 +611,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_country_2" class="col-sm-3 control-label">{{ form.country_2.label }}{%if from.country_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_country_2" class="col-sm-3 control-label">{{ form.country_2.label }}{%if form.country_2.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.country_2.errors %}
 		         <div class="text-danger">{{ form.country_2.errors }}</div>
@@ -744,7 +744,7 @@
 
 	   {% if form.interactive %}
 	   <div class="form-group">
-		    <label for="id_interactive" class="col-sm-3 control-label">{{ form.interactive.label }}{%if from.interactive.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_interactive" class="col-sm-3 control-label">{{ form.interactive.label }}{% if form.interactive.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.interactive.errors %}
 		         <div class="text-danger">{{ form.interactive.errors }}</div>
@@ -760,7 +760,7 @@
 	   {% endif %}
 	   
 	   <div class="form-group">
-		    <label for="id_status_detail" class="col-sm-3 control-label">{{ form.status_detail.label }}{%if from.status_detail.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_status_detail" class="col-sm-3 control-label">{{ form.status_detail.label }}{% if form.status_detail.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-3">
 		      {% if form.status_detail.errors %}
 		         <div class="text-danger">{{ form.status_detail.errors }}</div>
@@ -779,7 +779,7 @@
 	<fieldset>
     	<legend>H) {% trans 'Notes '%}</legend>
     	<div class="form-group">
-		    <label for="id_notes" class="col-sm-3 control-label">{{ form.notes.label }}{%if from.notes.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_notes" class="col-sm-3 control-label">{{ form.notes.label }}{% if form.notes.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-8">
 		      {% if form.notes.errors %}
 		         <div class="text-danger">{{ form.notes.errors }}</div>
@@ -799,7 +799,7 @@
     	<legend>I) {% trans 'Optional Information'%}</legend>
     	
     	<div class="form-group">
-		    <label for="id_time_zone" class="col-sm-3 control-label">{{ form.time_zone.label }}{%if from.time_zone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_time_zone" class="col-sm-3 control-label">{{ form.time_zone.label }}{% if form.time_zone.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-8">
 		      {% if form.time_zone.errors %}
 		         <div class="text-danger">{{ form.time_zone.errors }}</div>
@@ -814,7 +814,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_language" class="col-sm-3 control-label">{{ form.language.label }}{%if from.language.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_language" class="col-sm-3 control-label">{{ form.language.label }}{% if form.language.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.language.errors %}
 		         <div class="text-danger">{{ form.language.errors }}</div>
@@ -829,7 +829,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_sex" class="col-sm-3 control-label">{{ form.sex.label }}{%if from.sex.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_sex" class="col-sm-3 control-label">{{ form.sex.label }}{% if form.sex.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-4">
 		      {% if form.sex.errors %}
 		         <div class="text-danger">{{ form.sex.errors }}</div>
@@ -844,7 +844,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_spouse" class="col-sm-3 control-label">{{ form.spouse.label }}{%if from.spouse.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_spouse" class="col-sm-3 control-label">{{ form.spouse.label }}{% if form.spouse.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-6">
 		      {% if form.spouse.errors %}
 		         <div class="text-danger">{{ form.spouse.errors }}</div>
@@ -859,7 +859,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_dob" class="col-sm-3 control-label">{{ form.dob.label }}{%if from.dob.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_dob" class="col-sm-3 control-label">{{ form.dob.label }}{% if form.dob.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-5">
 		      {% if form.dob.errors %}
 		         <div class="text-danger">{{ form.dob.errors }}</div>
@@ -899,7 +899,7 @@
     <legend>J) {% trans 'Administrator Information'%}</legend>
 
 	   <div class="form-group">
-		    <label for="id_account_id" class="col-sm-3 control-label">{{ form.account_id.label }}{%if from.account_id.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_account_id" class="col-sm-3 control-label">{{ form.account_id.label }}{% if form.account_id.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-4">
 		      {% if form.account_id.errors %}
 		         <div class="text-danger">{{ form.account_id.errors }}</div>
@@ -914,7 +914,7 @@
 	   </div>
 
     	 <div class="form-group">
-		    <label for="id_admin_notes" class="col-sm-3 control-label">{{ form.admin_notes.label }}{%if from.admin_notes.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_admin_notes" class="col-sm-3 control-label">{{ form.admin_notes.label }}{% if form.admin_notes.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-6">
 		      {% if form.admin_notes.errors %}
 		         <div class="text-danger">{{ form.admin_notes.errors }}</div>
@@ -929,7 +929,7 @@
 	   </div>
 	   
 	   <div class="form-group">
-		    <label for="id_security_level" class="col-sm-3 control-label">{{ form.security_level.label }}{%if from.security_level.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <label for="id_security_level" class="col-sm-3 control-label">{{ form.security_level.label }}{% if form.security_level.field.required %}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-4">
 		      {% if form.security_level.errors %}
 		         <div class="text-danger">{{ form.security_level.errors }}</div>

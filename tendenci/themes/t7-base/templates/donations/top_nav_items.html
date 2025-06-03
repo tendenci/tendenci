@@ -19,7 +19,7 @@
                 <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     {% if app_object %}
                         <li>
-                            <span class="content-head text-content-head">{% trans 'All Donations' %}</span>
+                            <span class="content-head text-content-head">{% trans 'All ' %}{% firstof MODULE_DONATIONS_LABEL_PLURAL trans "Donations" %}</span>
                         </li>
                     {% endif %}
 
@@ -47,7 +47,7 @@
 
                     <li class="content-item">
                         <span class="app-name">
-                            <a href="{% url 'donation.add' %}">{% trans "Add donation" %}</a>
+                            <a href="{% url 'donation.add' %}">{% trans "Add " %}{% firstof MODULE_DONATIONS_LABEL trans "Donation" %}</a>
                         </span>
                     </li>
 
@@ -57,7 +57,7 @@
                     {% if can_view_donation or can_edit_donation %}
                         <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                             <li>
-                                <span class="content-head text-content-head">{% trans "This donation" %}</span>
+                                <span class="content-head text-content-head">{% trans "This " %}{% firstof MODULE_DONATIONS_LABEL trans "Donation" %}</span>
                             </li>
 
                             {% if can_view_donation %}

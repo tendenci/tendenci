@@ -331,15 +331,6 @@ class ProfileForm(TendenciBaseForm):
         if not self.user_current.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
-        # we make first_name, last_name, email, username and password as required field regardless
-        # the rest of fields will be decided by the setting - UsersRequiredFields
-        if self.required_fields_list:
-            for field in self.required_fields_list:
-                for myfield in self.fields:
-                    if field == self.fields[myfield].label:
-                        self.fields[myfield].required = True
-                        continue
-
         if 'password1' in self.fields:
             self.password_regex = (get_setting('module', 'users', 'password_requirements_regex')).strip()
             self.password_help_text = (get_setting('module', 'users', 'password_text')).strip()
@@ -376,6 +367,14 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['region']
             else:
                 self.fields['region'].queryset = region_queryset
+
+        # we make first_name, last_name, email, username and password as required field regardless
+        # the rest of fields will be decided by the setting - UsersRequiredFields
+        if self.required_fields_list:
+            myfield_names = self.fields.keys()
+            for field_name in self.required_fields_list:
+                if field_name in myfield_names:
+                    self.fields[field_name].required = True
 
     def clean_username(self):
         """
