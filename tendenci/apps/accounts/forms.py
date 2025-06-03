@@ -27,6 +27,7 @@ from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.forms import ProhibitNullCharactersValidatorMixin
 from tendenci.apps.base.utils import get_latest_version
 from tendenci import __version__ as version
+from tendenci.apps.base.fields import StateSelectField
 
 PASSWORD_REGEX_DEFAULT = r'^(?=.*(\d|[!@#\$%\^&\*_\-\+])).{8,}$'
 PASSWORD_HELP_TEXT_DEFAULT = _('Password must contain at least 1 number or 1 special character. Password must be 8 or more characters long.')
@@ -92,6 +93,12 @@ class RegistrationCustomForm(RegistrationForm):
                 self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
 
         self.fields['password1'].help_text = self.password_help_text
+
+        # state
+        if get_setting('site', 'global', 'stateusesdropdown'):
+            self.fields['state'] = StateSelectField(label=self.fields['state'].label,
+                                                    required=self.fields['state'].required)
+            self.fields['state'].widget.attrs.update({'class': 'form-control'})
 
     def clean_password1(self):
         password1 = self.cleaned_data.get('password1')
