@@ -13,7 +13,7 @@ def clone_selected(modeladmin, request, queryset):
     Approves selected corp memberships.
     """
     for newsletter in queryset:
-        newsletter.clone()
+        newsletter.clone(request_user=request.user)
 
 clone_selected.short_description = 'Clone selected'
 
