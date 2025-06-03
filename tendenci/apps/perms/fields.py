@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import force_str
 from django.utils.html import conditional_escape
 from django.utils.translation import gettext_lazy as _
+from django.apps import apps
 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group
@@ -28,10 +29,21 @@ member_perm_options = {
 
 
 def group_choices():
-    # groups = Group.objects.filter(status=1, status_detail='active', use_for_membership=0).order_by('name')
-    groups = Group.objects.filter(status=True, status_detail='active').order_by('name')
+    groups = Group.objects.filter(status=1, status_detail='active', use_for_membership=0).order_by('name')
+    if not apps.ready and not apps.stored_app_configs and 'perms' in list(apps.app_configs.keys()):
+        # If a RuntimeWarning of APPS_NOT_READY_WARNING_MSG would be issued, 
+        # suppress that warning for this settings request.  
+        stored_app_configs = apps.stored_app_configs
+        apps.stored_app_configs = True
+        groups = Group.objects.filter(status=True, status_detail='active').order_by('name')
+        has_groups = bool(groups)
+        apps.stored_app_configs = stored_app_configs
+    else:
+        groups = Group.objects.filter(status=True, status_detail='active').order_by('name')
+        has_groups = bool(groups)
+        
     choices = []
-    if groups:
+    if has_groups:
         for g in groups:
             choices.append(('%s_%s' % ('view', g.pk), g.name))
             choices.append(('%s_%s' % ('change', g.pk), g.name))
