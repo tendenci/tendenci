@@ -8,33 +8,44 @@ import csv
 
 #from dateutil.parser import parse
 from datetime import datetime, timedelta, date
+
+import simplejson
 import time as ttime
 import subprocess
 import calendar
+
+from decimal import Decimal
+from hashlib import md5
+from datetime import datetime, timedelta, date
 from collections import OrderedDict
 from dateutil.parser import parse as dparse, ParserError 
 from dateutil.relativedelta import relativedelta
 from urllib.parse import urlparse, quote as url_quote
- 
+
 from django.urls import reverse
+from django.urls.resolvers import NoReverseMatch
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.http import Http404, HttpResponseRedirect, HttpResponse, StreamingHttpResponse
-from django.db.models.fields import AutoField
+from django.db.models.fields import AutoField, PositiveIntegerField 
+
 from django.utils.encoding import smart_str
-import simplejson
 from django.views.decorators.csrf import csrf_exempt
+from django.db import connection
 from django.db.models import ForeignKey, OneToOneField
-from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
+from django.db.models.functions import Cast
 from django.core.files.storage import default_storage
+
 from django.utils.translation import gettext_lazy as _
+from django.core.files.base import ContentFile
+from django.template.loader import render_to_string
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.urls.resolvers import NoReverseMatch
+from django.contrib.postgres.aggregates import StringAgg 
 
 #from geraldo.generators import PDFGenerator
 
@@ -2533,7 +2544,7 @@ def report_member_roster(request, template_name='reports/membership_roster.html'
 def report_member_quick_list(request, template_name='reports/membership_quick_list.html'):
     """ Table view of current members fname, lname and company only.
     """
-    members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
+    members = MembershipDefault.objects.filter(status=1, status_detail="active")
     region_form = None
     region_name = None
     region_url_param = ''
@@ -2546,14 +2557,42 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
                 region_url_param = f'&region={region.id}'
                 members = members.filter(region_id=region.id)
 
+    order_by = request.GET.get('order_by', 'user__last_name')
+    
+    descending = order_by.startswith('-')
+    if descending:
+        order_by =  order_by[1:]
+    
+    if order_by == 'member_number_int':
+        members = members.annotate(member_number_int=Cast('member_number', PositiveIntegerField()))
+
+    # If we want to be able order by an aggregated list of groups
+    # then we need to annotate the with that. Django provides no 
+    # generic means for creating such aggregates yet but the postgresql
+    # package provides on. So we can order by the group list only on
+    # postgresql systems for now. 
+    #
+    # Note the template can render a list without this annotation and
+    # shoudlm fall on such a method.  
+    if connection.vendor == 'postgresql':
+        members = members.annotate(user_group_list=StringAgg('user__user_groups__name', ', ', ordering='user__user_groups__id'))
+    
+    if descending:
+        order_by = '-' + order_by
+        
+    members = members.order_by(order_by)
+
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
     if ouput == 'csv':
 
         table_header = [
+            'member number',
+            'membership type', 
             'first name',
             'last name',
-            'company'
+            'company',
+            'groups'
         ]
 
         table_data = []
@@ -2562,10 +2601,14 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
                 company = mem.user.profile.company
             else:
                 company = ''
+            
             table_data.append([
+                mem.member_number,
+                mem.membership_type,
                 mem.user.first_name,
                 mem.user.last_name,
-                company
+                company,
+                [group.name for group in mem.user.user_groups.all()]
             ])
 
         return render_csv(
