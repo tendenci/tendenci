@@ -30,6 +30,8 @@ class DeclarativeMetaclass(type):
         attrs['fields'] = FieldDict()
         allowed_fields = [
             '__doc__',
+            '__firstlineno__',
+            '__static_attributes__',
             'version',
             'author',
             'author_email',
