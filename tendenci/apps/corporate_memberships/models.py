@@ -2046,7 +2046,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                         args=[self.corp_app.id]),
                 self.corp_app.id)
 
-    def get_field_class(self, initial=None):
+    def get_field_class(self, initial=None, max_length=None):
         """
             Generate the form field class for this field.
         """
@@ -2103,6 +2103,9 @@ class CorpMembershipAppField(OrderingBaseModel):
                 field_args["widget"] = getattr(import_module(module), widget)
             if self.field_type == 'FileField':
                 field_args["validators"] = [FileValidator()]
+
+            if max_length:
+                field_args['max_length'] = max_length
 
             return field_class(**field_args)
         return None
