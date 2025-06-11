@@ -135,6 +135,7 @@ class CountrySelectField(fields.ChoiceField):
 class StateSelectField(fields.ChoiceField):
     def __init__(self, *args, app_name='', label="", **kwargs):
         empty_label = kwargs.pop('empty_label', '-----------')
+        self.max_length = kwargs.pop('max_length', 50)
         self.app_name = app_name
         if get_setting('site', 'global', 'stateusesregion'):
             label = get_setting('module', 'regions', 'label')

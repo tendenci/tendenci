@@ -376,8 +376,11 @@ def get_membership_rows(
                     field_name, demographic, field_name in foreign_keys)
 
         for field_name in membership_field_list:
-            row_dict[field_name] = get_obj_field_value(
-                field_name, membership, field_name in foreign_keys)
+            if field_name == 'corp_profile_name':
+                row_dict[field_name] = membership.get_corporate_profile_name()
+            else:
+                row_dict[field_name] = get_obj_field_value(
+                    field_name, membership, field_name in foreign_keys)
 
         if invoice:
             for field_name in invoice_field_list:
@@ -439,6 +442,7 @@ def process_export(
             'app',
             'membership_type',
             'corp_profile_id',
+            'corp_profile_name',
             'corporate_membership_id',
             'join_dt',
             'expire_dt',
@@ -486,6 +490,7 @@ def process_export(
         membership_field_list = [
             smart_str(field.name) for field in MembershipDefault._meta.fields
             if not field.__class__ == AutoField]
+        membership_field_list.insert(membership_field_list.index('corp_profile_id')+1, 'corp_profile_name')
         membership_field_list.remove('user')
 
         # invoice ---------

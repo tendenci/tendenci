@@ -812,6 +812,18 @@ class MembershipDefault(TendenciBaseModel):
 
         return corporate_membership
 
+    def get_corporate_profile_name(self):
+        """
+        Returns corporate profile name if available.
+        """
+        from tendenci.apps.corporate_memberships.models import CorpProfile
+        if self.corp_profile_id:
+            corp_name_list = CorpProfile.objects.filter(
+            pk=self.corp_profile_id).values_list('name', flat=True)
+            return corp_name_list[0] if corp_name_list else ''
+
+        return ''
+
     def send_email(self, request, notice_type):
         """
         Convenience method for sending

@@ -22,7 +22,7 @@
                 <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     {% if app_object %}
                         <li>
-                            <span class="content-head text-content-head">{% trans 'All Committees' %}</span>
+                            <span class="content-head text-content-head">{% blocktrans %}All {{ MODULE_COMMITTEES_LABEL_PLURAL }}{% endblocktrans %}</span>
                         </li>
                     {% endif %}
 
@@ -36,14 +36,14 @@
 
                     <li class="content-item">
                         <span class="app-name">
-                            <a href="{% url 'committees.search' %}">{% trans "Search Committees" %}</a>
+                            <a href="{% url 'committees.search' %}">{% blocktrans %}Search {{ MODULE_COMMITTEES_LABEL_PLURAL }}{% endblocktrans %}</a>
                         </span>
                     </li>
 
                     {% if can_add_committee %}
                         <li class="content-item">
                             <span class="app-name">
-                                <a href="{% url 'committees.add' %}">{% trans "Add Committee" %}</a>
+                                <a href="{% url 'committees.add' %}">{% blocktrans %}Add {{ MODULE_COMMITTEES_LABEL }}{% endblocktrans %}</a>
                             </span>
                         </li>
                     {% endif %}
@@ -62,13 +62,13 @@
                     {% if can_view_committee or can_edit_committee %}
                         <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                             <li>
-                                <span class="content-head text-content-head">{% trans "This Committee" %}</span>
+                                <span class="content-head text-content-head">{% blocktrans %}This {{ MODULE_COMMITTEES_LABEL }}{% endblocktrans %}</span>
                             </li>
 
                             {% if can_view_committee %}
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View Committee" %}</a>
+                                        <a href="{{ app_object.get_absolute_url }}">{% blocktrans %}View {{ MODULE_COMMITTEES_LABEL }}{% endblocktrans %}</a>
                                     </span>
                                 </li>
                             {% endif %}
@@ -76,7 +76,7 @@
                             {% if can_edit_committee %}
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a href="{% url 'committees.edit' app_object.pk %}">{% trans "Edit Committee" %}</a>
+                                        <a href="{% url 'committees.edit' app_object.pk %}">{% blocktrans %}Edit {{ MODULE_COMMITTEES_LABEL }}{% endblocktrans %}</a>
                                     </span>
                                 </li>
 
@@ -104,7 +104,7 @@
 
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a class="delete" href="{% url 'committees.delete' app_object.pk %}">{% trans "Delete Committee" %}</a>
+                                        <a class="delete" href="{% url 'committees.delete' app_object.pk %}">{% blocktrans %}Delete {{ MODULE_COMMITTEES_LABEL }}{% endblocktrans %}</a>
                                     </span>
                                 </li>
                             {% endif %}
