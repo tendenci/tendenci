@@ -2091,7 +2091,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                     field_class = forms.BooleanField
                 else:
                     field_class = getattr(forms, field_class)
-            
+
             arg_names = field_class.__init__.__code__.co_varnames
             if initial:
                 field_args['initial'] = initial
@@ -2124,7 +2124,7 @@ class CorpMembershipAppField(OrderingBaseModel):
             if self.field_type == 'FileField':
                 field_args["validators"] = [FileValidator()]
 
-            if max_length:
+            if max_length and field_class.__name__ not in ['ChoiceField']:
                 field_args['max_length'] = max_length
 
             return field_class(**field_args)
