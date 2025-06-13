@@ -4,6 +4,7 @@
     <table class="directory-pricing-rate table table-bordered">
 
     <tr class="header-row">
+    <td>&nbsp;</td>
     <td>{% trans "Duration" %}</td>
     {% if show_member_price %}
         {% if show_premium_price %}
@@ -22,7 +23,8 @@
     </tr>
     {%for dp in directory_pricings %}
         <tr class="{% cycle 'row1' 'row2' %}">
-            <td>{{ dp.duration_display  }}</td>
+        	<td>{{ dp.label }}</td>
+            <td>{{ dp.duration_display }}</td>
             {% if show_premium_price %}
                 <td>{{ dp.regular_price|format_currency }}</td>
                 <td>{{ dp.premium_price|format_currency }}</td>
@@ -32,6 +34,7 @@
         </tr>
         {% if dp.show_member_pricing %}
         <tr class="{% cycle 'row1' 'row2' %}">
+            <td>{{ dp.label }}</td>
             <td>{{ dp.duration_display }} Member</td>
             {% if show_premium_price %}
                 <td>{{ dp.regular_price_member|format_currency }}</td>
