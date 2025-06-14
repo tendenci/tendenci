@@ -304,6 +304,26 @@ class CorpProfile(TendenciBaseModel):
     ud16 = models.TextField(blank=True, default='', null=True)
     ud17 = models.TextField(blank=True, default='', null=True)
     ud18 = models.TextField(blank=True, default='', null=True)
+    ud19 = models.TextField(blank=True, default='', null=True)
+    ud20 = models.TextField(blank=True, default='', null=True)
+    ud21 = models.TextField(blank=True, default='', null=True)
+    ud22 = models.TextField(blank=True, default='', null=True)
+    ud23 = models.TextField(blank=True, default='', null=True)
+    ud24 = models.TextField(blank=True, default='', null=True)
+    ud25 = models.TextField(blank=True, default='', null=True)
+    ud26 = models.TextField(blank=True, default='', null=True)
+    ud27 = models.TextField(blank=True, default='', null=True)
+    ud28 = models.TextField(blank=True, default='', null=True)
+    ud29 = models.TextField(blank=True, default='', null=True)
+    ud30 = models.TextField(blank=True, default='', null=True)
+    ud31 = models.TextField(blank=True, default='', null=True)
+    ud32 = models.TextField(blank=True, default='', null=True)
+    ud33 = models.TextField(blank=True, default='', null=True)
+    ud34 = models.TextField(blank=True, default='', null=True)
+    ud35 = models.TextField(blank=True, default='', null=True)
+    ud36 = models.TextField(blank=True, default='', null=True)
+    ud37 = models.TextField(blank=True, default='', null=True)
+    ud38 = models.TextField(blank=True, default='', null=True)
 
     perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
@@ -2046,7 +2066,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                         args=[self.corp_app.id]),
                 self.corp_app.id)
 
-    def get_field_class(self, initial=None):
+    def get_field_class(self, initial=None, max_length=None):
         """
             Generate the form field class for this field.
         """
@@ -2071,7 +2091,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                     field_class = forms.BooleanField
                 else:
                     field_class = getattr(forms, field_class)
-            
+
             arg_names = field_class.__init__.__code__.co_varnames
             if initial:
                 field_args['initial'] = initial
@@ -2103,6 +2123,9 @@ class CorpMembershipAppField(OrderingBaseModel):
                 field_args["widget"] = getattr(import_module(module), widget)
             if self.field_type == 'FileField':
                 field_args["validators"] = [FileValidator()]
+
+            if max_length and field_class.__name__ not in ['ChoiceField']:
+                field_args['max_length'] = max_length
 
             return field_class(**field_args)
         return None

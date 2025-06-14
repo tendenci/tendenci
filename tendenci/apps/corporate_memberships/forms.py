@@ -329,13 +329,14 @@ class CorpMembershipAppFieldAdminForm(forms.ModelForm):
 
 
 field_size_dict = {
-        'name': 36,
+        'name': 48,
+        'address': 48,
         'city': 24,
         'state': 12,
-        'country': 14,
+        'country': 34,
         'zip': 24,
         'phone': 22,
-        'url': 36,
+        'url': 48,
         'number_employees': 5,
         'referral_source': 28,
         'referral_source_member_name': 40,
@@ -345,7 +346,7 @@ field_size_dict = {
 
 
 def get_field_size(app_field_obj):
-    return field_size_dict.get(app_field_obj.field_name, '') or 28
+    return field_size_dict.get(app_field_obj.field_name, '') or 38
 
 
 def assign_fields(form, app_field_objs, instance=None):
@@ -394,8 +395,14 @@ def assign_fields(form, app_field_objs, instance=None):
                                     'logo_file',
                                     'region']:
                 # create form field with customized behavior
+                if hasattr(obj, 'max_length') and obj.max_length:
+                    max_length = obj.max_length
+                else:
+                    max_length = None
                 field = obj.get_field_class(
-                        initial=form.fields[obj.field_name].initial)
+                        initial=form.fields[obj.field_name].initial,
+                        max_length=max_length)
+                        
                 form.fields[obj.field_name] = field
             else:
                 field = form.fields[obj.field_name]
@@ -418,13 +425,14 @@ def assign_fields(form, app_field_objs, instance=None):
                     and obj.field_stype not in [
                         'radioselect',
                         'checkboxselectmultiple']:
-                obj.field_div_class = 'inline-block'
-                label_type.append('inline-block')
-                if len(obj.label) < 16:
-                    label_type.append('short-label')
+                pass
+                # obj.field_div_class = 'inline-block'
+                # label_type.append('inline-block')
+                # if len(obj.label) < 16:
+                #     label_type.append('short-label')
                     #if obj.field_stype == 'textarea':
-                label_type.append('float-left')
-                obj.field_div_class = 'float-left'
+                # label_type.append('float-left')
+                # obj.field_div_class = 'float-left'
             obj.label_type = ' '.join(label_type)
 
 
@@ -517,6 +525,11 @@ class CorpProfileForm(CorpProfileBaseForm):
         self.request_user = kwargs.pop('request_user')
         self.corpmembership_app = kwargs.pop('corpmembership_app')
         super(CorpProfileForm, self).__init__(*args, **kwargs)
+
+        for field_obj in app_field_objs:
+            if field_obj.field_name in self.fields:
+                if hasattr(self.fields[field_obj.field_name], 'max_length'):
+                    field_obj.max_length = self.fields[field_obj.field_name].max_length
 
         assign_fields(self, app_field_objs)
 
@@ -694,6 +707,11 @@ class CorpMembershipForm(FormControlWidgetMixin, forms.ModelForm):
         if 'status' in self.fields:
             self.fields['status'].widget = forms.widgets.Select(
                         choices=self.STATUS_CHOICES)
+
+        for field_obj in app_field_objs:
+            if field_obj.field_name in self.fields:
+                if hasattr(self.fields[field_obj.field_name], 'max_length'):
+                    field_obj.max_length = self.fields[field_obj.field_name].max_length
 
         assign_fields(self, app_field_objs, instance=self.instance)
         self.add_form_control_class()

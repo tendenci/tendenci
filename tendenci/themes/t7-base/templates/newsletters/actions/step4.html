@@ -58,15 +58,13 @@
 
 
           <div class="form-group">
-            <p class="capitalize">
+            <p class="">
               <label>
-                {% if object.member_only %}
                 {% trans 'Newsletter Recipients:' %}
-                {% else %}
-                {% trans 'Newsletter Recipients: ' %}
-                {% endif %}
               </label>
-
+              <br /><small>{% trans "Please select Members or a User Group (not both) to send your newsletter to." %}</small>
+			</p>
+			
              <!-- {% if object.member_only %}
               {% trans 'Members Only' %}
               <a href="{% url 'groups' %}">{% trans 'Specify User Group' %}</a>
@@ -82,6 +80,7 @@
                     <strong>{% trans "Send to members only?" %}</strong>
                     {{ form.member_only }}&nbsp; {% trans 'If checked, skip usergroup' %}
                   </div>
+                   <div id="group-wrap">
                   {% if form.group.errors %}
                   <div class="step-content-item body-copy-alerts">
                     {{ form.group.errors }}
@@ -90,12 +89,13 @@
                   <div class="step-content-item">
                     {% trans "Usergroup" %} {{ form.group }}
                   </div>
+                  </div>
 
                 </div>
               </div>
               <!-- end test -->
 
-            </p>
+            
           </div>
 
         </div>
@@ -145,5 +145,17 @@
 
 {% block extra_body %}
 {{ block.super }}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+    	$('input[id=id_member_only]').change(function() {
+    		if($(this).is(':checked')){
+        		$("#group-wrap").hide();
+        	}else{
+        		$("#group-wrap").show();
+        	}
+        });
+    });
+</script>
 
 {% endblock %}

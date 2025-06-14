@@ -116,11 +116,14 @@ class Command(BaseCommand):
             membership_type = None
 
         counter = 0
-        for recipient in recipients:
-            if hasattr(recipient.member, 'profile'):
-                profile = recipient.member.profile
-            else:
-                profile = None
+        for i, recipient in enumerate(recipients):
+            try:
+                if hasattr(recipient.member, 'profile'):
+                    profile = recipient.member.profile
+                else:
+                    profile = None
+            except KeyError:
+                continue
 
             # Skip if Don't Send Email is on
             if newsletter.enforce_direct_mail_flag:
@@ -173,7 +176,7 @@ class Command(BaseCommand):
                     reply_to=email.reply_to,
                     recipient=recipient.member.email
                     )
-            print(u"Sending to {}".format(str(recipient.member.email)))
+            print(i, u"Sending to {}".format(str(recipient.member.email)))
             email_to_send.send(connection=connection)
             counter += 1
             print(u"Newsletter sent to {}".format(str(recipient.member.email)))
