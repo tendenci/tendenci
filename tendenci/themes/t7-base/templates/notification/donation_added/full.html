@@ -1,6 +1,6 @@
 
 {% load base_filters %}
-<p><font face="Arial, Helvetica, sans-serif" size="2">{% blocktrans %}A donation has been made for
+<p><font face="Arial, Helvetica, sans-serif" size="2">{% blocktrans with donation_label_lower=donation_label|lower %}A {{ donation_label_lower }} has been made for
     {{ SITE_GLOBAL_SITEDISPLAYNAME }} {% endblocktrans %}
 </font></p>
 
@@ -23,7 +23,7 @@
 
     <tr>
     <td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
-    <td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">{% trans "Donation Amount:" %}
+    <td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">{% trans "Amount:" %}
     </font></td>
     <td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2">{{ donation.donation_amount|format_currency }}</font></b></td>
     </tr>

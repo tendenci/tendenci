@@ -9,7 +9,7 @@ from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.base.utils import tcurrency
 from tendenci.libs.form_utils.forms import BetterModelForm
 from tendenci.apps.base.forms import FormControlWidgetMixin
-from tendenci.apps.base.fields import StateSelectField
+from tendenci.apps.base.fields import StateSelectField, EmailVerificationField
 
 
 class DonationAdminForm(forms.ModelForm):
@@ -70,6 +70,15 @@ class DonationAdminForm(forms.ModelForm):
         if preset_amount_str:
             self.fields['donation_amount'] = forms.ChoiceField(choices=get_preset_amount_choices(preset_amount_str))
 
+        # check required fields
+        required_fields = get_setting('module', 'donations', 'requiredfields')
+        if required_fields:
+            required_fields_list = [field.strip() for field in required_fields.split(',') if field.strip()]
+            for field_name in required_fields_list:
+                if field_name in self.fields:
+                    self.fields[field_name].required = True
+
+
     def clean_donation_amount(self):
         try:
             if float(self.cleaned_data['donation_amount']) <= 0:
@@ -89,7 +98,9 @@ class DonationForm(FormControlWidgetMixin, BetterModelForm):
     state = forms.CharField(max_length=50, required=False,  widget=forms.TextInput(attrs={'size':'5'}))
     zip_code = forms.CharField(max_length=20, required=False, widget=forms.TextInput(attrs={'size':'10'}))
     referral_source = forms.CharField(max_length=200, required=False, widget=forms.TextInput(attrs={'size':'40'}))
-    email = forms.EmailField(help_text=_('A valid e-mail address, please.'))
+    email = EmailVerificationField(label=_("Email"),
+                                error_messages={'required': _('Email is a required field.'),},
+                                help_text=_('A receipt will be automatically emailed to the email address provided above.'))
     email_receipt = forms.BooleanField(initial=True, required=False,
                                        help_text=_('A receipt will be automatically emailed to the email address provided above.'))
     comments = forms.CharField(max_length=1000, required=False,
@@ -215,6 +226,16 @@ class DonationForm(FormControlWidgetMixin, BetterModelForm):
             self.fields['state'] = StateSelectField(label=self.fields['state'].label,
                                                     required=self.fields['state'].required)
             self.fields['state'].widget.attrs.update({'class': 'form-control'})
+
+        self.fields['email_receipt'].widget = forms.HiddenInput()
+        
+        # check required fields
+        required_fields = get_setting('module', 'donations', 'requiredfields')
+        if required_fields:
+            required_fields_list = [field.strip() for field in required_fields.split(',') if field.strip()]
+            for field_name in required_fields_list:
+                if field_name in self.fields:
+                    self.fields[field_name].required = True
 
 
     def get_entity_choices(self, entity_qs, preset_amount_list=None):

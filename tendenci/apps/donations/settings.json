@@ -168,5 +168,22 @@
         "scope_category": "donations",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "first_name,last_name,email,phone",
+        "description": "A list of required fields on donations add. Comma delimited.",
+        "data_type": "string",
+        "update_dt": "2025-06-14 17:00:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "requiredfields",
+        "value": "first_name,last_name,email,phone",
+        "label": "Required Fields",
+        "input_value": "",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "donations",
+        "store": true,
+        "updated_by": ""
     }
 ]

@@ -113,6 +113,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                             'donation': donation,
                             'invoice': invoice,
                             'request': request,
+                            'donation_label': get_setting('module', 'donations', 'label')
                         }
                         notification.send_emails(recipients,'donation_added', extra_context)
 
