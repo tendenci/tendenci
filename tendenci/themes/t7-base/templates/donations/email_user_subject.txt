@@ -1,1 +1,1 @@
-Thank you for your donation to {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+Thank you for your {{ donation_label }} to {{ SITE_GLOBAL_SITEDISPLAYNAME }}

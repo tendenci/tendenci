@@ -1,6 +1,6 @@
 {% extends "donations/base.html" %}
 
-{% block title %}{% trans 'Donation Confirmation' %}{% endblock %}
+{% block title %}{{ MODULE_DONATIONS_LABEL }} {% trans 'Confirmation' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -9,9 +9,9 @@
 {% block content %}
 <div class="t">
 
-<h1>{% trans 'Donation Confirmation' %}</h1>
+<h1>{{ MODULE_DONATIONS_LABEL }} {% trans 'Confirmation' %}</h1>
 <p>
-{% trans 'Thank you for your donation!' %}
+{% blocktrans with mylabel=MODULE_DONATIONS_LABEL|lower %}Thank you for your {{ mylabel }}!{% endblocktrans %}
 </p>
 
 </div>

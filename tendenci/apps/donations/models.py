@@ -27,7 +27,7 @@ class Donation(models.Model):
     zip_code = models.CharField(max_length=50, default='', blank=True, null=True)
     country = models.CharField(max_length=50, default='', blank=True, null=True)
     email = models.CharField(max_length=50)
-    phone = models.CharField(max_length=50)
+    phone = models.CharField(max_length=50, default='', blank=True)
     referral_source = models.CharField(_('referred by'), max_length=200, default='', blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     donation_amount = models.DecimalField(max_digits=10, decimal_places=2)

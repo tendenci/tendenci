@@ -8,7 +8,10 @@ from tendenci.apps.site_settings.utils import get_setting
 def donation_inv_add(user, donation, **kwargs):
     inv = Invoice()
     inv.title = "Donation Invoice"
-    inv.bill_to = donation.first_name + ' ' + donation.last_name
+    if donation.company:
+        inv.bill_to = donation.company
+    else:
+        inv.bill_to = donation.first_name + ' ' + donation.last_name
     inv.bill_to_first_name = donation.first_name
     inv.bill_to_last_name = donation.last_name
     inv.bill_to_company = donation.company
@@ -68,11 +71,14 @@ def donation_email_user(request, donation, invoice, **kwargs):
     from django.template.loader import render_to_string
     from django.conf import settings
 
+    donation_label = get_setting('module', 'donations', 'label').lower()
     subject = render_to_string(template_name='donations/email_user_subject.txt',
-                               context={'donation':donation},
+                               context={'donation':donation,
+                                        'donation_label': donation_label},
                                request=request)
     body = render_to_string(template_name='donations/email_user.txt', context={'donation':donation,
-                                                        'invoice':invoice},
+                                                        'invoice':invoice,
+                                                        'donation_label': donation_label},
                                                         request=request)
     sender = settings.DEFAULT_FROM_EMAIL
     recipient = donation.email
@@ -93,8 +99,14 @@ def get_payment_method_choices(user):
         if donation_payment_types:
             donation_payment_types_list = donation_payment_types.split(',')
             donation_payment_types_list = [item.strip() for item in donation_payment_types_list]
+            choices = []
+            for item in donation_payment_types_list:
+                if '|' in item:
+                    choices.append(item.split('|'))
+                else:
+                    choices.append((item, item))
 
-            return [(item, item) for item in donation_payment_types_list]
+            return choices
         else:
             return ()
 
