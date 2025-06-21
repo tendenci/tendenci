@@ -22,7 +22,9 @@ class MakePaymentForm(FormControlWidgetMixin, forms.ModelForm):
     zip_code = forms.CharField(max_length=20, required=False, widget=forms.TextInput(attrs={'size':'10'}))
     reference_number = forms.CharField(label=_('Reference # / Notes'), max_length=20, required=False, widget=forms.TextInput(attrs={'size':'15'}))
     referral_source = forms.CharField(max_length=200, required=False, widget=forms.TextInput(attrs={'size':'40'}))
-    email = EmailVerificationField(label=_("Email"), help_text=_('A valid e-mail address, please. A receipt will be automatically emailed to the email address provided above.'))
+    email = EmailVerificationField(label=_("Email"),
+                                   error_messages={'required': _('Email is a required field.'),},
+                                   help_text=_('A receipt will be automatically emailed to the email address provided above.'))
     email_receipt = forms.BooleanField(initial=True)
     country = forms.ChoiceField(label=_('Country'), choices=(('', '-----------'),) + tuple(COUNTRIES))
 
@@ -80,3 +82,13 @@ class MakePaymentForm(FormControlWidgetMixin, forms.ModelForm):
                     self.fields['phone'].initial = profile.phone
             except:
                 pass
+
+        self.fields['email_receipt'].widget = forms.HiddenInput()
+
+        # check required fields
+        required_fields = get_setting('module', 'make_payment', 'requiredfields')
+        if required_fields:
+            required_fields_list = [field.strip() for field in required_fields.split(',') if field.strip()]
+            for field_name in required_fields_list:
+                if field_name in self.fields:
+                    self.fields[field_name].required = True
