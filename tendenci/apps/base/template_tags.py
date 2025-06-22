@@ -215,7 +215,7 @@ class ListNode(Node):
                 tag = tag.strip()
                 query = '%s "tag:%s"' % (query, tag)
 
-            items = self.model.objects.search(user=user, query=query)
+            items = self.model.objects.search(user=user, query=query, exclude_tags=exclude_tags)
 
         else:
             filters = get_query_filters(user, self.perms)
