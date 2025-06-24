@@ -2123,8 +2123,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                 field_args["widget"] = getattr(import_module(module), widget)
             if self.field_type == 'FileField':
                 field_args["validators"] = [FileValidator()]
-
-            if max_length and field_class.__name__ not in ['ChoiceField']:
+            if max_length and field_class.__name__ not in ['ChoiceField', 'CountrySelectField']:
                 field_args['max_length'] = max_length
 
             return field_class(**field_args)
