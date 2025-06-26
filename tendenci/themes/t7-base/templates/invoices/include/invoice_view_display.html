@@ -25,6 +25,11 @@
             {% else %}
 	            {% if invoice.bill_to %}
 	                 {{ invoice.bill_to }}<br>
+	                 {% if obj_name == "Corporate Membership" %}
+	                 	{% if invoice.bill_to != invoice.bill_to_company %}
+	            		{{ invoice.bill_to_company }}<br>
+	            		{% endif %}
+	            	{% endif %}
 	            {% else %}
 	                {% if invoice.bill_to_first_name or invoice.bill_to_last_name %}
 	                    {% if invoice.bill_to_first_name %} {{ invoice.bill_to_first_name }} {% endif %} {% if invoice.bill_to_last_name %}{{ invoice.bill_to_last_name }}<br> {% endif %}
