@@ -500,9 +500,9 @@ class MembershipDefault(TendenciBaseModel):
     referral_source_member_name = models.CharField(max_length=50, blank=True, default=u'')
     referral_source_member_number = models.CharField(max_length=50, blank=True, default=u'')
     affiliation_member_number = models.CharField(max_length=50, blank=True)
-    join_dt = models.DateTimeField(_('Join Date'), blank=True, null=True, localize=True)
-    expire_dt = models.DateTimeField(_('Expire Date'), blank=True, null=True, localize=True)
-    renew_dt = models.DateTimeField(_('Renew Date'), blank=True, null=True, localize=True)
+    join_dt = models.DateTimeField(_('Join Date'), blank=True, null=True)
+    expire_dt = models.DateTimeField(_('Expire Date'), blank=True, null=True)
+    renew_dt = models.DateTimeField(_('Renew Date'), blank=True, null=True)
     primary_practice = models.CharField(max_length=100, blank=True, default=u'')
     how_long_in_practice = models.CharField(max_length=50, blank=True, default=u'')
     notes = models.TextField(blank=True)
@@ -512,24 +512,24 @@ class MembershipDefault(TendenciBaseModel):
 
     # workflow fields ------------------------------------------
     application_abandoned = models.BooleanField(default=False)
-    application_abandoned_dt = models.DateTimeField(null=True, default=None, localize=True)
+    application_abandoned_dt = models.DateTimeField(null=True, default=None)
     application_abandoned_user = models.ForeignKey(
         User, related_name='application_abandond_set', null=True,
         on_delete=models.SET_NULL)
 
     application_complete = models.BooleanField(default=True)
-    application_complete_dt = models.DateTimeField(null=True, default=None, localize=True)
+    application_complete_dt = models.DateTimeField(null=True, default=None)
     application_complete_user = models.ForeignKey(
         User, related_name='application_complete_set', null=True,
         on_delete=models.SET_NULL)
 
     application_approved = models.BooleanField(default=False)
-    application_approved_dt = models.DateTimeField(null=True, default=None, localize=True)
+    application_approved_dt = models.DateTimeField(null=True, default=None)
     application_approved_user = models.ForeignKey(
         User, related_name='application_approved_set', null=True,
         on_delete=models.SET_NULL)
 
-    application_approved_denied_dt = models.DateTimeField(null=True, default=None, localize=True)
+    application_approved_denied_dt = models.DateTimeField(null=True, default=None)
     application_approved_denied_user = models.ForeignKey(
         User, related_name='application_approved_denied_set', null=True,
         on_delete=models.SET_NULL)
@@ -537,15 +537,15 @@ class MembershipDefault(TendenciBaseModel):
     application_denied = models.BooleanField(default=False)
 
     action_taken = models.CharField(max_length=500, blank=True)
-    action_taken_dt = models.DateTimeField(null=True, default=None, localize=True)
+    action_taken_dt = models.DateTimeField(null=True, default=None)
     action_taken_user = models.ForeignKey(
         User, related_name='action_taken_set', null=True,
         on_delete=models.SET_NULL)
     # workflow fields -----------------------------------------
 
-    bod_dt = models.DateTimeField(null=True, localize=True)
-    personnel_notified_dt = models.DateTimeField(null=True, localize=True)
-    payment_received_dt = models.DateTimeField(null=True, localize=True)
+    bod_dt = models.DateTimeField(null=True)
+    personnel_notified_dt = models.DateTimeField(null=True)
+    payment_received_dt = models.DateTimeField(null=True)
     payment_method = models.ForeignKey(PaymentMethod, null=True,
                                        on_delete=models.SET_NULL)
     override = models.BooleanField(default=False)
@@ -2293,10 +2293,10 @@ class MembershipImport(models.Model):
     status = models.CharField(choices=STATUS_CHOICES,
                               max_length=50,
                               default='not_started')
-    complete_dt = models.DateTimeField(null=True, localize=True)
+    complete_dt = models.DateTimeField(null=True)
 
     creator = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    create_dt = models.DateTimeField(auto_now_add=True, localize=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         app_label = 'memberships'
@@ -2409,8 +2409,8 @@ class Notice(models.Model):
     sender_display = models.CharField(max_length=255, blank=True, null=True)
     email_content = tinymce_models.HTMLField(_("Email Content"))
 
-    create_dt = models.DateTimeField(auto_now_add=True, localize=True)
-    update_dt = models.DateTimeField(auto_now=True, localize=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="membership_notice_creator",  null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=150, null=True)
     owner = models.ForeignKey(User, related_name="membership_notice_owner", null=True, on_delete=models.SET_NULL)
@@ -2659,7 +2659,7 @@ class Notice(models.Model):
 class NoticeLog(models.Model):
     guid = models.CharField(max_length=50, editable=False)
     notice = models.ForeignKey(Notice, related_name="logs", on_delete=models.CASCADE)
-    notice_sent_dt = models.DateTimeField(auto_now_add=True, localize=True)
+    notice_sent_dt = models.DateTimeField(auto_now_add=True)
     num_sent = models.IntegerField()
 
     class Meta:
@@ -2675,8 +2675,8 @@ class NoticeDefaultLogRecord(models.Model):
                                    related_name="default_log_records",
                                    on_delete=models.CASCADE)
     action_taken = models.BooleanField(default=False)
-    action_taken_dt = models.DateTimeField(blank=True, null=True, localize=True)
-    create_dt = models.DateTimeField(auto_now_add=True, localize=True)
+    action_taken_dt = models.DateTimeField(blank=True, null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         app_label = 'memberships'
