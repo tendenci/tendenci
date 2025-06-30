@@ -857,6 +857,12 @@ def chapter_membership_add(request, chapter_id=0,
     chapter = get_object_or_404(Chapter, id=chapter_id)
     app = ChapterMembershipApp.objects.current_app()
 
+    if not app:
+        if request.user.is_superuser:
+            messages.add_message(request, messages.ERROR, _('No chapter membership application form has been added yet.'))
+            return HttpResponseRedirect(reverse('chapters.detail', args=[chapter.slug]))
+        raise Http404
+
     if not has_perm(request.user, 'chapters.view_chaptermembershipapp', app):
         raise Http403
 
