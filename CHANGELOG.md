@@ -1,3 +1,26 @@
+### 15.3.5 [2025-7-3]
+
+* Created the admin backend for newsletters to make newsletters searchable.
+* Updated donation add page. 1) Changed the format to be consistent with the rest of the forms. 2) Mixed the "donate to entity" and "preset amount" to be a list of radio select. 3) Added the option to charge tax based on user's region. 4) Added a setting to specify required fields. 5) And more.
+* Updated /py/.
+* Updated the format for corp membership add/edit.
+* Added the corp membership type name to corp export.
+* Included corp_profile_name to memberships export.
+* Granted staff access to report links at top menu. (Thanks to @bernd-wechner)
+* Assigned the owner for the cloned newsletters.
+* Added the setting usersrequiredfields to specify extra required fields on profiles add/edit.
+* Converted span elements with datetime attributes to time elements for event's day view. (Thanks to @tristanjl)
+* Added committees settings for root url and labels.
+* Added registration_open filter for event_list. (Thanks to @tristanjl)
+* Added 20 more UD fields to corp membership application.
+* Added the label field to directories pricing.
+* Updated newsletter generator to visually toggle group and members only.
+* Resolved 2 issues in membership auto renewal: If auto renewal fails, 1) no member number will be assigned to the profile, 2) no multiple membership entries will be created.
+* Updated invoice view to show bill_to_company for corp memberships.
+* Fixed an issue for file add to not block with blockUI until required fields are filled out.
+* Other small fixes.
+
+
 ### 15.3.4 [2025-5-7]
 
 * Updated the frontend add/edit to have wysiwyg editor for the custom forms.
