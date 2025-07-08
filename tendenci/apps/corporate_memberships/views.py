@@ -661,6 +661,17 @@ def corpmembership_edit(request, id,
             # assign object permissions
             corp_membership_update_perms(corp_membership)
 
+            if request.user.is_superuser and 'expiration_dt' in corpmembership_form.cleaned_data:
+                if corp_membership._original_expiration_dt != corp_membership.expiration_dt:
+                    if corp_membership.is_active:
+                        # The expiration date has been changed. Sync it with the associated individual memberships (active only).
+                        for membership in MembershipDefault.objects.filter(
+                                             corporate_membership_id=corp_membership.pk,
+                                             status_detail='active'):
+                            if membership.expire_dt != corp_membership.expiration_dt:
+                                membership.expire_dt = corp_membership.expiration_dt
+                                membership.save()
+
             # update salesforce lead if applicable
             # sf = get_salesforce_access()
             # if sf:

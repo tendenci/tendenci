@@ -749,6 +749,7 @@ class CorpMembership(TendenciBaseModel):
     def __init__(self, *args, **kwargs):
         super(CorpMembership, self).__init__(*args, **kwargs)
         self._original_status_detail = self.status_detail
+        self._original_expiration_dt = self.expiration_dt
 
     def __str__(self):
         return "%s" % (self.corp_profile.name)
