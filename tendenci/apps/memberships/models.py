@@ -1016,12 +1016,13 @@ class MembershipDefault(TendenciBaseModel):
 
         if not self.renewal:
             # add new member to the default group
-            default_group_name = get_setting('module', 'users', 'defaultusergroup')
-            [group] = Group.objects.filter(Q(name__iexact=default_group_name)
-                                           | Q(label__iexact=default_group_name))[:1] or [None]
-            # no need to check if group.is_member because group.add_user will check it
-            if group:
-                group.add_user(self.user)
+            default_group_name = get_setting('module', 'users', 'defaultusergroup').strip()
+            if default_group_name:
+                [group] = Group.objects.filter(Q(name__iexact=default_group_name)
+                                               | Q(label__iexact=default_group_name))[:1] or [None]
+                # no need to check if group.is_member because group.add_user will check it
+                if group:
+                    group.add_user(self.user)
                 
             if get_setting('module',  'memberships', 'adddirectory'):
                 # add a directory entry for this membership
