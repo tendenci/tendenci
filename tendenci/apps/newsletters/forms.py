@@ -72,8 +72,8 @@ class OldGenerateForm(forms.ModelForm):
         exclude = ["enforce_direct_mail_flag"]
         widgets = {
             'subject': forms.TextInput(attrs={'size': 50}),
-            'event_start_dt': SelectDateWidget(None, list(range(THIS_YEAR, THIS_YEAR+10))),
-            'event_end_dt': SelectDateWidget(None, list(range(THIS_YEAR, THIS_YEAR+10))),
+            'event_start_dt': SelectDateWidget(None, list(range(THIS_YEAR-1, THIS_YEAR+10))),
+            'event_end_dt': SelectDateWidget(None, list(range(THIS_YEAR-1, THIS_YEAR+10))),
             'format': forms.RadioSelect
         }
 
