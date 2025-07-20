@@ -489,7 +489,7 @@ if not sys.warnoptions:
 # Localisation Settings
 # ---------------------------------------------------------------------------- #
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'US/Central'
 USE_TZ = True
 DATE_FORMAT = "M d Y" # Oct 25 2006
 DATETIME_FORMAT = "M d Y, h:i A" # Oct 25, 2006 02:40pm
