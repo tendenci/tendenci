@@ -3,7 +3,7 @@ six
 configparser
 Django>=5.0
 django-formtools>=2.5.1
-Pillow==10.3.0
+Pillow==11.2.1
 django-countries==7.5.1
 django-localflavor==4.0
 dj-pagination>=2.5.0
@@ -36,9 +36,9 @@ django-ses==3.5.2
 django-tastypie==0.15.1
 docutils==0.20
 chardet==5.2.0
-psycopg2==2.9.9
+psycopg2==2.9.10
 gunicorn==23.0.0
-gevent==23.9.1
+gevent==25.5.1
 django-storages==1.14.2
 Whoosh==2.7.4
 simple-salesforce==1.12.6
