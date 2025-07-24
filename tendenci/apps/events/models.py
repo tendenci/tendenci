@@ -4058,6 +4058,15 @@ class Event(TendenciBaseModel):
         primary_eventgroup = self.group_relations.filter(is_primary=True).first()
         return primary_eventgroup.group if primary_eventgroup else None
 
+    def set_primary_group(self):
+        if hasattr(self, 'primary_group_selected') and self.primary_group_selected:
+            for groupevent in self.group_relations.all():
+                if groupevent.group == self.primary_group_selected:
+                    groupevent.is_primary = True
+                else:
+                    groupevent.is_primary = False
+                groupevent.save()
+
 
 class EventGroup(models.Model):
     event = models.ForeignKey(Event, related_name="group_relations", on_delete=models.CASCADE)
