@@ -17,6 +17,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 from django.db.models.aggregates import Sum
+from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
@@ -1853,7 +1854,7 @@ class Registrant(models.Model):
         """
         return self.child_events.filter(
             checked_in=False,
-            child_event__start_dt__date=datetime.today()
+            child_event__start_dt__date=timezone.localdate()
         )
 
     @property
@@ -2775,7 +2776,7 @@ class Event(TendenciBaseModel):
         """
         Child events available that are upcoming today.
         """
-        return self.child_events.filter(start_dt__date=datetime.today())
+        return self.child_events.filter(start_dt__date=timezone.localdate())
 
     def sessions_availble_to_switch_to(self, request):
         """Sessions available for check-in other than the one currently selected"""
@@ -3845,11 +3846,11 @@ class Event(TendenciBaseModel):
 
             for span in spans:
                 if span['same_date']:
-                    days.add(datetime.date(span['start_dt']))
+                    days.add(timezone.localdate(span['start_dt']))
                 else:
                     date_range = self.date_range(
                         span['start_dt'], span['end_dt'] + timedelta(days=1))
-                    date_range = [datetime.date(x) for x in date_range]
+                    date_range = [timezone.localdate(x) for x in date_range]
                     days.update(date_range)
 
         return sorted(days)
