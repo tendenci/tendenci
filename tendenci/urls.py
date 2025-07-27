@@ -190,11 +190,6 @@ urlpatterns += get_url_patterns()
 
 urlpatterns += [re_path(r'^en/$', RedirectView.as_view(url='/accounts/login/', permanent=True)),]
 
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns += [
-        re_path(r'^__debug__/', include(debug_toolbar.urls)),
-    ]
 
 # tack on the pages pattern at the very end so let custom and software patterns
 # happen first

@@ -84,6 +84,7 @@ class Command(BaseCommand):
         if r.status_code == 200:
             enrollment_results = r.json()
             messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' - STARTED')
+            messages.append(f'Total: {len(enrollment_results)}')
             # default certification_track
             [certification_track] = Certification.objects.filter(enable_diamond=True)[:1] or [None]
 
