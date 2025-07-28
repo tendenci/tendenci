@@ -230,8 +230,11 @@ def iter_form_entries(form):
                 file_field_ids.append(field.id)
     if form.custom_payment:
         columns.append(str("Pricing"))
+        field_indexes[-3] = ''
         columns.append(str("Price"))
+        field_indexes[-2] = ''
         columns.append(str("Payment Method"))
+        field_indexes[-1] = ''
 
     field_indexes[0] = 0
     writer = csv.DictWriter(Echo(), fieldnames=field_indexes)
