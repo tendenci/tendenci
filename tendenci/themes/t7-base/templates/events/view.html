@@ -412,6 +412,12 @@ div.small-font {
         {% endif %}
       {% endif %}
       
+      {% if can_view_eventfiles %}
+            <div class="vitals">
+				<a href="{% url 'event.files_display' event.id %}" title="View Event Files">{% trans "View Event Files" %}</a>
+            </div>
+      {% endif %}
+      
       <br />
       
       {% url "event" event.pk as the_url %}

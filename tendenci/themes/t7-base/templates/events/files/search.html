@@ -1,0 +1,47 @@
+{% extends "events/base.html" %}
+{% load bootstrap_pagination_tags %}
+
+{% block title %}{% trans 'Event Files Search' %}{% endblock %}
+
+{% block content %}
+<style>
+.t div.event-file-wrap {
+  border: 1px solid #CCC;
+  padding: 10px;
+  margin-bottom: 20px;
+  position: relative;
+  background-color: white;
+  }
+  .t div.event-file-wrap .meta {
+  margin-top: 10px;
+  background: #F6F6F6;
+  padding: 5px;
+  }
+</style>
+<div class="t">
+<h1>{% trans 'Event Files' %}</h1>
+
+<div class="pull-right"><a href="{% url 'event.search' %}" title="Back to events">{% trans "Back to Events" %}</a></div>
+
+{% include "events/files/search-form.html" %}
+
+{% autopaginate event_files 10 %}
+
+    <div class="files-found">{{ paginator.count }} {% trans 'File' %}{{ paginator.count|pluralize }} {% trans "Found" %}</div>
+
+    <div class="files-wrap clearfix">
+    {% for event_file in event_files %}
+        {% include "events/files/search-result.html" %}
+    {% endfor %}
+    </div>
+
+{% paginate %}
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {% include 'events/include/event_file_js.html' %}
+{% endblock %}

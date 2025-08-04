@@ -32,7 +32,7 @@ from tendenci.apps.events.models import (
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
     RecurringEvent, Registrant, EventCredit, EventStaff,
-    AssetsPurchase
+    AssetsPurchase, EventFile
 )
 
 from tendenci.libs.form_utils.forms import BetterModelForm
@@ -108,6 +108,59 @@ SEARCH_CATEGORIES = (
 
     ('priority', _('Priority Events')),
 )
+
+
+class EventFileForm(FormControlWidgetMixin, BetterModelForm):
+    label = _('Add a File')
+    class Meta:
+        model = EventFile
+
+        fields = (
+            'name',
+            'file_type',
+            'file',
+            'tags',
+            'status_detail'
+        )
+        field_order = [
+            'name',
+            'file_type',
+            'file',
+            'tags',
+            'status_detail'
+            ]
+
+        # fieldsets = [(_('Add a File'), {
+        #               'fields': [
+        #                   'name',
+        #                   'file_type',
+        #                   'file',                  
+        #                   'tags',
+        #               ],
+        #               'legend': ''
+        #               }),
+        #              (_('Administrator Only'), {
+        #               'fields': ['status_detail'],
+        #               'classes': ['admin-only'],
+        #             })]
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(EventFileForm, self).__init__(*args, **kwargs)
+        self.fields['file'].validators = [FileValidator()]
+
+
+class EventFileSearchForm(FormControlWidgetMixin, forms.Form):
+    file_type = forms.ChoiceField(
+        choices=(('', _('ALL')),) + EventFile.FILE_TYPE_CHOICES,
+        required=False,
+        label=_('')
+    )
+    q = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(EventFileSearchForm, self).__init__(*args, **kwargs)
 
 
 def management_forms_tampered(formsets=None):

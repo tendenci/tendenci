@@ -1,0 +1,33 @@
+<script type="text/javascript">
+	$.ajaxSetup({beforeSend: function(xhr, settings){
+		 xhr.setRequestHeader('X-CSRFToken',
+		                      '{{ csrf_token }}');
+	}});
+
+	(function($) {
+    $(document).ready(function(){
+
+		var token = $("[name=csrfmiddlewaretoken]").val();
+
+		// delete an event file
+        $('.event-file-delete').on("click", function(e){
+			e.preventDefault();
+            var delete_event_file = confirm('{% trans "Are you sure you want to delete this file?" %}?');  // confirm
+            if(delete_event_file){ // delete: if OK
+				var event_file_wrap = $(this).parents('.event-file-wrap');
+				var delete_url = $(this).attr('href');
+				
+				$.ajax({	
+				   	url: delete_url,
+					type: "POST",
+					data: {'csrfmiddlewaretoken': token, 'ajax': 'true'}
+					}).success(function(msg){
+				    	event_file_wrap.remove();
+				  });
+
+			}  // end if
+        });
+
+    });
+}(jQuery));
+</script>
