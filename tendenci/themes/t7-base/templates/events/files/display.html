@@ -1,0 +1,21 @@
+{% extends "events/base.html" %}
+
+{% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+<h1>{% trans 'Event Files' %} - {{ event.title }}</h1>
+</div>
+
+{% include "events/include/event-files-list.html" %}
+
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    
+  	{% include 'events/include/event_file_js.html' %}
+
+{% endblock %}  

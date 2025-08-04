@@ -5,6 +5,9 @@ import jwt
 import json
 import operator
 import pytz
+import hashlib
+import os
+import mimetypes
 from model_utils import FieldTracker
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -41,6 +44,7 @@ from tendenci.apps.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.apps.user_groups.models import GroupMembership
+from tendenci.apps.base.utils import correct_filename
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.files.models import File
@@ -57,6 +61,7 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.trainings.models import Course, Certification
 from tendenci.apps.zoom import ZoomClient
+from tendenci.apps.theme.templatetags.static import static
 
 # from south.modelsinspector import add_introspection_rules
 # add_introspection_rules([], [r'^timezone_field\.TimeZoneField'])
@@ -2635,6 +2640,116 @@ class EventPhoto(File):
         app_label = 'events'
 
 
+def eventfile_directory(instance, filename):
+    filename = correct_filename(filename)
+    m = hashlib.md5()
+    m.update(filename.encode())
+    hex_digest = m.hexdigest()[:8]
+    return 'events/files/%s/%s' % (hex_digest, filename)
+
+
+class EventFile(models.Model):
+    FILE_TYPE_CHOICES = (
+                ('Document', _('Document')),
+                ('Image', _('Image')),
+                ('Video', _('Video')),
+                ('Slide Show', _('Slide Show'))
+                )
+    STATUS_DETAIL_CHOICES = (('pending', _('Pending')),
+                             ('active', _('Active')),
+                             ('inactive', _('Inactive'))
+                             )
+    name = models.CharField(max_length=250)
+    file = models.FileField(upload_to=eventfile_directory)
+    guid = models.CharField(max_length=40)
+
+    description = models.TextField(blank=True)
+    # file type - image, video, or text...
+    file_type = models.CharField(max_length=20, blank=True,
+                                 default='Document',
+                                 choices=FILE_TYPE_CHOICES)
+    event = models.ForeignKey('Event',
+                              related_name='files',
+                              on_delete=models.CASCADE)
+    tags = TagField(null=True, blank=True)
+
+    create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
+    update_dt = models.DateTimeField(_("Last Updated"), auto_now=True)
+    creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="%(app_label)s_%(class)s_creator", editable=False)
+    creator_username = models.CharField(max_length=150)
+    owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="%(app_label)s_%(class)s_owner")
+    owner_username = models.CharField(max_length=150)
+    status_detail = models.CharField(max_length=50, default='active',
+                                     choices=STATUS_DETAIL_CHOICES)
+
+
+    class Meta:
+        app_label = 'events'
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid4())
+        super(EventFile, self).save(*args, **kwargs)
+
+    def allow_view_by(self, user):
+        if user.profile.is_superuser:
+            return True
+
+        if has_perm(user, 'events.view_eventfile'):
+            return True
+
+        if self.status_detail == 'active':
+            if self.event.is_registrant_user(user):
+                return True
+
+        return False
+
+    def allow_edit_by(self, user):
+        if user.profile.is_superuser:
+            return True
+
+        if has_perm(user, 'events.change_eventfile'):
+            return True
+
+        return False
+
+    def icon(self):
+        if not self.file_type:
+            return None
+
+        # map file-type to image file
+        icons = {
+            'Image': 'icon-ms-image-2007.png',
+            'Document': 'icon-pdf.png',
+            'Video': 'icon-wmv.png',
+            'Slide Show': 'icon-ms-powerpoint-2007.gif',
+        }
+
+        # return image path
+        return static('images/icons/'+icons[self.file_type])
+
+    def basename(self):
+        return os.path.basename(str(self.file.name))
+
+    def ext(self):
+        return os.path.splitext(self.basename())[-1]
+
+    def mime_type(self):
+        mtypes = [  # list of uncommon mimetypes
+            ('application/msword', '.docx',),
+            ('application/ms-powerpoint', '.pptx'),
+            ('application/ms-excel', '.xlsx'),
+            ('video/x-ms-wmv', '.wmv'),
+        ]
+        # add mimetypes
+        for mtype, ext in mtypes:
+            mimetypes.add_type(mtype, ext)
+        # get mimetype
+        return mimetypes.types_map.get(self.ext(), 'application/octet-stream')
+
+
 class Event(TendenciBaseModel):
     """
     Calendar Event
@@ -4066,6 +4181,18 @@ class Event(TendenciBaseModel):
                 else:
                     groupevent.is_primary = False
                 groupevent.save()
+
+    def allow_view_eventfiles_by(self, user):
+        if user.profile.is_superuser:
+            return True
+
+        if has_perm(user, 'events.view_eventfile'):
+            return True
+
+        if self.is_registrant_user(user):
+            return True
+
+        return False
 
 
 class EventGroup(models.Model):

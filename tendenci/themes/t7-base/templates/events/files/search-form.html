@@ -1,0 +1,30 @@
+{% load base_tags %}
+
+    <form id="t-event-files-search-form" class="form-inline t-search-form" action="" method="get">
+        <div class="form-group{% if form.file_type.errors %} has-error{% endif %}">
+            {{ form.file_type }}
+
+            {% if form.file_type.errors %}
+              <ul class="list-unstyled alert alert-danger">
+                  {% for error in form.file_type.errors %}
+                      <li>{{ error }}</li>
+                  {% endfor %}
+              </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group{% if form.q.errors %} has-error{% endif %}">
+            {{ form.q }}
+
+            {% if form.q.errors %}
+              <ul class="list-unstyled alert alert-danger">
+                  {% for error in form.q.errors %}
+                      <li>{{ error }}</li>
+                  {% endfor %}
+              </ul>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-default"> <i class="glyphicon glyphicon-search" alt="{% trans "Search" %}"></i></button>
+
+    </form>
