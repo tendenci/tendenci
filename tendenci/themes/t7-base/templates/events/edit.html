@@ -106,7 +106,10 @@
             	<input class="btn btn-default" type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
             	{% endif %}
             {% endif %}
-            <input class="btn btn-primary" type="submit" value="{% trans 'Save Changes' %}" name="_save"/>
+            <input class="btn btn-primary" type="submit" value="{% if label == "file_add" %}{% trans 'Add File' %}{% else %}{% trans 'Save Changes' %}{% endif %}" name="_save"/>
+  			{% if label == "file_add" %}
+  			<div class="pull-right"><a href="{% url 'event' event.id %}" class="btn btn-default">{% trans 'Go to Event' %}</a></div>
+  			{% endif %}
         </div>
         </form>
 

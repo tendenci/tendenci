@@ -45,6 +45,7 @@ urlpatterns = [
     re_path(r'^%s/regconf/edit/(?P<id>\d+)/$' % urlpath, views.regconf_edit, name="event.regconf_edit"),
     re_path(r'^%s/pricing/edit/(?P<id>\d+)/$' % urlpath, views.pricing_edit, name="event.pricing_edit"),
     re_path(r'^%s/file-add/(?P<event_id>\d+)/$' % urlpath, views.event_file_add, name="event.file_add"),
+    re_path(r'^%s/files/add/(?P<event_id>\d+)/$' % urlpath, views.event_file_add, {'template_name': 'events/files/add.html'}, name="event.file_add_only"),
     re_path(r'^%s/file-edit/(?P<event_file_id>\d+)/$' % urlpath, views.event_file_edit, name="event.file_edit"),
     re_path(r'^%s/file/(?P<event_file_id>\d+)/$' % urlpath, views.event_file_view, name="event.file_view"),
     re_path(r'^%s/file/(?P<event_file_id>\d+)/download/$' % urlpath, views.event_file_view, {'download': True}, name="event.file_download"),

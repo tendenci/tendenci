@@ -1,0 +1,20 @@
+{% extends "events/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{{ event_file.name }} - {% trans 'Add' %}{% endblock %}
+
+{% block content %}
+
+<div class="t">
+<h1>{{ event.title }} - {% trans 'Add File' %} </h1>
+
+<div class="forms">
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {{ event_file_form|styled_form }}
+            <input class="btn btn-primary" type="submit" value="{% trans 'Submit' %}" />
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

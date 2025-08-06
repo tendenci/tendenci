@@ -126,6 +126,15 @@
                             </span>
                         </li>
                     {% endif %}
+                    
+                    {% if request.user.is_authenticated %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.files_search' %}">{% trans "Event Files" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                    
 
                     <li class="content-item">
                         <span class="app-name">
