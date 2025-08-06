@@ -1544,14 +1544,18 @@ def event_files_display(request, event_id, template_name="events/files/display.h
     if not event.allow_view_eventfiles_by(request.user):
         raise Http403
 
+    event_files = event.files.all()
+    if not request.user.is_superuser:
+        event_files = event_files.filter(status_detail='active')
     return render_to_resp(request=request,
                           template_name=template_name,
-                          context={'event': event,})
+                          context={'event': event,
+                                   'event_files': event_files})
 
 
 @is_enabled('events')
 @login_required
-def event_file_add(request, event_id, form_class=EventFileForm,template_name="events/edit.html"):
+def event_file_add(request, event_id, form_class=EventFileForm, template_name="events/edit.html"):
     """Add an event file"""
     event = get_object_or_404(Event.objects.get_all(), pk=event_id)
     # check permission
@@ -1559,9 +1563,9 @@ def event_file_add(request, event_id, form_class=EventFileForm,template_name="ev
         raise Http403
 
     if request.method == "POST":
-        form = form_class(request.POST, request.FILES, user=request.user)
-        if form.is_valid():
-            event_file = form.save(commit=False)
+        event_file_form = form_class(request.POST, request.FILES, user=request.user)
+        if event_file_form.is_valid():
+            event_file = event_file_form.save(commit=False)
             event_file.event = event
 
             # set up the user information
@@ -1579,12 +1583,13 @@ def event_file_add(request, event_id, form_class=EventFileForm,template_name="ev
 
             return HttpResponseRedirect(reverse('event', args=[event.pk]))
     else:
-        form = form_class(user=request.user)
+        event_file_form = form_class(user=request.user)
 
-    multi_event_forms = [form]
+    multi_event_forms = [event_file_form]
     return render_to_resp(
         request=request, template_name=template_name, context={
             'event': event,
+            'event_file_form': event_file_form,
             'multi_event_forms': multi_event_forms,
             'label': "file_add"
         })
@@ -1592,7 +1597,7 @@ def event_file_add(request, event_id, form_class=EventFileForm,template_name="ev
 
 @is_enabled('events')
 @login_required
-def event_file_edit(request, event_file_id, form_class=EventFileForm,template_name="events/files/edit.html"):
+def event_file_edit(request, event_file_id, form_class=EventFileForm, template_name="events/files/edit.html"):
     event_file = get_object_or_404(EventFile, pk=event_file_id)
     # check permission
     if not has_perm(request.user, 'events.change_eventfile'):
@@ -1701,6 +1706,7 @@ def event_files_search(request, template_name="events/files/search.html"):
         # for regular users,
         # only show the files for the events that they registered for.
         event_ids = Registration.objects.filter(canceled=False,
+                            invoice__balance__lte=0,
                             id__in=Registrant.objects.filter(
                             cancel_dt__isnull=True,
                             user_id=request.user.id)

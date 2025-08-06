@@ -4,13 +4,15 @@
 {% tags_for_object event_file as tags %}
 
 <div class="event-file-wrap">
+   {% if request.user.is_superuser %}
     <div class="options">
         <div class="pull-right">
             <a href="{% url 'event.file_edit' event_file.id %}" style="text-wrap: nowrap; font-size: 0.8em;" class="edit">{% trans "Edit" %}</a>
             <a href="{% url 'event.file_delete' event_file.id %}" style="text-wrap: nowrap; font-size: 0.8em;" class="delete event-file-delete">{% trans "Delete" %}</a>
         </div>
     </div>
-
+   {% endif %}
+ 
     <div>
     	{% if event_file.icon %}
             <img class="icon pull-left" style="margin-right: 10px;" src="{{ event_file.icon }}" alt="{{ event_file.name }}" title="{{ event_file.name }}" />

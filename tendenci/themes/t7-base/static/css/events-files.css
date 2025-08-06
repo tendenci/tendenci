@@ -1,0 +1,12 @@
+.t div.event-file-wrap {
+  border: 1px solid #CCC;
+  padding: 10px;
+  margin-bottom: 20px;
+  position: relative;
+  background-color: white;
+  }
+.t div.event-file-wrap .meta {
+  margin-top: 10px;
+  background: #F6F6F6;
+  padding: 5px;
+  }

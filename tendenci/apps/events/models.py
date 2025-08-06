@@ -3569,8 +3569,12 @@ class Event(TendenciBaseModel):
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
 
-    def is_registrant_user(self, user):
+    def is_registrant_user(self, user, paid_only=None):
         if hasattr(user, 'registrant_set'):
+            if paid_only:
+                return user.registrant_set.filter(
+                    registration__event=self, cancel_dt__isnull=True,
+                    invoice__balance__lte=0).exists()
             return user.registrant_set.filter(
                 registration__event=self, cancel_dt__isnull=True).exists()
         return False
@@ -4189,7 +4193,7 @@ class Event(TendenciBaseModel):
         if has_perm(user, 'events.view_eventfile'):
             return True
 
-        if self.is_registrant_user(user):
+        if self.is_registrant_user(user, paid_only=True):
             return True
 
         return False
