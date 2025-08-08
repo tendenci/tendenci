@@ -2649,12 +2649,13 @@ def eventfile_directory(instance, filename):
 
 
 class EventFile(models.Model):
-    FILE_TYPE_CHOICES = (
+    FILE_TYPE_CHOICES = [
                 ('Document', _('Document')),
                 ('Image', _('Image')),
                 ('Video', _('Video')),
+                ('Audio', _('Audio')),
                 ('Slide Show', _('Slide Show'))
-                )
+                ]
     STATUS_DETAIL_CHOICES = (('pending', _('Pending')),
                              ('active', _('Active')),
                              ('inactive', _('Inactive'))

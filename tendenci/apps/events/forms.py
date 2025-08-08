@@ -148,11 +148,14 @@ class EventFileForm(FormControlWidgetMixin, BetterModelForm):
         self.user = kwargs.pop('user')
         super(EventFileForm, self).__init__(*args, **kwargs)
         self.fields['file'].validators = [FileValidator()]
+        if not settings.ALLOW_MP3_UPLOAD:
+            if ('Audio', 'Audio') in self.fields['file_type'].widget.choices:
+                self.fields['file_type'].widget.choices.remove(('Audio', 'Audio'))
 
 
 class EventFileSearchForm(FormControlWidgetMixin, forms.Form):
     file_type = forms.ChoiceField(
-        choices=(('', _('ALL')),) + EventFile.FILE_TYPE_CHOICES,
+        choices=[('', _('ALL')),] + EventFile.FILE_TYPE_CHOICES,
         required=False,
         label=_('')
     )
