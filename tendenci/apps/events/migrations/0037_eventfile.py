@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('file', models.FileField(upload_to=tendenci.apps.events.models.eventfile_directory)),
                 ('guid', models.CharField(max_length=40)),
                 ('description', models.TextField(blank=True)),
-                ('file_type', models.CharField(blank=True, choices=[('Document', 'Document'), ('Image', 'Image'), ('Video', 'Video'), ('Slide Show', 'Slide Show')], default='Document', max_length=20)),
+                ('file_type', models.CharField(blank=True, choices=[('Document', 'Document'), ('Image', 'Image'), ('Video', 'Video'), ('Audio', 'Audio'), ('Slide Show', 'Slide Show')], default='Document', max_length=20)),
                 ('tags', tagging.fields.TagField(blank=True, max_length=255, null=True)),
                 ('create_dt', models.DateTimeField(auto_now_add=True, verbose_name='Created On')),
                 ('update_dt', models.DateTimeField(auto_now=True, verbose_name='Last Updated')),
