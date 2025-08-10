@@ -54,6 +54,7 @@
               {% if events %}
 
               {% for event in events %}
+              {% if not event.has_any_child_events %}
               <div class="event-item" title="{{ event.type }}: {{ event }}"
               style="color:{{ event.type.fg_color }}; background-color:{{ event.type.bg_color }}" itemscope itemtype="https://schema.org/Event">
                 {% if event.priority %}
@@ -66,12 +67,16 @@
                   {% if not event.all_day %}{{ event.start_dt|date:"f A" }} - {{ event.end_dt|date:"f A" }}<br/>{% endif %}
                 </a>
                 <time style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</time>
+                {% if event.parent %}
+                	<span itemprop="name">{{ event.parent.title|truncatechars:15 }}</span>
+                {% endif %}
                 <a href="{{ event.get_absolute_url }}" class="event-title" itemprop="url">
                   <span itemprop="name">{{ event.title }}</span>
                 </a>
                 <br><a href="{{ event.get_absolute_url }}" itemprop="description">{{ event.description|striptags|safe|truncatewords:5 }}</a>
                 <a class='click-mask' href="{{ event.get_absolute_url }}"></a>
               </div>
+              {% endif %}
               {% endfor %}
 
               {% endif %}
