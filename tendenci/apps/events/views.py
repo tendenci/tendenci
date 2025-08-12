@@ -1639,9 +1639,10 @@ def event_file_view(request, event_file_id, download=False):
     # check permissions
     if not event_file.allow_view_by(request.user):
         raise Http403
-    
-    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-        return HttpResponse(event_file.file.url)
+
+    # comment it out for now
+    # if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+    #     return HttpResponseRedirect(event_file.file.url)
 
     mime_type = event_file.mime_type()
 
