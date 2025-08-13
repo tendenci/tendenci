@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('status_detail', models.CharField(default='active', max_length=50)),
                 ('discount_code', models.CharField(help_text='Discount codes must be unique.', unique=True, max_length=100)),
                 ('start_dt', models.DateTimeField(verbose_name='Start Date/Time')),
-                ('end_dt', models.DateTimeField(verbose_name='Start Date/Time')),
+                ('end_dt', models.DateTimeField(verbose_name='End Date/Time')),
                 ('never_expires', models.BooleanField(default=False, help_text='Check this box to make the discount code never expire.', verbose_name='Never Expires')),
                 ('value', models.DecimalField(help_text='Enter discount value as a positive number.', verbose_name='Discount Value', max_digits=10, decimal_places=2)),
                 ('cap', models.IntegerField(default=0, help_text='Enter 0 for unlimited discount code uses.', verbose_name='Maximum Uses')),
