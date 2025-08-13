@@ -305,7 +305,14 @@ class EventListNode(Node):
         elif query and cat:
             events = events.filter(**{cat : query})
 
-        context[self.context_var] = events
+        # exclude parent events
+        events_to_display = []
+        for event in events:
+            if event.has_any_child_events:
+                continue
+            events_to_display.append(event)
+
+        context[self.context_var] = events_to_display
         return ''
 
 
