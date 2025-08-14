@@ -80,6 +80,18 @@ class ListNode(Node):
                 value = None
             return value
         return None
+
+    def build_tag_queries(self, tags):
+        # this is fast; but has one hole
+        # it finds words inside of other words
+        # e.g. "prev" is within "prevent"
+        tag_queries = [Q(tags__iexact=t.strip()) for t in tags]
+        tag_queries += [Q(tags__istartswith=t.strip() + ",") for t in tags]
+        tag_queries += [Q(tags__iendswith=", " + t.strip()) for t in tags]
+        tag_queries += [Q(tags__iendswith="," + t.strip()) for t in tags]
+        tag_queries += [Q(tags__icontains=", " + t.strip() + ",") for t in tags]
+        tag_queries += [Q(tags__icontains="," + t.strip() + ",") for t in tags]
+        return tag_queries
     
     def render(self, context):
         tags = u''
@@ -88,6 +100,7 @@ class ListNode(Node):
         limit = 3
         order = u''
         exclude = u''
+        exclude_tags = u''
         randomize = False
         group = u''
         status_detail = u'active'
@@ -105,6 +118,16 @@ class ListNode(Node):
 
             tags = tags.replace('"', '')
             tags = tags.split(',')
+
+        if 'exclude_tags' in self.kwargs:
+            try:
+                exclude_tags = Variable(self.kwargs['exclude_tags'])
+                exclude_tags = str(exclude_tags.resolve(context))
+            except:
+                exclude_tags = self.kwargs['exclude_tags']
+
+            exclude_tags = exclude_tags.replace('"', '')
+            exclude_tags = exclude_tags.split(',')
 
         if 'filters' in self.kwargs:
             try:
@@ -192,7 +215,7 @@ class ListNode(Node):
                 tag = tag.strip()
                 query = '%s "tag:%s"' % (query, tag)
 
-            items = self.model.objects.search(user=user, query=query)
+            items = self.model.objects.search(user=user, query=query, exclude_tags=exclude_tags)
 
         else:
             filters = get_query_filters(user, self.perms)
@@ -201,17 +224,12 @@ class ListNode(Node):
                 items = items.distinct()
 
             if tags:  # tags is a comma delimited list
-                # this is fast; but has one hole
-                # it finds words inside of other words
-                # e.g. "prev" is within "prevent"
-                tag_queries = [Q(tags__iexact=t.strip()) for t in tags]
-                tag_queries += [Q(tags__istartswith=t.strip() + ",") for t in tags]
-                tag_queries += [Q(tags__iendswith=", " + t.strip()) for t in tags]
-                tag_queries += [Q(tags__iendswith="," + t.strip()) for t in tags]
-                tag_queries += [Q(tags__icontains=", " + t.strip() + ",") for t in tags]
-                tag_queries += [Q(tags__icontains="," + t.strip() + ",") for t in tags]
-                tag_query = reduce(or_, tag_queries)
+                tag_query = reduce(or_, self.build_tag_queries(tags))
                 items = items.filter(tag_query)
+
+            if exclude_tags: # exclude_tags is a comma delimited list of tags to exclude
+                exclude_tag_query = reduce(or_, self.build_tag_queries(exclude_tags))
+                items = items.exclude(exclude_tag_query)
 
             if hasattr(self.model, 'group') and group:
                 items = items.filter(group=group)
