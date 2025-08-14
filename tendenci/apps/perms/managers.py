@@ -558,7 +558,7 @@ class TendenciBaseManager(models.Manager):
         if query:
             if exclude_tags:
                 exclude_tags_list = exclude_tags.split(',')
-                sql = sqs.exclude(tags__in=exclude_tags)
+                sqs = sqs.exclude(tags__in=exclude_tags_list)
 
             tags_query = kwargs.get('tags-query', False)
             if tags_query:
