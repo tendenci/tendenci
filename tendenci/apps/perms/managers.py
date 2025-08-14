@@ -535,7 +535,7 @@ class TendenciBaseManager(models.Manager):
         return sqs
 
     # Public functions
-    def search(self, query=None, *args, **kwargs):
+    def search(self, query=None, exclude_tags=None, *args, **kwargs):
         """
         Search the Django Haystack search index
         Returns a SearchQuerySet object
@@ -556,6 +556,10 @@ class TendenciBaseManager(models.Manager):
         status_detail = kwargs.get('status_detail', 'active')
 
         if query:
+            if exclude_tags:
+                exclude_tags_list = exclude_tags.split(',')
+                sql = sqs.exclude(tags__in=exclude_tags)
+
             tags_query = kwargs.get('tags-query', False)
             if tags_query:
                 query = query.split(':')[1]
