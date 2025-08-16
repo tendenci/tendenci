@@ -500,6 +500,12 @@ SHORT_DATETIME_FORMAT = "m/d/Y h:i A" # 10/25/2006 02:40pm
 TIME_FORMAT = "h:i A" # 02:40pm
 YEAR_MONTH_FORMAT = "M Y" # October 2006
 
+# The following STRFTIME_ formats are mainly used to format dates in exported/downloaded data, NOT for the display of dates on the site.
+# they use the Python 3 strftime format codes: https://docs.python.org/3/library/datetime.html#format-codes
+STRFTIME_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S' # ex: 2025-08-15 13:58:07
+STRFTIME_DATE_FORMAT = '%Y-%m-%d' # ex: 2025-08-15
+STRFTIME_TIME_FORMAT = '%I:%M %p' # ex: '01:58 PM'
+
 DATE_INPUT_FORMATS = [
     "%m/%d/%Y",  # '10/25/2006'
     "%m/%d/%y",  # '10/25/06'
