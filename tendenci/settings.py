@@ -151,7 +151,7 @@ TEMPLATES = [
 def disable_template_cache():  # For use in site-specific settings.py
     if TEMPLATES[0]['OPTIONS']['loaders'][0][0] == 'tendenci.apps.theme.template_loaders.CachedLoader':
         TEMPLATES[0]['OPTIONS']['loaders'] = TEMPLATES[0]['OPTIONS']['loaders'][0][1]
-        
+
 # The form renderer does not use the TEMPLATES setting by default.  Configure it to use the
 # TEMPLATES setting so that form widget templates can be overridden in themes.
 # This requires either adding 'django.forms' to INSTALLED_APPS or adding
@@ -493,12 +493,19 @@ TIME_ZONE = 'US/Central'
 USE_TZ = True
 DATE_FORMAT = "M d Y" # Oct 25 2006
 DATETIME_FORMAT = "M d Y, h:i A" # Oct 25, 2006 02:40pm
-FIRST_DAY_OF_WEEK = 1 # Monday
-MONTH_DAY_FORMAT = "M d" # 25 Oct
+LONG_DATE_FORMAT = "M d Y" # Oct 25 2006
 SHORT_DATE_FORMAT = "m/d/Y" # 10/25/2006
 SHORT_DATETIME_FORMAT = "m/d/Y h:i A" # 10/25/2006 02:40pm
+FIRST_DAY_OF_WEEK = 1 # Monday
+MONTH_DAY_FORMAT = "M d" # Oct 25
 TIME_FORMAT = "h:i A" # 02:40pm
 YEAR_MONTH_FORMAT = "M Y" # October 2006
+
+# The following STRFTIME_ formats are mainly used to format dates in exported/downloaded data, NOT for the display of dates on the site.
+# they use the Python 3 strftime format codes: https://docs.python.org/3/library/datetime.html#format-codes
+STRFTIME_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S' # ex: 2025-08-15 13:58:07
+STRFTIME_DATE_FORMAT = '%Y-%m-%d' # ex: 2025-08-15
+STRFTIME_TIME_FORMAT = '%I:%M %p' # ex: '01:58 PM'
 
 DATE_INPUT_FORMATS = [
     "%m/%d/%Y",  # '10/25/2006'
@@ -635,7 +642,7 @@ NEWSLETTER_SCHEDULE_ENABLED = False
 
 # If True, it allows members to send emails to corporate membership reps
 # (default to False).
-# Why here not in site settings? Because we don't want this feature to be 
+# Why here not in site settings? Because we don't want this feature to be
 # turned on lightly. Extra caution is needed.
 BROADCAST_EMAIL_ENABLED = False
 
@@ -712,7 +719,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'tinymce_version': '6.8.2',
     'theme': "silver",
     'plugins': ["image", 'advlist', 'autolink', 'lists', 'link', 'charmap',
-                'preview', 'anchor', 'searchreplace', 'visualblocks', 'code',  
+                'preview', 'anchor', 'searchreplace', 'visualblocks', 'code',
                  'emoticons', 'quickbars', 'importcss',
                 'insertdatetime', 'media', 'table', 'fullscreen',],
     'toolbar': 'code undo redo | bold italic underline | forecolor backcolor emoticons | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | fullscreen',
@@ -800,7 +807,7 @@ STRIPE_API_VERSION = '2019-08-14'
 
 # List of merchant accounts you can set up.
 # If you want to set up multiple payment methods (gateways) for memberships,
-# the machine name of the payment methods specified should be in this list. 
+# the machine name of the payment methods specified should be in this list.
 MERCHANT_ACCOUNT_NAMES = ('stripe', 'authorizenet', 'firstdatae4', 'paypal')
 
 
@@ -890,4 +897,3 @@ Q_CLUSTER = {
     "timeout": 35000,
     "max_attempts": 1
 }
-
