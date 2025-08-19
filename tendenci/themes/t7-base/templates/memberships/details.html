@@ -31,14 +31,14 @@
                     {% trans "Print Page" %}</a>
 
                 {% if member_can_edit_records and user == membership.user %}
-                	<a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Your Membership" %}</a>
+                    <a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Your Membership" %}</a>
                 {% else %}
-					{% if can_edit_memberships %}
-					<a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Membership" %}</a>
-					 {% endif %}
+                    {% if can_edit_memberships %}
+                    <a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Membership" %}</a>
+                     {% endif %}
                 {% endif %}
 
-				{% if request.user.is_staff and can_edit_memberships %}
+                {% if request.user.is_staff and can_edit_memberships %}
                 <a href="{% url "admin:memberships_membershipdefault_change" membership.pk %}?next={{ request.path }}">
                     {% trans "Admin:Edit Membership" %}</a>
                 {% endif %}
@@ -93,7 +93,7 @@
                             {% with membership.next_auto_renew_date as next_auto_renew_date %}
                             {% if membership.has_rp and next_auto_renew_date %}
                             <p class="text-primary">
-                                 {% trans 'Auto Renews' %} {{ next_auto_renew_date|date:'m/d/Y' }}
+                                 {% trans 'Auto Renews' %} {{ next_auto_renew_date|date:'SHORT_DATE_FORMAT' }}
                             </p>
                             {% endif %}
                             {% endwith %}
@@ -118,11 +118,11 @@
 
                                      {% if membership.application_approved and membership.application_approved_user %}
                                       {% url 'profile' membership.application_approved_user.username as approved_user_url %}
-                                     <li><i class="pull-right">{% blocktrans with approved_by=membership.application_approved_user.username approved_dt=membership.application_approved_dt|date:'m/d/Y' %}
+                                     <li><i class="pull-right">{% blocktrans with approved_by=membership.application_approved_user.username approved_dt=membership.application_approved_dt|date:'SHORT_DATE_FORMAT' %}
                                       Approved by <a href="{{ approved_user_url }}">{{ approved_by }}</a> on {{ approved_dt }} {% endblocktrans %}</i></li>
                                      {% elif membership.application_denied and membership.application_approved_denied_user %}
                                         {% url 'profile' membership.application_approved_denied_user.username as denied_user_url %}
-                                     <li><i>{% blocktrans with denied_by=membership.application_approved_denied_user.username denied_dt=membership.application_approved_denied_dt|date:'m/d/Y' %}
+                                     <li><i>{% blocktrans with denied_by=membership.application_approved_denied_user.username denied_dt=membership.application_approved_denied_dt|date:'SHORT_DATE_FORMAT' %}
                                       Denied by <a href="{{ denied_user_url }}">{{ denied_by }}</a> on {{ denied_dt }} {% endblocktrans %}</i></li>
                                      {% endif %}
                                 </ul>
@@ -622,21 +622,21 @@
 
 
             {% if MODULE_MEMBERSHIPS_ADDDIRECTORY %}
-	            {% if membership.directory %}
-	                 {% if request.user.is_superuser or request.user == membership.user %}
-			            <div class="field">
-			                <div class="label label-info">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</div>
-			                <div class="value"><a href="{% url 'directory' membership.directory.slug  %}">{{ membership.directory }}</a></div>
-			            </div>
-	                 {% endif %}
-	            {% else %}
+                {% if membership.directory %}
+                     {% if request.user.is_superuser or request.user == membership.user %}
+                        <div class="field">
+                            <div class="label label-info">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</div>
+                            <div class="value"><a href="{% url 'directory' membership.directory.slug  %}">{{ membership.directory }}</a></div>
+                        </div>
+                     {% endif %}
+                {% else %}
                         {% if request.user.is_superuser and membership.status_detail == 'active' %}
-			            <div class="field">
-			                <div class="label label-info">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</div>
-			                <div>{% trans 'None' %} <a href="{% url 'membership.add_directory' membership.id  %}">{% trans 'Admin: Add a Directory' %}</a></div>
-			            </div>
-	                 {% endif %}
-	            {% endif %}
+                        <div class="field">
+                            <div class="label label-info">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</div>
+                            <div>{% trans 'None' %} <a href="{% url 'membership.add_directory' membership.id  %}">{% trans 'Admin: Add a Directory' %}</a></div>
+                        </div>
+                     {% endif %}
+                {% endif %}
             {% endif %}
 
         </fieldset>
