@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import path, re_path
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.safestring import mark_safe
+from django.contrib import messages
 
 from tendenci.apps.corporate_memberships.models import (
     CorporateMembershipType,
@@ -226,6 +227,104 @@ def approve_selected(modeladmin, request, queryset):
 
 approve_selected.short_description = u'Approve selected'
 
+
+def renew_selected(modeladmin, request, queryset):
+    """
+    Renew selected corp memberships.
+    """
+    corp_membs = queryset.filter(status_detail__in=['active', 'expired'])
+    if corp_membs.count() > 10:
+        corp_membs = corp_membs[:10]
+    corp_names = []
+
+    for corp_memb in corp_membs:
+        # should it check if in renewal period?
+        #if copr_memb.expiration_dt:
+        if corp_memb.can_renew() and not corp_memb.latest_renewed_in_pending():
+            corp_memb.renew(request)
+            #copr_memb.send_notice_email(request, 'renewal')
+            corp_names.append(corp_memb.corp_profile.name)
+
+    if corp_names:
+        msg_string = f'Successfully renewed: {", ".join(corp_names)}. Total: {len(corp_names)}' 
+    else:
+        msg_string = 'Nothing to renew.'
+    messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+renew_selected.short_description = 'Renew selected (select less than 10 please)'
+
+
+def export_selected_invoices(modeladmin, request, queryset):
+    """
+    Export invoices for the selected corp memberships.
+    """
+    import time as ttime
+    from django.http import StreamingHttpResponse
+    from tendenci.apps.invoices.models import Invoice
+    from tendenci.apps.invoices.utils import iter_invoices
+
+    invoices = Invoice.objects.filter(id__in=queryset.values_list('invoice_id', flat=True))
+    response = StreamingHttpResponse(
+        streaming_content=(iter_invoices(invoices)),
+        content_type='text/csv',)
+    response['Content-Disposition'] = f'attachment;filename=invoices_export_{ttime.time()}.csv'
+    return response
+
+export_selected_invoices.short_description = 'Export selected Invoices'
+
+
+# def print_selected_invoices(modeladmin, request, queryset):
+#     """
+#     Print invoices for the selected corp memberships.
+#     """
+#     import time as ttime
+#     from django.http import StreamingHttpResponse
+#     from tendenci.apps.invoices.models import Invoice
+#     from tendenci.apps.invoices.utils import invoice_pdf
+#
+#     def iter_invoices_pdf(request, invoices):
+#         for invoice in invoices:
+#             result = invoice_pdf(request, invoice)
+#             yield result.getvalue()
+#
+#     invoices = Invoice.objects.filter(id__in=queryset.values_list('invoice_id', flat=True))
+#     response = StreamingHttpResponse(
+#         streaming_content=(iter_invoices_pdf(request, invoices)),
+#         content_type='application/pdf',)
+#     response['Content-Disposition'] = f'attachment;filename=invoices_{ttime.time()}.pdf'
+#     return response
+
+def print_selected_invoices(modeladmin, request, queryset):
+    """
+    Print invoices for the selected corp memberships.
+    """
+    # from xhtml2pdf import pisa
+    # from io import BytesIO
+    # import time as ttime
+    # from django.template.loader import render_to_string
+    # from django.http import HttpResponse
+    from tendenci.apps.invoices.models import Invoice
+    from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+
+    invoices = Invoice.objects.filter(id__in=queryset.values_list('invoice_id', flat=True))
+    template_name = "invoices/print_invoices.html"
+    # html_string = render_to_string(template_name, context={
+    #     'invoices': invoices,}, request=request)
+    # result = BytesIO()
+    # #pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)
+    # pisa.pisaDocument(BytesIO(html_string.encode("utf-8")), result,
+    #                   path=get_setting('site', 'global', 'siteurl'))
+    # response = HttpResponse(result.getvalue(), content_type='application/pdf')
+    # response['Content-Disposition'] = f'attachment; filename=invoices_{ttime.time()}.pdf"'
+    # return response
+    
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+        'invoices': invoices,})
+
+print_selected_invoices.short_description = 'Print selected Invoices'
+
+
 class CorpMembershipAdmin(TendenciBaseModelAdmin):
     list_display = ['profile',
                     'account_id',
@@ -242,7 +341,10 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     list_filter = ['corporate_membership_type', StatusDetailFilter, 'join_dt', 'expiration_dt']
     search_fields = ['corp_profile__name', 'corp_profile__account_id']
 
-    actions = [approve_selected,]
+    actions = [approve_selected,
+               renew_selected,
+               export_selected_invoices,
+               print_selected_invoices]
 
     fieldsets = (
         (None, {'fields': ()}),
@@ -253,7 +355,8 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
         Excludes archive
         """
         return super(CorpMembershipAdmin, self).get_queryset(request
-                    ).exclude(status_detail='archive'
+                    ).exclude(status_detail='archive').exclude(
+                              corp_profile__status=False,
                               ).order_by('status_detail',
                                          'corp_profile__name')
 
