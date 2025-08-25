@@ -317,10 +317,11 @@ def print_selected_invoices(modeladmin, request, queryset):
     # response = HttpResponse(result.getvalue(), content_type='application/pdf')
     # response['Content-Disposition'] = f'attachment; filename=invoices_{ttime.time()}.pdf"'
     # return response
-    
+
     return render_to_resp(request=request, template_name=template_name,
         context={
-        'invoices': invoices,})
+        'invoices': invoices,
+        'back_link': request.get_full_path()})
 
 print_selected_invoices.short_description = 'Print selected Invoices'
 

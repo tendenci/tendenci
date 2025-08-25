@@ -31,6 +31,9 @@
 
 {% block content %}
 <div class="t">
+{% if back_link %}
+<div><a href="{{ back_link }}">&laquo; {% trans "Back" %}</a></div>
+{% endif %}
 {% if invoices %}
     <div id="print-tbn" class="text-right">
 	<button type="button" class="btn btn-info btn-lg" onclick="window.print();">
