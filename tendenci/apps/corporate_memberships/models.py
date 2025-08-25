@@ -1690,6 +1690,11 @@ class CorpMembership(TendenciBaseModel):
                             )
             ind_memb_renew_entry.save()        
 
+
+        if request.user.is_superuser and inv.balance <= 0:
+            # admin: approve renewal
+            new_corp_membership.approve_renewal(request)
+
         # send an email to dues reps
         if get_setting('module', 'corporate_memberships', 'notificationson'):
             recipients = dues_rep_emails_list(new_corp_membership)
