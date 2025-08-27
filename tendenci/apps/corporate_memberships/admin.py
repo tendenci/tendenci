@@ -240,7 +240,8 @@ def renew_selected(modeladmin, request, queryset):
     for corp_memb in corp_membs:
         # should it check if in renewal period?
         #if copr_memb.expiration_dt:
-        if corp_memb.can_renew() and not corp_memb.latest_renewed_in_pending():
+        if (corp_memb.can_renew() or corp_memb.is_expired) and \
+            not corp_memb.latest_renewed_in_pending():
             corp_memb.renew(request)
             #copr_memb.send_notice_email(request, 'renewal')
             corp_names.append(corp_memb.corp_profile.name)
