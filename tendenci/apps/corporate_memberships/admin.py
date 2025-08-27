@@ -236,21 +236,32 @@ def renew_selected(modeladmin, request, queryset):
     if corp_membs.count() > 10:
         corp_membs = corp_membs[:10]
     corp_names = []
+    has_pending = False
+    return_url = None
 
     for corp_memb in corp_membs:
         # should it check if in renewal period?
         #if copr_memb.expiration_dt:
         if (corp_memb.can_renew() or corp_memb.is_expired) and \
             not corp_memb.latest_renewed_in_pending():
-            corp_memb.renew(request)
+            new_corp_memb = corp_memb.renew(request)
+            if new_corp_memb.status_detail == 'pending':
+                has_pending = True
             #copr_memb.send_notice_email(request, 'renewal')
             corp_names.append(corp_memb.corp_profile.name)
 
     if corp_names:
-        msg_string = f'Successfully renewed: {", ".join(corp_names)}. Total: {len(corp_names)}' 
+        if has_pending:
+            msg_string = f'Renewal pending: {", ".join(corp_names)}. Total: {len(corp_names)}. Please make payment and mark as approved'
+        else:
+            msg_string = f'Successfully renewed: {", ".join(corp_names)}. Total: {len(corp_names)}'
+        return_url = request.path + '?o=-1'
     else:
         msg_string = 'Nothing to renew.'
     messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+    if return_url:
+        return HttpResponseRedirect(return_url)
 
 renew_selected.short_description = 'Renew selected (select less than 10 please)'
 

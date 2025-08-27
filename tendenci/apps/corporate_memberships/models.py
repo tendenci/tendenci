@@ -1694,6 +1694,11 @@ class CorpMembership(TendenciBaseModel):
         if request.user.is_superuser and inv.balance <= 0:
             # admin: approve renewal
             new_corp_membership.approve_renewal(request)
+        else:
+            if self.is_expired:
+                # archive expired
+                self.status_detail = 'archive'
+                self.save()
 
         # send an email to dues reps
         if get_setting('module', 'corporate_memberships', 'notificationson'):
@@ -1709,6 +1714,7 @@ class CorpMembership(TendenciBaseModel):
                 }
                 send_email_notification('corp_memb_renewed_user',
                                         recipients, extra_context)
+        return new_corp_membership
 
 
     def send_notice_email(self, request, notice_type, **kwargs):
