@@ -346,6 +346,10 @@ class Invoice(models.Model):
             _object = None
         return _object
 
+    def get_object_name(self):
+        obj = self.get_object()
+        return obj and obj._meta.verbose_name
+
     @property
     def use_third_party_payment(self):
         obj = self.get_object()
