@@ -1700,20 +1700,21 @@ class CorpMembership(TendenciBaseModel):
                 self.status_detail = 'archive'
                 self.save()
 
-        # send an email to dues reps
-        if get_setting('module', 'corporate_memberships', 'notificationson'):
-            recipients = dues_rep_emails_list(new_corp_membership)
-            notice_sent = new_corp_membership.send_notice_email(request, 'renewal')
-            if not notice_sent:
-                extra_context = {
-                    'object': new_corp_membership,
-                    'corp_profile': new_corp_membership.corp_profile,
-                    'corpmembership_app': opt_d['app'],
-                    'request': request,
-                    'invoice': inv,
-                }
-                send_email_notification('corp_memb_renewed_user',
-                                        recipients, extra_context)
+        # Comment it out for now
+        # # send an email to dues reps
+        # if get_setting('module', 'corporate_memberships', 'notificationson'):
+        #     recipients = dues_rep_emails_list(new_corp_membership)
+        #     notice_sent = new_corp_membership.send_notice_email(request, 'renewal')
+        #     if not notice_sent:
+        #         extra_context = {
+        #             'object': new_corp_membership,
+        #             'corp_profile': new_corp_membership.corp_profile,
+        #             'corpmembership_app': opt_d['app'],
+        #             'request': request,
+        #             'invoice': inv,
+        #         }
+        #         send_email_notification('corp_memb_renewed_user',
+        #                                 recipients, extra_context)
         return new_corp_membership
 
 
