@@ -285,50 +285,15 @@ def export_selected_invoices(modeladmin, request, queryset):
 export_selected_invoices.short_description = 'Export selected Invoices'
 
 
-# def print_selected_invoices(modeladmin, request, queryset):
-#     """
-#     Print invoices for the selected corp memberships.
-#     """
-#     import time as ttime
-#     from django.http import StreamingHttpResponse
-#     from tendenci.apps.invoices.models import Invoice
-#     from tendenci.apps.invoices.utils import invoice_pdf
-#
-#     def iter_invoices_pdf(request, invoices):
-#         for invoice in invoices:
-#             result = invoice_pdf(request, invoice)
-#             yield result.getvalue()
-#
-#     invoices = Invoice.objects.filter(id__in=queryset.values_list('invoice_id', flat=True))
-#     response = StreamingHttpResponse(
-#         streaming_content=(iter_invoices_pdf(request, invoices)),
-#         content_type='application/pdf',)
-#     response['Content-Disposition'] = f'attachment;filename=invoices_{ttime.time()}.pdf'
-#     return response
-
 def print_selected_invoices(modeladmin, request, queryset):
     """
     Print invoices for the selected corp memberships.
     """
-    # from xhtml2pdf import pisa
-    # from io import BytesIO
-    # import time as ttime
-    # from django.template.loader import render_to_string
-    # from django.http import HttpResponse
     from tendenci.apps.invoices.models import Invoice
     from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
     invoices = Invoice.objects.filter(id__in=queryset.values_list('invoice_id', flat=True))
     template_name = "invoices/print_invoices.html"
-    # html_string = render_to_string(template_name, context={
-    #     'invoices': invoices,}, request=request)
-    # result = BytesIO()
-    # #pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)
-    # pisa.pisaDocument(BytesIO(html_string.encode("utf-8")), result,
-    #                   path=get_setting('site', 'global', 'siteurl'))
-    # response = HttpResponse(result.getvalue(), content_type='application/pdf')
-    # response['Content-Disposition'] = f'attachment; filename=invoices_{ttime.time()}.pdf"'
-    # return response
 
     return render_to_resp(request=request, template_name=template_name,
         context={
