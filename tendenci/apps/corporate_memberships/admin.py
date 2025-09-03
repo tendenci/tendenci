@@ -297,6 +297,7 @@ def print_selected_invoices(modeladmin, request, queryset):
 
     return render_to_resp(request=request, template_name=template_name,
         context={
+        'print_view': True,
         'invoices': invoices,
         'back_link': request.get_full_path()})
 
