@@ -323,7 +323,7 @@ def photo_original(request, id):
         with io.BytesIO() as output:
             img.save(output, format=ext.upper())
             img.close()
-            return HttpResponse(output.getvalue(), content_type="image/{}".format(ext))
+            return HttpResponse(output.getbuffer(), content_type="image/{}".format(ext))
 
     return HttpResponse(photo.image, content_type="image/{}".format(ext))
 

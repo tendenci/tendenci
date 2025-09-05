@@ -466,14 +466,15 @@ class ListEventsNode(ListNode):
             raise AttributeError(_('Model.objects does not have a search method'))
 
     def render(self, context):
-        tags = u''
-        query = u''
+        tags = ''
+        query = ''
         user = AnonymousUser()
         limit = 3
         order = 'next_upcoming'
         event_type = ''
-        group = u''
-        start_dt = u''
+        #group = ''
+        groups_list = []
+        start_dt = ''
         registered_only = False
         registration_open = False
 
@@ -551,9 +552,10 @@ class ListEventsNode(ListNode):
                 group = self.kwargs['group']
 
             try:
-                group = int(group)
+                for g in group.split(','):
+                    groups_list.append(int(g))
             except:
-                group = None
+                groups_list = None
         if 'registered_only' in self.kwargs:
             try:
                 registered_only = Variable(self.kwargs['registered_only'])
@@ -595,10 +597,10 @@ class ListEventsNode(ListNode):
             tag_query = reduce(or_, tag_queries)
             items = items.filter(tag_query)
 
-        if hasattr(self.model, 'group') and group:
-            items = items.filter(groups=group)
-        if hasattr(self.model, 'groups') and group:
-            items = items.filter(groups__in=[group])
+        if hasattr(self.model, 'group') and groups_list:
+            items = items.filter(group__in=groups_list)
+        if hasattr(self.model, 'groups') and groups_list:
+            items = items.filter(groups__in=groups_list)
 
         objects = []
 

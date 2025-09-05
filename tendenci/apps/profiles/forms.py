@@ -367,6 +367,8 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['region']
             else:
                 self.fields['region'].queryset = region_queryset
+            if not get_setting('module', 'invoices', 'taxrateuseregions'):
+                self.fields['region'].required = False
 
         # we make first_name, last_name, email, username and password as required field regardless
         # the rest of fields will be decided by the setting - UsersRequiredFields
@@ -929,7 +931,7 @@ class UserUploadForm(forms.ModelForm):
         #  django.db.utils.ProgrammingError: relation "user_groups_group" does not exist
         GROUP_CHOICES = [(0, _('Select One'))] + [(group.id, group.name) for group in
                      Group.objects.filter(status=True, status_detail='active'
-                                          ).exclude(type='membership')]
+                                          ).exclude(type__in=['membership', 'system_generated'])]
         self.fields['group_id'].choices = GROUP_CHOICES
 
     def clean_upload_file(self):
