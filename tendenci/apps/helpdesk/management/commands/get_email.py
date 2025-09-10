@@ -25,6 +25,8 @@ from email.utils import parseaddr, collapse_rfc2231_value
 
 from email_reply_parser import EmailReplyParser
 
+from django.utils.encoding import smart_str
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from django.db.models import Q
@@ -266,11 +268,13 @@ def ticket_from_message(message, queue, quiet):
         body = _('No plain-text email body available. Please see attachment email_html_body.html.')
 
     if body_html:
-        files.append({
-            'filename': _("email_html_body.html"),
-            'content': body_html,
-            'type': 'text/html',
-        })
+        files.append(
+            SimpleUploadedFile(
+                _("email_html_body.html"),
+                body_html.encode("utf-8"),
+                "text/html",
+            )
+        )
 
     now = timezone.now()
 
@@ -328,17 +332,22 @@ def ticket_from_message(message, queue, quiet):
         print((" [%s-%s] %s" % (t.queue.slug, t.id, t.title,)).encode('ascii', 'replace'))
 
     for file in files:
-        if file['content']:
-            filename = file['filename'].replace(' ', '_')
+        if file.size:
+            filename = smart_str(file.name)
+            filename = filename.replace(' ', '_')
             filename = re.sub(r'[^a-zA-Z0-9._-]+', '', filename)
             a = Attachment(
                 followup=f,
+                file=file,
                 filename=filename,
-                mime_type=file['type'],
-                size=len(file['content']),
+                mime_type=file.content_type
+                or mimetypes.guess_type(filename, strict=False)[0]
+                or "application/octet-stream",
+                size=file.size,
                 )
-            a.file.save(filename, ContentFile(file['content']), save=False)
+            a.full_clean()
             a.save()
+
             if not quiet:
                 print("    - %s" % filename)
 
