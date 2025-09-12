@@ -201,6 +201,30 @@ def export_selected_all(modeladmin, request, queryset):
 export_selected_all.short_description = 'Export selected (All fields)'
 
 
+def print_selected_invoices(modeladmin, request, queryset):
+    """
+    Print invoices for the selected memberships.
+    """
+    from django.contrib.contenttypes.models import ContentType
+    from tendenci.apps.invoices.models import Invoice
+    from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+    from tendenci.apps.memberships.models import MembershipSet
+
+    ct_m = ContentType.objects.get_for_model(MembershipDefault)
+    ct_mset = ContentType.objects.get_for_model(MembershipSet)
+    invoices = Invoice.objects.filter(Q(object_type=ct_m, object_id__in=queryset.values_list('id', flat=True)) | 
+                                      Q(object_type=ct_mset, object_id__in=queryset.values_list('membership_set_id', flat=True)))
+    template_name = "invoices/print_invoices.html"
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+        'print_view': True,
+        'invoices': invoices,
+        'back_link': request.get_full_path()})
+
+print_selected_invoices.short_description = 'Print selected Invoices'
+
+
 class MembershipDefaultAdmin(admin.ModelAdmin):
     """
     MembershipDefault model
@@ -350,7 +374,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         disapprove_selected,
         expire_selected,
         export_selected_main,
-        export_selected_all
+        export_selected_all,
+        print_selected_invoices
     ]
 
     def get_fieldsets(self, request, instance=None):
