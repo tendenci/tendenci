@@ -164,8 +164,8 @@ Currently showing members who expired in the last {{ days }} days.
       <td>{{ mem.user.get_full_name }}</td>
       <td><a href="mailto:{{ mem.user.email }}">{{ mem.user.email }}</td>
         <td>{{ mem.membership_type }}</td>
-        <td>{{ mem.join_dt|date:"N j, Y" }}</td>
-        <td>{{ mem.expire_dt|date:"N j, Y" }}</td>
+        <td>{{ mem.join_dt|date:'DATE_FORMAT' }}</td>
+        <td>{{ mem.expire_dt|date:'DATE_FORMAT' }}</td>
         <td>
           {% if mem.get_invoice %}
           <a href="{% url "invoice.view" mem.get_invoice.pk %}">
