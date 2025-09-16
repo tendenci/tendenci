@@ -216,7 +216,7 @@ class Command(BaseCommand):
         print("Sending confirmation message to creator...")
         # send confirmation email
         subject = "Newsletter Submission Recap for %s" % newsletter.email.subject
-        detail_url = get_setting('site', 'global', 'siteurl') + newsletter.get_absolute_url()
+        detail_url = self.site_url + newsletter.get_absolute_url()
         params = {'first_name': newsletter.email.creator.first_name,
                     'subject': newsletter.email.subject,
                     'count': counter,
