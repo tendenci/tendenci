@@ -295,6 +295,11 @@ class ForumSubscriptionForm(forms.Form):
                 'unsubscribe', 
                 _('be unsubscribe from this forum')
             ))
+        digest_type_choices = list(ForumSubscription.DIGEST_TYPE_CHOICES)
+        digest_apply_to_choices = (
+            ('this', _('This forum Only')),
+            ('all', _('All forums I subscribed')),
+        )
 
         initial = ForumSubscription.TYPE_SUBSCRIBE if not instance else instance.type
         self.fields['type'] = forms.ChoiceField(
@@ -302,6 +307,14 @@ class ForumSubscriptionForm(forms.Form):
             widget=forms.RadioSelect())
         self.fields['topics'] = forms.ChoiceField(
             label=_('Concerned topics'), choices=topic_choices, initial=topic_choices[1][0],
+            widget=forms.RadioSelect())
+        digest_type_initial = '' if not instance else instance.digest_type
+        self.fields['digest_type'] = forms.ChoiceField(required=False,
+            label=_('Digest type'), choices=digest_type_choices, initial=digest_type_initial,
+            widget=forms.RadioSelect())
+        self.fields['digest_type_apply_to'] = forms.ChoiceField(
+            label=_('Apply digest type to'), choices=digest_apply_to_choices,
+            initial='this',
             widget=forms.RadioSelect())
     
     def process(self):
@@ -319,5 +332,13 @@ class ForumSubscriptionForm(forms.Form):
                 self.instance.user = self.user
                 self.instance.forum = self.forum
             self.instance.type = int(self.cleaned_data.get('type'))
+            self.instance.digest_type = self.cleaned_data.get('digest_type', '')
             self.instance.save(all_topics=all_topics)
+            # 
+            if self.cleaned_data.get('digest_type_apply_to') == 'all':
+                for forum_subscription in ForumSubscription.objects.filter(
+                    user=self.user).exclude(id=self.instance.id):
+                    forum_subscription.digest_type = self.instance.digest_type
+                    forum_subscription.save()
+
             return 'subscribe-all' if all_topics else 'subscribe'

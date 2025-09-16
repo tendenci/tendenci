@@ -125,6 +125,23 @@ class Forum(models.Model):
             parent = parent.parent
         return parents
 
+    def get_digest(self, start_dt, end_dt, digest_type):
+        pass
+
+    def send_digest_to_subscribers(self, users=None):
+        """
+        Email digest to subscribers
+        users is a list of users.
+        """
+        subscriptions = ForumSubscription.objects.filter(forum=self
+                                    ).exclude(digest_type='')
+        if users:
+            subscriptions = subscriptions.filter(user__in=users)
+        daily_subscriptions = subscriptions.filter(digest_type='daily')
+        weekly_subscriptions = subscriptions.filter(digest_type='weekly')
+        for subscription in subscriptions:
+            user = subscription.user
+
 
 class ForumSubscription(models.Model):
     TYPE_NOTIFY = 1
@@ -132,6 +149,11 @@ class ForumSubscription(models.Model):
     TYPE_CHOICES = (
         (TYPE_NOTIFY, _('be notified only when a new topic is added')),
         (TYPE_SUBSCRIBE, _('be auto-subscribed to topics')),
+    )
+    DIGEST_TYPE_CHOICES = (
+        ('', _('No digest')),
+        ('daily', _('Daily')),
+        ('weekly', _('Weekly')),
     )
 
     user = models.ForeignKey(get_user_model_path(), 
@@ -151,6 +173,9 @@ class ForumSubscription(models.Model):
             'you will be notified only once when the topic is created : '
             'you won\'t be notified for the answers.'
         )), )
+    digest_type = models.CharField(max_length=6,
+                                   default='',
+                                   choices=DIGEST_TYPE_CHOICES)
 
     class Meta(object):
         verbose_name = _('Subscription to forum')
