@@ -100,11 +100,14 @@ class Command(BaseCommand):
             # default certification_track
             [certification_track] = Certification.objects.filter(enable_diamond=True)[:1] or [None]
 
-            limit_count = 0 # for rate limit (30/minute)
+            limit_count = 1 # for rate limit (30/minute)
             for enrollment_result in enrollment_results['Collection']:
                 course_id = enrollment_result['CourseId']
                 user_id = enrollment_result['UserId']
                 completion_date = enrollment_result['CompletionDate']
+                if dparser.parse(completion_date) < datetime(date_from.year, 1, 1, 0, 0, 0):
+                    print('completion_date not current')
+                    continue
                 
                 # STEP 2: Get course detail to course code
                 # Check if we can find the course by course_id (maps to the external_id
