@@ -1,12 +1,15 @@
 import traceback
 from logging import getLogger
 from datetime import datetime, date, timedelta
+import time
 
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.urls import reverse
 import requests
+
+RATE_LIMIT = 30
 
 
 class Command(BaseCommand):
@@ -29,8 +32,15 @@ class Command(BaseCommand):
             default=None,
             help='import_id - specify import id')
 
+    def go_to_sleep(self, limit_count):
+        if limit_count >= RATE_LIMIT:
+            time.sleep(60)
+            return True
+        return False
+
     def import_bv_exams(self, import_id=None):
         import dateutil.parser as dparser
+        from tendenci.apps.profiles.models import Profile
         from tendenci.apps.trainings.models import BluevoltExamImport, Course, Transcript, Exam, Certification
         if not hasattr(settings, 'BLUEVOLT_API_KEY'):
             print('Bluevolt API is not set up. Exiting...')
@@ -84,36 +94,69 @@ class Command(BaseCommand):
         if r.status_code == 200:
             enrollment_results = r.json()
             messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' - STARTED')
-            messages.append(f'Total: {len(enrollment_results)}')
+            total_records = len(enrollment_results['Collection'])
+            print('total=', total_records)
+            messages.append(f'Total: {total_records}')
             # default certification_track
             [certification_track] = Certification.objects.filter(enable_diamond=True)[:1] or [None]
 
+            limit_count = 1 # for rate limit (30/minute)
             for enrollment_result in enrollment_results['Collection']:
                 course_id = enrollment_result['CourseId']
                 user_id = enrollment_result['UserId']
                 completion_date = enrollment_result['CompletionDate']
+                if dparser.parse(completion_date) < datetime(date_from.year, 1, 1, 0, 0, 0):
+                    print('completion_date not current')
+                    continue
                 
                 # STEP 2: Get course detail to course code
-                #TODO: Store the maps for CourseId and UserId so that we
-                #    don't have to retrieve the same courses and users
-                course_payload = {'apiKey': api_key,
-                                  'courseId': course_id}
-                course_r = requests.get(course_url, headers=headers, params=course_payload)
-                if course_r.status_code == 200:
-                    course_result = course_r.json()
-                    course_code = course_result['ExternalCourseCode']
-                    # given course_code, find the course
-                    [course] = Course.objects.filter(course_code=course_code)[:1] or [None]
-                    if not course:
-                        msg = f'Course with course code {course_code} does not exist!'
-                        print(msg)
-                        messages.append(msg)
-                        continue
+                # Check if we can find the course by course_id (maps to the external_id
+                course = Course.objects.filter(external_id=course_id).first()
+                if not course:
+                    # we didn't find it, go fetch the course code from API
 
-                    # STEP 3: Get user info to find username
+                    if self.go_to_sleep(limit_count):
+                        limit_count = 0
+
+                    course_payload = {'apiKey': api_key,
+                                      'courseId': course_id}
+                    course_r = requests.get(course_url, headers=headers, params=course_payload)
+                    limit_count += 1
+                    
+                    if course_r.status_code == 200:
+                        course_result = course_r.json()
+                        course_code = course_result['ExternalCourseCode']
+                        # given course_code, find the course
+                        [course] = Course.objects.filter(course_code=course_code)[:1] or [None]
+                        if not course:
+                            msg = f'Course with course code {course_code} does not exist!'
+                            print(msg)
+                            messages.append(msg)
+                            continue
+                        else:
+                            course.external_id = course_id
+                            course.save(update_fields=['external_id'])
+                    else:
+                        # course_r.status_code != 200:
+                        print('courseId=', course_id, course_r.text)
+                        messages.append(course_r.text)
+                        continue
+                        
+
+                # STEP 3: Get user info to find username
+                profile = Profile.objects.filter(external_id=user_id).first()
+                if profile:
+                    user = profile.user
+                else:
+                    # we didn't find the user by this external_id, go fetch the username from API
+                    if self.go_to_sleep(limit_count):
+                        limit_count = 0
+
                     user_payload = {'apiKey': api_key,
                                     'userID': user_id}
                     user_r = requests.get(user_url, headers=headers, params=user_payload)
+                    limit_count += 1
+                    
                     if user_r.status_code == 200:
                         user_result = user_r.json()[0]
                         username = user_result['UserName']
@@ -124,38 +167,43 @@ class Command(BaseCommand):
                             print(msg)
                             messages.append(msg)
                             continue
-                        
-                        # STEP 3: Insert into transcripts if not already in there
-                        #         and user has completed the course          
+                    else:
+                        # user_r.status_code != 200:
+                        print('userID=', user_id, user_r.text)
+                        messages.append(user_r.text)
+                        continue
 
-                        # check if already exists, but would someone take same courses again?
-                        [transcript] = Transcript.objects.filter(course=course,
-                                                                 user=user,
-                                                                 location_type='online')[:1] or [None]
-                        if not transcript:
-                            
-                            exam = Exam(user=user,
-                                        course=course,
-                                        grade=100)
-                            exam.date = dparser.parse(completion_date)
-                            exam.save()
-                            transcript = Transcript(
-                                         exam=exam,
-                                         parent_id=exam.id,
-                                         location_type='online',
-                                         user=user,
-                                         course=course,
-                                         school_category=course.school_category,
-                                         credits=course.credits,
-                                         certification_track=certification_track,
-                                         status='approved'
-                                        )
-                            transcript.save()
-                            num_inserted += 1
-                            print(transcript, f'{transcript.id}... added')
-                            #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" added')
-                        #else:
-                            #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - DUBLICATE TRANSACTION: Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" already exists')
+                # STEP 3: Insert into transcripts if not already in there
+                #         and user has completed the course          
+
+                # check if already exists, but would someone take same courses again?
+                [transcript] = Transcript.objects.filter(course=course,
+                                                         user=user,
+                                                         location_type='online')[:1] or [None]
+                if not transcript:
+                    
+                    exam = Exam(user=user,
+                                course=course,
+                                grade=100)
+                    exam.date = dparser.parse(completion_date)
+                    exam.save()
+                    transcript = Transcript(
+                                 exam=exam,
+                                 parent_id=exam.id,
+                                 location_type='online',
+                                 user=user,
+                                 course=course,
+                                 school_category=course.school_category,
+                                 credits=course.credits,
+                                 certification_track=certification_track,
+                                 status='approved'
+                                )
+                    transcript.save()
+                    num_inserted += 1
+                    print(transcript, f'{transcript.id}... added')
+                    #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" added')
+                #else:
+                    #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - DUBLICATE TRANSACTION: Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" already exists')
 
             end_dt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             if num_inserted == 1:
@@ -164,6 +212,7 @@ class Command(BaseCommand):
                 messages.append(end_dt + f' - INSERTED: {num_inserted} records')
 
             messages.append(end_dt + ' - ENDED')
+            print('num_inserted=', num_inserted)
 
             if bv_import:
                 # Update bv_import object
