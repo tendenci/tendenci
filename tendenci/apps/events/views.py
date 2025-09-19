@@ -3540,9 +3540,10 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
     if request.method == "POST":
         # If cancellation is no longer allowed, force a refresh so that
         # "cancellation not allowed message is displayed"
-        if not event.can_cancel:
-            return HttpResponseRedirect(reverse(
-                'event.cancel_registration', args=[event.pk, registration.pk]))
+        if not request.user.is_superuser:
+            if not event.can_cancel:
+                return HttpResponseRedirect(reverse(
+                    'event.cancel_registration', args=[event.pk, registration.pk]))
 
         # check if already canceled. if so, do nothing
         if not registration.canceled:

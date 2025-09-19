@@ -83,7 +83,7 @@
          {% endfor %}
     </div>
     {% endif %}
-    {% if event.can_cancel %}
+    {% if event.can_cancel or request.user.is_superuser %}
         <div>
             <button type="button" data-toggle="modal" data-target="#cancelModal">{% trans "Cancel Event Registration" %}</button>
             <!-- Cancellation Modal  -->

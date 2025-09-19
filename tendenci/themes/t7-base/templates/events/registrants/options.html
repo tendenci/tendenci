@@ -5,7 +5,9 @@
     {% endif %}
     <a href="{% url "event.registration_confirmation" opt_object.registration.event.pk opt_object.registration.pk %}">{% trans "View Registration" %}</a>
 
-    {% if not opt_object.cancel_dt and event.can_cancel %}
+    {% if not opt_object.cancel_dt %}
+    {% if event.can_cancel or request.user.is_superuser %}
     <a href="{% url "event.cancel_registration" opt_object.registration.event.pk opt_object.registration.pk %}">{% trans "Cancel Registration" %}</a>
+    {% endif %}
     {% endif %}
 </div>
