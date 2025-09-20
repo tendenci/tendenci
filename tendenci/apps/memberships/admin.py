@@ -173,7 +173,7 @@ def export_selected(modeladmin, request, queryset, export_fields='main_fields'):
     ids = queryset.values_list('id', flat=True)
     ids = ','.join([str(id) for id in ids])
     identifier = int(ttime.time())
-    run_membership_export(request, 
+    run_membership_export(request,
                           identifier=identifier,
                           export_fields=export_fields,
                           ids=ids)
@@ -464,14 +464,14 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     get_invoice.short_description = u'Invoice'
 
     def get_create_dt(self, instance):
-        return instance.create_dt.strftime('%b %d, %Y, %I:%M %p')
+        return instance.create_dt.strftime(settings.STRFTIME_DATETIME_FORMAT)
     get_create_dt.short_description = u'Created On'
 
     def get_approve_dt(self, instance):
         dt = instance.application_approved_dt
 
         if dt:
-            return dt.strftime('%b %d, %Y, %I:%M %p')
+            return dt.strftime(settings.STRFTIME_DATETIME_FORMAT)
         return u''
     get_approve_dt.short_description = u'Approved On'
     get_approve_dt.admin_order_field = 'application_approved_dt'
@@ -480,7 +480,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         dt = instance.expire_dt
 
         if dt:
-            return dt.strftime('%m/%d/%Y')
+            return dt.strftime(settings.STRFTIME_DATE_FORMAT)
         return u''
     get_expire_dt.short_description = u'Expire Date'
     get_expire_dt.admin_order_field = 'expire_dt'

@@ -22,6 +22,7 @@ from geraldo import Report, ReportBand, ObjectValue,\
      Label, landscape
 from reportlab.lib.units import cm
 from reportlab.lib.pagesizes import A5
+from django.conf import settings
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
@@ -71,9 +72,9 @@ class ReportNewMems(Report):
                     get_value=lambda instance: instance.get_invoice().total if instance.get_invoice() else ''),
                 #ObjectValue(attribute_name='payment_method', left=15*cm),
                 ObjectValue(attribute_name='join_dt', left=14.5*cm,
-                    get_value=lambda instance: instance.join_dt.strftime('%b %d, %Y')),
+                    get_value=lambda instance: instance.join_dt.strftime(settings.STRFTIME_DATE_FORMAT)),
                 ObjectValue(attribute_name='expire_dt', left=17.5*cm,
-                    get_value=lambda instance: instance.expire_dt.strftime('%b %d, %Y') if instance.expire_dt else ''),
+                    get_value=lambda instance: instance.expire_dt.strftime(settings.STRFTIME_DATE_FORMAT) if instance.expire_dt else ''),
             )
 
 def id_format(value, instance):

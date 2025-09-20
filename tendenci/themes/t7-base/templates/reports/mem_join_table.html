@@ -30,8 +30,8 @@
         <td>{{ mem.membership_type }}</td>
         <td><a href="{{ mem.get_invoice.get_absolute_url }}">{{ mem.get_invoice.total }}</a></td>
         <td style="white-space: nowrap;">{{ mem.payment_method.human_name }}</td>
-        <td style="white-space: nowrap;">{{ mem.join_dt|date:"N j, Y" }}</td>
-        <td style="white-space: nowrap;">{{ mem.expire_dt|date:"N j, Y" }}</td>
+        <td style="white-space: nowrap;">{{ mem.join_dt|date:'DATE_FORMAT' }}</td>
+        <td style="white-space: nowrap;">{{ mem.expire_dt|date:'DATE_FORMAT' }}</td>
         <td>{{ mem.status_detail|title }}</td>
     </tr>
     {% endfor %}
