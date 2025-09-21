@@ -311,7 +311,8 @@ class ForumSubscriptionForm(forms.Form):
         digest_type_initial = '' if not instance else instance.digest_type
         self.fields['digest_type'] = forms.ChoiceField(required=False,
             label=_('Digest type'), choices=digest_type_choices, initial=digest_type_initial,
-            widget=forms.RadioSelect())
+            widget=forms.RadioSelect(),
+            help_text=_('If you opt in daily or weekly digest, you will stop receive the instant messages.'))
         self.fields['digest_type_apply_to'] = forms.ChoiceField(
             label=_('Apply digest type to'), choices=digest_apply_to_choices,
             initial='this',
