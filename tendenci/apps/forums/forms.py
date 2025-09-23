@@ -312,7 +312,7 @@ class ForumSubscriptionForm(forms.Form):
         self.fields['digest_type'] = forms.ChoiceField(required=False,
             label=_('Digest type'), choices=digest_type_choices, initial=digest_type_initial,
             widget=forms.RadioSelect(),
-            help_text=_('If you opt in daily or weekly digest, you will stop receive the instant messages.'))
+            help_text=_('If you opt in to receive daily or weekly digest emails, you will not receive instant updates.'))
         self.fields['digest_type_apply_to'] = forms.ChoiceField(
             label=_('Apply digest type to'), choices=digest_apply_to_choices,
             initial='this',
