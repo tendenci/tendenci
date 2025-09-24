@@ -3,6 +3,7 @@
 import re
 import inspect
 
+from django.conf import settings
 from django import forms
 from django.core.exceptions import FieldError
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
@@ -308,15 +309,16 @@ class ForumSubscriptionForm(forms.Form):
         self.fields['topics'] = forms.ChoiceField(
             label=_('Concerned topics'), choices=topic_choices, initial=topic_choices[1][0],
             widget=forms.RadioSelect())
-        digest_type_initial = '' if not instance else instance.digest_type
-        self.fields['digest_type'] = forms.ChoiceField(required=False,
-            label=_('Digest type'), choices=digest_type_choices, initial=digest_type_initial,
-            widget=forms.RadioSelect(),
-            help_text=_('If you opt in to receive daily or weekly digest emails, you will not receive instant updates.'))
-        self.fields['digest_type_apply_to'] = forms.ChoiceField(
-            label=_('Apply digest type to'), choices=digest_apply_to_choices,
-            initial='this',
-            widget=forms.RadioSelect())
+        if settings.ENABLE_FORUM_DIGEST:
+            digest_type_initial = '' if not instance else instance.digest_type
+            self.fields['digest_type'] = forms.ChoiceField(required=False,
+                label=_('Digest type'), choices=digest_type_choices, initial=digest_type_initial,
+                widget=forms.RadioSelect(),
+                help_text=_('If you opt in to receive daily or weekly digest emails, you will not receive instant updates.'))
+            self.fields['digest_type_apply_to'] = forms.ChoiceField(
+                label=_('Apply digest type to'), choices=digest_apply_to_choices,
+                initial='this',
+                widget=forms.RadioSelect())
     
     def process(self):
         """
