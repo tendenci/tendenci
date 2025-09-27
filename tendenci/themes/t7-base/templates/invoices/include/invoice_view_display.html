@@ -40,6 +40,7 @@
 	            {% endif %}
 
             	{% if invoice.bill_to_address %} {{ invoice.bill_to_address }}<br>{% endif %}
+            	{% if invoice.bill_to_address2 %} {{ invoice.bill_to_address2 }}<br>{% endif %}
             	{% if invoice.bill_to_city %}{{ invoice.bill_to_city}},{% endif %} {% if invoice.bill_to_state %}{{ invoice.bill_to_state }}{% endif %} {% if invoice.bill_to_zip_code %}{{ invoice.bill_to_zip_code }}{% endif %}
             {% endif %}
           </td>

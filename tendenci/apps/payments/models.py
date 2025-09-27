@@ -198,6 +198,7 @@ class Payment(models.Model):
             if user and user.id:
                 self.cust_id = user.id
             self.address = inv.bill_to_address
+            self.address2 = inv.bill_to_address2
             self.city = inv.bill_to_city
             self.state = inv.bill_to_state
             self.zip = inv.bill_to_zip_code
