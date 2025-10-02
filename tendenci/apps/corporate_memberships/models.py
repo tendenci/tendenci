@@ -719,6 +719,12 @@ class CorpMembership(TendenciBaseModel):
     total_passes_allowed = models.PositiveIntegerField(_('Total Passes Allowed'),
                                                default=0,
                                                blank=True)
+    # store the original price for display purpose
+    corp_price = models.DecimalField(max_digits=15, decimal_places=2,
+                                blank=True, default=0)
+    num_ind_above_cap = models.PositiveSmallIntegerField(default=0)
+    above_cap_price = models.DecimalField(max_digits=15, decimal_places=2,
+                                blank=True, default=0)
 
     perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
