@@ -805,9 +805,12 @@ class RegConfPricing(OrderingBaseModel):
                             }
             else:
                 # user is a member
-                filter_or = {'allow_anonymous': True,
-                             'allow_user': True,
-                             'allow_member': True}
+                if get_setting('module', 'events', 'hide_non_member_pricing'):
+                    filter_or = {'allow_member': True}
+                else:
+                    filter_or = {'allow_anonymous': True,
+                                 'allow_user': True,
+                                 'allow_member': True}
 
             if not user.is_anonymous and user.group_member.exists():
                 # get a list of groups for this user
