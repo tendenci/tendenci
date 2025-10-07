@@ -1242,7 +1242,11 @@ class Registration(models.Model):
         else:
             balance = 0
         if self.reg_conf_price is None or self.reg_conf_price.payment_required is None:
-            payment_required = config.payment_required
+            registrant = self.registrant
+            if registrant and registrant.pricing:
+                payment_required = registrant.pricing.payment_required or config.payment_required
+            else:
+                payment_required = config.payment_required
         else:
             payment_required = self.reg_conf_price.payment_required
 
