@@ -219,6 +219,8 @@ def get_member_reminders(user, view_self=False):
         if view_self:
             if membership.in_grace_period() or membership.is_expired() or membership.can_renew():
                 corp_profile = membership.get_corporate_profile()
+                if not corp_profile:
+                    continue
                 corp_membership = corp_profile.corp_membership
                 is_rep = corp_profile.is_rep(user) if corp_profile else False
                 if corp_profile and not is_rep:
