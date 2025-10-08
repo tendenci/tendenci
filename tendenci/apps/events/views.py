@@ -5324,10 +5324,14 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
     if not active:
         raise Http404
 
+    form_place = PlaceForm(request.POST or None, prefix="place")
+    form_organizer = OrganizerForm(request.POST or None, request.FILES or None, prefix='organizer')
+    form_sponsor = SponsorForm(request.POST or None, request.FILES or None, prefix='sponsor')
+
     if request.method == "POST":
         form = form_class(request.POST, request.FILES, user=request.user,)
-        form_place = PlaceForm(request.POST, prefix="place")
-        if form.is_valid() and form_place.is_valid():
+        
+        if all([fm.is_valid() for fm in [form, form_place, form_organizer, form_sponsor]]):
             event = form.save(commit=False)
 
             # update all permissions and save the model
@@ -5352,6 +5356,26 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             # save place
             place = form_place.save()
             event.place = place
+            # save organizer
+            organizer = form_organizer.save()
+            logo = form_organizer.cleaned_data['image_upload']
+            if logo:
+                organizer.upload(logo, request.user, event)
+
+            sponsor = form_sponsor.save()
+            logo = form_sponsor.cleaned_data['image_upload']
+            if logo:
+                sponsor.upload(logo, request.user, event)
+            
+            organizer.event.set([event])
+            organizer.save() # save again
+            
+            sponsor.event.set([event])
+            sponsor.save()
+            
+            assign_files_perms(place)
+            assign_files_perms(organizer)
+            assign_files_perms(sponsor)
 
             # place event into pending queue
             event.status = True
@@ -5387,11 +5411,12 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             return redirect('events')
     else:
         form = form_class(user=request.user,)
-        form_place = PlaceForm(prefix="place")
 
     return render_to_resp(request=request, template_name=template_name, context={
         'form': form,
         'form_place': form_place,
+        'form_organizer': form_organizer,
+        'form_sponsor': form_sponsor
         })
 
 
