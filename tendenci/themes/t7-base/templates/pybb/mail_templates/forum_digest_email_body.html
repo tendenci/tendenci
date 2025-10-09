@@ -13,6 +13,7 @@
 	<p><i>{% pybb_time post.created %} {{ post.user }}:</i><br />
 	{{ post.body_html|safe }}</p>
 	{% endfor %}
+	<strong>{% trans "Click the link to respond:" %}</strong> <a href="{{site_url}}{{ posts.0.get_absolute_url }}">{{site_url}}{{ posts.0.get_absolute_url }}</a><br>
 	<p>&nbsp;</p>
 {% endfor %}
 <p>
