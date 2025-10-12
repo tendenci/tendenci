@@ -45,6 +45,7 @@ def job_set_inv_payment(user, job, pricing):
             inv.bill_to_last_name = last_name
             inv.bill_to_company = job.contact_company
             inv.bill_to_address = job.contact_address
+            inv.bill_to_address2 = job.contact_address2
             inv.bill_to_city = job.contact_city
             inv.bill_to_state = job.contact_state
             inv.bill_to_zip_code = job.contact_zip_code
@@ -57,6 +58,7 @@ def job_set_inv_payment(user, job, pricing):
             inv.ship_to_last_name = last_name
             inv.ship_to_company = job.contact_company
             inv.ship_to_address = job.contact_address
+            inv.ship_to_address2 = job.contact_address2
             inv.ship_to_city = job.contact_city
             inv.ship_to_state = job.contact_state
             inv.ship_to_zip_code = job.contact_zip_code

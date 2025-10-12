@@ -1,4 +1,4 @@
-#container { width: 8.5in; }
+#container { width: 8.2in; margin: 30px auto;}
 
 .invoice-view-display{
 	width: 95%;
@@ -401,5 +401,14 @@ div.void-stamp span{
 	position: absolute; top: 0px; left: 5px;
 	padding: 40px;
 	font-size: 60px;
+}
+
+@media print {
+    a {
+		text-decoration: none !important;
+	}
+	a[href]:after {
+    content: none !important;
+  }
 }
 

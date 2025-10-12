@@ -1273,11 +1273,14 @@ def corp_renew(request, id,
                 indiv_renewal_price = corp_memb_type.membership_type.renewal_price
                 if not indiv_renewal_price:
                     indiv_renewal_price = 0
+                new_corp_membership.corp_price = corp_renewal_price
 
                 count_members = len(members)
                 if corp_memb_type.apply_cap and corp_memb_type.allow_above_cap and count_members > corp_memb_type.membership_cap:
                     count_ind_within_cap = corp_memb_type.membership_cap
                     count_ind_above_cap = count_members - count_ind_within_cap
+                    new_corp_membership.num_ind_above_cap = count_ind_above_cap
+                    new_corp_membership.above_cap_price = corp_memb_type.above_cap_price
                     renewal_total = corp_renewal_price + \
                                     indiv_renewal_price * count_ind_within_cap + \
                                     corp_memb_type.above_cap_price * count_ind_above_cap

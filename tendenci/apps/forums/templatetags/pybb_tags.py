@@ -74,7 +74,7 @@ class PybbTimeNode(template.Node):
                 else:
                     msg = _('minutes ago')
                 return '%d %s' % (minutes, msg)
-        if context['user'].is_authenticated:
+        if 'user' in context and context['user'].is_authenticated:
             # commenting it out because DST is already accounted
             # if time.daylight:
             #     tz1 = time.altzone

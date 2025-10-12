@@ -87,7 +87,7 @@
         {% if not registration.canceled %}
             <div>
              <a href="{% if hash %}{% url "event.registration_edit" registration.pk hash %}{% else %}{% url "event.registration_edit" registration.pk %}{% endif %}">{% trans "Edit Registrant(s) Info" %}{% if event.nested_events_enabled and event.has_child_events %}{% trans " and Sessions" %}{% endif %}</a>
-			 {% if event.can_cancel %}
+			 {% if event.can_cancel or request.user.is_superuser %}
 	            {% if registrants_count >= 1 or registration.reg_conf_price.quantity > 1 %}
 	                    &nbsp;&nbsp;
 	                  {% if user.is_authenticated %}

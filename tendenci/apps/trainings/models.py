@@ -410,6 +410,7 @@ class Course(TendenciBaseModel):
                              choices=LOCATION_TYPE_CHOICES)
     school_category = models.ForeignKey(SchoolCategory, null=True, on_delete=models.SET_NULL)
     course_code = models.CharField(max_length=50, blank=True, null=True)
+    external_id = models.PositiveIntegerField(blank=True, null=True)
     summary = models.TextField(blank=True, default='')
     description = tinymce_models.HTMLField(blank=True, default='')
     credits = models.DecimalField(max_digits=5, decimal_places=2, default=0)

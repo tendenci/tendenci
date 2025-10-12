@@ -16,7 +16,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
-from django.template.defaultfilters import slugify
+from django.utils.text import slugify
 from django import forms
 from django.utils.safestring import mark_safe
 from django.template import engines
@@ -140,7 +140,7 @@ class Chapter(BasePage):
             # create a group for this type
             group = Group()
             group.name = f'{self.title}'[:200]
-            group.slug = slugify(group.name)
+            group.slug = slugify(group.name, allow_unicode=True)
             # ensure uniqueness of the slug
             if Group.objects.filter(slug=group.slug).exists():
                 tmp_groups = Group.objects.filter(slug__istartswith=group.slug)

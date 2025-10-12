@@ -87,10 +87,10 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.ship_to_user(user)
 
             inv.bill_to_company = directory.headline
-            if directory.address2:
+            if directory.address:
                 inv.bill_to_address = directory.address
                 if directory.address2:
-                    inv.bill_to_address += ', ' + directory.address2
+                    inv.bill_to_address2 = directory.address2
             inv.bill_to_city = directory.city
             inv.bill_to_state = directory.state
             inv.bill_to_zip_code = directory.zip_code

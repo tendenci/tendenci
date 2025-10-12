@@ -594,7 +594,10 @@ MOBILE_COOKIE_NAME = "tendenci_mobile"
 # Forums App
 PYBB_MARKUP = 'markdown'
 PYBB_NICE_URL = True
-PYBB_ATTACHMENT_ENABLE = True
+
+# If forum digest is enabled, make sure to set up 2 cron jobs
+# to run management command send_forum_digest daily and weekly. 
+ENABLE_FORUM_DIGEST = False
 
 # HelpDesk App
 HELPDESK_REDIRECT_TO_LOGIN_BY_DEFAULT = False
@@ -840,18 +843,3 @@ Q_CLUSTER = {
     "max_attempts": 1
 }
 
-# ---------------------------------------------------------------------------- #
-# Debugging Tools
-# ---------------------------------------------------------------------------- #
-
-DEBUG_TOOLBAR_ENABLED = False
-try:
-    import debug_toolbar  # noqa: F401
-    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
-    INSTALLED_APPS += ['debug_toolbar']
-    DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_TOOLBAR_CALLBACK': lambda req: DEBUG_TOOLBAR_ENABLED,
-        'SHOW_COLLAPSED': False,
-    }
-except ImportError:
-    pass

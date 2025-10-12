@@ -53,6 +53,7 @@ from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.utils import send_email_notification, fieldify, get_salesforce_access, correct_filename
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.corporate_memberships.utils import (
+                                            corp_memb_inv_add,
                                             corp_membership_update_perms,
                                             dues_rep_emails_list,
                                             create_salesforce_lead)
@@ -718,6 +719,12 @@ class CorpMembership(TendenciBaseModel):
     total_passes_allowed = models.PositiveIntegerField(_('Total Passes Allowed'),
                                                default=0,
                                                blank=True)
+    # store the original price for display purpose
+    corp_price = models.DecimalField(max_digits=15, decimal_places=2,
+                                blank=True, default=0)
+    num_ind_above_cap = models.PositiveSmallIntegerField(default=0)
+    above_cap_price = models.DecimalField(max_digits=15, decimal_places=2,
+                                blank=True, default=0)
 
     perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
@@ -1624,6 +1631,98 @@ class CorpMembership(TendenciBaseModel):
 
         now = datetime.now()
         return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
+
+    def renew(self, request):
+        new_corp_membership = self.copy()
+        new_corp_membership.renewal = True
+        new_corp_membership.renew_from_id = self.id
+        new_corp_membership.renew_dt = datetime.now()
+        new_corp_membership.status = True
+        new_corp_membership.status_detail = 'pending'
+        new_corp_membership.creator = request.user
+        new_corp_membership.creator_username = request.user.username
+        new_corp_membership.owner = request.user
+        new_corp_membership.owner_username = request.user.username
+        new_corp_membership.expiration_dt = new_corp_membership.get_expiration_dt()
+        
+        # calculate the total price for invoice
+        corp_memb_type = self.corporate_membership_type
+        corp_renewal_price = corp_memb_type.renewal_price
+        if not corp_renewal_price:
+            corp_renewal_price = 0
+        indiv_renewal_price = corp_memb_type.membership_type.renewal_price
+        if not indiv_renewal_price:
+            indiv_renewal_price = 0
+
+        member_ids = MembershipDefault.objects.filter(
+                        corp_profile_id=self.corp_profile.id,
+                        status=True,
+                        status_detail__in=['active', 'expired']
+                        ).values_list('id', flat=True)
+        count_members = len(member_ids)
+        if corp_memb_type.apply_cap and corp_memb_type.allow_above_cap and count_members > corp_memb_type.membership_cap:
+            count_ind_within_cap = corp_memb_type.membership_cap
+            count_ind_above_cap = count_members - count_ind_within_cap
+            renewal_total = corp_renewal_price + \
+                            indiv_renewal_price * count_ind_within_cap + \
+                            corp_memb_type.above_cap_price * count_ind_above_cap
+        else:
+            renewal_total = corp_renewal_price + \
+                    indiv_renewal_price * count_members
+
+        opt_d = {'renewal': True,
+                 'renewal_total': renewal_total,
+                 'include_donation': False,
+                 'app': CorpMembershipApp.objects.current_app()}
+
+        new_corp_membership.save()
+        # create an invoice
+        inv = corp_memb_inv_add(request.user,
+                                new_corp_membership,
+                                **opt_d)
+        new_corp_membership.invoice = inv
+        new_corp_membership.save()
+
+        # assign object permissions
+        corp_membership_update_perms(new_corp_membership)
+
+        EventLog.objects.log(instance=self)
+
+        # save the individual members
+        for member_id in member_ids:
+            ind_memb_renew_entry = IndivMembershipRenewEntry(
+                            corp_membership=new_corp_membership,
+                            membership_id=member_id,
+                            )
+            ind_memb_renew_entry.save()        
+
+
+        if request.user.is_superuser and inv.balance <= 0:
+            # admin: approve renewal
+            new_corp_membership.approve_renewal(request)
+        else:
+            if self.is_expired:
+                # archive expired
+                self.status_detail = 'archive'
+                self.save()
+
+        # Comment it out for now
+        # # send an email to dues reps
+        # if get_setting('module', 'corporate_memberships', 'notificationson'):
+        #     recipients = dues_rep_emails_list(new_corp_membership)
+        #     notice_sent = new_corp_membership.send_notice_email(request, 'renewal')
+        #     if not notice_sent:
+        #         extra_context = {
+        #             'object': new_corp_membership,
+        #             'corp_profile': new_corp_membership.corp_profile,
+        #             'corpmembership_app': opt_d['app'],
+        #             'request': request,
+        #             'invoice': inv,
+        #         }
+        #         send_email_notification('corp_memb_renewed_user',
+        #                                 recipients, extra_context)
+        return new_corp_membership
+
 
     def send_notice_email(self, request, notice_type, **kwargs):
         """

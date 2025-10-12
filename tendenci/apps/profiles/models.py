@@ -125,6 +125,7 @@ class Profile(Person):
     # relations
     guid = models.CharField(max_length=40)
     account_id = models.IntegerField(blank=True, null=True, unique=True)
+    external_id = models.PositiveIntegerField(blank=True, null=True)
     entity = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.SET_NULL)
     pl_id = models.IntegerField(default=1)
     historical_member_number = models.CharField(_('historical member number'), max_length=50, blank=True)
