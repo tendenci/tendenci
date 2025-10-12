@@ -1,7 +1,7 @@
 future
 six
 configparser
-Django>=5.0
+Django>=5.2,<6.0
 django-formtools>=2.5.1
 Pillow==11.2.1
 django-countries==7.5.1
