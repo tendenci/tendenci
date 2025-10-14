@@ -309,6 +309,10 @@ class Invoice(models.Model):
             if field.max_length and value and len(value) > field.max_length:
                 value = value[:field.max_length]
                 setattr(self, field.name, value)
+        if self.bill_to_address2 is None:
+            self.bill_to_address2 = ''
+        if self.ship_to_address2 is None:
+            self.ship_to_address2 = ''
 
     def delete(self, *args, **kwargs):
         """
