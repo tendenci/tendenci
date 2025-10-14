@@ -1,3 +1,9 @@
+### 15.3.7 [2025-10-8]
+
+* Bugfix a IntegrityError for /py/.
+* Included the member_number field to the profiles list.
+
+
 ### 15.3.6 [2025-10-8]
 
 * New feature: Forum digest. Forum subscribers can opt in to receive daily and/or weekly digest. 
