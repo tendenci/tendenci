@@ -19,7 +19,7 @@ from tendenci.apps.profiles.utils import iter_users
 
 
 class ProfileAdmin(TendenciBaseModelAdmin):
-    list_display = ('username', 'account_id', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser', 'get_last_login')
+    list_display = ('username', 'account_id', 'member_number', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser', 'get_last_login')
     search_fields = ('account_id', 'display_name', 'user__first_name', 'user__last_name', 'user__username', 'user__email')
 
     fieldsets = (
