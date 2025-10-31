@@ -1,4 +1,4 @@
-import imghdr
+import magic
 from datetime import datetime
 from os.path import splitext
 
@@ -437,7 +437,7 @@ class DirectoryForm(TendenciBaseForm):
                     raise forms.ValidationError(self.logo_extension_error_message)
 
                 # check the image header
-                image_type = '.%s' % imghdr.what('', logo.read())
+                image_type = '.%s' % what_wagic('', logo.read())
                 if image_type not in ALLOWED_LOGO_EXT:
                     raise forms.ValidationError(self.logo_mime_error_message)
 

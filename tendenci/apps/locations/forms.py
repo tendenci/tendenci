@@ -1,4 +1,4 @@
-import imghdr
+import magic
 from os.path import splitext, basename
 
 from tendenci.apps.locations.models import Location
@@ -120,7 +120,7 @@ class LocationForm(TendenciBaseForm):
                 raise forms.ValidationError(_('The logo must be of jpg, gif, or png image type.'))
 
             # check the image header
-            image_type = '.%s' % imghdr.what('', photo_upload.read())
+            image_type = '.%s' % what_wagic('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError(_('The logo is an invalid image. Try uploading another logo.'))
 

@@ -1,4 +1,4 @@
-import imghdr
+import magic
 from os.path import splitext
 
 from django import forms
@@ -68,7 +68,7 @@ class StaffForm(TendenciBaseForm):
                 raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
 
             # check the image header
-            image_type = '.%s' % imghdr.what('', photo.read())
+            image_type = '.%s' % what_wagic('', photo.read())
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
 
