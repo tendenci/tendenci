@@ -251,10 +251,10 @@ def ticket_from_message(message, queue, quiet):
                 ext = mimetypes.guess_extension(part.get_content_type())
                 name = "part-%i%s" % (counter, ext)
 
-            files.append({
-                'filename': name,
-                'content': part.get_payload(decode=True),
-                'type': part.get_content_type()},
+            files.append(SimpleUploadedFile(
+                name,
+                part.get_payload(decode=True),
+                part.get_content_type())
                 )
 
         counter += 1
