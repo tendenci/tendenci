@@ -406,6 +406,10 @@ class Profile(Person):
                 region = Region.get_region_by_name(self.state)
                 if region and region != self.region:
                     self.region = region
+            else:
+                # no state, populate with the region name if available
+                if self.region:
+                    self.state = self.region.region_name
 
         super(Profile, self).save(*args, **kwargs)
 
