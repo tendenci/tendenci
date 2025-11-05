@@ -12,8 +12,9 @@ class GroupAdmin(TendenciBaseModelAdmin):
     search_fields = ['name', 'label', 'entity__entity_name']
     list_filter = ['entity', 'show_as_option', 'allow_self_add']
     list_editable = ['name', 'label', 'entity']
+    prepopulated_fields = {'slug': ['name']}
     fieldsets = (
-        (None, {'fields': ('name', 'label', 'entity', 'email_recipient', 'permissions')}),
+        (None, {'fields': ('name', 'label', 'slug', 'entity', 'email_recipient', 'permissions')}),
         (_('Flags'), {'fields': (
             'show_as_option', 'allow_self_add', 'allow_self_remove', 'sync_newsletters', 'show_for_events')}),
         (_('Administrative'), {'fields': (
