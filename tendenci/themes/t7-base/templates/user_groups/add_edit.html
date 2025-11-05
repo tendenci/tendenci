@@ -25,3 +25,20 @@
      </form>
  </div>
 {% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Slugify
+            var slugit = new Slugify({
+                input_element : '#id_name',
+                slug_element : '#id_slug',
+                submit_element : 'button[type="submit"]',
+                help: false,
+                limit : 150
+            });
+        });
+    </script>
+{% endblock %}

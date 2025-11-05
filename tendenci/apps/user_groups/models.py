@@ -73,6 +73,8 @@ class Group(TendenciBaseModel):
         return self.name
 
     def get_absolute_url(self):
+        if not self.slug:
+            return ''
         return reverse('group.detail', args=[self.slug])
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
