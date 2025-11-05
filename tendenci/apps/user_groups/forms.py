@@ -176,8 +176,8 @@ class GroupForm(TendenciBaseForm):
         self.fields['entity'].empty_label = None
         self.fields['logo'].validators = [FileValidator(allowed_extensions=('.jpeg', '.jpg', '.png', '.gif',))]
         self.fields['logo'].required = False
+        del self.fields['type']
         if self.instance and self.instance.type in ('membership', 'system_generated'):
-            del self.fields['type']
             del self.fields['allow_self_add']
             del self.fields['allow_self_remove']
 
