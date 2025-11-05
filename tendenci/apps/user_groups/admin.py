@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group as AuthGroup
 from django.utils.translation import gettext_lazy as _
+from django.contrib import messages
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.forms import GroupAdminForm
@@ -23,10 +24,15 @@ class GroupAdmin(TendenciBaseModelAdmin):
     form = GroupAdminForm
     ordering = ("id",)
 
-#     def has_delete_permission(self, request, obj=None):
-#         if obj and obj.type == 'system_generated':
-#             return False
-#         return super(GroupAdmin, self).has_delete_permission(request, obj=obj)
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.type in ('membership', 'system_generated'):
+            messages.add_message(
+                request,
+                messages.WARNING,
+                _(f'System generated group(s) "{obj.name}" can not be deleted')
+            )
+            return False
+        return super(GroupAdmin, self).has_delete_permission(request, obj=obj)
 
 
 class GroupMembershipAdmin(admin.ModelAdmin):
