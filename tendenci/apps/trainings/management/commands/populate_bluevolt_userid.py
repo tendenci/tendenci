@@ -37,7 +37,7 @@ class Command(BaseCommand):
                 [profile] = Profile.objects.filter(user__username=username)[:1] or [None]
                 if profile:
                     profile.external_id = external_id
-                    profile.save()
+                    profile.save(update_fields=['external_id'])
                     print(external_id)
                 else:
                     print(f'user with username "{username}" does not exist.')
