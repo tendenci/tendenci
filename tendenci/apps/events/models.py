@@ -2031,7 +2031,7 @@ class Registrant(models.Model):
                 self.registration.save()
 
             # update the invoice if invoice is not tendered
-            if not self.invoice.is_tendered:
+            if self.invoice and not self.invoice.is_tendered:
                 self.invoice.total -= self.amount
                 self.invoice.subtotal -= self.amount
                 self.invoice.balance -= self.amount
