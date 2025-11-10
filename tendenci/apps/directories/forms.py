@@ -1,4 +1,4 @@
-import magic
+from tendenci.apps.base.utils import what_magic
 from datetime import datetime
 from os.path import splitext
 

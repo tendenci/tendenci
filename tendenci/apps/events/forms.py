@@ -1,6 +1,6 @@
 from builtins import str
 import re
-import magic
+from tendenci.apps.base.utils import what_magic
 import calendar
 from ast import literal_eval
 from os.path import splitext, basename

@@ -1,4 +1,4 @@
-import magic
+from tendenci.apps.base.utils import what_magic
 from os.path import splitext, basename
 from django import forms
 from django.utils.translation import gettext_lazy as _
