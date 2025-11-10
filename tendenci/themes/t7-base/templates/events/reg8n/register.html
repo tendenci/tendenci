@@ -521,7 +521,7 @@
             </div>
             
             <input type="hidden" name="confirmed" />
-			{% if not event.is_table and event.registration_configuration.allow_guests %}
+			{% if not event.is_table and event.registration_configuration.allow_guests and flat_registrants|length <= event.registration_configuration.guest_limit  %}
             <input class="btn btn-default" type="submit" name="addmore" value="{% trans "Add Another Registrant" %}" />
              <br /><br />
              {% endif %}
