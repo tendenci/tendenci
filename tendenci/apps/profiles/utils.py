@@ -224,7 +224,7 @@ def get_member_reminders(user, view_self=False):
                 corp_membership = corp_profile.corp_membership
                 is_rep = corp_profile.is_rep(user) if corp_profile else False
                 if corp_profile and not is_rep:
-                    if corp_membership.is_expired or corp_membership.is_in_grace_period:
+                    if not corp_membership or corp_membership.is_expired or corp_membership.is_in_grace_period:
                         message = _("Your Corporate membership has lapsed. " + \
                                     "Please contact your company administrator. " + \
                                     "If you are in charge of renewing the membership, click the link below to request access")

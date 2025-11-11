@@ -724,6 +724,14 @@ def corpprofile_view(request, id, template="corporate_memberships/profiles/view.
                 raise Http403
 
     corp_membership = corp_profile.corp_membership
+    if not corp_membership:
+        # this one has been deleted by someone (an admin) - it shouldn't be deleted
+        corp_membership = CorpMembership.objects.all_inactive().filter(corp_profile_id=corp_profile.id).first()
+        if corp_membership and not corp_membership.status:
+            #corp_membership.status = True
+            #corp_membership.save(update_fields=['status'])
+            msg_string = f'NOTE: The associated corporate membership (ID: {corp_membership.id}) was deleted.'
+            messages.add_message(request, messages.WARNING, _(msg_string))
     reps = corp_profile.reps.all()
     memberships = MembershipDefault.objects.filter(
                         corp_profile_id=corp_profile.id
