@@ -1183,6 +1183,8 @@ def membership_default_add(request, slug='', membership_id=None,
                 msg_string = _(f'Your membership has been renewed. <a href="{view_url}">View Membership</a>')
             messages.add_message(request, messages.INFO, msg_string)
             return HttpResponseRedirect(reverse('profile', args=[membership_renewed.user.username]))
+        if not membership.expire_dt:
+            return HttpResponseRedirect(membership.get_absolute_url())
 
     membership_type_id = request.GET.get('membership_type_id', u'')
     if membership_type_id.isdigit():
