@@ -1183,8 +1183,6 @@ def membership_default_add(request, slug='', membership_id=None,
                 msg_string = _(f'Your membership has been renewed. <a href="{view_url}">View Membership</a>')
             messages.add_message(request, messages.INFO, msg_string)
             return HttpResponseRedirect(reverse('profile', args=[membership_renewed.user.username]))
-        if not membership.expire_dt:
-            return HttpResponseRedirect(membership.get_absolute_url())
 
     membership_type_id = request.GET.get('membership_type_id', u'')
     if membership_type_id.isdigit():
@@ -1256,7 +1254,9 @@ def membership_default_add(request, slug='', membership_id=None,
             renewed_corp = corp_membership.get_latest_renewed()
             renewal_blocked = False # renewal blocked to user
             corp_expired = False
-            if corp_membership.is_expired or (membership.expire_dt >= corp_membership.expiration_dt and not renewed_corp):
+            if corp_membership.is_expired or (membership.expire_dt and corp_membership.expiration_dt \
+                                              and membership.expire_dt >= corp_membership.expiration_dt \
+                                              and not renewed_corp):
                 corp_expired = True
             elif not get_setting('module', 'memberships', 'orgmembercanrenew'):
                 if not (request.user.is_superuser or is_corp_rep):
