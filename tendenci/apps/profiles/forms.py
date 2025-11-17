@@ -367,8 +367,8 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['region']
             else:
                 self.fields['region'].queryset = region_queryset
-            if not get_setting('module', 'invoices', 'taxrateuseregions'):
-                self.fields['region'].required = False
+                if not get_setting('module', 'invoices', 'taxrateuseregions'):
+                    self.fields['region'].required = False
 
         # we make first_name, last_name, email, username and password as required field regardless
         # the rest of fields will be decided by the setting - UsersRequiredFields
