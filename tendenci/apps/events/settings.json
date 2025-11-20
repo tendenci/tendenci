@@ -1511,5 +1511,22 @@
         "scope_category": "events",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, the Price Options field will show on registration edit for admin. (Currently, it works for the standard registration form only.)",
+        "data_type": "boolean",
+        "update_dt": "2025-11-20 12:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "allowpricingupdate",
+        "value": "false",
+        "label": "Registrant Pricing Can Be Changed",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]

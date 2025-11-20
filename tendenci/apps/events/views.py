@@ -3385,6 +3385,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
         if reg8n.event.course:
             fields.append('certification_track')
+        if request.user.is_superuser and get_setting('module', 'events', 'allowpricingupdate'):
+            fields.append('pricing')
+
         # use modelformset_factory for regular registration form
         RegistrantFormSet = modelformset_factory(
             Registrant, extra=0,
@@ -3407,6 +3410,12 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         if 'certification_track' in form.fields:
             form.fields['certification_track'].choices = reg8n.event.get_certification_choices()
             form.fields['certification_track'].required = False
+        if 'pricing' in form.fields:
+            from .forms import _get_price_labels
+            form.fields['pricing'].label_from_instance = _get_price_labels
+            form.fields['pricing'].queryset = form.fields['pricing'].queryset.filter(reg_conf=reg_conf)
+            form.fields['pricing'].empty_label = None
+            form.fields['pricing'].help_text = _('ADMIN ONLY. If you change the pricing, the associated invoice will NOT be changed. Make sure you manually adjust it.')
 
     if request.method == 'POST':
         redirect = True
