@@ -900,7 +900,7 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
             EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
-                if place.event_set.count() > 1 and (place._original_name != place.name):
+                if place.id and place.event_set.count() > 1 and (place._original_name != place.name):
                     # Create a new place
                     place.pk = None
                 place.save()
