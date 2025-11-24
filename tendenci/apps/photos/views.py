@@ -149,6 +149,8 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
     photo_set = None
     set_count = None
     photo = get_object_or_404(Image, id=id)
+    if not photo.image:
+        raise Http404
     if not has_perm(request.user, 'photos.view_image', photo):
         raise Http403
 
