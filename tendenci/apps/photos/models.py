@@ -152,6 +152,8 @@ class ImageModel(models.Model):
 
     def cache_path(self):
         # example 'photos/cache/3949a2d9' or 'photos/cache'
+        if not self.image:
+            return ''
         l = str(self.image).split('/')
         l.insert(1, 'cache')
         return os.path.dirname('/'.join(l))

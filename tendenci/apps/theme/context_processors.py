@@ -19,6 +19,7 @@ def theme(request):
     context['THEME'] = theme = get_theme(context['ACTIVE_THEME'])
 
     context['THEME_INFO'] = get_theme_info(theme)
+    context['USE_S3_STORAGE'] = settings.USE_S3_STORAGE
 
     # Backward compatibility for old themes
     def warn_theme_urls(value):
