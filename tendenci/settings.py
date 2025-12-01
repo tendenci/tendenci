@@ -59,6 +59,8 @@ DEBUG = False
 
 SITE_ID = 1
 
+URLIZE_ASSUME_HTTPS = True
+
 # Maintaining the historical behavior, the default value for DEFAULT_AUTO_FIELD is AutoField.
 # Starting with 3.2 new projects are generated with DEFAULT_AUTO_FIELD set to BigAutoField.
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
