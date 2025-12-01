@@ -1,3 +1,24 @@
+### 15.3.7 [2025-10-8]
+
+* Bugfix a IntegrityError for /py/.
+* Included the member_number field to the profiles list.
+
+
+### 15.3.6 [2025-10-8]
+
+* New feature: Forum digest. Forum subscribers can opt in to receive daily and/or weekly digest. 
+* Added 3 custom admin actions for corporate memberships: 1) renewed selected. 2) export invoices for the selected. 3) print invoices for the selected.
+* Added the "print selected invoices" admin action for memberships.
+* Updated list_events template tag to allow multiple groups.
+* Allowed admin to cancel an event registration with no cancellation deadline.
+* Added the option to hide non-member pricing from members on event registration.
+* Included the sponsor and organizer sections to event minimal add. 
+* Added the option to exclude tags for list_directories template tag. (Thanks to @rob-hills)
+* Updated events monthly and weekly views to handle events with child events. 
+* Added the option to allow member content to be pulled in to the newsletter templates.
+* Assorted bugfixes.
+
+
 ### 15.3.5 [2025-7-3]
 
 * Created the admin backend for newsletters to make newsletters searchable.

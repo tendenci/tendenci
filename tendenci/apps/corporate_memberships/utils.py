@@ -316,6 +316,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
 
         inv.bill_to_company = corp_profile.name
         inv.bill_to_address = corp_profile.address
+        inv.bill_to_address2 = corp_profile.address2
         inv.bill_to_city = corp_profile.city
         inv.bill_to_state = corp_profile.state
         inv.bill_to_zip_code = corp_profile.zip
@@ -324,6 +325,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
         inv.ship_to = corp_profile.name
         inv.ship_to_company = corp_profile.name
         inv.ship_to_address = corp_profile.address
+        inv.ship_to_address2 = corp_profile.address2
         inv.ship_to_city = corp_profile.city
         inv.ship_to_state = corp_profile.state
         inv.ship_to_zip_code = corp_profile.zip

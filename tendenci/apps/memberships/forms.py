@@ -1508,11 +1508,12 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
 
         # assign corp_profile_id
         if membership.corporate_membership_id:
-            corp_membership = CorpMembership.objects.get(
-                pk=membership.corporate_membership_id
-            )
-            membership.corp_profile_id = corp_membership.corp_profile.id
-            membership.entity = corp_membership.corp_profile.entity
+            if not membership.corp_profile_id:
+                corp_membership = CorpMembership.objects.get(
+                    pk=membership.corporate_membership_id
+                )
+                membership.corp_profile_id = corp_membership.corp_profile.id
+                membership.entity = corp_membership.corp_profile.entity
         else:
             # detach if no corporate_membership
             if membership.corp_profile_id:

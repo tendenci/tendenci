@@ -3,7 +3,7 @@
 {% load user_group_tags %}
 
 
-{% block title %}{% trans 'Groups Add' %}{% endblock %}
+{% block title %}{% if group %}{% trans "Edit Group" %}{% else %}{% trans 'Groups Add' %}{% endif %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -24,4 +24,21 @@
          </div>
      </form>
  </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Slugify
+            var slugit = new Slugify({
+                input_element : '#id_name',
+                slug_element : '#id_slug',
+                submit_element : 'button[type="submit"]',
+                help: false,
+                limit : 150
+            });
+        });
+    </script>
 {% endblock %}

@@ -130,7 +130,7 @@ class Form(TendenciBaseModel):
         help_text=_("One or more email addresses for form recipients, separated by commas"),
         max_length=2000)
     completion_url = models.CharField(_("Completion URL"), max_length=1000, blank=True, null=True,
-        help_text=_("Optionally, redirect to this page after form completion. Absolute URLS should begin with http. Relative URLs should begin with a forward slash (/)."))
+        help_text=_("Optionally, redirect to this page after form completion. Absolute URLS should begin with https://. Relative URLs should begin with a forward slash (/)."))
     template = models.CharField(_('Template'), max_length=50, blank=True)
     group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
 

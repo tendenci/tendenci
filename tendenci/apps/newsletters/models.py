@@ -365,6 +365,7 @@ class Newsletter(models.Model):
         content = content.replace('[site_mailing_address]', get_setting('site', 'global', 'sitemailingaddress'))
         content = content.replace('[site_contact_email]', get_setting('site', 'global', 'sitecontactemail'))
         content = content.replace('[site_phone_number]', get_setting('site', 'global', 'sitephonenumber'))
+        content = content.replace('[browser_view_url]', self.get_browser_view_url())
 
         return content
 

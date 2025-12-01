@@ -16,6 +16,7 @@ def donation_inv_add(user, donation, **kwargs):
     inv.bill_to_last_name = donation.last_name
     inv.bill_to_company = donation.company
     inv.bill_to_address = donation.address
+    inv.bill_to_address2 = donation.address2
     inv.bill_to_city = donation.city
     inv.bill_to_state = donation.state
     inv.bill_to_zip_code = donation.zip_code

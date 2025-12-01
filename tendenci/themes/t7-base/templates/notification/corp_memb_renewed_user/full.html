@@ -1,6 +1,10 @@
 
+{% if request.user.is_superuser and invoice.balance > 0 %}
+<p>{% trans "We have initiated the renewal for your corporate membership" %} {{ object.corp_profile.name }}.</p>
+{% else %}
 <p>{% blocktrans with object.corp_profile.name as objname and request.user.username as requser %}The corporate membership "{{ objname }}" has been renewed by {{ requser }}.{% endblocktrans %}
 </p>
+{% endif %}
 
 {% if invoice.balance <= 0 %}
     <p>
@@ -9,7 +13,7 @@
 {% else %}
     {% if object.payment_method.is_online %}
     <p>
-        {% blocktrans %}To make online credit card payment, go to invoice view page and make online payment from there:{% endblocktrans %}
+        {% blocktrans %}To make online credit card payment and complete the renewal, go to invoice view page and make online payment from there:{% endblocktrans %}
         <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}</a>
 
     </p>

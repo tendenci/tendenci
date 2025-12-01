@@ -724,6 +724,14 @@ def corpprofile_view(request, id, template="corporate_memberships/profiles/view.
                 raise Http403
 
     corp_membership = corp_profile.corp_membership
+    if not corp_membership:
+        # this one has been deleted by someone (an admin) - it shouldn't be deleted
+        corp_membership = CorpMembership.objects.all_inactive().filter(corp_profile_id=corp_profile.id).first()
+        if corp_membership and not corp_membership.status:
+            #corp_membership.status = True
+            #corp_membership.save(update_fields=['status'])
+            msg_string = f'NOTE: The associated corporate membership (ID: {corp_membership.id}) was deleted.'
+            messages.add_message(request, messages.WARNING, _(msg_string))
     reps = corp_profile.reps.all()
     memberships = MembershipDefault.objects.filter(
                         corp_profile_id=corp_profile.id
@@ -1273,11 +1281,14 @@ def corp_renew(request, id,
                 indiv_renewal_price = corp_memb_type.membership_type.renewal_price
                 if not indiv_renewal_price:
                     indiv_renewal_price = 0
+                new_corp_membership.corp_price = corp_renewal_price
 
                 count_members = len(members)
                 if corp_memb_type.apply_cap and corp_memb_type.allow_above_cap and count_members > corp_memb_type.membership_cap:
                     count_ind_within_cap = corp_memb_type.membership_cap
                     count_ind_above_cap = count_members - count_ind_within_cap
+                    new_corp_membership.num_ind_above_cap = count_ind_above_cap
+                    new_corp_membership.above_cap_price = corp_memb_type.above_cap_price
                     renewal_total = corp_renewal_price + \
                                     indiv_renewal_price * count_ind_within_cap + \
                                     corp_memb_type.above_cap_price * count_ind_above_cap
