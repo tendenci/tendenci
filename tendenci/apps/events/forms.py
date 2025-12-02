@@ -2934,7 +2934,7 @@ class UserRegistrationForm(UserMemberRegBaseForm):
     """
     User Registration form.
     """
-    user_display = forms.CharField(max_length=80,
+    user_display = forms.CharField(max_length=300,
                         label=_('User'),
                         required=False,
                         help_text=_('Type name or username or email, then press the down arrow key to select a suggestion'))
