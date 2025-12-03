@@ -264,7 +264,7 @@
       <div class="col-md-3 awarded">
         {% trans "This is to certify that" %} <br />
         <strong>{{ registrant.first_name }} {{ registrant.last_name }}</strong> <br />
-        {% trans "License #: " %} <u>{{ registrant.license_number }}</u> {% trans "PTIN #: " %} <u>{{ registrant.ptin}}</u> <br />
+        {% trans "License #: " %} <u>{{ registrant.license_number }}</u> {% if registrant.ptin and registrant.released_irs_credits %}{% trans "PTIN #: " %} <u>{{ registrant.ptin}}</u> {% endif %}<br />
         {% trans "has attended the following program" %}
       </div>
     </div>
