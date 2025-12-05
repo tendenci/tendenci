@@ -3542,6 +3542,13 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
 
     if not any(perms):
         raise Http403
+    
+    if registration.canceled:
+        # already canceled
+        return HttpResponseRedirect(
+            reverse('event.registration_confirmation',
+            args=[event.pk, registration.registrant.hash])
+        )
 
     registrants = registration.registrant_set.filter(cancel_dt__isnull=True)
     cancelled_registrants = registration.registrant_set.filter(cancel_dt__isnull=False)
