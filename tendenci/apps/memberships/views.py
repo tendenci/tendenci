@@ -1554,27 +1554,28 @@ def membership_default_add(request, slug='', membership_id=None,
                 if auto_renew_discount:
                     discount_amount += discount_amount
 
-            invoice = membership_set.save_invoice(memberships, app, discount_code=discount_code, discount_amount=discount_amount)
-            invoice.entity = memberships[0].entity
-
-            if discount_code and discount:
-                for dmount in discount_list:
-                    if dmount > 0:
-                        DiscountUse.objects.create(discount=discount, invoice=invoice)
-
+            donation_amount = None
+            donation_apply_tax = get_setting('module', 'donations', 'apply_tax')
             if app.donation_enabled:
                 # check for donation
                 donation_option, donation_amount = membership_form2.cleaned_data.get('donation_option_value', (None, None))
                 if donation_option:
                     if donation_option == 'default':
                         donation_amount = app.donation_default_amount
-                    if donation_amount > Decimal(0):
-                        membership_set.donation_amount = donation_amount
-                        membership_set.save()
-                        invoice.subtotal += donation_amount
-                        invoice.total += donation_amount
-                        invoice.balance += donation_amount
-                        invoice.save()
+
+            invoice = membership_set.save_invoice(memberships, app, discount_code=discount_code,
+                                                  discount_amount=discount_amount,
+                                                  donation_amount=donation_amount,
+                                                  donation_apply_tax=donation_apply_tax)
+            invoice.entity = memberships[0].entity
+            if donation_amount and donation_amount > Decimal(0):
+                membership_set.donation_amount = donation_amount
+                membership_set.save()
+
+            if discount_code and discount:
+                for dmount in discount_list:
+                    if dmount > 0:
+                        DiscountUse.objects.create(discount=discount, invoice=invoice)
 
             memberships_join_notified = []
             memberships_renewal_notified = []
