@@ -1,3 +1,13 @@
+### 15.3.8 [2025-12-9]
+
+* Appled tax to donation, if enabled, for membership forms.
+* Added a setting "Registrant Pricing Can Be Changed", default to False, to allow admin to change the pricing for a registrant.
+* Fixed the issue about testimonials not showing for logged in users.
+* Updated copy event to clone custom form if needed.
+* Updated group add to auto-fill slug.
+* More assorted bugfixes.
+
+
 ### 15.3.7 [2025-10-8]
 
 * Bugfix a IntegrityError for /py/.
