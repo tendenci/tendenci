@@ -268,7 +268,8 @@ class Profile(Person):
         Returns grid with credits by category -> by year -> by Event
         Also returns all credit names by category
         """
-        credits = OrderedDict()
+        #credits = OrderedDict()
+        credits = {}
         credit_names_by_category = OrderedDict()
 
         for credit in self.released_credits:
@@ -327,6 +328,8 @@ class Profile(Person):
             # Update total credits for this event (by pk)
             credits[category][year]['events'][event.pk]['credits'] += credit.credits
 
+        # sort credits dict by category
+        credits = OrderedDict(sorted(credits.items()))
         return credits, credit_names_by_category
 
     def first_name(self):
