@@ -215,6 +215,7 @@ def get_invoice_data(invoice, field_names):
         data['Item'] = invoice.object_display(obj)
 
     data[f'Total Amount ({currency_symbol})'] = invoice.total
+    data['Taxes'] = "%.2f" % invoice.total_taxes if invoice.total_taxes else ''
 
     data[f'balance ({currency_symbol})'] = invoice.balance
 
@@ -230,7 +231,7 @@ def get_invoice_data(invoice, field_names):
     
 def iter_invoices(invoices, ):
     currency_symbol = get_setting('site', 'global', 'currencysymbol')
-    field_names = ['Date', 'Invoice No.', 'Member/User', 'Item', f'Total Amount ({currency_symbol})', f'balance ({currency_symbol})', 'Status']
+    field_names = ['Date', 'Invoice No.', 'Member/User', 'Item', f'Total Amount ({currency_symbol})', 'Taxes', f'balance ({currency_symbol})', 'Status']
     
     writer = csv.DictWriter(Echo(), fieldnames=field_names)
     # write headers

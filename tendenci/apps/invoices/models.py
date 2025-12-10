@@ -915,6 +915,10 @@ class Invoice(models.Model):
 
         return data.get('amount__sum') or 0
 
+    @property
+    def total_taxes(self):
+        return self.tax + self.tax_2
+
     def get_first_approved_payment(self):
         """
         Returns first approved payment in ascending order
