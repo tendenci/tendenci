@@ -1,3 +1,10 @@
+### 15.3.9 [2025-12-12]
+
+* Included the taxes column to the invoices list.
+* Updated credits page to sort by category.
+* Resolved an issue that the membership renew link might not show on user profiles.
+
+
 ### 15.3.8 [2025-12-9]
 
 * Appled tax to donation, if enabled, for membership forms.
