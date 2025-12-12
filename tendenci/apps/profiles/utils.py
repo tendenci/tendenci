@@ -219,23 +219,22 @@ def get_member_reminders(user, view_self=False):
         if view_self:
             if membership.in_grace_period() or membership.is_expired() or membership.can_renew():
                 corp_profile = membership.get_corporate_profile()
-                if not corp_profile:
-                    continue
-                corp_membership = corp_profile.corp_membership
-                is_rep = corp_profile.is_rep(user) if corp_profile else False
-                if corp_profile and not is_rep:
-                    if not corp_membership or corp_membership.is_expired or corp_membership.is_in_grace_period:
-                        message = _("Your Corporate membership has lapsed. " + \
-                                    "Please contact your company administrator. " + \
-                                    "If you are in charge of renewing the membership, click the link below to request access")
-                        reminders += ((message, '/contact/', 'Request Access.'),)
-                        continue
-                    elif not get_setting('module', 'memberships', 'orgmembercanrenew'):
-                        # corp membership not expired yet, but individual not allowed to renew 
-                        message = _("Please contact your company administrator to renew your membership. " + \
-                                    "If you are in charge of renewing the membership, click the link below to request access")
-                        reminders += ((message, '/contact/', 'Request Access.'),)
-                        continue
+                if corp_profile:
+                    corp_membership = corp_profile.corp_membership
+                    is_rep = corp_profile.is_rep(user) if corp_profile else False
+                    if corp_profile and not is_rep:
+                        if not corp_membership or corp_membership.is_expired or corp_membership.is_in_grace_period:
+                            message = _("Your Corporate membership has lapsed. " + \
+                                        "Please contact your company administrator. " + \
+                                        "If you are in charge of renewing the membership, click the link below to request access")
+                            reminders += ((message, '/contact/', 'Request Access.'),)
+                            continue
+                        elif not get_setting('module', 'memberships', 'orgmembercanrenew'):
+                            # corp membership not expired yet, but individual not allowed to renew 
+                            message = _("Please contact your company administrator to renew your membership. " + \
+                                        "If you are in charge of renewing the membership, click the link below to request access")
+                            reminders += ((message, '/contact/', 'Request Access.'),)
+                            continue
 
         # renew_link depends on membership.app
         if not membership.app:
