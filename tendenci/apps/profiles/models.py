@@ -811,6 +811,9 @@ class Profile(Person):
         if default_storage.exists(size_path):
             return default_storage.url(size_path)
 
+        if not default_storage.exists(self.photo.name):
+            return None
+            
         im = Image.open(default_storage.open(self.photo.name))
         im.thumbnail((size, size))
 
