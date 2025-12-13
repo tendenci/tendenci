@@ -647,6 +647,7 @@ class PhotoImageURL(Node):
         cached_image_url = cache.get(cache_key)
         if cached_image_url:
             if settings.USE_S3_STORAGE:
+                cached_image_url = re.sub(rf'^{settings.MEDIA_URL}', '', cached_image_url)
                 return default_storage.url(cached_image_url)
             return cached_image_url
 
