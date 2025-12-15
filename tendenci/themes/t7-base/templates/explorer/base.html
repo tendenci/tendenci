@@ -1,83 +1,114 @@
+{% load i18n static %}
+{% load vite %}
 
-{% load staticfiles %}
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "SQL Explorer" %}{% if query %} - {{ query.title }}{% elif title %} - {{ title }}{% endif %}</title>
+    <title>{% translate "SQL Explorer" %}{% if query %} - {{ query.title }}{% elif title %} - {{ title }}{% endif %}</title>
+    <link rel="icon" type="image/svg+xml" href="{% vite_asset 'images/logo.png' %}">
 
-    <link rel="stylesheet" href="{% static 'explorer/css/codemirror.min.css' %}" />
-    <link rel="stylesheet" href="{% static 'explorer/css/pivot.min.css' %}" />
-    <link rel="stylesheet" href="{% static 'explorer/css/bootstrap.min.css' %}" />
-    <link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}" />
+    {% block style %}
+        {% vite_asset 'scss/styles.scss' %}
+    {% endblock style %}
 
-    <script src="{% static 'explorer/js/jquery.min.js' %}"></script>
-    <script src="{% static 'explorer/js/jquery.cookie.min.js' %}"></script>
-
-    <script src="{% static 'explorer/js/jquery-ui.min.js' %}"></script>
-    <script type="text/javascript">
-        queryId = "{% firstof query.id 'new' %}";
-        csrfCookieName = "{% firstof csrf_cookie_name 'csrftoken' %}"
-    </script>
-    <script src="{% static 'explorer/js/explorer.js' %}"></script>
 </head>
 
 <body>
-  {% block sql_explorer_content_takeover %}
-    <div id="wrap" class="wrap">
-        {% block sql_explorer_navbar %}
-            <div class="navbar navbar-default navbar-static-top" role="navigation">
-              <div class="container">
-                <div class="navbar-header">
-                  <a class="navbar-brand" href="{% url "explorer_index" %}">SQL Explorer</a>
-                </div>
-                <div class="navbar-collapse collapse">
-                  <ul class="nav navbar-nav">
-                    {% block sql_explorer_navlinks %}
-					    {% if can_change %}
-					      <li{% if not query %} class="active" {% endif %}><a href="{% url "query_create" %}">New Query</a></li>
-					      <li><a href="{% url "explorer_playground" %}">Playground</a></li>
-					    {% endif %}
-					    {% if query %}<li class="active"><a href="">Query Detail</a></li>{% endif %}
-					    <li><a href="{% url "explorer_logs" %}">Logs</a></li>
-					{% endblock %}
-					<li><a href="{% url 'explorer_extensions.export_page' %}">Data Export</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-        {% endblock %}
-        <div class="container">
-          <div class="starter-template">
-          {% block sql_explorer_content %}{% endblock %}
-          </div>
-        </div>
+    <input type="hidden" id="csrfCookieName" value="{% firstof csrf_cookie_name 'csrftoken' %}">
+    <input type="hidden" id="csrfTokenInDOM" value="{% firstof csrf_token_in_dom False %}">
+    <input type="hidden" id="clientRoute" value="{{ request.resolver_match.url_name }}">
+    <input type="hidden" id="baseUrlPath" value="{% url 'explorer_index' %}">
+{% if vite_dev_mode %}
+    <div class="vite-not-running-canary" style="text-align:center;">
+        <hr>
+        <h1>Looks like Vite isn't running</h1>
+        <h2>This is easy to fix, I promise!</h2>
+        <div>You can run:</div>
+            <pre>
+npm run dev
+            </pre>
+        <div>Then refresh this page, and you'll get all of your styles, JS, and hot-reloading.</div>
+        <div>If this is the first time you are running the project, then run:</div>
+        <pre>
+nvm install
+nvm use
+npm install
+npm run dev
+        </pre>
+        <hr>
     </div>
-  {% endblock %}
-    {% block sql_explorer_footer %}
-        <div class="container">
-            <div class="row">
-              <div class="col-md-12 text-center">
-                    <p class="text-muted">
-                        Powered by <a href="https://www.github.com/groveco/django-sql-explorer/">django-sql-explorer</a> from
-                        <a href="https://www.grove.co">Grove Collaborative</a>. Rendered at {% now "SHORT_DATETIME_FORMAT" %}
-                    </p>
-              </div>
-            </div>
+{% endif %}
+
+{% block sql_explorer_content_takeover %}
+    <nav class="navbar navbar-expand-lg navbar-dark mb-3">
+        <div class="container bd-gutter flex-wrap flex-lg-nowrap">
+            <a class="navbar-brand d-flex align-items-center"
+                href="{% url 'explorer_index' %}">
+                <img src="{% vite_asset 'images/logo-main.svg' %}" alt="Logo" class="me-2 logo-image" >
+                {% translate "SQL Explorer" %}
+            </a>
+            <ul class="nav nav-pills">
+                {% if can_change %}
+                    <li class="nav-item">
+                        <a class="nav-link{% if not query and view_name == 'query_create' %} active{% endif %}"
+                           href="{% url 'query_create' %}"><i class="small me-1 bi-plus-circle"></i>{% translate "New Query" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if not query and view_name == 'explorer_playground' %} active{% endif %}"
+                           href="{% url 'explorer_playground' %}"><i class="small me-1 bi-arrow-up-right-square"></i>{% translate "Playground" %}</a>
+                    </li>
+                    {% if db_connections_enabled and can_manage_connections %}
+                        <li class="nav-item">
+                            <a class="nav-link{% if view_name == 'explorer_connections' %} active{% endif %}"
+                               href="{% url 'explorer_connections' %}"><i class="small me-1 bi-globe"></i>{% translate "Connections" %}</a>
+                        </li>
+                        {% if assistant_enabled %}
+                            <li class="nav-item">
+                                <a class="nav-link{% if view_name == 'table_description_list' %} active{% endif %}"
+                                   href="{% url 'table_description_list' %}"><i class="small me-1 bi-bank2"></i>{% translate "Annotations" %}</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link{% if not query and view_name == 'explorer_logs' %} active{% endif %}"
+                       href="{% url 'explorer_logs' %}"><i class="small me-1 bi-card-list"></i>{% translate "Logs" %}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if not query and view_name == 'query_favorites' %} active{% endif %}"
+                       href="{% url 'query_favorites' %}"><i class="small me-1 bi-heart"></i>{% translate "Favorites" %}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="{% url 'explorer_extensions.export_page' %}"><i class="small me-1 bi-download"></i>{% translate "Data Export" %}</a>
+                </li>
+            {% if hosted %}
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="/"><i class="small me-1 bi-arrow-return-left"></i>Manage</a>
+                </li>
+            {% endif %}
+            </ul>
         </div>
-    {% endblock %}
-    <script src="{% static 'explorer/js/underscore-min.js' %}"></script>
-    <script src="{% static 'explorer/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'explorer/js/list.min.js' %}"></script>
-    <script src="{% static 'explorer/js/codemirror.min.js' %}"></script>
-    <script src="{% static 'explorer/js/sql.min.js' %}"></script>
-    <script src="{% static 'explorer/js/comment.min.js' %}"></script>
-    <script src="{% static 'explorer/js/jquery.floatThead.min.js' %}"></script>
-    <script src="{% static 'explorer/js/pivot.min.js' %}"></script>
-    {% block sql_explorer_scripts %}{% endblock %}
+    </nav>
+{% block sql_explorer_content %}{% endblock %}
+{% endblock %}
+{% block sql_explorer_footer %}
+    <div class="container">
+        <footer class="py-3 my-4">
+            <p class="text-center text-body-secondary border-top pt-3">
+                Powered by <a href="https://www.sqlexplorer.io/">SQL Explorer</a>. Rendered at {% now "SHORT_DATETIME_FORMAT" %}
+            </p>
+        </footer>
+    </div>
+{% endblock %}
+{% block bottom_script %}
+    {% vite_hmr_client %}
+    {% vite_asset 'js/main.js' %}
+{% endblock bottom_script %}
+{% block sql_explorer_scripts %}{% endblock %}
 </body>
 
 </html>
