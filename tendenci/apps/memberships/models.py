@@ -23,7 +23,7 @@ from django.template.loader import render_to_string
 from django.db.models.fields import AutoField
 from django.template.defaultfilters import slugify
 
-from tendenci.apps.base.utils import day_validate, is_blank, tcurrency
+from tendenci.apps.base.utils import day_validate, is_blank, tcurrency, is_positive_and_not_zerotype
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.utils import get_notice_recipients
@@ -399,8 +399,7 @@ class MembershipSet(models.Model):
                 invoice.discount_amount = discount_amount
                 price -= discount_amount
 
-        if donation_amount > 0 and donation_apply_tax: 
-            # prevent negative donation amounts
+        if is_positive_and_not_zerotype(donation_amount) and donation_apply_tax: 
             # add the donation amount to the price so that 
             # it can calculate the tax for donation as well
             price += donation_amount
@@ -418,8 +417,7 @@ class MembershipSet(models.Model):
         else: #tax included
             invoice.total = price
         invoice.balance = invoice.total
-        if donation_amount > 0 and not donation_apply_tax:
-            # prevent negative donation amounts
+        if is_positive_and_not_zerotype(donation_amount) and not donation_apply_tax:
             # Since tax is not applied to donation,
             # donation_amount hasn't been added yet
             invoice.subtotal += donation_amount
