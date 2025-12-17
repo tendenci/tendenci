@@ -1378,7 +1378,10 @@ class Registration(models.Model):
         invoice.assign_tax(price_tax_rate_list, primary_registrant.user)
 
         invoice.subtotal = self.amount_paid
-        invoice.total = invoice.subtotal + invoice.tax + invoice.tax_2
+        if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added': #tax added
+            invoice.total = invoice.subtotal + invoice.tax + invoice.tax_2
+        else:
+            invoice.total = invoice.subtotal
             
         if invoice.gratuity:
             invoice.total += invoice.subtotal * invoice.gratuity

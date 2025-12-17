@@ -119,7 +119,10 @@ def make_invoice_for_entry(entry, **kwargs):
     if entry.pricing and entry.pricing.taxable:        
         inv.assign_tax([(amount, entry.pricing.tax_rate)], entry.creator)
         inv.subtotal = amount
-        inv.total = amount + inv.tax + inv.tax_2
+        if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added': #tax added
+            inv.total = amount + inv.tax + inv.tax_2
+        else: #tax included
+            inv.total = amount
         inv.balance = inv.total
 
     if entry.creator and not entry.creator.is_anonymous:

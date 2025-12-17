@@ -399,7 +399,8 @@ class MembershipSet(models.Model):
                 invoice.discount_amount = discount_amount
                 price -= discount_amount
 
-        if donation_amount and donation_apply_tax:
+        if donation_amount > 0 and donation_apply_tax: 
+            # prevent negative donation amounts
             # add the donation amount to the price so that 
             # it can calculate the tax for donation as well
             price += donation_amount
@@ -412,9 +413,13 @@ class MembershipSet(models.Model):
                            module_tax_rate_use_regions=get_setting('module', 'memberships', 'taxrateuseregions'))
 
         invoice.subtotal = price
-        invoice.total = price + invoice.tax + invoice.tax_2
+        if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added': #tax added
+            invoice.total = price + invoice.tax + invoice.tax_2
+        else: #tax included
+            invoice.total = price
         invoice.balance = invoice.total
-        if donation_amount and not donation_apply_tax:
+        if donation_amount > 0 and not donation_apply_tax:
+            # prevent negative donation amounts
             # Since tax is not applied to donation,
             # donation_amount hasn't been added yet
             invoice.subtotal += donation_amount
