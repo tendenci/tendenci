@@ -1234,6 +1234,17 @@ def corp_renew(request, id,
                              for admin approval.""" % corp_membership)
         return HttpResponseRedirect(reverse('corpmembership.view',
                                         args=[corp_membership.id]))
+
+    # avoid duplicates if a corp membership is already renewed and in pending
+    latest_renewed_in_pending = corp_membership.latest_renewed_in_pending()
+    if latest_renewed_in_pending:
+        messages.add_message(request, messages.INFO,
+                             """The corporate membership
+                             has been renewed and is pending
+                             for admin approval.""")
+        return HttpResponseRedirect(reverse('corpmembership.view',
+                                        args=[latest_renewed_in_pending.id]))
+
     if corp_membership.is_archive:
         # don't renew archive
         [latest_renewed] = CorpMembership.objects.filter(
