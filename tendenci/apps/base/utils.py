@@ -1023,6 +1023,18 @@ def validate_email(s, quiet=True):
     return False
 
 
+def is_positive_and_not_zerotype(value):
+    """
+    Checks if a value is positive and has a non-zero truthy value.
+    Handles cases where the value is not a comparable type (e.g. a string that can't be converted)
+    Effectively excludes 0, 0.0, None, [], '', etc.
+    """
+    try:
+        return value > 0 and bool(value)
+    except (TypeError, ValueError):
+        return False
+
+
 def get_latest_version():
     from xmlrpc import client as xmlrpc_client
     with xmlrpc_client.ServerProxy('http://pypi.python.org/pypi') as proxy:
