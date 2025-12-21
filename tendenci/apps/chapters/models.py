@@ -884,7 +884,10 @@ class ChapterMembership(TendenciBaseModel):
             price = self.get_price()
             invoice.assign_tax([(price, 0)], self.user)
             invoice.subtotal = price
-            invoice.total = price + invoice.tax + invoice.tax_2
+            if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added':
+                invoice.total = price + invoice.tax + invoice.tax_2
+            else: #Tax Included
+                invoice.total = price
             invoice.balance = invoice.total
     
             invoice.due_date = datetime.now()

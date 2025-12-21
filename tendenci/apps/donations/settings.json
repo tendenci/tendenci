@@ -120,9 +120,9 @@
     },
     {
         "default_value": "false",
-        "description": "Charge tax based on the user's region if the setting <a href=\"/settings/module/invoices/#id_taxrateuseregions\">Use Regions for Tax Rate</a> is turned on.",
+        "description": "Tax donations as per the <a href=\"/settings/module/invoices/#id_taxmodel\">Tax Model</a> setting. Tax will be based on the user's region if the setting <a href=\"/settings/module/invoices/#id_taxrateuseregions\">Use Regions for Tax Rate</a> is turned on.",
         "data_type": "boolean",
-        "update_dt": "2025-05-26 12:48:00",
+        "update_dt": "2025-12-16 20:00:00",
         "input_type": "select",
         "client_editable": false,
         "name": "apply_tax",
