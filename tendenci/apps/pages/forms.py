@@ -1,4 +1,4 @@
-import imghdr
+from tendenci.apps.base.utils import what_magic
 from os.path import splitext, basename
 
 from tendenci.apps.pages.models import Page
@@ -243,7 +243,7 @@ class PageForm(TendenciBaseForm):
                 raise forms.ValidationError(_('The header image must be of jpg, gif, or png image type.'))
 
             # check the image header_image
-            image_type = '.%s' % imghdr.what('', header_image.read())
+            image_type = '.%s' % what_wagic('', header_image.read())
             if image_type not in ALLOWED_IMG_EXT:
                 raise forms.ValidationError(_('The header image is an invalid image. Try uploading another image.'))
 
