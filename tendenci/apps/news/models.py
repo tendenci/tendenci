@@ -7,6 +7,7 @@ from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.conf import settings
+from django.utils import timezone
 
 from tagging.fields import TagField
 from timezone_field import TimeZoneField
@@ -151,7 +152,7 @@ class News(TendenciBaseModel):
     def is_released(self):
         if not self.release_dt_local:
             self.assign_release_dt_local()
-        return self.release_dt_local <= datetime.now()
+        return self.release_dt_local <= timezone.now()
 
     @property
     def has_google_author(self):

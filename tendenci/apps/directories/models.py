@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 
 from tagging.fields import TagField
 from timezone_field import TimeZoneField
@@ -289,7 +290,7 @@ class Directory(TendenciBaseModel):
     def renew_window(self):
         days = get_setting('module', 'directories', 'renewaldays')
         days = int(days)
-        if self.expiration_dt and datetime.now() + timedelta(days) > self.expiration_dt:
+        if self.expiration_dt and timezone.now() + timedelta(days) > self.expiration_dt:
             return True
         else:
             return False

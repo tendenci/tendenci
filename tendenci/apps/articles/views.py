@@ -17,6 +17,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
@@ -58,7 +59,7 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
     if not article.release_dt_local and article.release_dt:
         article.assign_release_dt_local()
 
-    if not article.release_dt_local or article.release_dt_local >= datetime.now():
+    if not article.release_dt_local or article.release_dt_local >= timezone.now():
         if not any([
             has_perm(request.user, 'articles.view_article'),
             request.user == article.owner,

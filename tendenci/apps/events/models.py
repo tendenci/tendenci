@@ -26,6 +26,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.fields import AutoField
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Q
+from django.utils import timezone
 
 from tagging.fields import TagField
 from timezone_field import TimeZoneField
@@ -3625,7 +3626,7 @@ class Event(TendenciBaseModel):
 
     @property
     def is_over(self):
-        return self.end_dt <= datetime.now()
+        return self.end_dt <= timezone.now()
 
     @property
     def available_for_purchase(self):
