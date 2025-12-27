@@ -6,6 +6,10 @@ from django.shortcuts import get_object_or_404
 #from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetView
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.views import LogoutView as DjangoLogoutView
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.utils.decorators import method_decorator
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.registration.forms import RegistrationForm
@@ -17,6 +21,25 @@ from tendenci.apps.accounts.forms import PasswordResetForm
 from tendenci.apps.base.utils import get_next_url
 from tendenci.apps.base.http import Http403
 
+
+
+class LogoutView(DjangoLogoutView):
+    http_method_names = ["get", "post", "options"]
+
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """Go to confirmation before logging out"""
+        template_name='accounts/logout_form.html'
+        return render_to_resp(request=request, template_name=template_name)
+
+    @method_decorator(csrf_protect)
+    def post(self, request, *args, **kwargs):
+        """Logout may be done via POST."""
+        return super().post(request, *args, **kwargs)   
+    
 
 @ssl_required
 def login(request, form_class=LoginForm, template_name="account/login.html"):

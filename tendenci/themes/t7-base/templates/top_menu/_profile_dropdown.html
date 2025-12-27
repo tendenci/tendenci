@@ -143,10 +143,11 @@
                             {% endwith %}
                             {% endif %}
 
-                            <li class="content-item">
-                                <a href="{% url 'auth_logout' %}"><span class="glyph">&#88;</span><span class="nav-label">{% trans "Logout" %}</span></a>
-                            </li>
-
+                            <li class="content-item"><span class="glyph">&#88;</span>
+                            <form method="post" action="{% url 'auth_logout' %}" style="display: inline;">{% csrf_token %}
+    							<button type="submit" class="btn btn-link" style="padding: 3px;"><span class="nav-label">{% trans "Logout" %}</span></button>
+    						</form>
+    						</li>
                         </ul>
 
                     </div>
