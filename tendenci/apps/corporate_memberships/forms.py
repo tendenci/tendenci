@@ -840,6 +840,8 @@ class CorpMembershipRenewForm(forms.ModelForm):
                 try:
                     donation_amount = donation_amount.replace('$', '').replace(',', '')
                     donation_amount = decimal.Decimal(donation_amount)
+                    if donation_amount < 0:
+                        raise forms.ValidationError(_("Negative donation amount entered! Please correct it."))
                     return (donation_option, donation_amount)
                 except decimal.InvalidOperation:
                     raise forms.ValidationError(_("Please enter a valid donation amount."))
