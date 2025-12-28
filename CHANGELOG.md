@@ -1,3 +1,12 @@
+### 15.3.10 [2025-12-28]
+
+* Added the option to have taxes included in prices (as is done in Europe and VAT and GST countries. (Thanks to @rockinrobstar)
+* Updated corporate membership renewal to avoid duplicate submissions if a corp membership is already renewed and in pending.
+* Fixed an error in the template tag `photo_image_url` when using s3.
+* Corrected the "view notice" link for corporate membership notice logs search.
+* Fixed an issue about a negative donation could be applied on membership join or renewal. (Thanks to @rockinrobstar)
+
+
 ### 15.3.9 [2025-12-12]
 
 * Included the taxes column to the invoices list.
