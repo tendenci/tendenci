@@ -556,7 +556,7 @@ def get_payment_method_choices(user, corp_app):
 def csv_to_dict(file_path):
     data_list = []
 
-    data = csv.reader(default_storage.open(file_path, 'rU'))
+    data = csv.reader(default_storage.open(file_path, 'r'))
     fields = next(data)
 
     fields = [smart_str(field) for field in fields]
@@ -572,7 +572,7 @@ def validate_import_file(file_path):
     'name' and 'corporate_membership_type' are required fields
     """
     normalize_newline(file_path)
-    data = csv.reader(default_storage.open(file_path, mode='rU'))
+    data = csv.reader(default_storage.open(file_path, mode='r'))
     fields = next(data)
     fields = [smart_str(field) for field in fields]
 
