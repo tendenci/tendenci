@@ -663,7 +663,7 @@ def csv_to_dict(file_path, **kwargs):
         return []
 
     normalize_newline(file_path)
-    csv_file = csv.reader(default_storage.open(file_path, 'rU'))
+    csv_file = csv.reader(default_storage.open(file_path, 'r'))
     colnames = next(csv_file)  # row 1;
 
     if machine_name:
@@ -1055,6 +1055,8 @@ def memb_import_parse_csv(mimport):
         data_list = []
     
         for row in csv_reader:
+            if not row:
+                continue
             data_list.append(dict(zip(fieldnames, row)))
     
         return fieldnames, data_list

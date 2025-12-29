@@ -512,7 +512,7 @@ def extract_from_excel(file_path):
         import dateutil.parser as dparser
 
         normalize_newline(file_path)
-        data = csv.reader(default_storage.open(file_path, 'rU'))
+        data = csv.reader(default_storage.open(file_path, 'r'))
 
         # read the column header
         fields = next(data)
