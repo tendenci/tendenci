@@ -265,7 +265,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     if request.user.profile.is_superuser or has_approve_perm:
         GET_KEYS = request.GET
 
-        if 'approve' in GET_KEYS:
+        if 'approve' in GET_KEYS and not membership.is_approved():
             is_renewal = membership.is_renewal()
             membership.approve(request)
             membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
