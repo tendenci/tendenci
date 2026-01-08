@@ -54,6 +54,8 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.utils import get_theme_root
 from .forms import NextURLForm
 
+import magic
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 STOP_WORDS = ['able','about','across','after','all','almost','also','am',
@@ -1076,3 +1078,29 @@ class Echo:
     def write(self, value):
         """Write the value by returning it, instead of storing in a buffer."""
         return value
+
+def what_magic(filename, data=None):
+    """
+    A drop-in replacement for imghdr.what() using python-magic.
+    Returns the image type string (e.g., 'jpeg', 'png') or None.
+
+    Args:
+        filename: The filename (can be empty string when data is provided)
+        data: The image data as bytes (optional)
+    """
+    try:
+        if data:
+            # If data is provided, use magic.from_buffer() instead of from_file()
+            mime = magic.from_buffer(data, mime=True)
+        else:
+            # If no data, use the original file-based approach
+            mime = magic.from_file(filename, mime=True)
+
+        # Check if it's an image and split the MIME type
+        if mime.startswith('image/'):
+            return mime.split('/')[1] # Return 'jpeg' from 'image/jpeg'
+        return None
+    except (FileNotFoundError, IOError, TypeError):
+        # Handle cases where the file doesn't exist or can't be read
+        return None
+    
