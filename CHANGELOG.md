@@ -1,4 +1,7 @@
-### 15.3.11 [2026-1-8]
+### 15.3.11 [2026-1-8] 
+
+* Fixed an issue in import for profiles, memberships, etc, due to the invalid mode: 'rU' which was removed in Python 3.11.
+* Avoided the Approve link being double-clicked on membership details view.
 
 
 ### 15.3.10 [2025-12-28]
