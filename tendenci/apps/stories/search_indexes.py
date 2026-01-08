@@ -1,5 +1,5 @@
 from haystack import indexes
-from datetime import datetime
+from django.utils import timezone
 
 from tendenci.apps.stories.models import Story
 from tendenci.apps.categories.models import Category
@@ -42,4 +42,4 @@ class StoryIndex(TendenciBaseSearchIndex, indexes.Indexable):
 
     def prepare_can_syndicate(self, obj):
         return obj.syndicate and obj.status == 1 and obj.status_detail == 'active' \
-                and datetime.now() > obj.end_dt
+                and timezone.now() > obj.end_dt

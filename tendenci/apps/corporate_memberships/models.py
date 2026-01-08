@@ -21,6 +21,7 @@ from django.db.models.signals import post_delete
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from django.utils import timezone
 
 #from django.contrib.contenttypes.models import ContentType
 from tendenci.libs.tinymce import models as tinymce_models
@@ -1629,7 +1630,7 @@ class CorpMembership(TendenciBaseModel):
         (renewal_period_start_dt,
          renewal_period_end_dt) = self.get_renewal_period_dt()
 
-        now = datetime.now()
+        now = timezone.now()
         return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
 
     def renew(self, request):
@@ -1765,7 +1766,7 @@ class CorpMembership(TendenciBaseModel):
             if not self.expiration_dt or not isinstance(self.expiration_dt,
                                                         datetime):
                 return False
-            return datetime.now() >= self.expiration_dt
+            return timezone.now() >= self.expiration_dt
         return False
 
     @property
@@ -1804,7 +1805,7 @@ class CorpMembership(TendenciBaseModel):
             grace_period_end_dt = self.expiration_dt + timedelta(
                 days=self.corporate_membership_type.membership_type.expiration_grace_period)
 
-            return datetime.now() < grace_period_end_dt
+            return timezone.now() < grace_period_end_dt
         return False
 
     @property

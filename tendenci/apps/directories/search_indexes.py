@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from haystack import indexes
 
 from tendenci.apps.directories.models import Directory
@@ -50,10 +50,10 @@ class DirectoryIndex(TendenciBaseSearchIndex, indexes.Indexable):
         ]
 
         if obj.activation_dt:
-            args.append(obj.activation_dt <= datetime.now())
+            args.append(obj.activation_dt <= timezone.now())
 
         if obj.expiration_dt:
-            args.append(obj.expiration_dt > datetime.now())
+            args.append(obj.expiration_dt > timezone.now())
 
         return all(args)
 
