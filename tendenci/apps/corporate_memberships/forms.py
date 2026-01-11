@@ -503,9 +503,10 @@ class CorpProfileAdminForm(CorpProfileBaseForm):
         f = self.fields.get('parent_entity', None)
         if f is not None:
             corpmembership_app = CorpMembershipApp.objects.current_app()
-            selected_parent_entities = corpmembership_app.parent_entities.all()
-            if selected_parent_entities.exists():
-                f.queryset = corpmembership_app.parent_entities.all()
+            if corpmembership_app:
+                selected_parent_entities = corpmembership_app.parent_entities.all()
+                if selected_parent_entities.exists():
+                    f.queryset = corpmembership_app.parent_entities.all()
 
     def clean_number_employees(self):
         number_employees = self.cleaned_data['number_employees']

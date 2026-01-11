@@ -366,7 +366,7 @@ def original_templates(request, template_name="theme_editor/original_templates.h
     elif is_valid_theme(app):
         root = os.path.join(get_theme_root(app), 'templates')
     else:
-        if '/' in app and app.split('/')[0] == 'builtin':
+        if app and '/' in app and app.split('/')[0] == 'builtin':
             builtin_base_name = app.split('/')[1]
             root = os.path.join(settings.TENDENCI_ROOT, "themes/{}/templates".format(builtin_base_name))
         else:
