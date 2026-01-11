@@ -2308,6 +2308,8 @@ class CorpMembershipRep(models.Model):
 
     def sync_reps_groups(self):
         corp_app = CorpMembershipApp.objects.current_app()
+        if not corp_app:
+            return
         if corp_app.dues_reps_group:
             if self.is_dues_rep and not corp_app.dues_reps_group.is_member(self.user):
                 corp_app.dues_reps_group.add_user(self.user, **{
@@ -2325,6 +2327,8 @@ class CorpMembershipRep(models.Model):
 
     def remove_from_reps_groups(self):
         corp_app = CorpMembershipApp.objects.current_app()
+        if not corp_app:
+            return
         if corp_app.dues_reps_group:
             if corp_app.dues_reps_group.is_member(self.user):
                 if not self.user.corpmembershiprep_set.exclude(id=self.id, is_dues_rep=True).exists():

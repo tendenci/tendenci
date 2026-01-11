@@ -4840,6 +4840,8 @@ def edit_email(request, event_id, form_class=EmailForm, template_name='events/ed
         form = form_class(request.POST, instance=email)
         if form.is_valid():
             email = form.save(commit=False)
+            if not 'load base_filters' in email.body:
+                email.body = '{% load base_filters %}\n' + email.body
             if not email.id:
                 email.creator = request.user
                 email.creator_username = request.user.username
