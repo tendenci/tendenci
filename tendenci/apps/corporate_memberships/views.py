@@ -416,6 +416,9 @@ def corpmembership_add(request, slug='',
             # calculate the expiration
             corp_membership.expiration_dt = corp_memb_type.get_expiration_dt(
                                         join_dt=corp_membership.join_dt)
+            corp_membership.corp_price = corp_memb_type.price
+            if corp_memb_type.above_cap_price:
+                corp_membership.above_cap_price = corp_memb_type.above_cap_price
 
             # add invoice
             inv = corp_memb_inv_add(request.user, corp_membership, app=app)
@@ -1304,6 +1307,7 @@ def corp_renew(request, id,
                                     indiv_renewal_price * count_ind_within_cap + \
                                     corp_memb_type.above_cap_price * count_ind_above_cap
                 else:
+                    new_corp_membership.above_cap_price = corp_memb_type.above_cap_price
                     renewal_total = corp_renewal_price + \
                             indiv_renewal_price * count_members
 
