@@ -2276,6 +2276,18 @@ def report_corp_members_by_status(request,
         order_by_field =  allowed_sort_fields[sort]
     corp_mems = corp_mems.order_by(order_by_field)
 
+    if not status_detail:
+        exclude_list = []
+        for corp_mem in corp_mems:
+            corp_profile = corp_mem.corp_profile
+            if corp_mem.status_detail == 'pending':
+                active_corp_membership = corp_profile.active_corp_membership
+                if active_corp_membership:
+                    exclude_list.append(corp_mem.id)
+    
+        if exclude_list:
+            corp_mems = corp_mems.exclude(id__in=exclude_list)
+
     EventLog.objects.log()
 
     # process csv download
