@@ -3063,7 +3063,7 @@ class Event(TendenciBaseModel):
     @property
     def use_zoom_integration(self):
         """Use Zoom for this Event"""
-        return self.place.use_zoom_integration if self.place else None
+        return self.place.use_zoom_integration and self.place.zoom_api_configuration if self.place else None
 
     @property
     def is_zoom_webinar(self):
