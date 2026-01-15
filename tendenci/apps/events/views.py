@@ -227,14 +227,15 @@ def event_custom_reg_form_list(request, event_id, template_name="events/event_cu
 @login_required
 def zoom(request, event_id, template_name="events/zoom.html"):
     event = get_object_or_404(Event.objects.get_all(), pk=event_id)
+
+    if not event.zoom_api_configuration:
+        raise Http404
+
     registrant = event.get_registrant_by_user(request.user)
 
     # If the user is not a registrant of this event or not paid, don't connect to Zoom
     if not registrant or registrant.reg8n_status() == 'payment-required':
         raise Http403
-
-    if not event.zoom_integration_setup:
-        raise Http404
 
     now = datetime.now()
     not_ready_yet = event.start_dt - now > timedelta(minutes=10)
