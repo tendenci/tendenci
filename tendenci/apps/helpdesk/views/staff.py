@@ -28,6 +28,7 @@ from django.utils.translation import gettext as _
 from django.utils.html import escape
 from django import forms
 from django.utils.encoding import smart_str
+from django.views.decorators.http import require_http_methods
 import simplejson
 
 try:
@@ -36,7 +37,7 @@ except ImportError:
     from datetime import datetime as timezone
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
-from tendenci.apps.helpdesk.forms import TicketForm, UserSettingsForm, EmailIgnoreForm, EditTicketForm, TicketCCForm, EditFollowUpForm, TicketDependencyForm
+from tendenci.apps.helpdesk.forms import SavedSearchForm, TicketForm, UserSettingsForm, EmailIgnoreForm, EditTicketForm, TicketCCForm, EditFollowUpForm, TicketDependencyForm
 from tendenci.apps.helpdesk.lib import send_templated_mail, query_to_dict, apply_query, safe_template_context
 from tendenci.apps.helpdesk.models import UserSettings, Ticket, Queue, FollowUp, TicketChange, PreSetReply, Attachment, SavedSearch, IgnoreEmail, TicketCC, TicketDependency, QueueMembership
 from tendenci.apps.helpdesk import settings as helpdesk_settings
@@ -1220,18 +1221,19 @@ def run_report(request, report):
 run_report = staff_member_required(run_report)
 
 
+@require_http_methods(["POST"])
 def save_query(request):
-    title = request.POST.get('title', None)
-    shared = request.POST.get('shared', False) in ['on', 'True', True, 'TRUE']
-    query_encoded = request.POST.get('query_encoded', None)
+    form = SavedSearchForm(request.POST)
+    if form.is_valid():
+        encoded_query = form.save(commit=False)
+        encoded_query.user =request.user
+        encoded_query.query = form.cleaned_data['query_encoded']
+        encoded_query.save()
+        return HttpResponseRedirect('%s?saved_query=%s' % (reverse('helpdesk_list'), encoded_query.id))
 
-    if not title or not query_encoded:
-        return HttpResponseRedirect(reverse('helpdesk_list'))
+    # invalid form
+    return HttpResponseRedirect(reverse('helpdesk_list'))
 
-    query = SavedSearch(title=title, shared=shared, query=query_encoded, user=request.user)
-    query.save()
-
-    return HttpResponseRedirect('%s?saved_query=%s' % (reverse('helpdesk_list'), query.id))
 save_query = staff_member_required(save_query)
 
 
