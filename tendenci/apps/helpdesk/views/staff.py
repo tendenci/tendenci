@@ -1056,10 +1056,11 @@ def run_report(request, report):
             return HttpResponseRedirect(reverse('helpdesk_report_index'))
         if not (saved_query.shared or saved_query.user == request.user):
             return HttpResponseRedirect(reverse('helpdesk_report_index'))
-
-        import pickle
+    
+        #import pickle
         from base64 import b64decode
-        query_params = pickle.loads(b64decode(str(saved_query.query).encode()))
+        #query_params = pickle.loads(b64decode(str(saved_query.query).encode()))
+        query_params = simplejson.loads(b64decode(str(saved_query.query).encode()))
         report_queryset = apply_query(report_queryset, query_params)
 
     from collections import defaultdict
