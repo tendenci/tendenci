@@ -67,7 +67,7 @@ pymemcache>=4.0.0
 django-two-factor-auth>=1.15.5
 phonenumbers>=8.13.28
 # QR code generator
-django-qr-code==3.1.1
+django-qr-code==4.2.0
 # Zoom SDK
 pyzoom>=1.0.5
 # Python JWT

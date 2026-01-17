@@ -1,6 +1,6 @@
 from builtins import str
 import re
-import imghdr
+from tendenci.apps.base.utils import what_magic
 import calendar
 from ast import literal_eval
 from os.path import splitext, basename
@@ -1130,7 +1130,7 @@ class EventForm(TendenciBaseForm):
                 raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
 
             # check the image header
-            image_type = '.%s' % imghdr.what('', photo_upload.read())
+            image_type = '.%s' % what_wagic('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
 
