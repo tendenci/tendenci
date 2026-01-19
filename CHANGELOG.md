@@ -1,6 +1,6 @@
 ### 15.3.12 [2026-1-18]
 
-* **SECURITY**: Fixed an UnpicklingError in helpdesk module, which also patches a security vulnerability that could potentially be exploited by a staff user with carefully crafted malicious data. The helpdesk module is not enabled by default, if you have it enabled, be sure to update tendenci for your site immediately. 
+* **SECURITY**: Fixed an UnpicklingError in helpdesk module, which also patches a security vulnerability that could potentially be exploited by a staff user with carefully crafted malicious data (Thanks to @nedlir for reporting the issue). The helpdesk module is not enabled by default, if you have it enabled, be sure to update tendenci for your site immediately. 
 * Other bugfixes. 
 
 
