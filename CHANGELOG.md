@@ -1,4 +1,10 @@
-### 15.3.11 [2026-1-8] 
+### 15.3.12 [2026-1-18]
+
+* **SECURITY**: Fixed an UnpicklingError in helpdesk module, which also patches a security vulnerability that could potentially be exploited by a staff user with carefully crafted malicious data. The helpdesk module is not enabled by default, if you have it enabled, be sure to update tendenci for your site immediately. 
+* Other bugfixes. 
+
+
+### 15.3.11 [2026-1-8]
 
 * Fixed an issue in import for profiles, memberships, etc, due to the invalid mode: 'rU' which was removed in Python 3.11.
 * Avoided the Approve link being double-clicked on membership details view.
