@@ -503,9 +503,10 @@ class CorpProfileAdminForm(CorpProfileBaseForm):
         f = self.fields.get('parent_entity', None)
         if f is not None:
             corpmembership_app = CorpMembershipApp.objects.current_app()
-            selected_parent_entities = corpmembership_app.parent_entities.all()
-            if selected_parent_entities.exists():
-                f.queryset = corpmembership_app.parent_entities.all()
+            if corpmembership_app:
+                selected_parent_entities = corpmembership_app.parent_entities.all()
+                if selected_parent_entities.exists():
+                    f.queryset = corpmembership_app.parent_entities.all()
 
     def clean_number_employees(self):
         number_employees = self.cleaned_data['number_employees']
@@ -840,6 +841,8 @@ class CorpMembershipRenewForm(forms.ModelForm):
                 try:
                     donation_amount = donation_amount.replace('$', '').replace(',', '')
                     donation_amount = decimal.Decimal(donation_amount)
+                    if donation_amount < 0:
+                        raise forms.ValidationError(_("Negative donation amount entered! Please correct it."))
                     return (donation_option, donation_amount)
                 except decimal.InvalidOperation:
                     raise forms.ValidationError(_("Please enter a valid donation amount."))

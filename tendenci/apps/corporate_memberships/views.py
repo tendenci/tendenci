@@ -416,6 +416,9 @@ def corpmembership_add(request, slug='',
             # calculate the expiration
             corp_membership.expiration_dt = corp_memb_type.get_expiration_dt(
                                         join_dt=corp_membership.join_dt)
+            corp_membership.corp_price = corp_memb_type.price
+            if corp_memb_type.above_cap_price:
+                corp_membership.above_cap_price = corp_memb_type.above_cap_price
 
             # add invoice
             inv = corp_memb_inv_add(request.user, corp_membership, app=app)
@@ -724,6 +727,14 @@ def corpprofile_view(request, id, template="corporate_memberships/profiles/view.
                 raise Http403
 
     corp_membership = corp_profile.corp_membership
+    if not corp_membership:
+        # this one has been deleted by someone (an admin) - it shouldn't be deleted
+        corp_membership = CorpMembership.objects.all_inactive().filter(corp_profile_id=corp_profile.id).first()
+        if corp_membership and not corp_membership.status:
+            #corp_membership.status = True
+            #corp_membership.save(update_fields=['status'])
+            msg_string = f'NOTE: The associated corporate membership (ID: {corp_membership.id}) was deleted.'
+            messages.add_message(request, messages.WARNING, _(msg_string))
     reps = corp_profile.reps.all()
     memberships = MembershipDefault.objects.filter(
                         corp_profile_id=corp_profile.id
@@ -1226,6 +1237,17 @@ def corp_renew(request, id,
                              for admin approval.""" % corp_membership)
         return HttpResponseRedirect(reverse('corpmembership.view',
                                         args=[corp_membership.id]))
+
+    # avoid duplicates if a corp membership is already renewed and in pending
+    latest_renewed_in_pending = corp_membership.latest_renewed_in_pending()
+    if latest_renewed_in_pending:
+        messages.add_message(request, messages.INFO,
+                             """The corporate membership
+                             has been renewed and is pending
+                             for admin approval.""")
+        return HttpResponseRedirect(reverse('corpmembership.view',
+                                        args=[latest_renewed_in_pending.id]))
+
     if corp_membership.is_archive:
         # don't renew archive
         [latest_renewed] = CorpMembership.objects.filter(
@@ -1273,15 +1295,19 @@ def corp_renew(request, id,
                 indiv_renewal_price = corp_memb_type.membership_type.renewal_price
                 if not indiv_renewal_price:
                     indiv_renewal_price = 0
+                new_corp_membership.corp_price = corp_renewal_price
 
                 count_members = len(members)
                 if corp_memb_type.apply_cap and corp_memb_type.allow_above_cap and count_members > corp_memb_type.membership_cap:
                     count_ind_within_cap = corp_memb_type.membership_cap
                     count_ind_above_cap = count_members - count_ind_within_cap
+                    new_corp_membership.num_ind_above_cap = count_ind_above_cap
+                    new_corp_membership.above_cap_price = corp_memb_type.above_cap_price
                     renewal_total = corp_renewal_price + \
                                     indiv_renewal_price * count_ind_within_cap + \
                                     corp_memb_type.above_cap_price * count_ind_above_cap
                 else:
+                    new_corp_membership.above_cap_price = corp_memb_type.above_cap_price
                     renewal_total = corp_renewal_price + \
                             indiv_renewal_price * count_members
 
@@ -2249,6 +2275,18 @@ def report_corp_members_by_status(request,
     else:
         order_by_field =  allowed_sort_fields[sort]
     corp_mems = corp_mems.order_by(order_by_field)
+
+    if not status_detail:
+        exclude_list = []
+        for corp_mem in corp_mems:
+            corp_profile = corp_mem.corp_profile
+            if corp_mem.status_detail == 'pending':
+                active_corp_membership = corp_profile.active_corp_membership
+                if active_corp_membership:
+                    exclude_list.append(corp_mem.id)
+    
+        if exclude_list:
+            corp_mems = corp_mems.exclude(id__in=exclude_list)
 
     EventLog.objects.log()
 

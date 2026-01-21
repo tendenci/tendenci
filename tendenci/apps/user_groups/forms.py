@@ -139,6 +139,7 @@ class GroupForm(TendenciBaseForm):
                                  'slug',
                                  'entity',
                                  'dashboard_url',
+                                 'type',
                                  'email_recipient',
                                  'logo',
                                  'show_as_option',
@@ -175,6 +176,10 @@ class GroupForm(TendenciBaseForm):
         self.fields['entity'].empty_label = None
         self.fields['logo'].validators = [FileValidator(allowed_extensions=('.jpeg', '.jpg', '.png', '.gif',))]
         self.fields['logo'].required = False
+        del self.fields['type']
+        if self.instance and self.instance.type in ('membership', 'system_generated'):
+            del self.fields['allow_self_add']
+            del self.fields['allow_self_remove']
 
     def clean_auto_respond_priority(self):
         auto_respond_priority = self.cleaned_data['auto_respond_priority']

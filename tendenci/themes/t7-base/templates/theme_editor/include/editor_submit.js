@@ -17,6 +17,17 @@ $("#editorForm").on("submit", function() {
                 $('#save_message').removeClass('success');
                 $('#save_message').addClass('error');
             }
+        },
+        error: function(xhr, status, error) {
+            // Handle errors
+            console.error(error);
+            const contentType = xhr.getResponseHeader('Content-Type');
+            if (contentType && contentType.indexOf('application/json') == -1){
+				console.log("Content-Type does not indicate JSON:", contentType);
+				window.location.reload();
+	
+			}
+            
         }
     });
     return false;

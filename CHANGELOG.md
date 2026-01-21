@@ -1,3 +1,62 @@
+### 15.3.12 [2026-1-18]
+
+* **SECURITY**: Fixed an UnpicklingError in helpdesk module, which also patches a security vulnerability that could potentially be exploited by a staff user with carefully crafted malicious data (Thanks to @nedlir for reporting the issue). The helpdesk module is not enabled by default, if you have it enabled, be sure to update tendenci for your site immediately. 
+* Other bugfixes. 
+
+
+### 15.3.11 [2026-1-8]
+
+* Fixed an issue in import for profiles, memberships, etc, due to the invalid mode: 'rU' which was removed in Python 3.11.
+* Avoided the Approve link being double-clicked on membership details view.
+
+
+### 15.3.10 [2025-12-28]
+
+* Added the option to have taxes included in prices (as is done in Europe and VAT and GST countries. (Thanks to @rockinrobstar)
+* Updated corporate membership renewal to avoid duplicate submissions if a corp membership is already renewed and in pending.
+* Fixed an error in the template tag `photo_image_url` when using s3.
+* Corrected the "view notice" link for corporate membership notice logs search.
+* Fixed an issue about a negative donation could be applied on membership join or renewal. (Thanks to @rockinrobstar)
+
+
+### 15.3.9 [2025-12-12]
+
+* Included the taxes column to the invoices list.
+* Updated credits page to sort by category.
+* Resolved an issue that the membership renew link might not show on user profiles.
+
+
+### 15.3.8 [2025-12-9]
+
+* Appled tax to donation, if enabled, for membership forms.
+* Added a setting "Registrant Pricing Can Be Changed", default to False, to allow admin to change the pricing for a registrant.
+* Fixed the issue about testimonials not showing for logged in users.
+* Updated copy event to clone custom form if needed.
+* Updated group add to auto-fill slug.
+* More assorted bugfixes.
+
+
+### 15.3.7 [2025-10-8]
+
+* Bugfix a IntegrityError for /py/.
+* Included the member_number field to the profiles list.
+
+
+### 15.3.6 [2025-10-8]
+
+* New feature: Forum digest. Forum subscribers can opt in to receive daily and/or weekly digest. 
+* Added 3 custom admin actions for corporate memberships: 1) renewed selected. 2) export invoices for the selected. 3) print invoices for the selected.
+* Added the "print selected invoices" admin action for memberships.
+* Updated list_events template tag to allow multiple groups.
+* Allowed admin to cancel an event registration with no cancellation deadline.
+* Added the option to hide non-member pricing from members on event registration.
+* Included the sponsor and organizer sections to event minimal add. 
+* Added the option to exclude tags for list_directories template tag. (Thanks to @rob-hills)
+* Updated events monthly and weekly views to handle events with child events. 
+* Added the option to allow member content to be pulled in to the newsletter templates.
+* Assorted bugfixes.
+
+
 ### 15.3.5 [2025-7-3]
 
 * Created the admin backend for newsletters to make newsletters searchable.

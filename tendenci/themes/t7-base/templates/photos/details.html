@@ -17,7 +17,13 @@
 {% block extra_head %}
 {{ block.super }}
 <meta property="og:title" content="{{ photo.title }}"/>
+{% if photo.image %}
+{% if USE_S3_STORAGE %}
+<meta property="og:image" content="{{ photo.get_medium_640_url }}"/>
+{% else %}
 <meta property="og:image" content="{{ SITE_GLOBAL_SITEURL }}{{ photo.get_medium_640_url }}"/>
+{% endif %}
+{% endif %}
 <meta property="og:description" content="{{ photo.caption|striptags }} {{ photo.get_license.name }}"/>
 <meta property="og:url" content="{{ SITE_GLOBAL_SITEURL }}{{ photo.get_absolute_url }}" />
 <meta property="og:site_name" content="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" />

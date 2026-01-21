@@ -265,7 +265,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     if request.user.profile.is_superuser or has_approve_perm:
         GET_KEYS = request.GET
 
-        if 'approve' in GET_KEYS:
+        if 'approve' in GET_KEYS and not membership.is_approved():
             is_renewal = membership.is_renewal()
             membership.approve(request)
             membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
@@ -1254,7 +1254,9 @@ def membership_default_add(request, slug='', membership_id=None,
             renewed_corp = corp_membership.get_latest_renewed()
             renewal_blocked = False # renewal blocked to user
             corp_expired = False
-            if corp_membership.is_expired or (membership.expire_dt >= corp_membership.expiration_dt and not renewed_corp):
+            if corp_membership.is_expired or (membership.expire_dt and corp_membership.expiration_dt \
+                                              and membership.expire_dt >= corp_membership.expiration_dt \
+                                              and not renewed_corp):
                 corp_expired = True
             elif not get_setting('module', 'memberships', 'orgmembercanrenew'):
                 if not (request.user.is_superuser or is_corp_rep):
@@ -1552,27 +1554,28 @@ def membership_default_add(request, slug='', membership_id=None,
                 if auto_renew_discount:
                     discount_amount += discount_amount
 
-            invoice = membership_set.save_invoice(memberships, app, discount_code=discount_code, discount_amount=discount_amount)
-            invoice.entity = memberships[0].entity
-
-            if discount_code and discount:
-                for dmount in discount_list:
-                    if dmount > 0:
-                        DiscountUse.objects.create(discount=discount, invoice=invoice)
-
+            donation_amount = None
+            donation_apply_tax = get_setting('module', 'donations', 'apply_tax')
             if app.donation_enabled:
                 # check for donation
                 donation_option, donation_amount = membership_form2.cleaned_data.get('donation_option_value', (None, None))
                 if donation_option:
                     if donation_option == 'default':
                         donation_amount = app.donation_default_amount
-                    if donation_amount > Decimal(0):
-                        membership_set.donation_amount = donation_amount
-                        membership_set.save()
-                        invoice.subtotal += donation_amount
-                        invoice.total += donation_amount
-                        invoice.balance += donation_amount
-                        invoice.save()
+
+            invoice = membership_set.save_invoice(memberships, app, discount_code=discount_code,
+                                                  discount_amount=discount_amount,
+                                                  donation_amount=donation_amount,
+                                                  donation_apply_tax=donation_apply_tax)
+            invoice.entity = memberships[0].entity
+            if donation_amount and donation_amount > Decimal(0):
+                membership_set.donation_amount = donation_amount
+                membership_set.save()
+
+            if discount_code and discount:
+                for dmount in discount_list:
+                    if dmount > 0:
+                        DiscountUse.objects.create(discount=discount, invoice=invoice)
 
             memberships_join_notified = []
             memberships_renewal_notified = []

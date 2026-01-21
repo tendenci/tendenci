@@ -20,7 +20,18 @@
     <div class="event-wrap">
         <form class="form-horizontal" action="{% url "event.minimal_add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
             {{ form|styled_form }}
+            <fieldset>
+            <legend>{% trans 'Location Information' %}</legend>
             {{ form_place|styled_form }}
+            </fieldset>
+            <fieldset>
+            <legend>{% trans 'Organizer' %}</legend>
+            {{ form_organizer|styled_form }}
+            </fieldset>
+            <fieldset>
+            <legend>{% trans 'Sponsor' %}</legend>
+            {{ form_sponsor|styled_form }}
+            </fieldset>
             <input class="btn btn-primary" type="submit" value="Add {% firstof MODULE_EVENTS_LABEL trans 'Event' %}" />
         </form>
     </div>

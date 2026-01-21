@@ -1,5 +1,8 @@
 
 import bleach
+from collections import OrderedDict
+from datetime import datetime, timedelta
+
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.db import models, transaction, DatabaseError
@@ -9,16 +12,17 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now as tznow
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import OneToOneField
+from django.template.loader import render_to_string
 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.utils import validate_email
 
 from .compat import get_user_model_path, get_username_field, get_atomic_func, slugify
 from . import defaults
 from .profiles import PybbProfile
 from .util import unescape, FilePathGenerator, _get_markup_formatter
-
 
 
 class Category(TendenciBaseModel):
@@ -125,6 +129,81 @@ class Forum(models.Model):
             parent = parent.parent
         return parents
 
+    def get_digest_content(self, digest_type, from_dt, to_dt):
+        topics_dict = OrderedDict()
+        for topic in self.topics.all().order_by('name'):
+            posts = Post.objects.filter(topic=topic
+                                    ).filter(created__gte=from_dt
+                                             ).filter(created__lte=to_dt
+                                                      ).order_by('-created')
+            if posts.count() > 0:
+                topics_dict[topic.name] = posts
+  
+        if not topics_dict:
+            return None
+            
+        template_name = 'pybb/mail_templates/forum_digest_email_body.html'
+        context_vars = {'site_url': get_setting('site', 'global', 'siteurl'),
+                        'site_name': get_setting('site', 'global', 'sitedisplayname'),
+                        'manage_url': reverse('pybb:forum_subscription', kwargs={'pk': self.id}),
+                        'topics_dict': topics_dict,
+                        'forum_url': reverse('pybb:forum', args=[self.id]),
+                        'forum': self,
+                        'digest_type': digest_type,
+                        }
+        return render_to_string(template_name=template_name,
+                                   context=context_vars)
+
+
+    def send_digest_to_subscribers(self, digest_type, users=None):
+        """
+        Email digest to subscribers
+        users is a list of users.
+        """
+        from tendenci.apps.emails.models import Email
+        subscriptions = ForumSubscription.objects.filter(forum=self
+                                    ).exclude(digest_type='')
+        if users:
+            subscriptions = subscriptions.filter(user__in=users)
+
+        subscriptions = subscriptions.filter(digest_type=digest_type)
+        if subscriptions.count() == 0:
+            print('No users subscribed digest for forum ', self)
+            return
+
+        now = datetime.now()
+        to_dt = now - timedelta(days=1)
+        #to_dt = now
+        to_dt = datetime(to_dt.year, to_dt.month, to_dt.day, 23, 59, 59)
+        if digest_type == 'daily':
+            from_dt = to_dt - timedelta(days=1)
+        else: # 'weekly'
+            from_dt = to_dt - timedelta(days=7)
+
+        site_name = get_setting('site', 'global', 'sitedisplayname')
+        email_subject = f'{site_name} | {self.name} | {digest_type.capitalize()} Digest'
+        email_content = self.get_digest_content(digest_type, from_dt, to_dt)
+        if not email_content:
+            print('No latest posts')
+            return
+
+        for subscription in subscriptions:
+            user = subscription.user
+            if not validate_email(user.email):
+                # skip if not a valid email address
+                continue
+            if Email.is_blocked(user.email):
+                continue
+
+            # email digest
+            email_to_send = Email(
+                    subject=email_subject,
+                    body=email_content,
+                    sender_display=site_name,
+                    recipient=user.email
+                    )
+            email_to_send.send()
+
 
 class ForumSubscription(models.Model):
     TYPE_NOTIFY = 1
@@ -132,6 +211,11 @@ class ForumSubscription(models.Model):
     TYPE_CHOICES = (
         (TYPE_NOTIFY, _('be notified only when a new topic is added')),
         (TYPE_SUBSCRIBE, _('be auto-subscribed to topics')),
+    )
+    DIGEST_TYPE_CHOICES = (
+        ('', _('No digest')),
+        ('daily', _('Daily')),
+        ('weekly', _('Weekly')),
     )
 
     user = models.ForeignKey(get_user_model_path(), 
@@ -151,6 +235,9 @@ class ForumSubscription(models.Model):
             'you will be notified only once when the topic is created : '
             'you won\'t be notified for the answers.'
         )), )
+    digest_type = models.CharField(max_length=6,
+                                   default='',
+                                   choices=DIGEST_TYPE_CHOICES)
 
     class Meta(object):
         verbose_name = _('Subscription to forum')
