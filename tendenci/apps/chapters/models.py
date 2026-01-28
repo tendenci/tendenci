@@ -1003,6 +1003,13 @@ class ChapterMembership(TendenciBaseModel):
                 renewal=self.renewal, join_dt=self.join_dt
             )
 
+        if get_setting('module', 'chapters', 'usenationalexpiredt'):
+            # Supersede with national membership's expire_dt, if exists
+            national_membership = self.national_membership
+            if national_membership.is_active():
+                if not national_membership.expire_dt or national_membership.expire_dt > self.expire_dt:
+                    self.expire_dt = national_membership.expire_dt
+
     def group_refresh(self):
         """
         Look at the memberships status and decide

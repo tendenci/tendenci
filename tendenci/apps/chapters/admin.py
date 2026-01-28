@@ -33,6 +33,7 @@ from tendenci.apps.chapters.forms import (ChapterAdminForm,
                         CoordinatingAgencyAdminForm)
 from tendenci.apps.theme.templatetags.static import static
 from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.site_settings.utils import get_setting
 
 
 class ChapterMembershipTypeAdmin(TendenciBaseModelAdmin):
@@ -43,9 +44,15 @@ class ChapterMembershipTypeAdmin(TendenciBaseModelAdmin):
 
     exclude = ('status',)
 
+    if get_setting('module', 'chapters', 'usenationalexpiredt'):
+        ex_descrition = _('NOTE: If national membership is also applied, instead of using the one specified here, the expiration date of the national membership will be assigned to the chapter membership. <a href="/settings/module/chapters/#id_usenationalexpiredt" target="_blank">View the setting</a>')
+    else:
+        ex_descrition = _('NOTE: You can update <a href="/settings/module/chapters/#id_usenationalexpiredt" target="_blank">the setting</a> to supersede expiration date with the national membership\'s.')
     fieldsets = (
         (None, {'fields': ('name', 'price', 'description')}),
-        (_('Expiration Method'), {'fields': ('never_expires', 'type_exp_method',)}),
+        (_('Expiration Method'), {
+            'description': ex_descrition,
+            'fields': ('never_expires', 'type_exp_method',)}),
         (_('Renewal Options for this membership type'), {'fields': ('allow_renewal', 'renewal', 'renewal_require_approval',
                                         'renewal_price',
                                         'renewal_period_start',
