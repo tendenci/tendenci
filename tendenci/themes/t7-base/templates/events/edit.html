@@ -73,7 +73,7 @@
             <li role="presentation"  class="dropdown {% if label == 'pricing' %}active{% endif %}">
                 <a href="{% url "event.pricing_edit" event.pk %}">{% trans "Pricing(s)" %}</a>
             </li>
-            {% if can_add_file %}
+            {% if MODULE_EVENTS_ENABLEASSETS and can_add_file %}
             <li role="presentation"  class="dropdown {% if label == 'file_add' %}active{% endif %}">
                 <a href="{% url "event.file_add" event.pk %}">{% trans "Add Files" %}</a>
             </li>
@@ -94,10 +94,11 @@
                 {% review_and_edit_credits event %}
             {% endif %}
             {% if label == "file_add" and can_add_file %}
+            	<div class="text-warning"><i>{% trans 'Note that, files uploaded here can be viewable by users who have registered this event.' %}</i></div>
                 {% include "events/include/event-files-list.html" %}
             {% endif %}
             {{ multi_event_forms|styled_multi_forms }}
-            {% if can_add_file %}
+            {% if MODULE_EVENTS_ENABLEASSETS and can_add_file %}
             	{% if label != "file_add" %}
             	<input class="btn btn-default" type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
             	{% endif %}
