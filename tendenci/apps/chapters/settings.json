@@ -151,5 +151,22 @@
         "scope_category": "chapters",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "When an expiration date is assigned to a chapter membership, the expiration date of their national membership will be used.",
+        "data_type": "boolean",
+        "update_dt": "2026-1-27 16:00:00",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "usenationalexpiredt",
+        "value": "false",
+        "label": "Supersede the Expiration Date with their National Membership's",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "chapters",
+        "store": true,
+        "updated_by": ""
     }
 ]
