@@ -348,10 +348,10 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         my_registrants = request.user.registrant_set.filter(
             registration__event=event).filter(cancel_dt__isnull=True)
 
-    if event.files.all().exists() and event.allow_view_eventfiles_by(request.user):
-        can_view_eventfiles = True
-    else:
-        can_view_eventfiles = False
+    can_view_eventfiles = False
+    if get_setting('module', 'events', 'enableassets'):
+        if event.files.all().exists() and event.allow_view_eventfiles_by(request.user):
+            can_view_eventfiles = True
 
     return render_to_resp(request=request, template_name=template_name, context={
         'days': days,
@@ -1489,7 +1489,10 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
                     regconf_price.save()
 
                 msg_string = 'Successfully updated %s' % str(event)
-                redirect_url = reverse('event', args=[event.pk])
+                if get_setting('module', 'events', 'enableassets') and "_save" not in request.POST:
+                    redirect_url = reverse('event.file_add', args=[event.pk])
+                else:
+                    redirect_url = reverse('event', args=[event.pk])
             else:
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
@@ -1540,6 +1543,9 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
 @login_required
 def event_files_display(request, event_id, template_name="events/files/display.html"):
     """A list of files and this event."""
+    if not get_setting('module', 'events', 'enableassets'):
+        raise Http404
+
     event = get_object_or_404(Event.objects.get_all(), pk=event_id)
     # check permission
     if not event.allow_view_eventfiles_by(request.user):
@@ -1558,6 +1564,9 @@ def event_files_display(request, event_id, template_name="events/files/display.h
 @login_required
 def event_file_add(request, event_id, form_class=EventFileForm, template_name="events/edit.html"):
     """Add an event file"""
+    if not get_setting('module', 'events', 'enableassets'):
+        raise Http404
+
     event = get_object_or_404(Event.objects.get_all(), pk=event_id)
     # check permission
     if not has_perm(request.user, 'events.add_eventfile'):

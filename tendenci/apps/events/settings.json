@@ -1528,5 +1528,22 @@
         "scope_category": "events",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, the event assets/files uploaded will be accessible by event registrants.",
+        "data_type": "boolean",
+        "update_dt": "2026-1-28 12:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "enableassets",
+        "value": "false",
+        "label": "Enable Event Assets/Files",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]
