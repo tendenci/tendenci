@@ -17,7 +17,7 @@
         success: (success) => {
             ZoomMtg.join({
                 ...meetingConfig,
-                userName: '{{ registrant.user.username }}',
+                userName: '{{ registrant.user.get_full_name() }}',
                 userEmail: '{{ registrant.user.email }}',
                 success: (success) => {
                     '{% execute_method registrant "zoom_check_in" event %}'
