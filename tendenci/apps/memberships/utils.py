@@ -2243,13 +2243,20 @@ def email_membership_members(email, memberships, **kwargs):
         if email.recipient:
             view_url = '{0}{1}'.format(site_url, reverse('membership.details', args=[member.id]))
             edit_url = '{0}{1}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
+            if member.expire_dt:
+                expire_dt = ttime.strftime("%b %d, %Y", member.expire_dt.timetuple())
+            else:
+                expire_dt = ''
+            renew_link = '{0}{1}'.format(site_url, member.get_absolute_url())
             template = Template(email.body)
             context = Context({'site_url': site_url,
                                'site_display_name': site_display_name,
                                "first_name": first_name,
                                'last_name': last_name,
                                'view_url': view_url,
-                               'edit_url': edit_url,})
+                               'edit_url': edit_url,
+                               'expire_dt': expire_dt,
+                               'renew_link': renew_link})
             email.body = template.render(context)
             
             # replace relative to absolute urls

@@ -1,6 +1,7 @@
 from datetime import datetime, date, timedelta, time
 import dateutil.parser as dparser
 from decimal import Decimal
+import time as ttime
 
 from django.core import exceptions
 from django.contrib.auth.models import User
@@ -166,6 +167,10 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
         if email.recipient:
             view_url = '{0}{1}'.format(site_url, reverse('chapters.membership_details', args=[member.id]))
             edit_url = '{0}{1}'.format(site_url, reverse('chapters.membership_edit', args=[member.id]))
+            if member.expire_dt:
+                expire_dt = ttime.strftime("%b %d, %Y", member.expire_dt.timetuple())
+            else:
+                expire_dt = ''
             template = Template(email.body)
             context = Context({'site_url': site_url,
                                'site_display_name': site_display_name,
@@ -173,6 +178,8 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
                                'last_name': last_name,
                                'view_url': view_url,
                                'edit_url': edit_url,
+                               'expire_dt': expire_dt,
+                               'renew_link': view_url,
                                'chapter_name': member.chapter.title})
             email.body = template.render(context)
             
