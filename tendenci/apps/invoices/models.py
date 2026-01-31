@@ -100,6 +100,7 @@ class Invoice(models.Model):
     bill_to_last_name = models.CharField(max_length=100, blank=True, null=True)
     bill_to_company = models.CharField(max_length=100, blank=True, null=True)
     bill_to_address = models.CharField(max_length=250, blank=True, null=True)
+    bill_to_address2 = models.CharField(max_length=100, default='', blank=True)
     bill_to_city = models.CharField(max_length=50, blank=True, null=True)
     bill_to_state = models.CharField(max_length=50, blank=True, null=True)
     bill_to_zip_code = models.CharField(max_length=20, blank=True, null=True)
@@ -112,6 +113,7 @@ class Invoice(models.Model):
     ship_to_last_name = models.CharField(max_length=50, blank=True)
     ship_to_company = models.CharField(max_length=100, blank=True)
     ship_to_address = models.CharField(max_length=250, blank=True)
+    ship_to_address2 = models.CharField(max_length=100, default='', blank=True)
     ship_to_city = models.CharField(max_length=50, blank=True)
     ship_to_state = models.CharField(max_length=50, blank=True)
     ship_to_zip_code = models.CharField(max_length=20, blank=True)
@@ -149,7 +151,7 @@ class Invoice(models.Model):
         self.owner = user
         self.owner_username = user.username
 
-    def assign_tax(self, price_tax_rate_list, user, module_tax_rate_use_regions=False, corp_profile=None):
+    def assign_tax(self, price_tax_rate_list, user, module_tax_rate_use_regions=False, corp_profile=None, region=None):
         """
         Calculate and assign tax to this invoice.
         
@@ -158,13 +160,13 @@ class Invoice(models.Model):
         price_tax_rate_list is a list of (price, default_tax_rate) tuples,
         example: [(10.50, 0.0825), ..]
         """
-        region = None
-        if module_tax_rate_use_regions or get_setting('module', 'invoices', 'taxrateuseregions'):
-            if corp_profile:
-                region = corp_profile.region
-            else:
-                if user and not user.is_anonymous and hasattr(user, 'profile'):
-                    region = user.profile.region
+        if not region:
+            if module_tax_rate_use_regions or get_setting('module', 'invoices', 'taxrateuseregions'):
+                if corp_profile:
+                    region = corp_profile.region
+                else:
+                    if user and not user.is_anonymous and hasattr(user, 'profile'):
+                        region = user.profile.region
         if region:
             # check if we need to use alternative region
             if get_setting('module', 'invoices', 'usealtregions') and \
@@ -212,6 +214,7 @@ class Invoice(models.Model):
             self.bill_to_fax = profile.fax
             if profile.is_billing_address or not profile.is_billing_address_2:
                 self.bill_to_address = profile.address
+                self.bill_to_address2 = profile.address2
                 self.bill_to_city = profile.city
                 self.bill_to_state = profile.state
                 self.bill_to_zip_code = profile.zipcode
@@ -219,6 +222,7 @@ class Invoice(models.Model):
             else:
                 
                 self.bill_to_address = profile.address_2
+                self.bill_to_address2 = profile.address2_2
                 self.bill_to_city = profile.city_2
                 self.bill_to_state = profile.state_2
                 self.bill_to_zip_code = profile.zipcode_2
@@ -244,6 +248,7 @@ class Invoice(models.Model):
             self.ship_to_address_type = profile.address_type
             if profile.is_billing_address or not profile.is_billing_address_2:
                 self.ship_to_address = profile.address
+                self.ship_to_address2 = profile.address2
                 self.ship_to_city = profile.city
                 self.ship_to_state = profile.state
                 self.ship_to_zip_code = profile.zipcode
@@ -251,6 +256,7 @@ class Invoice(models.Model):
             else:
                 
                 self.ship_to_address = profile.address_2
+                self.ship_to_address2 = profile.address2_2
                 self.ship_to_city = profile.city_2
                 self.ship_to_state = profile.state_2
                 self.ship_to_zip_code = profile.zipcode_2
@@ -294,7 +300,7 @@ class Invoice(models.Model):
             self.entity = self.get_entity()
 
         self.verifydata()
-        super(Invoice, self).save()
+        super(Invoice, self).save(*args, **kwargs)
 
     def verifydata(self):
         # verify each field
@@ -303,6 +309,10 @@ class Invoice(models.Model):
             if field.max_length and value and len(value) > field.max_length:
                 value = value[:field.max_length]
                 setattr(self, field.name, value)
+        if self.bill_to_address2 is None:
+            self.bill_to_address2 = ''
+        if self.ship_to_address2 is None:
+            self.ship_to_address2 = ''
 
     def delete(self, *args, **kwargs):
         """
@@ -345,6 +355,10 @@ class Invoice(models.Model):
         if _object and hasattr(_object, 'status') and (not _object.status):
             _object = None
         return _object
+
+    def get_object_name(self):
+        obj = self.get_object()
+        return obj and obj._meta.verbose_name
 
     @property
     def use_third_party_payment(self):
@@ -900,6 +914,10 @@ class Invoice(models.Model):
         data = self.payment_set.refundable().aggregate(models.Sum('amount'))
 
         return data.get('amount__sum') or 0
+
+    @property
+    def total_taxes(self):
+        return self.tax + self.tax_2
 
     def get_first_approved_payment(self):
         """

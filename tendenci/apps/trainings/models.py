@@ -91,6 +91,7 @@ class OutsideSchool(models.Model):
     certification_track = models.ForeignKey('Certification',
                                    null=True, on_delete=models.SET_NULL)
     date = models.DateField()
+    training_hours = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True)
     credits = models.DecimalField(max_digits=8, decimal_places=3, default=0)
     description = models.TextField(blank=True, default='')
     create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
@@ -111,6 +112,16 @@ class OutsideSchool(models.Model):
         verbose_name = _("Outside School")
         verbose_name_plural = _("Outside Schools")
         app_label = 'trainings'
+
+    def assign_credits_from_training_hours(self):
+        credits_per_hour = get_setting('module', 'trainings', 'creditsperhour')
+        if credits_per_hour:
+            if self.training_hours and not self.credits:
+                self.credits = self.training_hours * credits_per_hour
+
+    def save(self, *args, **kwargs):
+        self.assign_credits_from_training_hours()
+        super(OutsideSchool, self).save(*args, **kwargs)
 
 
 class SchoolCategory(models.Model):
@@ -399,6 +410,7 @@ class Course(TendenciBaseModel):
                              choices=LOCATION_TYPE_CHOICES)
     school_category = models.ForeignKey(SchoolCategory, null=True, on_delete=models.SET_NULL)
     course_code = models.CharField(max_length=50, blank=True, null=True)
+    external_id = models.PositiveIntegerField(blank=True, null=True)
     summary = models.TextField(blank=True, default='')
     description = tinymce_models.HTMLField(blank=True, default='')
     credits = models.DecimalField(max_digits=5, decimal_places=2, default=0)

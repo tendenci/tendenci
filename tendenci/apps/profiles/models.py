@@ -125,6 +125,7 @@ class Profile(Person):
     # relations
     guid = models.CharField(max_length=40)
     account_id = models.IntegerField(blank=True, null=True, unique=True)
+    external_id = models.PositiveIntegerField(blank=True, null=True)
     entity = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.SET_NULL)
     pl_id = models.IntegerField(default=1)
     historical_member_number = models.CharField(_('historical member number'), max_length=50, blank=True)
@@ -267,7 +268,8 @@ class Profile(Person):
         Returns grid with credits by category -> by year -> by Event
         Also returns all credit names by category
         """
-        credits = OrderedDict()
+        #credits = OrderedDict()
+        credits = {}
         credit_names_by_category = OrderedDict()
 
         for credit in self.released_credits:
@@ -326,6 +328,8 @@ class Profile(Person):
             # Update total credits for this event (by pk)
             credits[category][year]['events'][event.pk]['credits'] += credit.credits
 
+        # sort credits dict by category
+        credits = OrderedDict(sorted(credits.items()))
         return credits, credit_names_by_category
 
     def first_name(self):
@@ -405,6 +409,10 @@ class Profile(Person):
                 region = Region.get_region_by_name(self.state)
                 if region and region != self.region:
                     self.region = region
+            else:
+                # no state, populate with the region name if available
+                if self.region:
+                    self.state = self.region.region_name
 
         super(Profile, self).save(*args, **kwargs)
 
@@ -576,6 +584,8 @@ class Profile(Person):
 
     @property
     def membership(self):
+        if not self.user.pk:
+            return None
         [membership] = self.user.membershipdefault_set.exclude(
                     status_detail__in=['archive', 'disapproved']).order_by('-create_dt')[:1] or [None]
         return membership
@@ -620,6 +630,9 @@ class Profile(Person):
                 membership.set_member_number()
                 membership.save()
             self.member_number = membership.member_number
+            # this is an active membership, check if it's user profile is active. 
+            if self.status_detail != 'active':
+                self.status_detail = 'active'
 
         self.save()
         return self.member_number
@@ -800,6 +813,9 @@ class Profile(Person):
         if default_storage.exists(size_path):
             return default_storage.url(size_path)
 
+        if not default_storage.exists(self.photo.name):
+            return None
+            
         im = Image.open(default_storage.open(self.photo.name))
         im.thumbnail((size, size))
 

@@ -8,6 +8,7 @@ from tendenci.apps.base.fields import EmailVerificationField, PriceField
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.base.fields import StateSelectField
 
 
 class MakePaymentForm(FormControlWidgetMixin, forms.ModelForm):
@@ -19,9 +20,11 @@ class MakePaymentForm(FormControlWidgetMixin, forms.ModelForm):
     address = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'size':'35'}))
     state = forms.CharField(max_length=50, required=False,  widget=forms.TextInput(attrs={'size':'5'}))
     zip_code = forms.CharField(max_length=20, required=False, widget=forms.TextInput(attrs={'size':'10'}))
-    reference_number = forms.CharField(max_length=20, required=False, widget=forms.TextInput(attrs={'size':'15'}))
+    reference_number = forms.CharField(label=_('Reference # / Notes'), max_length=20, required=False, widget=forms.TextInput(attrs={'size':'15'}))
     referral_source = forms.CharField(max_length=200, required=False, widget=forms.TextInput(attrs={'size':'40'}))
-    email = EmailVerificationField(label=_("Email"), help_text=_('A valid e-mail address, please.'))
+    email = EmailVerificationField(label=_("Email"),
+                                   error_messages={'required': _('Email is a required field.'),},
+                                   help_text=_('A receipt will be automatically emailed to the email address provided above.'))
     email_receipt = forms.BooleanField(initial=True)
     country = forms.ChoiceField(label=_('Country'), choices=(('', '-----------'),) + tuple(COUNTRIES))
 
@@ -53,6 +56,12 @@ class MakePaymentForm(FormControlWidgetMixin, forms.ModelForm):
         self.fields['reference_number'].label = get_setting('module',
                                                             'make_payment',
                                                             'referencenumberlabel') or _('Reference #')
+        # state
+        if get_setting('site', 'global', 'stateusesdropdown'):
+            self.fields['state'] = StateSelectField(label=self.fields['state'].label,
+                                                    required=self.fields['state'].required)
+            self.fields['state'].widget.attrs.update({'class': 'form-control'})
+
         # populate the user fields
         if user and user.id:
             if 'captcha' in self.fields:
@@ -73,3 +82,13 @@ class MakePaymentForm(FormControlWidgetMixin, forms.ModelForm):
                     self.fields['phone'].initial = profile.phone
             except:
                 pass
+
+        self.fields['email_receipt'].widget = forms.HiddenInput()
+
+        # check required fields
+        required_fields = get_setting('module', 'make_payment', 'requiredfields')
+        if required_fields:
+            required_fields_list = [field.strip() for field in required_fields.split(',') if field.strip()]
+            for field_name in required_fields_list:
+                if field_name in self.fields:
+                    self.fields[field_name].required = True

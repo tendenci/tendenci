@@ -40,6 +40,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 from django.db.models import F
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_protect
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.decorators import password_required
@@ -93,7 +94,8 @@ from tendenci.apps.events.models import (
     RegistrationConfiguration,
     EventPhoto,
     Place,
-    RecurringEvent)
+    RecurringEvent,
+    EventFile)
 from tendenci.apps.events.forms import (
     attendance_dates_callback,
     EventForm,
@@ -135,7 +137,9 @@ from tendenci.apps.events.forms import (
     EventReportFilterForm,
     GratuityForm,
     management_forms_tampered,
-    AssetsPurchaseForm)
+    AssetsPurchaseForm,
+    EventFileForm,
+    EventFileSearchForm)
 from tendenci.apps.events.utils import (
     email_registrants,
     render_event_email,
@@ -227,14 +231,15 @@ def event_custom_reg_form_list(request, event_id, template_name="events/event_cu
 @login_required
 def zoom(request, event_id, template_name="events/zoom.html"):
     event = get_object_or_404(Event.objects.get_all(), pk=event_id)
+
+    if not event.zoom_api_configuration:
+        raise Http404
+
     registrant = event.get_registrant_by_user(request.user)
 
     # If the user is not a registrant of this event or not paid, don't connect to Zoom
     if not registrant or registrant.reg8n_status() == 'payment-required':
         raise Http403
-
-    if not event.zoom_integration_setup:
-        raise Http404
 
     now = datetime.now()
     not_ready_yet = event.start_dt - now > timedelta(minutes=10)
@@ -343,6 +348,11 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         my_registrants = request.user.registrant_set.filter(
             registration__event=event).filter(cancel_dt__isnull=True)
 
+    can_view_eventfiles = False
+    if get_setting('module', 'events', 'enableassets'):
+        if event.files.all().exists() and event.allow_view_eventfiles_by(request.user):
+            can_view_eventfiles = True
+
     return render_to_resp(request=request, template_name=template_name, context={
         'days': days,
         'event': event,
@@ -358,6 +368,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'place_files': place_files,
         'free_event': free_event,
         'can_view_attendees': can_view_attendees,
+        'can_view_eventfiles': can_view_eventfiles,
         'is_admin': request.user.profile.is_superuser,
         'registrant_user': request.user if my_registrants and my_registrants[0].reg8n_status() != 'payment-required' else None,
         'my_registrants': my_registrants,
@@ -750,6 +761,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             # update all permissions and save the model
             event = update_perms_and_save(request, form_event, event)
             form_event.save_m2m()
+            event.set_primary_group()
 
             EventLog.objects.log(instance=event)
 
@@ -899,7 +911,7 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
             EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
-                if place.event_set.count() > 1 and (place._original_name != place.name):
+                if place.id and place.event_set.count() > 1 and (place._original_name != place.name):
                     # Create a new place
                     place.pk = None
                 place.save()
@@ -1477,7 +1489,10 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
                     regconf_price.save()
 
                 msg_string = 'Successfully updated %s' % str(event)
-                redirect_url = reverse('event', args=[event.pk])
+                if get_setting('module', 'events', 'enableassets') and "_save" not in request.POST:
+                    redirect_url = reverse('event.file_add', args=[event.pk])
+                else:
+                    redirect_url = reverse('event', args=[event.pk])
             else:
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
@@ -1522,6 +1537,218 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
     # response
     return render_to_resp(request=request, template_name=template_name,
         context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "pricing"})
+
+
+@is_enabled('events')
+@login_required
+def event_files_display(request, event_id, template_name="events/files/display.html"):
+    """A list of files and this event."""
+    if not get_setting('module', 'events', 'enableassets'):
+        raise Http404
+
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
+    # check permission
+    if not event.allow_view_eventfiles_by(request.user):
+        raise Http403
+
+    event_files = event.files.all()
+    if not request.user.is_superuser:
+        event_files = event_files.filter(status_detail='active')
+    return render_to_resp(request=request,
+                          template_name=template_name,
+                          context={'event': event,
+                                   'event_files': event_files})
+
+
+@is_enabled('events')
+@login_required
+def event_file_add(request, event_id, form_class=EventFileForm, template_name="events/edit.html"):
+    """Add an event file"""
+    if not get_setting('module', 'events', 'enableassets'):
+        raise Http404
+
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
+    # check permission
+    if not has_perm(request.user, 'events.add_eventfile'):
+        raise Http403
+
+    if request.method == "POST":
+        event_file_form = form_class(request.POST, request.FILES, user=request.user)
+        if event_file_form.is_valid():
+            event_file = event_file_form.save(commit=False)
+            event_file.event = event
+
+            # set up the user information
+            event_file.creator = request.user
+            event_file.creator_username = request.user.username
+            event_file.owner = request.user
+            event_file.owner_username = request.user.username
+            event_file.save()
+
+            msg_string = _(f'Successfully added file {event_file.name}')
+            messages.add_message(request, messages.SUCCESS, msg_string)
+
+            EventLog.objects.log(instance=event_file)
+            
+
+            return HttpResponseRedirect(reverse('event', args=[event.pk]))
+    else:
+        event_file_form = form_class(user=request.user)
+
+    multi_event_forms = [event_file_form]
+    return render_to_resp(
+        request=request, template_name=template_name, context={
+            'event': event,
+            'event_file_form': event_file_form,
+            'multi_event_forms': multi_event_forms,
+            'label': "file_add"
+        })
+
+
+@is_enabled('events')
+@login_required
+def event_file_edit(request, event_file_id, form_class=EventFileForm, template_name="events/files/edit.html"):
+    event_file = get_object_or_404(EventFile, pk=event_file_id)
+    # check permission
+    if not has_perm(request.user, 'events.change_eventfile'):
+        raise Http403
+
+    if request.method == "POST":
+        event_file_form = form_class(request.POST, request.FILES, instance=event_file, user=request.user)
+        if event_file_form.is_valid():
+            event_file = event_file_form.save(commit=False)
+
+            # set up the user information
+            event_file.owner = request.user
+            event_file.owner_username = request.user.username
+            event_file.save()
+
+            msg_string = _(f'Successfully edited file {event_file.name}')
+            messages.add_message(request, messages.SUCCESS, msg_string)
+
+            EventLog.objects.log(instance=event_file)
+            
+
+            return HttpResponseRedirect(reverse('event.files_display', args=[event_file.event.pk]))
+    else:
+        event_file_form = form_class(instance=event_file, user=request.user)
+
+    return render_to_resp(
+        request=request, template_name=template_name, context={
+            'event_file': event_file,
+            'event_file_form': event_file_form
+        })
+
+
+@is_enabled('events')
+@login_required
+def event_file_view(request, event_file_id, download=False):
+    """View an event file."""
+    event_file = get_object_or_404(EventFile, pk=event_file_id)
+ 
+    # check permissions
+    if not event_file.allow_view_by(request.user):
+        raise Http403
+
+    # comment it out for now
+    # if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+    #     return HttpResponseRedirect(event_file.file.url)
+
+    mime_type = event_file.mime_type()
+
+    # get file binary
+    try:
+        data = event_file.file.read()
+        event_file.file.close()
+    except IOError:  # no such file or directory
+        raise Http404
+    
+    if mime_type:
+        response = HttpResponse(data, content_type=mime_type)
+    else:
+        raise Http404
+
+    EventLog.objects.log()
+
+    if download:
+        response['Content-Disposition'] = f'attachment; filename="{event_file.basename()}"'
+    else:
+        response['Content-Disposition'] = f'inline; filename="{event_file.basename()}"'
+    return response
+
+
+@is_enabled('events')
+@csrf_protect
+@login_required
+def event_file_delete(request, event_file_id):
+    """
+    Delete an event file. 
+    """
+    event_file = get_object_or_404(EventFile, pk=event_file_id)
+    event_id = event_file.event.id
+
+    if not has_perm(request.user, 'events.delete_eventfile'):
+        raise Http403
+    
+    if request.method in ["POST"]:
+        # log an event
+        description = _(f'Deleted the event file {event_file.name} from event "{event_file.event.title}"')
+        EventLog.objects.log(instance=event_file, description=description)
+
+        msg_string = _(f'Successfully deleted the event file {event_file.name}')
+        messages.add_message(request, messages.SUCCESS, msg_string)
+    
+        event_file.delete()
+
+        if 'ajax' in request.POST:
+            return HttpResponse('Ok')
+
+    return HttpResponseRedirect(reverse('event.files_display', args=[event_id]))
+
+
+@is_enabled('events')
+@login_required
+def event_files_search(request, template_name="events/files/search.html"):
+    """
+    This page lists out all event files from newest to oldest.
+    """
+    event_files = EventFile.objects.all()
+    if not has_perm(request.user, 'events.view_eventfile'):
+        # for regular users,
+        # only show the files for the events that they registered for.
+        event_ids = Registration.objects.filter(canceled=False,
+                            invoice__balance__lte=0,
+                            id__in=Registrant.objects.filter(
+                            cancel_dt__isnull=True,
+                            user_id=request.user.id)
+            ).values_list('event_id', flat=True)
+        event_files = event_files.filter(event_id__in=event_ids)
+        event_files = event_files.filter(status_detail='active')
+
+    tag = request.GET.get('tag', None)
+
+    if tag:
+        event_files = event_files.filter(tags__icontains=tag)
+
+    form = EventFileSearchForm(request.GET, user=request.user)
+    if form.is_valid():
+        file_type = form.cleaned_data.get('file_type', None)
+        query = form.cleaned_data.get('q', None)
+        if file_type:
+            event_files = event_files.filter(file_type=file_type)
+        if query:
+            event_files = event_files.filter(name__icontains=query)
+
+    event_files = event_files.order_by('-update_dt')
+
+    EventLog.objects.log()
+
+    return render_to_resp(
+        request=request, template_name=template_name, context={
+            'event_files': event_files,
+            'form' : form,
+        })
+
 
 
 @is_enabled('events')
@@ -1714,6 +1941,7 @@ def add(request, year=None, month=None, day=None, is_template=False, parent_even
                 event = update_perms_and_save(request, form_event, event)
                 groups = form_event.cleaned_data['groups']
                 event.groups.set(groups)
+                event.set_primary_group()
                 if is_template:
                     event.status_detail = 'template'
                 event.save(log=False)
@@ -2658,9 +2886,9 @@ def register(request, event_id=0,
         if request.user.is_authenticated:
             profile = request.user.profile
             if not event.is_registrant_user(request.user):
-                initial = {'first_name':request.user.first_name,
-                            'last_name':request.user.last_name,
-                            'email':request.user.email,}
+                initial = {'first_name': request.user.first_name,
+                            'last_name': request.user.last_name,
+                            'email': [request.user.email, ''],}
                 if profile:
                     initial.update({'company_name': profile.company,
                                     'phone':profile.phone,
@@ -3383,6 +3611,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
         if reg8n.event.course:
             fields.append('certification_track')
+        if request.user.is_superuser and get_setting('module', 'events', 'allowpricingupdate'):
+            fields.append('pricing')
+
         # use modelformset_factory for regular registration form
         RegistrantFormSet = modelformset_factory(
             Registrant, extra=0,
@@ -3405,6 +3636,12 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         if 'certification_track' in form.fields:
             form.fields['certification_track'].choices = reg8n.event.get_certification_choices()
             form.fields['certification_track'].required = False
+        if 'pricing' in form.fields:
+            from .forms import _get_price_labels
+            form.fields['pricing'].label_from_instance = _get_price_labels
+            form.fields['pricing'].queryset = form.fields['pricing'].queryset.filter(reg_conf=reg_conf)
+            form.fields['pricing'].empty_label = None
+            form.fields['pricing'].help_text = _('ADMIN ONLY. If you change the pricing, the associated invoice will NOT be changed. Make sure you manually adjust it.')
 
     if request.method == 'POST':
         redirect = True
@@ -3531,6 +3768,13 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
 
     if not any(perms):
         raise Http403
+    
+    if registration.canceled:
+        # already canceled
+        return HttpResponseRedirect(
+            reverse('event.registration_confirmation',
+            args=[event.pk, registration.registrant.hash])
+        )
 
     registrants = registration.registrant_set.filter(cancel_dt__isnull=True)
     cancelled_registrants = registration.registrant_set.filter(cancel_dt__isnull=False)
@@ -3538,9 +3782,10 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
     if request.method == "POST":
         # If cancellation is no longer allowed, force a refresh so that
         # "cancellation not allowed message is displayed"
-        if not event.can_cancel:
-            return HttpResponseRedirect(reverse(
-                'event.cancel_registration', args=[event.pk, registration.pk]))
+        if not request.user.is_superuser:
+            if not event.can_cancel:
+                return HttpResponseRedirect(reverse(
+                    'event.cancel_registration', args=[event.pk, registration.pk]))
 
         # check if already canceled. if so, do nothing
         if not registration.canceled:
@@ -4821,6 +5066,8 @@ def edit_email(request, event_id, form_class=EmailForm, template_name='events/ed
         form = form_class(request.POST, instance=email)
         if form.is_valid():
             email = form.save(commit=False)
+            if not 'load base_filters' in email.body:
+                email.body = '{% load base_filters %}\n' + email.body
             if not email.id:
                 email.creator = request.user
                 email.creator_username = request.user.username
@@ -5321,10 +5568,14 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
     if not active:
         raise Http404
 
+    form_place = PlaceForm(request.POST or None, prefix="place")
+    form_organizer = OrganizerForm(request.POST or None, request.FILES or None, prefix='organizer')
+    form_sponsor = SponsorForm(request.POST or None, request.FILES or None, prefix='sponsor')
+
     if request.method == "POST":
         form = form_class(request.POST, request.FILES, user=request.user,)
-        form_place = PlaceForm(request.POST, prefix="place")
-        if form.is_valid() and form_place.is_valid():
+        
+        if all([fm.is_valid() for fm in [form, form_place, form_organizer, form_sponsor]]):
             event = form.save(commit=False)
 
             # update all permissions and save the model
@@ -5349,6 +5600,26 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             # save place
             place = form_place.save()
             event.place = place
+            # save organizer
+            organizer = form_organizer.save()
+            logo = form_organizer.cleaned_data['image_upload']
+            if logo:
+                organizer.upload(logo, request.user, event)
+
+            sponsor = form_sponsor.save()
+            logo = form_sponsor.cleaned_data['image_upload']
+            if logo:
+                sponsor.upload(logo, request.user, event)
+            
+            organizer.event.set([event])
+            organizer.save() # save again
+            
+            sponsor.event.set([event])
+            sponsor.save()
+            
+            assign_files_perms(place)
+            assign_files_perms(organizer)
+            assign_files_perms(sponsor)
 
             # place event into pending queue
             event.status = True
@@ -5384,11 +5655,12 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             return redirect('events')
     else:
         form = form_class(user=request.user,)
-        form_place = PlaceForm(prefix="place")
 
     return render_to_resp(request=request, template_name=template_name, context={
         'form': form,
         'form_place': form_place,
+        'form_organizer': form_organizer,
+        'form_sponsor': form_sponsor
         })
 
 

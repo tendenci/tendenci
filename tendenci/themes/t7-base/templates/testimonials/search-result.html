@@ -2,7 +2,7 @@
 {% load base_tags %}
 {% load perm_tags %}
 
-{% has_perm user staff.delete_staff opt_object as can_delete %}
+{% has_perm user testimonials.delete_testimonial testimonial as can_delete %}
 
 <div class="tsm-search-item">
   <div class="tsm-search-item-desc">
@@ -24,6 +24,7 @@
         , {{ testimonial.company }} </em>
       {% endif %}
     </p>
+    {% comment %}
     <!--  REMOVED TO SIMPLIFY SEARCH RESULT DATA
     ============================================
     {% if testimonial.website %}
@@ -47,6 +48,7 @@
   </p>
     {% endif %} 
     -->
+    {% endcomment %}
   </div>
   
   {% if can_delete %}

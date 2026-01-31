@@ -467,9 +467,15 @@ def add_decimal(value, arg):
 
 @register.filter
 def phonenumber(value):
+    if not value or value.lower() == 'n/a':
+        return ''
+
     if value:
         number = ''
-        number_object = phonenumbers.parse(value, get_setting('site', 'global', 'phone_number_region'))
+        try:
+            number_object = phonenumbers.parse(value, get_setting('site', 'global', 'phone_number_region'))
+        except phonenumbers.NumberParseException:
+            return value
         # iterate backwards through number and pattern so we can pad with zeroes if the number is shorter than the pattern
         reversed_number = reversed(str(number_object.national_number))
         # for ch in reversed(settings.PHONE_NUMBER_PATTERN):

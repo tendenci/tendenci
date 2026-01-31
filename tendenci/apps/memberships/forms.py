@@ -468,17 +468,18 @@ class MembershipDefaultUploadForm(forms.ModelForm):
         self.fields['interactive'].initial = 1
         self.fields['interactive'].widget = forms.HiddenInput()
         self.fields['key'].initial = 'email/member_number/fn_ln_phone'
+        self.fields['upload_file'].validators = [FileValidator(allowed_extensions=('.csv',), allowed_mimetypes=('text/csv', 'text/plain'))]
 
     def clean_upload_file(self):
         key = self.cleaned_data['key']
         upload_file = self.cleaned_data['upload_file']
         if not key:
             raise forms.ValidationError(_('Please specify the key to identify duplicates'))
-
+        upload_file.seek(0)
         file_content = upload_file.read()
         encoding = chardet.detect(file_content)['encoding']
         file_content = file_content.decode(encoding)
-        upload_file.seek(0)
+        #upload_file.seek(0)
         header_line_index = file_content.find('\n')
         header_list = ((file_content[:header_line_index]
                             ).strip('\r')).split(',')
@@ -1463,6 +1464,8 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                 try:
                     donation_amount = donation_amount.replace('$', '').replace(',', '')
                     donation_amount = decimal.Decimal(donation_amount)
+                    if donation_amount < 0:
+                        raise forms.ValidationError(_("Negative donation amount entered! Please correct it."))
                     return (donation_option, donation_amount)
                 except decimal.InvalidOperation:
                     raise forms.ValidationError(_("Please enter a valid donation amount."))
@@ -1507,11 +1510,12 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
 
         # assign corp_profile_id
         if membership.corporate_membership_id:
-            corp_membership = CorpMembership.objects.get(
-                pk=membership.corporate_membership_id
-            )
-            membership.corp_profile_id = corp_membership.corp_profile.id
-            membership.entity = corp_membership.corp_profile.entity
+            if not membership.corp_profile_id:
+                corp_membership = CorpMembership.objects.get(
+                    pk=membership.corporate_membership_id
+                )
+                membership.corp_profile_id = corp_membership.corp_profile.id
+                membership.entity = corp_membership.corp_profile.entity
         else:
             # detach if no corporate_membership
             if membership.corp_profile_id:

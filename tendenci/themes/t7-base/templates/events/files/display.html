@@ -1,0 +1,36 @@
+{% extends "events/base.html" %}
+
+{% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events-files.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+
+	<h1>{% trans 'Event Files' %}</h1>
+	<strong>{% trans 'Event:' %} <a href="{% url 'event' event.id %}" title="Back to events">{{ event.title }}</a></strong>
+	
+	{% if request.user.is_superuser %}
+	<div class="pull-right"><a href="{% url "event.file_add_only" event.pk %}" class="btn btn-default btn-sm">{% trans "Add File" %}</a></div>
+	{% endif %}
+	<div class="clearfix">&nbsp;</div>
+	
+	
+	<div class="files-wrap clearfix">
+	{% for event_file in event_files %}
+	    {% include "events/files/search-result.html" %}
+	{% endfor %}
+	</div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    
+  	{% include 'events/include/event_file_js.html' %}
+
+{% endblock %}  

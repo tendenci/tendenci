@@ -32,7 +32,7 @@ from tendenci.apps.events.models import (
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
     RecurringEvent, Registrant, EventCredit, EventStaff,
-    AssetsPurchase
+    AssetsPurchase, EventFile
 )
 
 from tendenci.libs.form_utils.forms import BetterModelForm
@@ -108,6 +108,62 @@ SEARCH_CATEGORIES = (
 
     ('priority', _('Priority Events')),
 )
+
+
+class EventFileForm(FormControlWidgetMixin, BetterModelForm):
+    label = _('Add a File')
+    class Meta:
+        model = EventFile
+
+        fields = (
+            'name',
+            'file_type',
+            'file',
+            'tags',
+            'status_detail'
+        )
+        field_order = [
+            'name',
+            'file_type',
+            'file',
+            'tags',
+            'status_detail'
+            ]
+
+        # fieldsets = [(_('Add a File'), {
+        #               'fields': [
+        #                   'name',
+        #                   'file_type',
+        #                   'file',                  
+        #                   'tags',
+        #               ],
+        #               'legend': ''
+        #               }),
+        #              (_('Administrator Only'), {
+        #               'fields': ['status_detail'],
+        #               'classes': ['admin-only'],
+        #             })]
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(EventFileForm, self).__init__(*args, **kwargs)
+        self.fields['file'].validators = [FileValidator()]
+        if not settings.ALLOW_MP3_UPLOAD:
+            if ('Audio', 'Audio') in self.fields['file_type'].widget.choices:
+                self.fields['file_type'].widget.choices.remove(('Audio', 'Audio'))
+
+
+class EventFileSearchForm(FormControlWidgetMixin, forms.Form):
+    file_type = forms.ChoiceField(
+        choices=[('', _('ALL')),] + EventFile.FILE_TYPE_CHOICES,
+        required=False,
+        label=_('')
+    )
+    q = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(EventFileSearchForm, self).__init__(*args, **kwargs)
 
 
 def management_forms_tampered(formsets=None):
@@ -708,7 +764,7 @@ def _get_price_labels(pricing):
         target_display = ''
 
     end_dt = '<br/>&nbsp;(Ends ' + str(pricing.end_dt.date()) + ')'
-    description = '<br/>&nbsp;' + str(pricing.description)
+    description = '<br/>&nbsp;<span style="font-weight: normal;">' + str(pricing.description) + '</span>'
 
     return mark_safe('&nbsp;<strong><span data-price="%s">%s %s%s</span>%s</strong>%s' % (
                                       pricing.price,
@@ -1203,12 +1259,11 @@ class EventForm(TendenciBaseForm):
 
         if self.cleaned_data.get('remove_photo'):
             event.image = None
-            
+
         primary_group = self.cleaned_data.get('primary_group', None)
         if primary_group:
-            for groupevent in event.group_relations.exclude(group=primary_group):
-                groupevent.is_primary = False
-                groupevent.save()
+            event.primary_group_selected = primary_group
+
         return event
 
 
@@ -2935,7 +2990,7 @@ class UserRegistrationForm(UserMemberRegBaseForm):
     """
     User Registration form.
     """
-    user_display = forms.CharField(max_length=80,
+    user_display = forms.CharField(max_length=300,
                         label=_('User'),
                         required=False,
                         help_text=_('Type name or username or email, then press the down arrow key to select a suggestion'))

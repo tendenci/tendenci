@@ -92,11 +92,11 @@ div.small-font {
           <h3>
             {% for span in event.date_spans %}
             {% if span.same_date %}
-            <span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"N j, Y" }}</span>
+            <time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"N j, Y" }}</time>
             {% if not forloop.last %} and {% endif %}
             {% else %}
-            <span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"M. j" }}</span> -
-            <span itemprop="endDate" datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"M. j, Y" }}</span>
+            <time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"M. j" }}</time> -
+            <time itemprop="endDate" datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"M. j, Y" }}</time>
             {% endif %}
             {% endfor %}
           </h3>
@@ -126,25 +126,31 @@ div.small-font {
 			{% endif %}
 			{% if event.place.national %}
 				{% include 'events/include/display_national.html' %}
-			      {% endif %}
+		    {% endif %}
             {% if registrant_user and event.enable_zoom_meeting %}
-            <div class="btn btn-success">
-	       <a href="{% url 'event.zoom' event.pk %}" style="color:white;">
-		    {% if event.place.is_zoom_webinar %}
-		      {% trans "Join Webinar" %}
-		    {% else %}
-	       	      {% trans "Join Meeting" %}
-	       	{% endif %}
-		</a>
-            </div>
+	            <div class="btn btn-success">
+		        <a href="{% url 'event.zoom' event.pk %}" style="color:white;">
+			    {% if event.place.is_zoom_webinar %}
+			      {% trans "Join Webinar" %}
+			    {% else %}
+		       	      {% trans "Join Meeting" %}
+		       	{% endif %}
+			    </a>
+	            </div>
             {% else %}
-            <div class="small-font">
-              {% if registrant_user and event.zoom_integration_setup %}
-              {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
-              Zoom meeting available from 10 minutes prior to <strong>{{ start_dt }}</strong> through <strong>{{ end_dt }}</strong>
-              {% endblocktrans %}
-            {% endif %}
-            </div>
+	            <div class="small-font">
+	              {% if registrant_user and event.zoom_integration_setup %}
+	              	  {% if event.place.is_zoom_webinar %}
+	              	  {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
+		              Zoom webinar available from 10 minutes prior to <strong>{{ start_dt }}</strong> through <strong>{{ end_dt }}</strong>
+		              {% endblocktrans %}
+	              	  {% else %}
+		              {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
+		              Zoom meeting available from 10 minutes prior to <strong>{{ start_dt }}</strong> through <strong>{{ end_dt }}</strong>
+		              {% endblocktrans %}
+		              {% endif %}
+	            {% endif %}
+	            </div>
             {% endif %}
 
           </p>
@@ -321,12 +327,12 @@ div.small-font {
         
         {% for span in event.date_spans %}
         {% if span.same_date %}
-        <p><span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, N j, Y" }}</span></p>
+        <p><time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, N j, Y" }}</time></p>
         
         {% if not forloop.last %} and {% endif %}
         {% else %}
-        <p><span datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, M. j" }}</span></p> -
-        <p><span datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"D, M. j, Y" }}</span></p>
+        <p><time datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, M. j" }}</time></p> -
+        <p><time datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"D, M. j, Y" }}</time></p>
         {% if not forloop.last %} and {% endif %}
         {% endif %}
         
@@ -410,6 +416,12 @@ div.small-font {
 				<a href="{% url 'event.attendees' event.id %}">{% trans "View Attendees" %}</a>
             </div>
         {% endif %}
+      {% endif %}
+      
+      {% if can_view_eventfiles %}
+            <div class="vitals">
+				<a href="{% url 'event.files_display' event.id %}" title="View Event Files">{% trans "View Event Files" %}</a>
+            </div>
       {% endif %}
       
       <br />

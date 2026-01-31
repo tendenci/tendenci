@@ -53,6 +53,7 @@ from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.utils import send_email_notification, fieldify, get_salesforce_access, correct_filename
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.corporate_memberships.utils import (
+                                            corp_memb_inv_add,
                                             corp_membership_update_perms,
                                             dues_rep_emails_list,
                                             create_salesforce_lead)
@@ -182,8 +183,10 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
 
     def __init__(self, *args, **kwargs):
         super(CorporateMembershipType, self).__init__(*args, **kwargs)
-        self._original_pending_group = self.pending_group
-        self._original_active_group = self.active_group
+        #Commenting it out as it is causing an error on dumpdata:
+        # RecursionError: maximum recursion depth exceeded in comparison
+        # self._original_pending_group = self.pending_group
+        # self._original_active_group = self.active_group
 
     class Meta:
         verbose_name = _("Corporate Membership Type")
@@ -205,12 +208,12 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                 self.position = 1
 
         super(CorporateMembershipType, self).save(*args, **kwargs)
-        # Sync pending_group and active_group if needed
-        if (self.pending_group and self.pending_group != self._original_pending_group) or \
-            (self.active_group and self.active_group != self._original_active_group):
-            subprocess.Popen([python_executable(), "manage.py",
-                              "sync_corp_reps_groups", '--corp_mem_type_id',
-                              str(self.id)])
+        # # Sync pending_group and active_group if needed
+        # if (self.pending_group and self.pending_group != self._original_pending_group) or \
+        #     (self.active_group and self.active_group != self._original_active_group):
+        #     subprocess.Popen([python_executable(), "manage.py",
+        #                       "sync_corp_reps_groups", '--corp_mem_type_id',
+        #                       str(self.id)])
 
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None, previous_expire_dt=None):
         """
@@ -292,6 +295,36 @@ class CorpProfile(TendenciBaseModel):
     ud6 = models.TextField(blank=True, default='', null=True)
     ud7 = models.TextField(blank=True, default='', null=True)
     ud8 = models.TextField(blank=True, default='', null=True)
+    ud9 = models.TextField(blank=True, default='', null=True)
+    ud10 = models.TextField(blank=True, default='', null=True)
+    ud11 = models.TextField(blank=True, default='', null=True)
+    ud12 = models.TextField(blank=True, default='', null=True)
+    ud13 = models.TextField(blank=True, default='', null=True)
+    ud14 = models.TextField(blank=True, default='', null=True)
+    ud15 = models.TextField(blank=True, default='', null=True)
+    ud16 = models.TextField(blank=True, default='', null=True)
+    ud17 = models.TextField(blank=True, default='', null=True)
+    ud18 = models.TextField(blank=True, default='', null=True)
+    ud19 = models.TextField(blank=True, default='', null=True)
+    ud20 = models.TextField(blank=True, default='', null=True)
+    ud21 = models.TextField(blank=True, default='', null=True)
+    ud22 = models.TextField(blank=True, default='', null=True)
+    ud23 = models.TextField(blank=True, default='', null=True)
+    ud24 = models.TextField(blank=True, default='', null=True)
+    ud25 = models.TextField(blank=True, default='', null=True)
+    ud26 = models.TextField(blank=True, default='', null=True)
+    ud27 = models.TextField(blank=True, default='', null=True)
+    ud28 = models.TextField(blank=True, default='', null=True)
+    ud29 = models.TextField(blank=True, default='', null=True)
+    ud30 = models.TextField(blank=True, default='', null=True)
+    ud31 = models.TextField(blank=True, default='', null=True)
+    ud32 = models.TextField(blank=True, default='', null=True)
+    ud33 = models.TextField(blank=True, default='', null=True)
+    ud34 = models.TextField(blank=True, default='', null=True)
+    ud35 = models.TextField(blank=True, default='', null=True)
+    ud36 = models.TextField(blank=True, default='', null=True)
+    ud37 = models.TextField(blank=True, default='', null=True)
+    ud38 = models.TextField(blank=True, default='', null=True)
 
     perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
@@ -686,6 +719,12 @@ class CorpMembership(TendenciBaseModel):
     total_passes_allowed = models.PositiveIntegerField(_('Total Passes Allowed'),
                                                default=0,
                                                blank=True)
+    # store the original price for display purpose
+    corp_price = models.DecimalField(max_digits=15, decimal_places=2,
+                                blank=True, default=0)
+    num_ind_above_cap = models.PositiveSmallIntegerField(default=0)
+    above_cap_price = models.DecimalField(max_digits=15, decimal_places=2,
+                                blank=True, default=0)
 
     perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
@@ -717,6 +756,7 @@ class CorpMembership(TendenciBaseModel):
     def __init__(self, *args, **kwargs):
         super(CorpMembership, self).__init__(*args, **kwargs)
         self._original_status_detail = self.status_detail
+        self._original_expiration_dt = self.expiration_dt
 
     def __str__(self):
         return "%s" % (self.corp_profile.name)
@@ -1310,6 +1350,9 @@ class CorpMembership(TendenciBaseModel):
                 self.owner_username = request_user.username
             self.save()
             
+            # archive old corp_memberships
+            self.archive_old()
+            
             # directory
             if self.corp_profile.directory:
                 directory = self.corp_profile.directory
@@ -1589,6 +1632,98 @@ class CorpMembership(TendenciBaseModel):
         now = datetime.now()
         return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
 
+    def renew(self, request):
+        new_corp_membership = self.copy()
+        new_corp_membership.renewal = True
+        new_corp_membership.renew_from_id = self.id
+        new_corp_membership.renew_dt = datetime.now()
+        new_corp_membership.status = True
+        new_corp_membership.status_detail = 'pending'
+        new_corp_membership.creator = request.user
+        new_corp_membership.creator_username = request.user.username
+        new_corp_membership.owner = request.user
+        new_corp_membership.owner_username = request.user.username
+        new_corp_membership.expiration_dt = new_corp_membership.get_expiration_dt()
+        
+        # calculate the total price for invoice
+        corp_memb_type = self.corporate_membership_type
+        corp_renewal_price = corp_memb_type.renewal_price
+        if not corp_renewal_price:
+            corp_renewal_price = 0
+        indiv_renewal_price = corp_memb_type.membership_type.renewal_price
+        if not indiv_renewal_price:
+            indiv_renewal_price = 0
+
+        member_ids = MembershipDefault.objects.filter(
+                        corp_profile_id=self.corp_profile.id,
+                        status=True,
+                        status_detail__in=['active', 'expired']
+                        ).values_list('id', flat=True)
+        count_members = len(member_ids)
+        if corp_memb_type.apply_cap and corp_memb_type.allow_above_cap and count_members > corp_memb_type.membership_cap:
+            count_ind_within_cap = corp_memb_type.membership_cap
+            count_ind_above_cap = count_members - count_ind_within_cap
+            renewal_total = corp_renewal_price + \
+                            indiv_renewal_price * count_ind_within_cap + \
+                            corp_memb_type.above_cap_price * count_ind_above_cap
+        else:
+            renewal_total = corp_renewal_price + \
+                    indiv_renewal_price * count_members
+
+        opt_d = {'renewal': True,
+                 'renewal_total': renewal_total,
+                 'include_donation': False,
+                 'app': CorpMembershipApp.objects.current_app()}
+
+        new_corp_membership.save()
+        # create an invoice
+        inv = corp_memb_inv_add(request.user,
+                                new_corp_membership,
+                                **opt_d)
+        new_corp_membership.invoice = inv
+        new_corp_membership.save()
+
+        # assign object permissions
+        corp_membership_update_perms(new_corp_membership)
+
+        EventLog.objects.log(instance=self)
+
+        # save the individual members
+        for member_id in member_ids:
+            ind_memb_renew_entry = IndivMembershipRenewEntry(
+                            corp_membership=new_corp_membership,
+                            membership_id=member_id,
+                            )
+            ind_memb_renew_entry.save()        
+
+
+        if request.user.is_superuser and inv.balance <= 0:
+            # admin: approve renewal
+            new_corp_membership.approve_renewal(request)
+        else:
+            if self.is_expired:
+                # archive expired
+                self.status_detail = 'archive'
+                self.save()
+
+        # Comment it out for now
+        # # send an email to dues reps
+        # if get_setting('module', 'corporate_memberships', 'notificationson'):
+        #     recipients = dues_rep_emails_list(new_corp_membership)
+        #     notice_sent = new_corp_membership.send_notice_email(request, 'renewal')
+        #     if not notice_sent:
+        #         extra_context = {
+        #             'object': new_corp_membership,
+        #             'corp_profile': new_corp_membership.corp_profile,
+        #             'corpmembership_app': opt_d['app'],
+        #             'request': request,
+        #             'invoice': inv,
+        #         }
+        #         send_email_notification('corp_memb_renewed_user',
+        #                                 recipients, extra_context)
+        return new_corp_membership
+
+
     def send_notice_email(self, request, notice_type, **kwargs):
         """
         Convenience method for sending
@@ -1648,6 +1783,18 @@ class CorpMembership(TendenciBaseModel):
                                     status_detail='active'
                                     ).order_by('-expiration_dt')[:1] or [None]
             return latest_renewed
+
+        return None
+
+    def latest_renewed_in_pending(self):
+        """
+        Get the latest renewed corpMembership that is still in pending.
+        """
+        corp_profile = self.corp_profile
+        latest_corp_membership = corp_profile.corp_membership
+        if latest_corp_membership and latest_corp_membership.id != self.id:
+            if 'pending' in latest_corp_membership.status_detail:
+                return latest_corp_membership
 
         return None
 
@@ -2019,7 +2166,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                         args=[self.corp_app.id]),
                 self.corp_app.id)
 
-    def get_field_class(self, initial=None):
+    def get_field_class(self, initial=None, max_length=None):
         """
             Generate the form field class for this field.
         """
@@ -2044,7 +2191,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                     field_class = forms.BooleanField
                 else:
                     field_class = getattr(forms, field_class)
-            
+
             arg_names = field_class.__init__.__code__.co_varnames
             if initial:
                 field_args['initial'] = initial
@@ -2076,6 +2223,8 @@ class CorpMembershipAppField(OrderingBaseModel):
                 field_args["widget"] = getattr(import_module(module), widget)
             if self.field_type == 'FileField':
                 field_args["validators"] = [FileValidator()]
+            if max_length and field_class.__name__ not in ['ChoiceField', 'CountrySelectField']:
+                field_args['max_length'] = max_length
 
             return field_class(**field_args)
         return None
@@ -2159,6 +2308,8 @@ class CorpMembershipRep(models.Model):
 
     def sync_reps_groups(self):
         corp_app = CorpMembershipApp.objects.current_app()
+        if not corp_app:
+            return
         if corp_app.dues_reps_group:
             if self.is_dues_rep and not corp_app.dues_reps_group.is_member(self.user):
                 corp_app.dues_reps_group.add_user(self.user, **{
@@ -2176,6 +2327,8 @@ class CorpMembershipRep(models.Model):
 
     def remove_from_reps_groups(self):
         corp_app = CorpMembershipApp.objects.current_app()
+        if not corp_app:
+            return
         if corp_app.dues_reps_group:
             if corp_app.dues_reps_group.is_member(self.user):
                 if not self.user.corpmembershiprep_set.exclude(id=self.id, is_dues_rep=True).exists():

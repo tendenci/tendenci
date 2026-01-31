@@ -82,12 +82,12 @@ class ThemeLoader(DjangoLoader):
 
     def get_contents(self, origin):
         if not origin.use_s3_theme:
+            if not os.path.isfile(origin.name):
+                raise TemplateDoesNotExist(origin)
+
             try:
                 with open(origin.name) as fp:
                     return fp.read()
-            # Python 3 only
-            #except FileNotFoundError:
-            #    raise TemplateDoesNotExist(origin)
             # Python 2 and 3
             except IOError as e:
                 if e.errno == errno.ENOENT:

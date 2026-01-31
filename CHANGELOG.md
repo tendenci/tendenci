@@ -1,3 +1,115 @@
+### 15.3.12 [2026-1-18]
+
+* **SECURITY**: Fixed an UnpicklingError in helpdesk module, which also patches a security vulnerability that could potentially be exploited by a staff user with carefully crafted malicious data (Thanks to @nedlir for reporting the issue). The helpdesk module is not enabled by default, if you have it enabled, be sure to update tendenci for your site immediately. 
+* Other bugfixes. 
+
+
+### 15.3.11 [2026-1-8]
+
+* Fixed an issue in import for profiles, memberships, etc, due to the invalid mode: 'rU' which was removed in Python 3.11.
+* Avoided the Approve link being double-clicked on membership details view.
+
+
+### 15.3.10 [2025-12-28]
+
+* Added the option to have taxes included in prices (as is done in Europe and VAT and GST countries. (Thanks to @rockinrobstar)
+* Updated corporate membership renewal to avoid duplicate submissions if a corp membership is already renewed and in pending.
+* Fixed an error in the template tag `photo_image_url` when using s3.
+* Corrected the "view notice" link for corporate membership notice logs search.
+* Fixed an issue about a negative donation could be applied on membership join or renewal. (Thanks to @rockinrobstar)
+
+
+### 15.3.9 [2025-12-12]
+
+* Included the taxes column to the invoices list.
+* Updated credits page to sort by category.
+* Resolved an issue that the membership renew link might not show on user profiles.
+
+
+### 15.3.8 [2025-12-9]
+
+* Appled tax to donation, if enabled, for membership forms.
+* Added a setting "Registrant Pricing Can Be Changed", default to False, to allow admin to change the pricing for a registrant.
+* Fixed the issue about testimonials not showing for logged in users.
+* Updated copy event to clone custom form if needed.
+* Updated group add to auto-fill slug.
+* More assorted bugfixes.
+
+
+### 15.3.7 [2025-10-8]
+
+* Bugfix a IntegrityError for /py/.
+* Included the member_number field to the profiles list.
+
+
+### 15.3.6 [2025-10-8]
+
+* New feature: Forum digest. Forum subscribers can opt in to receive daily and/or weekly digest. 
+* Added 3 custom admin actions for corporate memberships: 1) renewed selected. 2) export invoices for the selected. 3) print invoices for the selected.
+* Added the "print selected invoices" admin action for memberships.
+* Updated list_events template tag to allow multiple groups.
+* Allowed admin to cancel an event registration with no cancellation deadline.
+* Added the option to hide non-member pricing from members on event registration.
+* Included the sponsor and organizer sections to event minimal add. 
+* Added the option to exclude tags for list_directories template tag. (Thanks to @rob-hills)
+* Updated events monthly and weekly views to handle events with child events. 
+* Added the option to allow member content to be pulled in to the newsletter templates.
+* Assorted bugfixes.
+
+
+### 15.3.5 [2025-7-3]
+
+* Created the admin backend for newsletters to make newsletters searchable.
+* Updated donation add page. 1) Changed the format to be consistent with the rest of the forms. 2) Mixed the "donate to entity" and "preset amount" to be a list of radio select. 3) Added the option to charge tax based on user's region. 4) Added a setting to specify required fields. 5) And more.
+* Updated /py/.
+* Updated the format for corp membership add/edit.
+* Added the corp membership type name to corp export.
+* Included corp_profile_name to memberships export.
+* Granted staff access to report links at top menu. (Thanks to @bernd-wechner)
+* Assigned the owner for the cloned newsletters.
+* Added the setting usersrequiredfields to specify extra required fields on profiles add/edit.
+* Converted span elements with datetime attributes to time elements for event's day view. (Thanks to @tristanjl)
+* Added committees settings for root url and labels.
+* Added registration_open filter for event_list. (Thanks to @tristanjl)
+* Added 20 more UD fields to corp membership application.
+* Added the label field to directories pricing.
+* Updated newsletter generator to visually toggle group and members only.
+* Resolved 2 issues in membership auto renewal: If auto renewal fails, 1) no member number will be assigned to the profile, 2) no multiple membership entries will be created.
+* Updated invoice view to show bill_to_company for corp memberships.
+* Fixed an issue for file add to not block with blockUI until required fields are filled out.
+* Other small fixes.
+
+
+### 15.3.4 [2025-5-7]
+
+* Updated the frontend add/edit to have wysiwyg editor for the custom forms.
+* Updated corp export to include some invoice fields (subtotal, total, tax, balance).
+* Added the perm "Can publish form" for custom forms.
+* Added 10 more UD fields to corp membership application.
+* Fixed some issues in projects documents upload.
+* Converted setup.py to pyproject.toml
+* Other minor fixes.
+
+### 15.3.3 [2025-3-10]
+
+* Updated assets purchase to handle free purchase.
+* Forum subscription update. Notifications for new topics will be sent to all forum subscribers instead of those opted to the "only new topics".
+* Added the check that payment mode is online (#1343). When expired membership has submitted renewal, then we trigger online payment only if payment is online payment. (Thanks to @AnttiMJohansson)
+* Phone number formatting now uses Phonenumberslite library (#1340). (Thanks to @rob-hills)
+* Added a management command "prune_event_log_records" to prune event logs if the setting KEEP_EVENT_LOG_FOR_DAYS is set to a number greater than 0. (Thanks to @rob-hills)
+* Set the button label to "Join Webinar" if the Zoom event is a webinar and not a regular meeting. (Thanks to @bje-)
+* Added a method to include raw files within the static directory.  (#1342) (Thanks to @rockinrobstar)
+* Displayed the renew link for admin to renew a membership that is out of renewal period.
+* Updated invoice title for form entries.
+* Added an option to show online payment pre page.
+* Updated bluevolt API connections.
+* Added an option to allow payment credits to be carried over on renewal for both memberships and corporate memberships.
+* Included "member type" field to the renewed members report.
+* Fixed an issue about "taxes not included in refunds".
+* Resolved an issue about registration edit link not showing when event registration passed the cancellation date.
+* Other minor fixes.
+
+
 ### 15.3.2 [2025-2-24]
 
 * Allowed event addons to be added without options specified.

@@ -266,7 +266,7 @@ class Newsletter(models.Model):
 
         return ''
 
-    def clone(self):
+    def clone(self, request_user=None):
         """
         Clone this newsletter and return the cloned newsletter.
         """
@@ -308,6 +308,11 @@ class Newsletter(models.Model):
             for name in email_field_names:
                 if hasattr(self.email, name):
                     setattr(email_new, name, getattr(self.email, name))
+            if request_user:
+                email_new.creator = request_user
+                email_new.creator_username = request_user.username
+                email_new.owner = request_user
+                email_new.owner_username = request_user.username
             email_new.save()
 
             newsletter_new.email = email_new
@@ -360,6 +365,7 @@ class Newsletter(models.Model):
         content = content.replace('[site_mailing_address]', get_setting('site', 'global', 'sitemailingaddress'))
         content = content.replace('[site_contact_email]', get_setting('site', 'global', 'sitecontactemail'))
         content = content.replace('[site_phone_number]', get_setting('site', 'global', 'sitephonenumber'))
+        content = content.replace('[browser_view_url]', self.get_browser_view_url())
 
         return content
 

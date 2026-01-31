@@ -521,10 +521,14 @@
             </div>
             
             <input type="hidden" name="confirmed" />
+            {% with event.registration_configuration.guest_limit as guest_limit %}
 			{% if not event.is_table and event.registration_configuration.allow_guests %}
+			{% if guest_limit == 0 or flat_registrants|length <= guest_limit %}
             <input class="btn btn-default" type="submit" name="addmore" value="{% trans "Add Another Registrant" %}" />
              <br /><br />
              {% endif %}
+             {% endif %}
+             {% endwith %}
             <div class="clear"></div>
             <input class="btn btn-success" type="submit" name="commit" value="{% if not reg_conf.payment_required or total_price <= 0 %}{% trans 'Confirm My Details' %}{% else %}{% trans 'Save & Continue' %}{% endif %}" />
            <br /><br />

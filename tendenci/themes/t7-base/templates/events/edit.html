@@ -14,6 +14,7 @@
 {% endblock %}
 
 {% block content %}
+{% has_perm user events.add_eventfile as can_add_file %}
 <!-- you are here: templates/events/edit.html -->
 
 <div class="t">
@@ -72,13 +73,18 @@
             <li role="presentation"  class="dropdown {% if label == 'pricing' %}active{% endif %}">
                 <a href="{% url "event.pricing_edit" event.pk %}">{% trans "Pricing(s)" %}</a>
             </li>
+            {% if MODULE_EVENTS_ENABLEASSETS and can_add_file %}
+            <li role="presentation"  class="dropdown {% if label == 'file_add' %}active{% endif %}">
+                <a href="{% url "event.file_add" event.pk %}">{% trans "Add Files" %}</a>
+            </li>
+            {% endif %}
         </ul>
     </div>
 
     <div class="event-wrap">
         <form id="event-form" class="form-horizontal"  action="." method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
-            {% if event.can_configure_credits %}
+            {% if event.can_configure_credits and label == 'credits' %}
               {% credits_form_display event credit_forms user %}
             {% endif %}
             {% if event.has_child_events and label == "children" %}
@@ -87,11 +93,24 @@
             {% if event.use_credits_enabled and label == "review_credits" %}
                 {% review_and_edit_credits event %}
             {% endif %}
-            {{ multi_event_forms|styled_multi_forms }}
-            {% if label != "pricing" %}
-            <input class="btn btn-default" type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
+            {% if label == "file_add" and can_add_file %}
+            	<div class="text-warning"><i>{% trans 'Note that, files uploaded here can be viewable by users who have registered this event.' %}</i></div>
+                {% include "events/include/event-files-list.html" %}
             {% endif %}
-            <input class="btn btn-primary" type="submit" value="{% trans 'Save Changes' %}" name="_save"/>
+            {{ multi_event_forms|styled_multi_forms }}
+            {% if MODULE_EVENTS_ENABLEASSETS and can_add_file %}
+            	{% if label != "file_add" %}
+            	<input class="btn btn-default" type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
+            	{% endif %}
+            {% else %}
+            	{% if label != "pricing" %}
+            	<input class="btn btn-default" type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
+            	{% endif %}
+            {% endif %}
+            <input class="btn btn-primary" type="submit" value="{% if label == "file_add" %}{% trans 'Add File' %}{% else %}{% trans 'Save Changes' %}{% endif %}" name="_save"/>
+  			{% if label == "file_add" %}
+  			<div class="pull-right"><a href="{% url 'event' event.id %}" class="btn btn-default">{% trans 'Go to Event' %}</a></div>
+  			{% endif %}
         </div>
         </form>
 
@@ -226,6 +245,8 @@
      <script type="text/javascript">
         {% include 'events/include/event_toggle_reply_to.js' %}
     </script>
+
+	{% include 'events/include/event_file_js.html' %}
 
     {% include 'tags/autocomplete.html' %}
 {% endblock %}

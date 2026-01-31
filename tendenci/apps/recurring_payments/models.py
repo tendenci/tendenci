@@ -404,15 +404,25 @@ class RecurringPayment(models.Model):
             if memberships:
                 for m in self.memberships:
                     if m.expire_dt < datetime(now.year, now.month, now.day, 0, 0, 0) + timedelta(days=1):
-                        renewed_m = m.renew(m.user)
-                        renewed_m.status_detail = 'pending'
-                        renewed_m.save()
-                        invoice = renewed_m.get_invoice()
-                        rp_invoice = RecurringPaymentInvoice(
-                                 recurring_payment=self,
-                                 invoice=invoice,
-                                 billing_dt=now)
-                        rp_invoice.save()
+                        if not m.user.membershipdefault_set.filter(
+                                renewal=True,
+                                renew_from_id=m.id,
+                                status_detail__in=['pending', 'active']
+                                ).exists():
+                            #renewed_m = m.renew(m.user)
+                            renewed_m = m.copy()
+                            renewed_m.renewal = True
+                            renewed_m.renew_from_id = m.id
+                            renewed_m.pend()
+                            renewed_m.save()
+                            renewed_m.save_invoice(status_detail='tendered')
+
+                            invoice = renewed_m.get_invoice()
+                            rp_invoice = RecurringPaymentInvoice(
+                                     recurring_payment=self,
+                                     invoice=invoice,
+                                     billing_dt=now)
+                            rp_invoice.save()
 
         else:
             if not last_billing_cycle:

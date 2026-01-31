@@ -191,9 +191,25 @@ def corp_membership_rows(corp_profile_field_names,
                     item = item.id
             row_items.append(item)
         for field_name in corp_memb_field_names:
-            item = getattr(corp_membership, field_name)
-            if item and field_name in foreign_keys:
-                item = item.id
+            if field_name in ['subtotal', 'total', 'tax', 'balance']:
+                invoice = corp_membership.invoice
+                if invoice:
+                    if field_name == 'tax':
+                        item = invoice.tax + invoice.tax_2
+                    else:
+                        item = getattr(invoice, field_name)
+                else:
+                    item = ''
+            elif field_name == 'corporate_membership_type_name':
+                corp_type = getattr(corp_membership, 'corporate_membership_type')
+                if corp_type:
+                    item = corp_type.name
+                else:
+                    item = ''
+            else:
+                item = getattr(corp_membership, field_name)
+                if item and field_name in foreign_keys:
+                    item = item.id
             row_items.append(item)
 
         yield row_items
@@ -300,6 +316,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
 
         inv.bill_to_company = corp_profile.name
         inv.bill_to_address = corp_profile.address
+        inv.bill_to_address2 = corp_profile.address2
         inv.bill_to_city = corp_profile.city
         inv.bill_to_state = corp_profile.state
         inv.bill_to_zip_code = corp_profile.zip
@@ -308,6 +325,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
         inv.ship_to = corp_profile.name
         inv.ship_to_company = corp_profile.name
         inv.ship_to_address = corp_profile.address
+        inv.ship_to_address2 = corp_profile.address2
         inv.ship_to_city = corp_profile.city
         inv.ship_to_state = corp_profile.state
         inv.ship_to_zip_code = corp_profile.zip
@@ -538,7 +556,7 @@ def get_payment_method_choices(user, corp_app):
 def csv_to_dict(file_path):
     data_list = []
 
-    data = csv.reader(default_storage.open(file_path, 'rU'))
+    data = csv.reader(default_storage.open(file_path, 'r'))
     fields = next(data)
 
     fields = [smart_str(field) for field in fields]
@@ -554,7 +572,7 @@ def validate_import_file(file_path):
     'name' and 'corporate_membership_type' are required fields
     """
     normalize_newline(file_path)
-    data = csv.reader(default_storage.open(file_path, mode='rU'))
+    data = csv.reader(default_storage.open(file_path, mode='r'))
     fields = next(data)
     fields = [smart_str(field) for field in fields]
 

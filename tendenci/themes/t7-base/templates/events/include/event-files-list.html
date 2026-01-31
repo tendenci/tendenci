@@ -1,0 +1,37 @@
+
+ {% with event.files.all as event_files %}
+ {% if event_files %}
+    <table class="table table-striped">
+        <tr>
+            <th width="40%">{% trans "Name" %}</th>
+            <th width="10%">{% trans "Download" %}</th>
+            <th width="5%" style="text-wrap: nowrap;">{% trans "File Type" %}</th>
+            <th width="5%">{% trans "By" %}</th>
+            <th width="10%">{% trans "Added on" %}</th>
+            <th width="10%">{% trans "Status" %}</th>
+            <th width="30%">&nbsp;</th>
+        </tr>
+      {% for event_file in event_files %}
+          <tr class="event-file-wrap">
+           <td>
+            {% if event_file.icon %}
+                <img class="icon pull-left" style="margin-right: 10px;" src="{{ event_file.icon }}" alt="{{ event_file.name }}" title="{{ event_file.name }}" />
+            {% endif %}
+          	 <strong><a href="{% url 'event.file_view' event_file.id %}">{{ event_file.name }}</a></strong>
+          </td>
+          <td><a href="{% url 'event.file_download' event_file.id %}" title="Download"><span class="glyphicon glyphicon-download-alt"></span></a></td>
+          <td>{{ event_file.file_type }}</td>
+          <td><a href="{% url 'profile' event_file.creator_username %}">{{ event_file.creator_username }}</a></td>
+          <td>{{ event_file.create_dt|date }}</td>
+          <td>{{ event_file.status_detail }}</td>
+          <td>
+          {% if request.user.is_superuser %}
+          <a href="{% url 'event.file_edit' event_file.id %}" style="text-wrap: nowrap; font-size: 0.8em;" class="edit">{% trans "Edit" %}</a>
+          <a href="{% url 'event.file_delete' event_file.id %}" style="text-wrap: nowrap; font-size: 0.8em;" class="delete event-file-delete">{% trans "Delete" %}</a>
+		  {% endif %}
+          </td>
+          </tr>
+      {% endfor %}
+    </table>
+{% endif %}
+{% endwith %}

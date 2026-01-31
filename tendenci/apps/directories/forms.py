@@ -506,7 +506,8 @@ class DirectoryPricingForm(forms.ModelForm):
 
     class Meta:
         model = DirectoryPricing
-        fields = ('duration',
+        fields = ('label',
+                  'duration',
                   'regular_price',
                   'premium_price',
                   'regular_price_member',

@@ -1808,12 +1808,13 @@ def copy_event(
                 discount_eligible = old_regconf.discount_eligible,
                 display_registration_stats = old_regconf.display_registration_stats,
                 use_custom_reg_form = old_regconf.use_custom_reg_form,
-                reg_form = old_regconf.reg_form,
                 bind_reg_form_to_conf_only = old_regconf.bind_reg_form_to_conf_only,
                 send_reminder = old_regconf.send_reminder,
                 reminder_days = old_regconf.reminder_days,
                 registration_email_text = old_regconf.registration_email_text,
             )
+            if new_regconf.use_custom_reg_form:
+                new_regconf.reg_form = old_regconf.reg_form.clone()
             new_regconf.payment_method.set(old_regconf.payment_method.all())
             new_regconf.save()
             new_event.registration_configuration = new_regconf

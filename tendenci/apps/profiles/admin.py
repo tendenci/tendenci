@@ -9,6 +9,7 @@ from django.utils.translation import ngettext
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
 from django.http import StreamingHttpResponse
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -16,10 +17,11 @@ from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.forms import ProfileAdminForm
 from tendenci.apps.profiles.utils import iter_users
+from tendenci.apps.theme.templatetags.static import static
 
 
 class ProfileAdmin(TendenciBaseModelAdmin):
-    list_display = ('username', 'account_id', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser', 'get_last_login')
+    list_display = ('username', 'account_id', 'member_number', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser', 'get_last_login')
     search_fields = ('account_id', 'display_name', 'user__first_name', 'user__last_name', 'user__username', 'user__email')
 
     fieldsets = (
@@ -171,7 +173,7 @@ def export_selected_users(modeladmin, request, queryset):
 
 
 class MyUserAdmin(UserAdmin):
-    list_display = ('id', 'username', 'email', 'first_name', 'last_name',
+    list_display = ('id', 'view_profile', 'username', 'email', 'first_name', 'last_name',
                     'show_member_number', 'is_staff', 'is_superuser', 'is_active', 'last_login')
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -186,6 +188,12 @@ class MyUserAdmin(UserAdmin):
     actions = [
         export_selected_users
     ]
+
+    @mark_safe
+    def view_profile(self, obj):
+        if hasattr(obj, 'profile'):
+            link_icon = static('images/icons/external_16x16.png')
+            return f'<a href="{obj.profile.get_absolute_url()}" title="{obj.first_name} {obj.last_name}"><img src="{link_icon}" alt="external_16x16" title="external icon"/></a>'
     
     def show_member_number(self, instance):
         [member_number] = Profile.objects.filter(user=instance).values_list('member_number', flat=True)[:1] or ['']

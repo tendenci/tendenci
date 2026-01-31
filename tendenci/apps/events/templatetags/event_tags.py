@@ -305,7 +305,17 @@ class EventListNode(Node):
         elif query and cat:
             events = events.filter(**{cat : query})
 
-        context[self.context_var] = events
+        if get_setting('module', 'events', 'nested_events'):
+            # exclude parent events
+            events_to_display = []
+            for event in events:
+                if event.has_any_child_events:
+                    continue
+                events_to_display.append(event)
+    
+            context[self.context_var] = events_to_display
+        else:
+            context[self.context_var] = events
         return ''
 
 
@@ -456,15 +466,17 @@ class ListEventsNode(ListNode):
             raise AttributeError(_('Model.objects does not have a search method'))
 
     def render(self, context):
-        tags = u''
-        query = u''
+        tags = ''
+        query = ''
         user = AnonymousUser()
         limit = 3
         order = 'next_upcoming'
         event_type = ''
-        group = u''
-        start_dt = u''
+        #group = ''
+        groups_list = []
+        start_dt = ''
         registered_only = False
+        registration_open = False
 
         randomize = False
 
@@ -540,15 +552,22 @@ class ListEventsNode(ListNode):
                 group = self.kwargs['group']
 
             try:
-                group = int(group)
+                for g in group.split(','):
+                    groups_list.append(int(g))
             except:
-                group = None
+                groups_list = None
         if 'registered_only' in self.kwargs:
             try:
                 registered_only = Variable(self.kwargs['registered_only'])
                 registered_only = registered_only.resolve(context)
             except:
                 registered_only = self.kwargs['registered_only']
+        if 'registration_open' in self.kwargs:
+            try:
+                registration_open = Variable(self.kwargs['registration_open'])
+                registration_open = registration_open.resolve(context)
+            except:
+                registration_open = self.kwargs['registration_open']
 
         filters = get_query_filters(user, 'events.view_event')
         items = Event.objects.filter(filters)
@@ -578,10 +597,10 @@ class ListEventsNode(ListNode):
             tag_query = reduce(or_, tag_queries)
             items = items.filter(tag_query)
 
-        if hasattr(self.model, 'group') and group:
-            items = items.filter(groups=group)
-        if hasattr(self.model, 'groups') and group:
-            items = items.filter(groups__in=[group])
+        if hasattr(self.model, 'group') and groups_list:
+            items = items.filter(group__in=groups_list)
+        if hasattr(self.model, 'groups') and groups_list:
+            items = items.filter(groups__in=groups_list)
 
         objects = []
 
@@ -619,6 +638,9 @@ class ListEventsNode(ListNode):
 
         if user and user.is_authenticated and registered_only:
             items = [item for item in items if item.is_registrant_user(user)]
+
+        if registration_open:
+            items = [item for item in items if registration_has_started(item) and not registration_has_ended(item)]
 
         if randomize:
             items = list(items)

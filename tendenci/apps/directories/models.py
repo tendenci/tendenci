@@ -564,6 +564,7 @@ class Affiliateship(models.Model):
 
 class DirectoryPricing(models.Model):
     guid = models.CharField(max_length=40)
+    label = models.CharField(max_length=100, blank=True, default='')
     duration = models.IntegerField(blank=True, choices=ADMIN_DURATION_CHOICES)
     regular_price =models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     premium_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)

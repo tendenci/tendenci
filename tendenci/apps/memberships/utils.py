@@ -376,8 +376,11 @@ def get_membership_rows(
                     field_name, demographic, field_name in foreign_keys)
 
         for field_name in membership_field_list:
-            row_dict[field_name] = get_obj_field_value(
-                field_name, membership, field_name in foreign_keys)
+            if field_name == 'corp_profile_name':
+                row_dict[field_name] = membership.get_corporate_profile_name()
+            else:
+                row_dict[field_name] = get_obj_field_value(
+                    field_name, membership, field_name in foreign_keys)
 
         if invoice:
             for field_name in invoice_field_list:
@@ -439,6 +442,7 @@ def process_export(
             'app',
             'membership_type',
             'corp_profile_id',
+            'corp_profile_name',
             'corporate_membership_id',
             'join_dt',
             'expire_dt',
@@ -486,6 +490,7 @@ def process_export(
         membership_field_list = [
             smart_str(field.name) for field in MembershipDefault._meta.fields
             if not field.__class__ == AutoField]
+        membership_field_list.insert(membership_field_list.index('corp_profile_id')+1, 'corp_profile_name')
         membership_field_list.remove('user')
 
         # invoice ---------
@@ -658,7 +663,7 @@ def csv_to_dict(file_path, **kwargs):
         return []
 
     normalize_newline(file_path)
-    csv_file = csv.reader(default_storage.open(file_path, 'rU'))
+    csv_file = csv.reader(default_storage.open(file_path, 'r'))
     colnames = next(csv_file)  # row 1;
 
     if machine_name:
@@ -1050,6 +1055,8 @@ def memb_import_parse_csv(mimport):
         data_list = []
     
         for row in csv_reader:
+            if not row:
+                continue
             data_list.append(dict(zip(fieldnames, row)))
     
         return fieldnames, data_list
@@ -2236,13 +2243,20 @@ def email_membership_members(email, memberships, **kwargs):
         if email.recipient:
             view_url = '{0}{1}'.format(site_url, reverse('membership.details', args=[member.id]))
             edit_url = '{0}{1}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
+            if member.expire_dt:
+                expire_dt = ttime.strftime("%b %d, %Y", member.expire_dt.timetuple())
+            else:
+                expire_dt = ''
+            renew_link = '{0}{1}'.format(site_url, member.get_absolute_url())
             template = Template(email.body)
             context = Context({'site_url': site_url,
                                'site_display_name': site_display_name,
                                "first_name": first_name,
                                'last_name': last_name,
                                'view_url': view_url,
-                               'edit_url': edit_url,})
+                               'edit_url': edit_url,
+                               'expire_dt': expire_dt,
+                               'renew_link': renew_link})
             email.body = template.render(context)
             
             # replace relative to absolute urls

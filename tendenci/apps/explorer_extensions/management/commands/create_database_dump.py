@@ -2,6 +2,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.template.loader import render_to_string
 from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 
 
 class Command(BaseCommand):
@@ -67,9 +68,10 @@ class Command(BaseCommand):
 
         print("Creating database dump...")
 
-        content = ''
+        content = b''
         dump_obj.dbfile.save(str(uuid.uuid4()), ContentFile(content))
-        call_command('dumpdata', format=fmt, output=dump_obj.dbfile.path, exclude=['event_logs', 'sessions', 'handler404', 'notifications', 'captcha.captchastore', 'files.multiplefile', 'events.standardregform', 'help_files', 'explorer_extensions'])
+        with default_storage.open(dump_obj.dbfile.name, 'w') as f:
+            call_command('dumpdata', format=fmt, stdout=f, exclude=['event_logs', 'sessions', 'handler404', 'notifications', 'captcha.captchastore', 'files.multiplefile', 'events.standardregform', 'help_files', 'explorer_extensions'])
 
         dump_obj.status = "completed"
         dump_obj.end_dt = datetime.datetime.now() + datetime.timedelta(days=3)

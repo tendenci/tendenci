@@ -17,6 +17,7 @@ from tendenci.apps.perms.utils import get_notice_recipients
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.base.utils import get_unique_username
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.entities.models import Entity
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -35,6 +36,13 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
 
         if form.is_valid() and captcha_form.is_valid():
             donation = form.save(commit=False)
+
+            entity_qs = Entity.objects.filter(show_for_donation=True)
+            if entity_qs.exists():
+                donate_to_entity_id = form.cleaned_data['donate_to_entity_id']
+                if donate_to_entity_id:
+                    donation.donate_to_entity = Entity.objects.filter(id=donate_to_entity_id).first()
+
             donation.payment_method = donation.payment_method.lower()
             # we might need to create a user record if not exist
             if request.user.is_authenticated:
@@ -96,7 +104,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                 if donation.payment_method in ['paid - check', 'paid - cc']:
                     # the admin accepted payment - mark the invoice paid
                     invoice.tender(request.user)
-                    invoice.make_payment(request.user, donation.donation_amount)
+                    invoice.make_payment(request.user, invoice.total)
 
             # send notification to administrators
             # get admin notice recipients
@@ -109,6 +117,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                             'donation': donation,
                             'invoice': invoice,
                             'request': request,
+                            'donation_label': get_setting('module', 'donations', 'label')
                         }
                         notification.send_emails(recipients,'donation_added', extra_context)
 
@@ -123,7 +132,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
             if donation.payment_method.lower() in ['cc', 'credit card', 'paypal']:
                 return HttpResponseRedirect(reverse('payment.pay_online', args=[invoice.id, invoice.guid]))
             else:
-                return HttpResponseRedirect(reverse('donation.add_confirm', args=[donation.id]))
+                return HttpResponseRedirect(reverse('donation.add_confirm', args=[donation.id, donation.guid]))
     else:
         form = form_class(user=request.user)
         captcha_form = CaptchaForm()
@@ -139,10 +148,11 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
         'currency_symbol': currency_symbol})
 
 
-def add_confirm(request, id, template_name="donations/add_confirm.html"):
-    donation = get_object_or_404(Donation, pk=id)
+def add_confirm(request, id, guid, template_name="donations/add_confirm.html"):
+    donation = get_object_or_404(Donation, pk=id, guid=guid)
     EventLog.objects.log(instance=donation)
-    return render_to_resp(request=request, template_name=template_name)
+    return render_to_resp(request=request, template_name=template_name,
+                           context={'donation': donation})
 
 
 @login_required

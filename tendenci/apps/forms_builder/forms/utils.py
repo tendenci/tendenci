@@ -119,7 +119,10 @@ def make_invoice_for_entry(entry, **kwargs):
     if entry.pricing and entry.pricing.taxable:        
         inv.assign_tax([(amount, entry.pricing.tax_rate)], entry.creator)
         inv.subtotal = amount
-        inv.total = amount + inv.tax + inv.tax_2
+        if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added': #tax added
+            inv.total = amount + inv.tax + inv.tax_2
+        else: #tax included
+            inv.total = amount
         inv.balance = inv.total
 
     if entry.creator and not entry.creator.is_anonymous:
@@ -230,8 +233,11 @@ def iter_form_entries(form):
                 file_field_ids.append(field.id)
     if form.custom_payment:
         columns.append(str("Pricing"))
+        field_indexes[-3] = ''
         columns.append(str("Price"))
+        field_indexes[-2] = ''
         columns.append(str("Payment Method"))
+        field_indexes[-1] = ''
 
     field_indexes[0] = 0
     writer = csv.DictWriter(Echo(), fieldnames=field_indexes)

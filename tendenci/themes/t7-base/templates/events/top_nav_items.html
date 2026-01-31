@@ -126,6 +126,15 @@
                             </span>
                         </li>
                     {% endif %}
+                    
+                    {% if request.user.is_authenticated %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.files_search' %}">{% trans "Event Files" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                    
 
                     <li class="content-item">
                         <span class="app-name">
@@ -171,6 +180,14 @@
                                 <a href="{{ app_object.get_absolute_url }}">{% trans "View Event" %}</a>
                             </span>
                         </li>
+                        
+                        {% if request.user.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url "event.files_display" app_object.id %}">{% trans "View Event files" %}</a>
+                            </span>
+                        </li>
+                        {% endif %}
 
                         {% if app_object.nested_events_enabled and app_object.parent %}
                         <li class="content-item">

@@ -18,6 +18,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.utils import has_perm
 # from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.utils import get_template_list, tcurrency
@@ -475,6 +476,19 @@ class FormForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('draft',_('Draft')),('published',_('Published')),))
+    intro = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label': Form._meta.app_label,
+        'storme_model': Form._meta.model_name.lower()}))
+    response = forms.CharField(required=False, label=_('Confirmation Text'),
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label': Form._meta.app_label,
+        'storme_model': Form._meta.model_name.lower()}), help_text=_("Optionally, after submission, display a page with this text. Alternately, specify a Completion URL."))
+
+    email_text = forms.CharField(required=False, label=_('Email Text to Submitter'),
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label': Form._meta.app_label,
+        'storme_model': Form._meta.model_name.lower()}))
     custom_payment = forms.BooleanField(label=_('Take Payment'), required=False)
 
     # payment_method_choices = list(PaymentMethod.objects.values_list('id','human_name'))
@@ -536,7 +550,7 @@ class FormForm(TendenciBaseForm):
                                     ],
                         'classes': ['permissions'],
                         }),
-                    (_('Administrator Only'), {
+                    (_('Publishing Status'), {
                         'fields': ['status_detail'],
                         'classes': ['admin-only'],
                     }),
@@ -548,7 +562,7 @@ class FormForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(FormForm, self).__init__(*args, **kwargs)
 
-        if not self.user.profile.is_superuser:
+        if not (self.user.profile.is_superuser or has_perm(self.user,'forms.publish_form')):
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
 
@@ -571,7 +585,7 @@ class FormForm(TendenciBaseForm):
 class FormForField(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = Field
-        exclude = ["position", 'remember']
+        exclude = ["summary_position", 'remember']
 
     def clean(self):
         cleaned_data = self.cleaned_data

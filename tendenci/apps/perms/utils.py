@@ -201,7 +201,7 @@ def get_query_filters(user, perm, **kwargs):
     group_perm = Q()
     group_q = Q()
 
-    if not isinstance(user, User) or user.is_anonymous:
+    if not isinstance(user, User) or user.is_anonymous or not hasattr(user, 'profile'):
         anon_q = Q(allow_anonymous_view=True)
         status_q = Q(status=True)
         status_detail_q = Q(status_detail__in=['active', 'published'])

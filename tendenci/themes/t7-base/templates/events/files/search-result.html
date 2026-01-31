@@ -1,0 +1,49 @@
+
+{% load tagging_tags %}
+
+{% tags_for_object event_file as tags %}
+
+<div class="event-file-wrap">
+   {% if request.user.is_superuser %}
+    <div class="options">
+        <div class="pull-right">
+            <a href="{% url 'event.file_edit' event_file.id %}" style="text-wrap: nowrap; font-size: 0.8em;" class="edit">{% trans "Edit" %}</a>
+            <a href="{% url 'event.file_delete' event_file.id %}" style="text-wrap: nowrap; font-size: 0.8em;" class="delete event-file-delete">{% trans "Delete" %}</a>
+        </div>
+    </div>
+   {% endif %}
+ 
+    <div>
+    	{% if event_file.icon %}
+            <img class="icon pull-left" style="margin-right: 10px;" src="{{ event_file.icon }}" alt="{{ event_file.name }}" title="{{ event_file.name }}" />
+        {% endif %}
+        <strong><a href="{% url 'event.file_view' event_file.id %}">{{ event_file.name }}</a></strong>
+    </div>
+
+    <div class="download">
+        <a href="{% url 'event.file_download' event_file.id %}" title="Download">{% trans 'Download this ' %}{{ event_file.file_type }}</a>
+    </div>
+    <div class="clearfix">&nbsp;</div>
+    <div>
+    	{% trans 'View Event:' %} <a href="{% url 'event' event_file.event.id %}">{{ event_file.event.title }}</a>
+    </div>
+
+    <div class="meta">
+        {% if tags %}
+        <div class="tags">
+            <strong>Tags: </strong>
+        {% for tag in tags %}
+            <a href="{% url 'event.files_search' %}?q=tag:{{ tag|lower|urlencode }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="related-content">
+            <strong>{% trans "Uploaded by" %}</strong>
+            <a href="{% url 'profile' event_file.creator_username %}">{{ event_file.creator_username }}</a>
+            {% trans "on" %} {{ event_file.create_dt|date }}
+        </div>
+
+    </div>
+
+</div>

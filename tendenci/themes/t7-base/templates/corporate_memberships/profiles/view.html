@@ -51,7 +51,9 @@
     <div class="col-md-5 profile-left">
         <h3>{% trans 'Company Details' %}</h3>
         {% if request.user.is_superuser or is_rep %}
+        {% if corp_membership %}
         <div class="text-right"><a href="{% url 'corpmembership.edit' corp_membership.pk %}?next={{ request.path }}">{% trans 'Edit' %}</a></div>
+        {% endif %}
         {% endif %}
         <div class="row">
             <div class="col-xs-4">
@@ -131,7 +133,9 @@
             <small><em>{{ corp_membership.join_dt|date:"M j, Y" }}
             {% if not corp_membership.is_pending %} - {% firstof corp_membership.expiration_dt|date:"M j, Y" "Forever" %} {% endif %}</em></small>
            
+           	{% if corp_membership and corp_membership.status %}
             {% include "corporate_memberships/action_options.html" %}
+            {% endif %}
         </div>
 
         <h3>{% trans 'Payment Method' %}</h3>
@@ -284,7 +288,9 @@
   {% if request.user.is_superuser or is_rep %}
   {% with corp_membership as corporate_membership %}
   <p>
+  {% if corporate_membership %}
   {% include "corporate_memberships/applications/meta.html" %} 
+  {% endif %}
   </p>
   {% endwith %}
   {% endif %}

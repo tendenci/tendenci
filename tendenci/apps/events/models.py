@@ -5,6 +5,9 @@ import jwt
 import json
 import operator
 import pytz
+import hashlib
+import os
+import mimetypes
 from model_utils import FieldTracker
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -41,6 +44,7 @@ from tendenci.apps.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.apps.user_groups.models import GroupMembership
+from tendenci.apps.base.utils import correct_filename
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.files.models import File
@@ -57,6 +61,7 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.trainings.models import Course, Certification
 from tendenci.apps.zoom import ZoomClient
+from tendenci.apps.theme.templatetags.static import static
 
 # from south.modelsinspector import add_introspection_rules
 # add_introspection_rules([], [r'^timezone_field\.TimeZoneField'])
@@ -805,17 +810,25 @@ class RegConfPricing(OrderingBaseModel):
                             }
             else:
                 # user is a member
-                filter_or = {'allow_member': True}
+                if get_setting('module', 'events', 'hide_non_member_pricing'):
+                    filter_or = {'allow_member': True}
+                else:
+                    filter_or = {'allow_anonymous': True,
+                                 'allow_user': True,
+                                 'allow_member': True}
+
+            if not user.is_anonymous and user.group_member.exists():
+                # get a list of groups for this user
+                groups_id_list = user.group_member.values_list('group__id', flat=True)
+                if groups_id_list:
+                    filter_or.update({'groups__in': groups_id_list})
 
         else:
             filter_or = {'allow_anonymous': True,
                         'allow_user': True,
-                        'allow_member': True}
-        if not user.is_anonymous and user.group_member.exists():
-            # get a list of groups for this user
-            groups_id_list = user.group_member.values_list('group__id', flat=True)
-            if groups_id_list:
-                filter_or.update({'groups__in': groups_id_list})
+                        'allow_member': True,
+                        'groups__isnull': False}
+        
 
         filter_and = {'start_dt__lt': now,
                       'end_dt__gt': now,
@@ -1234,7 +1247,11 @@ class Registration(models.Model):
         else:
             balance = 0
         if self.reg_conf_price is None or self.reg_conf_price.payment_required is None:
-            payment_required = config.payment_required
+            registrant = self.registrant
+            if registrant and registrant.pricing:
+                payment_required = registrant.pricing.payment_required or config.payment_required
+            else:
+                payment_required = config.payment_required
         else:
             payment_required = self.reg_conf_price.payment_required
 
@@ -1366,7 +1383,10 @@ class Registration(models.Model):
         invoice.assign_tax(price_tax_rate_list, primary_registrant.user)
 
         invoice.subtotal = self.amount_paid
-        invoice.total = invoice.subtotal + invoice.tax + invoice.tax_2
+        if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added': #tax added
+            invoice.total = invoice.subtotal + invoice.tax + invoice.tax_2
+        else:
+            invoice.total = invoice.subtotal
             
         if invoice.gratuity:
             invoice.total += invoice.subtotal * invoice.gratuity
@@ -1755,7 +1775,7 @@ class Registrant(models.Model):
 
             credits[date].append({
                 'event_code': event.event_code,
-                'title': event.title if len(event.title) <= 60 else event.short_name,
+                'title': event.short_name if event.short_name else event.title,
                 'credits': cpe_credits,
                 'irs_credits': irs_credits,
 
@@ -2019,7 +2039,7 @@ class Registrant(models.Model):
                 self.registration.save()
 
             # update the invoice if invoice is not tendered
-            if not self.invoice.is_tendered:
+            if self.invoice and not self.invoice.is_tendered:
                 self.invoice.total -= self.amount
                 self.invoice.subtotal -= self.amount
                 self.invoice.balance -= self.amount
@@ -2632,6 +2652,117 @@ class EventPhoto(File):
         app_label = 'events'
 
 
+def eventfile_directory(instance, filename):
+    filename = correct_filename(filename)
+    m = hashlib.md5()
+    m.update(filename.encode())
+    hex_digest = m.hexdigest()[:8]
+    return 'events/files/%s/%s' % (hex_digest, filename)
+
+
+class EventFile(models.Model):
+    FILE_TYPE_CHOICES = [
+                ('Document', _('Document')),
+                ('Image', _('Image')),
+                ('Video', _('Video')),
+                ('Audio', _('Audio')),
+                ('Slide Show', _('Slide Show'))
+                ]
+    STATUS_DETAIL_CHOICES = (('pending', _('Pending')),
+                             ('active', _('Active')),
+                             ('inactive', _('Inactive'))
+                             )
+    name = models.CharField(max_length=250)
+    file = models.FileField(upload_to=eventfile_directory)
+    guid = models.CharField(max_length=40)
+
+    description = models.TextField(blank=True)
+    # file type - image, video, or text...
+    file_type = models.CharField(max_length=20, blank=True,
+                                 default='Document',
+                                 choices=FILE_TYPE_CHOICES)
+    event = models.ForeignKey('Event',
+                              related_name='files',
+                              on_delete=models.CASCADE)
+    tags = TagField(null=True, blank=True)
+
+    create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
+    update_dt = models.DateTimeField(_("Last Updated"), auto_now=True)
+    creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="%(app_label)s_%(class)s_creator", editable=False)
+    creator_username = models.CharField(max_length=150)
+    owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="%(app_label)s_%(class)s_owner")
+    owner_username = models.CharField(max_length=150)
+    status_detail = models.CharField(max_length=50, default='active',
+                                     choices=STATUS_DETAIL_CHOICES)
+
+
+    class Meta:
+        app_label = 'events'
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid4())
+        super(EventFile, self).save(*args, **kwargs)
+
+    def allow_view_by(self, user):
+        if user.profile.is_superuser:
+            return True
+
+        if has_perm(user, 'events.view_eventfile'):
+            return True
+
+        if self.status_detail == 'active':
+            if self.event.is_registrant_user(user):
+                return True
+
+        return False
+
+    def allow_edit_by(self, user):
+        if user.profile.is_superuser:
+            return True
+
+        if has_perm(user, 'events.change_eventfile'):
+            return True
+
+        return False
+
+    def icon(self):
+        if not self.file_type:
+            return None
+
+        # map file-type to image file
+        icons = {
+            'Image': 'icon-ms-image-2007.png',
+            'Document': 'icon-pdf.png',
+            'Video': 'icon-wmv.png',
+            'Slide Show': 'icon-ms-powerpoint-2007.gif',
+        }
+
+        # return image path
+        return static('images/icons/'+icons[self.file_type])
+
+    def basename(self):
+        return os.path.basename(str(self.file.name))
+
+    def ext(self):
+        return os.path.splitext(self.basename())[-1]
+
+    def mime_type(self):
+        mtypes = [  # list of uncommon mimetypes
+            ('application/msword', '.docx',),
+            ('application/ms-powerpoint', '.pptx'),
+            ('application/ms-excel', '.xlsx'),
+            ('video/x-ms-wmv', '.wmv'),
+        ]
+        # add mimetypes
+        for mtype, ext in mtypes:
+            mimetypes.add_type(mtype, ext)
+        # get mimetype
+        return mimetypes.types_map.get(self.ext(), 'application/octet-stream')
+
+
 class Event(TendenciBaseModel):
     """
     Calendar Event
@@ -2734,8 +2865,10 @@ class Event(TendenciBaseModel):
 
     def __init__(self, *args, **kwargs):
         super(Event, self).__init__(*args, **kwargs)
-        self.private_slug = self.private_slug or Event.make_slug()
-        self._original_repeat_of = self.repeat_of
+        self.private_slug = self.private_slug or self.make_slug()
+        # Commenting it out - This line of code is causing an error on dumpdata:
+        # "RecursionError: maximum recursion depth exceeded while calling a Python object"
+        #self._original_repeat_of = self.repeat_of
 
     @property
     def title_with_event_code(self):
@@ -3045,7 +3178,7 @@ class Event(TendenciBaseModel):
     @property
     def use_zoom_integration(self):
         """Use Zoom for this Event"""
-        return self.place.use_zoom_integration if self.place else None
+        return self.place.use_zoom_integration and self.place.zoom_api_configuration if self.place else None
 
     @property
     def is_zoom_webinar(self):
@@ -3454,8 +3587,12 @@ class Event(TendenciBaseModel):
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
 
-    def is_registrant_user(self, user):
+    def is_registrant_user(self, user, paid_only=None):
         if hasattr(user, 'registrant_set'):
+            if paid_only:
+                return user.registrant_set.filter(
+                    registration__event=self, cancel_dt__isnull=True,
+                    invoice__balance__lte=0).exists()
             return user.registrant_set.filter(
                 registration__event=self, cancel_dt__isnull=True).exists()
         return False
@@ -3483,16 +3620,18 @@ class Event(TendenciBaseModel):
         # Without this set, we would not identify the original as being the same
         # as a repeated event.
         
+        # Commenting it out - the _original_repeat_of assigment is causing
+        # error on the command dumpdata: "RecursionError: maximum recursion depth exceeded while calling a Python object" 
         # Check if repeat_of has been removed or switched to another sub event
-        if self.repeat_of != self._original_repeat_of:
-            if not self.repeat_of:
-                # 1) removed - re-assign a new unique uuid 
-                self.repeat_uuid = uuid.uuid4()
-            else:
-                # 2) switched to another event - find the new repeat_uuid
-                self.repeat_uuid = self.repeat_of.repeat_uuid or uuid.uuid4()
-        else:
-            self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
+        # if self.repeat_of != self._original_repeat_of:
+        #     if not self.repeat_of:
+        #         # 1) removed - re-assign a new unique uuid 
+        #         self.repeat_uuid = uuid.uuid4()
+        #     else:
+        #         # 2) switched to another event - find the new repeat_uuid
+        #         self.repeat_uuid = self.repeat_of.repeat_uuid or uuid.uuid4()
+        # else:
+        self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
 
         self.guid = self.guid or str(uuid.uuid4())
 
@@ -3982,7 +4121,7 @@ class Event(TendenciBaseModel):
 
         return total_registered - self.total_checked_in
 
-    @classmethod
+    #@classmethod
     def make_slug(self, length=7):
         """
         Returns newly generated slug
@@ -4000,7 +4139,7 @@ class Event(TendenciBaseModel):
             get_global_setting)
 
         pk = self.pk or 'id'
-        private_slug = self.private_slug or Event.make_slug()
+        private_slug = self.private_slug or self.make_slug()
 
         if absolute_url:
             return '%s/%s/%s/%s' % (
@@ -4055,6 +4194,27 @@ class Event(TendenciBaseModel):
     def primary_group(self):
         primary_eventgroup = self.group_relations.filter(is_primary=True).first()
         return primary_eventgroup.group if primary_eventgroup else None
+
+    def set_primary_group(self):
+        if hasattr(self, 'primary_group_selected') and self.primary_group_selected:
+            for groupevent in self.group_relations.all():
+                if groupevent.group == self.primary_group_selected:
+                    groupevent.is_primary = True
+                else:
+                    groupevent.is_primary = False
+                groupevent.save()
+
+    def allow_view_eventfiles_by(self, user):
+        if user.profile.is_superuser:
+            return True
+
+        if has_perm(user, 'events.view_eventfile'):
+            return True
+
+        if self.is_registrant_user(user, paid_only=True):
+            return True
+
+        return False
 
 
 class EventGroup(models.Model):

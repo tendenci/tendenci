@@ -40,6 +40,8 @@ class Command(BaseCommand):
                 <html>
                     <head>
                         <title>[title]</title>
+                         <meta charset="UTF-8">
+                         <meta name="viewport" content="width=device-width, initial-scale=1">
                         [style_block]
                     </head>
                     <body>
@@ -116,11 +118,14 @@ class Command(BaseCommand):
             membership_type = None
 
         counter = 0
-        for recipient in recipients:
-            if hasattr(recipient.member, 'profile'):
-                profile = recipient.member.profile
-            else:
-                profile = None
+        for i, recipient in enumerate(recipients):
+            try:
+                if hasattr(recipient.member, 'profile'):
+                    profile = recipient.member.profile
+                else:
+                    profile = None
+            except KeyError:
+                continue
 
             # Skip if Don't Send Email is on
             if newsletter.enforce_direct_mail_flag:
@@ -173,7 +178,7 @@ class Command(BaseCommand):
                     reply_to=email.reply_to,
                     recipient=recipient.member.email
                     )
-            print(u"Sending to {}".format(str(recipient.member.email)))
+            print(i, u"Sending to {}".format(str(recipient.member.email)))
             email_to_send.send(connection=connection)
             counter += 1
             print(u"Newsletter sent to {}".format(str(recipient.member.email)))
@@ -211,7 +216,7 @@ class Command(BaseCommand):
         print("Sending confirmation message to creator...")
         # send confirmation email
         subject = "Newsletter Submission Recap for %s" % newsletter.email.subject
-        detail_url = get_setting('site', 'global', 'siteurl') + newsletter.get_absolute_url()
+        detail_url = self.site_url + newsletter.get_absolute_url()
         params = {'first_name': newsletter.email.creator.first_name,
                     'subject': newsletter.email.subject,
                     'count': counter,

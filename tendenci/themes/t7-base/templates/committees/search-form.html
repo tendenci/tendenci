@@ -18,7 +18,7 @@
   
   {% if can_add_committees %}
   <div class="form-group pull-right">
-    <a class="btn btn-primary" href="/committees/add/">Add Committee</a>
+    <a class="btn btn-primary" href="{% url 'committees.add' %}">{% blocktrans %}Add {{ MODULE_COMMITTEES_LABEL }}{% endblocktrans %}</a>
   </div>
   {% endif %}
   

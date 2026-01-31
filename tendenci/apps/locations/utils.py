@@ -104,7 +104,7 @@ def csv_to_dict(file_path, **kwargs):
         return []
 
     normalize_newline(file_path)
-    csv_file = csv.reader(default_storage.open(file_path, 'rU'))
+    csv_file = csv.reader(default_storage.open(file_path, 'r'))
     colnames = next(csv_file)  # row 1;
 
     if machine_name:
