@@ -3212,8 +3212,13 @@ class Event(TendenciBaseModel):
         # For each user that answered questions, count the number
         # of questions answered within a credit period
         for question in questions_answered:
+            # Zoom gets passed the full name and the username so that
+            # the participant list in Zoom is understandable, so we
+            # need to split them apart again here. Format is:
+            # fullname | username.
+            zoom_user_name = question.get('name')
+            full_name, user_name = zoom_user_name.split(' | ')
             # Get registrant by username
-            user_name = question.get('name')
             registrant = self.get_registrant_by_user_name(user_name)
             if not registrant:
                 continue
