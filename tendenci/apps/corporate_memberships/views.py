@@ -739,7 +739,7 @@ def corpprofile_view(request, id, template="corporate_memberships/profiles/view.
     memberships = MembershipDefault.objects.filter(
                         corp_profile_id=corp_profile.id
                         ).exclude(
-                        status_detail__in=('archive', 'pending'))
+                        status_detail__in=('archive', 'pending', 'expired'))
     members_count = memberships.count()
     members_first10 = memberships.order_by('user__first_name', 'user__last_name')[:10]
     all_records = corp_profile.corp_memberships.all().order_by('-create_dt')
