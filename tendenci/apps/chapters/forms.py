@@ -128,7 +128,6 @@ class ChapterMemberSearchForm(FormControlWidgetMixin, forms.Form):
         # status_detail
         self.fields['status_detail'] = forms.ChoiceField(
                     required=False,
-                    widget=forms.RadioSelect,
                     choices=(('', _('All')),
                             ('active', _('Active')),
                             ('pending', _('Pending')),
