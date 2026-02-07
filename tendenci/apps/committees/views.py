@@ -76,7 +76,7 @@ def search(request, template_name="committees/search.html"):
         filters = get_query_filters(request.user, 'committees.view_committee')
         committees = Committee.objects.filter(filters).distinct()
 
-    committees = committees.order_by('-create_dt')
+    committees = committees.order_by('title')
 
     EventLog.objects.log()
 
