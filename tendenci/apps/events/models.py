@@ -3588,7 +3588,7 @@ class Event(TendenciBaseModel):
             if paid_only:
                 return user.registrant_set.filter(
                     registration__event=self, cancel_dt__isnull=True,
-                    invoice__balance__lte=0).exists()
+                    registration__invoice__balance__lte=0).exists()
             return user.registrant_set.filter(
                 registration__event=self, cancel_dt__isnull=True).exists()
         return False
