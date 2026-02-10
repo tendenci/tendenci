@@ -367,7 +367,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
             membership = None
             obj = payment.invoice.get_object()
             if obj and hasattr(obj, 'memberships'):
-                if obj.memberships:
+                if obj.memberships and len(obj.memberships()):
                     membership = obj.memberships()[0]
                     if membership.auto_renew and not membership.has_rp(platform='stripe'):
                         obj_user = membership.user
