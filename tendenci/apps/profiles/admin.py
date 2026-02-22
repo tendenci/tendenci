@@ -72,6 +72,7 @@ class ProfileAdmin(TendenciBaseModelAdmin):
                                                 'sex',)}),
         (_('Administrator Information'), {'fields': ('account_id',
                                                      'admin_notes',
+                                                     'external_id',
                                                      'security_level',)}),)
     form = ProfileAdminForm
 

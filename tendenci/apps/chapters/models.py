@@ -1878,7 +1878,7 @@ class Notice(models.Model):
         Gather a list of chapter memberships that meet the criteria of this notice
         and send email notifications to the members.
         """
-        self.chapter_memberships_processed = []
+        self.chapter_memberships_processed = {}
         num_sent = 0
         now = datetime.now()
         if self.notice_time in ['before', 'after']:
@@ -1958,8 +1958,13 @@ class Notice(models.Model):
                     boo_sent = self.email_chapter_member(chapter_membership, verbosity=verbosity)
                     if boo_sent:
                         num_sent += 1
-                        if memberships_count <= 50:
-                            self.chapter_memberships_processed.append(chapter_membership)
+                        chapter = chapter_membership.chapter
+                        if chapter not in self.chapter_memberships_processed:
+                            self.chapter_memberships_processed[chapter] = {'count': 1, 'members': []}
+                        else:
+                            self.chapter_memberships_processed[chapter]['count'] += 1
+                        if memberships_count <= 50 or self.chapter_memberships_processed[chapter]['count'] <= 20:
+                            self.chapter_memberships_processed[chapter]['members'].append(chapter_membership)
 
                         # log record
                         notice_log_record = NoticeDefaultLogRecord(

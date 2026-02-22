@@ -41,4 +41,5 @@ class Command(BaseCommand):
                     print(external_id)
                 else:
                     print(f'user with username "{username}" does not exist.')
+                    print(user_result['ID'])
                 

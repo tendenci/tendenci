@@ -1,0 +1,29 @@
+
+{% trans "Greetings:" %}<br /><br />
+{% blocktrans with chapter_name=chapter.title %}The following chapter membership notice was distributed to members of {{ chapter_name }}.{% endblocktrans %}
+<br />
+
+<h3>{% trans "Notice Name:" %} {{ notice.notice_name  }}</h3>
+    ({{ notice.num_days }} day(s) {{ notice.notice_time }} {{ notice.notice_type }})
+<br />
+{% trans "Chapter:" %} {{ chapter.title }}<br>
+{% trans "Total sent:" %} {{ total_sent }}<br>
+<br />
+{% trans "Recap of Emails Sent:" %} {% if total_sent > 20 %}({% trans "show first 20 members" %}){% endif %}
+<br />
+ <ol>
+ {% for member in chapter_members %}
+     <li>{{ member.user.get_full_name }} - {{ site_url }}{{ member.get_absolute_url }}</li>
+ {% endfor %}
+ </ol>
+      
+<ul>
+  <li><a href="{{ site_url }}{% url 'chapters.memberships_search_single_chapter' chapter.id %}">{% trans "View All Chapter Members" %}</a> </li>
+</ul>
+<br /><br />
+    
+
+{% trans "Thanks!" %}
+<br /><br />
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>

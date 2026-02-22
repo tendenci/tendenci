@@ -25,6 +25,31 @@ class Command(BaseCommand):
         from tendenci.apps.notifications import models as notification
         from tendenci.apps.site_settings.utils import get_setting
 
+            
+        def email_chapter_contact_recap(notices):
+            template_name = "chapters/notices/chapter_contact_email_recap.html"
+            site_url = get_setting('site', 'global', 'siteurl')
+            site_display_name = get_setting('site', 'global', 'sitedisplayname')
+            for notice in notices:
+                for chapter in notice.chapter_memberships_processed.keys():
+                    if chapter.contact_email:
+                        recap_email_content = render_to_string(
+                           template_name=template_name,
+                           context={'notice': notice,
+                                    'chapter': chapter,
+                                    'total_sent': notice.chapter_memberships_processed[chapter]['count'],
+                                    'chapter_members': notice.chapter_memberships_processed[chapter]['members'],
+                                    'site_url': site_url,
+                                    'site_display_name': site_display_name})
+                        recap_subject = f'{site_display_name} | Chapter Membership Notice Distributed | {notice.notice_name}'
+                        email_context = {
+                                    'subject':recap_subject,
+                                    'content': recap_email_content,
+                                    'content_type':"html"}
+                        notification.send_emails(chapter.contact_email.split(','), 
+                                                 'chapter_membership_notice_email',
+                                         email_context)
+        
         def email_admins_recap(notices, total_sent):
             """Send admins recap after the notices were processed.
             """
@@ -85,6 +110,7 @@ class Command(BaseCommand):
                                         notice, 'log'
                                         ) and notice.log.num_sent > 0]
                 email_admins_recap(processed_notices, total_sent)
+                email_chapter_contact_recap(processed_notices)
 
             if verbosity > 1:
                 print('Total notice processed: %d' % (total_notices))

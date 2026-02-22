@@ -203,6 +203,9 @@ class Command(BaseCommand):
                 notice.err = ''
 
                 for membership in memberships:
+                    if notice.notice_type == 'expiration' and membership.latest_renewed_in_pending():
+                        continue
+
                     try:
                         num_sent += email_member(notice, membership, global_context)
                         if memberships_count <= 50:
