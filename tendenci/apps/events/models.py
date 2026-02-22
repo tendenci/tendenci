@@ -3349,8 +3349,9 @@ class Event(TendenciBaseModel):
             # the participant list in Zoom is understandable, so we
             # need to split them apart again here. Format is:
             # fullname | username.
-            zoom_user_name = question.get('name')
-            full_name, user_name = zoom_user_name.split(' | ')
+            user_name = question.get('name')
+            if ' | ' in user_name:
+                user_name = user_name.split(' | ')[-1]
             # Get registrant by username
             registrant = self.get_registrant_by_user_name(user_name)
             if not registrant:
