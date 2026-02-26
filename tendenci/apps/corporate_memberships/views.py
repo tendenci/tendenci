@@ -2147,7 +2147,8 @@ def report_active_corp_members_by_type(request,
     template='corporate_memberships/reports/report_by_type.html'):
     corp_mems = CorpMembership.objects.filter(
                             status=True,
-                            status_detail='active')
+                            status_detail='active',
+                            corp_profile__status=True)
     form = ReportByTypeForm(request.GET)
     if form.is_valid():
         days = int(form.cleaned_data.get('days') or 0)
@@ -2240,7 +2241,8 @@ def report_active_corp_members_by_type(request,
 def report_corp_members_by_status(request,
     template='corporate_memberships/reports/report_by_status.html'):
     corp_mems = CorpMembership.objects.filter(
-                            status=True,).exclude(
+                            status=True,
+                            corp_profile__status=True).exclude(
                             status_detail='archive')
     form = ReportByStatusForm(request.GET)
     if form.is_valid():
