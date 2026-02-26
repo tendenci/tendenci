@@ -2889,6 +2889,8 @@ def register(request, event_id=0,
                 initial = {'first_name': request.user.first_name,
                             'last_name': request.user.last_name,
                             'email': [request.user.email, ''],}
+                if custom_reg_form:
+                    initial['email'] = request.user.email
                 if profile:
                     initial.update({'company_name': profile.company,
                                     'phone':profile.phone,
