@@ -142,11 +142,11 @@ div.small-font {
 	              {% if registrant_user and event.zoom_integration_setup %}
 	              	  {% if event.place.is_zoom_webinar %}
 	              	  {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
-		              Zoom webinar available from 10 minutes prior to <strong>{{ start_dt }}</strong> through <strong>{{ end_dt }}</strong>
+		              Zoom webinar available from 10 minutes prior to <strong>{{ start_dt }}</strong>.
 		              {% endblocktrans %}
 	              	  {% else %}
 		              {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
-		              Zoom meeting available from 10 minutes prior to <strong>{{ start_dt }}</strong> through <strong>{{ end_dt }}</strong>
+		              Zoom meeting available from 10 minutes prior to <strong>{{ start_dt }}</strong>.
 		              {% endblocktrans %}
 		              {% endif %}
 	            {% endif %}
