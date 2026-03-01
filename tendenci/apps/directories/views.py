@@ -465,7 +465,8 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
 @login_required
 def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="directories/pricing-edit.html"):
     directory_pricing = get_object_or_404(DirectoryPricing, pk=id)
-    if not has_perm(request.user,'directories.change_directorypricing',directory_pricing): Http403
+    if not has_perm(request.user,'directories.change_directorypricing',directory_pricing):
+        raise Http403
 
     if request.method == "POST":
         form = form_class(request.POST, instance=directory_pricing, user=request.user)

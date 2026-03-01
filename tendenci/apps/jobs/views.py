@@ -475,7 +475,7 @@ def pricing_edit(request, id, form_class=JobPricingForm,
                     template_name="jobs/pricing-edit.html"):
     job_pricing = get_object_or_404(JobPricing, pk=id)
     if not has_perm(request.user, 'jobs.change_jobpricing', job_pricing):
-        Http403
+        raise Http403
 
     if request.method == "POST":
         form = form_class(request.POST, instance=job_pricing)
