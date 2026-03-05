@@ -794,9 +794,19 @@ def email_invoice(request, invoice_id, form_class=EmailInvoiceForm,
 
     else:
         template = get_template("invoices/email_invoice_template.html")
-        body_initial = template.render(context={'invoice': invoice}, request=request)
+        obj = invoice.get_object()
+        obj_name = obj and obj._meta.verbose_name
+
+        if obj and obj_name == 'Corporate Membership':
+            dues_reps = obj.corp_profile.reps.filter(is_dues_rep=True)
+            recipient = ', '.join([rep.user.email for rep in dues_reps])
+        else:
+            recipient = invoice.bill_to_email
+            dues_reps = None
+        body_initial = template.render(context={'invoice': invoice,
+                                                'dues_reps': dues_reps}, request=request)
         form = form_class(initial={'subject': 'Invoice for {}'.format(invoice.title),
-                                   'recipient': invoice.bill_to_email,
+                                   'recipient': recipient,
                                    'body': body_initial})
 
     return render_to_resp(request=request, template_name=template_name,context={
