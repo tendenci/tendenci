@@ -39,9 +39,13 @@
         {% endif %}
 
         <div class="related-content">
+        	{% if event_file.creator_username %}
             <strong>{% trans "Uploaded by" %}</strong>
             <a href="{% url 'profile' event_file.creator_username %}">{{ event_file.creator_username }}</a>
             {% trans "on" %} {{ event_file.create_dt|date }}
+            {% else %}
+            {% trans "Uploaded on" %} {{ event_file.create_dt|date }}
+            {% endif %}
         </div>
 
     </div>

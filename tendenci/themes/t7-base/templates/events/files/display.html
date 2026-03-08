@@ -1,4 +1,5 @@
 {% extends "events/base.html" %}
+{% load bootstrap_pagination_tags %}
 
 {% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
 
@@ -18,12 +19,19 @@
 	{% endif %}
 	<div class="clearfix">&nbsp;</div>
 	
+	{% include "events/files/search-form.html" %}
+	
+	{% autopaginate event_files 10 %}
+	
+	<div class="files-found">{{ paginator.count }} {% trans 'File' %}{{ paginator.count|pluralize }} {% trans "Found" %}</div>
 	
 	<div class="files-wrap clearfix">
 	{% for event_file in event_files %}
 	    {% include "events/files/search-result.html" %}
 	{% endfor %}
 	</div>
+	
+	{% paginate %}
 
 </div>
 {% endblock %}

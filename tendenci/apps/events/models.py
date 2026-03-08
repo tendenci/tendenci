@@ -2736,13 +2736,28 @@ class EventFile(models.Model):
         # map file-type to image file
         icons = {
             'Image': 'icon-ms-image-2007.png',
-            'Document': 'icon-pdf.png',
+            'Document': 'articles-color-64x64.png',
+            'Audio': 'icon-wmv.png',
             'Video': 'icon-wmv.png',
+            'Zip': 'icon-zip.gif',
             'Slide Show': 'icon-ms-powerpoint-2007.gif',
         }
+        ext = self.ext()
+        if ext in ['.docx', '.doc']:
+            icon_name = 'icon-ms-word-2007.gif'
+        elif ext in ['.xlsx', '.xls']:
+            icon_name = 'icon-ms-excel-2007.gif'
+        elif ext in ['.pdf']:
+            icon_name = 'icon-pdf.png'
+        elif ext in ['.zip']:
+            icon_name = 'icon-zip.gif'
+        elif ext in ['.png', '.jpg', '.jpeg']:
+            icon_name = icons['Image']
+        else:
+            icon_name = icons[self.file_type]
 
         # return image path
-        return static('images/icons/'+icons[self.file_type])
+        return static(f'images/icons/{icon_name}')
 
     def basename(self):
         return os.path.basename(str(self.file.name))
