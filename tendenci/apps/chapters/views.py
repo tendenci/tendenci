@@ -1048,17 +1048,16 @@ def chapter_membership_renew(request, chapter_membership_id=0,
 
             # create an invoice
             chapter_membership.save_invoice()
+            chapter_membership.pend()
             if chapter_membership.approval_required():
                 # approval is required - set pending
-                chapter_membership.pend()
                 chapter_membership.save()
+            else:
+                # not require approval - approve it!
+                chapter_membership.approve(request_user=request.user)
 
             # send notification to user
             chapter_membership.send_email(notice_type='renewal')
-
-            if not chapter_membership.approval_required():
-                # not require approval - approve it!
-                chapter_membership.approve(request_user=request.user)
 
             # log an event
             EventLog.objects.log(instance=chapter_membership)
