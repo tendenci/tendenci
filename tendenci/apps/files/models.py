@@ -28,7 +28,8 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import get_notice_recipients, has_perm
 from tendenci.apps.files.managers import FileManager
-from tendenci.apps.base.utils import extract_pdf, correct_filename
+#from tendenci.apps.base.utils import extract_pdf, correct_filename
+from tendenci.apps.base.utils import correct_filename
 from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
@@ -307,25 +308,25 @@ class File(TendenciBaseModel):
         except:
             return 0
 
-    def read(self):
-        """Returns a file's text data
-        For now this only considers pdf files.
-        if the file cannot be read this will return an empty string.
-        """
-
-        if not settings.USE_S3_STORAGE:
-            if not os.path.exists(self.file.path):
-                return str()
-
-        if settings.INDEX_FILE_CONTENT:
-            if self.type() == 'pdf':
-
-                try:
-                    return extract_pdf(self.file.file)
-                except:
-                    return str()
-
-        return str()
+    # def read(self):
+    #     """Returns a file's text data
+    #     For now this only considers pdf files.
+    #     if the file cannot be read this will return an empty string.
+    #     """
+    #
+    #     if not settings.USE_S3_STORAGE:
+    #         if not os.path.exists(self.file.path):
+    #             return str()
+    #
+    #     if settings.INDEX_FILE_CONTENT:
+    #         if self.type() == 'pdf':
+    #
+    #             try:
+    #                 return extract_pdf(self.file.file)
+    #             except:
+    #                 return str()
+    #
+    #     return str()
 
     def is_public_file(self):
         return all([

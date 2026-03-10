@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 import codecs
-import csv
+# import csv
 import hashlib
 import hmac
 import base64
@@ -16,12 +16,12 @@ import socket
 from PIL import Image
 from io import BytesIO, StringIO
 import requests
-from pdfminer.pdfparser import PDFParser
-from pdfminer.pdfdocument import PDFDocument
-from pdfminer.pdfpage import PDFPage
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import PDFPageAggregator
-from pdfminer.layout import LAParams, LTTextBox, LTTextLine
+# from pdfminer.pdfparser import PDFParser
+# from pdfminer.pdfdocument import PDFDocument
+# from pdfminer.pdfpage import PDFPage
+# from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+# from pdfminer.converter import PDFPageAggregator
+# from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from PIL import Image as pil
 from PIL import ImageFile
 from localflavor.us.us_states import US_STATES
@@ -976,26 +976,26 @@ def checklist_update(key):
         item.save()
 
 
-def extract_pdf(fp):
-    """
-    Extract text from PDF file.
-    """
-    rsrcmgr = PDFResourceManager()
-    laparams = LAParams()
-    device = PDFPageAggregator(rsrcmgr, laparams=laparams)
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
-    text_content = [] # a list of strings, each representing text collected from each page of the pdf
-    for page in PDFPage.create_pages(PDFDocument(PDFParser(fp))):
-        interpreter.process_page(page) # LTPage object for this page
-        layout = device.get_result() # layout is an LTPage object which may contain child objects
-        for lt_obj in layout: # extract text from text objects
-            if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
-                if isinstance(lt_obj.get_text(), str):
-                    text_content.append(lt_obj.get_text())
-                else:
-                    text_content.append(lt_obj.get_text().decode())
-    device.close()
-    return '\n\n'.join(text_content)
+# def extract_pdf(fp):
+#     """
+#     Extract text from PDF file.
+#     """
+#     rsrcmgr = PDFResourceManager()
+#     laparams = LAParams()
+#     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+#     interpreter = PDFPageInterpreter(rsrcmgr, device)
+#     text_content = [] # a list of strings, each representing text collected from each page of the pdf
+#     for page in PDFPage.create_pages(PDFDocument(PDFParser(fp))):
+#         interpreter.process_page(page) # LTPage object for this page
+#         layout = device.get_result() # layout is an LTPage object which may contain child objects
+#         for lt_obj in layout: # extract text from text objects
+#             if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
+#                 if isinstance(lt_obj.get_text(), str):
+#                     text_content.append(lt_obj.get_text())
+#                 else:
+#                     text_content.append(lt_obj.get_text().decode())
+#     device.close()
+#     return '\n\n'.join(text_content)
 
 
 def normalize_field_names(fieldnames):
