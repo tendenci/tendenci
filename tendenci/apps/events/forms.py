@@ -160,6 +160,7 @@ class EventFileSearchForm(FormControlWidgetMixin, forms.Form):
         label=_('')
     )
     q = forms.CharField(required=False)
+    tag = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)

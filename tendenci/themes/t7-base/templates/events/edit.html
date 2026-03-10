@@ -95,7 +95,9 @@
             {% endif %}
             {% if label == "file_add" and can_add_file %}
             	<div class="text-warning"><i>{% trans 'Note that, files uploaded here can be viewable by users who have registered this event.' %}</i></div>
+            	<div id="event-files-list" style="max-height: 500px; overflow-x: auto;">
                 {% include "events/include/event-files-list.html" %}
+                </div>
             {% endif %}
             {{ multi_event_forms|styled_multi_forms }}
             {% if MODULE_EVENTS_ENABLEASSETS and can_add_file %}

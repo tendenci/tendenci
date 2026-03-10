@@ -1554,10 +1554,32 @@ def event_files_display(request, event_id, template_name="events/files/display.h
     event_files = event.files.all()
     if not request.user.is_superuser:
         event_files = event_files.filter(status_detail='active')
+
+    form = EventFileSearchForm(request.GET, user=request.user)
+    if form.is_valid():
+        file_type = form.cleaned_data.get('file_type', None)
+        query = form.cleaned_data.get('q', None)
+        tag = form.cleaned_data.get('tag', None)
+        if file_type:
+            event_files = event_files.filter(file_type=file_type)
+        if query:
+            if "tag:" in query:
+                tag = query.replace('tag:', '')
+                event_files = event_files.filter(tags__icontains=tag)
+            else:
+                event_files = event_files.filter(name__icontains=query)
+        if tag:
+            event_files = event_files.filter(tags__icontains=tag)
+    else:
+        event_files = event_files.none()
+
+    event_files = event_files.order_by('-update_dt')
+
     return render_to_resp(request=request,
                           template_name=template_name,
                           context={'event': event,
-                                   'event_files': event_files})
+                                   'event_files': event_files,
+                                   'form' : form,})
 
 
 @is_enabled('events')
@@ -1725,19 +1747,23 @@ def event_files_search(request, template_name="events/files/search.html"):
         event_files = event_files.filter(event_id__in=event_ids)
         event_files = event_files.filter(status_detail='active')
 
-    tag = request.GET.get('tag', None)
-
-    if tag:
-        event_files = event_files.filter(tags__icontains=tag)
-
     form = EventFileSearchForm(request.GET, user=request.user)
     if form.is_valid():
         file_type = form.cleaned_data.get('file_type', None)
         query = form.cleaned_data.get('q', None)
+        tag = form.cleaned_data.get('tag', None)
         if file_type:
             event_files = event_files.filter(file_type=file_type)
         if query:
-            event_files = event_files.filter(name__icontains=query)
+            if "tag:" in query:
+                tag = query.replace('tag:', '')
+                event_files = event_files.filter(tags__icontains=tag)
+            else:
+                event_files = event_files.filter(name__icontains=query)
+        if tag:
+            event_files = event_files.filter(tags__icontains=tag)
+    else:
+        event_files = event_files.none()
 
     event_files = event_files.order_by('-update_dt')
 

@@ -21,7 +21,7 @@
           </td>
           <td><a href="{% url 'event.file_download' event_file.id %}" title="Download"><span class="glyphicon glyphicon-download-alt"></span></a></td>
           <td>{{ event_file.file_type }}</td>
-          <td><a href="{% url 'profile' event_file.creator_username %}">{{ event_file.creator_username }}</a></td>
+          <td>{% if event_file.creator_username %}<a href="{% url 'profile' event_file.creator_username %}">{{ event_file.creator_username }}</a>{% endif %}</td>
           <td>{{ event_file.create_dt|date }}</td>
           <td>{{ event_file.status_detail }}</td>
           <td>
