@@ -43,20 +43,41 @@ def invoice_pdf(request, invoice):
             tmp_total += invoice.box_and_packing
 
     template_name="invoices/pdf.html"
+
     template = get_template(template_name)
+    site_url = get_setting('site', 'global', 'siteurl')
     html  = template.render(context={
                              'invoice': invoice,
                              'obj_name': obj_name,
                              'payment_method': payment_method,
                              'tmp_total': tmp_total,
                              'pdf_version': True,
-                             'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl')
+                             'SITE_GLOBAL_SITEURL': site_url
                             }, request=request)
+
+    html = html.replace(f"href=\"{site_url}/", "href=\"/")
+    html = html.replace(f"src=\"{site_url}/", "src=\"/")
     result = BytesIO()
-    #pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)
     pisa.pisaDocument(BytesIO(html.encode("utf-8")), result,
-                      path=get_setting('site', 'global', 'siteurl'))
+                      link_callback=link_callback)
+    # pisa.pisaDocument(BytesIO(html.encode("utf-8")), result,
+    #                   path=site_url)
     return result
+
+
+def link_callback(uri, rel):
+    """Convert HTML URIs to absolute system paths"""
+    #from tendenci.apps.theme.templatetags.static import static
+    import os
+    from django.conf import settings
+    if settings.MEDIA_URL and uri.startswith(settings.MEDIA_URL):
+        path = os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, ""))
+    elif settings.STATIC_URL and uri.startswith(settings.STATIC_URL):
+        path = os.path.join(settings.STATIC_ROOT, uri.replace(settings.STATIC_URL, ""))
+    else:
+        return uri
+    return path
+
 
 def process_invoice_export(start_dt=None, end_dt=None,
                            identifier=u'', user_id=0):
