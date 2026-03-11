@@ -2,8 +2,21 @@ from datetime import datetime
 from django.forms.widgets import MultiWidget, DateInput, TextInput
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
 from tendenci.apps.site_settings.utils import get_setting
+
+
+class ReCaptchaV2(ReCaptchaV2Checkbox):
+    input_type = None
+    
+    def build_attrs(self, base_attrs, extra_attrs=None):    
+        attrs = super().build_attrs(base_attrs, extra_attrs)
+        if 'class' in attrs:
+            # strip the 'form-control' from attrs because it messes up the format
+            if 'form-control' in attrs['class']:
+                attrs['class'] = attrs['class'].replace('form-control', '').strip()
+        return attrs
 
 
 class SplitDateTimeWidget(MultiWidget):

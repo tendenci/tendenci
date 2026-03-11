@@ -196,6 +196,7 @@ INSTALLED_APPS = [
     'two_factor.plugins.email',
     'qr_code',
     'model_bakery',
+    'django_recaptcha',
 
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',

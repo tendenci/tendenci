@@ -9,6 +9,7 @@ django-localflavor==4.0
 dj-pagination>=2.5.0
 django-picklefield>=3.2
 django-simple-captcha==0.6.0
+django-recaptcha==4.1.0
 #django-nocaptcha-recaptcha==0.0.20
 tendenci-django-tagging==0.6
 django-haystack==3.3.0
