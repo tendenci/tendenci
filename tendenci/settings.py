@@ -256,7 +256,6 @@ INSTALLED_APPS = [
     'tendenci.apps.resumes',
     'tendenci.apps.boxes',
     'tendenci.apps.mobile',
-    #'tendenci.apps.campaign_monitor',
     'tendenci.apps.theme',
     'tendenci.apps.discounts',
     'tendenci.apps.metrics',
