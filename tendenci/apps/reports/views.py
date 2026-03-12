@@ -23,7 +23,7 @@ class ReportListView(ListView):
 
     @method_decorator(superuser_required)
     def dispatch(self, *args, **kwargs):
-        return super(ReportListView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
 
 class ReportCreateView(CreateView):
@@ -33,7 +33,7 @@ class ReportCreateView(CreateView):
 
     @method_decorator(superuser_required)
     def dispatch(self, *args, **kwargs):
-        return super(ReportCreateView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def form_valid(self, form):
         # Pass in the request so we can use it in the save
@@ -47,7 +47,7 @@ class ReportDetailView(DetailView):
 
     @method_decorator(superuser_required)
     def dispatch(self, *args, **kwargs):
-        return super(ReportDetailView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
 
 class RunCreateView(CreateView):
@@ -57,10 +57,10 @@ class RunCreateView(CreateView):
 
     @method_decorator(superuser_required)
     def dispatch(self, *args, **kwargs):
-        return super(RunCreateView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get_initial(self):
-        initial = super(RunCreateView, self).get_initial()
+        initial = super().get_initial()
         # Get the Report ID to associate
         initial.update({
             'report': self.kwargs.get('report_id'),
@@ -70,7 +70,7 @@ class RunCreateView(CreateView):
         return initial
 
     def get_context_data(self, **kwargs):
-        context = super(RunCreateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['report'] = get_object_or_404(Report, pk=self.kwargs.get('report_id'))
         return context
 
@@ -86,7 +86,7 @@ class RunDetailView(DetailView):
 
     @method_decorator(superuser_required)
     def dispatch(self, *args, **kwargs):
-        return super(RunDetailView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
         #invalidate('reports_run')
@@ -102,7 +102,7 @@ class RunOutputView(DetailView):
 
     @method_decorator(superuser_required)
     def dispatch(self, *args, **kwargs):
-        return super(RunOutputView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
         #invalidate('reports_run')

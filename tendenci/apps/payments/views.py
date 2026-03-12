@@ -187,7 +187,7 @@ def search(request, template_name='payments/search.html'):
             search_type = '__istartswith'
         elif search_method == 'contains':
             search_type = '__icontains'
-        search_filter = {'%s%s' % (search_criteria,
+        search_filter = {'{}{}'.format(search_criteria,
                                    search_type): search_text}
         payments = payments.filter(**search_filter)
 

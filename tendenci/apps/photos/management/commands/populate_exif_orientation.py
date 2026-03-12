@@ -25,6 +25,6 @@ class Command(BaseCommand):
                                 photo.exif_data[key] = value
                                 photo.save()
                                 break
-                except (AttributeError, IOError):
+                except (AttributeError, OSError):
                     pass
 

@@ -94,7 +94,7 @@ class Group(TendenciBaseModel):
         if not self.entity:
             self.entity = Entity.objects.first()
 
-        super(Group, self).save(force_insert, force_update, *args, **kwargs)
+        super().save(force_insert, force_update, *args, **kwargs)
 
         if not self.group:
             # create auth group if not exists

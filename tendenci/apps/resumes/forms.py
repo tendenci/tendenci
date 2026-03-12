@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from datetime import timedelta
 from os.path import splitext
@@ -51,7 +50,7 @@ class ResumeSearchForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
-        super(ResumeSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['first_name'].widget.attrs.update({'placeholder': _('Enter first name')})
         self.fields['last_name'].widget.attrs.update({'placeholder': _('Enter last name')})
         self.fields['email'].widget.attrs.update({'placeholder': _('Enter email')})
@@ -219,7 +218,7 @@ class ResumeForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(ResumeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
 
@@ -299,7 +298,7 @@ class ResumeForm(TendenciBaseForm):
         return resume
 
     def clean(self):
-        cleaned_data = super(ResumeForm, self).clean()
+        cleaned_data = super().clean()
 
         print(self.errors)
 

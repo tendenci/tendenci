@@ -25,7 +25,7 @@ def change_profile_photo_update_url(apps, schema_editor):
 
     file_path = f'{dir_path}/templates/top_menu/_profile_dropdown.html'
     if os.path.isfile(file_path):
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
             content = content.replace('//gravatar.com/',
                                       "{% url 'profile.upload_photo' user.id %}")
@@ -35,7 +35,7 @@ def change_profile_photo_update_url(apps, schema_editor):
 
     file_path = f'{dir_path}/templates/profiles/index.html'
     if os.path.isfile(file_path):
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
             content = content.replace('https://en.gravatar.com',
                                       "{% url 'profile.upload_photo' user.id %}")

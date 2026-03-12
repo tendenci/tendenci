@@ -1,4 +1,3 @@
-
 """
 lockfile.py - Platform-independent advisory file locks.
 
@@ -48,8 +47,6 @@ Exceptions:
             NotMyLock - File was locked but not by the current thread/process
 """
 
-from __future__ import division
-from builtins import str
 
 import sys
 import socket
@@ -173,7 +170,7 @@ class LockBase:
             tname = ""
         dirname = os.path.dirname(self.lock_file)
         self.unique_name = os.path.join(dirname,
-                                        "%s.%s%s" % (self.hostname,
+                                        "{}.{}{}".format(self.hostname,
                                                      tname,
                                                      self.pid))
 
@@ -238,7 +235,7 @@ class LinkFileLock(LockBase):
     def acquire(self, timeout=None):
         try:
             open(self.unique_name, "wb").close()
-        except IOError:
+        except OSError:
             raise LockFailed
 
         end_time = time.time()
@@ -304,7 +301,7 @@ class MkdirFileLock(LockBase):
         # Lock file itself is a directory.  Place the unique file name into
         # it.
         self.unique_name  = os.path.join(self.lock_file,
-                                         "%s.%s%s" % (self.hostname,
+                                         "{}.{}{}".format(self.hostname,
                                                       tname,
                                                       self.pid))
 

@@ -1,5 +1,3 @@
-
-
 from django.db import models, migrations
 import datetime
 import tagging.fields
@@ -232,6 +230,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='pool',
-            unique_together=set([('photo', 'content_type', 'object_id')]),
+            unique_together={('photo', 'content_type', 'object_id')},
         ),
     ]

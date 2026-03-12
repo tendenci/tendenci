@@ -28,7 +28,7 @@ class LatestAlbums(SubFeed):
                     alt = alt[:123]
             else:
                 alt = ""
-            return '<a href="%s"><img src="%s" alt="%s" title="%s" /></a><br />%s' % (item.get_absolute_url(), item.get_cover_photo().get_medium_640_url(), alt, alt, item.description)
+            return '<a href="{}"><img src="{}" alt="{}" title="{}" /></a><br />{}'.format(item.get_absolute_url(), item.get_cover_photo().get_medium_640_url(), alt, alt, item.description)
         return item.description
 
     def item_pubdate(self, item):

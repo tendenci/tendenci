@@ -63,7 +63,7 @@ class VideoForm(TendenciBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(VideoForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.embedly_403 = False
         self.fields['image'].help_text = _('Note: This is a required field if "Video url" is a non Youtube video.')
         self.fields['group'].queryset = Group.objects.filter(status=True,
@@ -76,7 +76,7 @@ class VideoForm(TendenciBaseForm):
         self.fields['release_dt'].initial = datetime.now()
 
     def clean(self, *args, **kwargs):
-        super(VideoForm, self).clean(*args, **kwargs)
+        super().clean(*args, **kwargs)
         if self.embedly_403:
             if not self.cleaned_data.get('image'):
                 raise forms.ValidationError('Please provide a thumbnail of your video in the image upload field.')
@@ -106,7 +106,7 @@ class VideoForm(TendenciBaseForm):
         return video_url
 
     def save(self, *args, **kwargs):
-        video = super(VideoForm, self).save(*args, **kwargs)
+        video = super().save(*args, **kwargs)
         if self.cleaned_data['clear_image']:
             video.image.delete()
         return video
@@ -116,7 +116,7 @@ class VideoFrontEndForm(VideoForm):
 
     def __init__(self, *args, **kwargs):
         self.request_user = kwargs.pop('user', None)
-        super(VideoFrontEndForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['release_dt'].widget.attrs.update({'class': 'form-control'})
 

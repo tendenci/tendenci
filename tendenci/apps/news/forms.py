@@ -126,7 +126,7 @@ class NewsForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(NewsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not hasattr(self, 'admin_backend'):
             self.admin_backend = False
         if self.instance.pk:
@@ -153,7 +153,7 @@ class NewsForm(TendenciBaseForm):
 
         # only show the remove photo checkbox if there is already a thumbnail
         if self.instance.thumbnail:
-            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.thumbnail.pk, basename(self.instance.thumbnail.file.name))
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.thumbnail.pk, basename(self.instance.thumbnail.file.name))
         else:
             self.fields.pop('remove_photo')
         self.fields['release_dt'].initial = datetime.now()
@@ -195,7 +195,7 @@ class NewsForm(TendenciBaseForm):
             return False
 
     def save(self, *args, **kwargs):
-        news = super(NewsForm, self).save(*args, **kwargs)
+        news = super().save(*args, **kwargs)
         if self.cleaned_data.get('remove_photo'):
             news.thumbnail = None
         return news
@@ -207,7 +207,7 @@ class NewsSearchForm(FormControlWidgetMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
-        super(NewsSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
         group_choices = Group.objects.filter(group_filters).distinct(

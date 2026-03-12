@@ -22,7 +22,7 @@ class ReportForm(forms.ModelForm):
         fields = ["type"]
 
     def __init__(self, *args, **kwargs):
-        super(ReportForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         fields_to_append = ['invoice_display', 'invoice_status']
 
@@ -49,7 +49,7 @@ class ReportForm(forms.ModelForm):
         request = kwargs.get('request')
         if request:
             del kwargs['request']
-        report = super(ReportForm, self).save(*args, **kwargs)
+        report = super().save(*args, **kwargs)
 
         if request:
             update_perms_and_save(request, self, report)
@@ -110,7 +110,7 @@ class RunForm(forms.ModelForm):
         request = kwargs.get('request')
         if request:
             del kwargs['request']
-        run = super(RunForm, self).save(*args, **kwargs)
+        run = super().save(*args, **kwargs)
 
         if request:
             run.creator = request.user

@@ -168,7 +168,7 @@ class AuthorizeView(TemplateView):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(AuthorizeView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
 
 class DeauthorizeView(View):
@@ -179,7 +179,7 @@ class DeauthorizeView(View):
         self.sa = get_object_or_404(StripeAccount, pk=sa_id, status_detail='active')
         if not has_perm(request.user, 'stripe.delete_stripeaccount', self.sa):
             raise Http403
-        return super(DeauthorizeView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name, {'sa': self.sa})
@@ -200,7 +200,7 @@ class DeauthorizeView(View):
                 messages.add_message(request, messages.SUCCESS, msg_string)
             else:
                 # failed
-                msg_string = '{0} - {1}'.format(response_json['error'], response_json['error_description'])
+                msg_string = '{} - {}'.format(response_json['error'], response_json['error_description'])
                 messages.add_message(request, messages.ERROR, msg_string)
 
         return HttpResponseRedirect(reverse('stripe_connect.authorize'))
@@ -210,7 +210,7 @@ class WebhooksView(View):
     @method_decorator(csrf_exempt)
     @method_decorator(require_POST)
     def dispatch(self, *args, **kwargs):
-        return super(WebhooksView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         payload = request.body.decode()
@@ -261,7 +261,7 @@ class FetchAccessToken(View):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(FetchAccessToken, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request):
         code = request.GET.get('code')
@@ -322,7 +322,7 @@ class FetchAccessToken(View):
             msg_string = _('Success!')
         else:
             sa = None
-            msg_string = '{0} - {1}'.format(response_json['error'], response_json['error_description'])
+            msg_string = '{} - {}'.format(response_json['error'], response_json['error_description'])
 
         return render(request, self.template_name, {'sa': sa, 'msg_string': msg_string})
 

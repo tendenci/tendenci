@@ -12,9 +12,9 @@ from tendenci.apps.sitemaps import TendenciSitemap
 from tendenci.apps.stories.models import Story
 
 class LatestEntriesFeed(SubFeed):
-    title = _('%(dname)s Latest Stories' % {'dname': get_setting('site','global','sitedisplayname')})
+    title = _('{dname} Latest Stories'.format(dname=get_setting('site','global','sitedisplayname')))
     link =  "/stories/"
-    description = _("Latest Stories by %(dname)s" % {'dname': get_setting('site','global','sitedisplayname')})
+    description = _("Latest Stories by {dname}".format(dname=get_setting('site','global','sitedisplayname')))
 
     def items(self):
         items = Story.objects.filter(Q(expires=False) | Q(start_dt__lte=datetime.now()), Q(end_dt__gte=datetime.now())).filter(**PUBLIC_FILTER).filter(syndicate=True).order_by('-create_dt')[:20]

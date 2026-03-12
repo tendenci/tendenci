@@ -38,26 +38,26 @@ from urllib.parse import quote, urlencode
 from collections import UserDict as IterableUserDict
 
 
-class Url(IterableUserDict, object):
+class Url(IterableUserDict):
     """
     A dictionary with two additional attributes for the method and url.
     UserDict provides a dictionary interface along with the regular
     dictionary accsesible via the `data` attribute.
     """
     def __init__(self, data=None, method=None, original_url=None, **kwargs):
-        super(Url, self).__init__(data, **kwargs)
+        super().__init__(data, **kwargs)
         self.method = method or 'url'
         self.original_url = original_url
 
     def __str__(self):
-        return '<%s %s>' % (self.method.title(), self.original_url or "")
+        return '<{} {}>'.format(self.method.title(), self.original_url or "")
 
 def get_user_agent():
     __version__ = '0.5.0'
     return 'Mozilla/5.0 (compatible; embedly-python/%s;)' % __version__
 
 
-class Embedly(object):
+class Embedly:
     """
     Client
 
@@ -161,7 +161,7 @@ class Embedly(object):
         else:
             query += '&url=%s' % quote(url_or_urls)
 
-        url = 'https://api.embed.ly/%s/%s?%s' % (version, method, query)
+        url = 'https://api.embed.ly/{}/{}?{}'.format(version, method, query)
 
         http = httplib2.Http(timeout=self.timeout)
 

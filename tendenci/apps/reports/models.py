@@ -1,4 +1,3 @@
-from builtins import str
 from collections import OrderedDict
 
 from django.db import models
@@ -69,7 +68,7 @@ class Report(TendenciBaseModel):
         verbose_name_plural = _('Reports')
 
     def __str__(self):
-        return "%s %s " % (self.pk, str(self.type))
+        return "{} {} ".format(self.pk, str(self.type))
 
     def get_absolute_url(self):
         return reverse('report_detail', args=[self.pk])
@@ -80,7 +79,7 @@ class Report(TendenciBaseModel):
     def config_options_dict(self):
         if self.config:
             return json.loads(self.config)
-        return u''
+        return ''
 
     def config_options(self):
         if self.config:
@@ -116,12 +115,12 @@ class Report(TendenciBaseModel):
                         pass
 
             return output
-        return u''
+        return ''
 
     def config_options_string(self):
         if self.config_options():
             return '; '.join([i['value'] for i in self.config_options()])
-        return u''
+        return ''
 
 RUN_STATUS_CHOICES = (
     ('unstarted', 'Unstarted'),
@@ -164,7 +163,7 @@ class Run(models.Model):
         verbose_name_plural = _('Runs')
 
     def __str__(self):
-        return "Run %s for report %s" % (self.pk, self.report.pk)
+        return "Run {} for report {}".format(self.pk, self.report.pk)
 
     def get_absolute_url(self):
         return reverse('report_run_detail', args=[self.report.pk, self.pk])

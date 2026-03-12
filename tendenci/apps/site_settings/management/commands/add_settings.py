@@ -1,4 +1,3 @@
-
 import os
 import simplejson as json
 
@@ -101,12 +100,12 @@ class Command(BaseCommand):
             }).exists()
 
             if (exists):
-                print('%s (%s) already exists ... skipping.' % (
+                print('{} ({}) already exists ... skipping.'.format(
                     new_setting.name,
                     new_setting.scope_category
                 ))
             else:
-                print('%s (%s) ... done.' % (
+                print('{} ({}) ... done.'.format(
                     new_setting.name,
                     new_setting.scope_category
                 ))
@@ -122,14 +121,14 @@ class Command(BaseCommand):
             json_file = options['json']
 
         if os.path.isfile(json_file):
-            with open(json_file, 'r') as f:
+            with open(json_file) as f:
                 try:
                     settings = json.loads(f.read())
                 except ValueError as e:
                     raise CommandError(e)
                 self.add_settings(settings)
         else:
-            raise CommandError('%s: Could not find json file %s' % (
+            raise CommandError('{}: Could not find json file {}'.format(
                 __file__,
                 json_file,
             ))

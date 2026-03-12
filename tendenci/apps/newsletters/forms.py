@@ -61,7 +61,7 @@ class GenerateForm(forms.Form):
     template = forms.ModelChoiceField(queryset=NewsletterTemplate.objects.all())
 
     def __init__(self, *args, **kwargs):
-        super(GenerateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['events_type'].choices = get_type_choices()
 
 class OldGenerateForm(forms.ModelForm):
@@ -79,7 +79,7 @@ class OldGenerateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
-        super(OldGenerateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         not_required = ['actionname', 'actiontype', 'article', 'send_status',
         'date_created', 'date_submitted', 'date_email_sent', 'email_sent_count',
         'date_last_resent', 'resend_count']
@@ -126,7 +126,7 @@ class OldGenerateForm(forms.ModelForm):
             subject = '[firstname] [lastname] ' + subj
         else:
             subject = subj
-        nl = super(OldGenerateForm, self).save(*args, **kwargs)
+        nl = super().save(*args, **kwargs)
         nl.subject = subject
         nl.actionname = subject
         nl.date_created = datetime.datetime.now()
@@ -159,7 +159,7 @@ class MarketingStepOneForm(forms.ModelForm):
         fields= ('actiontype', 'actionname',)
 
     def __init__(self, *args, **kwargs):
-        super(MarketingStepOneForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['actiontype'].required = True
         self.fields['actionname'].required = True
 
@@ -186,7 +186,7 @@ class MarketingStepFourForm(forms.ModelForm):
         fields = ('subject', 'send_to_email2', 'enforce_direct_mail_flag', 'sla', 'member_only', 'group')
 
     def __init__(self, *args, **kwargs):
-        super(MarketingStepFourForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['sla'].required = True
 
         self.fields['send_to_email2'] = forms.ChoiceField(
@@ -227,7 +227,7 @@ class MarketingStepFiveForm(FormControlWidgetMixin, forms.ModelForm):
                   'send_status',)
 
     def __init__(self, *args, **kwargs):
-        super(MarketingStepFiveForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not settings.NEWSLETTER_SCHEDULE_ENABLED:
             self.fields.pop('schedule_send')
             self.fields.pop('schedule_send_dt')
@@ -259,7 +259,7 @@ class MarketingStepFiveForm(FormControlWidgetMixin, forms.ModelForm):
 
     def save(self, *args, **kwargs):
         create_article = self.cleaned_data.get('create_article', False)
-        newsletter = super(MarketingStepFiveForm, self).save(*args, **kwargs)
+        newsletter = super().save(*args, **kwargs)
         newsletter.date_submitted = datetime.datetime.now()
         if newsletter.schedule_type == 'O':
             newsletter.repeats = 0
@@ -308,7 +308,7 @@ class MarketingEditScheduleForm(FormControlWidgetMixin, forms.ModelForm):
         return schedule_send_dt
 
     def save(self, *args, **kwargs):
-        newsletter = super(MarketingEditScheduleForm, self).save(*args, **kwargs)
+        newsletter = super().save(*args, **kwargs)
         if newsletter.schedule_type == 'O':
             newsletter.repeats = 0
         newsletter.save()

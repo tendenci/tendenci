@@ -100,7 +100,7 @@ def to_camel_case(d):
         def to_camel(x):
             return re.sub(r'_([a-z])', to_upper, x)
 
-        return dict([(to_camel(x[0]), x[1]) for x in d.items()])
+        return {to_camel(x[0]): x[1] for x in d.items()}
     return d
 
 
@@ -123,7 +123,7 @@ def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, iframe_communicator_
     if is_secure:
         site_url = site_url.replace('http://', 'https://')
     if not iframe_communicator_url:
-        iframe_communicator_url = '%s%s' % (
+        iframe_communicator_url = '{}{}'.format(
                                 site_url,
                                 reverse('recurring_payment.authnet.iframe_communicator'))
 

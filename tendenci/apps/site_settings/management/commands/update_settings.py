@@ -1,4 +1,3 @@
-
 import os
 import simplejson as json
 
@@ -128,7 +127,7 @@ class Command(BaseCommand):
                     del setting['value']
                 current_setting.__dict__.update(setting)
                 current_setting.save()
-                print('%s (%s)  - updated.' % (
+                print('{} ({})  - updated.'.format(
                     setting['name'],
                     setting['scope_category']
                 ))
@@ -137,7 +136,7 @@ class Command(BaseCommand):
                 new_setting = Setting(**setting)
                 new_setting.save()
                 #if verbosity >= 2:
-                print('%s (%s)  - added.' % (
+                print('{} ({})  - added.'.format(
                     setting['name'],
                     setting['scope_category']
                 ))
@@ -178,7 +177,7 @@ class Command(BaseCommand):
                                 'settings.json'
                             ))
             if os.path.isfile(json_file):
-                with open(json_file, 'r') as f:
+                with open(json_file) as f:
                     try:
                         settings = json.loads(f.read())
                     except ValueError as e:

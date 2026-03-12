@@ -1,4 +1,3 @@
-
 import os
 import simplejson as json
 
@@ -56,7 +55,7 @@ class Command(BaseCommand):
                     'scope_category': setting['scope_category']
                 })
             except Setting.DoesNotExist:
-                print("Setting: %s %s %s, is missing." % (setting['name'], setting['scope'], setting['scope_category']))
+                print("Setting: {} {} {}, is missing.".format(setting['name'], setting['scope'], setting['scope_category']))
 
     def handle(self, *args, **options):
         json_file = os.path.abspath(os.path.join(
@@ -68,14 +67,14 @@ class Command(BaseCommand):
             json_file = options['json']
 
         if os.path.isfile(json_file):
-            with open(json_file, 'r') as f:
+            with open(json_file) as f:
                 try:
                     settings = json.loads(f.read())
                 except ValueError as e:
                     raise CommandError(e)
                 self.check_settings(settings)
         else:
-            raise CommandError('%s: Could not find json file %s' % (
+            raise CommandError('{}: Could not find json file {}'.format(
                 __file__,
                 json_file,
             ))

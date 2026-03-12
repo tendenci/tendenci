@@ -1,4 +1,3 @@
-from builtins import str
 import re
 import time as ttime
 from datetime import datetime, date, time
@@ -64,7 +63,7 @@ def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs)
                                request=request)
 
     sender = settings.DEFAULT_FROM_EMAIL
-    recipients = ['%s<%s>' % (r[0], r[1]) for r in settings.ADMINS]
+    recipients = ['{}<{}>'.format(r[0], r[1]) for r in settings.ADMINS]
     email = Email(
             sender=sender,
             recipient=recipients,
@@ -130,7 +129,7 @@ def group_choices(user):
     if not user.profile.is_superuser:
         groups = groups.exclude(allow_self_add=False)
 
-    choices = [(group.pk, "%s (%s)" % (group.label, group.name)) for group in groups]
+    choices = [(group.pk, "{} ({})".format(group.label, group.name)) for group in groups]
 
     return choices
 
@@ -155,12 +154,12 @@ def make_username_unique(un):
 
     if others and 0 in others:
         # the appended digit will compromise the username length
-        un = '%s%s' % (un, str(max(others) + 1))
+        un = '{}{}'.format(un, str(max(others) + 1))
 
     return un
 
 
-def spawn_username(fn=u'', ln=u'', em=u''):
+def spawn_username(fn='', ln='', em=''):
     """
     Uses a first name, last name and email to
     spawn a typical username.  All usernames are
@@ -191,7 +190,7 @@ def spawn_username(fn=u'', ln=u'', em=u''):
         return make_username_unique(em[:max_length].lower())
 
     if fn and ln:
-        un = '%s.%s' % (fn, ln)
+        un = '{}.{}'.format(fn, ln)
         return make_username_unique(un[:max_length].lower())
 
     if fn:
@@ -245,9 +244,9 @@ def get_member_reminders(user, view_self=False):
         else:
             my_msg = 'Your membership'
 
-        renew_link = u''
+        renew_link = ''
         if hasattr(membership, 'app') and membership.app:
-            renew_link = '%s%s?username=%s&membership_type_id=%s' % (
+            renew_link = '{}{}?username={}&membership_type_id={}'.format(
                 get_setting('site', 'global', 'siteurl'),
                 reverse('membership_default.renew',
                         kwargs={'slug': membership.app.slug,
@@ -316,7 +315,7 @@ def clean_username(username):
     return username
 
 
-def process_export(export_fields='all_fields', identifier=u'', user_id=0):
+def process_export(export_fields='all_fields', identifier='', user_id=0):
     from tendenci.apps.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':
@@ -544,7 +543,7 @@ def get_user_by_fn_ln_company(first_name, last_name, company):
     return None
 
 
-class ImportUsers(object):
+class ImportUsers:
     """
     Check and process (insert/update) a user.
     """
@@ -559,13 +558,13 @@ class ImportUsers(object):
         self.uimport = uimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.user_fields = dict([(field.name, field)
+        self.user_fields = {field.name: field
                             for field in User._meta.fields
-                            if field.get_internal_type() != 'AutoField'])
-        self.profile_fields = dict([(field.name, field)
+                            if field.get_internal_type() != 'AutoField'}
+        self.profile_fields = {field.name: field
                             for field in Profile._meta.fields
                             if field.get_internal_type() != 'AutoField' and
-                            field.name not in ['user', 'guid']])
+                            field.name not in ['user', 'guid']}
         # Track account_ids in file to handle duplicate account_ids within the same file.
         self.account_ids_in_file = list()
         # Allow specific fields to be null, even when clean_data would normally provide a
@@ -622,7 +621,7 @@ class ImportUsers(object):
         self.user_data = idata.row_data
         user = None
         user_display = {
-            'error': u'',
+            'error': '',
             'user': None,
             'action': ''
         }
@@ -683,13 +682,13 @@ class ImportUsers(object):
                 return
 
         user_display.update({
-            'first_name': self.user_data.get('first_name', u''),
-            'last_name': self.user_data.get('last_name', u''),
-            'account_id': self.user_data.get('account_id', u''),
-            'email': self.user_data.get('email', u''),
-            'username': self.user_data.get('username', u''),
-            'phone': self.user_data.get('phone', u''),
-            'company': self.user_data.get('company', u''),
+            'first_name': self.user_data.get('first_name', ''),
+            'last_name': self.user_data.get('last_name', ''),
+            'account_id': self.user_data.get('account_id', ''),
+            'email': self.user_data.get('email', ''),
+            'username': self.user_data.get('username', ''),
+            'phone': self.user_data.get('phone', ''),
+            'company': self.user_data.get('company', ''),
         })
 
         return user_display
@@ -739,12 +738,12 @@ class ImportUsers(object):
         self.assign_import_values_from_dict(user, action_info['action'])
 
         user.username = user.username or spawn_username(
-            fn=user_data.get('first_name', u''),
-            ln=user_data.get('last_name', u''),
-            em=user_data.get('email', u''))
+            fn=user_data.get('first_name', ''),
+            ln=user_data.get('last_name', ''),
+            em=user_data.get('email', ''))
 
         # clean username
-        user.username = re.sub(r'[^\w+-.@]', u'', user.username)
+        user.username = re.sub(r'[^\w+-.@]', '', user.username)
 
         # make sure username is unique.
         if action_info['action'] == 'insert':

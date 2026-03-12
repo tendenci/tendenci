@@ -53,7 +53,7 @@ class Command(BaseCommand):
                         run_a_recurring_payment(rp, verbosity)
                     except:
                         print(traceback.format_exc())
-                        rp_url = '%s%s' % (get_setting('site', 'global', 'siteurl'),
+                        rp_url = '{}{}'.format(get_setting('site', 'global', 'siteurl'),
                                         reverse('recurring_payment.view_account', args=[rp.id]))
                         logger.error(f'Error processing recurring payment {rp_url}...\n\n{traceback.format_exc()}')
         else:

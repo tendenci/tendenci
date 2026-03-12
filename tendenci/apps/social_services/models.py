@@ -94,8 +94,8 @@ class SkillSet(models.Model):
             if result and not 'error' in result:
                 lat = result[0]['lat']
                 lng = result[0]['lon']
-                self.loc = "POINT(%s %s)" % (lng, lat)
-        super(SkillSet, self).save(*args, **kwargs)
+                self.loc = "POINT({} {})".format(lng, lat)
+        super().save(*args, **kwargs)
 
 
 class ReliefAssessment(models.Model):
@@ -163,7 +163,7 @@ class ReliefAssessment(models.Model):
         return self.ethnicity
 
     def get_address(self):
-        return "%s %s %s, %s %s %s" % (
+        return "{} {} {}, {} {} {}".format(
             self.address,
             self.address2,
             self.city,
@@ -182,5 +182,5 @@ class ReliefAssessment(models.Model):
         if result:
             lat = result[0]['lat']
             lng = result[0]['lon']
-            self.loc = "POINT(%s %s)" % (lng, lat)
-        super(ReliefAssessment, self).save(*args, **kwargs)
+            self.loc = "POINT({} {})".format(lng, lat)
+        super().save(*args, **kwargs)

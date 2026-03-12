@@ -27,5 +27,5 @@ class PagesConfig(AppConfig):
     verbose_name = 'Pages'
 
     def ready(self):
-        super(PagesConfig, self).ready()
+        super().ready()
         post_migrate.connect(create_notice_types, sender=self)

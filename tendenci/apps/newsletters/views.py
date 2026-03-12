@@ -1,4 +1,3 @@
-from builtins import str
 import datetime
 
 from django.conf import settings
@@ -51,7 +50,7 @@ class NewsletterGeneratorView(TemplateView):
     template_name="newsletters/newsletter_generator.html"
 
     def get_context_data(self, **kwargs):
-        context = super(NewsletterGeneratorView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         cm_api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
         cm_client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 
@@ -66,7 +65,7 @@ class NewsletterListView(NewsletterPermissionMixin, ListView):
     template_name = 'newsletters/search.html'
 
     def get_queryset(self, **kwargs):
-        qset = super(NewsletterListView, self).get_queryset(**kwargs)
+        qset = super().get_queryset(**kwargs)
         qset = qset.order_by('-date_created')
 
         return qset
@@ -97,14 +96,14 @@ class NewsletterGeneratorOrigView(NewsletterPermissionMixin, FormView):
         return reverse_lazy('newsletter.action.step4', kwargs={'pk': self.object_id })
 
     def get_context_data(self, **kwargs):
-        context = super(NewsletterGeneratorOrigView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         templates = NewsletterTemplate.objects.all()
         context['templates'] = templates
 
         return context
 
     def get_form_kwargs(self):
-        kwargs = super(NewsletterGeneratorOrigView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs.update({'request': self.request})
 
         return kwargs
@@ -129,17 +128,17 @@ class MarketingActionStepTwoView(NewsletterPermStatMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         self.form = MarketingStep2EmailFilterForm(request.GET)
-        return super(MarketingActionStepTwoView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(MarketingActionStepTwoView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         pk = int(self.kwargs.get('pk'))
         context['object'] = get_object_or_404(Newsletter, pk=pk)
         context['form'] = self.form
         return context
 
     def get_queryset(self):
-        qset = super(MarketingActionStepTwoView, self).get_queryset()
+        qset = super().get_queryset()
         qset = qset.filter(status=True, status_detail='active').order_by('-pk')
         request = self.request
         form = self.form
@@ -201,7 +200,7 @@ class MarketingActionStepFiveView(NewsletterPermStatMixin, NewsletterPassedSLAMi
             "Please note that it may take several hours to complete the process depending "
             "on the size of your user group. You will receive an email notification when it's done."
             )
-        return super(MarketingActionStepFiveView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class MarketingActionEditScheduleView(NewsletterPermissionMixin, UpdateView):
@@ -214,7 +213,7 @@ class MarketingActionEditScheduleView(NewsletterPermissionMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         if not settings.NEWSLETTER_SCHEDULE_ENABLED:
             raise Http404
-        return super(MarketingActionEditScheduleView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         obj = self.get_object()
@@ -225,7 +224,7 @@ class MarketingActionEditScheduleView(NewsletterPermissionMixin, UpdateView):
         messages.success(self.request,
             "Your newsletter schedule has been edited. "
             )
-        return super(MarketingActionEditScheduleView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class NewsletterDetailView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, DetailView):
@@ -236,7 +235,7 @@ class NewsletterDetailView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, 
 
     def get(self, request, *args, **kwargs):
         EventLog.objects.log(instance=self.get_object(), action='view')
-        return super(NewsletterDetailView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 
 @login_required
@@ -288,7 +287,7 @@ class NewsletterResendView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, 
                 ' Newsletter cannot be sent.'))
             return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
 
-        return super(NewsletterResendView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         newsletter = self.get_object()
@@ -303,7 +302,7 @@ class NewsletterResendView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, 
             "on the size of your user group. You will receive an email notification when it's done.")
             return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
 
-        return super(NewsletterResendView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 
 class NewsletterDeleteView(NewsletterPermissionMixin, DeleteView):
@@ -343,19 +342,19 @@ def generate(request):
 
             html_url = [
                 reverse('newsletter.template_render', args=[template.template_id]),
-                u'?jump_links=%s' % form.cleaned_data.get('jump_links'),
+                '?jump_links=%s' % form.cleaned_data.get('jump_links'),
                 '&events=%s' % form.cleaned_data.get('events'),
                 '&events_type=%s' % form.cleaned_data.get('events_type'),
-                '&event_start_dt=%s' % form.cleaned_data.get('event_start_dt', u''),
-                '&event_end_dt=%s' % form.cleaned_data.get('event_end_dt', u''),
-                '&articles=%s' % form.cleaned_data.get('articles', u''),
-                '&articles_days=%s' % form.cleaned_data.get('articles_days', u''),
-                '&news=%s' % form.cleaned_data.get('news', u''),
-                '&news_days=%s' % form.cleaned_data.get('news_days', u''),
-                '&jobs=%s' % form.cleaned_data.get('jobs', u''),
-                '&jobs_days=%s' % form.cleaned_data.get('jobs_days', u''),
-                '&pages=%s' % form.cleaned_data.get('pages', u''),
-                '&pages_days=%s' % form.cleaned_data.get('pages_days', u''),
+                '&event_start_dt=%s' % form.cleaned_data.get('event_start_dt', ''),
+                '&event_end_dt=%s' % form.cleaned_data.get('event_end_dt', ''),
+                '&articles=%s' % form.cleaned_data.get('articles', ''),
+                '&articles_days=%s' % form.cleaned_data.get('articles_days', ''),
+                '&news=%s' % form.cleaned_data.get('news', ''),
+                '&news_days=%s' % form.cleaned_data.get('news_days', ''),
+                '&jobs=%s' % form.cleaned_data.get('jobs', ''),
+                '&jobs_days=%s' % form.cleaned_data.get('jobs_days', ''),
+                '&pages=%s' % form.cleaned_data.get('pages', ''),
+                '&pages_days=%s' % form.cleaned_data.get('pages_days', ''),
                 ]
 
             return redirect(''.join(html_url))

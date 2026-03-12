@@ -93,7 +93,7 @@ class Person(TendenciBaseModel):
         state_zip = ' '.join([s for s in (self.state, self.zipcode) if s])
         city_state_zip = ', '.join([s for s in (self.city, state_zip, self.country) if s])
 
-        return '%s %s %s' % (self.address, self.address2, city_state_zip)
+        return '{} {} {}'.format(self.address, self.address2, city_state_zip)
 
     def get_alternate_address(self):
         """
@@ -102,7 +102,7 @@ class Person(TendenciBaseModel):
         state_zip = ' '.join([s for s in (self.state_2, self.zipcode_2) if s])
         city_state_zip = ', '.join([s for s in (self.city_2, state_zip, self.country_2) if s])
 
-        return '%s %s %s' % (self.address_2, self.address2_2, city_state_zip)
+        return '{} {} {}'.format(self.address_2, self.address2_2, city_state_zip)
 
 
 class Profile(Person):
@@ -118,8 +118,8 @@ class Profile(Person):
     )
 
     SEX_CHOICES = (
-        ('male', _(u'Male')),
-        ('female', _(u'Female'))
+        ('male', _('Male')),
+        ('female', _('Female'))
     )
 
     # relations
@@ -198,10 +198,10 @@ class Profile(Person):
         if hasattr(self, 'user'):
             return self.user.username
         else:
-            return u''
+            return ''
 
     def __init__(self, *args, **kwargs):
-        super(Profile, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._original_photo = self.photo
 
     def get_absolute_url(self):
@@ -343,17 +343,17 @@ class Profile(Person):
 
     def get_address(self):
         if self.address_type:
-            return '%s (%s)' % (super(Profile, self).get_address(),
+            return '{} ({})'.format(super().get_address(),
                                 self.address_type)
         else:
-            return super(Profile, self).get_address()
+            return super().get_address()
 
     def get_name(self):
         """
         Returns name first_name + last_name
         """
         user = self.user
-        name = "%s %s" % (user.first_name, user.last_name)
+        name = "{} {}".format(user.first_name, user.last_name)
         name = name.strip()
 
         return self.display_name or name or user.email or user.username
@@ -414,7 +414,7 @@ class Profile(Person):
                 if self.region:
                     self.state = self.region.region_name
 
-        super(Profile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if self.photo and self._original_photo:
             if self._original_photo != self.photo:
@@ -624,7 +624,7 @@ class Profile(Person):
             status=True, status_detail__iexact='active'
         )
 
-        self.member_number = u''
+        self.member_number = ''
         if membership:
             if not membership.member_number:
                 membership.set_member_number()
@@ -667,7 +667,7 @@ class Profile(Person):
             # the appended digit will compromise the username length
             # there would have to be more than 99,999 duplicate usernames
             # to kill the database username max field length
-            un = '%s%s' % (un, str(max(others) + 1))
+            un = '{}{}'.format(un, str(max(others) + 1))
 
         return un
 
@@ -690,11 +690,11 @@ class Profile(Person):
         create a new user account.
         """
 
-        un = kwargs.get('username', u'')
-        pw = kwargs.get('password', u'')
-        fn = kwargs.get('first_name', u'')
-        ln = kwargs.get('last_name', u'')
-        em = kwargs.get('email', u'')
+        un = kwargs.get('username', '')
+        pw = kwargs.get('password', '')
+        fn = kwargs.get('first_name', '')
+        ln = kwargs.get('last_name', '')
+        em = kwargs.get('email', '')
 
         user = None
         created = False
@@ -900,7 +900,7 @@ class UserImport(BaseImport):
         import csv
         if not self.recap_file and self.header_line:
             file_name = 'user_import_%d_recap.csv' % self.id
-            file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
+            file_path = '{}/{}'.format(os.path.split(self.upload_file.name)[0],
                                    file_name)
             with default_storage.open(file_path, 'w') as f:
                 recap_writer = csv.writer(f)

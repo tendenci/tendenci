@@ -455,7 +455,7 @@ class UserCertDataAdmin(admin.ModelAdmin):
     )
     
     def get_queryset(self, request):
-        qs = super(UserCertDataAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.filter(certification__enable_diamond=True)
 
     def get_readonly_fields(self, request, obj=None):
@@ -555,7 +555,7 @@ class BluevoltExamImportAdmin(admin.ModelAdmin):
     #     )},),
     # )
     def save_model(self, request, obj, form, change):
-        super(BluevoltExamImportAdmin, self).save_model(request, obj, form, change)
+        super().save_model(request, obj, form, change)
         if not change:
             obj.run_by = request.user
             obj.save()
@@ -578,7 +578,7 @@ class BluevoltExamImportAdmin(admin.ModelAdmin):
             kwargs['fields'] = ['date_from', 'date_to']
         else: # change
             kwargs['fields'] = ['date_from', 'date_to', 'status_detail', 'result_detail']
-        return super(BluevoltExamImportAdmin, self).get_form(request, obj, **kwargs)
+        return super().get_form(request, obj, **kwargs)
 
     def get_readonly_fields(self, request, obj=None):
         if obj: # editing

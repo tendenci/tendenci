@@ -17,5 +17,5 @@ class PaymentsConfig(AppConfig):
     verbose_name = 'Payments'
 
     def ready(self):
-        super(PaymentsConfig, self).ready()
+        super().ready()
         post_migrate.connect(create_notice_types, sender=self)

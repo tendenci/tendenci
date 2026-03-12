@@ -49,7 +49,7 @@ class TestimonialAdmin(TendenciBaseModelAdmin):
     ordering = ['-position']
 
     def first_last_name(self, obj):
-        return '%s %s' % (obj.first_name, obj.last_name)
+        return '{} {}'.format(obj.first_name, obj.last_name)
     first_last_name.short_description = 'name'
 
     def testimonial_parsed(self, obj):

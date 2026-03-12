@@ -1,5 +1,3 @@
-
-
 from django.db import models, migrations
 import tendenci.apps.base.fields
 import django.db.models.deletion

@@ -99,10 +99,10 @@ class Setting(models.Model):
         if self.name == 'theme':
             from tendenci.apps.theme.utils import theme_options
             self.input_value = theme_options()
-            super(Setting, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
             call_command('clear_theme_cache')
         else:
-            super(Setting, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
 
         #update the cache when value has changed
         if orig and self.value != orig.value:

@@ -97,7 +97,7 @@ class SkillSetForm(BetterModelForm):
             edit = kwargs.pop('edit', False)
         else:
             edit = False
-        super(SkillSetForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not edit:
             for name, field in self.fields.items():
                 field.widget.attrs['disabled'] = True
@@ -209,7 +209,7 @@ class ReliefAssessmentForm(BetterModelForm):
             edit = kwargs.pop('edit', True)
         else:
             edit = True
-        super(ReliefAssessmentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not edit:
             for name, field in self.fields.items():
                 field.widget.attrs['disabled'] = True
@@ -244,7 +244,7 @@ class ReliefAssessmentForm(BetterModelForm):
         return cleaned_data
 
     def save(self, *args, **kwargs):
-        relief = super(ReliefAssessmentForm, self).save(commit=False)
+        relief = super().save(commit=False)
 
         user, created = Profile.get_or_create_user(**{
             'email': self.cleaned_data.get('email'),

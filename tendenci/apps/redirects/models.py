@@ -40,4 +40,4 @@ class Redirect(models.Model):
     def save(self, *args, **kwargs):
         if 'log' in kwargs:
             kwargs.pop('log')
-        super(Redirect, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)

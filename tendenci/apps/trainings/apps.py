@@ -6,6 +6,6 @@ class TrainingsConfig(AppConfig):
     verbose_name = 'Trainings'
 
     def ready(self):
-        super(TrainingsConfig, self).ready()
+        super().ready()
         from .signals import init_signals
         init_signals()

@@ -24,7 +24,7 @@ class StaffSearchForm(FormControlWidgetMixin, forms.Form):
     position = forms.ChoiceField(label=_('Position'), required=False, choices=[])
     
     def __init__(self, *args, **kwargs):
-        super(StaffSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # department
         department_choices = Department.objects.values_list('id', 'name').order_by('name')
@@ -75,7 +75,7 @@ class StaffForm(TendenciBaseForm):
         return photo
 
     def __init__(self, *args, **kwargs):
-        super(StaffForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['biography'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
@@ -114,4 +114,4 @@ class FileForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(FileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)

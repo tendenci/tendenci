@@ -1,5 +1,3 @@
-from builtins import str
-
 from django.urls import reverse
 from django.utils.functional import lazy
 from django.contrib.admin import site as admin_site
@@ -55,7 +53,7 @@ class DeclarativeMetaclass(type):
                     field = attrs.pop(field_name)
                     attrs['fields'][field_name] = field
 
-        return super(DeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
 
 
 class Registry(metaclass=DeclarativeMetaclass):
@@ -127,7 +125,7 @@ class Registry(metaclass=DeclarativeMetaclass):
         """
         # TODO: find a more global area to set this URL path
         default_plugin_url = 'plugin-media'
-        return '/%s/%s/images/icon.png' % (
+        return '/{}/{}/images/icon.png'.format(
             default_plugin_url,
             str(self.model._meta.verbose_name_plural.lower())
         )
@@ -153,11 +151,11 @@ class Registry(metaclass=DeclarativeMetaclass):
             'search': '',
             'list': '',
         }
-        admin_add = 'admin:%s_%s_add' % (
+        admin_add = 'admin:{}_{}_add'.format(
             self.model._meta.app_label,
             self.model._meta.model_name,
         )
-        admin_index = 'admin:%s_%s_changelist' % (
+        admin_index = 'admin:{}_{}_changelist'.format(
             self.model._meta.app_label,
             self.model._meta.model_name,
         )
@@ -190,7 +188,7 @@ class CoreRegistry(Registry):
     Registry for core applications
     """
     def __init__(self, model):
-        super(CoreRegistry, self).__init__(model)
+        super().__init__(model)
 
         # application type
         self.fields['app_type'] = 'core'
@@ -201,7 +199,7 @@ class AppRegistry(Registry):
     Registry for addon applications
     """
     def __init__(self, model):
-        super(AppRegistry, self).__init__(model)
+        super().__init__(model)
 
         # application type
         self.fields['app_type'] = 'addon'
@@ -212,7 +210,7 @@ class PeopleRegistry(Registry):
     Registry for people applications
     """
     def __init__(self, model):
-        super(PeopleRegistry, self).__init__(model)
+        super().__init__(model)
 
         # application type
         self.fields['app_type'] = 'people'
@@ -225,7 +223,7 @@ class LogRegistry(Registry):
     """
 
     def __init__(self, model):
-        super(LogRegistry, self).__init__(model)
+        super().__init__(model)
 
         # application type
         self.fields['app_type'] = 'log'

@@ -23,9 +23,9 @@ def remove_google_profile_from_page_view(apps, schema_editor):
     dir_path = get_theme_root()
     file_path = '{}/templates/pages/view.html'.format(dir_path)
     if os.path.isfile(file_path):
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
-            p = r'{0}([\d\D\s\S\w\W]*?){1}([\s\S]*?){2}'.format(re.escape('{% if page.google_profile %}'),
+            p = r'{}([\d\D\s\S\w\W]*?){}([\s\S]*?){}'.format(re.escape('{% if page.google_profile %}'),
                                                                 re.escape('{% endif %}'),
                                                                 re.escape('{% endif %}'))
             content = re.sub(p, '', content)

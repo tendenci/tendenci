@@ -1,5 +1,3 @@
-
-from builtins import str
 import base64
 from Crypto.Hash import SHA256
 from Crypto.Cipher import AES

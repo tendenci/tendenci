@@ -109,4 +109,4 @@ class Oauth2LogoutView(LogoutView):
                                 logout_url=reverse('oauth2_logout'))
 
                 return HttpResponseRedirect(next_page)
-        return super(Oauth2LogoutView, self).dispatch(request, *args, **kwargs)    
+        return super().dispatch(request, *args, **kwargs)    

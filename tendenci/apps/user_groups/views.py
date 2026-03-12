@@ -183,7 +183,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
             messages.add_message(
                 request,
                 messages.SUCCESS,
-                _('Successfully sent email to all %(num)s members in this group' % {'num': num_members}))
+                _('Successfully sent email to all {num} members in this group'.format(num=num_members)))
 
             EventLog.objects.log(instance=email)
 
@@ -360,7 +360,7 @@ def group_membership_self_add(request, slug):
         messages.add_message(request, messages.SUCCESS, _('Successfully added yourself to group %(grp)s' % {'grp':group}))
         return HttpResponseRedirect(group.get_absolute_url())
     else:
-        messages.add_message(request, messages.INFO, _('You are already in the group %(grp)s' % {'grp': group}))
+        messages.add_message(request, messages.INFO, _('You are already in the group {grp}'.format(grp=group)))
 
     return HttpResponseRedirect(reverse('group.search'))
 
@@ -383,7 +383,7 @@ def group_membership_self_remove(request, slug):
             messages.add_message(request, messages.SUCCESS, _('Successfully removed yourself from group %(grp)s' % {'grp':group}))
             return HttpResponseRedirect(group.get_absolute_url())
     else:
-        messages.add_message(request, messages.INFO, _('You are not in the group %(grp)s' % {'grp': group}))
+        messages.add_message(request, messages.INFO, _('You are not in the group {grp}'.format(grp=group)))
 
     return HttpResponseRedirect(reverse('group.search'))
 
@@ -566,7 +566,7 @@ def group_members_export(request, group_slug, export_target='all'):
     if not has_perm(request.user,'user_groups.change_group', group):
         raise Http403
 
-    identifier = '%s_%s' % (int(ttime.time()), request.user.id)
+    identifier = '{}_{}'.format(int(ttime.time()), request.user.id)
     file_dir = 'export/groups/'
     temp_export_path = '%sgroup_%d_%s_%s_temp.csv' % (file_dir,
                                              group.id,
@@ -649,7 +649,7 @@ def group_members_export_download(request, group_slug, export_target, identifier
 
     file_dir = 'export/groups/'
     file_name = 'group_%d_%s_%s.csv' % (group.id, export_target, identifier)
-    export_path = '%s%s' % (file_dir, file_name)
+    export_path = '{}{}'.format(file_dir, file_name)
     if not default_storage.exists(export_path):
         raise Http404
 

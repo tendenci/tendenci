@@ -28,9 +28,9 @@ def remove_fb_like_from_custom_templates(apps, schema_editor):
     # news/meta.html
     file_path = '{}/templates/news/meta.html'.format(dir_path)
     if os.path.isfile(file_path):
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
-            p = r'{0}([\d\D\s\S\w\W]*?){1}'.format(re.escape('{% if show_fb_connect|default:False %}'),
+            p = r'{}([\d\D\s\S\w\W]*?){}'.format(re.escape('{% if show_fb_connect|default:False %}'),
                                                                 re.escape('{% endif %}'))
             content = re.sub(p, '', content)
             
@@ -40,9 +40,9 @@ def remove_fb_like_from_custom_templates(apps, schema_editor):
     # news/view.html
     file_path = '{}/templates/news/view.html'.format(dir_path)
     if os.path.isfile(file_path):
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
-            p = r'{0}'.format(re.escape('{% include "news/meta.html" with show_source=True show_contact=True show_fb_connect=True %}'))
+            p = r'{}'.format(re.escape('{% include "news/meta.html" with show_source=True show_contact=True show_fb_connect=True %}'))
             content = re.sub(p, '{% include "news/meta.html" with show_source=True show_contact=True %}', content)
             
         with open(file_path, 'w') as f:

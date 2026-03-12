@@ -232,7 +232,7 @@ def get_raw_content(relative_path, type=''):
                 raw_content = fp.read()
             break
         else:
-            warn("%s relative path %s not found" % (type, relative_path))
+            warn("{} relative path {} not found".format(type, relative_path))
 
     return raw_content
 

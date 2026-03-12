@@ -125,7 +125,7 @@ class Payment(models.Model):
             self.owner = user
             self.owner_username = user.username
 
-        super(Payment, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def completed_refunds(self):
@@ -167,7 +167,7 @@ class Payment(models.Model):
                     self.status_detail == 'approved'])
 
     def __str__(self):
-        return "response_code: %s, trans_id: %s, amount: %.2f" % (
+        return "response_code: {}, trans_id: {}, amount: {:.2f}".format(
                                        self.response_code,
                                        self.trans_id,
                                        self.amount)
@@ -263,7 +263,7 @@ class Payment(models.Model):
             else:
                 self.response_page = "/payments/thankyou/%d" % (self.id)
 
-            self.response_page = '%s%s' % (site_url, self.response_page)
+            self.response_page = '{}{}'.format(site_url, self.response_page)
 
             self.invoice_num = self.id
             self.save()
@@ -287,7 +287,7 @@ class PaymentMethod(models.Model):
         app_label = 'payments'
 
     def __str__(self):
-        name = "%s" % (self.human_name, )
+        name = "{}".format(self.human_name)
 
         if self.is_online:
             return "%s - Online" % name

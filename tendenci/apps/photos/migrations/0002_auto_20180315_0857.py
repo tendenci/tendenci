@@ -1,5 +1,3 @@
-
-
 from django.db import migrations, models
 import tendenci.apps.user_groups.utils
 import django.db.models.deletion

@@ -11,7 +11,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import has_perm
 
 
-class PageSecurityCheck(object):
+class PageSecurityCheck:
     """
         a decorator to check page security, and redirect accordingly
     """

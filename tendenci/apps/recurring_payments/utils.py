@@ -1,4 +1,3 @@
-
 from datetime import datetime
 import time
 from decimal import Decimal
@@ -23,7 +22,7 @@ from tendenci.apps.payments.models import Payment
 UNSUCCESSFUL_TRANS_CODE = ['E00027']
 
 
-class RecurringPaymentEmailNotices(object):
+class RecurringPaymentEmailNotices:
     def __init__(self):
         self.site_display_name = get_setting('site', 'global', 'sitedisplayname')
         self.site_contact_name = get_setting('site', 'global', 'sitecontactname')
@@ -81,7 +80,7 @@ class RecurringPaymentEmailNotices(object):
                                                                             'dname':self.site_display_name})
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
     def email_admins_transaction_result(self, payment_transaction, success=True, **kwargs):
@@ -106,15 +105,15 @@ class RecurringPaymentEmailNotices(object):
                 self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
                 if not success:
-                    self.email.subject = _('Recurring payment transaction failed on %(dname)s' % {
-                                                                            'dname': self.site_display_name})
+                    self.email.subject = _('Recurring payment transaction failed on {dname}'.format(
+                                                                            dname=self.site_display_name))
                     self.email.priority = 1
                 else:
-                    self.email.subject = _('Recurring payment transaction processed on %(dname)s' % {
-                                                                                'dname': self.site_display_name})
+                    self.email.subject = _('Recurring payment transaction processed on {dname}'.format(
+                                                                                dname=self.site_display_name))
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
     def email_customer_transaction_result(self, payment_transaction, **kwargs):
@@ -139,12 +138,12 @@ class RecurringPaymentEmailNotices(object):
                     self.email.subject = _('Payment Received ')
                 else:
                     self.email.subject = _('Payment Failed ')
-                self.email.subject = _("%(subj)s for %(desc)s " % {
-                            'subj': self.email.subject,
-                            'desc': payment_transaction.recurring_payment.description})
+                self.email.subject = _("{subj} for {desc} ".format(
+                            subj=self.email.subject,
+                            desc=payment_transaction.recurring_payment.description))
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
     def email_admins_no_payment_profile(self, recurring_payment):
@@ -161,12 +160,12 @@ class RecurringPaymentEmailNotices(object):
                                                 })
                 self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
-                self.email.subject = _('Payment method not setup for %(rp)s on %(dname)s' % {
-                                    'rp': recurring_payment ,
-                                    'dname': self.site_display_name})
+                self.email.subject = _('Payment method not setup for {rp} on {dname}'.format(
+                                    rp=recurring_payment ,
+                                    dname=self.site_display_name))
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
     def email_customer_no_payment_profile(self, recurring_payment):
@@ -183,12 +182,12 @@ class RecurringPaymentEmailNotices(object):
                                                 })
                 self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
-                self.email.subject = _('Please update your payment method for %(rp)s on %(dname)s' % {
-                                    'rp': recurring_payment.description,
-                                    'dname': self.site_display_name})
+                self.email.subject = _('Please update your payment method for {rp} on {dname}'.format(
+                                    rp=recurring_payment.description,
+                                    dname=self.site_display_name))
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
     def email_admins_account_disabled(self, recurring_payment, user_by):
@@ -212,7 +211,7 @@ class RecurringPaymentEmailNotices(object):
                        'dname': self.site_display_name})
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
 
@@ -810,7 +809,7 @@ def api_verify_rp_payment_profile(data):
                 rp_invoice.save()
 
                 # send out the invoice view page
-                d['receipt_url'] = '%s%s' % (get_setting('site', 'global', 'siteurl'),
+                d['receipt_url'] = '{}{}'.format(get_setting('site', 'global', 'siteurl'),
                                              reverse('recurring_payment.transaction_receipt',
                                                 args=[rp.id,
                                                 payment_transaction.id,

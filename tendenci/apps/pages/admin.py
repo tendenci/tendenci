@@ -51,7 +51,7 @@ class PageAdmin(admin.ModelAdmin):
 
     @mark_safe
     def link(self, obj):
-        return '<a href="%s" title="%s">%s</a>' % (
+        return '<a href="{}" title="{}">{}</a>'.format(
             obj.get_absolute_url(),
             obj.title,
             obj.slug
@@ -67,7 +67,7 @@ class PageAdmin(admin.ModelAdmin):
     @mark_safe
     def view_on_site(self, obj):
         link_icon = static('images/icons/external_16x16.png')
-        link = '<a href="%s" title="%s"><img src="%s" alt="%s" title="%s" /></a>' % (
+        link = '<a href="{}" title="{}"><img src="{}" alt="{}" title="{}" /></a>'.format(
             reverse('page', args=[obj.slug]),
             obj.title,
             link_icon,
@@ -78,7 +78,7 @@ class PageAdmin(admin.ModelAdmin):
     view_on_site.short_description = _('view')
 
     def log_deletion(self, request, object, object_repr):
-        super(PageAdmin, self).log_deletion(request, object, object_repr)
+        super().log_deletion(request, object, object_repr)
         log_defaults = {
             'event_id' : 583000,
             'event_data': '%s (%d) deleted by %s' % (object._meta.object_name,
@@ -91,7 +91,7 @@ class PageAdmin(admin.ModelAdmin):
         EventLog.objects.log(**log_defaults)
 
     def log_change(self, request, object, message):
-        super(PageAdmin, self).log_change(request, object, message)
+        super().log_change(request, object, message)
         log_defaults = {
             'event_id' : 582000,
             'event_data': '%s (%d) edited by %s' % (object._meta.object_name,
@@ -104,7 +104,7 @@ class PageAdmin(admin.ModelAdmin):
         EventLog.objects.log(**log_defaults)
 
     def log_addition(self, request, object, message):
-        super(PageAdmin, self).log_addition(request, object, message)
+        super().log_addition(request, object, message)
         log_defaults = {
             'event_id' : 581000,
             'event_data': '%s (%d) added by %s' % (object._meta.object_name,

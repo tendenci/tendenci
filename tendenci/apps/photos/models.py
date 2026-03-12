@@ -125,7 +125,7 @@ class ImageModel(models.Model):
         try:
             content = default_storage.open(str(self.image)).read()
             im = PILImage.open(BytesIO(content))
-        except IOError:
+        except OSError:
             return
 
         try:
@@ -143,10 +143,10 @@ class ImageModel(models.Model):
             return _('An "admin_thumbnail" photo size has not been defined.')
         else:
             if hasattr(self, 'get_absolute_url'):
-                return u'<a href="%s"><img src="%s"></a>' % \
+                return '<a href="%s"><img src="%s"></a>' % \
                     (self.get_absolute_url(), func())
             else:
-                return u'<a href="%s"><img src="%s"></a>' % \
+                return '<a href="%s"><img src="%s"></a>' % \
                     (self.image.url, func())
     admin_thumbnail.short_description = _('Thumbnail')
 
@@ -276,7 +276,7 @@ class ImageModel(models.Model):
             with default_storage.open(str(self.image)) as f:
                 content = f.read()
                 im = PILImage.open(BytesIO(content))
-        except IOError as e:
+        except OSError as e:
             print(e)
             return
 
@@ -307,7 +307,7 @@ class ImageModel(models.Model):
                 im.save(buffer, im_format, quality=int(photosize.quality), optimize=True)
             im.close()
             default_storage.save(im_filename, ContentFile(buffer.getvalue()))
-        except IOError as e:
+        except OSError as e:
             print(e)
             pass
 
@@ -354,13 +354,13 @@ class ImageModel(models.Model):
             self.date_taken = datetime.now()
         if self._get_pk_val():
             self.clear_cache()
-        super(ImageModel, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self.pre_cache()
 
     def delete(self):
-        assert self._get_pk_val() is not None, "%s object can't be deleted because its %s attribute is set to None." % (self._meta.object_name, self._meta.pk.attname)
+        assert self._get_pk_val() is not None, "{} object can't be deleted because its {} attribute is set to None.".format(self._meta.object_name, self._meta.pk.attname)
         self.clear_cache()
-        super(ImageModel, self).delete()
+        super().delete()
 
 
 class BaseEffect(models.Model):
@@ -374,24 +374,24 @@ class BaseEffect(models.Model):
         return os.path.join(settings.MEDIA_ROOT, settings.PHOTOS_DIR, 'samples')
 
     def sample_url(self):
-        return settings.MEDIA_URL + '/'.join([settings.PHOTOS_DIR, 'samples', '%s %s.jpg' % (self.name.lower(), 'sample')])
+        return settings.MEDIA_URL + '/'.join([settings.PHOTOS_DIR, 'samples', '{} {}.jpg'.format(self.name.lower(), 'sample')])
 
     def sample_filename(self):
-        return os.path.join(self.sample_dir(), '%s %s.jpg' % (self.name.lower(), 'sample'))
+        return os.path.join(self.sample_dir(), '{} {}.jpg'.format(self.name.lower(), 'sample'))
 
     def create_sample(self):
         if not os.path.isdir(self.sample_dir()):
             os.makedirs(self.sample_dir())
         try:
             im = PILImage.open(SAMPLE_IMAGE_PATH)
-        except IOError:
-            raise IOError('Photos was unable to open the sample image: %s.' % SAMPLE_IMAGE_PATH)
+        except OSError:
+            raise OSError('Photos was unable to open the sample image: %s.' % SAMPLE_IMAGE_PATH)
         im = self.process(im)
         im.save(self.sample_filename(), 'JPEG', quality=90, optimize=True)
 
     @mark_safe
     def admin_sample(self):
-        return u'<img src="%s">' % self.sample_url()
+        return '<img src="%s">' % self.sample_url()
     admin_sample.short_description = 'Sample'
 
     def pre_process(self, im):
@@ -487,7 +487,7 @@ class Watermark(BaseEffect):
         try:
             content = default_storage.open(str(self.image)).read()
             mark = PILImage.open(BytesIO(content))
-        except IOError as e:
+        except OSError as e:
             raise e
 
         return apply_watermark(im, mark, self.style, self.opacity)
@@ -526,14 +526,14 @@ class PhotoSize(models.Model):
         if self.crop is True:
             if self.width == 0 or self.height == 0:
                 raise ValueError(_("PhotoSize width and/or height can not be zero if crop=True."))
-        super(PhotoSize, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         PhotoSizeCache().reset()
         self.clear_cache()
 
     def delete(self):
-        assert self._get_pk_val() is not None, "%s object can't be deleted because its %s attribute is set to None." % (self._meta.object_name, self._meta.pk.attname)
+        assert self._get_pk_val() is not None, "{} object can't be deleted because its {} attribute is set to None.".format(self._meta.object_name, self._meta.pk.attname)
         self.clear_cache()
-        super(PhotoSize, self).delete()
+        super().delete()
 
     def _get_size(self):
         return (self.width, self.height)
@@ -542,7 +542,7 @@ class PhotoSize(models.Model):
     size = property(_get_size, _set_size)
 
 
-class PhotoSizeCache(object):
+class PhotoSizeCache:
     __state = {"sizes": {}}
 
     def __init__(self):
@@ -618,7 +618,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
         if not self.group:
             self.group_id = get_default_group()
 
-        super(PhotoSet, self).save()
+        super().save()
 
         if not self.is_public():
             for photo in Image.objects.filter(photoset=self.pk):
@@ -700,7 +700,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
         associated with the photo-set.
         """
         self.delete_all_images()
-        super(PhotoSet, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def is_public(self):
         return all([self.allow_anonymous_view,
@@ -783,7 +783,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                 exif_exists = self.get_exif_data()
             except AttributeError:
                 pass
-        super(Image, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         
         # clear the cache
         #caching.instance_cache_clear(self, self.pk)
@@ -809,7 +809,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         Delete image-file and all resized versions
         """
 
-        super(Image, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
         if self.image:
             cache_path = self.cache_path()
@@ -842,7 +842,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         try:
             img = PILImage.open(default_storage.open(self.image.name))
             exif = img._getexif()
-        except (AttributeError, IOError):
+        except (AttributeError, OSError):
             return False
         
         if self.exif_data is None:

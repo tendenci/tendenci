@@ -1,4 +1,3 @@
-from builtins import str
 import os
 from django.db.models import Max, Count
 import celery
@@ -77,5 +76,5 @@ class NavsExportTask(celery.Task):
 
         fields = nav_fields
         for i in range(0, max_nav_items):
-            fields = fields + ["nav_item %s %s" % (i, f) for f in nav_item_fields]
+            fields = fields + ["nav_item {} {}".format(i, f) for f in nav_item_fields]
         return render_csv(file_name, fields, data_row_list)

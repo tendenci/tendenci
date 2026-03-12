@@ -10,9 +10,9 @@ from tendenci.apps.news.models import News
 from tendenci.apps.base.decorators import strip_control_chars
 
 class LatestEntriesFeed(SubFeed):
-    title =  _('%(dname)s Latest News' % {'dname': get_setting('site','global','sitedisplayname')})
+    title =  _('{dname} Latest News'.format(dname=get_setting('site','global','sitedisplayname')))
     link =  "/news/"
-    description =  _("Latest News by %(dname)s" % {'dname': get_setting('site','global','sitedisplayname')})
+    description =  _("Latest News by {dname}".format(dname=get_setting('site','global','sitedisplayname')))
 
     def items(self):
         items = News.objects.filter(**PUBLIC_FILTER).filter(syndicate=True, release_dt__lte=datetime.now()).order_by('-release_dt')[:20]

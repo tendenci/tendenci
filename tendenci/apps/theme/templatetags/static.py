@@ -97,7 +97,7 @@ class ThemeStaticNode(StaticNode):
             return urljoin(settings.LOCAL_STATIC_URL, quote(path))
 
         # Default to standard Django {% static %} behavior
-        return super(ThemeStaticNode, cls).handle_simple(path)
+        return super().handle_simple(path)
 
 @register.tag('static')
 def do_static(parser, token, local_only=False):

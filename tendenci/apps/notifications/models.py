@@ -1,4 +1,3 @@
-from builtins import str
 from os.path import splitext
 import datetime
 import logging
@@ -214,7 +213,7 @@ class NoticeEmail(models.Model):
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
         self.verifydata()
-        super(NoticeEmail, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def verifydata(self):
         # verify each field
@@ -315,7 +314,7 @@ def get_formatted_messages(formats, label, context):
             context['autoescape'] = True
 
         list_of_templates = (
-            'notification/%s/%s' % (label, format),
+            'notification/{}/{}'.format(label, format),
             'notification/%s' % format
         )
         template = render_to_string(template_name=list_of_templates, context=context)
@@ -361,7 +360,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
     current_site = Site.objects.get_current()
 
-    notices_url = u"%s://%s%s" % (
+    notices_url = "{}://{}{}".format(
         protocol,
         str(current_site),
         reverse("notification_notices"),
@@ -421,7 +420,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     sender_display = extra_context.get('sender_display', '')
     # Add quotes around display name to prevent errors on sending
     # when display name contains comma or other control characters, - jennyq
-    from_display = '"%s" <%s>' % (sender_display, sender)
+    from_display = '"{}" <{}>'.format(sender_display, sender)
 
     if sender_display:
         headers['From'] = from_display
@@ -452,7 +451,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     to = ','.join(emails)
     bcc = ','.join(recipient_bcc)
-    reply_to = reply_to or str()
+    reply_to = reply_to or ''
 
     NoticeEmail.objects.create(
         emails=to,
@@ -496,7 +495,7 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
         current_site = Site.objects.get_current()
 
-        notices_url = u"%s://%s%s" % (
+        notices_url = "{}://{}{}".format(
             protocol,
             str(current_site),
             reverse("notification_notices"),

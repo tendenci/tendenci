@@ -104,7 +104,7 @@ def build_settings_form(user, settings):
     """
     fields = OrderedDict()
     for setting in settings:
-        setting_label = mark_safe('{0} <a href="#id_{1}" title="Permalink to this setting"><i class="fa fa-link" aria-hidden="true"></i></a>'.format(
+        setting_label = mark_safe('{} <a href="#id_{}" title="Permalink to this setting"><i class="fa fa-link" aria-hidden="true"></i></a>'.format(
                                     setting.label, setting.name))
 
         # Do not display standard regform settings
@@ -208,14 +208,14 @@ def build_settings_form(user, settings):
                 if tfile:
                     if tfile.file.name.lower().endswith(('.jpg', '.jpe', '.png', '.gif', '.svg')):
                         tfile_alt = tfile.file.name.lower()[:-4]
-                        file_display = '<img src="/files/%s/" alt="%s" title="%s">' % (tfile.pk, tfile_alt, tfile_alt)
+                        file_display = '<img src="/files/{}/" alt="{}" title="{}">'.format(tfile.pk, tfile_alt, tfile_alt)
                     else:
                         file_display = tfile.file.name
             except TendenciFile.DoesNotExist:
                 file_display = "No file"
             options = {
                 'label': setting_label,
-                'help_text': "%s<br> Current File: %s" % (setting.description, file_display),
+                'help_text': "{}<br> Current File: {}".format(setting.description, file_display),
                 #'initial': tfile and tfile.file, # Removed this so the file doesn't save over and over
                 'required': False,
                 'label_suffix': "",

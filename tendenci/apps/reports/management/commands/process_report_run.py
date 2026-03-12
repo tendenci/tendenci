@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
@@ -135,7 +134,7 @@ class Command(BaseCommand):
                 t = get_template("reports/invoices/results-summary.html")
             else:
                 t = get_template("reports/invoices/results.html")
-        except (TemplateDoesNotExist, IOError):
+        except (TemplateDoesNotExist, OSError):
             self.end_with_error(run)
             raise CommandError('The template for this report is missing.')
         return t.render(context={

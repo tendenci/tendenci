@@ -1,4 +1,3 @@
-from builtins import str
 from haystack.query import SearchQuerySet
 from haystack.backends import SQ
 
@@ -124,7 +123,7 @@ class ObjectPermissionManager(models.Manager):
                         except:
                             group = None
 
-                codename = '%s_%s' % (perm, object._meta.object_name.lower())
+                codename = '{}_{}'.format(perm, object._meta.object_name.lower())
                 content_type = ContentType.objects.get_for_model(object)
 
                 perm = Permission.objects.get(codename=codename,
@@ -143,7 +142,7 @@ class ObjectPermissionManager(models.Manager):
             for group in group_or_groups:
                 if perms:
                     for perm in perms:
-                        codename = '%s_%s' % (perm, object._meta.object_name.lower())
+                        codename = '{}_{}'.format(perm, object._meta.object_name.lower())
                         content_type = ContentType.objects.get_for_model(object)
 
                         perm = Permission.objects.get(codename=codename,
@@ -170,7 +169,7 @@ class ObjectPermissionManager(models.Manager):
         else:  # not multi_group
             if perms:
                 for perm in perms:
-                    codename = '%s_%s' % (perm, object._meta.object_name.lower())
+                    codename = '{}_{}'.format(perm, object._meta.object_name.lower())
                     content_type = ContentType.objects.get_for_model(object)
 
                     perm = Permission.objects.get(codename=codename,
@@ -227,7 +226,7 @@ class ObjectPermissionManager(models.Manager):
             for user in user_or_users:
                 if perms:
                     for perm in perms:
-                        codename = '%s_%s' % (perm, object._meta.object_name.lower())
+                        codename = '{}_{}'.format(perm, object._meta.object_name.lower())
                         content_type = ContentType.objects.get_for_model(object)
 
                         perm = Permission.objects.get(codename=codename,
@@ -262,7 +261,7 @@ class ObjectPermissionManager(models.Manager):
         else:  # not muli_user
             if perms:
                 for perm in perms:
-                    codename = '%s_%s' % (perm, object._meta.object_name.lower())
+                    codename = '{}_{}'.format(perm, object._meta.object_name.lower())
                     content_type = ContentType.objects.get_for_model(object)
 
                     perm = Permission.objects.get(codename=codename,
@@ -586,7 +585,7 @@ class TendenciBaseManager(models.Manager):
         a status=True. Objects with status=False are considered
         deleted and should not appear in querysets.
         """
-        return super(TendenciBaseManager, self).get_queryset().filter(status=True)
+        return super().get_queryset().filter(status=True)
 
     def all_inactive(self):
         """
@@ -594,4 +593,4 @@ class TendenciBaseManager(models.Manager):
         a status=False. It can be chained with filter and other functions,
         but be sure to call this function first.
         """
-        return super(TendenciBaseManager, self).get_queryset().filter(status=False)
+        return super().get_queryset().filter(status=False)

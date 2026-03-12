@@ -1,5 +1,3 @@
-from builtins import str
-
 import os
 import re
 import io
@@ -119,7 +117,7 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
 
     try:
         if all([photo.image.width, photo.image.height]):
-            original_source_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % (photo.image.width, photo.image.height)})
+            original_source_url = reverse('photo.size', kwargs={'id':id, 'size':"{}x{}".format(photo.image.width, photo.image.height)})
         else:
             original_source_url = reverse('photo_original', kwargs={'id':id,})
     except TypeError:
@@ -236,7 +234,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     if cached_image:
         if settings.USE_S3_STORAGE:
             return redirect(default_storage.url(cached_image))
-        return redirect('{0}{1}'.format(get_setting('site', 'global', 'siteurl'), cached_image))
+        return redirect('{}{}'.format(get_setting('site', 'global', 'siteurl'), cached_image))
 
     photo = get_object_or_404(Image, id=id)
     size = [int(s) for s in size.split('x')]
@@ -261,7 +259,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     # Check if this particular thumbnail already exists on file system.
     # If it's there, no need to rebuild it from the original image!
     file_name = photo.image_filename()
-    file_path = 'cached%s%s' % (request.path, file_name)
+    file_path = 'cached{}{}'.format(request.path, file_name)
     if default_storage.exists(file_path):
         image = PILImage.open(default_storage.open(file_path))
     else:
@@ -273,7 +271,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
         raise Http404
 
     response = HttpResponse(content_type='image/jpeg')
-    response['Content-Disposition'] = '%s filename="%s"' % (attachment, photo.image_filename())
+    response['Content-Disposition'] = '{} filename="{}"'.format(attachment, photo.image_filename())
     image.convert('RGB').save(response, "JPEG", quality=quality)
     image.close()
 
@@ -283,7 +281,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
         if settings.USE_S3_STORAGE:
             cache.set(cache_key, file_path)
         else:
-            full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
+            full_file_path = "{}{}".format(settings.MEDIA_URL, file_path)
             cache.set(cache_key, full_file_path)
         cache_group_key = "photos_cache_set.%s" % photo.pk
         cache_group_list = cache.get(cache_group_key)
@@ -386,7 +384,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 # update all permissions and save the model
                 photo = update_perms_and_save(request, form, photo)
 
-                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%(title)s'" % {'title': str(photo)}) )
+                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '{title}'".format(title=str(photo))) )
                 if set_id:
                     return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
                 else:
@@ -417,7 +415,7 @@ def delete(request, id, set_id=0):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '%(title)s'" % {'title': str(photo)}))
+        messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '{title}'".format(title=str(photo))))
 
         photo.delete()
 

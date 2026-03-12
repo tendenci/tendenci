@@ -35,7 +35,7 @@ class Nav(TendenciBaseModel):
         return reverse('navs.detail', args=[self.pk])
 
     def save(self, *args, **kwargs):
-        super(Nav, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         # reset nav cache
         clear_nav_cache(self)
 
@@ -60,7 +60,7 @@ class NavItem(OrderingBaseModel):
         app_label = 'navs'
 
     def __str__(self):
-        return '%s - %s' % (self.nav.title, self.label)
+        return '{} - {}'.format(self.nav.title, self.label)
 
     def get_url(self):
         if self.page and self.page.status:

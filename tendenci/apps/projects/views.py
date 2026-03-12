@@ -35,7 +35,7 @@ class ProjectInline():
         """
         Pass request user to the form.
         """
-        kwargs = super(ProjectInline, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['request_user'] = self.request.user
         return kwargs
 
@@ -43,7 +43,7 @@ class ProjectInline():
         named_formsets = self.get_named_formsets()
         ctx = self.get_context_data(form=form)
         edit_mode = ctx.get('edit_mode', False)
-        if not all((x.is_valid() for x in named_formsets.values())):
+        if not all(x.is_valid() for x in named_formsets.values()):
             return self.render_to_response(ctx)
 
         self.object = form.save(commit=False)
@@ -57,7 +57,7 @@ class ProjectInline():
 
         # for each formset, use custom formset save func if available
         for name, formset in named_formsets.items():
-            formset_save_func = getattr(self, 'formset_{0}_valid'.format(name), None)
+            formset_save_func = getattr(self, 'formset_{}_valid'.format(name), None)
             if formset_save_func is not None:
                 formset_save_func(formset)
             else:
@@ -181,10 +181,10 @@ class ProjectCreate(ProjectInline, CreateView):
     def dispatch(self, request, *args, **kwargs):
         if not has_perm(request.user, 'projects.add_project'):
             return HttpResponseForbidden()
-        return super(ProjectCreate, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        ctx = super(ProjectCreate, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx['named_formsets'] = self.get_named_formsets()
         ctx['edit_mode'] = False
         return ctx
@@ -212,10 +212,10 @@ class ProjectUpdate(ProjectInline, UpdateView):
         project = get_object_or_404(Project, pk=kwargs['pk'])
         if not has_perm(request.user, 'projects.change_project', project):
             return HttpResponseForbidden()
-        return super(ProjectUpdate, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        ctx = super(ProjectUpdate, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx['named_formsets'] = self.get_named_formsets()
         ctx['edit_mode'] = True
         return ctx
@@ -327,7 +327,7 @@ def search(request, template_name="projects/search.html"):
 
     log_defaults = {
         'event_id' : 1180400,
-        'event_data': '%s searched by %s' % ('Project', request.user),
+        'event_data': '{} searched by {}'.format('Project', request.user),
         'description': '%s searched' % 'Project',
         'user': request.user,
         'request': request,
@@ -365,7 +365,7 @@ def category(request, template_name="projects/category.html"):
 
     log_defaults = {
         'event_id' : 1180400,
-        'event_data': '%s searched by %s' % ('Project', request.user),
+        'event_data': '{} searched by {}'.format('Project', request.user),
         'description': '%s searched' % 'Project',
         'user': request.user,
         'request': request,

@@ -232,7 +232,7 @@ def index(request, username='', template_name="profiles/index.html"):
     else:
         membership_apps = None
 
-    directories = set([m.directory for m in memberships.exclude(directory_id__isnull=True) if m.directory])
+    directories = {m.directory for m in memberships.exclude(directory_id__isnull=True) if m.directory}
     corps_list = user_this.corpmembershiprep_set.filter(corp_profile__status=True
                             ).values_list('corp_profile__id', 'corp_profile__name')
     if corps_list and get_setting('module', 'corporate_memberships', 'donationsepinv'):
@@ -453,12 +453,12 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         elif search_method == 'contains':
             search_type = '__icontains'
         if search_criteria in ['username', 'first_name', 'last_name', 'email']:
-            search_filter = {'user__%s%s' % (search_criteria,
+            search_filter = {'user__{}{}'.format(search_criteria,
                                              search_type): search_text}
         elif search_criteria == 'region':
             search_filter = {f'region__region_name{search_type}': search_text}
         else:
-            search_filter = {'%s%s' % (search_criteria,
+            search_filter = {'{}{}'.format(search_criteria,
                                          search_type): search_text}
 
         profiles = profiles.filter(**search_filter)
@@ -1050,7 +1050,7 @@ def user_groups_edit(request, username, form_class=UserGroupsForm, template_name
         if form.is_valid():
             form.save()
             messages.add_message(request, messages.SUCCESS, _('Successfully edited groups for %(full_name)s' % { 'full_name' : user.get_full_name()}))
-            return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-groups'))
+            return HttpResponseRedirect("{}{}".format(reverse('profile', args=[user.username]),'#userview-groups'))
     else:
         form = form_class(user, request.user, request)
 
@@ -1080,7 +1080,7 @@ def user_role_edit(request, username, membership_id, form_class=GroupMembershipE
         if form.is_valid():
             form.save()
             messages.add_message(request, messages.SUCCESS, _('Successfully edited membership for %(g)s' % {'g':membership.group}))
-            return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-groups'))
+            return HttpResponseRedirect("{}{}".format(reverse('profile', args=[user.username]),'#userview-groups'))
     else:
         form = form_class(instance=membership)
 
@@ -1093,7 +1093,7 @@ def user_role_edit(request, username, membership_id, form_class=GroupMembershipE
 def user_membership_add(request, username, form_class=UserMembershipForm, template_name="profiles/add_membership.html"):
     user = get_object_or_404(User, username=username)
     redirect_url = reverse('membership_default.add')
-    redirect_url = '%s?username=%s' % (redirect_url, user.username)
+    redirect_url = '{}?username={}'.format(redirect_url, user.username)
     # this view is redundant and not handling membership add well.
     # redirect to membership add
     return redirect(redirect_url)
@@ -1114,7 +1114,7 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
             membership = update_perms_and_save(request, form, membership)
             messages.add_message(request, messages.SUCCESS, _('Successfully updated memberships for %s' % { 'full_name': user.get_full_name()}))
             membership.populate_or_clear_member_id()
-            return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-memberships'))
+            return HttpResponseRedirect("{}{}".format(reverse('profile', args=[user.username]),'#userview-memberships'))
 
     return render_to_resp(request=request, template_name=template_name, context={
                             'form': form,
@@ -1289,7 +1289,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
 
             if master and users:
                 # get description for event log before users get deleted
-                description = 'Master user: %s, merged user(s): %s.' % (
+                description = 'Master user: {}, merged user(s): {}.'.format(
                                 '%s %s (%s)(id=%d)' % (master_user.first_name,
                                                master_user.last_name,
                                                master_user.username,
@@ -1395,7 +1395,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                 # log an event
                 EventLog.objects.log(description=description[:120])
                 #invalidate('profiles_profile')
-                messages.add_message(request, messages.SUCCESS, _('Successfully merged users. %(desc)s' % { 'desc': description}))
+                messages.add_message(request, messages.SUCCESS, _('Successfully merged users. {desc}'.format( desc=description)))
 
             return redirect("profile.search")
 

@@ -1,5 +1,3 @@
-
-
 from django.db import migrations
 from django.template.defaultfilters import slugify
 
@@ -12,7 +10,7 @@ def assign_slug(apps, schema_editor):
         if not department.slug:
             slug = slugify(department.name)
             if Department.objects.filter(slug=slug).exists():
-                slug = '%s%s' % (slug, department.id)
+                slug = '{}{}'.format(slug, department.id)
             department.slug = slug
             department.save()
 

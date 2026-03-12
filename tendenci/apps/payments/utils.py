@@ -44,16 +44,16 @@ def log_silent_post(request, payment):
     now_str = (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
     # log the post
     output = """
-                %s \n
-                Referrer: %s \n
-                Content-Type: %s \n
-                User-Agent: %s \n\n
-                Query-String: \n %s \n
-                Remote-Addr: %s \n\n
-                Remote-Host: %s \n
-                Remote-User: %s \n
-                Request-Method: %s \n
-            """ % (now_str, request.META.get('HTTP_REFERER', ''),
+                {} \n
+                Referrer: {} \n
+                Content-Type: {} \n
+                User-Agent: {} \n\n
+                Query-String: \n {} \n
+                Remote-Addr: {} \n\n
+                Remote-Host: {} \n
+                Remote-User: {} \n
+                Request-Method: {} \n
+            """.format(now_str, request.META.get('HTTP_REFERER', ''),
                    request.META.get('CONTENT_TYPE', ''),
                    request.META.get('HTTP_USER_AGENT', ''),
                    request.META.get('QUERY_STRING', ''),

@@ -1,5 +1,3 @@
-from builtins import str
-
 from django.http import HttpResponse
 from django.conf import settings
 from django.core.cache import cache
@@ -58,9 +56,9 @@ def cache_photo_size(id, size, crop=False, quality=90, download=False, constrain
 
     if photo.is_public_photo() and photo.is_public_photoset():
         file_name = photo.image_filename()
-        file_path = 'cached%s%s' % (request_path, file_name)
+        file_path = 'cached{}{}'.format(request_path, file_name)
         default_storage.save(file_path, ContentFile(response.content))
-        full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
+        full_file_path = "{}{}".format(settings.MEDIA_URL, file_path)
         cache.set(cache_key, full_file_path)
         cache_group_key = "photos_cache_set.%s" % photo.pk
         cache_group_list = cache.get(cache_group_key)

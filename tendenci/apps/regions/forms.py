@@ -41,7 +41,7 @@ class RegionForm(TendenciBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(RegionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # if not get_setting('module', 'invoices', 'taxrateuseregions'):
         #     del self.fields['tax_rate']

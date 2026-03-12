@@ -1,4 +1,3 @@
-
 import os.path
 from django.core.management.base import BaseCommand
 from django.conf import settings
@@ -36,7 +35,7 @@ class Command(BaseCommand):
                     for filename in filenames:
                         file_path = (os.path.join(dirpath, filename)
                                     ).replace('\\', '/')
-                        key = '%s/%s/%s' % (bucket_site_folder_name,
+                        key = '{}/{}/{}'.format(bucket_site_folder_name,
                                         dirpath.replace(theme_root, 'themes'),
                                         filename)
                         k.key = key

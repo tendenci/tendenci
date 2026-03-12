@@ -15,7 +15,7 @@ class LatestEntriesFeed(SubFeed):
         return items
 
     def item_title(self, item):
-        return '%s, %s' % (item.first_name, item.last_name)
+        return '{}, {}'.format(item.first_name, item.last_name)
 
     def item_description(self, item):
         return item.testimonial

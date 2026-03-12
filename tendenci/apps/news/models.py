@@ -107,7 +107,7 @@ class News(TendenciBaseModel):
         self.assign_release_dt_local()
 
         photo_upload = kwargs.pop('photo', None)
-        super(News, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if photo_upload and self.pk:
             image = NewsImage(

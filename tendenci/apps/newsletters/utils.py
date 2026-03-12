@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import re
 import shutil
@@ -18,7 +17,7 @@ from tendenci.apps.theme.utils import get_theme_search_order, get_theme_root
 
 
 def get_type_choices():
-    types_list = [(u'',_(u'All'))]
+    types_list = [('',_('All'))]
     types = Type.objects.all()
     for type in types:
         types_list.append((int(type.pk),type.name))
@@ -195,7 +194,7 @@ def newsletter_jobs_list(request, jobs_days, simplified):
 
 def newsletter_events_list(request, start_dt, end_dt, simplified):
     events = []
-    event_content = u''
+    event_content = ''
     try:
         from tendenci.apps.events.models import Event
 
@@ -295,7 +294,7 @@ def extract_files(template):
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
             # create a tmp directory to extract the zip file
             tmp_dir = 'tmp_%d' % template.id
-            path = './%s/newsletters/%s' % (tmp_dir, template.template_id)
+            path = './{}/newsletters/{}'.format(tmp_dir, template.template_id)
             zip_file.extractall(path)
             # upload extracted files to s3
             for root, dirs, files in os.walk(path):
@@ -323,7 +322,7 @@ def apply_template_media(template):
     pattern = r'"[^"]*?\.(?:(?i)jpg|(?i)jpeg|(?i)png|(?i)gif|(?i)bmp|(?i)tif|(?i)css)"'
 
     def repl(x):
-        return '"%s/%s/%s"' % (
+        return '"{}/{}/{}"'.format(
             site_url,
             template.get_media_url(),
             x.group(0).replace('"', ''))

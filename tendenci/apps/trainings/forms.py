@@ -14,7 +14,7 @@ class UpdateTranscriptActionForm(ActionForm):
     cert = forms.ChoiceField(required=False, label=_(' '),  choices=())
     
     def __init__(self, *args, **kwargs):
-        super(UpdateTranscriptActionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         certs = Certification.objects.all().order_by('name')
             
         self.fields['cert'].choices = [(0,  '--- Select a Certification Track ---')] + [
@@ -77,7 +77,7 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
-        super(OutsideSchoolForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         credits_per_hour = get_setting('module', 'trainings', 'creditsperhour')
         if credits_per_hour:
@@ -94,7 +94,7 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
             del self.fields['participants']
 
     def save(self, **kwargs):
-        outside_school = super(OutsideSchoolForm, self).save(commit=False)
+        outside_school = super().save(commit=False)
         if 'participants' not in self.fields:
             users = [self.request.user]
         else:
@@ -123,7 +123,7 @@ class ParticipantsForm(FormControlWidgetMixin, forms.Form):
         self.request = kwargs.pop('request')
         self.corp_profile = kwargs.pop('corp_profile')
         self.hidden = kwargs.pop('hidden', False)
-        super(ParticipantsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.hidden:
             self.fields['p'].widget = forms.MultipleHiddenInput()
@@ -157,7 +157,7 @@ class CoursesInfoForm(FormControlWidgetMixin, forms.Form):
         self.request = kwargs.pop('request')
         self.participants = kwargs.pop('participants')
         #self.hide_courses = kwargs.pop('hide_courses')
-        super(CoursesInfoForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         online_qs = Course.objects.filter(
                             location_type='online',

@@ -1,5 +1,3 @@
-from builtins import str
-
 from django.db.models import Manager
 from django.core.cache import cache
 from django.conf import settings

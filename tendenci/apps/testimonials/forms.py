@@ -68,14 +68,14 @@ class TestimonialForm(TendenciBaseForm):
         return photo_upload
 
     def __init__(self, *args, **kwargs):
-        super(TestimonialForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.image:
-            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.image.pk, basename(self.instance.image.file.name))
         else:
             self.fields.pop('remove_photo')
 
     def save(self, *args, **kwargs):
-        testimonial = super(TestimonialForm, self).save(*args, **kwargs)
+        testimonial = super().save(*args, **kwargs)
         if self.cleaned_data.get('remove_photo'):
             testimonial.image = None
             testimonial.save()

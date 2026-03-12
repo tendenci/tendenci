@@ -25,13 +25,13 @@ class UserResource(ModelResource):
         return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):
-        bundle = super(UserResource, self).obj_create(bundle, request, **kwargs)
+        bundle = super().obj_create(bundle, request, **kwargs)
         bundle.obj.set_password(bundle.data.get('password'))
         bundle.obj.save()
         return bundle
 
     def obj_update(self, bundle, request=None, **kwargs):
-        bundle = super(UserResource, self).obj_update(bundle, request, **kwargs)
+        bundle = super().obj_update(bundle, request, **kwargs)
         password = bundle.data.get('password')
         if password:
             bundle.obj.set_password(password)

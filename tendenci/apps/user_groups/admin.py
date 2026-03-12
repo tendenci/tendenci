@@ -32,7 +32,7 @@ class GroupAdmin(TendenciBaseModelAdmin):
                 _(f'System generated group(s) "{obj.name}" can not be deleted')
             )
             return False
-        return super(GroupAdmin, self).has_delete_permission(request, obj=obj)
+        return super().has_delete_permission(request, obj=obj)
 
 
 class GroupMembershipAdmin(admin.ModelAdmin):

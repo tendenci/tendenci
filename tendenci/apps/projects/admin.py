@@ -55,7 +55,7 @@ class CategoryAdmin(admin.ModelAdmin):
     image_preview.short_description = 'Image'
 
     def save_model(self, request, object, form, change):
-        super(CategoryAdmin, self).save_model(request, object, form, change)
+        super().save_model(request, object, form, change)
 
         category_photo = CategoryPhoto()
         image = form.cleaned_data.get('photo_upload')
@@ -190,7 +190,7 @@ class ProjectAdmin(TendenciBaseModelAdmin):
     @mark_safe
     def view_on_site(self, obj):
         link_icon = static('images/icons/external_16x16.png')
-        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
+        link = '<a href="{}" title="{}"><img src="{}" /></a>'.format(
             reverse('projects.detail', args=[obj.slug]),
             strip_tags(obj),
             link_icon,

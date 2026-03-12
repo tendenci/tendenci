@@ -69,5 +69,5 @@ urlpatterns = [
 
 urlpatterns += [
     # Special redirect for user.get_absolute_url
-    re_path(r'^users/(?P<username>[+-.\w\d@\s]+)/$', RedirectView.as_view(url='/%s/%s/' % (urlpath, '%(username)s'), permanent=True)),
+    re_path(r'^users/(?P<username>[+-.\w\d@\s]+)/$', RedirectView.as_view(url='/{}/{}/'.format(urlpath, '%(username)s'), permanent=True)),
 ]

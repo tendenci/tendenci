@@ -1,5 +1,3 @@
-from builtins import str
-
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils.functional import lazy
@@ -11,7 +9,7 @@ from tendenci.apps.site_settings.utils import check_setting, get_setting
 lazy_reverse = lazy(reverse, str)
 
 
-class RegisteredApps(object):
+class RegisteredApps:
     """
     RegistredApps iterarable that represents all registered apps
 
@@ -123,7 +121,7 @@ class RegisteredApps(object):
         return len(self.all_apps)
 
 
-class RegistrySite(object):
+class RegistrySite:
     """
     Encapsulates all the registries that should be available.
     This follows the django.contrib.admim model

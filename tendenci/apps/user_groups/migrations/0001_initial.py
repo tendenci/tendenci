@@ -1,5 +1,3 @@
-
-
 from django.db import models, migrations
 import tendenci.apps.base.fields
 import django.db.models.deletion
@@ -96,6 +94,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='groupmembership',
-            unique_together=set([('group', 'member')]),
+            unique_together={('group', 'member')},
         ),
     ]

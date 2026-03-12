@@ -79,7 +79,7 @@ class ProfileAdmin(TendenciBaseModelAdmin):
     ordering = ('user__last_name', 'user__first_name')
 
     def get_object(self, request, object_id, from_field=None):
-        obj = super(ProfileAdmin, self).get_object(request, object_id, from_field=from_field)
+        obj = super().get_object(request, object_id, from_field=from_field)
         # Avoid language being accidentally set to the first option 'ar'
         # because en-us is not an option in the language dropdown
         if obj and obj.language == 'en-us':
@@ -122,7 +122,7 @@ class ProfileAdmin(TendenciBaseModelAdmin):
     get_last_login.short_description = _('Last Login')
 
     def get_user(self, obj):
-        name = "%s %s" % (obj.user.first_name, obj.user.last_name)
+        name = "{} {}".format(obj.user.first_name, obj.user.last_name)
         name = name.strip()
 
         return name or obj.user.username
@@ -201,7 +201,7 @@ class MyUserAdmin(UserAdmin):
         return member_number
 
     def has_delete_permission(self, request, obj=None):
-        result = super(MyUserAdmin, self).has_delete_permission(request, obj=obj)
+        result = super().has_delete_permission(request, obj=obj)
 
         if obj:
             num_rps = obj.recurring_payments.filter(status=True, status_detail='active').count()

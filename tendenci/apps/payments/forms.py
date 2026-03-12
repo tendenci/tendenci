@@ -33,7 +33,7 @@ class MarkAsPaidForm(forms.ModelForm):
         self.invoice = kwargs.pop('invoice')
         self.request = kwargs.pop('request')
         self.invoice_object = self.invoice.get_object()
-        super(MarkAsPaidForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['payment_method'].widget = forms.Select(
             choices=PaymentMethod.objects.filter().values_list(
                     'machine_name', 'human_name').exclude())
@@ -50,7 +50,7 @@ class MarkAsPaidForm(forms.ModelForm):
         Save payment, bind invoice instance.
         Set payment fields (e.g. name, description)
         """
-        instance = super(MarkAsPaidForm, self).save(*args, **kwargs)
+        instance = super().save(*args, **kwargs)
 
         instance.method = self.cleaned_data['payment_method']
 

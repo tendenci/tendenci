@@ -48,7 +48,7 @@ class PhotoAdmin(admin.ModelAdmin):
         )
 
     def log_deletion(self, request, object, object_repr):
-        super(PhotoAdmin, self).log_deletion(request, object, object_repr)
+        super().log_deletion(request, object, object_repr)
         log_defaults = {
             'event_id' : 990300,
             'event_data': '%s (%d) deleted by %s' % (object._meta.object_name,
@@ -61,7 +61,7 @@ class PhotoAdmin(admin.ModelAdmin):
         EventLog.objects.log(**log_defaults)
 
     def log_change(self, request, object, message):
-        super(PhotoAdmin, self).log_change(request, object, message)
+        super().log_change(request, object, message)
         log_defaults = {
             'event_id' : 990200,
             'event_data': '%s (%d) edited by %s' % (object._meta.object_name,
@@ -74,7 +74,7 @@ class PhotoAdmin(admin.ModelAdmin):
         EventLog.objects.log(**log_defaults)
 
     def log_addition(self, request, object, message):
-        super(PhotoAdmin, self).log_addition(request, object, message)
+        super().log_addition(request, object, message)
         log_defaults = {
             'event_id' : 990100,
             'event_data': '%s (%d) added by %s' % (object._meta.object_name,
@@ -128,7 +128,7 @@ class CategoryAdmin(admin.ModelAdmin):
         return ', '.join(PhotoCategory.objects.filter(parent=instance).values_list('name', flat=True))
 
     def get_queryset(self, request):
-        qs = super(CategoryAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.filter(parent__isnull=True)
 
 admin.site.register(PhotoCategory, CategoryAdmin)

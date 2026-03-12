@@ -1,5 +1,3 @@
-
-
 from django.core.management.base import BaseCommand
 
 from tendenci.apps.site_settings.models import Setting
@@ -44,7 +42,7 @@ class Command(BaseCommand):
                 if (current_setting):
                     current_setting.client_editable = False
                     current_setting.save()
-                    print('%s (%s)  - hidden.' % (
+                    print('{} ({})  - hidden.'.format(
                         setting.name,
                         setting.scope_category
                     ))

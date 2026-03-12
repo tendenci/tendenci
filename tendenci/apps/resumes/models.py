@@ -21,7 +21,7 @@ from tendenci.apps.industries.models import Industry
 
 def file_directory(instance, filename):
     if instance.first_name and instance.last_name:
-        filename = '{0}-{1}{2}'.format(instance.last_name,
+        filename = '{}-{}{}'.format(instance.last_name,
                                     instance.first_name,
                                     os.path.splitext(filename)[1])
         
@@ -125,7 +125,7 @@ class Resume(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or uuid.uuid4()
-        super(Resume, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title

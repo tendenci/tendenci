@@ -85,7 +85,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         link = reverse('recurring_payment.authnet.update_payment_info', args=[self.id])
         if pp:
             pp = pp[0]
-            return '<a href="%s">Edit payment info</a><br />Last updated by %s<br /> on %s' % (
+            return '<a href="{}">Edit payment info</a><br />Last updated by {}<br /> on {}'.format(
                                                                         link,
                                                                         pp.owner,
                                                                         pp.update_dt.strftime('%Y-%m-%d'))
@@ -96,7 +96,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         if self.object_content_type and self.object_content_type.name == 'Membership':
             return '--'
         if self.billing_frequency == 1:
-            return '%s/%s' % (tcurrency(self.payment_amount), self.billing_period)
+            return '{}/{}'.format(tcurrency(self.payment_amount), self.billing_period)
         else:
             return '%s/%d %ss' % (tcurrency(self.payment_amount), self.billing_frequency, self.billing_period)
 
@@ -128,7 +128,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
     @mark_safe
     def view_on_site(self, obj):
         link_icon = static('images/icons/external_16x16.png')
-        return '<a href="%s"><img src="%s" /></a>' % (
+        return '<a href="{}"><img src="{}" /></a>'.format(
             reverse('recurring_payment.view_account', args=[obj.id]),
             link_icon)
     view_on_site.short_description = _('view')
@@ -144,7 +144,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
             ))
             return HttpResponseRedirect(url)
 
-        return super(RecurringPaymentAdmin, self).change_view(request, object_id, form_url=form_url, extra_context=extra_context)
+        return super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
 
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
@@ -174,7 +174,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         return instance
 
     def log_change(self, request, object, message):
-        super(RecurringPaymentAdmin, self).log_change(request, object, message)
+        super().log_change(request, object, message)
         log_defaults = {
             'event_id' : 1120200,
             'event_data': '%s for %s(%d) edited by %s' % (object._meta.object_name,
@@ -187,7 +187,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         EventLog.objects.log(**log_defaults)
 
     def log_addition(self, request, object, message):
-        super(RecurringPaymentAdmin, self).log_addition(request, object, message)
+        super().log_addition(request, object, message)
         log_defaults = {
             'event_id' : 1120100,
             'event_data': '%s for %s(%d) added by %s' % (object._meta.object_name,
@@ -200,7 +200,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         EventLog.objects.log(**log_defaults)
 
     def log_deletion(self, request, object, message):
-        super(RecurringPaymentAdmin, self).log_deletion(request, object, message)
+        super().log_deletion(request, object, message)
         log_defaults = {
             'event_id' : 1120300,
             'event_data': '%s for %s(%d) deleted by %s' % (object._meta.object_name,

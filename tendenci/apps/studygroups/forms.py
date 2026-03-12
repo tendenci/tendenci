@@ -14,12 +14,12 @@ from tendenci.apps.files.validators import FileValidator
 class OfficerBaseFormSet(BaseInlineFormSet):
     def __init__(self,  *args, **kwargs): 
         self.study_group = kwargs.pop("study_group", None)
-        super(OfficerBaseFormSet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
  
     def _construct_form(self, i, **kwargs):
         if hasattr(self, 'study_group'):
             kwargs['study_group'] = self.study_group
-        return super(OfficerBaseFormSet, self)._construct_form(i, **kwargs)
+        return super()._construct_form(i, **kwargs)
 
 
 class StudyGroupForm(TendenciBaseForm):
@@ -96,9 +96,9 @@ class StudyGroupForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
 
     def __init__(self, *args, **kwargs):
-        super(StudyGroupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.header_image:
-            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.header_image.pk, basename(self.instance.header_image.file.name))
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.header_image.pk, basename(self.instance.header_image.file.name))
 
         if self.instance.pk:
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -110,7 +110,7 @@ class StudyGroupForm(TendenciBaseForm):
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
 
     def save(self, *args, **kwargs):
-        study_group = super(StudyGroupForm, self).save(*args, **kwargs)
+        study_group = super().save(*args, **kwargs)
         # save photo
         if 'photo_upload' in self.cleaned_data:
             photo = self.cleaned_data['photo_upload']
@@ -164,7 +164,7 @@ class StudyGroupAdminForm(TendenciBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(StudyGroupAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -174,7 +174,7 @@ class StudyGroupAdminForm(TendenciBaseForm):
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
         if self.instance.header_image:
-            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.header_image.pk, basename(self.instance.header_image.file.name))
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.header_image.pk, basename(self.instance.header_image.file.name))
             self.fields['photo_upload'].required = False
 
 class StudyGroupAdminChangelistForm(TendenciBaseForm):
@@ -199,7 +199,7 @@ class OfficerForm(forms.ModelForm):
     def __init__(self, study_group, *args, **kwargs):
         kwargs.update({'use_required_attribute': False})
         self.field_order = ['user', 'position', 'phone',]
-        super(OfficerForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # Initialize user.  Label depends on nullability.
         # Priority
         # 1. fullname

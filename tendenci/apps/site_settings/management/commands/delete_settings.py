@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand
 from tendenci.apps.site_settings.models import Setting
 
@@ -32,9 +31,9 @@ class Command(BaseCommand):
                 try:
                     setting = Setting.objects.get(scope=scope, scope_category=scope_category, name=name)
                     setting.delete()
-                    message = 'Deleted %s:%s:%s' % (setting.scope, setting.scope_category, setting.name)
+                    message = 'Deleted {}:{}:{}'.format(setting.scope, setting.scope_category, setting.name)
                 except Setting.DoesNotExist:
-                    message = "Does Not Exist %s:%s:%s" % (scope, scope_category, name)
+                    message = "Does Not Exist {}:{}:{}".format(scope, scope_category, name)
                 except Setting.MultipleObjectsReturned:
                     message = "Multiple Results!? %s:%s:%s" & (scope, scope_category, name)
 
@@ -47,9 +46,9 @@ class Command(BaseCommand):
                 setting = Setting.objects.filter(scope=scope, scope_category=scope_category)
                 if setting:
                     setting.delete()
-                    message = 'Deleted settings for %s:%s' % (scope, scope_category)
+                    message = 'Deleted settings for {}:{}'.format(scope, scope_category)
                 else:
-                    message = "Does Not Exist %s:%s" % (scope, scope_category)
+                    message = "Does Not Exist {}:{}".format(scope, scope_category)
 
                 if verbosity > 0:
                     print(message)

@@ -50,19 +50,19 @@ def is_theme_read_only(theme):
 
 
 # Class to hold theme info details
-class ThemeInfo(object):
+class ThemeInfo:
 
     def __init__(self, theme):
 
         self.orig_name = theme
         self.name = theme
-        self.description = u''
-        self.tags = u''
-        self.screenshot = u''
-        self.screenshot_thumbnail = u''
-        self.author = u''
-        self.author_uri = u''
-        self.version = u''
+        self.description = ''
+        self.tags = ''
+        self.screenshot = ''
+        self.screenshot_thumbnail = ''
+        self.author = ''
+        self.author_uri = ''
+        self.version = ''
         self.create_dt = datetime.now()
 
         for label, value in get_theme_info(theme).get('General', {}).items():
@@ -80,7 +80,7 @@ for app in settings.INSTALLED_APPS:
     try:
         mod = import_module(app)
     except ImportError as e:
-        raise ImproperlyConfigured('ImportError %s: %s' % (app, e.args[0]))
+        raise ImproperlyConfigured('ImportError {}: {}'.format(app, e.args[0]))
     template_dir = os.path.join(os.path.dirname(mod.__file__), 'templates')
     if os.path.isdir(template_dir):
         app_templates[app] = template_dir
@@ -242,7 +242,7 @@ def get_file_content(root_dir, theme, filename):
     if not content:
         current_file = safe_join(root_dir, filename)
         if os.path.isfile(current_file):
-            fd = open(current_file, 'r')
+            fd = open(current_file)
             content = fd.read()
             fd.close()
     return content
@@ -255,7 +255,7 @@ def archive_file(root_dir, relative_file_path, request):
     file_path = safe_join(root_dir, relative_file_path)
     if os.path.isfile(file_path):
         (file_dir, file_name) = os.path.split(file_path)
-        fd = open(file_path, 'r')
+        fd = open(file_path)
         content = fd.read()
         fd.close()
         archive = ThemeFileVersion(file_name=file_name,

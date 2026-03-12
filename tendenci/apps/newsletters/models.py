@@ -121,11 +121,11 @@ class NewsletterTemplate(models.Model):
 
     def get_media_url(self):
         if self.zip_file:
-            return "%snewsletters/%s" % (settings.MEDIA_URL, self.template_id)
+            return "{}newsletters/{}".format(settings.MEDIA_URL, self.template_id)
         return ''
 
     def save(self, *args, **kwargs):
-        super(NewsletterTemplate, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if self.html_file:
             set_s3_file_permission(self.html_file.file, public=True)
         if self.zip_file:
@@ -473,7 +473,7 @@ class Newsletter(models.Model):
             slug = slugify(self.email.subject)
             if len(slug) > 100 or Article.objects.filter(slug=slug).exists():
                 count = str(Article.objects.count())
-                slug = '{0}-{1}'.format(slug[:99-len(count)], count)
+                slug = '{}-{}'.format(slug[:99-len(count)], count)
             
             article = Article.objects.create(
                 creator=user,
@@ -529,11 +529,11 @@ class Newsletter(models.Model):
             self.actionname = self.subject
         if "log" in kwargs:
             kwargs.pop('log')
-        super(Newsletter, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_browser_view_url(self):
         site_url = get_setting('site', 'global', 'siteurl')
-        return "%s%s?key=%s" % (site_url, reverse('newsletter.view_from_browser', args=[self.pk]), self.security_key)
+        return "{}{}?key={}".format(site_url, reverse('newsletter.view_from_browser', args=[self.pk]), self.security_key)
 
 
 class NewsletterRecurringData(models.Model):

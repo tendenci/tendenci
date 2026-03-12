@@ -1,5 +1,3 @@
-
-
 from django.db import models, migrations
 from django.conf import settings
 import tagging.fields

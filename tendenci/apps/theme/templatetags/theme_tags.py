@@ -1,4 +1,3 @@
-from builtins import str
 import os
 
 from django.template import TemplateSyntaxError, VariableDoesNotExist
@@ -111,7 +110,7 @@ class ThemeSettingNode(IncludeNode):
         template_name = 'theme_includes/setting_edit_form.html'
         try:
             theme = context['THEME']
-            t = context.template.engine.get_template("%s/templates/%s" % (theme, template_name))
+            t = context.template.engine.get_template("{}/templates/{}".format(theme, template_name))
             return t.render(context=context)
         except:
             return ''

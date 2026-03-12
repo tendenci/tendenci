@@ -10,4 +10,4 @@ class NewsManager(TendenciBaseManager):
         if query and query.startswith(tag_query):
             kwargs['tags-query'] = True
 
-        return super(NewsManager, self).search(query, *args, **kwargs)
+        return super().search(query, *args, **kwargs)

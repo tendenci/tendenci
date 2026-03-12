@@ -74,4 +74,4 @@ class ProductFile(File):
                 # First row
                 self.position = 0
 
-        return super(ProductFile, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)

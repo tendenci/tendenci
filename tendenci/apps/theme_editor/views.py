@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import shutil
 import subprocess
@@ -182,7 +181,7 @@ def theme_copy(request, form_class=ThemeNameForm):
     if form.is_valid():
         new_theme_name = form.cleaned_data['theme_name']
         if is_valid_theme(new_theme_name):
-            ret_dict['err'] = _('Theme "%(name)s" already exists' % {'name': new_theme_name})
+            ret_dict['err'] = _('Theme "{name}" already exists'.format(name=new_theme_name))
             return HttpResponse(json.dumps(ret_dict))
         if not is_valid_path(settings.ORIGINAL_THEMES_DIR, new_theme_name):
             raise Http403
@@ -214,7 +213,7 @@ def theme_rename(request, form_class=ThemeNameForm):
     if form.is_valid():
         new_theme_name = form.cleaned_data['theme_name']
         if is_valid_theme(new_theme_name):
-            ret_dict['err'] = _('Theme "%(name)s" already exists' % {'name': new_theme_name})
+            ret_dict['err'] = _('Theme "{name}" already exists'.format(name=new_theme_name))
             return HttpResponse(json.dumps(ret_dict))
         if not is_valid_path(settings.ORIGINAL_THEMES_DIR, new_theme_name):
             raise Http403
@@ -438,7 +437,7 @@ def copy_to_theme(request):
 
     copy_file_to_theme(full_filename, selected_theme, os.path.join('templates', current_dir), chosen_file)
 
-    msg_string = 'Successfully copied %s/%s to theme' % (current_dir, chosen_file)
+    msg_string = 'Successfully copied {}/{} to theme'.format(current_dir, chosen_file)
     messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     EventLog.objects.log()
@@ -493,7 +492,7 @@ def delete_file(request):
         cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', s3_path])
         cache.delete(cache_key)
 
-    msg_string = 'Successfully deleted %s/%s.' % (current_dir, chosen_file)
+    msg_string = 'Successfully deleted {}/{}.'.format(current_dir, chosen_file)
     messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     EventLog.objects.log()

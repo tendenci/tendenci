@@ -20,23 +20,23 @@ def prepare_payflowlink_form(request, payment):
               'showconfirm': 'True',
               'disablereceipt': 'False',
               'custid': payment.id,
-              'name':'%s %s' % (payment.first_name, payment.last_name),
+              'name':'{} {}'.format(payment.first_name, payment.last_name),
               'email': payment.email,
-              'address': '%s %s' % (payment.address, payment.address2),
+              'address': '{} {}'.format(payment.address, payment.address2),
               'city': payment.city,
               'state': payment.state,
               'country': payment.country,
               'zip': payment.zip,
               'fax':payment.fax,
               'phone':payment.phone,
-              'nametoship': '%s %s' % (payment.ship_to_first_name, payment.ship_to_last_name),
+              'nametoship': '{} {}'.format(payment.ship_to_first_name, payment.ship_to_last_name),
               'addresstoship': payment.ship_to_address,
               'citytoship': payment.ship_to_city,
               'statetoship': payment.ship_to_state,
               'ziptoship': payment.ship_to_zip,
               'countrytoship': payment.ship_to_country,
               'comment1': smart_str(payment.description).replace('#', ''),
-              'comment2': '%s %s' % (payment.first_name, payment.last_name),
+              'comment2': '{} {}'.format(payment.first_name, payment.last_name),
 
         }
     form = PayflowLinkPaymentForm(initial=params)
@@ -45,7 +45,7 @@ def prepare_payflowlink_form(request, payment):
 
 def payflowlink_thankyou_processing(request, response_d, **kwargs):
     from django.shortcuts import get_object_or_404
-    response_d = dict([(x[0].lower(), x[1]) for x in response_d.items()])
+    response_d = {x[0].lower(): x[1] for x in response_d.items()}
 
     paymentid = response_d.get('custid', 0)
     try:

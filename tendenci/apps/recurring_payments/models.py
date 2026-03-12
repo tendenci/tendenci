@@ -1,4 +1,3 @@
-
 import uuid
 import re
 from datetime import datetime, timedelta
@@ -111,7 +110,7 @@ class RecurringPayment(models.Model):
         verbose_name_plural = _("Recurring Payments")
 
     def __str__(self):
-        return '%s - %s' % (self.user, self.description)
+        return '{} - {}'.format(self.user, self.description)
 
     def get_absolute_url(self):
         return reverse('recurring_payment.view_account', args=[self.id])
@@ -122,11 +121,11 @@ class RecurringPayment(models.Model):
             self.tax_exempt = 0
         if not self.id:
             self.platform = get_setting("site", "global", "merchantaccount").lower()
-        super(RecurringPayment, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def tax_rate_percentage(self):
-        return '%.2f%s' % (float(self.tax_rate * 100), '%')
+        return '{:.2f}{}'.format(float(self.tax_rate * 100), '%')
 
     @property
     def user_profile(self):
@@ -469,7 +468,7 @@ class RecurringPayment(models.Model):
         inv.object_type = ContentType.objects.get(app_label=self._meta.app_label,
                                                   model=self._meta.model_name)
         inv.object_id = self.id
-        inv.title = "Recurring Payment Invoice for Billing Cycle %s - %s" % (
+        inv.title = "Recurring Payment Invoice for Billing Cycle {} - {}".format(
                                            billing_cycle['start'].strftime('%m/%d/%Y'),
                                            billing_cycle['end'].strftime('%m/%d/%Y'))
         inv.bill_to_user(self.user)
@@ -607,7 +606,7 @@ class RecurringPaymentInvoice(models.Model):
 
         if self.billing_cycle_start_dt and self.billing_cycle_end_dt:
             description = self.recurring_payment.description
-            description += '(billing cycle from {0} to {1})'.format(
+            description += '(billing cycle from {} to {})'.format(
                             self.billing_cycle_start_dt.strftime('%m/%d/%Y'),
                             self.billing_cycle_end_dt.strftime('%m/%d/%Y'))
         else:

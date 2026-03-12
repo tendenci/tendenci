@@ -77,7 +77,7 @@ class TendenciBaseForm(FormControlWidgetMixin, BetterModelForm):
             if not hasattr(self, 'user'):
                 self.user = None
 
-        super(TendenciBaseForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # needs to update the choices on every pull
         # in case groups get added

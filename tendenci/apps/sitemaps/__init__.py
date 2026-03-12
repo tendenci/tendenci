@@ -34,7 +34,7 @@ class TendenciSitemap(Sitemap):
 
         urls = []
         for item in self.paginator.page(page).object_list:
-            loc = "%s://%s%s" % (protocol, domain, self.__get('location', item))
+            loc = "{}://{}{}".format(protocol, domain, self.__get('location', item))
             priority = self.__get('priority', item, None)
             url_info = {
                 #'item':       item,

@@ -121,7 +121,7 @@ class OutsideSchool(models.Model):
 
     def save(self, *args, **kwargs):
         self.assign_credits_from_training_hours()
-        super(OutsideSchool, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class SchoolCategory(models.Model):
@@ -390,7 +390,7 @@ class CertCat(models.Model):
 
     def save(self, *args, **kwargs):
         self.certification.cal_required_credits()
-        super(CertCat, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
     
 
 class Course(TendenciBaseModel):
@@ -650,7 +650,7 @@ class Transcript(models.Model):
                 # add the user to UserCertData
                 user_cert_data = UserCertData.objects.create(user=self.user, certification=cert)
             user_cert_data.cal_applicable_credits()
-        super(Transcript, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class UserCertData(models.Model):
@@ -778,4 +778,4 @@ class CorpTranscriptsZipFile(models.Model):
     def delete(self, *args, **kwargs):
         if self.zip_file:
             self.zip_file.delete(save=False)
-        super(CorpTranscriptsZipFile, self).delete(*args, **kwargs)  
+        super().delete(*args, **kwargs)  

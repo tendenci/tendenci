@@ -69,7 +69,7 @@ class PageAdminForm(TendenciBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(PageAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if self.instance.meta:
@@ -95,7 +95,7 @@ class PageAdminForm(TendenciBaseForm):
             return False
 
     def clean(self):
-        cleaned_data = super(PageAdminForm, self).clean()
+        cleaned_data = super().clean()
         slug = cleaned_data.get('slug')
 
         # Check if duplicate slug from different page (i.e. different guids)
@@ -183,9 +183,9 @@ class PageForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(PageForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.header_image:
-            self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> %s: <a target="_blank" href="/files/%s/">%s</a>' % (_('Remove current image'), self.instance.header_image.pk, basename(self.instance.header_image.file.name))
+            self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> {}: <a target="_blank" href="/files/{}/">{}</a>'.format(_('Remove current image'), self.instance.header_image.pk, basename(self.instance.header_image.file.name))
         else:
             self.fields.pop('remove_photo')
 
@@ -215,7 +215,7 @@ class PageForm(TendenciBaseForm):
             return False
 
     def clean(self):
-        cleaned_data = super(PageForm, self).clean()
+        cleaned_data = super().clean()
         slug = cleaned_data.get('slug')
 
         # Check if duplicate slug from different page (i.e. different guids)
@@ -256,7 +256,7 @@ class PageForm(TendenciBaseForm):
         return header_image
 
     def save(self, *args, **kwargs):
-        page = super(PageForm, self).save(*args, **kwargs)
+        page = super().save(*args, **kwargs)
         if self.cleaned_data.get('remove_photo'):
             page.header_image = None
         return page

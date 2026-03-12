@@ -50,7 +50,7 @@ class Command(BaseCommand):
         theme_zip.close()
 
         # Unzip the theme files
-        theme_zip_file = open(theme_zip_path, 'r')
+        theme_zip_file = open(theme_zip_path)
         zfobj = zipfile.ZipFile(theme_zip_file)
         unzip_dirname = "themes"
         for i, name in enumerate(zfobj.namelist()):

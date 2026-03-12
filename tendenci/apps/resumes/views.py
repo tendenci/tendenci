@@ -1,5 +1,3 @@
-
-from builtins import str
 import os
 from datetime import timedelta, datetime
 
@@ -117,7 +115,7 @@ def search(request, template_name="resumes/search.html"):
         elif search_method == 'contains':
             search_type = '__icontains'
 
-        search_filter = {'%s%s' % (search_criteria,
+        search_filter = {'{}{}'.format(search_criteria,
                                    search_type): search_text}
         resumes = resumes.filter(**search_filter)
 
@@ -128,7 +126,7 @@ def search(request, template_name="resumes/search.html"):
 
     EventLog.objects.log(**{
         'event_id' : 354000,
-        'event_data': '%s searched by %s' % ('Resume', request.user),
+        'event_data': '{} searched by {}'.format('Resume', request.user),
         'description': '%s searched' % 'Resume',
         'user': request.user,
         'request': request,

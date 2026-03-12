@@ -47,7 +47,7 @@ class SpeakerForm(TendenciBaseForm):
         return photo
 
     def __init__(self, *args, **kwargs):
-        super(SpeakerForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['biography'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
@@ -92,4 +92,4 @@ class FileForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(FileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
