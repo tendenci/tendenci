@@ -1,4 +1,4 @@
-import imghdr
+from tendenci.apps.base.utils import what_magic
 from os.path import splitext, basename
 from datetime import datetime
 from datetime import timedelta
@@ -104,7 +104,7 @@ class StoryForm(TendenciBaseForm):
                 raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
 
             # check the image header
-            image_type = '.%s' % imghdr.what('', photo_upload.read())
+            image_type = '.%s' % what_wagic('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
 
@@ -263,7 +263,7 @@ class StoryAdminForm(TendenciBaseForm):
                 raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
 
             # check the image header
-            image_type = '.%s' % imghdr.what('', photo_upload.read())
+            image_type = '.%s' % what_wagic('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
 
