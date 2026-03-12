@@ -10,10 +10,10 @@ from tendenci.apps.site_settings.utils import get_setting
 
 class DatabaseDumpFile(models.Model):
     STATUS_CHOICES = (
-        ("completed", _(u"Completed")),
-        ("pending", _(u"Pending")),
-        ("failed", _(u"Failed")),
-        ("expired", _(u"Expired")),
+        ("completed", _("Completed")),
+        ("pending", _("Pending")),
+        ("failed", _("Failed")),
+        ("expired", _("Expired")),
     )
     FORMAT_CHOICES = (
         ("json", "json"),
@@ -31,7 +31,7 @@ class DatabaseDumpFile(models.Model):
     @property
     def get_download_url(self):
         site_url = get_setting('site', 'global', 'siteurl')
-        return "%s%s" % (site_url, reverse('explorer_extensions.download_dump', args=[self.pk]))
+        return "{}{}".format(site_url, reverse('explorer_extensions.download_dump', args=[self.pk]))
 
 
 VALID_FORMAT_CHOICES = []

@@ -1,5 +1,3 @@
-# -*- coding: utf-8
-
 from datetime import datetime
 from django.utils.translation import gettext_lazy as _
 from django.contrib import admin
@@ -44,7 +42,7 @@ class CategoryAdmin(admin.ModelAdmin):
     inlines = [ForumInlineAdmin]
 
     def get_queryset(self, request):
-        qs = super(CategoryAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         # filter out soft-deleted items
         return qs.filter(status=True)
 
@@ -106,7 +104,7 @@ class TopicAdmin(admin.ModelAdmin):
     inlines = [PollAnswerAdmin, ]
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super(TopicAdmin, self).get_form(request, obj=obj, **kwargs)
+        form = super().get_form(request, obj=obj, **kwargs)
         form.base_fields['user'].initial = request.user
         form.base_fields['created'].initial = datetime.now()
         form.base_fields['updated'].initial = datetime.now()

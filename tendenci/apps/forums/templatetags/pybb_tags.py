@@ -1,4 +1,3 @@
-
 import inspect
 
 import math
@@ -99,7 +98,7 @@ def pybb_link(object, anchor=''):
     url = hasattr(object, 'get_absolute_url') and object.get_absolute_url() or None
     #noinspection PyRedeclaration
     anchor = anchor or smart_str(object)
-    return mark_safe('<a href="%s">%s</a>' % (url, escape(anchor)))
+    return mark_safe('<a href="{}">{}</a>'.format(url, escape(anchor)))
 
 
 @register.filter
@@ -161,9 +160,9 @@ def pybb_topic_unread(topics, user):
             topic.unread = True
 
         forums_ids = [f.forum_id for f in topic_list]
-        forum_marks = dict([(m.forum_id, m.time_stamp)
+        forum_marks = {m.forum_id: m.time_stamp
                             for m
-                            in ForumReadTracker.objects.filter(user=user, forum__in=forums_ids)])
+                            in ForumReadTracker.objects.filter(user=user, forum__in=forums_ids)}
         if len(forum_marks):
             for topic in topic_list:
                 topic_updated = topic.updated or topic.created
@@ -172,7 +171,7 @@ def pybb_topic_unread(topics, user):
 
         qs = TopicReadTracker.objects.filter(user=user, topic__in=topic_list).select_related('topic')
         topic_marks = list(qs)
-        topic_dict = dict(((topic.id, topic) for topic in topic_list))
+        topic_dict = {topic.id: topic for topic in topic_list}
         for mark in topic_marks:
             if topic_dict[mark.topic.id].updated <= mark.time_stamp:
                 topic_dict[mark.topic.id].unread = False
@@ -192,11 +191,11 @@ def pybb_forum_unread(forums, user):
             user=user,
             forum__in=forum_list
         ).select_related('forum')
-        forum_dict = dict(((forum.id, forum) for forum in forum_list))
+        forum_dict = {forum.id: forum for forum in forum_list}
         for mark in forum_marks:
             curr_forum = forum_dict[mark.forum.id]
             if (curr_forum.updated is None) or (curr_forum.updated <= mark.time_stamp):
-                if not any((f.unread for f in pybb_forum_unread(curr_forum.child_forums.all(), user))):
+                if not any(f.unread for f in pybb_forum_unread(curr_forum.child_forums.all(), user)):
                     forum_dict[mark.forum.id].unread = False
     return forum_list
 
@@ -268,9 +267,9 @@ def load_perms_filters():
         if inspect.ismethod(method[1]) and inspect.getfullargspec(method[1]).args[0] == 'self' and\
                 (method[0].startswith('may') or method[0].startswith('filter')):
             if len(inspect.getfullargspec(method[1]).args) == 3:
-                register.filter('%s%s' % ('pybb_', method[0]), partial(method[0], perms))
+                register.filter('{}{}'.format('pybb_', method[0]), partial(method[0], perms))
             elif len(inspect.getfullargspec(method[1]).args) == 2: # only user should be passed to permission method
-                register.filter('%s%s' % ('pybb_', method[0]), partial_no_param(method[0], perms))
+                register.filter('{}{}'.format('pybb_', method[0]), partial_no_param(method[0], perms))
 load_perms_filters()
 
 

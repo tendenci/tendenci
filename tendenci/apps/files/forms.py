@@ -77,7 +77,7 @@ class FileForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(FileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         if args:
@@ -103,7 +103,7 @@ class FileForm(TendenciBaseForm):
 
         if post_data:
             file_cat = post_data.get('file_cat', '0')
-            if file_cat and file_cat != '0' and file_cat != u'':
+            if file_cat and file_cat != '0' and file_cat != '':
                 file_cat = FilesCategory.objects.get(pk=int(file_cat))
                 self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
         if 'file' in self.fields:
@@ -127,7 +127,7 @@ class TinymceUploadForm(forms.ModelForm):
         else:
             self.user = None
         request_data = kwargs.pop('request_data')
-        super(TinymceUploadForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if request_data.method.lower() == 'post':
             upload_type = request_data.POST.get('upload_type', 'other')
@@ -157,7 +157,7 @@ class MostViewedForm(forms.Form):
     file_type = forms.ChoiceField(label=_('File Type'), choices=TYPES)
 
     def __init__(self, *args, **kwargs):
-        super(MostViewedForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['file_type'].widget.attrs['class'] = 'btn'
 
 
@@ -182,7 +182,7 @@ class FileSearchForm(forms.Form):
         data = args[0] if args else kwargs['data'] if 'data' in kwargs else None
         category = data['file_cat'] if data and 'file_cat' in data else None
 
-        super(FileSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         user = self.user or AnonymousUser()
         filters = get_query_filters(user, 'user_groups.view_group', **{'perms_field': False})
@@ -240,7 +240,7 @@ class FilewithCategoryForm(TendenciBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(FilewithCategoryForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         if args:
@@ -268,7 +268,7 @@ class FilewithCategoryForm(TendenciBaseForm):
 
         if post_data:
             file_cat = post_data.get('file_cat', '0')
-            if file_cat and file_cat != '0' and file_cat != u'':
+            if file_cat and file_cat != '0' and file_cat != '':
                 file_cat = FilesCategory.objects.get(pk=int(file_cat))
                 self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
 
@@ -285,7 +285,7 @@ class FilewithCategoryForm(TendenciBaseForm):
             raise forms.ValidationError(_('Invalid group selected.'))
 
     def save(self, *args, **kwargs):
-        file = super(FilewithCategoryForm, self).save(*args, **kwargs)
+        file = super().save(*args, **kwargs)
 
         file.save()
 
@@ -295,7 +295,7 @@ class FilewithCategoryForm(TendenciBaseForm):
 
         ## update the category of the file
         category_removed = False
-        category = file.file_cat.name if file.file_cat else u''
+        category = file.file_cat.name if file.file_cat else ''
 
         if category:
             Category.objects.update(file, category, 'category')
@@ -306,7 +306,7 @@ class FilewithCategoryForm(TendenciBaseForm):
 
         if not category_removed:
             # update the sub category of the article
-            sub_category = file.file_sub_cat.name if file.file_sub_cat else u''
+            sub_category = file.file_sub_cat.name if file.file_sub_cat else ''
             if sub_category:
                 Category.objects.update(file, sub_category, 'sub_category')
             else:  # remove
@@ -362,7 +362,7 @@ class MultiFileForm(BetterForm):
         else:
             self.user = None
 
-        super(MultiFileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         if args:
@@ -387,7 +387,7 @@ class MultiFileForm(BetterForm):
         # set up the sub category choices
         if post_data:
             file_cat = post_data.get('file_cat', '0')
-            if file_cat and file_cat != '0' and file_cat != u'':
+            if file_cat and file_cat != '0' and file_cat != '':
                 [file_cat] = FilesCategory.objects.filter(pk=int(file_cat))[:1] or [None]
                 if file_cat:
                     self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
@@ -478,7 +478,7 @@ class MultiFileForm(BetterForm):
 
             ## update the category of the file
             category_removed = False
-            category = file.file_cat.name if file.file_cat else u''
+            category = file.file_cat.name if file.file_cat else ''
 
             if category:
                 Category.objects.update(file, category, 'category')
@@ -489,7 +489,7 @@ class MultiFileForm(BetterForm):
 
             if not category_removed:
                 # update the sub category of the file
-                sub_category = file.file_sub_cat.name if file.file_sub_cat else u''
+                sub_category = file.file_sub_cat.name if file.file_sub_cat else ''
                 if sub_category:
                     Category.objects.update(file, sub_category, 'sub_category')
                 else:  # remove
@@ -517,7 +517,7 @@ class FileCategoryForm(forms.Form):
                                           required=False)
 
     def __init__(self, *args, **kwargs):
-        super(FileCategoryForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if args:
             post_data = args[0]
@@ -526,7 +526,7 @@ class FileCategoryForm(forms.Form):
 
         if post_data:
             file_cat = post_data.get('file_cat', '0')
-            if file_cat and file_cat != '0' and file_cat != u'':
+            if file_cat and file_cat != '0' and file_cat != '':
                 file_cat = FilesCategory.objects.get(pk=int(file_cat))
                 self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
 
@@ -545,7 +545,7 @@ class FileCategoryForm(forms.Form):
 
         ## update the category of the file
         category_removed = False
-        category = file.file_cat.name if file.file_cat else u''
+        category = file.file_cat.name if file.file_cat else ''
 
         if category:
             Category.objects.update(file, category, 'category')
@@ -556,7 +556,7 @@ class FileCategoryForm(forms.Form):
 
         if not category_removed:
             # update the sub category of the file
-            sub_category = file.file_sub_cat.name if file.file_sub_cat else u''
+            sub_category = file.file_sub_cat.name if file.file_sub_cat else ''
             if sub_category:
                 Category.objects.update(file, sub_category, 'sub_category')
             else:  # remove

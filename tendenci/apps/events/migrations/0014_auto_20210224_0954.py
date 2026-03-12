@@ -15,7 +15,7 @@ def remove_urlize_filter(apps, schema_editor):
     file_path = f'{dir_path}/templates/events/view.html'
     if os.path.isfile(file_path):
         updated = False
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
             if content.find('|urlize') >= 0:
                 content = content.replace('speaker.description|safe|urlize|linebreaks',

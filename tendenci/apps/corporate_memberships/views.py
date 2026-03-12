@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import math
 from decimal import Decimal
@@ -324,7 +323,7 @@ def corpmembership_add_pre(request,
             EventLog.objects.log(instance=creator)
 
             # redirect to add
-            return HttpResponseRedirect('%s%s' % (reverse('corpmembership.add',
+            return HttpResponseRedirect('{}{}'.format(reverse('corpmembership.add',
                                                           args=[app.slug]),
                                               '?hash=%s' % hash))
 
@@ -586,12 +585,12 @@ def corpmembership_upgrade(request, id,
                 memberships.update(membership_type=membership_type)
 
             # log an event
-            description = 'Updated corp. membership type from (id: %s) to (id: %s)' % (
+            description = 'Updated corp. membership type from (id: {}) to (id: {})'.format(
                                         original_corp_memb_type.id,
                                         corp_membership.corporate_membership_type.id)
             EventLog.objects.log(instance=corp_membership, description=description)
 
-            msg_string = 'Successfully upgraded membership type from "%s" to "%s" for "%s"' % (
+            msg_string = 'Successfully upgraded membership type from "{}" to "{}" for "{}"'.format(
                                     original_corp_memb_type,
                                     corp_membership.corporate_membership_type,
                                     corp_profile.name)
@@ -1055,10 +1054,10 @@ def corpmembership_search(request, my_corps_only=False,
         if search_criteria in ['name', 'address', 'city', 'state',
                                'zip', 'country', 'phone',
                                'email', 'url']:
-            search_filter = {'corp_profile__%s%s' % (search_criteria,
+            search_filter = {'corp_profile__{}{}'.format(search_criteria,
                                              search_type): search_text}
         else:
-            search_filter = {'%s%s' % (search_criteria,
+            search_filter = {'{}{}'.format(search_criteria,
                                          search_type): search_text}
 
         corp_members = corp_members.filter(**search_filter)
@@ -1601,7 +1600,7 @@ def roster_search(request,
         if search_criteria == 'username':
             filter_and.update({'user__username%s' % search_type: search_text})
         else:
-            filter_and.update({'user__profile__%s%s' % (search_criteria,
+            filter_and.update({'user__profile__{}{}'.format(search_criteria,
                                                         search_type
                                                         ):
                                search_text})
@@ -2201,9 +2200,9 @@ def report_active_corp_members_by_type(request,
         table_data = []
         for corp_mem in corp_mems:
             corp_profile = corp_mem.corp_profile
-            invoice_pk = u''
+            invoice_pk = ''
             if corp_mem.invoice:
-                invoice_pk = u'%i' % corp_mem.invoice.pk
+                invoice_pk = '%i' % corp_mem.invoice.pk
             member_rep = corp_profile.get_member_rep()
             if member_rep:
                 member_rep_name = member_rep.user.get_full_name()

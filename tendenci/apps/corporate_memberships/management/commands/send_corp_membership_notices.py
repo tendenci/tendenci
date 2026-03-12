@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 import time
 import traceback
@@ -85,7 +84,7 @@ class Command(BaseCommand):
 
                     notification.send_emails(recap_recipient, 'corp_memb_notice_email',
                                              email_context)
-                except (TemplateDoesNotExist, IOError):
+                except (TemplateDoesNotExist, OSError):
                     pass
 
         def email_script_errors(err_msg):
@@ -96,7 +95,7 @@ class Command(BaseCommand):
                 email_context.update({
                     'subject':'Error Processing Corporate Membership Notices on %s' % (
                                                             site_url),
-                    'content':'%s \n\nTime Submitted: %s\n' % (err_msg, nowstr),
+                    'content':'{} \n\nTime Submitted: {}\n'.format(err_msg, nowstr),
                     'content_type':"text"})
 
                 notification.send_emails(script_recipient, 'corp_memb_notice_email',
@@ -237,7 +236,7 @@ class Command(BaseCommand):
                 template_name='notification/corp_memb_notice_email/auth_info.html',
                 context={'corp_membership': membership,
                  'corp_app': corp_app})
-            individuals_join_url = '%s%s' % (site_url,
+            individuals_join_url = '{}{}'.format(site_url,
                                              reverse('membership_default.corp_pre_add',
                                                      args=[membership.id]))
             if membership.expiration_dt:
@@ -261,15 +260,15 @@ class Command(BaseCommand):
                 total_individuals_renewed = ''
 
             if membership.invoice:
-                invoice_link = '%s%s' % (site_url,
+                invoice_link = '{}{}'.format(site_url,
                                          membership.invoice.get_absolute_url())
             else:
                 invoice_link = ''
 
             if membership.corp_profile.directory:
-                directory_url = '{0}{1}'.format(site_url, reverse('directory',
+                directory_url = '{}{}'.format(site_url, reverse('directory',
                                                      args=[membership.corp_profile.directory.slug]))
-                directory_edit_url = '{0}{1}'.format(site_url, reverse('directory.edit',
+                directory_edit_url = '{}{}'.format(site_url, reverse('directory.edit',
                                     args=[membership.corp_profile.directory.id]))
             else:
                 directory_url = ''
@@ -282,8 +281,8 @@ class Command(BaseCommand):
                 'payment_method': payment_method,
                 'renewed_individuals_list': renewed_individuals_list,
                 'total_individuals_renewed': total_individuals_renewed,
-                'view_link': "%s%s" % (site_url, membership.get_absolute_url()),
-                'renew_link': "%s%s" % (site_url, membership.get_renewal_url()),
+                'view_link': "{}{}".format(site_url, membership.get_absolute_url()),
+                'renew_link': "{}{}".format(site_url, membership.get_renewal_url()),
                 'invoice_link': invoice_link,
                 'authentication_info': authentication_info,
                 'individuals_join_url': individuals_join_url,

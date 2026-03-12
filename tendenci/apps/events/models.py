@@ -1,4 +1,3 @@
-from builtins import str
 import uuid
 from hashlib import md5
 import jwt
@@ -90,7 +89,7 @@ class TypeColorSet(models.Model):
         app_label = 'events'
 
     def __str__(self):
-        return '%s #%s' % (self.pk, self.bg_color)
+        return '{} #{}'.format(self.pk, self.bg_color)
 
 
 class Type(models.Model):
@@ -136,7 +135,7 @@ class Type(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Type, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Place(models.Model):
@@ -196,11 +195,11 @@ class Place(models.Model):
         app_label = 'events'
 
     def __init__(self, *args, **kwargs):
-        super(Place, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._original_name = self.name
 
     def __str__(self):
-        str_place = '%s %s %s %s %s' % (
+        str_place = '{} {} {} {} {}'.format(
             self.name, self.address, ', '.join(self.city_state()), self.zip, self.country)
         str_place = str_place.strip()
         if str_place == '':
@@ -1299,7 +1298,7 @@ class Registration(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.guid = str(uuid.uuid4())
-        super(Registration, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_invoice(self):
         object_type = ContentType.objects.get(app_label=self._meta.app_label,
@@ -1363,7 +1362,7 @@ class Registration(models.Model):
         invoice.owner_id = self.owner_id
 
         # update invoice with details
-        invoice.title = "Registration %s for Event: %s" % (self.pk, self.event.title)
+        invoice.title = "Registration {} for Event: {}".format(self.pk, self.event.title)
         invoice.estimate = ('estimate' == status_detail)
         invoice.status_detail = status_detail
         invoice.tender_date = datetime.now()
@@ -1552,7 +1551,7 @@ class Registrant(models.Model):
         if self.custom_reg_form_entry:
             return self.custom_reg_form_entry.get_lastname_firstname()
         else:
-            return '%s, %s' % (self.last_name, self.first_name)
+            return '{}, {}'.format(self.last_name, self.first_name)
 
     @property
     def registration_closed(self):
@@ -2164,7 +2163,7 @@ class Registrant(models.Model):
             self.position_title = self.custom_reg_form_entry.get_value_of_mapped_field('position_title')
             self.company_name = self.custom_reg_form_entry.get_value_of_mapped_field('company_name')
         if self.first_name or self.last_name:
-            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
+            self.name = ('{} {}'.format(self.first_name, self.last_name)).strip()
         self.save()
 
     def assign_mapped_fields(self):
@@ -2176,7 +2175,7 @@ class Registrant(models.Model):
             for field in user_fields:
                 setattr(self, 'field', self.custom_reg_form_entry.get_value_of_mapped_field(field))
 
-            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
+            self.name = ('{} {}'.format(self.first_name, self.last_name)).strip()
 
     def populate_custom_form_entry(self):
         """
@@ -2293,7 +2292,7 @@ class AssetsPurchase(models.Model):
         invoice.owner = self.user
 
         # update invoice with details
-        invoice.title = "Assets purchaser %s for Event: %s" % (self.pk, self.event.title)
+        invoice.title = "Assets purchaser {} for Event: {}".format(self.pk, self.event.title)
         invoice.estimate = ('estimate' == status_detail)
         invoice.status_detail = status_detail
         invoice.tender_date = datetime.now()
@@ -2559,7 +2558,7 @@ class Organizer(ImageUploader, models.Model):
         app_label = 'events'
 
     def __init__(self, *args, **kwargs):
-        super(Organizer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._original_name = self.name
 
     def __str__(self):
@@ -2586,7 +2585,7 @@ class Speaker(OrderingBaseModel):
         app_label = 'events'
 
     def __init__(self, *args, **kwargs):
-        super(Speaker, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._original_name = self.name
 
     def __str__(self):
@@ -2642,10 +2641,10 @@ class RecurringEvent(models.Model):
         elif self.repeat_type == self.RECUR_YEARLY:
             repeat_type = 'year(s)'
         ends_on = self.ends_on.strftime("%b %d %Y")
-        return _("Repeats every %(frequency)s %(repeat_type)s until %(ends_on)s" % {
-                            'frequency': self.frequency,
-                            'repeat_type': repeat_type,
-                            'ends_on': ends_on})
+        return _("Repeats every {frequency} {repeat_type} until {ends_on}".format(
+                            frequency=self.frequency,
+                            repeat_type=repeat_type,
+                            ends_on=ends_on))
 
 
 class EventPhoto(File):
@@ -2658,7 +2657,7 @@ def eventfile_directory(instance, filename):
     m = hashlib.md5()
     m.update(filename.encode())
     hex_digest = m.hexdigest()[:8]
-    return 'events/files/%s/%s' % (hex_digest, filename)
+    return 'events/files/{}/{}'.format(hex_digest, filename)
 
 
 class EventFile(models.Model):
@@ -2705,7 +2704,7 @@ class EventFile(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid4())
-        super(EventFile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def allow_view_by(self, user):
         if user.profile.is_superuser:
@@ -2841,10 +2840,10 @@ class Event(TendenciBaseModel):
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False, on_delete=models.CASCADE)
     mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
     enable_private_slug = models.BooleanField(_('Enable Private URL'), blank=True, default=False) # hide from lists
-    private_slug = models.CharField(max_length=500, blank=True, default=u'')
+    private_slug = models.CharField(max_length=500, blank=True, default='')
     password = models.CharField(max_length=50, blank=True)
     on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
-    external_url = models.URLField(_('External URL'), default=u'', blank=True)
+    external_url = models.URLField(_('External URL'), default='', blank=True)
     image = models.ForeignKey(EventPhoto,
         help_text=_('Photo that represents this event.'), null=True, blank=True, on_delete=models.SET_NULL)
     certificate_image = models.ForeignKey(CertificateImage,
@@ -2880,7 +2879,7 @@ class Event(TendenciBaseModel):
         app_label = 'events'
 
     def __init__(self, *args, **kwargs):
-        super(Event, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.private_slug = self.private_slug or self.make_slug()
         # Commenting it out - This line of code is causing an error on dumpdata:
         # "RecursionError: maximum recursion depth exceeded while calling a Python object"
@@ -3652,7 +3651,7 @@ class Event(TendenciBaseModel):
 
         self.guid = self.guid or str(uuid.uuid4())
 
-        super(Event, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if self.image:
             set_s3_file_permission(self.image.file, public=self.is_public())
@@ -4159,7 +4158,7 @@ class Event(TendenciBaseModel):
         private_slug = self.private_slug or self.make_slug()
 
         if absolute_url:
-            return '%s/%s/%s/%s' % (
+            return '{}/{}/{}/{}'.format(
                 get_global_setting('siteurl'),
                 get_module_setting('events', 'url') or 'events',
                 pk,
@@ -4168,7 +4167,7 @@ class Event(TendenciBaseModel):
         self.private_slug = private_slug
         return private_slug
 
-    def is_private(self, slug=u''):
+    def is_private(self, slug=''):
         """
         Check if event is private (i.e. if private enabled)
         """
@@ -4307,8 +4306,8 @@ class CustomRegForm(models.Model):
         """
         Clone this custom registration form and associate it with the event if provided.
         """
-        params = dict([(field.name, getattr(self, field.name))
-                       for field in self._meta.fields if not field.__class__==AutoField])
+        params = {field.name: getattr(self, field.name)
+                       for field in self._meta.fields if not field.__class__==AutoField}
         cloned_obj = self.__class__.objects.create(**params)
         # clone fiellds
         fields = self.fields.all()
@@ -4359,8 +4358,8 @@ class CustomRegField(OrderingBaseModel):
         """
         Clone this custom registration field, and associate it with the form if provided.
         """
-        params = dict([(field.name, getattr(self, field.name))
-                       for field in self._meta.fields if not field.__class__==AutoField])
+        params = {field.name: getattr(self, field.name)
+                       for field in self._meta.fields if not field.__class__==AutoField}
         cloned_field = self.__class__.objects.create(**params)
 
         if form:
@@ -4428,7 +4427,7 @@ class CustomRegFormEntry(models.Model):
         return ''
 
     def get_lastname_firstname(self):
-        name = '%s, %s' % (self.get_value_of_mapped_field('last_name'),
+        name = '{}, {}'.format(self.get_value_of_mapped_field('last_name'),
                          self.get_value_of_mapped_field('first_name'))
         return name.strip()
 
@@ -4514,7 +4513,7 @@ class Addon(OrderingBaseModel):
             self.save(*args, **kwargs)
         else:
             # actual delete of an Addon
-            super(Addon, self).delete(*args, **kwargs)
+            super().delete(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -4528,7 +4527,7 @@ class Addon(OrderingBaseModel):
         return True
 
     def field_name(self):
-        return "%s_%s" % (self.pk, self.title.lower().replace(' ', '').replace('-', ''))
+        return "{}_{}".format(self.pk, self.title.lower().replace(' ', '').replace('-', ''))
 
     def has_options(self):
         return self.options.exists()
@@ -4573,7 +4572,7 @@ class RegAddon(models.Model):
         app_label = 'events'
 
     def __str__(self):
-        return "%s: %s" % (self.registration.pk, self.addon.title)
+        return "{}: {}".format(self.registration.pk, self.addon.title)
 
     def get_option(self):
         if self.regaddonoption_set.exists():
@@ -4594,4 +4593,4 @@ class RegAddonOption(models.Model):
 
     def __str__(self):
         #return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
-        return "%s: %s" % (self.regaddon.pk, self.option.title)
+        return "{}: {}".format(self.regaddon.pk, self.option.title)

@@ -2,7 +2,6 @@
 # anonymous registration impementation of events in the registration
 # module.
 
-from builtins import str
 
 import re
 import calendar
@@ -277,7 +276,7 @@ def generate_zoom_credits(request, event_id):
 
 
 @is_enabled('events')
-def details(request, id=None, private_slug=u'', template_name="events/view.html"):
+def details(request, id=None, private_slug='', template_name="events/view.html"):
     if not id and not private_slug:
         return HttpResponseRedirect(reverse('event.month'))
 
@@ -835,7 +834,7 @@ def credits_edit(request, id, form_class=EventCreditForm, template_name="events/
         if form_apply_recurring.is_valid():
             apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
 
-        form_names = set([f"{key.split('-')[0]}" for key in request.POST if key.startswith('form_')])
+        form_names = {f"{key.split('-')[0]}" for key in request.POST if key.startswith('form_')}
 
         forms = list()
         for form_name in form_names:
@@ -1682,7 +1681,7 @@ def event_file_view(request, event_file_id, download=False):
     try:
         data = event_file.file.read()
         event_file.file.close()
-    except IOError:  # no such file or directory
+    except OSError:  # no such file or directory
         raise Http404
     
     if mime_type:
@@ -1986,7 +1985,7 @@ def add(request, year=None, month=None, day=None, is_template=False, parent_even
                     image.creator_username = request.user.username
                     image.owner = request.user
                     image.owner_username = request.user.username
-                    filename = "%s-%s" % (event.id, f.name)
+                    filename = "{}-{}".format(event.id, f.name)
                     f.file.seek(0)
                     image.file.save(filename, f)
                     event.image = image
@@ -2121,7 +2120,7 @@ def add(request, year=None, month=None, day=None, is_template=False, parent_even
             if all((year, month, day)):
                 date_str = '-'.join([year,month,day])
                 time_str = '10:00 AM'
-                dt_str = "%s %s" % (date_str, time_str)
+                dt_str = "{} {}".format(date_str, time_str)
                 dt_fmt = '%Y-%m-%d %H:%M %p'
 
                 start_dt = datetime.strptime(dt_str, dt_fmt)
@@ -2735,7 +2734,7 @@ def register(request, event_id=0,
         if not request.user.is_authenticated:
             messages.add_message(request, messages.INFO,
                                 _('Please log in or sign up for a user account to register for an event.'))
-            return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'),
+            return HttpResponseRedirect('{}?next={}'.format(reverse('auth_login'),
                                                         reverse('event.register', args=[event.id])))
 
     # check if event allows registration
@@ -3966,14 +3965,14 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         if not Event.objects.filter(start_dt__gte=current_date, start_dt__lte=next_date, type=current_type[0]).exists():
             latest_event = Event.objects.filter(start_dt__gte=current_date, type=current_type[0]).order_by('start_dt').first()
             if latest_event is None:
-                msg_string = u'No more %s Events were found.' % (str(current_type[0]))
+                msg_string = 'No more %s Events were found.' % (str(current_type[0]))
                 messages.add_message(request, messages.INFO, _(msg_string))
             else:
                 latest_month = latest_event.start_dt.month
                 latest_year = latest_event.start_dt.year
                 current_date = current_date.strftime('%b %Y')
                 latest_date = latest_event.start_dt.strftime('%b %Y')
-                msg_string = u'No %s Events were found for %s. The next %s event is on %s, shown below.' % (str(current_type[0]), current_date, str(current_type[0]), latest_date)
+                msg_string = 'No {} Events were found for {}. The next {} event is on {}, shown below.'.format(str(current_type[0]), current_date, str(current_type[0]), latest_date)
                 messages.add_message(request, messages.INFO, _(msg_string))
                 return HttpResponseRedirect(reverse('event.month', args=[latest_year, latest_month, current_type[0].slug]))
 
@@ -4002,7 +4001,7 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
                     latest_year = latest_event.start_dt.year
                     current_date = datetime(month=month, day=1, year=year).strftime('%b %Y')
                     latest_date = latest_event.start_dt.strftime('%b %Y')
-                    msg_string = 'No Events were found for %s. The next event is on %s, shown below.' % (current_date, latest_date)
+                    msg_string = 'No Events were found for {}. The next event is on {}, shown below.'.format(current_date, latest_date)
                     messages.add_message(request, messages.INFO, _(msg_string))
                     return HttpResponseRedirect(reverse('event.month', args=[latest_year, latest_month]))
             # Try to redirect far future dates to the latest event
@@ -4013,7 +4012,7 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
                     latest_year = latest_event.end_dt.year
                     current_date = datetime(month=month, day=1, year=year).strftime('%b %Y')
                     latest_date = latest_event.end_dt.strftime('%b %Y')
-                    msg_string = 'No Events were found for %s. The next event is on %s, shown below.' % (current_date, latest_date)
+                    msg_string = 'No Events were found for {}. The next event is on {}, shown below.'.format(current_date, latest_date)
                     messages.add_message(request, messages.INFO, _(msg_string))
                     return HttpResponseRedirect(reverse('event.month', args=[latest_year, latest_month]))
 
@@ -4074,7 +4073,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
         if not Event.objects.filter(start_dt__gte=current_date, start_dt__lte=next_date, type=current_type[0]).exists():
             latest_event = Event.objects.filter(start_dt__gte=current_date, type=current_type[0]).order_by('start_dt').first()
             if latest_event is None:
-                msg_string = u'No more %s Events were found.' % (str(current_type[0]))
+                msg_string = 'No more %s Events were found.' % (str(current_type[0]))
                 messages.add_message(request, messages.INFO, _(msg_string))
             else:
                 latest_day = latest_event.start_dt.day
@@ -4082,7 +4081,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
                 latest_year = latest_event.start_dt.year
                 current_date = current_date.strftime('%x')
                 latest_date = latest_event.start_dt.strftime('%x')
-                msg_string = u'No %s Events were found for %s. The next %s event is on %s, shown below.' % (str(current_type[0]), current_date, str(current_type[0]), latest_date)
+                msg_string = 'No {} Events were found for {}. The next {} event is on {}, shown below.'.format(str(current_type[0]), current_date, str(current_type[0]), latest_date)
                 messages.add_message(request, messages.INFO, _(msg_string))
                 return HttpResponseRedirect(reverse('event.week', args=[latest_year, latest_month, latest_day, current_type[0].slug]))
 
@@ -4104,7 +4103,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
                 latest_event = Event.objects.filter(start_dt__gte=tgtdate).order_by('start_dt').first()
                 if latest_event is not None:
                     latest_date = latest_event.start_dt
-                    msg_string = 'No Events were found for %s. The next event is on %s, shown below.' % (tgtdate.strftime('%x'), latest_date.strftime('%x'))
+                    msg_string = 'No Events were found for {}. The next event is on {}, shown below.'.format(tgtdate.strftime('%x'), latest_date.strftime('%x'))
                     messages.add_message(request, messages.INFO, _(msg_string))
                     return HttpResponseRedirect(reverse('event.week', args=[latest_date.year, latest_date.month, latest_date.day]))
             # Try to redirect far future dates to the latest event
@@ -4112,7 +4111,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
                 latest_event = Event.objects.filter(end_dt__lte=tgtdate).order_by('-end_dt').first()
                 if latest_event is not None:
                     latest_date = latest_event.end_dt
-                    msg_string = 'No Events were found for %s. The next event is on %s, shown below.' % (tgtdate.strftime('%x'), latest_date.strftime('%x'))
+                    msg_string = 'No Events were found for {}. The next event is on {}, shown below.'.format(tgtdate.strftime('%x'), latest_date.strftime('%x'))
                     messages.add_message(request, messages.INFO, _(msg_string))
                     return HttpResponseRedirect(reverse('event.week', args=[latest_date.year, latest_date.month, latest_date.day]))
 
@@ -4178,7 +4177,7 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
                     latest_day = latest_event.start_dt.day
                     latest_month = latest_event.start_dt.month
                     latest_year = latest_event.start_dt.year
-                    msg_string = 'No Events were found for %s. The next event is on %s, shown below.' % (day_date.strftime('%x'), latest_event.start_dt.strftime('%x'))
+                    msg_string = 'No Events were found for {}. The next event is on {}, shown below.'.format(day_date.strftime('%x'), latest_event.start_dt.strftime('%x'))
                     messages.add_message(request, messages.INFO, _(msg_string))
                     return HttpResponseRedirect(reverse('event.day', args=[latest_year, latest_month, latest_day]))
             # Try to redirect far future dates to the latest event
@@ -4188,7 +4187,7 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
                     latest_month = latest_event.end_dt.month
                     latest_year = latest_event.end_dt.year
                     latest_day = latest_event.end_dt.day
-                    msg_string = 'No Events were found for %s. The next event is on %s, shown below.' % (day_date.strftime('%x'), latest_event.end_dt.strftime('%x'))
+                    msg_string = 'No Events were found for {}. The next event is on {}, shown below.'.format(day_date.strftime('%x'), latest_event.end_dt.strftime('%x'))
                     messages.add_message(request, messages.INFO, _(msg_string))
                     return HttpResponseRedirect(reverse('event.day', args=[latest_year, latest_month, latest_day]))
 
@@ -4271,7 +4270,7 @@ def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='
     if request.method == 'POST':
         if form.is_valid():
             type.event_set.update(type=form.cleaned_data['type'])
-            msg_string = 'Successfully reassigned events from type "%s" to type "%s".' % (type, form.cleaned_data['type'])
+            msg_string = 'Successfully reassigned events from type "{}" to type "{}".'.format(type, form.cleaned_data['type'])
             messages.add_message(request, messages.SUCCESS, _(msg_string))
             return redirect('event.search')
 
@@ -4348,7 +4347,7 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
             search_type = '__istartswith'
         elif search_method == 'contains':
             search_type = '__icontains'
-        search_filter = {'%s%s' % (search_criteria,
+        search_filter = {'{}{}'.format(search_criteria,
                                    search_type): search_text}
         registrants = registrants.filter(**search_filter)
 
@@ -4480,9 +4479,9 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     #    3) registrant_ids to registration_ids
     #    4) registration_ids to invoices
     reg7n_pricing_reg8n = registrants.values_list('id', 'pricing__id', 'registration__id')
-    reg7n_to_pricing_dict = dict([(item[0], item[1]) for item in reg7n_pricing_reg8n])
+    reg7n_to_pricing_dict = {item[0]: item[1] for item in reg7n_pricing_reg8n}
     reg8n_to_pricing_dict = dict(registrations.values_list('id', 'reg_conf_price__id'))
-    reg7n_to_reg8n_dict = dict([(item[0], item[2]) for item in reg7n_pricing_reg8n])
+    reg7n_to_reg8n_dict = {item[0]: item[2] for item in reg7n_pricing_reg8n}
     reg8n_to_invoice_objs = registrations.values_list(
         'id',
         'invoice__id',
@@ -5061,7 +5060,7 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
                 email.send()
 
             EventLog.objects.log(instance=email)
-            msg_string = 'Successfully sent email "%s" to event registrants for event "%s".' % (subject, event.title)
+            msg_string = 'Successfully sent email "{}" to event registrants for event "{}".'.format(subject, event.title)
             messages.add_message(request, messages.SUCCESS, msg_string)
 
             return HttpResponseRedirect(reverse('event', args=([event_id])))
@@ -5359,7 +5358,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
 
             is_paid = False
-            primary_registrant = u'-- N/A ---'
+            primary_registrant = '-- N/A ---'
 
             # update registrant values
             if not registrant_dict['is_primary']:
@@ -5371,7 +5370,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
                 primary_registrant = registrant.registration.registrant
 
                 if primary_registrant:
-                    primary_registrant = '%s %s' % (primary_registrant.first_name, primary_registrant.last_name)
+                    primary_registrant = '{} {}'.format(primary_registrant.first_name, primary_registrant.last_name)
 
                 registrant_dict['registration__invoice__total'] = 0
                 registrant_dict['registration__invoice__balance'] = 0
@@ -5414,7 +5413,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         cursor.execute(sql)
         rows = cursor.fetchall()
         # list of form ids
-        form_ids = list(set([row[0] for row in rows]))
+        form_ids = list({row[0] for row in rows})
 
         # remove some fields from registrant_mappings because they are
         # stored in the field entries
@@ -5620,7 +5619,7 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
                 image.creator_username = request.user.username
                 image.owner = request.user
                 image.owner_username = request.user.username
-                filename = "%s-%s" % (event.id, photo.name)
+                filename = "{}-{}".format(event.id, photo.name)
                 photo.file.seek(0)
                 image.file.save(filename, photo)
                 event.image = image
@@ -6159,7 +6158,7 @@ def reports_financial(request, template_name="events/financial_reports.html"):
 
     if event_type:
         events = events.filter(type_id=event_type)
-    events = events.order_by('{0}{1}'.format(sort_direction, sort_by))
+    events = events.order_by('{}{}'.format(sort_direction, sort_by))
 
     context = {'events' : events,
                 'form' : form}

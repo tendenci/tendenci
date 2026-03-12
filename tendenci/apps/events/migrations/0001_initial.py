@@ -1,5 +1,3 @@
-
-
 from django.db import models, migrations
 import datetime
 import timezone_field.fields
@@ -495,6 +493,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='regaddonoption',
-            unique_together=set([('regaddon', 'option')]),
+            unique_together={('regaddon', 'option')},
         ),
     ]

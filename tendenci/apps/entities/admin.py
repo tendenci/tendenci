@@ -53,6 +53,6 @@ class EntityAdmin(admin.ModelAdmin):
 
     def get_changelist_form(self, request, **kwargs):
         kwargs.setdefault('form', EntityAdminForm)
-        return super(EntityAdmin, self).get_changelist_form(request, **kwargs)
+        return super().get_changelist_form(request, **kwargs)
 
 admin.site.register(Entity, EntityAdmin)

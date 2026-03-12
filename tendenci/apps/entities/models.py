@@ -78,7 +78,7 @@ class Entity(models.Model):
         if not self.guid:
             self.guid = str(uuid.uuid4())
 
-        super(Entity, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @staticmethod
     def get_search_filter(user):

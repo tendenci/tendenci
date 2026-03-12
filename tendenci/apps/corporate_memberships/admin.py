@@ -59,7 +59,7 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
         )
 
     def get_queryset(self, request):
-        qs = super(CorporateMembershipTypeAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         # filter out soft-deleted items
         return qs.filter(status=True)
 
@@ -81,10 +81,10 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def get_membership_type(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return '<a href="{}">{}</a>'.format(
               reverse('admin:memberships_membershiptype_change',
                       args=[instance.membership_type.id]),
-              instance.membership_type.name,)
+              instance.membership_type.name)
     get_membership_type.short_description = _('Membership Type (Individual)')
     get_membership_type.admin_order_field = 'membership_type'
     
@@ -92,14 +92,14 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
     def reps_groups(self, instance):
         reps_groups_links = ''
         if instance.pending_group:
-            reps_groups_links = '<a href="%s">%s</a>' % (
+            reps_groups_links = '<a href="{}">{}</a>'.format(
                   reverse('group.detail',
                           args=[instance.pending_group.slug]),
                           _('Pending'))
         if instance.active_group:
             if reps_groups_links:
                 reps_groups_links += '<br />'
-            reps_groups_links += '<a href="%s">%s</a>' % (
+            reps_groups_links += '<a href="{}">{}</a>'.format(
                   reverse('group.detail',
                           args=[instance.active_group.slug]),
                           _('Active'))
@@ -164,14 +164,14 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
                        static('css/corpmemberships-admin.css')], }
 
     def get_queryset(self, request):
-        qs = super(CorpMembershipAppAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         # filter out soft-deleted items
         return qs.filter(status=True)
 
     @mark_safe
     def dues_reps_group_with_link(self, instance):
         if instance.dues_reps_group:
-            return '<a href="%s">%s</a>' % (
+            return '<a href="{}">{}</a>'.format(
                   reverse('group.detail',
                           args=[instance.dues_reps_group.slug]),
                 instance.dues_reps_group.name)
@@ -181,7 +181,7 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
     @mark_safe
     def member_reps_group_with_link(self, instance):
         if instance.member_reps_group:
-            return '<a href="%s">%s</a>' % (
+            return '<a href="{}">{}</a>'.format(
                   reverse('group.detail',
                           args=[instance.member_reps_group.slug]),
                 instance.member_reps_group.name)
@@ -225,7 +225,7 @@ def approve_selected(modeladmin, request, queryset):
                                 **{'create_new': True,
                               'assign_to_user': None})
 
-approve_selected.short_description = u'Approve selected'
+approve_selected.short_description = 'Approve selected'
 
 
 def renew_selected(modeladmin, request, queryset):
@@ -333,7 +333,7 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
         """
         Excludes archive
         """
-        return super(CorpMembershipAdmin, self).get_queryset(request
+        return super().get_queryset(request
                     ).exclude(status_detail='archive').exclude(
                               corp_profile__status=False,
                               ).order_by('status_detail',
@@ -346,10 +346,10 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def profile(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return '<a href="{}">{}</a>'.format(
               reverse('admin:corporate_memberships_corpprofile_change',
                       args=[instance.corp_profile.id]),
-              instance.corp_profile.name,)
+              instance.corp_profile.name)
     profile.short_description = _('Corp Profile')
     profile.admin_order_field = 'corp_profile__name'
 
@@ -366,10 +366,10 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     @mark_safe
     def cm_type(self, instance):
         if instance.corporate_membership_type:
-            return '<a href="%s">%s</a>' % (
+            return '<a href="{}">{}</a>'.format(
                   reverse('admin:corporate_memberships_corporatemembershiptype_change',
                           args=[instance.corporate_membership_type.id]),
-                  instance.corporate_membership_type.name,)
+                  instance.corporate_membership_type.name)
         return ''
     cm_type.short_description = _('Membership Type')
     cm_type.admin_order_field = 'corporate_membership_type'
@@ -397,9 +397,9 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def edit_link(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return '<a href="{}">{}</a>'.format(
                     reverse('corpmembership.edit',args=[instance.id]),
-                    _('Edit'),)
+                    _('Edit'))
     edit_link.short_description = _('edit')
 
     @mark_safe
@@ -415,7 +415,7 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
         for i, rep in enumerate(reps):
             if i > 0:
                 reps_display += '<br />'
-            reps_display += '<a href="%s">%s</a> ' % (
+            reps_display += '<a href="{}">{}</a> '.format(
                         reverse('profile',args=[rep.user.username]),
                         rep.user.get_full_name() or rep.user.username)
 
@@ -440,18 +440,18 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
         invoice = instance.invoice
         if invoice:
             if invoice.balance > 0:
-                return '<a href="%s">Invoice %s (%s)</a>' % (
+                return '<a href="{}">Invoice {} ({})</a>'.format(
                     invoice.get_absolute_url(),
                     invoice.pk,
                     tcurrency(invoice.balance)
                 )
             else:
-                return '<a href="%s">Invoice %s</a>' % (
+                return '<a href="{}">Invoice {}</a>'.format(
                     invoice.get_absolute_url(),
                     invoice.pk
                 )
         return ""
-    invoice_url.short_description = u'Invoice'
+    invoice_url.short_description = 'Invoice'
 
     def add_view(self, request, form_url='', extra_context=None):
         return HttpResponseRedirect(reverse('corpmembership.add'))
@@ -467,7 +467,7 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                                             object.id,
                                             object.corp_profile.id)
         EventLog.objects.log(instance=object, description=description)
-        super(CorpMembershipAdmin, self).log_deletion(request, object, object_repr)
+        super().log_deletion(request, object, object_repr)
 
 
 class NoticeAdmin(admin.ModelAdmin):
@@ -529,7 +529,7 @@ class NoticeAdmin(admin.ModelAdmin):
         return instance
 
     def get_urls(self):
-        urls = super(NoticeAdmin, self).get_urls()
+        urls = super().get_urls()
         extra_urls = [
             re_path(r'^clone/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.clone),
@@ -625,7 +625,7 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
                         }),)
 
     def get_object(self, request, object_id, from_field=None):
-        obj = super(CorpMembershipAppField2Admin, self).get_object(request, object_id, from_field=from_field)
+        obj = super().get_object(request, object_id, from_field=from_field)
 
         # assign default field_type
         if obj:
@@ -638,7 +638,7 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
         return obj
 
     def change_view(self, request, object_id=None, form_url='', extra_context=None):
-        return super(CorpMembershipAppField2Admin, self).change_view(request, object_id, form_url,
+        return super().change_view(request, object_id, form_url,
                                extra_context=dict(show_delete=False))
 
 #     def has_delete_permission(self, request, obj=None):
@@ -774,31 +774,31 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
         """
         Excludes those associated with the deleted corp profiles
         """
-        return super(CorpMembershipRepAdmin, self).get_queryset(request
+        return super().get_queryset(request
                     ).filter(corp_profile__status=True)
     
     @mark_safe
     def profile(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return '<a href="{}">{}</a>'.format(
               reverse('admin:corporate_memberships_corpprofile_change',
                       args=[instance.corp_profile.id]),
-              instance.corp_profile.name,)
+              instance.corp_profile.name)
     profile.short_description = _('Corp Profile')
     profile.admin_order_field = 'corp_profile__name'
 
     @mark_safe
     def rep_name(self, instance):
-        return '<a href="{0}">{1}</a>'.format(
+        return '<a href="{}">{}</a>'.format(
                 reverse('profile', args=[instance.user.username]),
                 instance.user.get_full_name() or instance.user.username,
 
             )
-    rep_name.short_description = u'Rep Name'
+    rep_name.short_description = 'Rep Name'
     rep_name.admin_order_field = 'user__first_name'
 
     def rep_email(self, instance):
         return instance.user.email
-    rep_email.short_description = u'Rep Email'
+    rep_email.short_description = 'Rep Email'
     rep_email.admin_order_field = 'user__email'
 
 

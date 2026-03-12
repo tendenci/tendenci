@@ -53,7 +53,7 @@ class EventLog(models.Model):
         if not self.uuid:
             self.uuid = str(uuid.uuid4())
         self.verifydata()
-        super(EventLog, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         
     def verifydata(self):
         # verify each field
@@ -87,7 +87,7 @@ class CachedColorModel(models.Model):
 
     def save(self, *args, **kwargs):
         self.__class__._cache = {}
-        super(CachedColorModel, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @classmethod
     def cache_get(cls, key, field):

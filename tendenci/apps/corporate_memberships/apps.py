@@ -7,7 +7,7 @@ class CorporateMembershipsConfig(AppConfig):
     verbose_name = 'Corporate Memberships Application'
 
     def ready(self):
-        super(CorporateMembershipsConfig, self).ready()
+        super().ready()
         from tendenci.apps.corporate_memberships.signals import init_signals, create_notice_types
         init_signals()
         post_migrate.connect(create_notice_types, sender=self)

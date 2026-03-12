@@ -1,4 +1,3 @@
-
 import os.path
 import warnings
 from django.conf import settings

@@ -113,10 +113,10 @@ class Contact(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid4())
 
-        super(Contact, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         if self.first_name:
-            return '%s %s' % (self.first_name, self.last_name)
+            return '{} {}'.format(self.first_name, self.last_name)
         else:
             return '%s' % self.user

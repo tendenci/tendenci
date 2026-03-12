@@ -6,4 +6,4 @@ class ContributionsConfig(AppConfig):
     verbose_name = 'Contributions'
 
     def ready(self):
-        super(ContributionsConfig, self).ready()
+        super().ready()

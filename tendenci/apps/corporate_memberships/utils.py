@@ -1,4 +1,3 @@
-
 from datetime import datetime
 import csv
 from dateutil.relativedelta import relativedelta
@@ -116,28 +115,28 @@ def get_corpmembership_type_choices(user, corpmembership_app, renew=False, exclu
 
     for cmt in corporate_membership_types:
         if not renew:
-            price_display = '%s - %s' % (cmt.name, tcurrency(cmt.price))
+            price_display = '{} - {}'.format(cmt.name, tcurrency(cmt.price))
         else:
             indiv_renewal_price = cmt.membership_type.renewal_price
             if not indiv_renewal_price:
                 indiv_renewal_price = '%s<span class="type-ind-price"></span>' % _('Free')
             else:
                 indiv_renewal_price = """
-                    %s<span class="type-ind-price">%0.2f</span>
-                    """ % (currency_symbol, indiv_renewal_price)
+                    {}<span class="type-ind-price">{:0.2f}</span>
+                    """.format(currency_symbol, indiv_renewal_price)
             if not cmt.renewal_price:
                 cmt.renewal_price = 0
             if cmt.apply_cap:
-                indiv_renewal_price = '%s %s %s' % (indiv_renewal_price, _('Limit'), cmt.membership_cap)
+                indiv_renewal_price = '{} {} {}'.format(indiv_renewal_price, _('Limit'), cmt.membership_cap)
                 if cmt.allow_above_cap:
-                    indiv_renewal_price = '%s - then %s / member' % (indiv_renewal_price,
+                    indiv_renewal_price = '{} - then {} / member'.format(indiv_renewal_price,
                                                           tcurrency(cmt.above_cap_price))
 
-            data_cap = '\'{"apply_cap": "%s", "membership_cap":"%s", "allow_above_cap": "%s", "above_cap_price": "%s"}\'' % (
+            data_cap = '\'{{"apply_cap": "{}", "membership_cap":"{}", "allow_above_cap": "{}", "above_cap_price": "{}"}}\''.format(
                          cmt.apply_cap, cmt.membership_cap, cmt.allow_above_cap, cmt.above_cap_price)
-            price_display = """%s - <b>%s<span class="type-corp-price">%0.2f</span>
+            price_display = """{} - <b>{}<span class="type-corp-price">{:0.2f}</span>
                             </b>(individual members:
-                            <b>%s</b>)<span class="type-cap" data-cap=%s></span>""" % (cmt.name,
+                            <b>{}</b>)<span class="type-cap" data-cap={}></span>""".format(cmt.name,
                                             currency_symbol,
                                             cmt.renewal_price,
                                             indiv_renewal_price,
@@ -238,7 +237,7 @@ def get_indiv_memberships_choices(corp_membership):
                                 )
 
     for membership in indiv_memberships:
-        indiv_memb_display = '<a href="%s" target="_blank">%s</a>' % (
+        indiv_memb_display = '<a href="{}" target="_blank">{}</a>'.format(
                                     reverse('profile',
                                             args=[membership.user.username]),
                                         membership.user.get_full_name() or membership.user.username)
@@ -298,7 +297,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
         inv.title = corp_memb.corp_profile.name
 
         if not (user.is_anonymous or user.is_superuser):
-            inv.bill_to = '%s %s' % (user.first_name, user.last_name)
+            inv.bill_to = '{} {}'.format(user.first_name, user.last_name)
             inv.bill_to_first_name = user.first_name
             inv.bill_to_last_name = user.last_name
             inv.bill_to_email = user.email
@@ -307,7 +306,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
         else:
             if corp_memb.anonymous_creator:
                 cmc = corp_memb.anonymous_creator
-                inv.bill_to = '%s %s' % (cmc.first_name, cmc.last_name)
+                inv.bill_to = '{} {}'.format(cmc.first_name, cmc.last_name)
                 inv.bill_to_first_name = cmc.first_name
                 inv.bill_to_last_name = cmc.last_name
                 inv.bill_to_email = cmc.email
@@ -519,19 +518,19 @@ def get_corporate_membership_type_choices(user, corpapp, renew=False):
 
     for cmt in corporate_membership_types:
         if not renew:
-            price_display = '%s - %s%0.2f' % (cmt.name, currency_symbol, cmt.price)
+            price_display = '{} - {}{:0.2f}'.format(cmt.name, currency_symbol, cmt.price)
         else:
             indiv_renewal_price = cmt.membership_type.renewal_price
             if not indiv_renewal_price:
                 indiv_renewal_price = 'Free<span class="type-ind-price"></span>'
             else:
-                indiv_renewal_price = '%s<span class="type-ind-price">%0.2f</span>' % (currency_symbol, indiv_renewal_price)
+                indiv_renewal_price = '{}<span class="type-ind-price">{:0.2f}</span>'.format(currency_symbol, indiv_renewal_price)
             if not cmt.renewal_price:
                 cmt.renewal_price = 0
 
-            price_display = """%s - <b>%s<span class="type-corp-price">%0.2f</span></b>
+            price_display = """{} - <b>{}<span class="type-corp-price">{:0.2f}</span></b>
                             (individual members renewal:
-                            <b>%s</b>)""" % (cmt.name,
+                            <b>{}</b>)""".format(cmt.name,
                                             currency_symbol,
                                             cmt.renewal_price,
                                             indiv_renewal_price)
@@ -706,7 +705,7 @@ def get_notice_token_help_text(notice=None):
                                         ).order_by('position')
             help_text += "<ul>"
             for field in fields:
-                help_text += '<li>{{ %s }} - (for %s)</li>' % (
+                help_text += '<li>{{{{ {} }}}} - (for {})</li>'.format(
                                                        field.field_name,
                                                        field.label)
             help_text += "</ul>"
@@ -758,7 +757,7 @@ def get_notice_token_help_text(notice=None):
 def create_salesforce_lead(sf, corporate_profile):
     [rep] = corporate_profile.reps.all()[:1] or [None]
     if rep:
-        name = '%s %s' % (rep.user.first_name, rep.user.last_name)
+        name = '{} {}'.format(rep.user.first_name, rep.user.last_name)
     else:
         name = corporate_profile.name
     corp_membership = corporate_profile.corp_membership

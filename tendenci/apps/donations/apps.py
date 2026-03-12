@@ -7,7 +7,7 @@ class DonationsConfig(AppConfig):
     verbose_name = 'Donations'
 
     def ready(self):
-        super(DonationsConfig, self).ready()
+        super().ready()
         from tendenci.apps.donations.signals import init_signals, create_notice_types
         init_signals()
         post_migrate.connect(create_notice_types, sender=self)

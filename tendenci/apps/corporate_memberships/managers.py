@@ -9,7 +9,7 @@ class CorpMembershipManager(TendenciBaseManager):
         haystack to query corporate memberships.
         Returns a SearchQuerySet
         """
-        return super(CorpMembershipManager, self).search(query=query, *args, **kwargs)
+        return super().search(query=query, *args, **kwargs)
 
 class CorpMembershipAppManager(Manager):
     def current_app(self, **kwargs):

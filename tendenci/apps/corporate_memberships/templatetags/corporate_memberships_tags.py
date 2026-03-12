@@ -55,7 +55,7 @@ def individual_pricing_desp(corp_membership):
         else:
             membership_price = tcurrency(membership_type.price)
             if membership_type.admin_fee:
-                membership_price = '%s + %s' % (
+                membership_price = '{} + {}'.format(
                                     membership_price,
                                     tcurrency(membership_type.admin_fee))
 
@@ -201,7 +201,7 @@ class ListCorpMembershipNode(Node):
         return items
 
     def render(self, context):
-        query = u''
+        query = ''
         user = AnonymousUser()
         limit = None
         order = '-join_dt'

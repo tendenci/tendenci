@@ -15,5 +15,5 @@ class ContactsConfig(AppConfig):
     verbose_name = 'Contacts'
 
     def ready(self):
-        super(ContactsConfig, self).ready()
+        super().ready()
         post_migrate.connect(create_notice_types, sender=self)

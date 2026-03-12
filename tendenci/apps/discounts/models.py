@@ -74,8 +74,8 @@ class Discount(TendenciBaseModel):
     def delete(self, *args, **kwargs):
         # Append id to the discount_code to avoid IntegrityError when the discount_code
         # is used again later
-        self.discount_code = '{0}-{1}'.format(self.discount_code, self.id)
-        super(Discount, self).delete(*args, **kwargs)
+        self.discount_code = '{}-{}'.format(self.discount_code, self.id)
+        super().delete(*args, **kwargs)
 
 
 class DiscountUse(models.Model):
@@ -87,4 +87,4 @@ class DiscountUse(models.Model):
         app_label = 'discounts'
 
     def __str__(self):
-        return "%s:%s" % (self.invoice, self.discount)
+        return "{}:{}".format(self.invoice, self.discount)

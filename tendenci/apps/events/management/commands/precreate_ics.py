@@ -1,4 +1,3 @@
-
 import re
 from django.core.management.base import BaseCommand
 
@@ -44,4 +43,4 @@ class Command(BaseCommand):
             destination = open(file_path, 'wb+')
             destination.write(ics_str.encode())
             destination.close()
-            print('Created ics for user %s pk=%s' % (user, user.pk))
+            print('Created ics for user {} pk={}'.format(user, user.pk))

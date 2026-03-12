@@ -50,10 +50,10 @@ def get_duration_choices(user):
                 continue
         else:
             if pricing.show_member_pricing and user.profile.is_member:
-                prices = "%s%s(R)/%s(P)" % (currency_symbol,pricing.regular_price_member,
+                prices = "{}{}(R)/{}(P)".format(currency_symbol,pricing.regular_price_member,
                                             pricing.premium_price_member)
             else:
-                prices = "%s%s(R)/%s(P)" % (currency_symbol, pricing.regular_price,
+                prices = "{}{}(R)/{}(P)".format(currency_symbol, pricing.regular_price,
                                     pricing.premium_price)
             choice = (pricing.pk, _(f'{pricing.duration_display()} for {prices}'))
         choices.append(choice)
@@ -167,7 +167,7 @@ def is_free_listing(user, pricing_id, list_type):
 
 
 def process_export(export_fields='all_fields', export_status_detail='',
-                   identifier=u'', user_id=0):
+                   identifier='', user_id=0):
     from tendenci.apps.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':

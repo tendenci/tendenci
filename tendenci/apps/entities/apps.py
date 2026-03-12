@@ -6,4 +6,4 @@ class EntitiesConfig(AppConfig):
     verbose_name = 'Entities'
 
     def ready(self):
-        super(EntitiesConfig, self).ready()
+        super().ready()

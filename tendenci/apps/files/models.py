@@ -1,4 +1,3 @@
-from builtins import str
 import hashlib
 import os
 import mimetypes
@@ -50,9 +49,9 @@ def file_directory(instance, filename):
         content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', str(content_type))
         content_type = content_type.lower()
 
-        return 'files/%s/%s/%s' % (content_type, hex_digest, filename)
+        return 'files/{}/{}/{}'.format(content_type, hex_digest, filename)
 
-    return 'files/files/%s/%s' % (hex_digest, filename)
+    return 'files/files/{}/{}'.format(hex_digest, filename)
 
 
 class File(TendenciBaseModel):
@@ -87,7 +86,7 @@ class File(TendenciBaseModel):
         app_label = 'files'
 
     def __init__(self, *args, **kwargs):
-        super(File, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._originaldict = {}
         for field in self._meta.get_fields():
@@ -141,7 +140,7 @@ class File(TendenciBaseModel):
         if not self.group:
             self.group_id = get_default_group()
 
-        super(File, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if self.is_public_file():
             set_s3_file_permission(self.file, public=True)
@@ -217,7 +216,7 @@ class File(TendenciBaseModel):
             self.file.delete(save=False)
 
         # delete database record
-        super(File, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def basename(self):
         return os.path.basename(str(self.file.name))
@@ -229,7 +228,7 @@ class File(TendenciBaseModel):
         return self.name or os.path.splitext(self.basename())[0]
 
     def get_name_ext(self):
-        return "%s%s" % (self.get_name(), self.ext())
+        return "{}{}".format(self.get_name(), self.ext())
 
     def type(self):
         ext = self.ext().lower()
@@ -348,7 +347,7 @@ class File(TendenciBaseModel):
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
             return self.file.url
         else:
-            return "%s%s" % (settings.MEDIA_URL, self.file)
+            return "{}{}".format(settings.MEDIA_URL, self.file)
 
     def get_content(self):
         if self.content_type and self.object_id:

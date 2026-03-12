@@ -82,7 +82,7 @@ class CorpProductForm(forms.ModelForm):
         fields = ('product', )
         
     def __init__(self, *args, **kwargs):
-        super(CorpProductForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['product'].choices = _get_product_choices()
 
 
@@ -95,7 +95,7 @@ class BranchAdminForm(forms.ModelForm):
               'country', 'phone', 'fax')
         
     def __init__(self, *args, **kwargs):
-        super(BranchAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # state
         if get_setting('site', 'global', 'stateusesdropdown'):
             self.fields['state'] = StateSelectField(label=self.fields['state'].label,
@@ -123,7 +123,7 @@ class BroadcastForm(FormControlWidgetMixin, forms.ModelForm):
                   'body',)
     
     def __init__(self, *args, **kwargs):
-        super(BroadcastForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['corp_members'].queryset = CorpMembership.objects.select_related(
             'corp_profile').filter(status_detail='active').order_by('corp_profile__name')
 
@@ -165,7 +165,7 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(CorporateMembershipTypeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['pending_group'].queryset = self.fields['pending_group'].queryset.exclude(
                     type='system_generated').exclude(type='membership')
         self.fields['active_group'].queryset = self.fields['active_group'].queryset.exclude(
@@ -247,7 +247,7 @@ class CorpMembershipAppForm(TendenciBaseForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(CorpMembershipAppForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs[
                 'app_instance_id'] = self.instance.pk
@@ -265,7 +265,7 @@ class CorpMembershipAppForm(TendenciBaseForm):
 
 
     def clean(self):
-        cleaned_data = super(CorpMembershipAppForm, self).clean()
+        cleaned_data = super().clean()
         is_public = cleaned_data.get('allow_anonymous_view')
         corp_memb_types = cleaned_data.get('corp_memb_type')
 
@@ -298,7 +298,7 @@ class CorpMembershipAppFieldAdminForm(forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(CorpMembershipAppFieldAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance:
             if not self.instance.field_name:
                 self.fields['field_type'].choices = CorpMembershipAppField.FIELD_TYPE_CHOICES2
@@ -315,7 +315,7 @@ class CorpMembershipAppFieldAdminForm(forms.ModelForm):
                                             choices=(('yesno', _('Yes/No')),))
 
     def save(self, *args, **kwargs):
-        self.instance = super(CorpMembershipAppFieldAdminForm, self).save(*args, **kwargs)
+        self.instance = super().save(*args, **kwargs)
         if self.instance:
             if not self.instance.field_name:
                 if self.instance.field_type != 'section_break':
@@ -379,8 +379,8 @@ def assign_fields(form, app_field_objs, instance=None):
                     obj.display_only = False
                 
                 if instance.invoice:
-                    obj.display_content = """%s - <a href="%s">View Invoice</a>
-                                        """ % (obj.display_content,
+                    obj.display_content = """{} - <a href="{}">View Invoice</a>
+                                        """.format(obj.display_content,
                                         instance.invoice.get_absolute_url())
                 continue
 
@@ -494,7 +494,7 @@ class CorpProfileAdminForm(CorpProfileBaseForm):
                  'notes',)
 
     def __init__(self, *args, **kwargs):
-        super(CorpProfileAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.instance.logo:
             self.initial['logo_file'] = self.instance.logo.file
@@ -525,7 +525,7 @@ class CorpProfileForm(CorpProfileBaseForm):
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request_user = kwargs.pop('request_user')
         self.corpmembership_app = kwargs.pop('corpmembership_app')
-        super(CorpProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         for field_obj in app_field_objs:
             if field_obj.field_name in self.fields:
@@ -630,7 +630,7 @@ class CorpProfileForm(CorpProfileBaseForm):
                                                      value)
                         setattr(self.instance, field_key, value)
 
-        corp_profile = super(CorpProfileForm, self).save(*args, **kwargs)
+        corp_profile = super().save(*args, **kwargs)
 
         # update authorized domain if needed
         if self.corpmembership_app.authentication_method == 'email':
@@ -651,7 +651,7 @@ class CorpMembershipUpgradeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request_user = kwargs.pop('request_user')
         self.corpmembership_app = kwargs.pop('corpmembership_app')
-        super(CorpMembershipUpgradeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['corporate_membership_type'].widget = forms.widgets.RadioSelect(
             choices=get_corpmembership_type_choices(
                 self.request_user,
@@ -679,7 +679,7 @@ class CorpMembershipForm(FormControlWidgetMixin, forms.ModelForm):
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request_user = kwargs.pop('request_user')
         self.corpmembership_app = kwargs.pop('corpmembership_app')
-        super(CorpMembershipForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['corporate_membership_type'].widget = forms.widgets.RadioSelect(
             choices=get_corpmembership_type_choices(
                 self.request_user,
@@ -719,7 +719,7 @@ class CorpMembershipForm(FormControlWidgetMixin, forms.ModelForm):
         self.field_names = [name for name in self.fields]
 
     def save(self, **kwargs):
-        super(CorpMembershipForm, self).save(commit=False)
+        super().save(commit=False)
         anonymous_creator = kwargs.get('creator')
         corp_profile = kwargs.get('corp_profile')
         creator_owner = self.request_user
@@ -766,7 +766,7 @@ class CorpMembershipRenewForm(forms.ModelForm):
         self.request_user = kwargs.pop('request_user')
         self.corpmembership_app = kwargs.pop('corpmembership_app')
 
-        super(CorpMembershipRenewForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['corporate_membership_type'].widget = forms.RadioSelect(
                     choices=get_corpmembership_type_choices(
@@ -813,7 +813,7 @@ class CorpMembershipRenewForm(forms.ModelForm):
                 self.instance.payment_method
 
     def clean(self):
-        cleaned_data = super(CorpMembershipRenewForm, self).clean()
+        cleaned_data = super().clean()
         cmt = cleaned_data['corporate_membership_type']
         members = cleaned_data['members']
         count_members = len(members)
@@ -886,7 +886,7 @@ class RosterSearchAdvancedForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         request_user = kwargs.pop('request_user')
-        super(RosterSearchAdvancedForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         choices = CorpMembership.get_my_corporate_profiles_choices(request_user)
         self.fields['cm_id'].choices = choices
         
@@ -919,7 +919,7 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
     def __init__(self, *args, **kwargs):
         search_field_names_list = kwargs.pop('names_list')
         user = kwargs.pop('user')
-        super(CorpMembershipSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # add industry field if industry exists
         app = CorpMembershipApp.objects.current_app()
         if app:
@@ -978,7 +978,7 @@ class ReportByTypeForm(FormControlWidgetMixin, forms.Form):
                             choices= ())
 
     def __init__(self, *args, **kwargs):
-        super(ReportByTypeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['days'].widget.attrs.update({'onchange': 'this.form.submit();'})
         self.fields['corp_membership_type'].choices = [(0, 'ALL')] + \
@@ -1010,7 +1010,7 @@ class ReportByStatusForm(FormControlWidgetMixin, forms.Form):
                             choices=STATUS_CHOICES)
 
     def __init__(self, *args, **kwargs):
-        super(ReportByStatusForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['days'].widget.attrs.update({'onchange': 'this.form.submit();'})
         self.fields['status_detail'].widget.attrs.update({'onchange': 'this.form.submit();'})
@@ -1033,7 +1033,7 @@ class CorpMembershipUploadForm(forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(CorpMembershipUploadForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['key'].initial = 'name'
         for k in self.fields:
             if k in ['key', 'override']:
@@ -1077,7 +1077,7 @@ class CreatorForm(forms.ModelForm):
                 'email', )
 
     def __init__(self, *args, **kwargs):
-        super(CreatorForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
         for k in self.fields:
             self.fields[k].widget.attrs['class'] = 'form-control'
@@ -1119,7 +1119,7 @@ class CorpApproveForm(forms.Form):
             users = User.objects.filter(query).order_by('last_name')
 
             for u in users:
-                user_set[u.pk] = '%s %s %s %s ' % (u.first_name,
+                user_set[u.pk] = '{} {} {} {} '.format(u.first_name,
                                                    u.last_name,
                                                    u.username,
                                                    u.email)
@@ -1133,7 +1133,7 @@ class CorpApproveForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         corp_memb = kwargs.pop('corporate_membership')
-        super(CorpApproveForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if corp_memb.is_join_pending and corp_memb.anonymous_creator:
             suggested_users, exact_match = self.suggested_users(
@@ -1141,7 +1141,7 @@ class CorpApproveForm(forms.Form):
                            last_name=corp_memb.anonymous_creator.last_name,
                            email=corp_memb.anonymous_creator.email)
             if not exact_match:
-                suggested_users.append((0, 'Create new user for %s %s %s' % (
+                suggested_users.append((0, 'Create new user for {} {} {}'.format(
                                       corp_memb.anonymous_creator.first_name,
                                       corp_memb.anonymous_creator.last_name,
                                       corp_memb.anonymous_creator.email
@@ -1165,11 +1165,11 @@ class CorpMembershipRepForm(FormControlWidgetMixin, forms.ModelForm):
 
     def __init__(self, corp_membership, *args, **kwargs):
         self.corp_membership = corp_membership
-        super(CorpMembershipRepForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['email'].widget.attrs.update({'placeholder': _('example@email.com')})
 
     def clean(self):
-        cleaned_data = super(CorpMembershipRepForm, self).clean()
+        cleaned_data = super().clean()
         value = self.cleaned_data['email']
         if not User.objects.filter(email__iexact=value).exists():
             register_url = reverse('registration_register')
@@ -1221,7 +1221,7 @@ class CSVForm(forms.Form):
         corp_app = kwargs.pop('corp_app', '')
         file_path = kwargs.pop('file_path', '')
 
-        super(CSVForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if step_numeral == 1:
             """
@@ -1357,7 +1357,7 @@ class NoticeForm(forms.ModelForm):
             'status_detail',)
         
     def __init__(self, *args, **kwargs):
-        super(NoticeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.instance.pk:
             self.fields['email_content'].widget.mce_attrs['app_instance_id'] = self.instance.pk

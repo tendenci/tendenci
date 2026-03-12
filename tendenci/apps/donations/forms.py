@@ -56,7 +56,7 @@ class DonationAdminForm(forms.ModelForm):
         #     self.user = kwargs.pop('user', None)
         # else:
         #     self.user = None
-        super(DonationAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['user'].required = False
 
         # donate_to_entity or allocation
@@ -82,9 +82,9 @@ class DonationAdminForm(forms.ModelForm):
     def clean_donation_amount(self):
         try:
             if float(self.cleaned_data['donation_amount']) <= 0:
-                raise forms.ValidationError(_(u'Please enter a positive number'))
+                raise forms.ValidationError(_('Please enter a positive number'))
         except:
-            raise forms.ValidationError(_(u'Please enter a numeric positive number'))
+            raise forms.ValidationError(_('Please enter a numeric positive number'))
         return self.cleaned_data['donation_amount']
 
 class DonationForm(FormControlWidgetMixin, BetterModelForm):
@@ -164,7 +164,7 @@ class DonationForm(FormControlWidgetMixin, BetterModelForm):
         else:
             self.user = None
         self.hide_amount = False
-        super(DonationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # populate the user fields
         if self.user and self.user.id:
             self.fields['first_name'].initial = self.user.first_name
@@ -253,7 +253,7 @@ class DonationForm(FormControlWidgetMixin, BetterModelForm):
         #raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
         try:
             if float(self.cleaned_data['donation_amount']) <= 0:
-                raise forms.ValidationError(_(u'Please enter a positive number'))
+                raise forms.ValidationError(_('Please enter a positive number'))
         except:
-            raise forms.ValidationError(_(u'Please enter a numeric positive number'))
+            raise forms.ValidationError(_('Please enter a numeric positive number'))
         return self.cleaned_data['donation_amount']

@@ -72,7 +72,7 @@ class Donation(models.Model):
             self.owner=user
             self.owner_username=user.username
 
-        super(Donation, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):

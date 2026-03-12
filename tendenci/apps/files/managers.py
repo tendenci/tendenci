@@ -1,4 +1,3 @@
-from builtins import str, int
 import os
 import re
 from datetime import datetime

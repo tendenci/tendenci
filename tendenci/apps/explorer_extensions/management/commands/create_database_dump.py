@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand, CommandError
 from django.template.loader import render_to_string
 from django.core.files.base import ContentFile
@@ -61,7 +60,7 @@ class Command(BaseCommand):
         fmt = options['export_format']
 
         if fmt not in VALID_FORMAT_CHOICES:
-            raise CommandError('Format %s is not supported. Please use one of the following: %s' % (fmt, VALID_FORMAT_CHOICES))
+            raise CommandError('Format {} is not supported. Please use one of the following: {}'.format(fmt, VALID_FORMAT_CHOICES))
 
         dump_obj.export_format = fmt
         dump_obj.save()

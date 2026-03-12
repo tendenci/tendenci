@@ -18,7 +18,7 @@ class DonationAdmin(admin.ModelAdmin):
     @mark_safe
     def show_user(self, instance):
         if instance.user:
-            return '<a href="{0}" title="Donor">{1}</a>'.format(
+            return '<a href="{}" title="Donor">{}</a>'.format(
                     reverse('profile', args=[instance.user.username]),
                     instance.user.username
                 )

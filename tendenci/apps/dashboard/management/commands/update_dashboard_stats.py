@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 from decimal import Decimal
 import simplejson as json
@@ -161,7 +160,7 @@ class Command(BaseCommand):
                 if limit == 0:
                     registration = "%s" % count
                 else:
-                    registration = "%s/%s" % (count, limit)
+                    registration = "{}/{}".format(count, limit)
                 registrations = event.registration_set.all()
                 total = registrations.aggregate(Sum('invoice__total'))
                 total = total['invoice__total__sum']
@@ -171,7 +170,7 @@ class Command(BaseCommand):
                 reg_paid_count = Decimal(registrations.filter(invoice__balance=0).count())
                 if reg_count != 0:
                     invoice_percentage = (reg_paid_count / reg_count)
-                    invoice_percentage = '{0:.2%}'.format(invoice_percentage)
+                    invoice_percentage = '{:.2%}'.format(invoice_percentage)
 
             events_list.append([event.start_dt.strftime('%a, %b %d, %Y'),
                                 event.title,
@@ -212,11 +211,11 @@ class Command(BaseCommand):
         cursor.execute("""
             SELECT object_id, count(*) as total_views
             FROM event_logs_eventlog
-            WHERE create_dt >= '%s'
-            AND content_type_id = %s
+            WHERE create_dt >= '{}'
+            AND content_type_id = {}
             GROUP BY object_id
             ORDER BY total_views DESC
-            LIMIT %s""" % (dt, cid.pk, items))
+            LIMIT {}""".format(dt, cid.pk, items))
         rows = cursor.fetchall()
 
         pages_list = [['','',total_count]]
@@ -243,11 +242,11 @@ class Command(BaseCommand):
         cursor.execute("""
             SELECT object_id, count(*) as total_views
             FROM event_logs_eventlog
-            WHERE create_dt >= '%s'
-            AND content_type_id = %s
+            WHERE create_dt >= '{}'
+            AND content_type_id = {}
             GROUP BY object_id
             ORDER BY total_views DESC
-            LIMIT %s""" % (dt, cid.pk, items))
+            LIMIT {}""".format(dt, cid.pk, items))
         rows = cursor.fetchall()
 
         events_list = [['','',total_count]]

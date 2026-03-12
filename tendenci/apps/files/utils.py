@@ -274,7 +274,7 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key, quality, con
     return key
 
 
-class AppRetrieveFiles(object):
+class AppRetrieveFiles:
     """
     Retrieve files (images) from src url.
     """
@@ -296,7 +296,7 @@ class AppRetrieveFiles(object):
             for article in articles:
                 print('Processing article - ', article.id,  article)
                 kwargs['instance'] = article
-                kwargs['content_url'] = '%s%s' % (self.site_url,
+                kwargs['content_url'] = '{}{}'.format(self.site_url,
                                                   article.get_absolute_url())
                 updated, article.body = self.process_content(
                                         article.body, **kwargs)
@@ -309,7 +309,7 @@ class AppRetrieveFiles(object):
             for n in news:
                 print('Processing news -', n.id, n)
                 kwargs['instance'] = n
-                kwargs['content_url'] = '%s%s' % (self.site_url,
+                kwargs['content_url'] = '{}{}'.format(self.site_url,
                                                   n.get_absolute_url())
                 updated, n.body = self.process_content(
                                         n.body, **kwargs)
@@ -321,7 +321,7 @@ class AppRetrieveFiles(object):
             for page in pages:
                 print('Processing page -', page.id, page)
                 kwargs['instance'] = page
-                kwargs['content_url'] = '%s%s' % (self.site_url,
+                kwargs['content_url'] = '{}{}'.format(self.site_url,
                                                   page.get_absolute_url())
                 updated, page.content = self.process_content(
                                         page.content, **kwargs)
@@ -333,7 +333,7 @@ class AppRetrieveFiles(object):
             for job in jobs:
                 print('Processing job -', job.id, job)
                 kwargs['instance'] = job
-                kwargs['content_url'] = '%s%s' % (self.site_url,
+                kwargs['content_url'] = '{}{}'.format(self.site_url,
                                                   job.get_absolute_url())
                 updated, job.description = self.process_content(
                                         job.description, **kwargs)
@@ -345,7 +345,7 @@ class AppRetrieveFiles(object):
             for event in events:
                 print('Processing event -', event.id, event)
                 kwargs['instance'] = event
-                kwargs['content_url'] = '%s%s' % (self.site_url,
+                kwargs['content_url'] = '{}{}'.format(self.site_url,
                                                   event.get_absolute_url())
                 updated, event.description = self.process_content(
                                         event.description, **kwargs)
@@ -359,7 +359,7 @@ class AppRetrieveFiles(object):
                 kwargs['instance'] = speaker
                 [event] = speaker.event.all()[:1] or [None]
                 if event:
-                    kwargs['content_url'] = '%s%s' % (self.site_url,
+                    kwargs['content_url'] = '{}{}'.format(self.site_url,
                                                       event.get_absolute_url())
                 else:
                     kwargs['content_url'] = 'event speaker %d' % speaker.id
@@ -381,7 +381,7 @@ class AppRetrieveFiles(object):
                 return
             tfiles = TFile.objects.all()
             for tfile in tfiles:
-                kwargs['content_url'] = '%s%s' % (self.site_url,
+                kwargs['content_url'] = '{}{}'.format(self.site_url,
                                                   tfile.get_absolute_url())
                 self.check_file(tfile, cursor, mig_file_table, **kwargs)
 
@@ -429,11 +429,11 @@ class AppRetrieveFiles(object):
                 row = cursor.fetchone()
                 if row:
                     (t4_object_id, t4_object_type) = row
-                    t4_relative_url = '/attachments/%s/%s/%s' % (
+                    t4_relative_url = '/attachments/{}/{}/{}'.format(
                                 t4_object_type,
                                 t4_object_id,
                                 file_name)
-                    t4_url = '%s%s' % (self.src_url, t4_relative_url)
+                    t4_url = '{}{}'.format(self.src_url, t4_relative_url)
                     # if link exists on the t4 site, go get it
                     if self.link_exists(t4_relative_url, self.src_domain):
                         tfile.file.save(file_path,
@@ -477,7 +477,7 @@ class AppRetrieveFiles(object):
         # if link doesn't exist on the site but on the src
         if not self.link_exists(relative_url, self.site_domain):
             if self.link_exists(relative_url, self.src_domain):
-                url = '%s%s' % (self.src_url, relative_url)
+                url = '{}{}'.format(self.src_url, relative_url)
                 # go get from the src site
                 tfile = self.save_file_from_url(url, kwargs.get('instance'))
                 self.replace_dict[link] = tfile.get_absolute_url()

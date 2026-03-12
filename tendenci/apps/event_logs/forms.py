@@ -106,6 +106,6 @@ class EventLogSearchForm(BetterForm):
         ]
 
     def __init__(self, *args, **kwargs):
-        super(EventLogSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['start_dt'].initial = datetime.now() - timedelta(weeks=4)
         self.fields['end_dt'].initial = datetime.now()

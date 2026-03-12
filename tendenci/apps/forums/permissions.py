@@ -10,7 +10,7 @@ from . import defaults, util
 from .models import Category, Forum
 
 
-class DefaultPermissionHandler(object):
+class DefaultPermissionHandler:
     """
     Default Permission handler. If you want to implement custom permissions (for example,
     private forums based on some application-specific settings), you can inherit from this

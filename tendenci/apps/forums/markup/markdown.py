@@ -24,7 +24,7 @@ class MarkdownWidget(Textarea):
 
     def render(self, *args, **kwargs):
         tpl = get_template('pybb/markup/markdown_widget.html')
-        ctx = {'widget_output': super(MarkdownWidget, self).render(*args, **kwargs)}
+        ctx = {'widget_output': super().render(*args, **kwargs)}
         return tpl.render(context=ctx)
 
 

@@ -79,7 +79,7 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         is_superuser = kwargs.pop('is_superuser', None)
-        super(DirectorySearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if not is_superuser:
             self.fields['search_category'].choices = SEARCH_CATEGORIES
@@ -98,7 +98,7 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
             self.fields.pop('sub_cat')
 
     def clean(self):
-        cleaned_data = super(DirectorySearchForm, self).clean()
+        cleaned_data = super().clean()
         q = cleaned_data.get('q', None)
         cat = cleaned_data.get('search_category', None)
 
@@ -302,7 +302,7 @@ class DirectoryForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(DirectoryForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         #self.fields['headline'].help_text = _('Company or Organization name')
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -345,7 +345,7 @@ class DirectoryForm(TendenciBaseForm):
         self.fields['sub_cats'].choices = _get_sub_cats_choices(directory=self.instance)
         
         if self.user.profile.is_superuser:
-            self.fields['sub_cats'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
+            self.fields['sub_cats'].help_text = mark_safe('<a href="{}">{}</a>'.format(
                                         reverse('admin:directories_category_changelist'),
                                         _('Manage Categories'),))
 #         if self.instance and self.instance.pk:
@@ -387,7 +387,7 @@ class DirectoryForm(TendenciBaseForm):
 
         if 'sub_cats' not in self.fields:
             if self.user.profile.is_superuser:
-                self.fields['cats'].help_text += mark_safe('<br /><a href="{0}">{1}</a>'.format(
+                self.fields['cats'].help_text += mark_safe('<br /><a href="{}">{}</a>'.format(
                             reverse('admin:directories_category_changelist'),
                             _('Manage Categories'),))
  
@@ -446,7 +446,7 @@ class DirectoryForm(TendenciBaseForm):
                     raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(logo_size)s') % {
                                                     'max_upload_size': filesizeformat(max_upload_size),
                                                     'logo_size': filesizeformat(logo.size)})
-            except IOError:
+            except OSError:
                 logo = None
 
         return logo
@@ -459,7 +459,7 @@ class DirectoryForm(TendenciBaseForm):
 
     def save(self, *args, **kwargs):
         from tendenci.apps.files.models import File
-        directory = super(DirectoryForm, self).save(*args, **kwargs)
+        directory = super().save(*args, **kwargs)
 
         content_type = ContentType.objects.get(
                 app_label=Directory._meta.app_label,
@@ -519,7 +519,7 @@ class DirectoryPricingForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
-        super(DirectoryPricingForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if user and user.profile.is_superuser:
             self.fields['duration'] = forms.ChoiceField(initial=14, choices=ADMIN_DURATION_CHOICES)
         else:
@@ -551,7 +551,7 @@ class DirectoryRenewForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(DirectoryRenewForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if 'payment_method' in self.fields:
             self.fields['payment_method'].widget = forms.RadioSelect()
@@ -560,7 +560,7 @@ class DirectoryRenewForm(TendenciBaseForm):
             self.fields['pricing'].choices = get_duration_choices(self.user)
 
     def save(self, *args, **kwargs):
-        directory = super(DirectoryRenewForm, self).save(*args, **kwargs)
+        directory = super().save(*args, **kwargs)
         if 'pricing' in self.cleaned_data:
             directory.requested_duration = self.cleaned_data['pricing'].duration
         return directory

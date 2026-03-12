@@ -101,7 +101,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
             if not form.cleaned_data['custom_payment']:
                 form_instance.pricing_set.all().delete()
 
-            messages.add_message(request, messages.SUCCESS, _('Successfully edited %(f)s' % {'f': form_instance}))
+            messages.add_message(request, messages.SUCCESS, _('Successfully edited {f}'.format(f=form_instance)))
             return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(instance=form_instance, user=request.user)
@@ -178,7 +178,7 @@ def copy(request, id):
         if i > 0:
             if i > 1:
                 slug = slug.rsplit("-", 1)[0]
-            slug = "%s-%s" % (slug, i)
+            slug = "{}-{}".format(slug, i)
         match = Form.objects.filter(slug=slug)
         if not match:
             break
@@ -225,7 +225,7 @@ def copy(request, id):
             )
 
     EventLog.objects.log(instance=form_instance)
-    messages.add_message(request, messages.SUCCESS, _('Successfully added %(n)s' % {'n': new_form}))
+    messages.add_message(request, messages.SUCCESS, _('Successfully added {n}'.format(n=new_form)))
     if not (request.user.is_superuser or request.user.is_staff):
         return redirect('form_edit', new_form.pk)
 
@@ -290,7 +290,7 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, _('Successfully deleted entry %(e)s' % { 'e': entry}))
+        messages.add_message(request, messages.SUCCESS, _('Successfully deleted entry {e}'.format( e=entry)))
         # hold the form here as the value of entry will be None after entry is deleted
         form = entry.form
         entry.delete()
@@ -489,7 +489,7 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                 is_spam = Email.is_blocked(email_to)
                 if is_spam:
                     # log the spam
-                    description = "Email \"{0}\" blocked because it is listed in email_blocks.".format(email_to)
+                    description = "Email \"{}\" blocked because it is listed in email_blocks.".format(email_to)
                     EventLog.objects.log(instance=form, description=description)
 
                     if form.completion_url:

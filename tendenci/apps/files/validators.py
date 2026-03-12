@@ -10,7 +10,7 @@ from django.template.defaultfilters import filesizeformat
 from tendenci.apps.files.utils import get_max_file_upload_size, get_allowed_upload_file_exts, get_allowed_mimetypes
 
 
-class FileValidator(object):
+class FileValidator:
     """
     Validator for files, checking the size, extension and mimetype.
 

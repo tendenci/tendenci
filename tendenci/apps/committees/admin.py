@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
@@ -36,7 +35,7 @@ class OfficerAdminInline(admin.TabularInline):
             if committee:
                 return UserModelChoiceField(queryset=User.objects.filter(group_member__group=committee.group), label="User")
             return UserModelChoiceField(queryset=User.objects.none(), label="User")
-        return super(OfficerAdminInline, self).formfield_for_dbfield(field, **kwargs)
+        return super().formfield_for_dbfield(field, **kwargs)
 
     def get_object(self, request, model):
         object_id = request.resolver_match.kwargs.get('object_id', None)
@@ -87,7 +86,7 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
         """
         inject the user in the form.
         """
-        form = super(CommitteeAdmin, self).get_form(request, obj, **kwargs)
+        form = super().get_form(request, obj, **kwargs)
         form.current_user = request.user
         return form
 
@@ -113,7 +112,7 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
         return instance
 
     def save_related(self, request, form, formsets, change):
-        super(CommitteeAdmin, self).save_related(request, form, formsets, change)
+        super().save_related(request, form, formsets, change)
         # update group perms to officers
         form.instance.update_group_perms()
 
@@ -131,7 +130,7 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def link(self, obj):
-        return '<a href="%s" title="%s">%s</a>' % (
+        return '<a href="{}" title="{}">{}</a>'.format(
             obj.get_absolute_url(),
             obj.title,
             obj.slug
@@ -146,7 +145,7 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
     @mark_safe
     def view_on_site(self, obj):
         link_icon = static('images/icons/external_16x16.png')
-        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
+        link = '<a href="{}" title="{}"><img src="{}" /></a>'.format(
             reverse('committees.detail', args=[obj.slug]),
             strip_tags(obj.title),
             link_icon,

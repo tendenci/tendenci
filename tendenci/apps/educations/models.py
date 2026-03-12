@@ -1,5 +1,3 @@
-from builtins import str
-
 import uuid
 import ast
 
@@ -33,7 +31,7 @@ class Education(TendenciBaseModel):
     objects = EducationManager()
 
     def __init__(self, *args, **kwargs):
-        super(Education, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # Handle the case that degree can be a a multi select field on membership forms
         # So make sure it shows as a string e.g. PHD, MS/MA rather than [u'PHD', u'MS/MA'],
         if self.degree:
@@ -62,4 +60,4 @@ class Education(TendenciBaseModel):
             # placeholder to contain value for the datetime graduation field
             self.graduation_dt = datetime(year=self.graduation_year, month=1, day=1)
 
-        super(Education, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)

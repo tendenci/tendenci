@@ -6,13 +6,13 @@ from picklefield.fields import PickledObjectField
 
 class Export(models.Model):
     STATUS_CHOICES = (
-        ("completed", _(u"Completed")),
-        ("pending", _(u"Pending")),
-        ("failed", _(u"Failed")),
+        ("completed", _("Completed")),
+        ("pending", _("Pending")),
+        ("failed", _("Failed")),
     )
     app_label = models.CharField(max_length=50)
     model_name = models.CharField(max_length=50)
-    status = models.CharField(_(u"status"), max_length=50,
+    status = models.CharField(_("status"), max_length=50,
             default="pending", choices=STATUS_CHOICES)
     result = PickledObjectField(null=True, default=None)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -26,4 +26,4 @@ class Export(models.Model):
         return reverse('export.status', args=[self.app_label, self.model_name])
 
     def __str__(self):
-        return "Export for %s %s" % (self.app_label, self.model_name)
+        return "Export for {} {}".format(self.app_label, self.model_name)

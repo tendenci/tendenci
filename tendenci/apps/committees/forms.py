@@ -84,9 +84,9 @@ class CommitteeForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
 
     def __init__(self, *args, **kwargs):
-        super(CommitteeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.featured_image:
-            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
         if self.instance.pk:
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -97,7 +97,7 @@ class CommitteeForm(TendenciBaseForm):
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
 
     def save(self, *args, **kwargs):
-        committee = super(CommitteeForm, self).save(*args, **kwargs)
+        committee = super().save(*args, **kwargs)
         # save photo
         if 'photo_upload' in self.cleaned_data:
             photo = self.cleaned_data['photo_upload']
@@ -151,7 +151,7 @@ class CommitteeAdminForm(TendenciBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(CommitteeAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -161,7 +161,7 @@ class CommitteeAdminForm(TendenciBaseForm):
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
         if self.instance.featured_image:
-            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
             self.fields['photo_upload'].required = False
 
 
@@ -194,12 +194,12 @@ class UserModelChoiceField(forms.ModelChoiceField):
 class OfficerBaseFormSet(BaseInlineFormSet):
     def __init__(self,  *args, **kwargs): 
         self.committee = kwargs.pop("committee", None)
-        super(OfficerBaseFormSet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _construct_form(self, i, **kwargs):
         if hasattr(self, 'committee'):
             kwargs['committee'] = self.committee
-        return super(OfficerBaseFormSet, self)._construct_form(i, **kwargs)
+        return super()._construct_form(i, **kwargs)
 
 
 class OfficerForm(forms.ModelForm):
@@ -212,7 +212,7 @@ class OfficerForm(forms.ModelForm):
     def __init__(self, committee, *args, **kwargs):
         kwargs.update({'use_required_attribute': False})
         self.field_order = ['user', 'position', 'phone', 'email', 'expire_dt']
-        super(OfficerForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         #self.field_order = ['position', 'user', 'phone']
         # Initialize user.  Label depends on nullability.
         # Priority

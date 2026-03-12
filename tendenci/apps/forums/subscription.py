@@ -181,7 +181,7 @@ class NotifyThread(threading.Thread):
     def __init__(self, obj, post_type='post', **kwargs):
         self.obj = obj
         self.post_type = post_type
-        super(NotifyThread, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def run(self):
         if self.post_type == 'post':

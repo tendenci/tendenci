@@ -432,6 +432,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='corpmembershiprep',
-            unique_together=set([('corp_profile', 'user')]),
+            unique_together={('corp_profile', 'user')},
         ),
     ]

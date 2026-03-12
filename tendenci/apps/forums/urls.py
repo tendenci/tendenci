@@ -1,4 +1,3 @@
-
 from django.urls import path, re_path
 from .feeds import LastPosts, LastTopics
 from . import views

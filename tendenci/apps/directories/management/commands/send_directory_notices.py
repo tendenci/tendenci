@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 
@@ -20,7 +19,7 @@ class Command(BaseCommand):
         for directory in directories:
             if datetime.now() + timedelta(days) > directory.expiration_dt:
                 email_recipient = directory.creator.email
-                print('Sending email to %s for directory %s.' % (email_recipient, directory, ))
+                print('Sending email to {} for directory {}.'.format(email_recipient, directory))
                 send_email_notification(
                     'directory_renewal_eligible',
                     email_recipient,
@@ -32,4 +31,4 @@ class Command(BaseCommand):
                 directory.renewal_notice_sent = True
                 directory.save()
             else:
-                print('Directory %s not eligible for renewal right now.' % (directory, ))
+                print('Directory {} not eligible for renewal right now.'.format(directory))

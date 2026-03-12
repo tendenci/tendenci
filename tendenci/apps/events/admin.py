@@ -205,7 +205,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         has_regconf = obj.has_regconf
         extra_context = extra_context or {}
         extra_context.update({'has_regconf': has_regconf})
-        result = super(CustomRegFormAdmin, self).change_view(request,
+        result = super().change_view(request,
                         object_id, form_url=form_url, extra_context=extra_context)
 
         if '_addanother' not in request.POST and '_continue' not in request.POST and 'next' in request.GET:
@@ -230,11 +230,11 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         return instance
 
     def log_deletion(self, request, object, object_repr):
-        super(CustomRegFormAdmin, self).log_deletion(request, object, object_repr)
+        super().log_deletion(request, object, object_repr)
         EventLog.objects.log(instance=object)
 
     def log_change(self, request, object, message):
-        super(CustomRegFormAdmin, self).log_change(request, object, message)
+        super().log_change(request, object, message)
         EventLog.objects.log(**{
             'event_id': 176200,
             'event_data': '%s (%d) edited by %s' % (object._meta.object_name,
@@ -246,7 +246,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         })
 
     def log_addition(self, request, object, message):
-        super(CustomRegFormAdmin, self).log_addition(request, object, message)
+        super().log_addition(request, object, message)
         log_defaults = {
             'event_id': 176100,
             'event_data': '%s (%d) added by %s' % (object._meta.object_name,
@@ -266,7 +266,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         if not form.has_regconf:
             raise Http404
         response = HttpResponse(content_type='text/csv')
-        csvname = '%s-%s.csv' % (form.for_event, slugify(datetime.now().ctime()))
+        csvname = '{}-{}.csv'.format(form.for_event, slugify(datetime.now().ctime()))
         response['Content-Disposition'] = 'attachment; filename="%s"' % csvname
         csv = writer(response)
         # Write out the column names and store the index of each field
@@ -302,7 +302,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         """
         Add the export view to urls.
         """
-        urls = super(CustomRegFormAdmin, self).get_urls()
+        urls = super().get_urls()
         extra_urls = [
             re_path(r'^export/(?P<regform_id>\d+)/$',
                 self.admin_site.admin_view(self.export_view),
@@ -319,7 +319,7 @@ class StandardRegFormAdmin(admin.ModelAdmin):
         """
         Add the export view to urls.
         """
-        urls = super(StandardRegFormAdmin, self).get_urls()
+        urls = super().get_urls()
         extra_urls = [
             re_path(r'^edit',
                 self.admin_site.admin_view(self.edit_regform_view),
@@ -349,7 +349,7 @@ class StandardRegFormAdmin(admin.ModelAdmin):
 class CEUSubCategoryFormSet(BaseInlineFormSet):
 
     def clean(self):
-        super(CEUSubCategoryFormSet, self).clean()
+        super().clean()
 
         for form in self.forms:
             if not hasattr(form, 'cleaned_data'):
@@ -379,7 +379,7 @@ class CEUCategoryAdmin(admin.ModelAdmin):
     verbose_name_plural = _("Continuing Education Unit Categories")
 
     def get_queryset(self, request):
-        qs = super(CEUCategoryAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.filter(parent__isnull=True)
 
 

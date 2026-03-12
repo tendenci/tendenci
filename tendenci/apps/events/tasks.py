@@ -1,4 +1,3 @@
-from builtins import str
 import os
 from django.db.models import Max, Count
 from django.http import HttpResponse
@@ -189,11 +188,11 @@ class EventsExportTask(celery.Task):
         fields = event_fields + ["place %s" % f for f in place_fields]
         fields = fields + ["config %s" % f for f in configuration_fields]
         for i in range(0, max_speakers):
-            fields = fields + ["speaker %s %s" % (i, f) for f in speaker_fields]
+            fields = fields + ["speaker {} {}".format(i, f) for f in speaker_fields]
         for i in range(0, max_organizers):
-            fields = fields + ["organizer %s %s" % (i, f) for f in organizer_fields]
+            fields = fields + ["organizer {} {}".format(i, f) for f in organizer_fields]
         for i in range(0, max_pricings):
-            fields = fields + ["pricing %s %s" % (i, f) for f in pricing_fields]
+            fields = fields + ["pricing {} {}".format(i, f) for f in pricing_fields]
         return render_csv(file_name, fields, data_row_list)
 
 class EventsICSTask(celery.Task):

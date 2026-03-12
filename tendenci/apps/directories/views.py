@@ -123,7 +123,7 @@ def search(request, my_directories_only=False, template_name="directories/search
             elif search_method == 'contains':
                 search_type = '__icontains'
 
-            search_filter = {'%s%s' % (search_category, search_type): query}
+            search_filter = {'{}{}'.format(search_category, search_type): query}
             directories = directories.filter( **search_filter)
 
     if not request.user.is_superuser:
@@ -174,7 +174,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
 
     pricings = DirectoryPricing.objects.filter(status=True)
     if not pricings and has_perm(request.user, 'directories.add_directorypricing'):
-        msg_string = 'You need to add a %s Pricing before you can add %s.' % (get_setting('module', 'directories', 'label_plural'),get_setting('module', 'directories', 'label'))
+        msg_string = 'You need to add a {} Pricing before you can add {}.'.format(get_setting('module', 'directories', 'label_plural'),get_setting('module', 'directories', 'label'))
         messages.add_message(request, messages.WARNING, _(msg_string))
         return HttpResponseRedirect(reverse('directory_pricing.add'))
 
@@ -311,7 +311,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             if directory.logo:
                 try:
                     directory.logo.file.seek(0)
-                except IOError:
+                except OSError:
                     pass
                     #directory.logo = None
             
@@ -446,7 +446,7 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
                 directory_pricing.save(request.user)
 
                 if "_popup" in request.POST:
-                    return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % (escape(directory_pricing.pk), escape(directory_pricing)))
+                    return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "{}", "{}");</script>'.format(escape(directory_pricing.pk), escape(directory_pricing)))
 
                 return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
         else:
@@ -643,7 +643,7 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
                 directory.list_type = 'regular'
 
             if not directory.slug:
-                directory.slug = '%s-%s' % (slugify(directory.headline), Directory.objects.count())
+                directory.slug = '{}-{}'.format(slugify(directory.headline), Directory.objects.count())
 
             if not can_add_active and require_approval:
                 directory.status = True

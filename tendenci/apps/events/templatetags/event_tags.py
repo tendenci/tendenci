@@ -1,4 +1,3 @@
-from builtins import str
 import random
 from datetime import datetime, timedelta
 from operator import or_

@@ -80,7 +80,7 @@ def migrate_categories_for_templates():
     p = r'\{% with directory.cat as directory_cat %\}[\d\D\s\S\w\W]*?\{% endwith %\}'
     if os.path.isfile(file_path):
         print('Updating categories for file directories/meta.html' )
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
     
             content = re.sub(p, replace_with, content)

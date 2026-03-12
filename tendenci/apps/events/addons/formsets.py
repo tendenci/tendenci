@@ -13,7 +13,7 @@ class RegAddonBaseFormSet(BaseFormSet):
                  initial=None, error_class=ErrorList, **kwargs):
         self.event = kwargs.pop('event')
         self.extra_params = kwargs.pop('extra_params', {})
-        super(RegAddonBaseFormSet, self).__init__(data, files, auto_id, prefix,
+        super().__init__(data, files, auto_id, prefix,
                  initial, error_class)
 
     def _construct_form(self, i, **kwargs):

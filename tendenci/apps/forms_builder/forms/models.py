@@ -182,7 +182,7 @@ class Form(TendenciBaseModel):
             site_url = get_setting('site', 'global', 'siteurl')
             self.email_text = self.email_text.replace("src=\"/", f"src=\"{site_url}/")
             self.email_text = self.email_text.replace("href=\"/", f"href=\"{site_url}/")
-        super(Form, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('form_detail', kwargs={"slug": self.slug})
@@ -198,14 +198,14 @@ class Form(TendenciBaseModel):
     @mark_safe
     def admin_link_view(self):
         url = self.get_absolute_url()
-        return "<a href='%s'>%s</a>" % (url, gettext("View on site"))
+        return "<a href='{}'>{}</a>".format(url, gettext("View on site"))
 
     admin_link_view.short_description = ""
 
     @mark_safe
     def admin_link_export(self):
         url = reverse("admin:forms_form_export", args=(self.id,))
-        return "<a href='%s'>%s</a>" % (url, gettext("Export entries"))
+        return "<a href='{}'>{}</a>".format(url, gettext("Export entries"))
 
     admin_link_export.short_description = ""
 
@@ -358,7 +358,7 @@ class FormEntry(models.Model):
         app_label = 'forms'
 
     def __str__(self):
-        return ('%s submission' % (self.form.title,))
+        return ('{} submission'.format(self.form.title))
 
     @property
     def summary(self):
@@ -474,7 +474,7 @@ class FormEntry(models.Model):
                 last_name = entry.value
         if not name:
             if first_name or last_name:
-                name = '%s %s' % (first_name, last_name)
+                name = '{} {}'.format(first_name, last_name)
         if not name:
             # pick the name from email
             if email:
@@ -673,7 +673,7 @@ class FieldEntry(models.Model):
         app_label = 'forms'
 
     def __str__(self):
-        return ('%s: %s' % (self.field.label, self.value))
+        return ('{}: {}'.format(self.field.label, self.value))
 
     def include_in_email(self):
         widget = self.field.get_field_widget()
@@ -724,4 +724,4 @@ class Pricing(models.Model):
         currency_symbol = get_setting("site", "global", "currencysymbol")
         if not currency_symbol:
             currency_symbol = '$'
-        return "%s - %s%s" % (self.label, currency_symbol, self.price,)
+        return "{} - {}{}".format(self.label, currency_symbol, self.price)

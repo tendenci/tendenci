@@ -68,7 +68,7 @@ class DirectoryCategoryAdmin(admin.ModelAdmin):
         return ', '.join(DirectoryCategory.objects.filter(parent=instance).values_list('name', flat=True))
 
     def get_queryset(self, request):
-        qs = super(DirectoryCategoryAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.filter(parent__isnull=True)
 
 

@@ -48,7 +48,7 @@ class FileAdmin(TendenciBaseModelAdmin):
         filecategory_form = FileCategoryForm()
         extra_context.update({'filecategory_form' : filecategory_form})
 
-        return super(FileAdmin, self).changelist_view(request, extra_context)
+        return super().changelist_view(request, extra_context)
 
     @mark_safe
     def file_preview(self, obj):
@@ -57,11 +57,11 @@ class FileAdmin(TendenciBaseModelAdmin):
                 args = [obj.pk]
                 args.append("100x50")
                 args.append("crop")
-                return '<img alt="%s" title="%s" src="%s" />' % (obj, obj, reverse('file', args=args))
+                return '<img alt="{}" title="{}" src="{}" />'.format(obj, obj, reverse('file', args=args))
             else:
                 return ""
         elif obj.icon():
-            return '<img alt="%s" title="%s" src="%s" />' % (obj.type(), obj.type(), obj.icon())
+            return '<img alt="{}" title="{}" src="{}" />'.format(obj.type(), obj.type(), obj.icon())
         else:
             return obj.type()
     file_preview.short_description = _('Preview')
@@ -94,7 +94,7 @@ class MultipleFileAdmin(admin.ModelAdmin):
         """
         Add the export view to urls.
         """
-        urls = super(MultipleFileAdmin, self).get_urls()
+        urls = super().get_urls()
         extra_urls = [
             re_path("^add",
                 self.admin_site.admin_view(self.add_multiple_file_view),
@@ -142,7 +142,7 @@ class CategoryAdmin(admin.ModelAdmin):
     inlines = (CategoryAdminInline,)
 
     def get_queryset(self, request):
-        qs = super(CategoryAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.filter(parent__isnull=True)
 
 admin.site.register(FilesCategory, CategoryAdmin)

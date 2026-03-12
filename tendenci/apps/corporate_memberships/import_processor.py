@@ -18,7 +18,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.entities.models import Entity
 
 
-class CorpMembershipImportProcessor(object):
+class CorpMembershipImportProcessor:
     """
     Check and process (insert/update) a corporate membership.
     """
@@ -33,16 +33,16 @@ class CorpMembershipImportProcessor(object):
         self.mimport = mimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.corp_profile_fields = dict([(field.name, field)
+        self.corp_profile_fields = {field.name: field
                             for field in CorpProfile._meta.fields
                             if field.get_internal_type() != 'AutoField' and
-                            field.name not in ['guid']])
-        self.corp_membership_fields = dict([(field.name, field)
+                            field.name not in ['guid']}
+        self.corp_membership_fields = {field.name: field
                             for field in CorpMembership._meta.fields \
                             # comment it out if you want to make id import possible
                             if field.get_internal_type() != 'AutoField' and \
                             field.name not in ['user', 'guid',
-                                               'corp_profile']])
+                                               'corp_profile']}
         # Track account_ids in file to handle duplicate account_ids within the same file.
         self.account_ids_in_file = list()
         # Allow specific fields to be null, even when clean_data would normally provide a

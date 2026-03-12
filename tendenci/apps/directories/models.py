@@ -165,9 +165,9 @@ class Directory(TendenciBaseModel):
             slug = slugify(self.headline)
             count = str(Directory.objects.count())
             if len(slug) + len(count) >= 99:
-                self.slug = '%s-%s' % (slug[:99-len(count)], count)
+                self.slug = '{}-{}'.format(slug[:99-len(count)], count)
             else:
-                self.slug = '%s-%s' % (slug, count)
+                self.slug = '{}-{}'.format(slug, count)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -180,7 +180,7 @@ class Directory(TendenciBaseModel):
                 if region and region != self.region:
                     self.region = region
 
-        super(Directory, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if self.logo:
             if self.is_public():
                 set_s3_file_permission(self.logo.name, public=True)
@@ -211,7 +211,7 @@ class Directory(TendenciBaseModel):
 
     def get_logo_url(self):
         if not self.logo_file:
-            return u''
+            return ''
 
         return reverse('file', args=[self.logo_file.pk])
 
@@ -589,8 +589,8 @@ class DirectoryPricing(models.Model):
 
     def __str__(self):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
-        price = "%s%s(R)/%s(P)" % (currency_symbol, self.regular_price, self.premium_price)
-        return "%s days for %s" % (self.duration_display(), price)
+        price = "{}{}(R)/{}(P)".format(currency_symbol, self.regular_price, self.premium_price)
+        return "{} days for {}".format(self.duration_display(), price)
 
     def save(self, user=None, *args, **kwargs):
         if not self.id:
@@ -604,7 +604,7 @@ class DirectoryPricing(models.Model):
         if not self.regular_price: self.regular_price = 0
         if not self.premium_price: self.premium_price = 0
 
-        super(DirectoryPricing, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def duration_display(self):
         if self.duration < 365:

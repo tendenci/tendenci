@@ -1,4 +1,3 @@
-from builtins import str
 import uuid
 import copy
 from django.db import models
@@ -99,7 +98,7 @@ class Email(TendenciBaseModel):
         if self.sender_display:
             # Add quotes around display name to prevent errors on sending
             # When display name contains comma or other control characters,
-            headers['From'] = '"%s" <%s>' % (self.sender_display, self.sender)
+            headers['From'] = '"{}" <{}>'.format(self.sender_display, self.sender)
         if self.priority and self.priority == 1:
             headers['X-Priority'] = '1'
             headers['X-MSMail-Priority'] = 'High'
@@ -142,7 +141,7 @@ class Email(TendenciBaseModel):
             self.owner = user
             self.owner_username = user.username
 
-        super(Email, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     # if this email allows view by user2_compare
     def allow_view_by(self, user2_compare):

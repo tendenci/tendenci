@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
@@ -16,4 +15,4 @@ class Command(BaseCommand):
             for invoice in related_invoice:
                 invoice.creator_id = registration.creator_id
                 invoice.save()
-                print('Invoice %s updated for Registraion %s' % (invoice.id, registration.id))
+                print('Invoice {} updated for Registraion {}'.format(invoice.id, registration.id))

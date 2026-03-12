@@ -22,7 +22,7 @@ class BBCodeWidget(Textarea):
 
     def render(self, *args, **kwargs):
         tpl = get_template('pybb/markup/bbcode_widget.html')
-        ctx = {'widget_output': super(BBCodeWidget, self).render(*args, **kwargs)}
+        ctx = {'widget_output': super().render(*args, **kwargs)}
         return tpl.render(context=ctx)
 
 
@@ -34,7 +34,7 @@ class BBCodeParser(BaseParser):
             origin_author_html = '<em>%s</em><br>' % options['quote']
         else:
             origin_author_html = ''
-        return '<blockquote>%s%s</blockquote>' % (origin_author_html, value)
+        return '<blockquote>{}{}</blockquote>'.format(origin_author_html, value)
 
     def __init__(self):
         self._parser = Parser()
@@ -48,4 +48,4 @@ class BBCodeParser(BaseParser):
         return smile_it(self._parser.format(text))
 
     def quote(self, text, username=''):
-        return '[quote="%s"]%s[/quote]\n' % (username, text)
+        return '[quote="{}"]{}[/quote]\n'.format(username, text)

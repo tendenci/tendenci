@@ -33,7 +33,7 @@ class EmailForm(forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(EmailForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
@@ -50,7 +50,7 @@ class EmailForm(forms.ModelForm):
             self.instance.owner = user
             self.instance.owner_username = user.username
 
-        return super(EmailForm, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 class AmazonSESVerifyEmailForm(forms.Form):
     email_address = forms.EmailField(max_length=255, label=_("Enter an email address to verify"))
