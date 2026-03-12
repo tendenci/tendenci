@@ -5,7 +5,6 @@
 This TinyMCE widget was copied and extended from this code by John D'Agostino:
 http://code.djangoproject.com/wiki/CustomWidgetsTinyMCE
 """
-from __future__ import unicode_literals
 
 from django import forms
 from django.conf import settings
@@ -43,7 +42,7 @@ class TinyMCE(forms.Textarea):
     parameter.
     """
     def __init__(self, content_language=None, attrs=None, mce_attrs=None):
-        super(TinyMCE, self).__init__(attrs)
+        super().__init__(attrs)
         mce_attrs = mce_attrs or {}
         mce_attrs['language'] = settings.TINYMCE_DEFAULT_CONFIG.get('language', None)
         self.mce_attrs = mce_attrs
@@ -102,7 +101,7 @@ class TinyMCE(forms.Textarea):
             }
             final_attrs['data-mce-gz-conf'] = json.dumps(compressor_config)
         final_attrs['data-mce-conf'] = mce_json
-        html = ['<textarea%s>%s</textarea>' % (flatatt(final_attrs), escape(value))]
+        html = ['<textarea{}>{}</textarea>'.format(flatatt(final_attrs), escape(value))]
         return mark_safe('\n'.join(html))
 
     def _media(self):
@@ -144,7 +143,7 @@ def get_language_config(content_language=None):
             default = '+'
         else:
             default = ''
-        sp_langs.append('%s%s=%s' % (default, ' / '.join(names), lang))
+        sp_langs.append('{}{}={}'.format(default, ' / '.join(names), lang))
 
     config['spellchecker_languages'] = ','.join(sp_langs)
 

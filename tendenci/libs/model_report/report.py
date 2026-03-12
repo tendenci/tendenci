@@ -1,4 +1,3 @@
-from builtins import str
 import copy
 from itertools import groupby
 from itertools import chain
@@ -138,7 +137,7 @@ def autodiscover(module_name='reports.py'):
         # Attempt to import the app's admin module.
         try:
             before_import_registry = copy.copy(reports)
-            import_module('%s.%s' % (app, module_name))
+            import_module('{}.{}'.format(app, module_name))
         except:
             # Reset the model registry to the state before the last import as
             # this import will have to reoccur on the next request and this
@@ -158,7 +157,7 @@ def autodiscover(module_name='reports.py'):
                 pass
 
 
-class ReportClassManager(object):
+class ReportClassManager:
     """
     Class to handle registered reports class.
     """
@@ -197,7 +196,7 @@ def cache_return(fun):
     now that report instances can be modified based on request data.
     """
     def wrap(self, *args, **kwargs):
-        cache_field = '%s_%s' % (self.__class__.__name__, fun.func_name)
+        cache_field = '{}_{}'.format(self.__class__.__name__, fun.func_name)
         if cache_field in _cache_class:
             return _cache_class[cache_field]
         result = fun(self, *args, **kwargs)
@@ -217,7 +216,7 @@ def get_model_name(model):
     return model._meta.model_name
 
 
-class ReportAdmin(object):
+class ReportAdmin:
     """
     Class to represent a Report.
     """
@@ -353,7 +352,7 @@ class ReportAdmin(object):
                         get_attr.verbose_name = field
                         model_field = field
             except IndexError:
-                raise ValueError('The field "%s" does not exist in model "%s".' % (field, get_model_name(self.model)))
+                raise ValueError('The field "{}" does not exist in model "{}".'.format(field, get_model_name(self.model)))
             model_fields.append([model_field, field])
             if m2mfields:
                 model_m2m_fields.append([model_field, field, len(model_fields) - 1, m2mfields])
@@ -362,7 +361,7 @@ class ReportAdmin(object):
         if parent_report:
             self.related_inline_field = [f for f in self.model._meta.get_fields() if f.remote_field and f.remote_field.model is self.parent_report.model][0]
             self.related_inline_accessor = self.related_inline_field.remote_field.get_accessor_name()
-            self.related_fields = ["%s__%s" % (get_model_name(pfield.model), attname) for pfield, attname in self.parent_report.model_fields if not isinstance(pfield, str) and  pfield.model == self.related_inline_field.remote_field.model]
+            self.related_fields = ["{}__{}".format(get_model_name(pfield.model), attname) for pfield, attname in self.parent_report.model_fields if not isinstance(pfield, str) and  pfield.model == self.related_inline_field.remote_field.model]
             self.related_inline_filters = []
 
             for pfield, pattname in self.parent_report.model_fields:
@@ -380,8 +379,8 @@ class ReportAdmin(object):
         except:
             model_field = None
         value = self.get_grouper_text(value, groupby_field, model_field)
-        if value is None or str(value) == u'None':
-            if groupby_field is None or str(groupby_field) == u'None':
+        if value is None or str(value) == 'None':
+            if groupby_field is None or str(groupby_field) == 'None':
                 value = force_str(_('Results'))
             else:
                 value = force_str(_('Nothing'))
@@ -394,7 +393,7 @@ class ReportAdmin(object):
             model_field = None
 
         value = self.get_value_text(value, index, model_field)
-        if value is None or str(value) == u'None':
+        if value is None or str(value) == 'None':
             value = ''
         if value == [None]:
             value = []
@@ -656,7 +655,7 @@ class ReportAdmin(object):
     def get_user_label(self, user):
         name = user.get_full_name()
         username = user.username
-        return (name and name != username and '%s (%s)' % (name, username)
+        return (name and name != username and '{} ({})'.format(name, username)
                 or username)
 
     def check_for_widget(self, widget, field):
@@ -798,13 +797,13 @@ class ReportAdmin(object):
 
     def get_with_dotvalues(self, resources):
         # {1: 'field.method'}
-        dot_indexes = dict([(index, dot_field) for index, dot_field in enumerate(self.get_fields()) if '.' in dot_field])
+        dot_indexes = {index: dot_field for index, dot_field in enumerate(self.get_fields()) if '.' in dot_field}
         dot_indexes_values = {}
 
         dot_model_fields = [(index, model_field[0]) for index, model_field in enumerate(self.model_fields) if index in dot_indexes]
         # [ 1, model_field] ]
         for index, model_field in dot_model_fields:
-            model_ids = set([row[index] for row in resources])
+            model_ids = {row[index] for row in resources}
             if isinstance(model_field, str) and 'self.' in model_field:
                 model_qs = self.model.objects.filter(pk__in=model_ids)
             else:
@@ -870,7 +869,7 @@ class ReportAdmin(object):
         gqs_values.sort(key=get_key_values)
         res = groupby(gqs_values, key=get_key_values)
         for key, values in res:
-            row_values = dict([(index, []) for index in m2m_indexes])
+            row_values = {index: [] for index in m2m_indexes}
             for v in values:
                 for index in m2m_indexes:
                     if v[index] not in row_values[index]:

@@ -1,4 +1,3 @@
-from builtins import str
 from django.utils.translation import gettext_lazy
 from django.utils.encoding import force_str
 
@@ -15,7 +14,7 @@ def _(s):
     return force_str(gettext_lazy(s))
 
 
-class CollectionObject(object):
+class CollectionObject:
     """
     Class to represent collection of dict values
     """
@@ -37,7 +36,7 @@ class DictObject:
     """
 
     def __init__(self, **default):
-        x = dict([(k, v if isinstance(v, (DictObject, CollectionObject)) else null) for k, v in default.items()])
+        x = {k: v if isinstance(v, (DictObject, CollectionObject)) else null for k, v in default.items()}
         self.__dict__.update(x)
 
     def update(self, **kwargs):

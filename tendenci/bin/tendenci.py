@@ -30,7 +30,7 @@ class Command:
             prog = None
         else:
             # hack the prog name as reported to ArgumentParser to include the command
-            prog = "%s %s" % (prog_name(), command_name)
+            prog = "{} {}".format(prog_name(), command_name)
 
         parser = ArgumentParser(
             description=getattr(self, 'description', None), add_help=False, prog=prog
@@ -70,7 +70,7 @@ class CreateProject(Command):
                      "Python module and cannot be used as a project "
                      "name. Please try another name." % project_name)
 
-        print("Creating a Tendenci project called %(project_name)s" % {'project_name': project_name})  # noqa
+        print("Creating a Tendenci project called {project_name}".format(project_name=project_name))  # noqa
 
         # First find the path to Tendenci
         template_path = "https://github.com/tendenci/tendenci-project-template/archive/master.zip"
@@ -87,7 +87,7 @@ class CreateProject(Command):
         utility = ManagementUtility(utility_args)
         utility.execute()
 
-        print("Success! %(project_name)s has been created" % {'project_name': project_name})  # noqa
+        print("Success! {project_name} has been created".format(project_name=project_name))  # noqa
 
 
 COMMANDS = {
@@ -103,7 +103,7 @@ def help_index():
     print("Type '%s help <subcommand>' for help on a specific subcommand.\n" % prog_name())  # NOQA
     print("Available subcommands:\n")  # NOQA
     for name, cmd in sorted(COMMANDS.items()):
-        print("    %s%s" % (name.ljust(20), cmd.description))  # NOQA
+        print("    {}{}".format(name.ljust(20), cmd.description))  # NOQA
 
 
 def unknown_command(command):

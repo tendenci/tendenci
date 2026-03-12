@@ -23,10 +23,10 @@ def with_metaclass(meta, *bases):
     and the new version doesn't work here.
 
     """
-    return meta(str("NewBase"), bases, {})
+    return meta("NewBase", bases, {})
 
 
-class Fieldset(object):
+class Fieldset:
     """An iterable Fieldset with a legend and a set of BoundFields."""
     def __init__(self, form, name, boundfields, legend='', classes='',
                  description=''):
@@ -40,8 +40,8 @@ class Fieldset(object):
         self.name = name
 
     def _errors(self):
-        return ErrorDict(((k, v) for (k, v) in iter(self.form.errors)
-                          if k in [f.name for f in self.boundfields]))
+        return ErrorDict((k, v) for (k, v) in iter(self.form.errors)
+                          if k in [f.name for f in self.boundfields])
     errors = property(_errors)
 
     def __iter__(self):
@@ -49,13 +49,13 @@ class Fieldset(object):
             yield _mark_row_attrs(bf, self.form)
 
     def __repr__(self):
-        return "%s('%s', %s, legend='%s', classes='%s', description='%s')" % (
+        return "{}('{}', {}, legend='{}', classes='{}', description='{}')".format(
             self.__class__.__name__, self.name,
             [f.name for f in self.boundfields], self.legend, self.classes,
             self.description)
 
 
-class FieldsetCollection(object):
+class FieldsetCollection:
     def __init__(self, form, fieldsets):
         self.form = form
         self.fieldsets = fieldsets
@@ -67,8 +67,7 @@ class FieldsetCollection(object):
     def __iter__(self):
         if not self._cached_fieldsets:
             self._gather_fieldsets()
-        for field in self._cached_fieldsets:
-            yield field
+        yield from self._cached_fieldsets
 
     def __getitem__(self, key):
         if not self._cached_fieldsets:
@@ -170,8 +169,7 @@ class BetterFormBaseMetaclass(type):
             _set_meta_attr(attrs, 'fields', fields)
         attrs['base_row_attrs'] = get_row_attrs(bases, attrs)
 
-        new_class = super(BetterFormBaseMetaclass,
-                          cls).__new__(cls, name, bases, attrs)
+        new_class = super().__new__(cls, name, bases, attrs)
         return new_class
 
 
@@ -185,7 +183,7 @@ class BetterModelFormMetaclass(BetterFormBaseMetaclass,
     pass
 
 
-class BetterBaseForm(object):
+class BetterBaseForm:
     """
     ``BetterForm`` and ``BetterModelForm`` are subclasses of Form
     and ModelForm that allow for declarative definition of fieldsets
@@ -241,7 +239,7 @@ class BetterBaseForm(object):
         self._fieldsets = deepcopy(self.base_fieldsets)
         self._row_attrs = deepcopy(self.base_row_attrs)
         self._fieldset_collection = None
-        super(BetterBaseForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def fieldsets(self):
@@ -251,11 +249,11 @@ class BetterBaseForm(object):
         return self._fieldset_collection
 
     def __iter__(self):
-        for bf in super(BetterBaseForm, self).__iter__():
+        for bf in super().__iter__():
             yield _mark_row_attrs(bf, self)
 
     def __getitem__(self, name):
-        bf = super(BetterBaseForm, self).__getitem__(name)
+        bf = super().__getitem__(name)
         return _mark_row_attrs(bf, self)
 
 
@@ -269,7 +267,7 @@ class BetterModelForm(with_metaclass(BetterModelFormMetaclass,
     __doc__ = BetterBaseForm.__doc__
 
 
-class BasePreviewFormMixin(object):
+class BasePreviewFormMixin:
     """
     Mixin to add preview functionality to a form.  If the form is submitted
     with the following k/v pair in its ``data`` dictionary:
@@ -282,18 +280,18 @@ class BasePreviewFormMixin(object):
 
     """
     def __init__(self, *args, **kwargs):
-        super(BasePreviewFormMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.preview = self.check_preview(kwargs.get('data', None))
 
     def check_preview(self, data):
-        if data and data.get('submit', '').lower() == u'preview':
+        if data and data.get('submit', '').lower() == 'preview':
             return True
         return False
 
     def is_valid(self, *args, **kwargs):
         if self.preview:
             return False
-        return super(BasePreviewFormMixin, self).is_valid()
+        return super().is_valid()
 
 
 class PreviewModelForm(BasePreviewFormMixin, BetterModelForm):

@@ -75,7 +75,7 @@ class TendenciBaseModel(models.Model):
                 EventLog.objects.log(instance=self, application=application)
         if "log" in kwargs:
             kwargs.pop('log')
-        super(TendenciBaseModel, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         if self.pk:
@@ -85,7 +85,7 @@ class TendenciBaseModel(models.Model):
                 EventLog.objects.log(instance=self, application=application)
         if "log" in kwargs:
             kwargs.pop('log')
-        super(TendenciBaseModel, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
 
 class UnsavedOneToOne(models.OneToOneField):

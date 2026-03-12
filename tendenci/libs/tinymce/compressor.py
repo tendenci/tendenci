@@ -37,7 +37,7 @@ def get_file_contents(filename):
             return f.read()
         finally:
             f.close()
-    except IOError:
+    except OSError:
         return ""
 
 def split_commas(str):
@@ -104,17 +104,17 @@ def gzip_compressor(request):
 
     # Add plugins
     for plugin in plugins:
-        files.append("plugins/%s/editor_plugin%s" % (plugin, suffix))
+        files.append("plugins/{}/editor_plugin{}".format(plugin, suffix))
 
         for lang in languages:
-            files.append("plugins/%s/langs/%s" % (plugin, lang))
+            files.append("plugins/{}/langs/{}".format(plugin, lang))
 
     # Add themes
     for theme in themes:
-        files.append("themes/%s/editor_template%s" % (theme, suffix))
+        files.append("themes/{}/editor_template{}".format(theme, suffix))
 
         for lang in languages:
-            files.append("themes/%s/langs/%s" % (theme, lang))
+            files.append("themes/{}/langs/{}".format(theme, lang))
 
     for f in files:
         # Check for unsafe characters

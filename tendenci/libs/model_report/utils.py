@@ -22,10 +22,10 @@ def base_label(report, field):
     return field
 
 def base_lookup_label(report, field):
-    return "[%s] %s" % (field.model._meta.verbose_name.title(), field.verbose_name.title())
+    return "[{}] {}".format(field.model._meta.verbose_name.title(), field.verbose_name.title())
 
 def model_lookup_label(report, field):
-    return "[%s] %s" % (report.model._meta.verbose_name.title(), field.verbose_name.title())
+    return "[{}] {}".format(report.model._meta.verbose_name.title(), field.verbose_name.title())
 
 
 def sum_column(values):
@@ -98,16 +98,16 @@ def date_label(report, field):
 def obj_type_format(value, instance=None):
     global OBJECT_TYPE_DICT
     if not OBJECT_TYPE_DICT:
-        OBJECT_TYPE_DICT = dict((ct.id, '%s: %s' % (ct.app_label, ct.model))
-                        for ct in ContentType.objects.all().order_by('app_label', 'model'))
+        OBJECT_TYPE_DICT = {ct.id: '{}: {}'.format(ct.app_label, ct.model)
+                        for ct in ContentType.objects.all().order_by('app_label', 'model')}
     return OBJECT_TYPE_DICT.get(value)
 
 
 def entity_format(value):
     global ENTITY_DICT
     if not ENTITY_DICT:
-        ENTITY_DICT = dict((e.id, e.entity_name.replace("'", "&apos;")) for e in Entity.objects.all())
-    return '%s (Entity ID: %s)' % (ENTITY_DICT.get(value), value)
+        ENTITY_DICT = {e.id: e.entity_name.replace("'", "&apos;") for e in Entity.objects.all()}
+    return '{} (Entity ID: {})'.format(ENTITY_DICT.get(value), value)
 
 
 def date_from_datetime(value):
@@ -118,7 +118,7 @@ def get_obj_type_choices():
     choices = ContentType.objects.filter(model__in=DEFAULT_OBJ_TYPES)
     return choices
 
-class ReportValue(object):
+class ReportValue:
     """
     Class to represent cells values for report rows
 

@@ -1,4 +1,3 @@
-from builtins import str
 from decimal import Decimal
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
@@ -37,7 +36,7 @@ def unicodeToHTMLEntities(text):
     return text
 
 
-class HighchartRender(object):
+class HighchartRender:
 
     def reset(self):
         self.model = DictObject(**get_highchart_data())
@@ -102,7 +101,7 @@ class HighchartRender(object):
         if self.config['serie_op'] == 'len':
             repr_char = ''
             repr_fun = ''
-        self.model.plotOptions.pie.dataLabels.formatter = "function() { return '<b>'+ this.point.name +'</b>: %s '+ %s(this.point.y); }" % (repr_char, repr_fun)
+        self.model.plotOptions.pie.dataLabels.formatter = "function() {{ return '<b>'+ this.point.name +'</b>: {} '+ {}(this.point.y); }}".format(repr_char, repr_fun)
 
     def set_bar_chart_options(self, report_rows):
         funcs_op = {

@@ -129,7 +129,7 @@ def render_to_image_list(image_list):
     return render_to_js_vardef('tinyMCEImageList', image_list)
 
 def render_to_js_vardef(var_name, var_value):
-    output = "var %s = %s" % (var_name, json.dumps(var_value))
+    output = "var {} = {}".format(var_name, json.dumps(var_value))
     return HttpResponse(output, content_type='application/x-javascript')
 
 def filebrowser(request):

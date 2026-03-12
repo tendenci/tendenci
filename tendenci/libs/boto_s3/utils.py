@@ -1,4 +1,3 @@
-from __future__ import print_function
 # import os
 # from datetime import datetime
 # import mimetypes
@@ -19,10 +18,10 @@ class StaticStorage(S3Boto3Storage):
 
     def __init__(self, *args, **kwargs):
         kwargs['location'] = settings.STATIC_S3_PATH
-        super(StaticStorage, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def url(self, name):
-        url = super(StaticStorage, self).url(name)
+        url = super().url(name)
         if name.endswith('/') and not url.endswith('/'):
             url += '/'
         return url
@@ -36,7 +35,7 @@ class DefaultStorage(S3Boto3Storage):
 
     def __init__(self, *args, **kwargs):
         kwargs['location'] = settings.DEFAULT_S3_PATH
-        super(DefaultStorage, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 def read_media_file_from_s3(file_path):
@@ -48,7 +47,7 @@ def read_media_file_from_s3(file_path):
     file_content = read_media_file_from_s3('/files/99/Earth-and-Moon.gif')
     """
     # the DEFAULT_S3_PATH is where the media files are stored.
-    file_path = '%s/%s' % (settings.DEFAULT_S3_PATH, str(file_path).lstrip('/'))
+    file_path = '{}/{}'.format(settings.DEFAULT_S3_PATH, str(file_path).lstrip('/'))
     storage = S3Boto3Storage()
     f = S3Boto3StorageFile(file_path, 'r', storage)
     content = f.read()
@@ -66,7 +65,7 @@ def read_theme_file_from_s3(file_path):
     file_content = read_theme_file_from_s3('themename/templates/default.html')
     """
     # the DEFAULT_S3_PATH is where the media files are stored.
-    file_path = '%s/%s' % (settings.THEME_S3_PATH, str(file_path).lstrip('/'))
+    file_path = '{}/{}'.format(settings.THEME_S3_PATH, str(file_path).lstrip('/'))
     storage = S3Boto3Storage()
     f = S3Boto3StorageFile(file_path, 'r', storage)
     content = f.read()

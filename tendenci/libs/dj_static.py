@@ -1,4 +1,3 @@
-
 # To use:
 # * Run `pip install dj-static`
 # * Make sure STATIC_ROOT, STATIC_URL, MEDIA_ROOT, MEDIA_URL, and THEMES_DIR are
