@@ -11,11 +11,11 @@ from tendenci.apps.base.decorators import strip_control_chars
 
 
 class LatestEntriesFeed(SubFeed):
-    title = _('%(sitedisplayname)s Latest Articles' % {
-        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')})
+    title = _('{sitedisplayname} Latest Articles'.format(
+        sitedisplayname=get_setting('site', 'global', 'sitedisplayname')))
     link = "/articles/"
-    description = _("Latest Articles by %(sitedisplayname)s" % {
-        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')})
+    description = _("Latest Articles by {sitedisplayname}".format(
+        sitedisplayname=get_setting('site', 'global', 'sitedisplayname')))
 
     def items(self):
         items = Article.objects.filter(**PUBLIC_FILTER).filter(

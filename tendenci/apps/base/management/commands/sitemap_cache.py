@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand
 
 
@@ -11,7 +10,7 @@ class Command(BaseCommand):
         from django.contrib.sites.models import Site
         from tendenci.apps.sitemaps.views import get_all_sitemaps
 
-        sitemaps = dict([(cls.__name__, cls) for cls in get_all_sitemaps()])
+        sitemaps = {cls.__name__: cls for cls in get_all_sitemaps()}
         maps = sitemaps.values()
         for site in maps:
             if callable(site):

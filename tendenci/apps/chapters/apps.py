@@ -7,7 +7,7 @@ class ChaptersConfig(AppConfig):
     verbose_name = 'Chapters'
 
     def ready(self):
-        super(ChaptersConfig, self).ready()
+        super().ready()
         from .signals import create_chapter_membership_notice_types, add_member_to_coord_group
         from tendenci.apps.memberships.models import MembershipDefault
         post_migrate.connect(create_chapter_membership_notice_types, sender=self)

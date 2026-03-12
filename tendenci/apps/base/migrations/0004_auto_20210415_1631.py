@@ -15,7 +15,7 @@ def update_jquery_3_6_in_theme(apps, schema_editor):
     file_path = '{}/templates/base.html'.format(theme_dir)
     if os.path.isfile(file_path):
         file_changed = False
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
             str_find = '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'
             str_to_replace = '//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'

@@ -1,4 +1,3 @@
-from builtins import str
 from decimal import Decimal
 import re
 #from south.modelsinspector import add_introspection_rules
@@ -36,7 +35,7 @@ class SlugField(CharField):
         # Set db_index=True unless it's been set manually.
         if 'db_index' not in kwargs:
             kwargs['db_index'] = True
-        super(SlugField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_internal_type(self):
         return "SlugField"
@@ -44,7 +43,7 @@ class SlugField(CharField):
     def formfield(self, **kwargs):
         defaults = {'form_class': forms.SlugField}
         defaults.update(kwargs)
-        return super(SlugField, self).formfield(**defaults)
+        return super().formfield(**defaults)
 
 
 class DictField(models.TextField):
@@ -96,7 +95,7 @@ class EmailVerificationField(fields.MultiValueField):
             )
         label = kwargs.pop('label', '') + ' (Enter twice to verify)'
         label = _(label)
-        super(EmailVerificationField, self).__init__(all_fields, widget=EmailVerificationWidget(attrs={'class': 'form-control'}), label=label, *args, **kwargs)
+        super().__init__(all_fields, widget=EmailVerificationWidget(attrs={'class': 'form-control'}), label=label, *args, **kwargs)
 
     def compress(self, data_list):
         """
@@ -116,13 +115,13 @@ class EmailVerificationField(fields.MultiValueField):
 
 class CountrySelectField(fields.ChoiceField):
     def __init__(self, *args, **kwargs):
-        super(CountrySelectField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         initial_choices = ()
         exclude_list = []
 
         initial_choices_keys = get_setting('site', 'global', 'countrylistinitialchoices')
-        if initial_choices_keys and initial_choices_keys != u'[]':
+        if initial_choices_keys and initial_choices_keys != '[]':
             initial_choices =  ((name, name) for key, name in list(COUNTRIES) if key in initial_choices_keys)
             exclude_list = initial_choices_keys
 
@@ -139,7 +138,7 @@ class StateSelectField(fields.ChoiceField):
         self.app_name = app_name
         if get_setting('site', 'global', 'stateusesregion'):
             label = get_setting('module', 'regions', 'label')
-        super(StateSelectField, self).__init__(*args, label=label, **kwargs)
+        super().__init__(*args, label=label, **kwargs)
         from tendenci.apps.regions.models import Region
         if get_setting('site', 'global', 'stateusesregion'):
             regions = Region.objects.filter(status_detail='active').order_by('position')
@@ -164,7 +163,7 @@ class StateSelectField(fields.ChoiceField):
 class PriceField(fields.DecimalField):
 
     def __init__(self, max_value=None, min_value=None, max_digits=None, decimal_places=None, *args, **kwargs):
-        super(PriceField, self).__init__(*args, max_value=max_value, min_value=min_value, max_digits=max_digits, decimal_places=decimal_places, **kwargs)
+        super().__init__(*args, max_value=max_value, min_value=min_value, max_digits=max_digits, decimal_places=decimal_places, **kwargs)
         self.widget = PriceWidget()
 
     def clean(self, value):
@@ -176,7 +175,7 @@ class PriceField(fields.DecimalField):
             else:
                 raise ValidationError(self.error_messages['invalid'])
 
-        return super(PriceField, self).clean(value)
+        return super().clean(value)
 
 
 class PercentField(fields.DecimalField):
@@ -198,7 +197,7 @@ class PercentField(fields.DecimalField):
         # Track raw input from user (Used to display values correctonly on error)
         self.raw_input = None
 
-        super(PercentField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def decimal_validation_error(self):
@@ -211,12 +210,12 @@ class PercentField(fields.DecimalField):
 
     def to_python(self, value):
         """Save percent as decimal number"""
-        value = super(PercentField, self).to_python(value)
+        value = super().to_python(value)
         return Decimal("%.2f" % (float(value) / 100.0))
 
     def prepare_value(self, value):
         """Display as whole number"""
-        value = super(PercentField, self).prepare_value(value) or 0
+        value = super().prepare_value(value) or 0
 
         # Display invalid values in a way expected by user.
         if self.error_occurred:
@@ -249,7 +248,7 @@ class PercentField(fields.DecimalField):
         self.raw_input = value
 
         try:
-            value = super(PercentField, self).clean(value)
+            value = super().clean(value)
         except Exception as e:
             self.raise_validation_error(e.args[0])
 

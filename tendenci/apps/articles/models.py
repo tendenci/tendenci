@@ -102,7 +102,7 @@ class Article(TendenciBaseModel):
 
     def get_thumbnail_url(self):
         if not self.thumbnail:
-            return u''
+            return ''
 
         return reverse('file', args=[self.thumbnail.pk])
 
@@ -110,7 +110,7 @@ class Article(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid4())
         self.assign_release_dt_local()
-        super(Article, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def is_released(self):

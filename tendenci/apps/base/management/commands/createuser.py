@@ -2,7 +2,6 @@
 Management utility to create superusers.
 """
 
-from builtins import input
 
 import getpass
 import re
@@ -134,4 +133,4 @@ class Command(BaseCommand):
         Profile.objects.create_profile(user)
 
         if verbosity >= 1:
-          print('User %s (%s) created successfully' % (user.username, user.pk))
+          print('User {} ({}) created successfully'.format(user.username, user.pk))

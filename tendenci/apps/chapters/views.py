@@ -1150,7 +1150,7 @@ def file_display(request, cm_id):
     try:
         data = cm_file.file.read()
         cm_file.file.close()
-    except IOError:  # no such file or directory
+    except OSError:  # no such file or directory
         raise Http404
 
     EventLog.objects.log()

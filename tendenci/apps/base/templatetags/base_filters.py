@@ -1,4 +1,3 @@
-from builtins import str
 import re
 import os
 import pytz
@@ -49,7 +48,7 @@ def date_short(value, arg=None):
     from django.utils.dateformat import format
     from tendenci.apps.site_settings.utils import get_setting
     if not value:
-        return u''
+        return ''
     if arg is None:
         s_date_format = get_setting('site', 'global', 'dateformat')
         if s_date_format:
@@ -71,7 +70,7 @@ def date_long(value, arg=None):
     from django.utils.dateformat import format
     from tendenci.apps.site_settings.utils import get_setting
     if not value:
-        return u''
+        return ''
     if arg is None:
         s_date_format = get_setting('site', 'global', 'dateformatlong')
         if s_date_format:
@@ -92,7 +91,7 @@ def date(value, arg=None):
     """Formats a date according to the given format."""
     from django.utils.dateformat import format
     if not value:
-        return u''
+        return ''
     if arg is None:
         arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT 
     else:
@@ -250,7 +249,7 @@ def rss_date(value, arg=None):
     from datetime import datetime
 
     if not value:
-        return u''
+        return ''
     else:
         value = datetime(*value[:-3])
     if arg is None:
@@ -289,9 +288,9 @@ def obfuscate_email(email, linktext=None, autoescape=None):
         linktext = email
 
     rotten_link = """<script type="text/javascript">document.write \
-        ("<n uers=\\\"znvygb:%s\\\">%s<\\057n>".replace(/[a-zA-Z]/g, \
-        function(c){return String.fromCharCode((c<="Z"?90:122)>=\
-        (c=c.charCodeAt(0)+13)?c:c-26);}));</script>""" % (email, linktext)
+        ("<n uers=\\\"znvygb:{}\\\">{}<\\057n>".replace(/[a-zA-Z]/g, \
+        function(c){{return String.fromCharCode((c<="Z"?90:122)>=\
+        (c=c.charCodeAt(0)+13)?c:c-26);}}));</script>""".format(email, linktext)
     return mark_safe(rotten_link)
 obfuscate_email.needs_autoescape = True
 
@@ -352,7 +351,7 @@ def twitterdate(value):
 @register.filter
 def thumbnail(file, size='200x200'):
     # defining the size
-    x, y = [int(x) for x in size.split('x')]
+    x, y = (int(x) for x in size.split('x'))
     # defining the filename and the miniature filename
     filehead, filetail = os.path.split(file.name)
     basename, format = os.path.splitext(filetail)
@@ -377,7 +376,7 @@ def thumbnail(file, size='200x200'):
     if not thumbnail_exist:
 
         if not default_storage.exists(filename):
-            return u''
+            return ''
 
         image = Image.open(default_storage.open(filename))
         image.thumbnail([x, y], Image.LANCZOS)
@@ -510,7 +509,7 @@ def field_to_string(value):
         if len(value) == 1:
             return str(value[0])
         if len(value) == 2:
-            return "%s and %s" % (value[0], value[1])
+            return "{} and {}".format(value[0], value[1])
         return ", ".join(value)
     return str(value)
 

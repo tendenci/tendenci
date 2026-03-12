@@ -7,7 +7,6 @@ greater than and less than operators. Some common case examples::
     {% if articles|length >= 5 %}...{% endif %}
     {% if "ifnotequal tag" != "beautiful" %}...{% endif %}
 """
-from builtins import str
 import unittest
 from django import template
 
@@ -17,7 +16,7 @@ register = template.Library()
 # Calculation objects
 #==============================================================================
 
-class BaseCalc(object):
+class BaseCalc:
     def __init__(self, var1, var2=None, negate=False):
         self.var1 = var1
         self.var2 = var2
@@ -75,7 +74,7 @@ class In(BaseCalc):
 # Tests
 #==============================================================================
 
-class TestVar(object):
+class TestVar:
     """
     A basic self-resolvable object similar to a Django template variable. Used
     to assist with tests.
@@ -99,7 +98,7 @@ class SmartIfTests(unittest.TestCase):
         Test a calculation is True, also checking the inverse "negate" case.
         """
         context = context or {}
-        self.assert_(calc.resolve(context))
+        self.assertTrue(calc.resolve(context))
         calc.negate = not calc.negate
         self.assertFalse(calc.resolve(context))
 
@@ -110,7 +109,7 @@ class SmartIfTests(unittest.TestCase):
         context = context or {}
         self.assertFalse(calc.resolve(context))
         calc.negate = not calc.negate
-        self.assert_(calc.resolve(context))
+        self.assertTrue(calc.resolve(context))
 
     def test_or(self):
         self.assertCalc(Or(self.true))
@@ -148,55 +147,55 @@ class SmartIfTests(unittest.TestCase):
 
     def test_parse_bits(self):
         var = IfParser([True]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
         var = IfParser([False]).parse()
         self.assertFalse(var.resolve({}))
 
         var = IfParser([False, 'or', True]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
 
         var = IfParser([False, 'and', True]).parse()
         self.assertFalse(var.resolve({}))
 
         var = IfParser(['not', False, 'and', 'not', False]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
 
         var = IfParser(['not', 'not', True]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
 
         var = IfParser([1, '=', 1]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
 
         var = IfParser([1, 'not', '=', 1]).parse()
         self.assertFalse(var.resolve({}))
 
         var = IfParser([1, 'not', 'not', '=', 1]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
 
         var = IfParser([1, '!=', 1]).parse()
         self.assertFalse(var.resolve({}))
 
         var = IfParser([3, '>', 2]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
 
         var = IfParser([1, '<', 2]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
 
         var = IfParser([2, 'not', 'in', [2, 3]]).parse()
         self.assertFalse(var.resolve({}))
 
         var = IfParser([1, 'or', 1, '=', 2]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
 
     def test_boolean(self):
         var = IfParser([True, 'and', True, 'and', True]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
         var = IfParser([False, 'or', False, 'or', True]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
         var = IfParser([True, 'and', False, 'or', True]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
         var = IfParser([False, 'or', True, 'and', True]).parse()
-        self.assert_(var.resolve({}))
+        self.assertTrue(var.resolve({}))
 
         var = IfParser([True, 'and', True, 'and', False]).parse()
         self.assertFalse(var.resolve({}))
@@ -231,7 +230,7 @@ OPERATORS = {
 BOOL_OPERATORS = ('or', 'and')
 
 
-class IfParser(object):
+class IfParser:
     error_class = ValueError
 
     def __init__(self, tokens):
@@ -329,7 +328,7 @@ class TemplateIfParser(IfParser):
 
     def __init__(self, parser, *args, **kwargs):
         self.template_parser = parser
-        return super(TemplateIfParser, self).__init__(*args, **kwargs)
+        return super().__init__(*args, **kwargs)
 
     def create_var(self, value):
         return self.template_parser.compile_filter(value)
@@ -351,11 +350,9 @@ class SmartIfNode(template.Node):
         return "<Smart If node>"
 
     def __iter__(self):
-        for node in self.nodelist_true:
-            yield node
+        yield from self.nodelist_true
         if self.nodelist_false:
-            for node in self.nodelist_false:
-                yield node
+            yield from self.nodelist_false
 
     def get_nodes_by_type(self, nodetype):
         nodes = []

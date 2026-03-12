@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
@@ -161,11 +160,11 @@ class ChapterMembershipAppAdmin(TendenciBaseModelAdmin):
             return redirect(reverse(
                 'admin:chapters_chaptermembershipapp_changelist',
             ))
-        return super(ChapterMembershipAppAdmin, self).add_view(request)
+        return super().add_view(request)
 
     @mark_safe
     def members_search_link(self, instance):
-        return '<a href="%s" title="%s"><i class="glyphicon glyphicon-search"></i> Search Chapter Members</a>' % (
+        return '<a href="{}" title="{}"><i class="glyphicon glyphicon-search"></i> Search Chapter Members</a>'.format(
                 reverse('chapters.memberships_search'),
                         _('Search Chapter Members'))
     members_search_link.short_description = _('Chapter Members Search Link')
@@ -238,7 +237,7 @@ class ChapterMembershipAppField2Admin(admin.ModelAdmin):
                         }),)
 
     def get_object(self, request, object_id, from_field=None):
-        obj = super(ChapterMembershipAppField2Admin, self).get_object(request, object_id)
+        obj = super().get_object(request, object_id)
 
         # assign default field_type
         if obj:
@@ -251,7 +250,7 @@ class ChapterMembershipAppField2Admin(admin.ModelAdmin):
         return obj
 
     def change_view(self, request, object_id=None, form_url='', extra_context=None):
-        return super(ChapterMembershipAppField2Admin, self).change_view(request, object_id, form_url,
+        return super().change_view(request, object_id, form_url,
                                extra_context=dict(show_delete=False))
 
 #     def has_delete_permission(self, request, obj=None):
@@ -305,7 +304,7 @@ class ChapterMembershipAdmin(admin.ModelAdmin):
         """
         Excludes archive
         """
-        return super(ChapterMembershipAdmin, self).get_queryset(request
+        return super().get_queryset(request
                     ).exclude(status_detail='archive'
                               ).filter(status=True).order_by('-create_dt')
 
@@ -322,7 +321,7 @@ class ChapterMembershipAdmin(admin.ModelAdmin):
             return None
 
         link_icon = static('images/icons/external_16x16.png')
-        link = '<a href="%s" title="%s"><img src="%s" alt="view chapter membership" title="view chapter membership"/></a>' % (
+        link = '<a href="{}" title="{}"><img src="{}" alt="view chapter membership" title="view chapter membership"/></a>'.format(
             obj.get_absolute_url(),
             strip_tags(obj),
             link_icon,
@@ -540,7 +539,7 @@ class OfficerAdminInline(admin.TabularInline):
             if chapter:
                 return UserModelChoiceField(queryset=User.objects.filter(group_member__group=chapter.group), label="User")
             return UserModelChoiceField(queryset=User.objects.none(), label="User")
-        return super(OfficerAdminInline, self).formfield_for_dbfield(field, **kwargs)
+        return super().formfield_for_dbfield(field, **kwargs)
 
     def get_object(self, request, model):
         object_id = request.resolver_match.kwargs.get('object_id', None)
@@ -594,7 +593,7 @@ class ChapterAdmin(TendenciBaseModelAdmin):
         """
         inject the user in the form.
         """
-        form = super(ChapterAdmin, self).get_form(request, obj, **kwargs)
+        form = super().get_form(request, obj, **kwargs)
         form.current_user = request.user
         return form
 
@@ -618,7 +617,7 @@ class ChapterAdmin(TendenciBaseModelAdmin):
         return instance
 
     def save_related(self, request, form, formsets, change):
-        super(ChapterAdmin, self).save_related(request, form, formsets, change)
+        super().save_related(request, form, formsets, change)
         # update group perms to officers
         form.instance.update_group_perms()
 
@@ -637,7 +636,7 @@ class ChapterAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def link(self, obj):
-        return '<a href="%s" title="%s">%s</a>' % (
+        return '<a href="{}" title="{}">{}</a>'.format(
             obj.get_absolute_url(),
             obj.title,
             obj.slug
@@ -672,7 +671,7 @@ class ChapterAdmin(TendenciBaseModelAdmin):
     @mark_safe
     def view_on_site(self, obj):
         link_icon = static('images/icons/external_16x16.png')
-        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
+        link = '<a href="{}" title="{}"><img src="{}" /></a>'.format(
             reverse('chapters.detail', args=[obj.slug]),
             strip_tags(obj.title),
             link_icon,
@@ -707,7 +706,7 @@ class CoordinatingAgencyAdmin(admin.ModelAdmin):
     exclude = ('coordinators',) 
 
     def save_related(self, request, form, formsets, change):
-        super(CoordinatingAgencyAdmin, self).save_related(request, form, formsets, change)
+        super().save_related(request, form, formsets, change)
         # update group perms to coordinators
         form.instance.update_group_perms()
         

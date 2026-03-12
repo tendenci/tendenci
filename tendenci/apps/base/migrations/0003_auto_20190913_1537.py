@@ -18,9 +18,9 @@ def update_jquery_in_theme(apps, schema_editor):
     if os.path.isfile(file_path):
         content = ''
         file_changed = False
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
-            p = r'({0}[\d\D\s\S\w\W]*?<script (type="text/javascript" )?)({1})([\d\D\s\S\w\W]*?{2})'.format(re.escape('{% block jquery_script %}'),
+            p = r'({}[\d\D\s\S\w\W]*?<script (type="text/javascript" )?)({})([\d\D\s\S\w\W]*?{})'.format(re.escape('{% block jquery_script %}'),
             re.escape('src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>'),
             re.escape('{% endblock jquery_script %}'))
             if re.search(p, content):
@@ -63,7 +63,7 @@ def update_jquery_in_theme(apps, schema_editor):
                 if os.path.splitext(file_name)[1] in ('.html', '.js'):
                     file_path = os.path.join(root, file_name)
                     file_changed = False
-                    with open(file_path, 'r') as f:
+                    with open(file_path) as f:
                         try:
                             content = f.read()
                         except:

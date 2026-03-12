@@ -1,4 +1,3 @@
-
 from django.template import Library
 
 from tendenci.apps.boxes.utils import render_content as rc

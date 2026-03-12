@@ -37,7 +37,7 @@ class CaseStudy(TendenciBaseModel):
     def delete(self, *args, **kwargs):
         for img in self.image_set.all():
             img.delete()
-        return super(CaseStudy, self).delete(*args, **kwargs)
+        return super().delete(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('case_study.view', args=[self.slug])
@@ -135,7 +135,7 @@ class Image(File):
                 # First row
                 self.position = 0
 
-        return super(Image, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     class Meta:
         ordering = ('position',)

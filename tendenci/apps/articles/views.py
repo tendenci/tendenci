@@ -1,7 +1,6 @@
 import subprocess
 import time
 
-from builtins import str
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
@@ -46,7 +45,7 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
         version = get_object_or_404(Version, hash=hash)
         current_article = get_object_or_404(Article, pk=version.object_id)
         article = version.get_version_object()
-        msg_string = 'You are viewing a previous version of this article. View the <a href="%s%s">Current Version</a>.' % (get_setting('site', 'global', 'siteurl'), current_article.get_absolute_url())
+        msg_string = 'You are viewing a previous version of this article. View the <a href="{}{}">Current Version</a>.'.format(get_setting('site', 'global', 'siteurl'), current_article.get_absolute_url())
         messages.add_message(request, messages.WARNING, _(msg_string))
     else:
         article = get_object_or_404(Article, slug=slug)

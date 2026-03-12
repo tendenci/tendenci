@@ -1,4 +1,3 @@
-future
 six
 configparser
 Django>=5.2,<6.0

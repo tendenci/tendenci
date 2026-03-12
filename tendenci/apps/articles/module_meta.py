@@ -26,7 +26,7 @@ class ArticleMeta():
         category = category_set.get('category', '')
         subcategory = category_set.get('sub_category', '')
 
-        contact_name = '%s %s' % (
+        contact_name = '{} {}'.format(
             obj.first_name,
             obj.last_name
         )
@@ -80,7 +80,7 @@ class ArticleMeta():
         subcategory = category_set.get('sub_category', '')
         site_name = get_setting('site', 'global', 'sitedisplayname')
         geo_location = get_setting('site', 'global', 'sitegeographiclocation')
-        contact_name = '%s %s' % (
+        contact_name = '{} {}'.format(
             object.first_name,
             object.last_name
         )
@@ -100,21 +100,21 @@ class ArticleMeta():
         value = object.headline
 
         if contact_name:
-            value = '%s %s' % (value, contact_name)
+            value = '{} {}'.format(value, contact_name)
 
-        value = '%s : %s' % (value, content)
+        value = '{} : {}'.format(value, content)
 
         if primary_keywords:
-            value = '%s %s' % (value, primary_keywords)
+            value = '{} {}'.format(value, primary_keywords)
         else:
             if category:
-                value = '%s %s' % (value, category)
+                value = '{} {}'.format(value, category)
             if category and subcategory:
-                value = '%s : %s' % (value, subcategory)
+                value = '{} : {}'.format(value, subcategory)
 
             value = '%s article' % value
 
-        value = '%s Articles and White Papers for %s %s' % (
+        value = '{} Articles and White Papers for {} {}'.format(
             value, site_name, geo_location)
 
         value = value.strip()
@@ -131,7 +131,7 @@ class ArticleMeta():
         geo_location = get_setting('site', 'global', 'sitegeographiclocation')
         site_name = get_setting('site', 'global', 'sitedisplayname')
 
-        contact_name = '%s %s' % (
+        contact_name = '{} {}'.format(
             object.first_name,
             object.last_name
         )
@@ -140,7 +140,7 @@ class ArticleMeta():
         value = ''
 
         if primary_keywords:
-            value = '%s %s' % (value, primary_keywords)
+            value = '{} {}'.format(value, primary_keywords)
             value = value.strip()
 
         if object.headline:
@@ -157,7 +157,7 @@ class ArticleMeta():
                 if not item.strip():
                     list.remove(item)
 
-            value = '%s %s, %s' % (value, ', '.join(list), dynamic_keywords)
+            value = '{} {}, {}'.format(value, ', '.join(list), dynamic_keywords)
 
         else:
             list = [
@@ -167,12 +167,12 @@ class ArticleMeta():
                 'white paper',
                 secondary_keywords,
             ]
-            value = '%s %s' % (value, ''.join(list))
+            value = '{} {}'.format(value, ''.join(list))
 
         return value
 
     def get_canonical_url(self):
-        return '{0}{1}'.format(get_setting('site', 'global', 'siteurl'), self.object.get_absolute_url())
+        return '{}{}'.format(get_setting('site', 'global', 'siteurl'), self.object.get_absolute_url())
 
     def get_meta(self, object, name):
 

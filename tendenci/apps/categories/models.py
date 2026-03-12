@@ -96,7 +96,7 @@ class CategoryManager(Manager):
                 for i in cat_items3:
                     cat_items2.append(i)
 
-            sub_categories = set([self.get(pk=c.parent.pk) for c in cat_items2 if c.parent])
+            sub_categories = {self.get(pk=c.parent.pk) for c in cat_items2 if c.parent}
 
         categories = sorted(categories, key=lambda category: category.name)
         sub_categories = sorted(sub_categories, key=lambda sub_categories: sub_categories.name)

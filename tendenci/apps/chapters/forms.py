@@ -97,7 +97,7 @@ class ChapterMemberSearchForm(FormControlWidgetMixin, forms.Form):
         app_fields = kwargs.pop('app_fields')
         user = kwargs.pop('user')
         self.chapters = kwargs.pop('chapters')
-        super(ChapterMemberSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not self.chapters or len(self.chapters) > 1:
             # chapter field
             chapter_choices = [(0, _('All'))]
@@ -158,7 +158,7 @@ class EmailChapterMemberForm(FormControlWidgetMixin, forms.ModelForm):
                   'reply_to',)
 
     def __init__(self, *args, **kwargs):
-        super(EmailChapterMemberForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.id:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
@@ -225,7 +225,7 @@ class ChapterMembershipTypeForm(TendenciBaseForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(ChapterMembershipTypeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.type_exp_method_fields = type_exp_method_fields
 
@@ -253,7 +253,7 @@ class ChapterMembershipTypeForm(TendenciBaseForm):
                                                                     fields_pos_d=fields_pos_d)
 
     def clean(self):
-        cleaned_data = super(ChapterMembershipTypeForm, self).clean()
+        cleaned_data = super().clean()
         # Make sure Expiretion Grace Period <= Renewal Period End
         if 'expiration_grace_period' in self.cleaned_data \
             and 'renewal_period_end' in self.cleaned_data:
@@ -347,7 +347,7 @@ class ChapterMembershipAppPreForm(FormControlWidgetMixin, forms.Form):
     chapter_id = forms.ChoiceField(label=_('Select a Chapter'))
 
     def __init__(self, *args, **kwargs):
-        super(ChapterMembershipAppPreForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         chapters_list = [(0, 'SELECT ONE')]
         chapters = Chapter.objects.filter(status_detail='active').order_by('title')
         for chapter in chapters:
@@ -397,7 +397,7 @@ class ChapterMembershipAppForm(TendenciBaseForm):
             )
 
     def __init__(self, *args, **kwargs):
-        super(ChapterMembershipAppForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs[
                             'app_instance_id'] = self.instance.pk
@@ -432,7 +432,7 @@ class ChapterMembershipAppFieldAdminForm(forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(ChapterMembershipAppFieldAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance:
             if not self.instance.field_name:
                 self.fields['field_type'].choices = ChapterMembershipAppField.FIELD_TYPE_CHOICES2
@@ -440,7 +440,7 @@ class ChapterMembershipAppFieldAdminForm(forms.ModelForm):
                 self.fields['field_type'].choices = ChapterMembershipAppField.FIELD_TYPE_CHOICES1
 
     def save(self, *args, **kwargs):
-        self.instance = super(ChapterMembershipAppFieldAdminForm, self).save(*args, **kwargs)
+        self.instance = super().save(*args, **kwargs)
         if self.instance:
             if not self.instance.field_name:
                 if self.instance.field_type != 'section_break':
@@ -481,7 +481,7 @@ class AppFieldCustomForm(FormControlWidgetMixin, forms.ModelForm):
 
     def __init__(self, *args, chapter, **kwargs):
         self.chapter = chapter
-        super(AppFieldCustomForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         [self.cfield] = self.chapter.customizedappfield_set.filter(
             app_field__id=self.instance.id)[:1] or [None]
         if self.cfield:
@@ -524,7 +524,7 @@ class CustomMembershipTypeForm(FormControlWidgetMixin, forms.ModelForm):
 
     def __init__(self, *args, chapter, **kwargs):
         self.chapter = chapter
-        super(CustomMembershipTypeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['name'].label = _('Membership Type')
         [self.ctype] = self.chapter.customizedtype_set.filter(
             membership_type__id=self.instance.id)[:1] or [None]
@@ -592,7 +592,7 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
         self.app = kwargs.pop('app')
         self.chapter = chapter
         self.app_field_objs = app_field_objs
-        super(ChapterMembershipForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         
         from tendenci.apps.memberships.forms import assign_fields
         assign_fields(self, self.app_field_objs)
@@ -679,7 +679,7 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
             return self.cleaned_data['payment_method']
 
     def clean(self):
-        cleaned_data = super(ChapterMembershipForm, self).clean()
+        cleaned_data = super().clean()
         if not (self.is_renewal or self.edit_mode):
             # check if a chapter membership already exists
             if ChapterMembership.objects.filter(user=self.request_user,
@@ -689,7 +689,7 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
         return cleaned_data
 
     def save(self):
-        chapter_membership = super(ChapterMembershipForm, self).save(commit=False)
+        chapter_membership = super().save(commit=False)
 
         if not self.edit_mode:
             chapter_membership.entity = self.chapter.entity
@@ -768,7 +768,7 @@ class NoticeForm(forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(NoticeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['email_content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
@@ -881,9 +881,9 @@ class ChapterForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
 
     def __init__(self, *args, **kwargs):
-        super(ChapterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.featured_image:
-            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
         if self.instance.pk:
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -897,7 +897,7 @@ class ChapterForm(TendenciBaseForm):
         self.fields['newsletter_group'].queryset = get_newsletter_group_queryset()
 
     def save(self, *args, **kwargs):
-        chapter = super(ChapterForm, self).save(*args, **kwargs)
+        chapter = super().save(*args, **kwargs)
         # save photo
         if 'photo_upload' in self.cleaned_data:
             photo = self.cleaned_data['photo_upload']
@@ -950,7 +950,7 @@ class ChapterAdminForm(TendenciBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(ChapterAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -960,7 +960,7 @@ class ChapterAdminForm(TendenciBaseForm):
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
         if self.instance.featured_image:
-            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
             self.fields['photo_upload'].required = False
         self.fields['newsletter_group'].queryset = get_newsletter_group_queryset()
 
@@ -994,12 +994,12 @@ class UserModelChoiceField(forms.ModelChoiceField):
 class OfficerBaseFormSet(BaseInlineFormSet):
     def __init__(self,  *args, **kwargs): 
         self.chapter = kwargs.pop("chapter", None)
-        super(OfficerBaseFormSet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _construct_form(self, i, **kwargs):
         if hasattr(self, 'chapter'):
             kwargs['chapter'] = self.chapter
-        return super(OfficerBaseFormSet, self)._construct_form(i, **kwargs)
+        return super()._construct_form(i, **kwargs)
 
 
 class OfficerForm(forms.ModelForm):
@@ -1012,7 +1012,7 @@ class OfficerForm(forms.ModelForm):
     def __init__(self, chapter, *args, **kwargs):
         kwargs.update({'use_required_attribute': False})
         self.field_order = ['user', 'position', 'phone', 'email', 'expire_dt']
-        super(OfficerForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # Initialize user.  Label depends on nullability.
         # Priority
         # 1. fullname
@@ -1034,7 +1034,7 @@ class ChapterSearchForm(FormControlWidgetMixin, forms.Form):
 
 
     def __init__(self, *args, **kwargs):
-        super(ChapterSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['q'].widget.attrs.update({'placeholder': _('Chapter title / keywords')})
         if Chapter.objects.exclude(region__isnull=True).exists():
             regions = Region.objects.filter(id__in=Chapter.objects.values_list('region', flat=True))
@@ -1065,13 +1065,13 @@ class ChapterMembershipUploadForm(FormControlWidgetMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.chapter = kwargs.pop('chapter')
-        super(ChapterMembershipUploadForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['upload_file'].validators = [FileValidator(allowed_extensions=['.csv'], allowed_mimetypes=['text/csv', 'text/plain', 'application/csv'])]
         if self.chapter:
             self.fields['key'].choices = (('username,membership_type_id', _('username and membership_type_id')),)
 
     def clean(self):
-        cleaned_data = super(ChapterMembershipUploadForm, self).clean()
+        cleaned_data = super().clean()
 
         # check for valid content in the csv file
         if 'upload_file' not in cleaned_data:

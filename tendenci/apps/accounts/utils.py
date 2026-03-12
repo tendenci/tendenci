@@ -1,5 +1,3 @@
-
-
 def send_registration_activation_email(user, registration_profile, **kwargs):
     """
         this function sends the activation email to the self registrant.

@@ -165,8 +165,8 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
         email.recipient = member.user.email
 
         if email.recipient:
-            view_url = '{0}{1}'.format(site_url, reverse('chapters.membership_details', args=[member.id]))
-            edit_url = '{0}{1}'.format(site_url, reverse('chapters.membership_edit', args=[member.id]))
+            view_url = '{}{}'.format(site_url, reverse('chapters.membership_details', args=[member.id]))
+            edit_url = '{}{}'.format(site_url, reverse('chapters.membership_edit', args=[member.id]))
             if member.expire_dt:
                 expire_dt = ttime.strftime("%b %d, %Y", member.expire_dt.timetuple())
             else:
@@ -205,7 +205,7 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
 
     opts = {}
     opts['summary'] = '<font face=""Arial"" color=""#000000"">'
-    opts['summary'] += 'Emails sent to {0} ({1})</font><br><br>'.format(dest, total_sent)
+    opts['summary'] += 'Emails sent to {} ({})</font><br><br>'.format(dest, total_sent)
     opts['summary'] += '<font face=""Arial"" color=""#000000"">'
     opts['summary'] += 'Email Sent Appears Below in Raw Format'
     opts['summary'] += '</font><br><br>'
@@ -230,7 +230,7 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
     yield rendered
 
 
-class ImportChapterMembership(object):
+class ImportChapterMembership:
     """
     Check and process (insert/update) a chapter membership.
     """
@@ -245,10 +245,10 @@ class ImportChapterMembership(object):
         self.mimport = mimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.chapter_membership_fields = dict([(field.name, field)
+        self.chapter_membership_fields = {field.name: field
                             for field in ChapterMembership._meta.fields
                             if field.get_internal_type() != 'AutoField' and
-                            field.name not in ['user', 'membership_type', 'chapter', 'guid']])
+                            field.name not in ['user', 'membership_type', 'chapter', 'guid']}
         self.private_settings = self.set_default_private_settings()
         # all chapter membership types
         self.all_membership_type_ids = ChapterMembershipType.objects.values_list(

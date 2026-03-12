@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from dateutil import tz
 
@@ -50,7 +49,7 @@ class Command(BaseCommand):
                     table_exists = cursor.fetchone()
                     if table_exists:
                         cursor = connection.cursor()
-                        cursor.execute("SELECT atttypid FROM pg_attribute WHERE attrelid = '%s'::regclass AND attname = '%s';" % (model._meta.db_table, field.name))
+                        cursor.execute("SELECT atttypid FROM pg_attribute WHERE attrelid = '{}'::regclass AND attname = '{}';".format(model._meta.db_table, field.name))
 
                         field_type = cursor.fetchone()
                         if field_type:
@@ -61,7 +60,7 @@ class Command(BaseCommand):
 
                         if field_type == 1114 and field.db_type(connection=connection) == "timestamp with time zone":
 
-                            print("Updating %s.%s data" % (model._meta.db_table, field.name))
+                            print("Updating {}.{} data".format(model._meta.db_table, field.name))
                             print("%s\n" % datetime.now())
                             try:
                                 objects = model.objects.all()
@@ -81,19 +80,19 @@ class Command(BaseCommand):
                                     if val:
                                         new_val = self.convert_to_utc(val)
                                         if verbosity >= 2:
-                                            print("%s %s ID:%s %s -> %s" % (model._meta.verbose_name, field.name, obj.pk, val, new_val))
+                                            print("{} {} ID:{} {} -> {}".format(model._meta.verbose_name, field.name, obj.pk, val, new_val))
 
                                         setattr(obj, field.name, new_val)
                                         try:
                                             obj.save()
                                         except Exception as e:
-                                            print("failed to update %s %s" % (model._meta.verbose_name, obj.pk))
+                                            print("failed to update {} {}".format(model._meta.verbose_name, obj.pk))
                                             print(e)
 
                             # Change the field type to be 'timestamp with time zone', 1184
                             cursor = connection.cursor()
-                            cursor.execute("UPDATE pg_attribute SET atttypid = '1184' WHERE attrelid = '%s'::regclass AND attname = '%s';" % (model._meta.db_table, field.name))
-                            print("Finished %s.%s data\n" % (model._meta.db_table, field.name))
+                            cursor.execute("UPDATE pg_attribute SET atttypid = '1184' WHERE attrelid = '{}'::regclass AND attname = '{}';".format(model._meta.db_table, field.name))
+                            print("Finished {}.{} data\n".format(model._meta.db_table, field.name))
 
                             updated_field_count = updated_field_count + 1
 

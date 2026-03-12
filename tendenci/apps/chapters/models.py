@@ -120,7 +120,7 @@ class Chapter(BasePage):
 
         photo_upload = kwargs.pop('photo', None)
 
-        super(Chapter, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if photo_upload and self.pk:
             image = File(content_type=ContentType.objects.get_for_model(self.__class__),
                          object_id=self.pk,
@@ -273,7 +273,7 @@ class Chapter(BasePage):
 
 
 class Position(models.Model):
-    title = models.CharField(_(u'title'), max_length=200)
+    title = models.CharField(_('title'), max_length=200)
 
     class Meta:
         app_label = 'chapters'
@@ -325,7 +325,7 @@ class CoordinatingAgency(models.Model):
     def save(self, *args, **kwargs):
         if not self.entity:
             self.entity = Entity.objects.first()
-        super(CoordinatingAgency, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if not self.group:
             self._auto_generate_group()
         self._populate_group()
@@ -466,7 +466,7 @@ class ChapterMembershipType(OrderingBaseModel, TendenciBaseModel):
         Save MembershipType instance.
         """
         self.guid = self.guid or uuid.uuid4().hex
-        super(ChapterMembershipType, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_price_display(self, renew_mode=False, chapter=None):
         price = self.price
@@ -679,7 +679,7 @@ class ChapterMembership(TendenciBaseModel):
         return f"Chapter Membership {self.pk} for {self.user.get_full_name()} in chapter {self.chapter}"
 
     def save(self, *args, **kwargs):
-        super(ChapterMembership, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         # add this chapter member to the coordinating group
         coord_group = self.chapter.get_coordinating_agency_group()
         if coord_group and not coord_group.is_member(self.user):
@@ -1412,7 +1412,7 @@ class ChapterMembershipApp(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid4())
-        super(ChapterMembershipApp, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def render_items(self, context):
         for field_name in ['name', 'description', 'confirmation_text']:
@@ -1558,8 +1558,8 @@ class ChapterMembershipAppField(OrderingBaseModel):
         fld = None
         field_type = 'CharField'
 
-        chapter_membership_fields = dict([(field.name, field)
-                        for field in ChapterMembership._meta.fields])
+        chapter_membership_fields = {field.name: field
+                        for field in ChapterMembership._meta.fields}
         if field_name in chapter_membership_fields:
             fld = chapter_membership_fields[field_name]
 
@@ -1730,7 +1730,7 @@ class Notice(models.Model):
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
-        super(Notice, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_default_context(self, chapter_membership):
         """
@@ -1761,12 +1761,12 @@ class Notice(models.Model):
             payment_method_name = ''
 
         view_link = f'{site_url}{chapter_membership.get_absolute_url()}'
-        edit_link = '{0}{1}'.format(site_url, reverse('chapters.membership_edit',
+        edit_link = '{}{}'.format(site_url, reverse('chapters.membership_edit',
                                     args=[chapter_membership.id]))
-        renew_link = '{0}{1}'.format(site_url, reverse('chapters.membership_renew',
+        renew_link = '{}{}'.format(site_url, reverse('chapters.membership_renew',
                                     args=[chapter_membership.id]))
         if chapter_membership.invoice:
-            invoice_link = '{0}{1}'.format(site_url, reverse('invoice.view',
+            invoice_link = '{}{}'.format(site_url, reverse('invoice.view',
                                         args=[chapter_membership.invoice.id]))
             total_amount = chapter_membership.invoice.total
         else:
@@ -2114,7 +2114,7 @@ class ChapterMembershipImport(BaseImport):
         import csv
         if not self.recap_file and self.header_line:
             file_name = 'chapter_memberships_import_%d_recap.csv' % self.id
-            file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
+            file_path = '{}/{}'.format(os.path.split(self.upload_file.name)[0],
                                    file_name)
             header_row = self.header_line.split(',')
             if 'status' in header_row:

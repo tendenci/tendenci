@@ -41,7 +41,7 @@ class SplitDateTimeWidget(MultiWidget):
         widgets = (DateInput(attrs=date_attrs, format=date_format),
                    TextInput(attrs=time_attrs))
 
-        super(SplitDateTimeWidget, self).__init__(widgets, attrs)
+        super().__init__(widgets, attrs)
 
     def decompress(self, value):
         if value:
@@ -62,7 +62,7 @@ class SplitDateTimeWidget(MultiWidget):
         """
         context = self.get_context(name, value, attrs)
         widgets = context['widget']['subwidgets']
-        return mark_safe("%s&nbsp;%s" % (widgets[0], widgets[1]))
+        return mark_safe("{}&nbsp;{}".format(widgets[0], widgets[1]))
 
 
 class EmailVerificationWidget(MultiWidget):
@@ -93,7 +93,7 @@ class EmailVerificationWidget(MultiWidget):
         widgets = (TextInput(attrs=email0_attrs),
                    TextInput(attrs=email1_attrs))
 
-        super(EmailVerificationWidget, self).__init__(widgets, attrs)
+        super().__init__(widgets, attrs)
 
     def decompress(self, value):
         if value:
@@ -110,24 +110,24 @@ class EmailVerificationWidget(MultiWidget):
         Returns a Unicode string representing the HTML for the whole lot.
         """
         label = "<label style='display:none; color:red; margin-left: 5px;' class='email-verfication-error'>Please enter email address twice to verify.</label>"
-        return "%s%s<br>%s" % (rendered_widgets[0], label, rendered_widgets[1])
+        return "{}{}<br>{}".format(rendered_widgets[0], label, rendered_widgets[1])
 
 
 class PriceWidget(TextInput):
     def render(self, name, value, attrs=None, renderer=None):
         currency_symbol = get_setting('site', 'global', 'currencysymbol') or '$'
-        html = super(PriceWidget, self).render(name, value, attrs)
+        html = super().render(name, value, attrs)
 
         input_group_addon_html = '<div class="input-group-addon">%s</div>' % currency_symbol
-        input_group_html = '<div class="input-group">%s%s</div>' % (input_group_addon_html, html,)
+        input_group_html = '<div class="input-group">{}{}</div>'.format(input_group_addon_html, html)
         return mark_safe(input_group_html)
 
 
 class PercentWidget(TextInput):
     def render(self, name, value, attrs=None, renderer=None):
-        html = super(PercentWidget, self).render(name, value, attrs)
+        html = super().render(name, value, attrs)
         input_group_addon_html = '<div class="input-group-addon">%</div>'
-        input_group_html = '<div class="input-group">{0}{1}</div>'.format(html, input_group_addon_html)
+        input_group_html = '<div class="input-group">{}{}</div>'.format(html, input_group_addon_html)
         return mark_safe(input_group_html)
     
         return mark_safe(html + '%')

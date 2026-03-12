@@ -82,5 +82,5 @@ class TestCase(TestCase):
         relative_url = relative_url.strip('_')
 
         self.browser.save_screenshot(
-            '%s%s.jpg' % (settings.TEST_SCREENSHOTS, relative_url)
+            '{}{}.jpg'.format(settings.TEST_SCREENSHOTS, relative_url)
         )

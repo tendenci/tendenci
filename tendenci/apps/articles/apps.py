@@ -7,7 +7,7 @@ class ArticlesConfig(AppConfig):
     verbose_name = 'Articles'
 
     def ready(self):
-        super(ArticlesConfig, self).ready()
+        super().ready()
         from tendenci.apps.articles.signals import init_signals, create_notice_types
         init_signals()
         post_migrate.connect(create_notice_types, sender=self)
