@@ -83,7 +83,7 @@ def send_templated_mail(template_name, context, recipients, sender=None, bcc=Non
     get_template_from_string = engines['django'].from_string
 
     text_part = get_template_from_string(
-        "%s{%% include '%s' %%}" % (t.plain_text, footer_file)
+        "{}{{% include '{}' %}}".format(t.plain_text, footer_file)
         ).render(context=context)
 
     email_html_base_file = os.path.join('helpdesk', locale, 'email_html_base.html')
@@ -97,7 +97,7 @@ def send_templated_mail(template_name, context, recipients, sender=None, bcc=Non
         context['comment'] = mark_safe(html_txt)
 
     html_part = get_template_from_string(
-        "{%% extends '%s' %%}{%% block title %%}%s{%% endblock %%}{%% block content %%}%s{%% endblock %%}" % (email_html_base_file, t.heading, t.html)
+        "{{% extends '{}' %}}{{% block title %}}{}{{% endblock %}}{{% block content %}}{}{{% endblock %}}".format(email_html_base_file, t.heading, t.html)
         ).render(context=context)
 
     subject_part = get_template_from_string(

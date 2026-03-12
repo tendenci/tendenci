@@ -86,7 +86,7 @@ def invoice_object_display(request, invoice):
                 context={'obj': obj, 'invoice': invoice},
                 request=request
             )
-        except (TemplateDoesNotExist, IOError):
+        except (TemplateDoesNotExist, OSError):
             pass
 
     context = {

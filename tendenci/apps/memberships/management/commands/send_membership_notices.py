@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 import time
 import traceback
@@ -76,7 +75,7 @@ class Command(BaseCommand):
 
                     notification.send_emails(recap_recipient, 'membership_notice_email',
                                              email_context)
-                except (TemplateDoesNotExist, IOError):
+                except (TemplateDoesNotExist, OSError):
                     pass
 
         def email_script_errors(err_msg):
@@ -87,7 +86,7 @@ class Command(BaseCommand):
                 email_context.update({
                     'subject':'Error Processing Membership Notices on %s' % (
                                                             site_url),
-                    'content':'%s \n\nTime Submitted: %s\n' % (err_msg, nowstr),
+                    'content':'{} \n\nTime Submitted: {}\n'.format(err_msg, nowstr),
                     'content_type':"text"})
 
                 notification.send_emails(script_recipient, 'membership_notice_email',
@@ -175,10 +174,10 @@ class Command(BaseCommand):
                 # password
                 passwd_str = """
                         If you've forgotten your password or need to reset
-                        the auto-generated one, click <a href="%s%s">here</a>
+                        the auto-generated one, click <a href="{}{}">here</a>
                         and follow the instructions on the page to
                         reset your password.
-                        """ % (site_url, reverse('auth_password_reset'))
+                        """.format(site_url, reverse('auth_password_reset'))
 
                 global_context = {'site_display_name': site_display_name,
                                   'site_contact_name': site_contact_name,
@@ -250,9 +249,9 @@ class Command(BaseCommand):
                 payment_method_name = ''
 
             if membership.directory:
-                directory_url = '{0}{1}'.format(site_url, reverse('directory',
+                directory_url = '{}{}'.format(site_url, reverse('directory',
                                                      args=[membership.directory.slug]))
-                directory_edit_url = '{0}{1}'.format(site_url, reverse('directory.edit',
+                directory_edit_url = '{}{}'.format(site_url, reverse('directory.edit',
                                     args=[membership.directory.id]))
             else:
                 directory_url = ''
@@ -261,13 +260,13 @@ class Command(BaseCommand):
             context.update({
                 'member_number': membership.member_number,
                 'payment_method': payment_method_name,
-                'referer_url': '%s%s?next=%s' % (site_url, reverse('auth_login'), membership.referer_url),
-                'membership_link': '%s%s' % (site_url, membership.get_absolute_url()),
-                'view_link': '%s%s' % (site_url, membership.get_absolute_url()),
-                'renew_link': '%s%s' % (site_url, membership.get_absolute_url()),
-                'mymembershipslink': '%s%s' % (site_url, membership.get_absolute_url()),
-                'membershiplink': '%s%s' % (site_url, membership.get_absolute_url()),
-                'renewlink': '%s%s' % (site_url, membership.get_absolute_url()),
+                'referer_url': '{}{}?next={}'.format(site_url, reverse('auth_login'), membership.referer_url),
+                'membership_link': '{}{}'.format(site_url, membership.get_absolute_url()),
+                'view_link': '{}{}'.format(site_url, membership.get_absolute_url()),
+                'renew_link': '{}{}'.format(site_url, membership.get_absolute_url()),
+                'mymembershipslink': '{}{}'.format(site_url, membership.get_absolute_url()),
+                'membershiplink': '{}{}'.format(site_url, membership.get_absolute_url()),
+                'renewlink': '{}{}'.format(site_url, membership.get_absolute_url()),
                 'directory_url': directory_url,
                 'directory_edit_url': directory_edit_url,
             })

@@ -1,5 +1,3 @@
-
-
 from django.db import models, migrations
 import django.db.models.deletion
 import django.utils.timezone
@@ -308,7 +306,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='ticketdependency',
-            unique_together=set([('ticket', 'depends_on')]),
+            unique_together={('ticket', 'depends_on')},
         ),
         migrations.AddField(
             model_name='presetreply',

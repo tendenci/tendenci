@@ -9,19 +9,19 @@ def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
     uuid_hex = uuid.uuid4().hex[:8]
     #app_label = re.sub(r'[^a-zA-Z0-9._]+', '-', instance.app_label)
-    return 'imports/%s/%s' % (uuid_hex, filename)
+    return 'imports/{}/{}'.format(uuid_hex, filename)
 
 
 class Import(models.Model):
     STATUS_CHOICES = (
-        ("pending", _(u"Pending")),
-        ("processing", _(u"Processing")),
-        ("completed", _(u"Completed")),
-        ("failed", _(u"Failed")),
+        ("pending", _("Pending")),
+        ("processing", _("Processing")),
+        ("completed", _("Completed")),
+        ("failed", _("Failed")),
     )
     app_label = models.CharField(max_length=50)
     model_name = models.CharField(max_length=50)
-    status = models.CharField(_(u"status"), max_length=50,
+    status = models.CharField(_("status"), max_length=50,
             default="pending", choices=STATUS_CHOICES)
     failure_reason = models.CharField(max_length=250, blank=True, default="")
     file = models.FileField("", max_length=260, upload_to=file_directory)
@@ -35,4 +35,4 @@ class Import(models.Model):
         return reverse('import.status', args=[self.app_label, self.model_name])
 
     def __str__(self):
-        return "Import for %s %s" % (self.app_label, self.model_name)
+        return "Import for {} {}".format(self.app_label, self.model_name)

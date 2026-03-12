@@ -1,4 +1,3 @@
-from builtins import str
 import uuid
 
 from django.db import models
@@ -59,7 +58,7 @@ class Location(TendenciBaseModel):
         return reverse('location', args=[self.slug])
 
     def get_address(self):
-        return "%s %s %s, %s %s" % (
+        return "{} {} {}, {} {}".format(
             self.address,
             self.address2,
             self.city,
@@ -125,7 +124,7 @@ class Location(TendenciBaseModel):
             self.latitude, self.longitude = get_coordinates(self.get_address())
 
         photo_upload = kwargs.pop('photo', None)
-        super(Location, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if photo_upload and self.pk:
             image = File(content_type=ContentType.objects.get_for_model(self.__class__),

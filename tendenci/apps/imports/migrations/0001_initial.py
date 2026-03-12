@@ -1,5 +1,3 @@
-
-
 from django.db import models, migrations
 import tendenci.apps.imports.models
 

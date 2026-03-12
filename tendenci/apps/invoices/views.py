@@ -99,17 +99,17 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
 
         for item in total_amount_by_object_type:
             if item['sum']:
-                total_amount_d[item['object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount)]
+                total_amount_d[item['object_type__app_label'] or 'unknown'] = [item['sum'], '{:.2%}'.format(item['sum']/invoice_total_amount)]
         for item in amount_paid_by_object_type:
             if item['sum']:
                 net_amount = item['sum'] - item.get('refunds', 0)
-                amount_paid_d[item['object_type__app_label'] or 'unknown'] = [net_amount, '{0:.2%}'.format(net_amount/invoice_total_amount_paid)]
+                amount_paid_d[item['object_type__app_label'] or 'unknown'] = [net_amount, '{:.2%}'.format(net_amount/invoice_total_amount_paid)]
         for item in total_balance_by_object_type:
             if item['balance_sum']:
-                balance_d[item['object_type__app_label'] or 'unknown'] = [item['balance_sum'], '{0:.2%}'.format(item['balance_sum']/invoice_total_balance)]
+                balance_d[item['object_type__app_label'] or 'unknown'] = [item['balance_sum'], '{:.2%}'.format(item['balance_sum']/invoice_total_balance)]
         for item in total_cc_by_object_type:
             if item['sum']:
-                total_cc_d[item['invoice__object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/total_cc)]
+                total_cc_d[item['invoice__object_type__app_label'] or 'unknown'] = [item['sum'], '{:.2%}'.format(item['sum']/total_cc)]
 
     else:
         total_amount_d = {}
@@ -164,14 +164,14 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
         else:
             form = form_class(initial={'admin_notes': invoice.admin_notes})
 
-    notify = request.GET.get('notify', u'')
-    guid = guid or u''
+    notify = request.GET.get('notify', '')
+    guid = guid or ''
 
     # boolean value
     merchant_login = get_setting("site", "global", "merchantaccount") != 'asdf asdf asdf'
 
     obj = invoice.get_object()
-    obj_name = u''
+    obj_name = ''
 
     if obj:
         obj_name = obj._meta.verbose_name
@@ -459,7 +459,7 @@ def search(request, template_name="invoices/search.html"):
     search_criteria = None
     search_text = None
     search_method = None
-    invoice_type = u''
+    invoice_type = ''
     event = None
     event_id = None
     object_type_id = None
@@ -542,7 +542,7 @@ def search(request, template_name="invoices/search.html"):
             else:
                 invoices = invoices.filter(owner_id=owner.id)
         else:
-            search_filter = {'%s%s' % (search_criteria,
+            search_filter = {'{}{}'.format(search_criteria,
                                        search_type): search_text}
             invoices = invoices.filter(**search_filter)
 

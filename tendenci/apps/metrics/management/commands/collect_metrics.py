@@ -1,4 +1,3 @@
-
 import subprocess
 from datetime import date, timedelta
 from decimal import Decimal

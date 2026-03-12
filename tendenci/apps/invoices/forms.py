@@ -25,7 +25,7 @@ class EmailInvoiceForm(FormControlWidgetMixin, forms.ModelForm):
         fields = ('subject', 'recipient', 'cc', 'body', )
 
     def __init__(self, *args, **kwargs):
-        super(EmailInvoiceForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.id:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
@@ -57,7 +57,7 @@ class AdminVoidForm(FormControlWidgetMixin, forms.ModelForm):
                                              required=False, initial=False)
 
     def __init__(self, *args, **kwargs):
-        super(AdminVoidForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['void_reason'].widget.attrs.update({'cols': 30, 'rows': 4})
 
     class Meta:
@@ -75,7 +75,7 @@ class ReportsOverviewForm(FormControlWidgetMixin, forms.Form):
         initial = kwargs.get('initial', {})
         if not data:
             data = {**initial, **data}
-        super(ReportsOverviewForm, self).__init__(data, **kwargs)
+        super().__init__(data, **kwargs)
         self.fields['start_dt'].widget.attrs['class'] += ' datepicker'
         self.fields['end_dt'].widget.attrs['class'] += ' datepicker'
         entities = Invoice.objects.values('entity__id', 'entity__entity_name').order_by('entity__entity_name').distinct('entity__entity_name')
@@ -133,7 +133,7 @@ class InvoiceSearchForm(forms.Form):
     object_type_id = forms.IntegerField(widget=forms.HiddenInput, required=False)
 
     def __init__(self, *args, **kwargs):
-        super(InvoiceSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Set start date and end date
         if self.fields.get('start_dt'):

@@ -1,4 +1,3 @@
-from builtins import str
 import uuid
 
 from django.db import models
@@ -40,4 +39,4 @@ class Industry(OrderingBaseModel, TendenciBaseModel):
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
 
-        super(Industry, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)

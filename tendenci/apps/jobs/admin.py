@@ -77,7 +77,7 @@ class JobAdmin(TendenciBaseModelAdmin):
     ordering = ['-post_dt', '-update_dt']
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super(JobAdmin, self).get_form(request, obj=None, **kwargs)
+        form = super().get_form(request, obj=None, **kwargs)
         form.user = request.user
         return form
 
@@ -136,7 +136,7 @@ class JobCategoryAdmin(admin.ModelAdmin):
         return ', '.join(JobCategory.objects.filter(parent=instance).values_list('name', flat=True))
 
     def get_queryset(self, request):
-        qs = super(JobCategoryAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.filter(parent__isnull=True)
 
 admin.site.register(JobCategory, JobCategoryAdmin)

@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import datetime
 import re
@@ -55,11 +54,11 @@ def get_user_import_settings(request, id):
     if id not in request.session:
         return d
 
-    d['file_name'] = (request.session[id]).get('file_name', u'')
+    d['file_name'] = (request.session[id]).get('file_name', '')
     d['interactive'] = request.session[id].get('interactive', False)
     d['override'] = request.session[id].get('override', False)
-    d['key'] = request.session[id].get('key', u'')
-    d['group'] = request.session[id].get('group', u'')
+    d['key'] = request.session[id].get('key', '')
+    d['group'] = request.session[id].get('group', '')
     d['clear_group_membership'] = request.session[id].get(
                                 'clear_group_membership', False
                                 )
@@ -416,7 +415,7 @@ def get_unique_username(user):
 
     if not user.username:
         if user.first_name and user.last_name:
-            user.username = '%s%s' % (user.first_name[0], user.last_name)
+            user.username = '{}{}'.format(user.first_name[0], user.last_name)
 
     p = re.compile(r'[^\w.@+-]+', re.IGNORECASE)
     user.username = p.sub('', user.username)
@@ -433,7 +432,7 @@ def get_unique_username(user):
         num = 1
         while str(num) in t_list:
             num += 1
-        user.username = '%s%s' % (user.username, str(num))
+        user.username = '{}{}'.format(user.username, str(num))
 
     return user.username
 

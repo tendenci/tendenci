@@ -47,7 +47,7 @@ class HelpFileAdminForm(TendenciBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(HelpFileAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['answer'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
@@ -132,7 +132,7 @@ class HelpFileForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(HelpFileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['answer'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:

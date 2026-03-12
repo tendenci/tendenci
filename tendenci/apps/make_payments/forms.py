@@ -51,7 +51,7 @@ class MakePaymentForm(FormControlWidgetMixin, forms.ModelForm):
                   )
 
     def __init__(self, user, *args, **kwargs):
-        super(MakePaymentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.initial['country'] = get_setting('site', 'global', 'defaultcountry')
         self.fields['reference_number'].label = get_setting('module',
                                                             'make_payment',

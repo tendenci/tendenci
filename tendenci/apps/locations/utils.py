@@ -20,7 +20,7 @@ def geocode_api(**kwargs):
         kwargs.update({
             'key': api_key
     })
-    url = '%s?%s' % (GEOCODE_BASE_URL, urlencode(kwargs))
+    url = '{}?{}'.format(GEOCODE_BASE_URL, urlencode(kwargs))
 
     return simplejson.load(urlopen(url))
 
@@ -54,7 +54,7 @@ def distance_api(*args, **kwargs):
             'key': api_key
         })
 
-    url = '%s?%s' % (distance_base_url, urlencode(kwargs))
+    url = '{}?{}'.format(distance_base_url, urlencode(kwargs))
     return simplejson.load(urlopen(url))
 
 def distance_via_sphere(lat1, long1, lat2, long2):

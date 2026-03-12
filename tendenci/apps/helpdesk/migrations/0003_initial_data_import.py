@@ -1,5 +1,3 @@
-
-
 import os
 
 from django.db import migrations

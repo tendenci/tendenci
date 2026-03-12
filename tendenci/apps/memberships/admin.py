@@ -39,7 +39,7 @@ class MembershipStatusDetailFilter(SimpleListFilter):
 
     def lookups(self, request, model_admin):
         memberships = model_admin.model.objects.exclude(status_detail='archive')
-        status_detail_list = set([m.status_detail for m in memberships])
+        status_detail_list = {m.status_detail for m in memberships}
         return list(zip(status_detail_list, status_detail_list))
 
     def queryset(self, request, queryset):
@@ -103,7 +103,7 @@ def approve_selected(modeladmin, request, queryset):
             # notify corp reps
             membership.email_corp_reps(request)
 
-approve_selected.short_description = u'Approve selected'
+approve_selected.short_description = 'Approve selected'
 
 
 def renew_selected(modeladmin, request, queryset):
@@ -121,10 +121,10 @@ def renew_selected(modeladmin, request, queryset):
         membership.send_email(request, 'renewal')
 
     member_names = [m.user.profile.get_name() for m in memberships]
-    msg_string = 'Successfully renewed: %s' % u', '.join(member_names)
+    msg_string = 'Successfully renewed: %s' % ', '.join(member_names)
     messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-renew_selected.short_description = u'Renew selected'
+renew_selected.short_description = 'Renew selected'
 
 
 def disapprove_selected(modeladmin, request, queryset):
@@ -143,7 +143,7 @@ def disapprove_selected(modeladmin, request, queryset):
         membership.disapprove(request_user=request.user)
         membership.send_email(request, ('disapprove_renewal' if is_renewal else 'disapprove'))
 
-disapprove_selected.short_description = u'Disapprove selected'
+disapprove_selected.short_description = 'Disapprove selected'
 
 
 def expire_selected(modeladmin, request, queryset):
@@ -163,7 +163,7 @@ def expire_selected(modeladmin, request, queryset):
         # but not being marked as expired yet (maybe due to a failed cron job).
         membership.expire(request_user=request.user)
 
-expire_selected.short_description = u'Expire selected'
+expire_selected.short_description = 'Expire selected'
 
 
 def export_selected(modeladmin, request, queryset, export_fields='main_fields'):
@@ -404,9 +404,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
     @mark_safe
     def edit_link(self, instance):
-        return '<a href="%s" title="Edit at Front End">%s</a>' % (
+        return '<a href="{}" title="Edit at Front End">{}</a>'.format(
                 reverse('membership_default.edit',args=[instance.id]),
-                _('Edit'),)
+                _('Edit'))
     edit_link.short_description = _('edit')
 
     @mark_safe
@@ -415,7 +415,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             return None
 
         link_icon = static('images/icons/external_16x16.png')
-        link = '<a href="%s" title="%s"><img src="%s" alt="external_16x16" title="external icon"/></a>' % (
+        link = '<a href="{}" title="{}"><img src="{}" alt="external_16x16" title="external icon"/></a>'.format(
             obj.get_absolute_url(),
             strip_tags(obj),
             link_icon,
@@ -425,9 +425,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
     @mark_safe
     def user_profile(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return '<a href="{}">{}</a>'.format(
               reverse('profile', args=[instance.user.username]),
-              instance.user.get_full_name() or instance.user.username,)
+              instance.user.get_full_name() or instance.user.username)
     user_profile.short_description = _('User Profile')
     user_profile.admin_order_field = 'user__last_name'
 
@@ -442,7 +442,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
     def get_status(self, instance):
         return instance.get_status().capitalize()
-    get_status.short_description = u'Status'
+    get_status.short_description = 'Status'
     get_status.admin_order_field = 'status_detail'
 
     @mark_safe
@@ -450,30 +450,30 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         inv = instance.get_invoice()
         if inv:
             if inv.balance > 0:
-                return '<a href="%s" title="Invoice">#%s (%s)</a>' % (
+                return '<a href="{}" title="Invoice">#{} ({})</a>'.format(
                     inv.get_absolute_url(),
                     inv.pk,
                     tcurrency(inv.balance)
                 )
             else:
-                return '<a href="%s" title="Invoice">#%s</a>' % (
+                return '<a href="{}" title="Invoice">#{}</a>'.format(
                     inv.get_absolute_url(),
                     inv.pk
                 )
         return ""
-    get_invoice.short_description = u'Invoice'
+    get_invoice.short_description = 'Invoice'
 
     def get_create_dt(self, instance):
         return instance.create_dt.strftime('%b %d, %Y, %I:%M %p')
-    get_create_dt.short_description = u'Created On'
+    get_create_dt.short_description = 'Created On'
 
     def get_approve_dt(self, instance):
         dt = instance.application_approved_dt
 
         if dt:
             return dt.strftime('%b %d, %Y, %I:%M %p')
-        return u''
-    get_approve_dt.short_description = u'Approved On'
+        return ''
+    get_approve_dt.short_description = 'Approved On'
     get_approve_dt.admin_order_field = 'application_approved_dt'
 
     def get_expire_dt(self, instance):
@@ -481,12 +481,12 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
         if dt:
             return dt.strftime('%m/%d/%Y')
-        return u''
-    get_expire_dt.short_description = u'Expire Date'
+        return ''
+    get_expire_dt.short_description = 'Expire Date'
     get_expire_dt.admin_order_field = 'expire_dt'
 
     def get_actions(self, request):
-        actions = super(MembershipDefaultAdmin, self).get_actions(request)
+        actions = super().get_actions(request)
         if not has_perm(request.user, 'memberships.approve_membershipdefault'):
             del actions['approve_selected']
         return actions
@@ -542,7 +542,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         if all(do_next_url):
             return HttpResponseRedirect(NEXT_URL)
 
-        return super(MembershipDefaultAdmin, self).response_change(request, obj)
+        return super().response_change(request, obj)
 
     def has_change_permission(self, request, obj=None):
         return (has_perm(request.user, 'memberships.approve_membershipdefault') or
@@ -552,7 +552,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         """
         Add the export view to urls.
         """
-        urls = super(MembershipDefaultAdmin, self).get_urls()
+        urls = super().get_urls()
 
         extra_urls = [
             re_path(r'^approve/(?P<pk>\d+)/$',
@@ -729,7 +729,7 @@ class MembershipAppAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def members_search_link(self, instance):
-        return '<a href="%s" title="%s"><i class="glyphicon glyphicon-search"></i> Search Members</a>' % (
+        return '<a href="{}" title="{}"><i class="glyphicon glyphicon-search"></i> Search Members</a>'.format(
                 reverse('memberships.search_per_app', args=[instance.id]),
                         _('Search Members'))
     members_search_link.short_description = _('Members Search Link')
@@ -761,7 +761,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
     ordering = ['position']
 
     def get_actions(self, request):
-        actions = super(MembershipTypeAdmin, self).get_actions(request)
+        actions = super().get_actions(request)
         return actions
 
     def add_view(self, request):
@@ -769,7 +769,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
         max_types = settings.MAX_MEMBERSHIP_TYPES
         if num_types >= max_types:
             raise ExceededMaxTypes
-        return super(MembershipTypeAdmin, self).add_view(request)
+        return super().add_view(request)
 
     class Media:
         js = ('//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js',
@@ -784,7 +784,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
                     instance.group.id,
                 )
         return ""
-    show_group.short_description = u'Group'
+    show_group.short_description = 'Group'
     show_group.admin_order_field = 'group'
 
     def save_model(self, request, object, form, change):
@@ -821,9 +821,9 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
                 num = 1
                 while str(num) in t_list:
                     num += 1
-                group.slug = '%s%s' % (group.slug, str(num))
+                group.slug = '{}{}'.format(group.slug, str(num))
                 # group name is also a unique field
-                group.name = '%s%s' % (group.name, str(num))
+                group.name = '{}{}'.format(group.name, str(num))
 
             group.label = instance.name
             group.type = 'system_generated'
@@ -899,7 +899,7 @@ class NoticeAdmin(admin.ModelAdmin):
         return instance
 
     def get_urls(self):
-        urls = super(NoticeAdmin, self).get_urls()
+        urls = super().get_urls()
         extra_urls = [
             re_path(r'^clone/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.clone),
@@ -1004,7 +1004,7 @@ class MembershipAppField2Admin(admin.ModelAdmin):
                         }),)
 
     def get_object(self, request, object_id, from_field=None):
-        obj = super(MembershipAppField2Admin, self).get_object(request, object_id)
+        obj = super().get_object(request, object_id)
 
         # assign default field_type
         if obj:
@@ -1017,7 +1017,7 @@ class MembershipAppField2Admin(admin.ModelAdmin):
         return obj
 
     def change_view(self, request, object_id=None, form_url='', extra_context=None):
-        return super(MembershipAppField2Admin, self).change_view(request, object_id, form_url,
+        return super().change_view(request, object_id, form_url,
                                extra_context=dict(show_delete=False))
 
 #     def has_delete_permission(self, request, obj=None):

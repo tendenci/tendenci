@@ -200,7 +200,7 @@ class Invoice(models.Model):
         This method populates all of the bill to fields
         via info in user and user.profile object.
         """
-        self.bill_to = '%s %s' % (user.first_name, user.last_name)
+        self.bill_to = '{} {}'.format(user.first_name, user.last_name)
         self.bill_to = self.bill_to.strip()
 
         self.bill_to_first_name = user.first_name
@@ -233,7 +233,7 @@ class Invoice(models.Model):
         This method populates all of the ship to fields
         via info in user and user.profile object.
         """
-        self.ship_to = '%s %s' % (user.first_name, user.last_name)
+        self.ship_to = '{} {}'.format(user.first_name, user.last_name)
         self.ship_to = self.ship_to.strip()
 
         self.ship_to_first_name = user.first_name
@@ -265,7 +265,7 @@ class Invoice(models.Model):
     def split_title(self):
         if ": " in self.title:
             split_title = ': '.join(self.title.split(': ')[1:])
-            return u'%s' % split_title
+            return '%s' % split_title
         return self.title
 
     def get_absolute_url(self):
@@ -300,7 +300,7 @@ class Invoice(models.Model):
             self.entity = self.get_entity()
 
         self.verifydata()
-        super(Invoice, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def verifydata(self):
         # verify each field
@@ -386,7 +386,7 @@ class Invoice(models.Model):
         Use status_detail and is_voide attribute
         """
         if self.is_void:
-            return u'void'
+            return 'void'
 
         return self.status_detail
 

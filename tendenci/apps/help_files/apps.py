@@ -7,7 +7,7 @@ class HelpFilesConfig(AppConfig):
     verbose_name = 'Help Files'
 
     def ready(self):
-        super(HelpFilesConfig, self).ready()
+        super().ready()
         from tendenci.apps.help_files.signals import init_signals, create_notice_types
         init_signals()
         post_migrate.connect(create_notice_types, sender=self)

@@ -1,5 +1,3 @@
-
-
 from django.db import models, migrations
 import tendenci.libs.tinymce.models
 import django.db.models.deletion

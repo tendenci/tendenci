@@ -15,11 +15,11 @@ CURRENCY_SYMBOL = get_setting("site", "global", "currencysymbol")
 
 def id_format(value, instance):
     link = reverse('invoice.view', args=[value])
-    html = "<a href=\"%s\">%s</a>" % (link, value)
+    html = "<a href=\"{}\">{}</a>".format(link, value)
     return mark_safe(html)
 
 def currency_format(value, instance):
-    return "%s%s" % (CURRENCY_SYMBOL, value)
+    return "{}{}".format(CURRENCY_SYMBOL, value)
 
 p = re.compile(r'^Registration \d+ for Event: ')
 def title_format(value, instance):

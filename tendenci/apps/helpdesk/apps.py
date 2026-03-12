@@ -5,6 +5,6 @@ class HelpdeskConfig(AppConfig):
     verbose_name = "Helpdesk"
 
     def ready(self):
-        super(HelpdeskConfig, self).ready()
+        super().ready()
         from tendenci.apps.helpdesk.signals import init_signals
         init_signals()

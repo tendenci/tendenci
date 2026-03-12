@@ -136,11 +136,11 @@ def dashboard(request):
                     COUNT(CASE t.status WHEN '1' THEN t.id WHEN '2' THEN t.id END) AS open,
                     COUNT(CASE t.status WHEN '3' THEN t.id END) AS resolved,
                     COUNT(CASE t.status WHEN '4' THEN t.id END) AS closed
-            %s
-            %s
+            {}
+            {}
             GROUP BY queue, name
             ORDER BY q.id;
-    """ % (from_clause, where_clause))
+    """.format(from_clause, where_clause))
 
     dash_tickets = query_to_dict(cursor.fetchall(), cursor.description)
 
@@ -347,7 +347,7 @@ def subscribe_staff_member_to_ticket(ticket, user):
 
 def update_ticket(request, ticket_id, public=False):
     if not (public or (request.user.is_authenticated and request.user.is_active and (request.user.is_staff or helpdesk_settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE))):
-        return HttpResponseRedirect('%s?next=%s' % (reverse('login'), reverse('helpdesk_update', args=[ticket_id])))
+        return HttpResponseRedirect('{}?next={}'.format(reverse('login'), reverse('helpdesk_update', args=[ticket_id])))
 
     ticket = get_object_or_404(Ticket, id=ticket_id)
 
@@ -630,7 +630,7 @@ def mass_update(request):
         if action == 'assign' and t.assigned_to != user:
             t.assigned_to = user
             t.save()
-            f = FollowUp(ticket=t, date=timezone.now(), title=_('Assigned to %(username)s in bulk update' % {'username': user.get_username()}), public=True, user=request.user)
+            f = FollowUp(ticket=t, date=timezone.now(), title=_('Assigned to {username} in bulk update'.format(username=user.get_username())), public=True, user=request.user)
             f.save()
         elif action == 'unassign' and t.assigned_to is not None:
             t.assigned_to = None
@@ -1083,7 +1083,7 @@ def run_report(request, report):
     periods = []
     year, month = first_year, first_month
     working = True
-    periods.append("%s %s" % (month_name(month), year))
+    periods.append("{} {}".format(month_name(month), year))
 
     while working:
         month += 1
@@ -1092,7 +1092,7 @@ def run_report(request, report):
             month = 1
         if (year > last_year) or (month > last_month and year >= last_year):
             working = False
-        periods.append("%s %s" % (month_name(month), year))
+        periods.append("{} {}".format(month_name(month), year))
 
     if report == 'userpriority':
         title = _('User by Priority')
@@ -1153,36 +1153,36 @@ def run_report(request, report):
     metric3 = False
     for ticket in report_queryset:
         if report == 'userpriority':
-            metric1 = u'%s' % ticket.get_assigned_to
-            metric2 = u'%s' % ticket.get_priority_display()
+            metric1 = '%s' % ticket.get_assigned_to
+            metric2 = '%s' % ticket.get_priority_display()
 
         elif report == 'userqueue':
-            metric1 = u'%s' % ticket.get_assigned_to
-            metric2 = u'%s' % ticket.queue.title
+            metric1 = '%s' % ticket.get_assigned_to
+            metric2 = '%s' % ticket.queue.title
 
         elif report == 'userstatus':
-            metric1 = u'%s' % ticket.get_assigned_to
-            metric2 = u'%s' % ticket.get_status_display()
+            metric1 = '%s' % ticket.get_assigned_to
+            metric2 = '%s' % ticket.get_status_display()
 
         elif report == 'usermonth':
-            metric1 = u'%s' % ticket.get_assigned_to
-            metric2 = u'%s %s' % (month_name(ticket.created.month), ticket.created.year)
+            metric1 = '%s' % ticket.get_assigned_to
+            metric2 = '{} {}'.format(month_name(ticket.created.month), ticket.created.year)
 
         elif report == 'queuepriority':
-            metric1 = u'%s' % ticket.queue.title
-            metric2 = u'%s' % ticket.get_priority_display()
+            metric1 = '%s' % ticket.queue.title
+            metric2 = '%s' % ticket.get_priority_display()
 
         elif report == 'queuestatus':
-            metric1 = u'%s' % ticket.queue.title
-            metric2 = u'%s' % ticket.get_status_display()
+            metric1 = '%s' % ticket.queue.title
+            metric2 = '%s' % ticket.get_status_display()
 
         elif report == 'queuemonth':
-            metric1 = u'%s' % ticket.queue.title
-            metric2 = u'%s %s' % (month_name(ticket.created.month), ticket.created.year)
+            metric1 = '%s' % ticket.queue.title
+            metric2 = '{} {}'.format(month_name(ticket.created.month), ticket.created.year)
 
         elif report == 'daysuntilticketclosedbymonth':
-            metric1 = u'%s' % ticket.queue.title
-            metric2 = u'%s %s' % (month_name(ticket.created.month), ticket.created.year)
+            metric1 = '%s' % ticket.queue.title
+            metric2 = '{} {}'.format(month_name(ticket.created.month), ticket.created.year)
             metric3 = ticket.modified - ticket.created
             metric3 = metric3.days
 
@@ -1229,7 +1229,7 @@ def save_query(request):
         encoded_query.user =request.user
         encoded_query.query = form.cleaned_data['query_encoded']
         encoded_query.save()
-        return HttpResponseRedirect('%s?saved_query=%s' % (reverse('helpdesk_list'), encoded_query.id))
+        return HttpResponseRedirect('{}?saved_query={}'.format(reverse('helpdesk_list'), encoded_query.id))
 
     # invalid form
     return HttpResponseRedirect(reverse('helpdesk_list'))

@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand
 
 
@@ -20,4 +19,4 @@ class Command(BaseCommand):
         ).update(status_detail='active')
 
         if verbosity:
-            print('Success!', '%s set to expired and %s set to active.' % (expired, active))
+            print('Success!', '{} set to expired and {} set to active.'.format(expired, active))

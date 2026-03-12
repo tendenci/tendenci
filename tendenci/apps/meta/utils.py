@@ -69,7 +69,7 @@ def generate_meta_keywords(value):
 
         # get the density, and word into a tuple
         one_words_length = len(one_words)
-        unique_words = set(word for word in one_words)
+        unique_words = {word for word in one_words}
         one_words = [(word, round((one_words.count(word)*100.00/one_words_length),2)) for word in unique_words]
 
         # sort the tuple by the density
@@ -109,7 +109,7 @@ def generate_meta_keywords(value):
 
         # get the density, and word into a tuple
         two_words_length = len(two_words)
-        unique_words = set(words for words in two_words)
+        unique_words = {words for words in two_words}
         two_words = [(words, round((two_words.count(words)*100.00/two_words_length),2)) for words in unique_words]
 
         # sort the tuple by the density

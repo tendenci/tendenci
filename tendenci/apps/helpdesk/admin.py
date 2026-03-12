@@ -20,7 +20,7 @@ class TicketAdmin(admin.ModelAdmin):
     exclude = ['owner_username']
 
     def save_model(self, request, obj, form, change):
-        super(TicketAdmin, self).save_model(request, obj, form, change)
+        super().save_model(request, obj, form, change)
         if obj.owner:
             obj.owner_username = obj.owner.username
             obj.save()
@@ -55,7 +55,7 @@ class UserAdminWithQueueMemberships(UserAdmin):
     def change_view(self, request, object_id, form_url='', extra_context=None):
         self.inlines = (QueueMembershipInline,)
 
-        return super(UserAdminWithQueueMemberships, self).change_view(
+        return super().change_view(
             request, object_id, form_url=form_url, extra_context=extra_context)
 
 

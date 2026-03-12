@@ -99,14 +99,14 @@ class LocationForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(LocationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.user:
             if not self.user.profile.is_superuser:
                 if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
         if self.instance.logo:
-            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.logo.pk, basename(self.instance.logo.file.name))
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.logo.pk, basename(self.instance.logo.file.name))
         else:
             self.fields.pop('remove_photo')
 
@@ -133,7 +133,7 @@ class LocationForm(TendenciBaseForm):
         return photo_upload
 
     def save(self, *args, **kwargs):
-        location = super(LocationForm, self).save(*args, **kwargs)
+        location = super().save(*args, **kwargs)
 
         if self.cleaned_data.get('remove_photo'):
             location.logo = None
@@ -148,7 +148,7 @@ class LocationFilterForm(forms.Form):
     # zipcode = forms.ChoiceField(choices=[], required=False)
 
     def __init__(self, data={}, *args, **kwargs):
-        super(LocationFilterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # self.update_field_choices('zipcode', data)
         del data['city']
         self.update_field_choices('city', data)

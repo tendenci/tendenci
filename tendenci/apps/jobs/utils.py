@@ -146,10 +146,10 @@ def pricing_choices(user):
 
     for pricing in pricings:
         if member:
-            prices = "%s/%s" % (pricing.regular_price_member, pricing.premium_price_member)
+            prices = "{}/{}".format(pricing.regular_price_member, pricing.premium_price_member)
         else:
-            prices = "%s/%s" % (pricing.regular_price, pricing.premium_price)
+            prices = "{}/{}".format(pricing.regular_price, pricing.premium_price)
 
-        label = "%s: %s Days for %s" % (pricing.get_title(), pricing.duration, prices)
+        label = "{}: {} Days for {}".format(pricing.get_title(), pricing.duration, prices)
         choices.append((pricing.pk, label))
     return choices

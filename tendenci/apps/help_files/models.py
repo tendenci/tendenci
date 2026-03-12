@@ -61,7 +61,7 @@ class HelpFile(TendenciBaseModel):
 
     def level_is(self):
         "Template helper: {% if file.level_is.basic %}..."
-        return dict([i, self.level==i] for i in HelpFile.LEVELS)
+        return {i: self.level==i for i in HelpFile.LEVELS}
 
 
 class Request(models.Model):
