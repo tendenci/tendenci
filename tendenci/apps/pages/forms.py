@@ -1,4 +1,3 @@
-import imghdr
 from os.path import splitext, basename
 
 from tendenci.apps.pages.models import Page
@@ -7,11 +6,10 @@ from tendenci.apps.perms.forms import TendenciBaseForm
 from django.utils.safestring import mark_safe
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from django.template.defaultfilters import filesizeformat
 
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.utils import get_template_list
-from tendenci.apps.files.utils import get_max_file_upload_size
+from tendenci.apps.files.validators import FileValidator
 
 ALLOWED_IMG_EXT = (
     '.jpg',
@@ -188,6 +186,8 @@ class PageForm(TendenciBaseForm):
             self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> {}: <a target="_blank" href="/files/{}/">{}</a>'.format(_('Remove current image'), self.instance.header_image.pk, basename(self.instance.header_image.file.name))
         else:
             self.fields.pop('remove_photo')
+        if 'header_image' in self.fields:
+            self.fields['header_image'].validators = [FileValidator(allowed_extensions=ALLOWED_IMG_EXT)]
 
         if self.instance.pk:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -232,28 +232,6 @@ class PageForm(TendenciBaseForm):
                 del cleaned_data['slug']
 
         return cleaned_data
-
-    def clean_header_image(self):
-        header_image = self.cleaned_data['header_image']
-        if header_image:
-            extension = splitext(header_image.name)[1]
-
-            # check the extension
-            if extension.lower() not in ALLOWED_IMG_EXT:
-                raise forms.ValidationError(_('The header image must be of jpg, gif, or png image type.'))
-
-            # check the image header_image
-            image_type = '.%s' % imghdr.what('', header_image.read())
-            if image_type not in ALLOWED_IMG_EXT:
-                raise forms.ValidationError(_('The header image is an invalid image. Try uploading another image.'))
-
-            max_upload_size = get_max_file_upload_size()
-            if header_image.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(header_image)s') % {
-                                            'max_upload_size': filesizeformat(max_upload_size),
-                                            'header_image': filesizeformat(header_image.size)})
-
-        return header_image
 
     def save(self, *args, **kwargs):
         page = super().save(*args, **kwargs)

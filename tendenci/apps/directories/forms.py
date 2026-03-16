@@ -1,4 +1,3 @@
-import imghdr
 from datetime import datetime
 from os.path import splitext
 
@@ -22,9 +21,9 @@ from tendenci.apps.directories.utils import (get_payment_method_choices,
 from tendenci.apps.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField, StateSelectField
-from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.regions.models import Region
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.files.validators import FileValidator
 
 
 ALLOWED_LOGO_EXT = (
@@ -154,7 +153,7 @@ class DirectoryForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Directory._meta.app_label,
         'storme_model':Directory._meta.model_name.lower()}))
 
-    logo = forms.FileField(
+    logo = forms.ImageField(
       required=False,
       help_text=_('Company logo. Only jpg, gif, or png images.'))
 
@@ -325,6 +324,7 @@ class DirectoryForm(TendenciBaseForm):
                 self.fields['logo'].help_text=_('Only jpg, gif, or png images.')
                 self.logo_extension_error_message = _('The photo must be of jpg, gif, or png image type.')
                 self.logo_mime_error_message = _('The photo is an invalid image. Try uploading another photo.')
+        self.fields['logo'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
             
 
         if not self.user.profile.is_superuser:
@@ -425,31 +425,6 @@ class DirectoryForm(TendenciBaseForm):
             return True
         else:
             return False
-
-    def clean_logo(self):
-        logo = self.cleaned_data['logo']
-        if logo:
-            try:
-                extension = splitext(logo.name)[1]
-
-                # check the extension
-                if extension.lower() not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(self.logo_extension_error_message)
-
-                # check the image header
-                image_type = '.%s' % imghdr.what('', logo.read())
-                if image_type not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(self.logo_mime_error_message)
-
-                max_upload_size = get_max_file_upload_size()
-                if logo.size > max_upload_size:
-                    raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(logo_size)s') % {
-                                                    'max_upload_size': filesizeformat(max_upload_size),
-                                                    'logo_size': filesizeformat(logo.size)})
-            except OSError:
-                logo = None
-
-        return logo
 
     def clean_headline(self):
         """

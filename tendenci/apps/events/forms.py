@@ -1,5 +1,4 @@
 import re
-import imghdr
 import calendar
 from ast import literal_eval
 from os.path import splitext, basename
@@ -882,7 +881,7 @@ class EventForm(TendenciBaseForm):
         initial=datetime.now().date()+timedelta(days=30),
         widget=forms.DateInput(attrs={'class':'datepicker'}))
 
-    photo_upload = forms.FileField(label=_('Photo'), required=False)
+    photo_upload = forms.ImageField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
     groups = forms.ModelMultipleChoiceField(required=True, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
     primary_group = forms.ModelChoiceField(required=False, queryset=None)
@@ -1176,28 +1175,8 @@ class EventForm(TendenciBaseForm):
             if 'repeat_of' in self.fields:
                 del self.fields['repeat_of']
 
-    def clean_photo_upload(self):
-        photo_upload = self.cleaned_data['photo_upload']
-        if photo_upload:
-            extension = splitext(photo_upload.name)[1]
-
-            # check the extension
-            if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
-
-            # check the image header
-            image_type = '.%s' % imghdr.what('', photo_upload.read())
-            if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
-
-            max_upload_size = get_max_file_upload_size()
-            if photo_upload.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(upload_size)s') % {
-                                'max_upload_size': filesizeformat(max_upload_size),
-                                'upload_size': filesizeformat(photo_upload.size)})
-
-        return photo_upload
-
+        if 'photo_upload' in self.fields:
+            self.fields['photo_upload'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
 
     def clean_end_recurring(self):
         end_recurring = self.cleaned_data.get('end_recurring', None)
