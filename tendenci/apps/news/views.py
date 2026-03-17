@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
@@ -77,7 +78,7 @@ def search(request, release_year=None, template_name="news/search.html"):
             news = news.filter(groups__in=[news_group])
 
         if not has_perm(request.user, 'news.view_news'):
-            news = news.filter(release_dt_local__lte=datetime.now())
+            news = news.filter(release_dt_local__lte=timezone.now())
     else:
         news = News.objects.none()
 

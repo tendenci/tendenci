@@ -10,6 +10,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 
 from tendenci.apps.events.models import Event, Registrant, Type
 from tendenci.apps.events.utils import (registration_earliest_time,
@@ -614,23 +615,23 @@ class ListEventsNode(ListNode):
             if order == "next_upcoming":
                 if not start_dt:
                     # Removed seconds and microseconds so we can cache the query better
-                    now = datetime.now().replace(second=0, microsecond=0)
+                    now = timezone.now().replace(second=0, microsecond=0)
                     items = items.filter(start_dt__gt=now)
                 items = items.order_by("start_dt", '-priority')
             elif order == "current_and_upcoming":
                 if not start_dt:
-                    now = datetime.now().replace(second=0, microsecond=0)
+                    now = timezone.now().replace(second=0, microsecond=0)
                     items = items.filter(Q(start_dt__gt=now) | Q(end_dt__gt=now))
                 items = items.order_by("start_dt", '-priority')
             elif order == "current_and_upcoming_by_hour":
-                now = datetime.now().replace(second=0, microsecond=0)
-                today = datetime.now().replace(second=0, hour=0, minute=0, microsecond=0)
+                now = timezone.now().replace(second=0, microsecond=0)
+                today = timezone.now().replace(second=0, hour=0, minute=0, microsecond=0)
                 tomorrow = today + timedelta(days=1)
                 items = items.filter(Q(start_dt__lte=tomorrow) & Q(end_dt__gte=today)).extra(select={'hour': 'extract( hour from start_dt )'}).extra(select={'minute': 'extract( minute from start_dt )'}).extra(where=["extract( hour from start_dt ) >= %s"], params=[now.hour])
                 items = items.distinct()
                 items = items.order_by('hour', 'minute', '-priority')
             elif order == "past":
-                items = items.filter(start_dt__lt=datetime.now())
+                items = items.filter(start_dt__lt=timezone.now())
                 items = items.order_by("-start_dt", '-priority')
             else:
                 items = items.order_by(order)

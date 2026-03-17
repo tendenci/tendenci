@@ -175,7 +175,7 @@ class News(TendenciBaseModel):
         then
             the corresponding release_dt_local will be: 2014-05-09 05:30:00
         """
-        now = datetime.now()
+        now = timezone.now()
         now_with_tz = adjust_datetime_to_timezone(now, settings.TIME_ZONE)
         if self.timezone and self.release_dt and self.timezone.key != settings.TIME_ZONE:
             time_diff = adjust_datetime_to_timezone(now, self.timezone) - now_with_tz

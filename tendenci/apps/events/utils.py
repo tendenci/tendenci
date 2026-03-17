@@ -28,6 +28,7 @@ from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
 from pytz import timezone
 from pytz import UnknownTimeZoneError
+from django.utils import timezone
 
 from tendenci.apps.events.models import (Event, Place, Speaker, Organizer, Sponsor,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
@@ -1547,7 +1548,7 @@ def registration_earliest_time(event, pricing=None):
             status=True,
         )
 
-    pricing = pricing.filter(end_dt__gt=datetime.now()).order_by('start_dt')
+    pricing = pricing.filter(end_dt__gt=timezone.now()).order_by('start_dt')
 
     try:
         return pricing[0].start_dt

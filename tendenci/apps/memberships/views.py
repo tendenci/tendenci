@@ -35,6 +35,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.urls.resolvers import NoReverseMatch
+from django.utils import timezone
 
 #from geraldo.generators import PDFGenerator
 
@@ -2124,7 +2125,7 @@ def expire(request, id, template_name="memberships/applications/expire.html"):
 
 @staff_member_required
 def membership_join_report(request):
-    TODAY = date.today()
+    TODAY = timezone.datetime.today()
     memberships = MembershipDefault.objects.filter(status=True,
                                                    status_detail__in=["active", 'archive'])
     membership_type = ''
@@ -2132,8 +2133,8 @@ def membership_join_report(request):
     start_date = ''
     end_date = ''
 
-    start_date = TODAY - relativedelta(months=1)
-    end_date = TODAY
+    start_date = timezone.make_aware(TODAY - relativedelta(months=1))
+    end_date = timezone.make_aware(TODAY)
 
     if request.method == 'POST':
         form = ReportForm(request.POST)
@@ -2155,7 +2156,7 @@ def membership_join_report(request):
             'start_date': start_date.strftime('%m/%d/%Y'),
             'end_date': end_date.strftime('%m/%d/%Y')})
 
-    end_date_time = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59)
+    end_date_time = timezone.make_aware(datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59))
     memberships = memberships.filter(application_approved_dt__gte=start_date,
                                      application_approved_dt__lt=end_date_time)
     memberships = memberships.filter(renewal=False).distinct('user__id', 'membership_type__id')
@@ -2760,7 +2761,8 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
     for index, month in enumerate(itermonths):
         index = index + 1
         start_dt = datetime(year_selected, index, 1)
-        end_dt = start_dt + relativedelta(months=1)
+        end_dt = timezone.make_aware(start_dt + relativedelta(months=1))
+        start_dt = timezone.make_aware(start_dt)
         members = active_mems.filter(application_approved_dt__gte=start_dt,
                                       application_approved_dt__lt=end_dt)
         new_mems = members.filter(renewal=False).distinct('user__id',

@@ -358,7 +358,7 @@ class GroupPermissionField(MultipleChoiceField):
     def __init__(self, *args, **kwargs):
         kwargs.update(group_perm_options)
         try:
-            kwargs.update({'choices': group_choices()})
+            kwargs.update({'choices': group_choices})
         except:
             # in database setup we can't get database entries
             # when they do not exist

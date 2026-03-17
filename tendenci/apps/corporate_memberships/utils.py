@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.memberships.models import MembershipDefault
@@ -451,7 +452,7 @@ def get_corp_memb_summary():
     for corp_memb_type in corp_memb_types:
         membership_type = corp_memb_type.membership_type
         grace_period = membership_type.expiration_grace_period
-        now = datetime.now()
+        now = timezone.now()
         date_to_expire = now - relativedelta(days=grace_period)
         mems = CorpMembership.objects.filter(
                     corporate_membership_type=corp_memb_type)

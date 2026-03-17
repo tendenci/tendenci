@@ -40,6 +40,7 @@ from django.db import connection
 from django.db.models import F
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
+from django.utils import timezone
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.decorators import password_required
@@ -475,11 +476,11 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         end_dt = form.cleaned_data.get('end_dt', None)
         cat = form.cleaned_data.get('search_category', None)
         try:
-            start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
+            start_dt = timezone.make_aware(datetime.strptime(start_dt, '%Y-%m-%d'))
         except:
-            start_dt = datetime.now()
+            start_dt = timezone.now()
         try:
-            end_dt = datetime.strptime(end_dt, '%Y-%m-%d')
+            end_dt = timezone.make_aware(datetime.strptime(end_dt, '%Y-%m-%d'))
         except:
             end_dt = None
 
@@ -6154,7 +6155,7 @@ def reports_financial(request, template_name="events/financial_reports.html"):
         sort_by = form.cleaned_data.get('sort_by') or 'start_dt'
         sort_direction = form.cleaned_data.get('sort_direction')
     else:
-        events = events.filter(Q(start_dt__gte=form.initial_start_dt) & Q(start_dt__lte=form.initial_end_dt))
+        events = events.filter(Q(start_dt__gte=timezone.make_aware(form.initial_start_dt)) & Q(start_dt__lte=timezone.make_aware(form.initial_end_dt)))
 
     if event_type:
         events = events.filter(type_id=event_type)

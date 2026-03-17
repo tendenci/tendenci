@@ -25,6 +25,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 from django.utils.html import strip_tags
 from django.db.models.functions import Lower
+from django.utils import timezone
 # from django.views.generic import UpdateView
 # from django.utils.decorators import method_decorator
 from django.http import JsonResponse
@@ -190,11 +191,11 @@ def index(request, username='', template_name="profiles/index.html"):
                                                  object_content_type__model='membershipdefault').exists():
             auto_renew_is_set = True
 
-    registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=datetime.now())
+    registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=timezone.now())
     
     if request.user.is_superuser:
         # a list of upcoming events (up to 10) that this user has not registered yet (or canceled)
-        upcoming_events = Event.objects.exclude_children().filter(start_dt__gt=datetime.now())
+        upcoming_events = Event.objects.exclude_children().filter(start_dt__gt=timezone.now())
         registered_event_ids = registrations.filter(cancel_dt__isnull=True).values_list('registration__event_id', flat=True)
         if registered_event_ids:
             upcoming_events = upcoming_events.exclude(id__in=registered_event_ids)
@@ -819,7 +820,7 @@ def password_change_done(request, id, template_name='registration/custom_passwor
 
 def _user_events(from_date):
     return User.objects.all()\
-                .filter(eventlog__create_dt__gte=from_date)\
+                .filter(eventlog__create_dt__gte=timezone.make_aware(from_date))\
                 .annotate(event_count=Count('eventlog__pk'))
 
 @staff_member_required
@@ -986,7 +987,7 @@ def admin_users_report(request, template_name='reports/admin_users.html'):
 
 @staff_member_required
 def user_access_report(request):
-    now = datetime.now()
+    now = timezone.now()
     logins_qs = EventLog.objects.filter(application="accounts",action="login")
 
     total_users = User.objects.all().count()

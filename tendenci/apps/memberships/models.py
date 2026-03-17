@@ -21,6 +21,7 @@ from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from django.db.models.fields import AutoField
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 
 from tendenci.apps.base.utils import day_validate, is_blank, tcurrency, is_positive_and_not_zerotype
 from tendenci.apps.site_settings.utils import get_setting
@@ -1488,8 +1489,8 @@ class MembershipDefault(TendenciBaseModel):
             return False
 
         return all([
-            self.expire_dt < datetime.now(),
-            expire_with_grace_period_dt > datetime.now(),
+            self.expire_dt < timezone.now(),
+            expire_with_grace_period_dt > timezone.now(),
             self.status_detail == "active"])
 
     def get_renewal_period_dt(self):
@@ -1558,7 +1559,7 @@ class MembershipDefault(TendenciBaseModel):
 
         # assert that we're within the renewal period
         start_dt, end_dt = renewal_period
-        return (datetime.now() >= start_dt and datetime.now() <= end_dt)
+        return (timezone.now() >= start_dt and timezone.now() <= end_dt)
 
     def past_renewal(self):
         """

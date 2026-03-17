@@ -29,6 +29,7 @@ from django.core.files.base import ContentFile
 from django.template import Context, Template
 from django.template.loader import get_template
 from django.utils.html import escape
+from django.utils import timezone
 
 from tendenci.apps.theme.shortcuts import _strip_content_above_doctype
 from tendenci.apps.newsletters.utils import get_newsletter_connection, is_newsletter_relay_set
@@ -1745,7 +1746,7 @@ class ImportMembDefault:
         # no join_dt - set one
         if not hasattr(memb, 'join_dt') or not memb.join_dt:
             if memb.status and memb.status_detail == 'active':
-                memb.join_dt = datetime.now()
+                memb.join_dt = timezone.now()
 
         # no application_approved_dt - set one
         if not hasattr(memb, 'application_approved_dt') or not memb.application_approved_dt:
@@ -1806,7 +1807,7 @@ class ImportMembDefault:
     def is_active(self, memb):
         return all([memb.status,
                     memb.status_detail == 'active',
-                    not memb.expire_dt or memb.expire_dt > datetime.now()
+                    not memb.expire_dt or memb.expire_dt > timezone.now()
                     ])
 
     def assign_import_values_from_dict(self, instance, action):
@@ -1860,7 +1861,7 @@ class ImportMembDefault:
             return date
 
         if field_type == 'DateTimeField':
-            return datetime.now()
+            return timezone.now()
 
         if field_type == 'DecimalField':
             return Decimal(0)
@@ -1943,7 +1944,7 @@ class ImportMembDefault:
                 if value == '':
                     value = None
                 if not field.null:
-                    value = datetime.now()
+                    value = timezone.now()
         elif field_type == 'DecimalField':
             try:
                 value = field.to_python(value)
@@ -2036,7 +2037,7 @@ def get_membership_summary_data():
     total_expired = 0
     total_in_grace_period = 0
     total_total = 0
-    now = datetime.now()
+    now = timezone.now()
     for membership_type in memb_types:
         grace_period = membership_type.expiration_grace_period
         date_to_expire = now - relativedelta(days=grace_period)

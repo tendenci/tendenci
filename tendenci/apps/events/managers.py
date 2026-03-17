@@ -6,6 +6,7 @@ from functools import reduce
 from django.db.models import Manager
 from django.db.models import Q
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from tendenci.apps.perms.managers import TendenciBaseManager
 
@@ -94,7 +95,7 @@ class EventManager(TendenciBaseManager):
     def available_parent_events(self):
         """Returns all available upcoming parent events"""
         return self.filter(
-            end_dt__gt=datetime.now(),
+            end_dt__gt=timezone.now(),
             event_relationship=self.model.EventRelationship.PARENT,
         )
 

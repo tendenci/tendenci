@@ -7,5 +7,6 @@ class PybbConfig(AppConfig):
     verbose_name = _('Forums')
 
     def ready(self):
+        super().ready()
         from . import signals
         signals.setup()

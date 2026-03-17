@@ -50,6 +50,7 @@ STATIC_URL = LOCAL_STATIC_URL  # Added 2012-03-01 to use cloudfront CDN
 # http://tendenci.com/photos/set/3/
 STOCK_STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-90/'
 
+FORMS_URLFIELD_ASSUME_HTTPS = True
 
 # ---------------------------------------------------------------------------- #
 # Django

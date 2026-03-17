@@ -22,6 +22,7 @@ from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from django.utils import timezone
 
 # from captcha.fields import CaptchaField
 from tendenci.apps.events.models import (
@@ -246,7 +247,7 @@ class EventSearchForm(forms.Form):
         group_choices = get_search_group_choices()
         self.fields['event_group'].choices = [('','All')] + list(group_choices)
 
-        self.fields['start_dt'].initial = datetime.now().strftime('%Y-%m-%d')
+        self.fields['start_dt'].initial = timezone.now().strftime('%Y-%m-%d')
         # state
         if get_setting('module', 'events', 'stateusedropdown'):
             self.fields['state'] = StateSelectField(label=_('Select a State'),
@@ -725,7 +726,7 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
             if not self.entry:
                 entry = super().save(commit=False)
                 entry.form = self.custom_reg_form
-                entry.entry_time = datetime.now()
+                entry.entry_time = timezone.now()
                 entry.save()
             else:
                 entry = self.entry
@@ -864,21 +865,21 @@ class EventForm(TendenciBaseForm):
         'storme_model':Event._meta.model_name.lower()}))
 
     start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'),
-                                  initial=datetime.now()+timedelta(days=30),
+                                  initial=timezone.now()+timedelta(days=30),
                                   input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
                                   input_time_formats=['%I:%M %p', '%H:%M:%S'])
     end_dt = forms.SplitDateTimeField(label=_('End Date/Time'),
-                                initial=datetime.now()+timedelta(days=30, hours=2),
+                                initial=timezone.now()+timedelta(days=30, hours=2),
                                 input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
                                 input_time_formats=['%I:%M %p', '%H:%M:%S'])
     all_day = forms.BooleanField(label=_('All Day'), required=False, initial=False)
     start_event_date = forms.DateField(
         label=_('Start Date'),
-        initial=datetime.now().date()+timedelta(days=30),
+        initial=timezone.now().date()+timedelta(days=30),
         widget=forms.DateInput(attrs={'class':'datepicker'}))
     end_event_date = forms.DateField(
         label=_('End Date'),
-        initial=datetime.now().date()+timedelta(days=30),
+        initial=timezone.now().date()+timedelta(days=30),
         widget=forms.DateInput(attrs={'class':'datepicker'}))
 
     photo_upload = forms.ImageField(label=_('Photo'), required=False)
@@ -1563,8 +1564,8 @@ class PaymentForm(forms.ModelForm):
 
 class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
     label = "Pricing"
-    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available for registration'))
-    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available for registration'))
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=timezone.now(), help_text=_('The date time this price starts to be available for registration'))
+    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=timezone.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available for registration'))
     price = PriceField(label=_('Price'), max_digits=21, decimal_places=2, initial=0.00)
     #dates = Reg8nDtField(label=_("Start and End"), required=False)
     groups = forms.ModelMultipleChoiceField(required=False, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one. If you have selected one but want to leave groups unselected, hold down "Control" +Z, or "Command" +Z on Mac, then click on the selected group.'))
@@ -1580,8 +1581,8 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
         self.reg_form_required = kwargs.pop('reg_form_required', False)
         kwargs.update({'use_required_attribute': False})
         super().__init__(*args, **kwargs)
-        kwargs.update({'initial': {'start_dt':datetime.now(),
-                        'end_dt': (datetime(datetime.now().year, datetime.now().month, datetime.now().day, 17, 0, 0)
+        kwargs.update({'initial': {'start_dt':timezone.now(),
+                        'end_dt': (datetime(timezone.now().year, timezone.now().month, timezone.now().day, 17, 0, 0)
                         + timedelta(days=29))}})
         #self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
@@ -2996,11 +2997,11 @@ class UserRegistrationForm(UserMemberRegBaseForm):
 class EventExportForm(FormControlWidgetMixin, forms.Form):
     start_dt = forms.DateField(
                 label=_('From'),
-                initial=datetime.now()-timedelta(days=365))
+                initial=timezone.now()-timedelta(days=365))
 
     end_dt = forms.DateField(
                 label=_('To'),
-                initial=datetime.now())
+                initial=timezone.now())
 
     by_type = forms.ModelChoiceField(
                 label=_("Filter by Type"),
@@ -3107,7 +3108,7 @@ class EventReportFilterForm(FormControlWidgetMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        now = datetime.now()
+        now = timezone.now()
         self.initial_start_dt = datetime(now.year, now.month, now.day, 0, 0, 0) - relativedelta(months=1)
         self.initial_end_dt = self.initial_start_dt + relativedelta(months=2)
         self.fields['start_dt'].initial = self.initial_start_dt

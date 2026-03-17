@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.template import Library, TemplateSyntaxError, Variable
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 
 from tendenci.apps.stories.models import Story
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
@@ -176,7 +177,7 @@ class ListStoriesNode(ListNode):
         objects = []
 
         # Removed seconds and microseconds so we can cache the query better
-        now = datetime.now().replace(second=0, microsecond=0)
+        now = timezone.now().replace(second=0, microsecond=0)
 
         # Custom filter for stories
         date_query = reduce(or_, [Q(end_dt__gte=now), Q(expires=False)])
