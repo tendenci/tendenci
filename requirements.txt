@@ -15,7 +15,7 @@ django-debug-toolbar>=3.4.0
 django-sql-explorer==5.3
 django-apptemplates>=1.5
 feedparser>=6.0.11
-pytz==2023.3
+pytz==2026.1.post1
 simplejson>=3.19.2
 webcolors>=1.13
 xlrd3>=1.1.0
@@ -33,7 +33,7 @@ django-timezone-field==7.2.1
 django-ses==4.7.2
 django-tastypie==0.15.1
 docutils==0.22.4
-chardet==7.1.0
+chardet==7.2.0
 psycopg2==2.9.11
 gunicorn==25.1.0
 gevent==25.9.1
