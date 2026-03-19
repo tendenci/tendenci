@@ -472,17 +472,13 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
 
 class NoticeAdmin(admin.ModelAdmin):
     @mark_safe
-    def notice_log(self):
-        if self.notice_time == 'attimeof':
+    def notice_log(self, obj):
+        if obj.notice_time == 'attimeof':
             return '--'
         return '<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
-                         reverse('corporate_membership.notice.log.search'), self.id)
+                         reverse('corporate_membership.notice.log.search'), obj.id)
 
-    list_display = ['id', 'notice_name', notice_log, 'content_type',
-                     'corporate_membership_type', 'status_detail']
-    if (get_setting('module', 'invoices', 'taxrateuseregions') \
-        or get_setting('module', 'memberships', 'taxrateuseregions')):
-        list_display += ['region', 'excluded_regions']
+    
     list_display_links  = ['notice_name']
     list_filter = ['notice_type', 'status_detail']
 
@@ -493,6 +489,15 @@ class NoticeAdmin(admin.ModelAdmin):
             "//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js",
             static('js/global/tinymce.event_handlers.js'),
         )
+
+    def get_list_display(self, request):
+        list_display = ['id', 'notice_name', 'notice_log', 'content_type',
+                     'corporate_membership_type', 'status_detail']
+        if (get_setting('module', 'invoices', 'taxrateuseregions') \
+            or get_setting('module', 'memberships', 'taxrateuseregions')):
+            list_display += ['region', 'excluded_regions']
+        return list_display
+        
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = (
