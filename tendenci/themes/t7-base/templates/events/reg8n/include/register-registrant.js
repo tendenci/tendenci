@@ -111,7 +111,7 @@ function addRegistrant(ele, prefix, price) {
     $(row).find(".form-field").find('[id^="id_registrant"]').each(function() {
         updateIndex(this, prefix, formCount);
         var $this = $(this);
-        if ($this.attr('type') == 'text'){
+        if ($this.attr('type') == 'text' || $this.attr('type') == 'email'){
          $this.val('');
         }
 
