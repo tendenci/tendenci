@@ -15,7 +15,7 @@ from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import get_notice_recipients
 from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.base.utils import get_unique_username
+from tendenci.apps.base.utils import get_unique_username, generate_random_password
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.entities.models import Entity
 
@@ -65,7 +65,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                 user.last_name = donation.last_name
                 user.email = donation.email
                 user.username = get_unique_username(user)
-                user.set_password(User.objects.make_random_password(length=8))
+                user.set_password(generate_random_password(length=8))
                 user.is_active = 0
                 user.save()
 

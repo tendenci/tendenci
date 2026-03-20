@@ -18,6 +18,8 @@ from tendenci.apps.recurring_payments.models import (RecurringPayment,
 from tendenci.apps.recurring_payments.authnet.utils import get_token
 from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
 from tendenci.apps.payments.models import Payment
+from tendenci.apps.base.utils import generate_random_password
+
 
 UNSUCCESSFUL_TRANS_CODE = ['E00027']
 
@@ -463,7 +465,7 @@ def api_rp_setup(data):
         u.username = get_unique_username(u)
         raw_password = data.get('login_password')
         if not raw_password:
-            raw_password = User.objects.make_random_password(length=8)
+            raw_password = generate_random_password(length=8)
         u.set_password(raw_password)
         u.first_name = data.get('first_name', '')
         u.last_name = data.get('last_name', '')
@@ -671,7 +673,7 @@ def api_add_rp(data):
     u.username = get_unique_username(u)
     raw_password = data.get('password', '')
     if not raw_password:
-        raw_password = User.objects.make_random_password(length=8)
+        raw_password = generate_random_password(length=8)
     u.set_password(raw_password)
     u.first_name = data.get('first_name', '')
     u.last_name = data.get('last_name', '')

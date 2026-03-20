@@ -82,7 +82,7 @@ from tendenci.apps.regions.models import Region
 from tendenci.apps.base.forms import CaptchaForm
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.theme.utils import get_template_content_raw
-from tendenci.apps.base.utils import get_next_url
+from tendenci.apps.base.utils import get_next_url, generate_random_password
 
 
 @login_required
@@ -2006,7 +2006,7 @@ def membership_default_corp_pre_add(request, cm_id=None,
                                                 indiv_veri.guid]))
                 if form.auth_method == 'secret_code':
                     # secret code hash
-                    random_string = User.objects.make_random_password(
+                    random_string = generate_random_password(
                                     length=4,
                                     allowed_chars='abcdefghjkmnpqrstuvwxyz')
                     request.session['corp_hash_random_string'] = random_string

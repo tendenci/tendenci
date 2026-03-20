@@ -1,5 +1,7 @@
 import os
 import re
+import string
+import secrets
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
@@ -1020,6 +1022,10 @@ def validate_email(s, quiet=True):
         if not quiet:
             raise e
     return False
+
+
+def generate_random_password(length=10, allowed_chars=string.ascii_letters + string.digits):
+    return ''.join(secrets.choice(allowed_chars) for i in range(length))
 
 
 def is_positive_and_not_zerotype(value):

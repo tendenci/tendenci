@@ -16,7 +16,7 @@ import xlrd3 as xlrd
 from xlwt import Workbook, XFStyle
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.base.utils import normalize_newline
+from tendenci.apps.base.utils import normalize_newline, generate_random_password
 
 
 # number rows to process per request
@@ -339,7 +339,7 @@ def do_user_import(request, user, user_object_dict, setting_dict):
         user.set_password(user_object_dict['password'])
 
     if not user.password:
-        user.set_password(User.objects.make_random_password(length=8))
+        user.set_password(generate_random_password(length=8))
 
     user.is_active = bool(setting_dict['interactive'])
 

@@ -47,7 +47,7 @@ from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.emails.models import Email
 from tendenci.apps.base.utils import validate_email
-from tendenci.apps.base.utils import get_timezone_choices
+from tendenci.apps.base.utils import get_timezone_choices, generate_random_password
 from tendenci.apps.regions.models import Region
 
 
@@ -942,7 +942,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             'last_name': self.cleaned_data.get('last_name'),
         }
         if not user_attrs['password']:
-            user_attrs['password'] = User.objects.make_random_password(length=8)
+            user_attrs['password'] = generate_random_password(length=8)
 
         # all fields are required in order to pull
         # an existing user record

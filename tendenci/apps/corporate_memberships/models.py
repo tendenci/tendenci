@@ -51,6 +51,7 @@ from tendenci.apps.base.fields import DictField, CountrySelectField, StateSelect
 
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.utils import send_email_notification, fieldify, get_salesforce_access, correct_filename
+from tendenci.apps.base.utils import generate_random_password
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.corporate_memberships.utils import (
                                             corp_memb_inv_add,
@@ -386,19 +387,19 @@ class CorpProfile(TendenciBaseModel):
 
     def assign_secret_code(self):
         if not self.secret_code:
-            # use the make_random_password in the User object
+            # use generate_random_password
             length = 6
             allowed_chars = 'abcdefghjkmnpqrstuvwxyzABCDEF' + \
                             'GHJKLMNPQRSTUVWXYZ23456789'
-            secret_code = User.objects.make_random_password(
-                                                length=length,
-                                                allowed_chars=allowed_chars)
+            secret_code = generate_random_password(
+                                        length=length,
+                                        allowed_chars=allowed_chars)
             # check if this one is unique
             corp_profiles = CorpProfile.objects.filter(
                                             secret_code=secret_code)
 
             while corp_profiles:
-                secret_code = User.objects.make_random_password(
+                secret_code = generate_random_password(
                                             length=length,
                                             allowed_chars=allowed_chars)
                 corp_profiles = CorpProfile.objects.filter(
@@ -1495,7 +1496,7 @@ class CorpMembership(TendenciBaseModel):
                     create_new = True
             if create_new:
                 params.update({
-                   'password': User.objects.make_random_password(length=8),
+                   'password': generate_random_password(length=8),
                    'is_active': True})
                 assign_to_user = User(**params)
                 assign_to_user.username = get_unique_username(assign_to_user)
