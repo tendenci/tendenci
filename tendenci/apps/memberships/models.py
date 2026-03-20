@@ -196,7 +196,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
                                                               renew_dt=membership.renew_dt,
                                                               previous_expire_dt=None)
         """
-        now = datetime.now()
+        now = timezone.now()
 
         if not join_dt or not isinstance(join_dt, datetime):
             join_dt = now
@@ -428,8 +428,8 @@ class MembershipSet(models.Model):
         if membership.renewal:
             membership.assign_payment_credits(invoice)
 
-        invoice.due_date = datetime.now()
-        invoice.ship_date = datetime.now()
+        invoice.due_date = timezone.now()
+        invoice.ship_date = timezone.now()
 
         invoice.save()
         self.invoice = invoice
@@ -970,7 +970,7 @@ class MembershipDefault(TendenciBaseModel):
         if not all(good):
             return False
 
-        NOW = datetime.now()
+        NOW = timezone.now()
 
         self.status = True
         self.status_detail = 'active'
@@ -1064,7 +1064,7 @@ class MembershipDefault(TendenciBaseModel):
             - Archive old memberships [of same type].
             - Show member number on profile.
         """
-        NOW = datetime.now()
+        NOW = timezone.now()
 
         if self.is_pending():
             dupe = self
@@ -1133,7 +1133,7 @@ class MembershipDefault(TendenciBaseModel):
         if not all(good):
             return False
 
-        NOW = datetime.now()
+        NOW = timezone.now()
 
         self.status = True
         self.status_detail = 'disapproved'
@@ -1178,7 +1178,7 @@ class MembershipDefault(TendenciBaseModel):
         """
 
         if self.is_approved() or (self.is_expired() and self.status_detail == 'active'):
-            NOW = datetime.now()
+            NOW = timezone.now()
 
             self.status = True
             self.status_detail = 'expired'
@@ -1280,7 +1280,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         if self.status and self.status_detail.lower() in ('active', 'expired'):
             if self.expire_dt:
-                return self.expire_dt <= datetime.now() and \
+                return self.expire_dt <= timezone.now() and \
                     (not self.in_grace_period())
         return False
 
@@ -1579,7 +1579,7 @@ class MembershipDefault(TendenciBaseModel):
         # assert that we're within the renewal period
         end_dt = renewal_period[1]
 
-        return datetime.now() > end_dt
+        return timezone.now() > end_dt
 
     def get_since_dt(self):
         memberships = MembershipDefault.objects.filter(
@@ -1736,8 +1736,8 @@ class MembershipDefault(TendenciBaseModel):
             if self.renewal:
                 self.assign_payment_credits(invoice)
 
-        invoice.due_date = invoice.due_date or datetime.now()
-        invoice.ship_date = invoice.ship_date or datetime.now()
+        invoice.due_date = invoice.due_date or timezone.now()
+        invoice.ship_date = invoice.ship_date or timezone.now()
 
         invoice.save()
 
@@ -2131,7 +2131,7 @@ class MembershipDefault(TendenciBaseModel):
                                      object_content_type=ct,
                                      platform= kwargs.get('platform', 'authorizenet'),
                                      description='Membership Auto Renew',
-                                     billing_start_dt=datetime.now(),
+                                     billing_start_dt=timezone.now(),
                                      payment_amount=0,
                                      creator=request_user,
                                      creator_username=request_user.username,
@@ -2152,10 +2152,10 @@ class MembershipDefault(TendenciBaseModel):
 
     def next_auto_renew_date(self):
         if self.status_detail != 'archive' and self.expire_dt and self.auto_renew:
-            if self.expire_dt > datetime.now():
+            if self.expire_dt > timezone.now():
                 return self.expire_dt
             else:
-                return datetime.now() + timedelta(days=1)
+                return timezone.now() + timedelta(days=1)
         return None
 
     def can_auto_renew(self):
@@ -2454,7 +2454,7 @@ class Notice(models.Model):
             'site_contact_name': global_setting('sitecontactname'),
             'site_contact_email': global_setting('sitecontactemail'),
             'site_display_name': global_setting('sitedisplayname'),
-            'time_submitted': time.strftime("%d-%b-%y %I:%M %p", datetime.now().timetuple()),
+            'time_submitted': time.strftime("%d-%b-%y %I:%M %p", timezone.now().timetuple()),
         })
 
         # return basic context

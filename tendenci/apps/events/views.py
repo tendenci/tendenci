@@ -241,7 +241,7 @@ def zoom(request, event_id, template_name="events/zoom.html"):
     if not registrant or registrant.reg8n_status() == 'payment-required':
         raise Http403
 
-    now = datetime.now()
+    now = timezone.now()
     not_ready_yet = event.start_dt - now > timedelta(minutes=10)
     meeting_is_over = now > event.end_dt
     if not_ready_yet or meeting_is_over:
@@ -360,7 +360,7 @@ def details(request, id=None, private_slug='', template_name="events/view.html")
         'speakers_length': speakers_length,
         'organizer': organizer,
         'sponsor': sponsor,
-        'now': datetime.now(),
+        'now': timezone.now(),
         'addons': event.addon_set.filter(status=True),
         'event_files': event_files,
         'speaker_files': speaker_files,
@@ -442,7 +442,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     if redirect:
         return HttpResponseRedirect(reverse('events'))
 
-    start_dt = datetime.now()
+    start_dt = timezone.now()
     end_dt = None
     form = EventSearchForm(request.GET or {'start_dt':start_dt.strftime('%Y-%m-%d')},
                            user=request.user)
@@ -542,7 +542,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     return render_to_resp(request=request, template_name=template_name, context={
         'events': events,
         'form': form,
-        'now': datetime.now(),
+        'now': timezone.now(),
         'past': past,
         'event_type': event_type,
         'start_dt': start_dt,
@@ -2111,7 +2111,7 @@ def add(request, year=None, month=None, day=None, is_template=False, parent_even
             event_init = {}
 
             # default to 30 days from now
-            mydate = datetime.now()+timedelta(days=30)
+            mydate = timezone.now()+timedelta(days=30)
             offset = timedelta(hours=2)
 
             if parent_event_id:
@@ -3920,11 +3920,11 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         # If no other criteria specified, show for the next event for that group
         if group and not any([search_text, events_in, event_type]):
             [next_event] = Event.objects.filter(groups__in=[group],
-                                    start_dt__gte=datetime.now()
+                                    start_dt__gte=timezone.now()
                                     ).order_by('start_dt')[:1] or [None]
             if not next_event:
                 [next_event] = Event.objects.filter(groups__in=[group],
-                                    start_dt__lt=datetime.now()
+                                    start_dt__lt=timezone.now()
                                     ).order_by('-start_dt')[:1] or [None]
             if next_event:
                 month = next_event.start_dt.month
@@ -4196,7 +4196,7 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
 
     return render_to_resp(request=request, template_name=template_name, context={
         'date': day_date,
-        'now': datetime.now(),
+        'now': timezone.now(),
         'type': None,
         'yesterday': yesterday,
         'tomorrow': tomorrow,
@@ -4212,7 +4212,7 @@ def today_redirect(request):
     try:
         today_date = datetime.strptime(today_date, '%Y-%m-%d')
     except:
-        today_date = datetime.now()
+        today_date = timezone.now()
 
     day, month, year = today_date.day, today_date.month, today_date.year
     return HttpResponseRedirect(reverse('event.day', args=(int(year), int(month), int(day))))
@@ -4731,7 +4731,7 @@ def registrant_check_in(request):
                 if checked_in == 'true':
                     if not registrant.checked_in:
                         registrant.checked_in = True
-                        registrant.checked_in_dt = datetime.now()
+                        registrant.checked_in_dt = timezone.now()
                         registrant.save()
                         if child_event:
                             # nested events don't have checked_out enabled, assign credits now
@@ -4758,7 +4758,7 @@ def registrant_check_in(request):
                 if checked_out == 'true':
                     if registrant.checked_in and not registrant.checked_out:
                         registrant.checked_out = True
-                        registrant.checked_out_dt = datetime.now()
+                        registrant.checked_out_dt = timezone.now()
                         registrant.save()
                         # single event has checked_out enabled
                         # if single_event has credits configured, assign credits
@@ -4887,7 +4887,7 @@ def sample_certificate(request, event_id=0):
                 'alternate_ceu': '123423423487'
             })
 
-    credits_by_sub_events = {datetime.now().date().strftime('%B %d, %Y'): sub_event_credits}
+    credits_by_sub_events = {timezone.now().date().strftime('%B %d, %Y'): sub_event_credits}
 
     registrant = {
         'event': event,
@@ -5922,7 +5922,7 @@ def myevents(request, template_name='events/myevents.html'):
     events = Event.objects.filter(registration__registrant__email=request.user.email,
                                   registration__registrant__cancel_dt=None).distinct()
     if 'all' not in request.GET:
-        events = events.exclude(end_dt__lt=datetime.now())
+        events = events.exclude(end_dt__lt=timezone.now())
         show = 'True'
     else:
         show = None

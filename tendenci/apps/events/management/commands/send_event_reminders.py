@@ -14,6 +14,7 @@ class Command(BaseCommand):
     
 
     def handle(self, *args, **options):
+        from django.utils import timezone
         from tendenci.apps.events.models import Event, Registrant, Organizer
         from tendenci.apps.emails.models import Email
         from tendenci.apps.site_settings.utils import get_setting
@@ -90,7 +91,7 @@ class Command(BaseCommand):
 
         verbosity = options['verbosity']
         site_url = get_setting('site', 'global', 'siteurl')
-        now = datetime.now()
+        now = timezone.now()
         today_tuple = (datetime(now.year, now.month, now.day, 0, 0, 0),
                        datetime(now.year, now.month, now.day, 23, 59, 59))
 

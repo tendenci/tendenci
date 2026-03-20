@@ -26,7 +26,6 @@ from django.template.loader import render_to_string
 import simplejson
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
-from pytz import timezone
 from pytz import UnknownTimeZoneError
 from django.utils import timezone
 
@@ -513,7 +512,7 @@ def get_vevents(user, d):
     e_str = ""
     # load both upcoming and ongoing events
     filters = get_query_filters(user, 'events.view_event')
-    events = Event.objects.filter(filters).filter(end_dt__gte=datetime.now())
+    events = Event.objects.filter(filters).filter(end_dt__gte=timezone.now())
     events = events.order_by('start_dt')
     
     dtstamp = adjust_datetime_to_timezone(datetime.now(), settings.TIME_ZONE, 'UTC').strftime('%Y%m%dT%H%M%SZ')
@@ -1338,7 +1337,7 @@ def gen_pricing_dict(price, qualifies, failure_type, admin=False):
     Generates a pricing dict based on the current date.
     Disregards time if user.profile.is_superuser is set to True.
     """
-    now = datetime.now()
+    now = timezone.now()
     if admin:
         pricing = {
             'price': price,

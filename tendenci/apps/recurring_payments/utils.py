@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
@@ -248,7 +249,7 @@ def run_a_recurring_payment(rp, verbosity=0):
                                              recurring_payment=rp,
                                              invoice__balance__gt=0,
                                              invoice__is_void=False,
-                                             billing_dt__lte=datetime.now()
+                                             billing_dt__lte=timezone.now()
                                              ).order_by('id')
 
         if rp_invoices:
@@ -325,8 +326,8 @@ def run_a_recurring_payment(rp, verbosity=0):
                         num_processed += 1
 
                     if success:
-                        rp.last_payment_received_dt = datetime.now()
-                        rp_invoice.payment_received_dt = datetime.now()
+                        rp.last_payment_received_dt = timezone.now()
+                        rp_invoice.payment_received_dt = timezone.now()
                         rp_invoice.save()
                         rp.num_billing_cycle_completed += 1
                         print('...Success.')
@@ -528,7 +529,7 @@ def api_rp_setup(data):
     rp_invoice.invoice.tender(rp.user)
 
     # 5) create rp transaction
-    now = datetime.now()
+    now = timezone.now()
     payment = Payment()
     payment.payments_pop_by_invoice_user(rp.user,
                                          rp_invoice.invoice,
@@ -624,20 +625,20 @@ def api_add_rp(data):
         try:
             rp.billing_start_dt = dparser.parse(rp.billing_start_dt)
         except:
-            rp.billing_start_dt = datetime.now()
+            rp.billing_start_dt = timezone.now()
     else:
-        rp.billing_start_dt = datetime.now()
+        rp.billing_start_dt = timezone.now()
     if rp.trial_period_start_dt:
         try:
             rp.trial_period_start_dt = dparser.parse(rp.trial_period_start_dt)
         except:
-            rp.trial_period_start_dt = datetime.now()
+            rp.trial_period_start_dt = timezone.now()
 
     if rp.trial_period_end_dt:
         try:
             rp.trial_period_end_dt = dparser.parse(rp.trial_period_end_dt)
         except:
-            rp.trial_period_end_dt = datetime.now()
+            rp.trial_period_end_dt = timezone.now()
 
     rp.payment_amount = Decimal(rp.payment_amount)
 
@@ -786,7 +787,7 @@ def api_verify_rp_payment_profile(data):
             # make a transaction NOW
             billing_cycle = {'start': rp.billing_start_dt,
                              'end': rp.billing_start_dt + relativedelta(months=rp.billing_frequency)}
-            billing_dt = datetime.now()
+            billing_dt = timezone.now()
             rp_invoice = rp.create_invoice(billing_cycle, billing_dt)
             payment_transaction = rp_invoice.make_payment_transaction(d['valid_cpp_id'])
             if not payment_transaction.status:
@@ -803,7 +804,7 @@ def api_verify_rp_payment_profile(data):
                 if rp.status_detail != 'active':
                     rp.status_detail = 'active'
 
-                now = datetime.now()
+                now = timezone.now()
                 rp.last_payment_received_dt = now
                 rp.num_billing_cycle_completed += 1
                 rp.save()

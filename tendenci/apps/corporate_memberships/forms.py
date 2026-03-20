@@ -1069,7 +1069,7 @@ class CorpExportForm(forms.Form):
                 choices=(('csv', _('csv (Export)')),))
 
 
-class CreatorForm(forms.ModelForm):
+class CreatorForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = Creator
         fields = ('first_name',
@@ -1079,8 +1079,6 @@ class CreatorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
-        for k in self.fields:
-            self.fields[k].widget.attrs['class'] = 'form-control'
 
 
 class CorpApproveForm(forms.Form):
