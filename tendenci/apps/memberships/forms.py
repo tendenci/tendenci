@@ -1925,7 +1925,8 @@ class MembershipDefaultForm(TendenciBaseForm):
         self.fields['corporate_membership_id'].widget = forms.widgets.Select(
                                         choices=get_corporate_membership_choices(active_only=False))
         self.fields['corporate_membership_id'].queryset = CorpMembership.objects.filter(
-                                        status=True).exclude(
+                                        status=True,
+                                        corp_profile__status=True).exclude(
                                         status_detail__in=['archive', 'inactive'])
 
         mts = MembershipType.objects.filter(status=True, status_detail='active')
