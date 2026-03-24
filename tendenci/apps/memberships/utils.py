@@ -162,7 +162,8 @@ def get_corporate_membership_choices(active_only=True):
     cm_list = [(0, 'SELECT ONE')]
     from tendenci.apps.corporate_memberships.models import CorpMembership
 
-    corp_membs = CorpMembership.objects.exclude(status_detail='archive')
+    corp_membs = CorpMembership.objects.exclude(status_detail='archive'
+                                                ).exclude(corp_profile__status=False)
     if active_only:
         corp_membs = corp_membs.filter(status_detail='active')
     corp_membs = corp_membs.order_by('corp_profile__name')
