@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 # from captcha.fields import CaptchaField
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -72,19 +73,19 @@ class JobForm(TendenciBaseForm):
     start_dt = forms.SplitDateTimeField(
         required=False,
         label=_('Position starts on:'),
-        initial=datetime.now())
+        initial=timezone.now())
 
     activation_dt = forms.SplitDateTimeField(
         label=_('Activation Date/Time'),
-        initial=datetime.now())
+        initial=timezone.now())
 
     post_dt = forms.SplitDateTimeField(
         label=_('Post Date/Time'),
-        initial=datetime.now())
+        initial=timezone.now())
 
     expiration_dt = forms.SplitDateTimeField(
         label=_('Expiration Date/Time'),
-        initial=datetime.now())
+        initial=timezone.now())
 
     syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
 
@@ -413,9 +414,9 @@ class JobAdminForm(JobForm):
         super().__init__(*args, **kwargs)
 
         if hasattr(self, 'user'):
-            self.fields['activation_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
-            self.fields['expiration_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
-            self.fields['post_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
+            self.fields['activation_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=timezone.now())
+            self.fields['expiration_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=timezone.now())
+            self.fields['post_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=timezone.now())
 
     def clean_syndicate(self):
         """

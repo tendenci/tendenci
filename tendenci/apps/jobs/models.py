@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 
 from tendenci.apps.categories.models import CategoryItem
 from tagging.fields import TagField
@@ -193,7 +194,7 @@ class BaseJob(TendenciBaseModel):
         if not request.user.profile.is_superuser:
             self.status_detail = 'paid - pending approval'
 
-        self.activation_dt = datetime.now()
+        self.activation_dt = timezone.now()
         self.expiration_dt = self.activation_dt + timedelta(days=self.requested_duration)
         self.save()
 

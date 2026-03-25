@@ -702,7 +702,7 @@ class RegConfPricing(OrderingBaseModel):
         if not self.reg_conf.enabled or not self.status:
             return False
         if hasattr(self, 'event'):
-            if localize_date(datetime.now()) > localize_date(self.event.end_dt, from_tz=self.timezone):
+            if localize_date(timezone.now()) > localize_date(self.event.end_dt, from_tz=self.timezone):
                 return False
         return True
 
@@ -752,20 +752,20 @@ class RegConfPricing(OrderingBaseModel):
 
     @property
     def registration_has_started(self):
-        if localize_date(datetime.now()) >= localize_date(self.start_dt, from_tz=self.timezone):
+        if localize_date(timezone.now()) >= localize_date(self.start_dt, from_tz=self.timezone):
             return True
         return False
 
     @property
     def registration_has_ended(self):
-        if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
+        if localize_date(timezone.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
 
     @property
     def registration_has_recently_ended(self):
-        if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
-            delta = localize_date(datetime.now()) - localize_date(self.end_dt, from_tz=self.timezone)
+        if localize_date(timezone.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
+            delta = localize_date(timezone.now()) - localize_date(self.end_dt, from_tz=self.timezone)
             # Only include events that is within the 1-2 days window.
             if delta > timedelta(days=2):
                 return False
@@ -783,7 +783,7 @@ class RegConfPricing(OrderingBaseModel):
     @property
     def within_time(self):
         if localize_date(self.start_dt, from_tz=self.timezone) \
-            <= localize_date(datetime.now())                    \
+            <= localize_date(timezone.now())                    \
             <= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
@@ -795,7 +795,7 @@ class RegConfPricing(OrderingBaseModel):
     @staticmethod
     def get_access_filter(user, is_strict=False, spots_available=-1):
         if user.profile.is_superuser: return None, None
-        now = datetime.now()
+        now = timezone.now()
         filter_and, filter_or = None, None
 
         # Hide non-member pricing if setting turned on
@@ -843,7 +843,7 @@ class RegConfPricing(OrderingBaseModel):
     @staticmethod
     def get_assets_purchase_access_filter(user):
         if user.profile.is_superuser: return None, None
-        now = datetime.now()
+        now = timezone.now()
         filter_and, filter_or = None, None
 
         if user.is_anonymous:
@@ -1042,7 +1042,7 @@ class Registration(models.Model):
             self.invoice.payment_set.filter(status_detail='').exists():
             # the payment was attempted a day ago but not finished - we can say
             # it is abandoned
-            if self.invoice.create_dt + timedelta(days=1) < datetime.now():
+            if self.invoice.create_dt + timedelta(days=1) < timezone.now():
                 return True
         return False
 
@@ -1365,9 +1365,9 @@ class Registration(models.Model):
         invoice.title = "Registration {} for Event: {}".format(self.pk, self.event.title)
         invoice.estimate = ('estimate' == status_detail)
         invoice.status_detail = status_detail
-        invoice.tender_date = datetime.now()
-        invoice.due_date = datetime.now()
-        invoice.ship_date = datetime.now()
+        invoice.tender_date = timezone.now()
+        invoice.due_date = timezone.now()
+        invoice.ship_date = timezone.now()
         invoice.admin_notes = admin_notes
         invoice.gratuity = self.gratuity
 
@@ -1597,14 +1597,14 @@ class Registrant(models.Model):
     def past_attendance_dates(self):
         """Attendance dates for sessions in the past"""
         if self.attendance_dates:
-            return [x for x in self.attendance_dates if parse(x).date() <= datetime.now().date()]
+            return [x for x in self.attendance_dates if parse(x).date() <= timezone.now().date()]
         return list()
 
     @property
     def upcoming_attendance_dates(self):
         """Attendance dates for future sessions"""
         if self.attendance_dates:
-            return [x for x in self.attendance_dates if parse(x).date() > datetime.now().date()]
+            return [x for x in self.attendance_dates if parse(x).date() > timezone.now().date()]
         return list()
 
     @property
@@ -1829,7 +1829,7 @@ class Registrant(models.Model):
         params = dict()
         if not is_admin:
             # Remove past events from deletion list if not an admin
-            params = {'child_event__start_dt__date__gt': datetime.now().date()}
+            params = {'child_event__start_dt__date__gt': timezone.now().date()}
         # Remove any upcoming records that have been updated to 'not attending'
         self.registrantchildevent_set.filter(**params).exclude(
             child_event_id__in=child_event_pks,
@@ -1926,7 +1926,7 @@ class Registrant(models.Model):
         child_event = self.child_events.filter(child_event=event).first()
         if child_event and not child_event.checked_in:
             child_event.checked_in = True
-            child_event.checked_in_dt = datetime.now()
+            child_event.checked_in_dt = timezone.now()
             child_event.save()
 
 
@@ -1939,7 +1939,7 @@ class Registrant(models.Model):
             _(f'Registrant was not successfully checked {error_message_var}. Please try again')
 
         setattr(self, check_in_or_out, True)
-        setattr(self, datetime_field, datetime.now())
+        setattr(self, datetime_field, timezone.now())
 
         try:
             self.save(update_fields=[check_in_or_out, datetime_field])
@@ -2029,7 +2029,7 @@ class Registrant(models.Model):
 
         can_refund = False
         can_auto_refund = False
-        self.cancel_dt = datetime.now()
+        self.cancel_dt = timezone.now()
         self.save()
 
         # update the amount_paid in registration
@@ -2188,7 +2188,7 @@ class Registrant(models.Model):
             if reg_conf.use_custom_reg_form:
                 custom_reg_form = reg_conf.reg_form
                 # add an entry for this registrant
-                entry = CustomRegFormEntry.objects.create(entry_time=datetime.now(),
+                entry = CustomRegFormEntry.objects.create(entry_time=timezone.now(),
                                                   form=custom_reg_form)
                 self.custom_reg_form_entry = entry
                 self.save()
@@ -2295,9 +2295,9 @@ class AssetsPurchase(models.Model):
         invoice.title = "Assets purchaser {} for Event: {}".format(self.pk, self.event.title)
         invoice.estimate = ('estimate' == status_detail)
         invoice.status_detail = status_detail
-        invoice.tender_date = datetime.now()
-        invoice.due_date = datetime.now()
-        invoice.ship_date = datetime.now()
+        invoice.tender_date = timezone.now()
+        invoice.due_date = timezone.now()
+        invoice.ship_date = timezone.now()
 
         invoice.assign_tax([(self.amount, 0)], request_user)
         invoice.subtotal = self.amount
@@ -2384,7 +2384,7 @@ class RegistrantChildEvent(models.Model):
     def check_in(self):
         """Check in this registrant to this child event"""
         self.checked_in = True
-        self.checked_in_dt = datetime.now()
+        self.checked_in_dt = timezone.now()
         self.save()
         self.child_event.assign_credits(self.registrant)
 
@@ -3047,7 +3047,7 @@ class Event(TendenciBaseModel):
     def upcoming_child_events(self):
         """All upcoming child events available for registration"""
         return self.child_events.filter(
-            start_dt__date__gt=datetime.now().date(),
+            start_dt__date__gt=timezone.now().date(),
             registration_configuration__enabled=True
         )
 
@@ -3172,11 +3172,11 @@ class Event(TendenciBaseModel):
         event starts. Meeting will be available to join up until
         the end_dt (allows participants to re-join if they lose connection)
         """
-        ten_minutes_prior = datetime.now() >= self.start_dt - timedelta(minutes=10)
+        ten_minutes_prior = timezone.now() >= self.start_dt - timedelta(minutes=10)
 
         return (
             ten_minutes_prior and
-            datetime.now() < self.end_dt and
+            timezone.now() < self.end_dt and
             self.zoom_integration_setup
         )
 
@@ -3225,7 +3225,7 @@ class Event(TendenciBaseModel):
         if not self.zoom_api_configuration:
             raise Exception(_("Zoom API not configured"))
 
-        max_exp = datetime.now().astimezone(pytz.UTC) + timedelta(hours=24)
+        max_exp = timezone.now().astimezone(pytz.UTC) + timedelta(hours=24)
         end_dt = self.end_dt.astimezone(pytz.UTC)
 
         payload = {
@@ -3247,7 +3247,7 @@ class Event(TendenciBaseModel):
         """
         return (
             self.zoom_integration_setup and
-            datetime.now() >= self.end_dt and
+            timezone.now() >= self.end_dt and
             (
                 not self.registrantcredits_set.exists() or
                 self.registrantcredits_set.filter(released=False).exists()
@@ -3698,7 +3698,7 @@ class Event(TendenciBaseModel):
         """Time to show reminder to switch check-in session."""
         if not self.check_in_reminders:
             return None
-        return datetime.now() >= self.start_dt + timedelta(minutes=int(self.check_in_reminders))
+        return timezone.now() >= self.start_dt + timedelta(minutes=int(self.check_in_reminders))
     
     @property
     def should_show_check_in_reminder(self):
@@ -3765,7 +3765,7 @@ class Event(TendenciBaseModel):
         Indicate whether cancelleation is allowed.
         """
         cancel_by_dt = self.registration_configuration.cancel_by_dt
-        return not cancel_by_dt or cancel_by_dt + timedelta(days=1) >= datetime.now()
+        return not cancel_by_dt or cancel_by_dt + timedelta(days=1) >= timezone.now()
 
     @property
     def is_over(self):
@@ -4014,7 +4014,7 @@ class Event(TendenciBaseModel):
         This is used to provide a list of potential attendance dates
         to filter sub-events by date. Includes dates for upcoming sessions only.
         """
-        params = {'start_dt__date__gt': datetime.now()}
+        params = {'start_dt__date__gt': timezone.now()}
         return self.get_child_events_days(params)
 
     @property
@@ -4522,7 +4522,7 @@ class Addon(OrderingBaseModel):
         if not self.reg_conf.enabled or not self.status:
             return False
         if hasattr(self, 'event'):
-            if datetime.now() > self.event.end_dt:
+            if timezone.now() > self.event.end_dt:
                 return False
         return True
 

@@ -15,6 +15,7 @@ from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 from django.http import Http404
+from django.utils import timezone
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import is_ajax
@@ -94,7 +95,7 @@ def search(request, template_name="jobs/search.html"):
                 jobs = jobs.filter(Q(title__icontains=query) | Q(description__icontains=query))
         # filter out expired and not activated
         if not has_perm(request.user, 'jobs.change_job'):
-            jobs = jobs.filter(activation_dt__lte=datetime.now(), expiration_dt__gt=datetime.now())
+            jobs = jobs.filter(activation_dt__lte=timezone.now(), expiration_dt__gt=timezone.now())
     else:
         jobs = Job.objects.none()
 
@@ -226,7 +227,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
                 job.list_type = 'regular'
 
             # set up all the times
-            now = datetime.now()
+            now = timezone.now()
             job.activation_dt = now
             if not job.post_dt:
                 job.post_dt = now
@@ -564,7 +565,7 @@ def approve(request, id, template_name="jobs/approve.html"):
     job = get_object_or_404(Job, pk=id)
 
     if request.method == "POST":
-        job.activation_dt = datetime.now()
+        job.activation_dt = timezone.now()
         job.allow_anonymous_view = True
         job.status = True
         job.status_detail = 'active'

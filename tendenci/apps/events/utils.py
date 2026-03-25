@@ -385,8 +385,10 @@ def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
             # styles the date/time fields
             if isinstance(val, datetime):
                 style = styles['datetime_style']
+                val = val.replace(tzinfo=None)
             elif isinstance(val, date):
                 style = styles['date_style']
+                val = val.replace(tzinfo=None)
             else:
                 style = styles['default_style']
                 if isinstance(val, str):
