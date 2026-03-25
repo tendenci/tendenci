@@ -1471,7 +1471,8 @@ def profile_export_download(request, identifier):
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="profiles_export_%s"' % file_name
-    response.content = default_storage.open(file_path).read()
+    with default_storage.open(file_path) as f:
+        response.content = f.read()
     return response
 
 

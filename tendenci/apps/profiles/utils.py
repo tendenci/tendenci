@@ -408,7 +408,8 @@ def process_export(export_fields='all_fields', identifier='', user_id=0):
 
     # rename the file name
     file_name = 'export/profiles/%s.csv' % identifier
-    default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
+    with default_storage.open(file_name_temp, 'rb') as f:
+        default_storage.save(file_name, f)
 
     # delete the temp file
     default_storage.delete(file_name_temp)
