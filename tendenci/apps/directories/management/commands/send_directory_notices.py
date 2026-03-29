@@ -6,6 +6,7 @@ class Command(BaseCommand):
     Send email to creator when directory is available for renewal.
     """
     def handle(self, *args, **options):
+        from django.utils import timezone
         from tendenci.apps.base.utils import send_email_notification
         from tendenci.apps.site_settings.utils import get_setting
         from tendenci.apps.directories.models import Directory
@@ -17,7 +18,7 @@ class Command(BaseCommand):
         days = int(days)
 
         for directory in directories:
-            if datetime.now() + timedelta(days) > directory.expiration_dt:
+            if timezone.now() + timedelta(days) > directory.expiration_dt:
                 email_recipient = directory.creator.email
                 print('Sending email to {} for directory {}.'.format(email_recipient, directory))
                 send_email_notification(

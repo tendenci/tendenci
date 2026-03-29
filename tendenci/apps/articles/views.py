@@ -139,9 +139,9 @@ def search(request, template_name="articles/search.html"):
 
     if not has_perm(request.user, 'articles.view_article'):
         if request.user.is_anonymous:
-            articles = articles.filter(release_dt_local__lte=datetime.now())
+            articles = articles.filter(release_dt_local__lte=timezone.now())
         else:
-            articles = articles.filter(Q(release_dt_local__lte=datetime.now()) | Q(owner=request.user) | Q(creator=request.user))
+            articles = articles.filter(Q(release_dt_local__lte=timezone.now()) | Q(owner=request.user) | Q(creator=request.user))
 
     # Query list of category and subcategory for dropdown filters
     if category:
@@ -187,7 +187,7 @@ def search_redirect(request):
 def print_view(request, slug, template_name="articles/print-view.html"):
     article = get_object_or_404(Article, slug=slug)
 
-    if article.release_dt >= datetime.now():
+    if article.release_dt >= timezone.now():
         if not any([
             has_perm(request.user, 'articles.view_article'),
             request.user == article.owner,

@@ -11,7 +11,7 @@ class Command(BaseCommand):
     Usage: python manage.py clean_corporate_memberships
     """
     def handle(self, *args, **kwargs):
-        from datetime import datetime
+        from django.utils import timezone
         from dateutil.relativedelta import relativedelta
         from tendenci.apps.corporate_memberships.models import (
                             CorpMembership, CorporateMembershipType)
@@ -21,7 +21,7 @@ class Command(BaseCommand):
         for corp_membership_type in CorporateMembershipType.objects.all():
             membership_type = corp_membership_type.membership_type
             grace_period = membership_type.expiration_grace_period
-            date_to_expire = datetime.now() - relativedelta(days=grace_period)
+            date_to_expire = timezone.now() - relativedelta(days=grace_period)
 
             corp_memberships = CorpMembership.objects.filter(
                 corporate_membership_type=corp_membership_type,

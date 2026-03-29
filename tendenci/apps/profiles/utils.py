@@ -19,6 +19,7 @@ from django.utils.encoding import smart_str
 from django.utils.html import format_html
 from django.core import exceptions
 from django.utils.translation import gettext as _
+from django.utils import timezone
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.user_groups.models import GroupMembership, Group
@@ -858,7 +859,7 @@ class ImportUsers:
             return date
 
         if field_type == 'DateTimeField':
-            return datetime.now()
+            return timezone.now()
 
         if field_type == 'DecimalField':
             return Decimal(0)
@@ -942,7 +943,7 @@ class ImportUsers:
                 if value == '':
                     value = None
                 if not field.null:
-                    value = datetime.now()
+                    value = timezone.now()
         elif field_type == 'DecimalField':
             try:
                 value = field.to_python(value)

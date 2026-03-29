@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.forms.utils import ErrorList
+from django.utils import timezone
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.discounts.models import Discount
@@ -149,7 +150,7 @@ class DiscountHandlingForm(forms.Form):
             raise forms.ValidationError(_('This is not a valid discount code.'))
 
         if not self.discount.never_expires:
-            now = datetime.now()
+            now = timezone.now()
             if self.discount.start_dt > now:
                 raise forms.ValidationError(_('This discount code is not in effect yet.'))
             if self.discount.end_dt <= now:

@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
+from django.utils import timezone
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -320,7 +321,7 @@ def search(request, template_name="projects/search.html"):
             projects = projects.filter(category=category)
 
     if get_setting('module', 'projects', 'availableonly'):
-        now = datetime.now()
+        now = timezone.now()
         projects = projects.filter(start_dt__lte=now).filter(Q(end_dt__isnull=True) | Q(end_dt__gt=now))
         projects = projects.filter(status_detail='active')
         projects = projects.order_by('-start_dt')

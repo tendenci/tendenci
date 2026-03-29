@@ -291,7 +291,7 @@ class Newsletter(models.Model):
         for name in field_names:
             if hasattr(self, name):
                 setattr(newsletter_new, name, getattr(self, name))
-        newsletter_new.date_created = datetime.datetime.now()
+        newsletter_new.date_created = timezone.now()
         newsletter_new.subject = '(Cloned) {}'.format(self.subject)
         newsletter_new.actionname = newsletter_new.subject
 
@@ -480,7 +480,7 @@ class Newsletter(models.Model):
                 creator_username=user.username,
                 owner=user,
                 owner_username=user.username,
-                release_dt=datetime.datetime.now(),
+                release_dt=timezone.now(),
                 headline=self.email.subject[:200],
                 slug=slug,
                 body=email_body.replace('[browser_view_url]', reverse('newsletter.view_from_browser', args=[self.id])))

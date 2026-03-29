@@ -56,10 +56,10 @@ def story_expiration(obj):
     t = '<span class="t-expires t-expires-%s">%s</span>'
 
     if obj.expires:
-        if obj.end_dt < datetime.now():
+        if obj.end_dt < timezone.now():
             value = t % ('inactive', ("Expired on %s" % obj.end_dt.strftime("%m/%d/%Y at %I:%M %p")))
         else:
-            if obj.start_dt > datetime.now():
+            if obj.start_dt > timezone.now():
                 value = t % ('inactive',("Starts on %s" % obj.start_dt.strftime("%m/%d/%Y at %I:%M %p")))
             else:
                 value = t % ('active', ("Expires on %s" % obj.end_dt.strftime("%m/%d/%Y at %I:%M %p")))

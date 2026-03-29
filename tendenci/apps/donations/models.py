@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.utils import timezone
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.entities.models import Entity
@@ -168,8 +169,8 @@ class Donation(models.Model):
         #self.ship_to_fax = make_payment.fax
         inv.ship_to_email = self.email
         inv.terms = "Due on Receipt"
-        inv.due_date = datetime.now()
-        inv.ship_date = datetime.now()
+        inv.due_date = timezone.now()
+        inv.ship_date = timezone.now()
         inv.message = 'Thank You.'
         inv.status = True
         

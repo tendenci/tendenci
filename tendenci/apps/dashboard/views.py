@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms.models import modelformset_factory
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.dashboard.models import DashboardStatType
@@ -40,7 +41,7 @@ def index(request, template_name="dashboard/index.html"):
 
         expiration_dt = site_create_dt + timedelta(days=30)
 
-        now = datetime.now()
+        now = timezone.now()
         if now >= expiration_dt:
             expired = True
 
@@ -101,7 +102,7 @@ def new(request, template_name="dashboard/new.html"):
 
         expiration_dt = site_create_dt + timedelta(days=30)
 
-        now = datetime.now()
+        now = timezone.now()
         if now >= expiration_dt:
             expired = True
 

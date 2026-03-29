@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils import timezone
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.perms.decorators import superuser_required
@@ -64,8 +65,8 @@ class RunCreateView(CreateView):
         # Get the Report ID to associate
         initial.update({
             'report': self.kwargs.get('report_id'),
-            'range_start_dt': datetime.now()-timedelta(days=30),
-            'range_end_dt': datetime.now()
+            'range_start_dt': timezone.now()-timedelta(days=30),
+            'range_end_dt': timezone.now()
         })
         return initial
 

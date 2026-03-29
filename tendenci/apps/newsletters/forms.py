@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
 from django.conf import settings
 from django_q.tasks import schedule
+from django.utils import timezone
 
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
@@ -129,7 +130,7 @@ class OldGenerateForm(forms.ModelForm):
         nl = super().save(*args, **kwargs)
         nl.subject = subject
         nl.actionname = subject
-        nl.date_created = datetime.datetime.now()
+        nl.date_created = timezone.now()
         nl.send_status = 'draft'
         if nl.default_template:
             template = render_to_string(template_name=nl.default_template, request=self.request)
@@ -234,11 +235,11 @@ class MarketingStepFiveForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields.pop('schedule_type')
             self.fields.pop('repeats')
         else:
-            self.fields['schedule_send_dt'].initial = datetime.datetime.now() + datetime.timedelta(days=1)
+            self.fields['schedule_send_dt'].initial = timezone.now() + datetime.timedelta(days=1)
 
     def clean_schedule_send_dt(self):
         schedule_send_dt = self.cleaned_data['schedule_send_dt']
-        if schedule_send_dt and schedule_send_dt < datetime.datetime.now() + datetime.timedelta(minutes=1):
+        if schedule_send_dt and schedule_send_dt < timezone.now() + datetime.timedelta(minutes=1):
             raise forms.ValidationError(_('Please select a time at least 5 minutes from now'))
         return schedule_send_dt
 
@@ -260,7 +261,7 @@ class MarketingStepFiveForm(FormControlWidgetMixin, forms.ModelForm):
     def save(self, *args, **kwargs):
         create_article = self.cleaned_data.get('create_article', False)
         newsletter = super().save(*args, **kwargs)
-        newsletter.date_submitted = datetime.datetime.now()
+        newsletter.date_submitted = timezone.now()
         if newsletter.schedule_type == 'O':
             newsletter.repeats = 0
         newsletter.save()
@@ -303,7 +304,7 @@ class MarketingEditScheduleForm(FormControlWidgetMixin, forms.ModelForm):
 
     def clean_schedule_send_dt(self):
         schedule_send_dt = self.cleaned_data['schedule_send_dt']
-        if schedule_send_dt and schedule_send_dt < datetime.datetime.now() + datetime.timedelta(minutes=1):
+        if schedule_send_dt and schedule_send_dt < timezone.now() + datetime.timedelta(minutes=1):
             raise forms.ValidationError(_('Please select a time at least 5 minutes from now'))
         return schedule_send_dt
 

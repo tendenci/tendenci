@@ -13,6 +13,7 @@ from django.db.models.fields import AutoField
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.invoices.models import Invoice
@@ -100,8 +101,8 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.bill_to_email = directory.email
 
             inv.terms = "Due on Receipt"
-            inv.due_date = datetime.now()
-            inv.ship_date = datetime.now()
+            inv.due_date = timezone.now()
+            inv.ship_date = timezone.now()
             inv.message = 'Thank You.'
             inv.status = True
 

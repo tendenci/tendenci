@@ -22,6 +22,7 @@ from django.utils.safestring import mark_safe
 from django.template import engines
 from django.core.files.storage import default_storage
 from importlib import import_module
+from django.utils import timezone
 
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.pages.models import BasePage
@@ -500,7 +501,7 @@ class ChapterMembershipType(OrderingBaseModel, TendenciBaseModel):
                                                               renew_dt=chapter_membership.renew_dt,
                                                               previous_expire_dt=None)
         """
-        now = datetime.now()
+        now = timezone.now()
 
         if not join_dt or not isinstance(join_dt, datetime):
             join_dt = now
@@ -805,7 +806,7 @@ class ChapterMembership(TendenciBaseModel):
 
         # assert that we're within the renewal period
         start_dt, end_dt = renewal_period
-        return (datetime.now() >= start_dt and datetime.now() <= end_dt)
+        return (timezone.now() >= start_dt and timezone.now() <= end_dt)
 
     def get_actions(self, user):
         """
@@ -890,8 +891,8 @@ class ChapterMembership(TendenciBaseModel):
                 invoice.total = price
             invoice.balance = invoice.total
     
-            invoice.due_date = datetime.now()
-            invoice.ship_date = datetime.now()
+            invoice.due_date = timezone.now()
+            invoice.ship_date = timezone.now()
     
             invoice.save()
             self.invoice = invoice
@@ -1062,7 +1063,7 @@ class ChapterMembership(TendenciBaseModel):
         if not all(good):
             return False
 
-        NOW = datetime.now()
+        NOW = timezone.now()
 
         self.status = True
         self.status_detail = 'active'
@@ -1157,7 +1158,7 @@ class ChapterMembership(TendenciBaseModel):
         if self.is_expired() or self.status_detail == 'archive':
             return False
 
-        NOW = datetime.now()
+        NOW = timezone.now()
 
         self.status = True
         self.status_detail = 'disapproved'
@@ -1236,7 +1237,7 @@ class ChapterMembership(TendenciBaseModel):
         """
         if self.status and self.status_detail.lower() in ('active', 'expired'):
             if self.expire_dt:
-                return self.expire_dt <= datetime.now() and \
+                return self.expire_dt <= timezone.now() and \
                     (not self.in_grace_period())
         return False
 
@@ -1293,8 +1294,8 @@ class ChapterMembership(TendenciBaseModel):
             return False
 
         return all([
-            self.expire_dt < datetime.now(),
-            expire_with_grace_period_dt > datetime.now(),
+            self.expire_dt < timezone.now(),
+            expire_with_grace_period_dt > timezone.now(),
             self.status_detail == "active"])
 
     def get_renewal_period_dt(self):
@@ -1740,7 +1741,7 @@ class Notice(models.Model):
         site_contact_name = get_setting('site', 'global', 'sitecontactname')
         site_contact_email = get_setting('site', 'global', 'sitecontactemail')
         site_url = get_setting('site', 'global', 'siteurl')
-        now = datetime.now()
+        now = timezone.now()
         nowstr = time.strftime("%d-%b-%y %I:%M %p", now.timetuple())
         global_context = {'site_display_name': site_display_name,
                           'site_contact_name': site_contact_name,
@@ -1880,7 +1881,7 @@ class Notice(models.Model):
         """
         self.chapter_memberships_processed = {}
         num_sent = 0
-        now = datetime.now()
+        now = timezone.now()
         if self.notice_time in ['before', 'after']:
             if self.notice_time == 'before':
                 start_dt = now + timedelta(days=self.num_days)

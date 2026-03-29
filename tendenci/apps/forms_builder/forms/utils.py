@@ -6,6 +6,8 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
+from django.utils import timezone
+
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry
@@ -104,7 +106,7 @@ def make_invoice_for_entry(entry, **kwargs):
     if price is None:
         price = kwargs.get('custom_price')
     amount = price * entry.quantity
-    now = datetime.now()
+    now = timezone.now()
 
     inv = Invoice()
     inv.title = "%s Invoice" % (entry.form.title)

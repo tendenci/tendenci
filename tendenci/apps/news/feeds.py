@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.rss.feedsmanager import SubFeed
 from tendenci.apps.site_settings.utils import get_setting
@@ -15,7 +16,7 @@ class LatestEntriesFeed(SubFeed):
     description =  _("Latest News by {dname}".format(dname=get_setting('site','global','sitedisplayname')))
 
     def items(self):
-        items = News.objects.filter(**PUBLIC_FILTER).filter(syndicate=True, release_dt__lte=datetime.now()).order_by('-release_dt')[:20]
+        items = News.objects.filter(**PUBLIC_FILTER).filter(syndicate=True, release_dt__lte=timezone.now()).order_by('-release_dt')[:20]
         return items
 
     @strip_control_chars
@@ -39,7 +40,7 @@ class NewsSitemap(TendenciSitemap):
     priority = 0.5
 
     def items(self):
-        items = News.objects.filter(**PUBLIC_FILTER).filter(release_dt__lte=datetime.now()).order_by('-release_dt')
+        items = News.objects.filter(**PUBLIC_FILTER).filter(release_dt__lte=timezone.now()).order_by('-release_dt')
         return items
 
     def lastmod(self, obj):

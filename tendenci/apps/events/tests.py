@@ -8,6 +8,7 @@ from django.test import Client, TestCase
 from django.test.client import RequestFactory
 from django.contrib import messages
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.utils import timezone
 # from django.contrib.auth.models import User
 # from django.urls import reverse
 # 
@@ -148,7 +149,7 @@ class EventTest(TestCase):
         user = baker.make('auth.User', is_superuser=True)
         
         event = baker.make('events.Event')
-        child_event = baker.make('events.Event', parent=event, start_dt=datetime.now(), end_dt=datetime.now())
+        child_event = baker.make('events.Event', parent=event, start_dt=timezone.now(), end_dt=timezone.now())
         registrant = baker.make('events.Registrant')
         registrant.registration.event = event
 
@@ -178,7 +179,7 @@ class EventTest(TestCase):
         self.assertEqual(error_level, messages.WARNING)
 
         # registrant is registered, but event isn't today. This should return an error
-        child_event.start_dt = datetime.now() + timedelta(days=1)
+        child_event.start_dt = timezone.now() + timedelta(days=1)
         child_event.save()
         registrant_child_event.checked_in = False
         registrant_child_event.save()
@@ -188,8 +189,8 @@ class EventTest(TestCase):
 
     @patch('tendenci.apps.events.models.Event.nested_events_enabled', True)
     def test_should_check_in(self):
-        start_dt = datetime.now()
-        end_dt = datetime.now() + timedelta(days=1)
+        start_dt = timezone.now()
+        end_dt = timezone.now() + timedelta(days=1)
         event = baker.make('events.Event', start_dt=start_dt, end_dt=end_dt)
 
         # Registrant is not checked in, so shouldn't check in to sub events
@@ -203,6 +204,6 @@ class EventTest(TestCase):
         self.assertFalse(registrant.should_check_in_to_sub_event)
 
         # Registrant is checked in and there are sub events today, so should check in to sub events
-        baker.make('events.Event', parent=event, start_dt=datetime.now(), end_dt=datetime.now())
+        baker.make('events.Event', parent=event, start_dt=timezone.now(), end_dt=timezone.now())
 
         self.assertTrue(registrant.should_check_in_to_sub_event)

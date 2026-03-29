@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.invoices.models import Invoice
@@ -34,8 +35,8 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     inv.ship_to_phone =  make_payment.phone or ''
     inv.ship_to_email = make_payment.email or ''
     inv.terms = "Due on Receipt"
-    inv.due_date = datetime.now()
-    inv.ship_date = datetime.now()
+    inv.due_date = timezone.now()
+    inv.ship_date = timezone.now()
     inv.message = 'Thank You.'
     inv.status = True
 

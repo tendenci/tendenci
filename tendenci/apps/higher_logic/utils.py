@@ -6,6 +6,7 @@ import phonenumbers
 
 from django.conf import settings
 from django.db.models import Q
+from django.utils import timezone
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
@@ -88,7 +89,7 @@ class HigherLogicAPI:
         Get a list of community groups dict. Community groups include Chapter, Committee and Event
         """
         community_groups = []
-        now = datetime.now()
+        now = timezone.now()
         group_memberships = GroupMembership.objects.filter(
                                     member=user,
                                     status=True,

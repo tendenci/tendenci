@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
 class Command(BaseCommand):
     """
@@ -13,7 +14,7 @@ class Command(BaseCommand):
         from tendenci.apps.trainings.models import CorpTranscriptsZipFile
         print("Cleanning up old transcript PDFs")
         for tz in CorpTranscriptsZipFile.objects.all():
-            if tz.start_dt + timedelta(days=3) < datetime.now():
+            if tz.start_dt + timedelta(days=3) < timezone.now():
                 print(f"Deleting transcript zip file (pk={tz.id})")
                 tz.delete()
         print("Done")

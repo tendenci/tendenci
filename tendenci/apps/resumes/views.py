@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.base.http import Http403
 
@@ -182,7 +183,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
                 resume.status_detail = 'pending'
 
             # set up the expiration time based on requested duration
-            now = datetime.now()
+            now = timezone.now()
             resume.expiration_dt = now + timedelta(days=resume.requested_duration)
 
             resume = update_perms_and_save(request, form, resume)
@@ -324,7 +325,7 @@ def approve(request, id, template_name="resumes/approve.html"):
     resume = get_object_or_404(Resume, pk=id)
 
     if request.method == "POST":
-        resume.activation_dt = datetime.now()
+        resume.activation_dt = timezone.now()
         resume.allow_anonymous_view = True
         resume.status = True
         resume.status_detail = 'active'

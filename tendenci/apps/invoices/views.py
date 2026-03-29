@@ -18,6 +18,7 @@ from django.urls import reverse
 from django.template.loader import get_template
 from django.db.models import Sum
 from django.http import StreamingHttpResponse
+from django.utils import timezone
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.decorators import password_required
@@ -246,7 +247,7 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
 
     else:
         form = MarkAsPaidForm(invoice=invoice, request=request, initial={
-            'amount': invoice.balance, 'submit_dt': datetime.now()})
+            'amount': invoice.balance, 'submit_dt': timezone.now()})
 
     return render_to_resp(
         request=request, template_name=template_name, context={
@@ -419,7 +420,7 @@ def void_invoice(request, id, form_class=AdminVoidForm, template_name="invoices/
                 if obj.__class__.__name__ == 'Registration':
                     registrants = obj.registrant_set.filter(cancel_dt__isnull=True)
                     for registrant in registrants:
-                        registrant.cancel_dt = datetime.now()
+                        registrant.cancel_dt = timezone.now()
                         registrant.save()
                     obj.canceled = True
                     obj.save()
@@ -850,7 +851,7 @@ def export(request, template_name="invoices/export.html"):
         try:
             end_dt = datetime.strptime(end_dt, '%Y-%m-%d')
         except:
-            end_dt = datetime.now()
+            end_dt = timezone.now()
         try:
             start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
         except:
@@ -877,7 +878,7 @@ def export(request, template_name="invoices/export.html"):
         EventLog.objects.log()
         return redirect('invoice.export_status', identifier)
     else:
-        end_dt = datetime.now()
+        end_dt = timezone.now()
         start_dt = end_dt - timedelta(days=30)
 
     context = {'start_dt': start_dt, 'end_dt': end_dt}

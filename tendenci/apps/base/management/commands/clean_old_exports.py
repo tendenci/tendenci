@@ -12,11 +12,12 @@ class Command(BaseCommand):
         """
         Delete the export files that are older than 7 days
         """
+        from django.utils import timezone
         from tendenci.apps.base.utils import directory_cleanup
         from tendenci.apps.exports.models import Export
 
         directory_cleanup('export', 7)
         
         # delete old exports from db
-        for export in Export.objects.filter(date_created__lt=(datetime.now() - timedelta(days=7))):
+        for export in Export.objects.filter(date_created__lt=(timezone.now() - timedelta(days=7))):
             export.delete()

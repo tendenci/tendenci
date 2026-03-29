@@ -11,8 +11,9 @@ from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.exceptions import ObjectDoesNotExist
-from tendenci.apps.base.utils import validate_email
+from django.utils import timezone
 
+from tendenci.apps.base.utils import validate_email
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -177,7 +178,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 if widget_name == 'selectdatewidget':
                     form.fields[field_key].widget.years = list(range(1920, THIS_YEAR + 10))
                 if widget_name in ('dateinput', 'selectdatewidget', 'datetimeinput'):
-                    form.fields[field_key].initial = datetime.now()
+                    form.fields[field_key].initial = timezone.now()
 
             for field_key, instance_field in instance_fields.items():
                 form.fields[field_key + "-id"] = forms.Field(widget=forms.HiddenInput(attrs={'value': instance_field.id}))
@@ -295,7 +296,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         # Entry time recorded only when the form is originally submitted.
         # Subsequent edits to the form entry do not alter the entry_time
         if not edit_mode:
-            entry.entry_time = datetime.now()
+            entry.entry_time = timezone.now()
 
         entry.save()
         for field in self.form_fields:

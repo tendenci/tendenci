@@ -13,6 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models.signals import post_save
 from django.conf import settings
+from django.utils import timezone
 
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.perms.utils import has_perm, get_notice_recipients
@@ -409,7 +410,7 @@ class Invoice(models.Model):
             make_acct_entries(user, self, self.total)
             self.status_detail = 'tendered'
             self.status = 1
-            self.tender_date = datetime.now()
+            self.tender_date = timezone.now()
             self.save()
         return True
 
@@ -515,7 +516,7 @@ class Invoice(models.Model):
         """
         if not self.is_void:
             self.is_void = True
-            self.void_date = datetime.now()
+            self.void_date = timezone.now()
             self.voided_by = user
             # set balance to 0
             self.balance = 0

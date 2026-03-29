@@ -17,6 +17,7 @@ from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.contrib.sessions.models import Session
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 # from djcelery.models import TaskMeta
 
 from tendenci.apps.perms.decorators import is_enabled
@@ -506,11 +507,11 @@ def form_detail(request, slug=None, id=None, template="forms/form_detail.html"):
                         rp_user = entry.creator
                     else:
                         rp_user = request.user
-                    billing_start_dt = datetime.datetime.now()
+                    billing_start_dt = timezone.now()
                     trial_period_start_dt = None
                     trial_period_end_dt = None
                     if entry.pricing.has_trial_period:
-                        trial_period_start_dt = datetime.datetime.now()
+                        trial_period_start_dt = timezone.now()
                         trial_period_end_dt = trial_period_start_dt + datetime.timedelta(1)
                         billing_start_dt = trial_period_end_dt
                     # Create recurring payment

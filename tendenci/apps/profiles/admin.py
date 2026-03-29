@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
 from django.http import StreamingHttpResponse
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -155,7 +156,7 @@ class LastLoginFilter(SimpleListFilter):
         if value == 999:
             queryset = queryset.filter(last_login__isnull=True)
         else:
-            dt = datetime.now() - timedelta(days=365 * value)
+            dt = timezone.now() - timedelta(days=365 * value)
             queryset = queryset.filter(last_login__lt=dt)
 
             #print(queryset.query)

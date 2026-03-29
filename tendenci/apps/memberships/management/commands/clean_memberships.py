@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -22,7 +23,7 @@ class Command(BaseCommand):
             # move todays day back.
             memberships = MembershipDefault.objects.filter(
                 membership_type=membership_type,
-                expire_dt__lt=datetime.now() - relativedelta(days=grace_period),
+                expire_dt__lt=timezone.now() - relativedelta(days=grace_period),
                 status=True).filter(status_detail='active')
 
             for membership in memberships:

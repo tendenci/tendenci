@@ -825,7 +825,7 @@ def _user_events(from_date):
 
 @staff_member_required
 def user_activity_report(request, template_name='reports/user_activity.html'):
-    now = datetime.now()
+    now = timezone.now()
     users30days = _user_events(now-timedelta(days=10))
     users60days = _user_events(now-timedelta(days=60))
     users90days = _user_events(now-timedelta(days=90))

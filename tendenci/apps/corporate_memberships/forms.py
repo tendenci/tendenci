@@ -16,6 +16,7 @@ from django.core.files.storage import default_storage
 from django.contrib.contenttypes.models import ContentType
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 #from django.conf import settings
 
 # from captcha.fields import CaptchaField
@@ -734,7 +735,7 @@ class CorpMembershipForm(FormControlWidgetMixin, forms.ModelForm):
                 self.instance.status = True
                 self.instance.status_detail = 'pending'
             if not self.instance.join_dt:
-                self.instance.join_dt = datetime.now()
+                self.instance.join_dt = timezone.now()
             if not creator_owner.is_anonymous:
                 self.instance.creator = creator_owner
                 self.instance.creator_username = creator_owner.username

@@ -707,14 +707,7 @@ class BranchInlineAdmin(admin.StackedInline):
 
 class CorpProfileAdmin(TendenciBaseModelAdmin):
     model = CorpProfile
-    list_display = ['name',]
-    if get_setting('module', 'trainings', 'enabled'):
-        list_display.append('show_transcripts')
     search_fields = ('name',)
-    inlines = (CorpMembershipRepInlineAdmin, BranchInlineAdmin,
-               CorpMembershipInlineAdmin)
-    if get_setting('module', 'corporate_memberships', 'useproducts'):
-        inlines = (ProductInline,) + inlines
     fieldsets = [(_('Company Details'), {
                       'fields': ('name',
                                  'account_id',
@@ -741,6 +734,19 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
                         )}),]
 
     form = CorpProfileAdminForm
+
+    def get_list_display(self, request):
+        list_display = ['name',]
+        if get_setting('module', 'trainings', 'enabled'):
+            list_display.append('show_transcripts')
+        return list_display
+
+    def get_inlines(self, request, obj):
+        inlines = (CorpMembershipRepInlineAdmin, BranchInlineAdmin,
+               CorpMembershipInlineAdmin)
+        if get_setting('module', 'corporate_memberships', 'useproducts'):
+            inlines = (ProductInline,) + inlines
+        return inlines
 
     def has_add_permission(self, request):
         return False

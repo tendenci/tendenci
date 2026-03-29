@@ -12,6 +12,7 @@ from django.utils.timezone import now as tznow
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import OneToOneField
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
@@ -170,7 +171,7 @@ class Forum(models.Model):
             print('No users subscribed digest for forum ', self)
             return
 
-        now = datetime.now()
+        now = timezone.now()
         to_dt = now - timedelta(days=1)
         #to_dt = now
         to_dt = datetime(to_dt.year, to_dt.month, to_dt.day, 23, 59, 59)

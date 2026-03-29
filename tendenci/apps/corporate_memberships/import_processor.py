@@ -5,6 +5,7 @@ import pytz
 
 from django.core import exceptions
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.corporate_memberships.models import (
@@ -380,7 +381,7 @@ class CorpMembershipImportProcessor:
         # no join_dt - set one
         if not hasattr(corp_memb, 'join_dt') or not corp_memb.join_dt:
             if corp_memb.status and corp_memb.status_detail == 'active':
-                corp_memb.join_dt = datetime.now()
+                corp_memb.join_dt = timezone.now()
 
         # no expire_dt - get it via corporate_membership_type
         if not hasattr(corp_memb, 'expiration_dt') or not corp_memb.expiration_dt:
@@ -425,7 +426,7 @@ class CorpMembershipImportProcessor:
         return all([
                 corp_memb.status,
                 corp_memb.status_detail == 'active',
-                not corp_memb.expiration_dt or corp_memb.expiration_dt > datetime.now()
+                not corp_memb.expiration_dt or corp_memb.expiration_dt > timezone.now()
                 ])
 
     def assign_import_values_from_dict(self, instance, action):
@@ -491,7 +492,7 @@ class CorpMembershipImportProcessor:
             return date
 
         if field_type == 'DateTimeField':
-            return datetime.now()
+            return timezone.now()
 
         if field_type == 'DecimalField':
             return Decimal(0)
@@ -574,7 +575,7 @@ class CorpMembershipImportProcessor:
                 if value == '':
                     value = None
                 if not field.null:
-                    value = datetime.now()
+                    value = timezone.now()
         elif field_type == 'DecimalField':
             try:
                 value = field.to_python(value)

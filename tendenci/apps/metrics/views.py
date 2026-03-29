@@ -6,6 +6,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.http import Http403
 from tendenci.apps.metrics.models import Metric
+from django.utils import timezone
 
 
 @login_required
@@ -14,8 +15,8 @@ def index(request, template_name="metrics/index.html"):
     if not request.user.profile.is_superuser:
         raise Http403
 
-    seven_days_ago = datetime.datetime.now() - datetime.timedelta(days=7)
-    one_month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+    seven_days_ago = timezone.now() - datetime.timedelta(days=7)
+    one_month_ago = timezone.now() - datetime.timedelta(days=30)
     last_week = Metric.objects.filter(create_dt__gte=seven_days_ago)
     try:
         yesterday = Metric.objects.all().order_by('-create_dt')[0]

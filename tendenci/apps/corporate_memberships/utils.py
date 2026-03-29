@@ -333,8 +333,8 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
         inv.ship_to_phone = corp_profile.phone
         inv.ship_to_email = corp_profile.email
         inv.terms = "Due on Receipt"
-        inv.due_date = datetime.now()
-        inv.ship_date = datetime.now()
+        inv.due_date = timezone.now()
+        inv.ship_date = timezone.now()
         inv.message = 'Thank You.'
         inv.status = True
 
@@ -589,7 +589,7 @@ def get_over_time_stats():
     return a dict of membership statistics overtime.
     """
     from tendenci.apps.corporate_memberships.models import CorpMembership
-    now = datetime.now()
+    now = timezone.now()
     this_month = datetime(day=1, month=now.month, year=now.year)
     this_year = datetime(day=1, month=1, year=now.year)
     times = [
@@ -649,7 +649,7 @@ def last_n_month(n):
     """
         Get the first day of the last n months.
     """
-    now = datetime.now()
+    now = timezone.now()
     last = now - relativedelta(months=n)
     return datetime(day=1, month=last.month, year=last.year)
 

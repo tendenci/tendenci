@@ -16,6 +16,7 @@ import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
@@ -127,8 +128,8 @@ def search(request, my_directories_only=False, template_name="directories/search
             directories = directories.filter( **search_filter)
 
     if not request.user.is_superuser:
-        directories = directories.exclude(activation_dt__gt=datetime.now())
-        directories = directories.exclude(expiration_dt__lt=datetime.now())
+        directories = directories.exclude(activation_dt__gt=timezone.now())
+        directories = directories.exclude(expiration_dt__lt=timezone.now())
 
     directories = directories.order_by('headline')
 
@@ -231,7 +232,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.status = True
                 directory.status_detail = 'pending'
             else:
-                directory.activation_dt = datetime.now()
+                directory.activation_dt = timezone.now()
                 # set the expiration date
                 directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
 
@@ -292,7 +293,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
     if request.user.is_superuser:
         if not directory.activation_dt:
             # auto-populate activation_dt
-            directory.activation_dt = datetime.now()
+            directory.activation_dt = timezone.now()
 
     form = form_class(request.POST or None, request.FILES or None,
                       instance=directory,
@@ -576,7 +577,7 @@ def approve(request, id, template_name="directories/approve.html"):
     directory = get_object_or_404(Directory, pk=id)
 
     if request.method == "POST":
-        directory.activation_dt = datetime.now()
+        directory.activation_dt = timezone.now()
         directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
         directory.allow_anonymous_view = True
         directory.status = True
@@ -649,7 +650,7 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
                 directory.status = True
                 directory.status_detail = 'pending'
             else:
-                directory.activation_dt = datetime.now()
+                directory.activation_dt = timezone.now()
                 # set the expiration date
                 directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
                 # mark renewal as not sent for new exp date

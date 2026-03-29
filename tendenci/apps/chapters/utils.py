@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django.template import Context, Template
 from django.template.loader import get_template
 from django.urls.base import reverse
+from django.utils import timezone
 
 from tendenci.apps.chapters.models import (
         Chapter, ChapterMembershipApp,
@@ -491,7 +492,7 @@ class ImportChapterMembership:
         # no join_dt - set one
         if not hasattr(chapter_memb, 'join_dt') or not chapter_memb.join_dt:
             if chapter_memb.status and chapter_memb.status_detail == 'active':
-                chapter_memb.join_dt = datetime.now()
+                chapter_memb.join_dt = timezone.now()
 
         # no approved_dt - set one
         if not hasattr(chapter_memb, 'approved_dt') or not chapter_memb.approved_dt:
@@ -567,7 +568,7 @@ class ImportChapterMembership:
             return date
 
         if field_type == 'DateTimeField':
-            return datetime.now()
+            return timezone.now()
 
         if field_type == 'DecimalField':
             return Decimal(0)
@@ -639,7 +640,7 @@ class ImportChapterMembership:
                 if value == '':
                     value = None
                 if not field.null:
-                    value = datetime.now()
+                    value = timezone.now()
         elif field_type == 'DecimalField':
             try:
                 value = field.to_python(value)

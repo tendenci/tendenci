@@ -27,8 +27,8 @@ from django.db.models import ForeignKey, OneToOneField
 from django.db.models.fields import AutoField
 from django.utils.translation import gettext_lazy as _
 from django.db.models.functions import Lower
-from django.http.response import StreamingHttpResponse
 from django.conf import settings
+from django.utils import timezone
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
@@ -1276,7 +1276,7 @@ def corp_renew(request, id,
                 new_corp_membership = form.save()
                 new_corp_membership.renewal = True
                 new_corp_membership.renew_from_id = corp_membership.id
-                new_corp_membership.renew_dt = datetime.now()
+                new_corp_membership.renew_dt = timezone.now()
                 new_corp_membership.status = True
                 new_corp_membership.status_detail = 'pending'
                 new_corp_membership.creator = request.user
@@ -2157,7 +2157,7 @@ def report_active_corp_members_by_type(request,
         corp_membership_type = 0
 
     if days:
-        compare_dt = datetime.now() - timedelta(days=days)
+        compare_dt = timezone.now() - timedelta(days=days)
         corp_mems = corp_mems.filter(join_dt__gte=compare_dt)
     if corp_membership_type:
         corp_mems = corp_mems.filter(corporate_membership_type=corp_membership_type)
@@ -2252,7 +2252,7 @@ def report_corp_members_by_status(request,
         status_detail = ''
 
     if days:
-        compare_dt = datetime.now() - timedelta(days=days)
+        compare_dt = timezone.now() - timedelta(days=days)
         corp_mems = corp_mems.filter(join_dt__gte=compare_dt)
     if status_detail:
         corp_mems = corp_mems.filter(status_detail=status_detail)

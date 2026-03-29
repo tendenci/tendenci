@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from django.views.generic import TemplateView, FormView, UpdateView, DetailView, ListView, DeleteView
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -78,7 +79,7 @@ class NewsletterGeneratorOrigView(NewsletterPermissionMixin, FormView):
 
     def get_initial(self):
         site_name = get_setting('site', 'global', 'sitedisplayname')
-        date_string = datetime.datetime.now().strftime("%d-%b-%Y")
+        date_string = timezone.now().strftime("%d-%b-%Y")
         subject_initial = site_name + ' Newsletter ' + date_string
 
         return {'subject': subject_initial}

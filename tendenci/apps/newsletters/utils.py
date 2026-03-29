@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.core.mail import get_connection
 from django.db.models import Q
+from django.utils import timezone
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.events.models import Type
@@ -42,7 +43,7 @@ def get_default_template_choices():
 
 def get_start_dt(duration_days, end_dt=None):
     if not end_dt:
-        end_dt = datetime.datetime.now()
+        end_dt = timezone.now()
     try:
         duration_days = int(duration_days)
     except:
@@ -77,7 +78,7 @@ def newsletter_articles_list(request, articles_days, simplified):
     art_content = ''
     try:
         from tendenci.apps.articles.models import Article
-        end_dt = datetime.datetime.now()
+        end_dt = timezone.now()
         start_dt = get_start_dt(articles_days, end_dt)
 
         articles = Article.objects.filter(release_dt__lte=end_dt)
@@ -106,7 +107,7 @@ def newsletter_news_list(request, news_days, simplified):
     news_content = ''
     try:
         from tendenci.apps.news.models import News
-        end_dt = datetime.datetime.now()
+        end_dt = timezone.now()
         start_dt = get_start_dt(news_days, end_dt)
 
         news = News.objects.filter(release_dt__lte=end_dt)
@@ -136,7 +137,7 @@ def newsletter_pages_list(request, pages_days, simplified):
     page_content = ''
     try:
         from tendenci.apps.pages.models import Page
-        end_dt = datetime.datetime.now()
+        end_dt = timezone.now()
         start_dt = get_start_dt(pages_days, end_dt)
 
         if start_dt:
@@ -167,7 +168,7 @@ def newsletter_jobs_list(request, jobs_days, simplified):
     job_content = ''
     try:
         from tendenci.apps.jobs.models import Job
-        end_dt = datetime.datetime.now()
+        end_dt = timezone.now()
         start_dt = get_start_dt(jobs_days, end_dt)
 
         jobs = Job.objects.filter(activation_dt__lte=end_dt)
@@ -232,7 +233,7 @@ def newsletter_directories_list(request, directories_days, simplified):
     directories_content = ''
     try:
         from tendenci.apps.directories.models import Directory
-        end_dt = datetime.datetime.now()
+        end_dt = timezone.now()
         start_dt = get_start_dt(directories_days, end_dt)
 
         directories = Directory.objects.filter(activation_dt__lte=end_dt)
@@ -263,7 +264,7 @@ def newsletter_resumes_list(request, resumes_days, simplified):
     resumes_content = ''
     try:
         from tendenci.apps.resumes.models import Resume
-        end_dt = datetime.datetime.now()
+        end_dt = timezone.now()
         start_dt = get_start_dt(resumes_days, end_dt)
 
         resumes = Resume.objects.filter(activation_dt__lte=end_dt)

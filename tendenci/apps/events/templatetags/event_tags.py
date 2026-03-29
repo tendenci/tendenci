@@ -194,7 +194,7 @@ def registration_pricing_and_button(context, event, user):
             registrant = registrants.first()
 
     context.update({
-        'now': datetime.now(),
+        'now': timezone.now(),
         'event': event,
         'limit': limit,
         'spots_taken': spots_taken,

@@ -2,6 +2,8 @@
 #           donationsrecipients,
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
+
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -36,8 +38,8 @@ def donation_inv_add(user, donation, **kwargs):
     #self.ship_to_fax = make_payment.fax
     inv.ship_to_email =donation.email
     inv.terms = "Due on Receipt"
-    inv.due_date = datetime.now()
-    inv.ship_date = datetime.now()
+    inv.due_date = timezone.now()
+    inv.ship_date = timezone.now()
     inv.message = 'Thank You.'
     inv.status = True
     

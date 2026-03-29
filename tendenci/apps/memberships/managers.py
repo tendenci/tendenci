@@ -5,6 +5,7 @@ from functools import reduce
 
 from django.db.models import Q
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from tendenci.apps.perms.managers import TendenciBaseManager
 from tendenci.apps.site_settings.utils import get_setting
@@ -141,7 +142,7 @@ class MembershipDefaultManager(TendenciBaseManager):
         kwargs['status'] = kwargs.get('status', True)
         kwargs['status_detail'] = kwargs.get('status_detail', 'active')
         return self.filter(
-            Q(expire_dt__gt=datetime.now()) | Q(expire_dt__isnull=True), **kwargs)
+            Q(expire_dt__gt=timezone.now()) | Q(expire_dt__isnull=True), **kwargs)
 
     def expired(self, **kwargs):
         """
@@ -156,7 +157,7 @@ class MembershipDefaultManager(TendenciBaseManager):
         for m_type in m_types:
 
             grace_period = m_type.expiration_grace_period
-            expire_dt = datetime.now() + relativedelta(days=grace_period)
+            expire_dt = timezone.now() + relativedelta(days=grace_period)
 
             qs = qs | self.filter(
                 status=True,

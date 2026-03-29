@@ -4,6 +4,7 @@ from datetime import datetime
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.storage import default_storage
+from django.utils import timezone
 
 from tendenci.apps.perms.managers import TendenciBaseManager
 
@@ -88,7 +89,7 @@ class FileManager(TendenciBaseManager):
                 file.name = re.sub(r'[^a-z0-9._]+', '_', file.name.lower())
                 file.owner = user
                 file.owner_username = user.username
-                file.update_dt = datetime.now()
+                file.update_dt = timezone.now()
             except:
                 file = self.model(**{
                     'file':file_path,
@@ -136,7 +137,7 @@ class FileManager(TendenciBaseManager):
                 file.name = re.sub(r'[^a-zA-Z0-9._-]+', '_', file.name)
                 file.owner = request.user
                 file.owner_username = request.user.username
-                file.update_dt = datetime.now()
+                file.update_dt = timezone.now()
                 file.content_type = ContentType.objects.get_for_model(instance)
                 file.object_id = instance_pk
             except:

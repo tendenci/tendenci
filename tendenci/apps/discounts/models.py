@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
@@ -40,7 +41,7 @@ class Discount(TendenciBaseModel):
         """
         if self.num_of_uses() > self.cap and self.cap != 0:
             return False
-        if datetime.now() > self.end_dt and not self.never_expires:
+        if timezone.now() > self.end_dt and not self.never_expires:
             return False
         return True
 
@@ -50,7 +51,7 @@ class Discount(TendenciBaseModel):
         """
         if (self.num_of_uses() + count) > self.cap and self.cap != 0:
             return False
-        if datetime.now() > self.end_dt and not self.never_expires:
+        if timezone.now() > self.end_dt and not self.never_expires:
             return False
         return True
 
@@ -62,7 +63,7 @@ class Discount(TendenciBaseModel):
 
     @staticmethod
     def has_valid_discount(**kwargs):
-        now = datetime.now()
+        now = timezone.now()
         model = kwargs.pop('model', None)
         discount_exists = Discount.objects.filter(
                             Q(never_expires=True) |

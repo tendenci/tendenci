@@ -1619,7 +1619,7 @@ def membership_default_add(request, slug='', membership_id=None,
                         notice_sent = membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
 
                 # application complete
-                membership.application_complete_dt = datetime.now()
+                membership.application_complete_dt = timezone.now()
                 membership.application_complete_user = membership.user
 
                 # save application fields
@@ -2043,7 +2043,7 @@ def verify_email(request,
     indiv_veri = get_object_or_404(IndivEmailVerification, id=id, guid=guid)
     if not indiv_veri.verified:
         indiv_veri.verified = True
-        indiv_veri.verified_dt = datetime.now()
+        indiv_veri.verified_dt = timezone.now()
         if request.user and not request.user.is_anonymous:
             indiv_veri.updated_by = request.user
         indiv_veri.save()
@@ -2230,7 +2230,7 @@ def report_list(request, template_name='reports/membership_report_list.html'):
 def report_active_members(request, template_name='reports/membership_list.html'):
     if request.GET.get('days'):
         days = int(request.GET.get('days'))
-        compare_dt = datetime.now() - timedelta(days=days)
+        compare_dt = timezone.now() - timedelta(days=days)
         mems = MembershipDefault.objects.filter(status=True, status_detail="active", join_dt__gte=compare_dt).order_by('join_dt')
     else:
         days = 0
@@ -2363,7 +2363,7 @@ def report_expired_members(request, template_name='reports/membership_list.html'
     """
     if request.GET.get('days'):
         days = int(request.GET.get('days'))
-        compare_dt = datetime.now() - timedelta(days=days)
+        compare_dt = timezone.now() - timedelta(days=days)
         mems = MembershipDefault.objects.filter(status_detail="expired", expire_dt__gte=compare_dt).order_by('expire_dt')
     else:
         days = 0
@@ -2630,7 +2630,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
         days = int(request.GET.get('days'))
     else:
         days = 30
-    compare_dt = datetime.now() - timedelta(days=days)
+    compare_dt = timezone.now() - timedelta(days=days)
     members = MembershipDefault.objects.filter(renewal=1, renew_dt__gte=compare_dt).order_by('renew_dt')
 
     # returns csv response ---------------
@@ -2738,7 +2738,7 @@ def report_grace_period_members(request, template_name='reports/grace_period_mem
 
 @staff_member_required
 def report_active_members_ytd(request, template_name='reports/active_members_ytd.html'):
-    this_year = datetime.now().year
+    this_year = timezone.now().year
     years = [this_year - i for i in range(5) ]
     year_selected = request.GET.get('year', this_year)
     try:
@@ -2799,7 +2799,7 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
 
 @staff_member_required
 def report_members_ytd_type(request, template_name='reports/members_ytd_type.html'):
-    year = datetime.now().year
+    year = timezone.now().year
     years = [year, year - 1, year - 2, year - 3, year - 4]
     if request.GET.get('year'):
         year = int(request.GET.get('year'))

@@ -741,16 +741,8 @@ class CorpMembership(TendenciBaseModel):
 
     class Meta:
 #         permissions = (("view_corpmembership", "Can view corporate membership"),)
-        if get_setting('module', 'corporate_memberships', 'label'):
-            verbose_name = get_setting('module',
-                                       'corporate_memberships',
-                                       'label')
-            verbose_name_plural = get_setting('module',
-                                              'corporate_memberships',
-                                              'label_plural')
-        else:
-            verbose_name = _("Corporate Membership")
-            verbose_name_plural = _("Corporate Memberships")
+        verbose_name = _("Corporate Membership")
+        verbose_name_plural = _("Corporate Memberships")
         permissions = (("approve_corpmembership", _("Can approve corporate memberships")),)
         app_label = 'corporate_memberships'
 
@@ -1150,7 +1142,7 @@ class CorpMembership(TendenciBaseModel):
             self.status_detail == 'active' and \
             self.approved:
             self.status_detail = 'expired'
-            self.expiration_dt = datetime.now()
+            self.expiration_dt = timezone.now()
             self.save()
 
             memberships = MembershipDefault.objects.filter(
@@ -1177,7 +1169,7 @@ class CorpMembership(TendenciBaseModel):
                 group = self.corporate_membership_type.membership_type.group
                 membership = MembershipDefault()
                 membership.user = creator
-                membership.join_dt = datetime.now()
+                membership.join_dt = timezone.now()
                 membership.expire_dt = self.expiration_dt
                 membership.corporate_membership_id = self.id
                 membership.corp_profile_id = self.corp_profile.id
@@ -1229,7 +1221,7 @@ class CorpMembership(TendenciBaseModel):
 
     def approve_join(self, request, **kwargs):
         self.approved = True
-        self.approved_denied_dt = datetime.now()
+        self.approved_denied_dt = timezone.now()
         if not request.user.is_anonymous:
             self.approved_denied_user = request.user
         self.status = True
@@ -1300,7 +1292,7 @@ class CorpMembership(TendenciBaseModel):
 
     def disapprove_join(self, request, **kwargs):
         self.approved = False
-        self.approved_denied_dt = datetime.now()
+        self.approved_denied_dt = timezone.now()
         self.approved_denied_user = request.user
         self.status = True
         self.status_detail = 'inactive'
@@ -1339,7 +1331,7 @@ class CorpMembership(TendenciBaseModel):
             request_user = request.user
             # 2) approve corp_membership
             self.approved = True
-            self.approved_denied_dt = datetime.now()
+            self.approved_denied_dt = timezone.now()
             if request_user and (not request_user.is_anonymous):
                 self.approved_denied_user = request_user
             self.status = True
@@ -1455,7 +1447,7 @@ class CorpMembership(TendenciBaseModel):
                         'pending', 'paid - pending approval']:
             request_user = request.user
             self.approved = True
-            self.approved_denied_dt = datetime.now()
+            self.approved_denied_dt = timezone.now()
             self.status_detail = 'inactive'
             if not request_user.is_anonymous:
                 self.owner = request_user
@@ -1637,7 +1629,7 @@ class CorpMembership(TendenciBaseModel):
         new_corp_membership = self.copy()
         new_corp_membership.renewal = True
         new_corp_membership.renew_from_id = self.id
-        new_corp_membership.renew_dt = datetime.now()
+        new_corp_membership.renew_dt = timezone.now()
         new_corp_membership.status = True
         new_corp_membership.status_detail = 'pending'
         new_corp_membership.creator = request.user
@@ -2563,7 +2555,7 @@ class Notice(models.Model):
             'site_contact_email': global_setting('sitecontactemail'),
             'site_display_name': global_setting('sitedisplayname'),
             'time_submitted': time.strftime("%d-%b-%y %I:%M %p",
-                                            datetime.now().timetuple()),
+                                            timezone.now().timetuple()),
         })
 
         # return basic context

@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template import engines, TemplateDoesNotExist
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -48,7 +49,7 @@ class Command(BaseCommand):
             'sender_display':site_display_name,
             'reply_to':site_contact_email}
 
-        now = datetime.now()
+        now = timezone.now()
         nowstr = time.strftime("%d-%b-%y %I:%M %p", now.timetuple())
 
         def email_admins_recap(notices, total_sent):
