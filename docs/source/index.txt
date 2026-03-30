@@ -21,10 +21,16 @@ Tendenci allows membership management organizations to communicate, manage and c
 
 .. toctree::
    :maxdepth: 1
-   :glob:
    :caption: Upgrade
 
-   upgrade/*
+   upgrade/upgrade-to-tendenci.txt
+   upgrade/upgrade-to-tendenci15.txt
+   upgrade/upgrade-to-tendenci14.txt
+   upgrade/upgrade-to-tendenci12.txt
+   upgrade/upgrade-to-tendenci11.txt
+   upgrade/upgrade-to-tendenci7.1.txt
+   upgrade/upgrade-to-tendenci7.txt
+   upgrade/upgrade-to-tendenci6.txt
 
 
 .. toctree::
