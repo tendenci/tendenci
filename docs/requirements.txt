@@ -1,2 +1,2 @@
-sphinx<7
+sphinx
 sphinx_rtd_theme
