@@ -35,6 +35,7 @@ Run:
     python manage.py migrate
     python manage.py deploy
     python manage.py clear_cache
+    python manage.py rebuild_index
 
 
 Step 3: Upgrade System Commands

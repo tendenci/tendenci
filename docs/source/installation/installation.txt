@@ -57,6 +57,8 @@ Install the required system dependencies (Ubuntu 22.04 LTS comes with Python 3.1
 
     sudo apt install build-essential \
       libpq-dev python3-dev
+    # For Ubuntu 22.04 LTS, the following 2 packages might be needed when installing cairo, a dependency of xhtml2pdf.
+    sudo apt install libcairo2-dev pkg-config
 
 
 Add the universe repository:
