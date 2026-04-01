@@ -42,7 +42,7 @@ Whoosh==2.7.4
 simple-salesforce==1.12.9
 selenium==4.41.0
 raven==6.10.0
-tendenci-django-admin-bootstrapped>=5.2
+tendenci-django-admin-bootstrapped>=6.2
 django-bootstrap3==26.1
 unidecode
 Markdown==3.10.2
