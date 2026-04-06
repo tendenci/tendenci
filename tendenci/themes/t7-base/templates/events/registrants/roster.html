@@ -218,7 +218,7 @@
                 {% if registrant.roster_field_list %}
                     {% for field in registrant.roster_field_list %}
                         {% if field.value %}
-                            <div>{{ field.label }}: {{ field.value }}</div>
+                            <div>{{ field.label }}: {{ field.value|safe }}</div>
                         {% endif %}
                     {% endfor %}
                 {% endif %}

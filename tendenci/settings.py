@@ -572,6 +572,8 @@ PHOTOS_MAXBLOCK = 2 ** 20  # prevents 'IOError: encoder error -2'
 # Turn on/off the Gratuity feature - per Ed, allow it to be adjusted in conf/settings.py rather than site settings
 EVENTS_GRATUITY_ENABLED = False
 
+CUSTOM_REG_FILE_UPLOAD_ENABLED = False
+
 # EMail Settings for Newsletters
 NEWSLETTER_EMAIL_HOST = None
 NEWSLETTER_EMAIL_PORT = 587     # 587 is the default for mailgun

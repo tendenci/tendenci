@@ -4450,6 +4450,11 @@ class CustomRegFormEntry(models.Model):
             entry_list.append({'label': field_entry.field.label, 'value': field_entry.value})
         return entry_list
 
+    def get_non_mapped_field_entries(self):
+        field_entries = self.field_entries
+        mapped_fields = [item[0] for item in USER_FIELD_CHOICES]
+        return field_entries.exclude(field__map_to_field__in=mapped_fields).order_by('field')
+
     def roster_field_entry_list(self):
         list_on_roster = []
         field_entries = self.field_entries.exclude(field__map_to_field__in=[
@@ -4460,7 +4465,14 @@ class CustomRegFormEntry(models.Model):
                                     ]).filter(field__display_on_roster=1).order_by('field')
 
         for field_entry in field_entries:
-            list_on_roster.append({'label': field_entry.field.label, 'value': field_entry.value})
+            value = field_entry.value
+            is_file = field_entry.is_file()
+            file_url = None
+            if is_file:
+                value = os.path.basename(value)
+                file_url = field_entry.file_url()
+                print('file_url=', file_url)
+            list_on_roster.append({'label': field_entry.field.label, 'value': value, 'is_file': is_file, 'file_url':file_url})
         return list_on_roster
 
     def set_group_subscribers(self, user):
@@ -4482,6 +4494,18 @@ class CustomRegFieldEntry(models.Model):
 
     class Meta:
         app_label = 'events'
+
+    def is_file(self):
+        return self.value and self.field.field_type == 'FileField'
+
+    def file_name(self):
+        #return self.value
+        return os.path.basename(self.value)
+
+    def file_url(self):
+        if not self.value:
+            return ''
+        return reverse('event.registrant_file', args=[self.pk])
 
 class Addon(OrderingBaseModel):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)

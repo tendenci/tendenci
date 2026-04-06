@@ -133,7 +133,7 @@
 
 
     <div class="form-wrap">
-        <form id="registration-form" action="" method="post">{% csrf_token %}
+        <form id="registration-form" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms" id="fillup-div">
 
             <div id="reg-form-wrap">
@@ -288,6 +288,10 @@
                                     {% if field.name != 'attendance_dates' %}
                                     {% if field.errors %}
                                     <div class="error">{{ field.errors }}</div>
+                                    {% elif field.field.widget.input_type == 'file' and field.data %}
+                                    <div class="error">
+                                        {% trans "Please re-select your file" %}
+                                    </div>
                                     {% endif %}
                                     <div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
                                     <div class="field">{{ field }}</div>
@@ -427,7 +431,10 @@
                     <div class="field">{{ reg_form.captcha }}</div>
                 </div>
             {% endif %}
-            <input class="btn btn-primary" type="submit" name="commit" id="register-form-button" class="registration-green-button" value="{% if event.free_event %}{% trans 'Submit' %}{% else %}{% trans 'Continue'%}{% endif %}" />
+            {% if file_fields_names %}
+            <input type="hidden" name="confirmed" />
+            {% endif %}
+            <input class="btn btn-primary" type="submit" name="commit" id="register-form-button" class="registration-green-button" value="{% if event.free_event or file_fields_names %}{% trans 'Submit' %}{% else %}{% trans 'Continue'%}{% endif %}" />
 
             <div class="clear"></div>
         </div>

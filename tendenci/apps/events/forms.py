@@ -8,6 +8,8 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from dateutil.relativedelta import relativedelta
 import requests
+from uuid import uuid4
+import os
 
 from django import forms
 from django.db.models import Q
@@ -24,6 +26,7 @@ from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from django.core.files.storage import default_storage
 
 # from captcha.fields import CaptchaField
 from tendenci.apps.events.models import (
@@ -56,6 +59,7 @@ from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.widgets import PercentWidget
 from tendenci.apps.base.forms import ProhibitNullCharactersValidatorMixin
 from tendenci.apps.files.validators import FileValidator
+from tendenci.apps.base.utils import correct_filename
 
 from .fields import UseCustomRegField
 from .widgets import UseCustomRegWidget
@@ -345,6 +349,12 @@ class CustomRegFormForField(forms.ModelForm):
         model = CustomRegField
         exclude = ["position"]
 
+    def __init__(self, *args, **kwargs):
+        super(CustomRegFormForField, self).__init__(*args, **kwargs)
+        # add option ("FileField", _("File upload"))
+        if settings.CUSTOM_REG_FILE_UPLOAD_ENABLED:
+            self.fields['field_type'].choices += (("FileField", _("File upload")),)
+
     def clean(self):
         cleaned_data = super(CustomRegFormForField, self).clean()
         field_function = cleaned_data.get("field_function")
@@ -428,6 +438,7 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
         self.user = kwargs.pop('user', AnonymousUser)
         self.request = kwargs.pop('request', None)
         self.custom_reg_form = kwargs.pop('custom_reg_form', None)
+        self.edit_mode = kwargs.pop('edit_mode', None)
         self.event = kwargs.pop('event', None)
         self.entry = kwargs.pop('entry', None)
         self.form_index = kwargs.pop('form_index', None)
@@ -439,7 +450,6 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
         self.default_pricing = kwargs.pop('default_pricing', False)
         if self.event and not self.default_pricing:
             self.default_pricing = getattr(self.event, 'default_pricing', None)
-
         super(FormForCustomRegForm, self).__init__(*args, **kwargs)
         
         max_length_dict = dict([(field.name, field.max_length) for field in Registrant._meta.fields\
@@ -478,6 +488,7 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                     else:
                         default = False
             field_args["initial"] = field.default
+
             #if "queryset" in arg_names:
             #    field_args["queryset"] = field.queryset()
             if field_widget is not None:
@@ -486,7 +497,18 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                 if module == 'django.forms.extras':
                     module = 'django.forms.widgets'
                 field_args["widget"] = getattr(import_module(module), widget)
+            # if field.field_type == 'FileField':
+            #     field_args["validators"] = [FileValidator(allowed_extensions=['.jpg'])]
             self.fields[field_key] = field_class(**field_args)
+            if field.field_type == 'FileField':
+                self.fields[field_key].validators = [FileValidator()]
+                if self.edit_mode and 'initial' in kwargs and kwargs['initial'][field_key]:
+                    # show the current file if exists
+                    if self.fields[field_key].help_text:
+                        self.fields[field_key].help_text += '. '
+                    self.fields[field_key].help_text += 'Current file: ' + \
+                                                        os.path.basename(kwargs['initial'][field_key])
+                    self.fields[field_key].required = False
 
         # add class attr registrant-email to the email field
         if hasattr(self.fields, 'email'):
@@ -718,6 +740,13 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                 raise forms.ValidationError(_('Free pass not available for "%s".' % corp_membership.corp_profile.name))
         return use_free_pass
 
+    def get_file_path(self, filename, field_id):
+        filename = correct_filename(filename)
+        return f'events/reg/fieldentry/{field_id}/{str(uuid4())}/{filename}'
+    
+    def handle_uploaded_file(self, f, field_id):
+        return default_storage.save(self.get_file_path(f.name, field_id), f)
+
     def save(self, event, **kwargs):
         """
         Create a FormEntry instance and related FieldEntry instances for each
@@ -737,9 +766,13 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                 else:
                     field_key = "field_%s" % field.id
                 value = self.cleaned_data.get(field_key, '')
-                if isinstance(value,list):
-                    value = ','.join(value)
-                if not value: value=''
+                if value:
+                    if isinstance(value, list):
+                        value = ','.join(value)
+                    elif field.field_type == 'FileField':
+                        value = self.handle_uploaded_file(value, field.id)
+                else: # no value
+                    value=''
 
                 field_entry = None
                 if self.entry:
@@ -747,6 +780,9 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                     if field_entries:
                         # field_entry exists, just do update
                         field_entry = field_entries[0]
+                        if field.field_type == 'FileField' and value and field_entry.value:
+                            # delete the old file before assigning the new value
+                            default_storage.delete(field_entry.value)
                         field_entry.value = value
                 if not field_entry:
                     #field_entry = CustomRegFieldEntry(field_id=field.id, entry=entry, value=value)
@@ -2259,6 +2295,7 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
         self.user = kwargs.pop('user', AnonymousUser)
         self.request = kwargs.pop('request', None)
         self.event = kwargs.pop('event', None)
+        self.edit_mode = kwargs.pop('edit_mode', None)
         self.form_index = kwargs.pop('form_index', None)
         self.pricings = kwargs.pop('pricings', None)
         self.validate_pricing = kwargs.pop('validate_pricing', True)
@@ -2530,6 +2567,7 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
 class RegistrantBaseFormSet(BaseFormSet):
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
                  initial=None, error_class=ErrorList, **kwargs):
+        self.edit_mode = kwargs.pop('edit_mode', None)
         self.event = kwargs.pop('event', None)
         self.user = kwargs.pop('user', None)
         self.request = kwargs.pop('request', None)
@@ -2557,6 +2595,7 @@ class RegistrantBaseFormSet(BaseFormSet):
         """
         defaults = {'auto_id': self.auto_id, 'prefix': self.add_prefix(i)}
 
+        defaults['edit_mode'] = self.edit_mode
         defaults['event'] = self.event
         defaults['user'] = self.user
         defaults['request'] = self.request

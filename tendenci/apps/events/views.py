@@ -2847,9 +2847,12 @@ def register(request, event_id=0,
 
     # check if using a custom reg form
     custom_reg_form = None
+    file_fields_names = ''
     if reg_conf.use_custom_reg_form:
         if reg_conf.bind_reg_form_to_conf_only:
             custom_reg_form = reg_conf.reg_form
+            # Note: upload fields won't have files picked on the confirmation page
+            file_fields_names = ', '.join(custom_reg_form.fields.filter(visible=True).filter(field_type='FileField').values_list('label', flat=True))
 
     if custom_reg_form:
         RF = FormForCustomRegForm
@@ -2943,7 +2946,8 @@ def register(request, event_id=0,
         reg_conf.discount_eligible = Discount.has_valid_discount(model=reg_conf._meta.model_name)
 
     # Setting up the formset
-    registrant = RegistrantFormSet(post_data or None, **params)
+    registrant = RegistrantFormSet(post_data or None, request.FILES or None, **params)
+    #print(registrant)
     addon_formset = RegAddonFormSet(request.POST or None,
                         prefix='addon',
                         event=event,
@@ -3004,7 +3008,7 @@ def register(request, event_id=0,
                 args = [request, event, reg_form, registrant, addon_formset,
                         pricing, pricing and pricing.price or 0]
 
-                if 'confirmed' in request.POST and gratuity_form.is_valid():
+                if ('confirmed' in request.POST or file_fields_names) and gratuity_form.is_valid():
                     # graguity
                     if 'gratuity' in gratuity_form.cleaned_data:
                         gratuity = gratuity_form.cleaned_data.get('gratuity')
@@ -3139,6 +3143,7 @@ def register(request, event_id=0,
         'pricing': pricing,
         'reg_form':reg_form,
         'custom_reg_form': custom_reg_form,
+        'file_fields_names': file_fields_names,
         'registrant': registrant,
         'addons':addons,
         'addon_formset': addon_formset,
@@ -3619,13 +3624,14 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                   'custom_reg_form': custom_reg_form,
                   'entries': entries,
                   'user': request.user,
-                  'event': reg8n.event}
+                  'event': reg8n.event,
+                  'edit_mode': True}
 
         if request.method != 'POST':
             # build initial
             check_cert = True if reg8n.event.course else False
             params.update({'initial': get_custom_registrants_initials(entries, check_cert=check_cert, attendance_dates=attendance_dates),})
-        formset = RegistrantFormSet(post_data, **params)
+        formset = RegistrantFormSet(post_data, request.FILES or None, **params)
     else:
         fields=('salutation', 'first_name', 'last_name', 'mail_name', 'email',
                     'position_title', 'company_name', 'phone', 'address', 'city',
@@ -4361,7 +4367,7 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
         if hasattr(reg, 'object'): reg = reg.object
         if reg.custom_reg_form_entry:
             reg.assign_mapped_fields()
-            reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
+            reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entries()
             if not reg.name:
                 reg.name = str(reg.custom_reg_form_entry)
 
@@ -4445,7 +4451,9 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         ]).select_related().values_list(
             'entry__id',
             'field__label',
-            'value'
+            'value',
+            'field__field_type',
+            'id'
         ).order_by('field__position')
 
         if reg_form_field_entries:
@@ -4453,7 +4461,13 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
                 key = str(field_entry[0])
                 if key not in roster_fields_dict:
                     roster_fields_dict[key] = []
-                roster_fields_dict[key].append({'label': field_entry[1], 'value': field_entry[2]})
+                value = field_entry[2]
+                if value and field_entry[3] == 'FileField':
+                    file_name = os.path.basename(value)
+                    file_url = reverse('event.registrant_file', args=[field_entry[4]])
+                    value = f'<a href="{file_url}" target="_blank">{file_name}</a>'
+                    
+                roster_fields_dict[key].append({'label': field_entry[1], 'value': value})
 
     registrants = Registrant.objects.filter(
         registration__event=event, cancel_dt=None)
@@ -4932,6 +4946,37 @@ def registrant_certificate(request, registrant_id=0):
             'phone': get_setting('site', 'global', 'sitephonenumber'),
         })
 
+
+@is_enabled('events')
+@login_required
+def registrant_file(request, id):
+    """
+    Returns a file uploaded by registrant.
+    """
+    import mimetypes
+
+    field_entry = get_object_or_404(CustomRegFieldEntry, pk=id)
+    custom_reg_form_entry = field_entry.entry
+    registrant = custom_reg_form_entry.registrants.first()
+
+    if not has_perm(request.user,'events.view_registrant', registrant):
+        raise Http403
+
+    base_name = os.path.basename(field_entry.value)
+    mime_type = mimetypes.guess_type(base_name)[0]
+
+    if not mime_type:
+        raise Http404
+
+    if not default_storage.exists(field_entry.value):
+        raise Http404
+
+    EventLog.objects.log()
+
+    with default_storage.open(field_entry.value) as f:
+        response = HttpResponse(f, content_type=mime_type)
+        response['Content-Disposition'] = f'filename="{base_name}"'
+        return response
 
 @is_enabled('events')
 def registration_confirmation(request, id=0, reg8n_id=0, hash='',
@@ -5429,6 +5474,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
         CustomRegistrantTuple = namedtuple('CustomRegistrant', list(registrant_mappings.values()))
 
+        site_url = get_setting('site', 'global', 'siteurl')
         # loop through all custom registration forms
         for form_id in form_ids:
             rows_list = []
@@ -5460,19 +5506,27 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
                 # keep the order of the values in the registrant dict
                 registrant_tuple = CustomRegistrantTuple(**registrant)
 
-                sql = """
-                        SELECT field_id, value
-                        FROM events_customregfieldentry
-                        WHERE field_id IN (%s)
-                        AND entry_id=%d
-                    """ % (','.join([str(id) for id in fields_dict]), entry_id)
-                cursor.execute(sql)
-                entry_rows = cursor.fetchall()
+                custom_reg_field_entries = CustomRegFieldEntry.objects.filter(
+                    entry_id=entry_id,
+                    field_id__in=fields_dict.keys() 
+                    ).select_related().values_list(
+                        'field_id',
+                        'value',
+                        'field__field_type',
+                        'id'
+                    )
+                entry_rows = []
+                for field_entry in custom_reg_field_entries:
+                    value = field_entry[1]
+                    if value and field_entry[2] == 'FileField':
+                        file_url = reverse('event.registrant_file', args=[field_entry[3]])
+                        value = site_url + file_url
+                    entry_rows.append((field_entry[0], value))
                 values_dict = dict(entry_rows)
-
                 custom_values_list = []
                 for field_id in fields_dict:
                     custom_values_list.append(values_dict.get(field_id, ''))
+  
                 custom_values_list.extend(registrant_tuple)
 
                 rows_list.append(custom_values_list)
