@@ -499,12 +499,13 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
             self.fields[field_key] = field_class(**field_args)
             if field.field_type == 'FileField':
                 self.fields[field_key].validators = [FileValidator()]
-                if self.edit_mode and 'initial' in kwargs and kwargs['initial'][field_key]:
-                    # show the current file if exists
-                    if self.fields[field_key].help_text:
-                        self.fields[field_key].help_text += '. '
-                    self.fields[field_key].help_text += 'Current file: ' + \
-                                                        os.path.basename(kwargs['initial'][field_key])
+                if self.edit_mode:
+                    if 'initial' in kwargs and kwargs['initial'][field_key]:
+                        # show the current file if exists
+                        if self.fields[field_key].help_text:
+                            self.fields[field_key].help_text += '. '
+                        self.fields[field_key].help_text += 'Current file: ' + \
+                                                            os.path.basename(kwargs['initial'][field_key])
                     self.fields[field_key].required = False
 
         # add class attr registrant-email to the email field
@@ -777,10 +778,14 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                     if field_entries:
                         # field_entry exists, just do update
                         field_entry = field_entries[0]
-                        if field.field_type == 'FileField' and value and field_entry.value:
-                            # delete the old file before assigning the new value
-                            default_storage.delete(field_entry.value)
-                        field_entry.value = value
+                        if field.field_type == 'FileField':
+                            if value:
+                                if field_entry.value:
+                                    # delete the old file before assigning the new value
+                                    default_storage.delete(field_entry.value)
+                                field_entry.value = value
+                        else:
+                            field_entry.value = value
                 if not field_entry:
                     #field_entry = CustomRegFieldEntry(field_id=field.id, entry=entry, value=value)
                     field_entry = CustomRegFieldEntry(field=field, entry=entry, value=value)
