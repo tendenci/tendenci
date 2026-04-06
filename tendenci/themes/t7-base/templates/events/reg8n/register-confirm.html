@@ -170,7 +170,13 @@
                 {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
                     {% for field in roster_field_list %}
                         {% if field.value %}
-                            <div>{{ field.label }}: {{ field.value }}</div>
+                            <div>{{ field.label }}:
+                             	 {% if field.is_file %}
+                             	 <a href="{{ field.file_url  }}" target="_blank">{{ field.value }}</a>
+                             	 {% else %}
+                           		 {{ field.value }}
+                           		 {% endif %}
+                            </div>
                         {% endif %}
                     {% endfor %}
                 {% endwith %}

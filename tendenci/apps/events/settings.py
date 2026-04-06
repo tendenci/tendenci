@@ -1,4 +1,5 @@
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 FIELD_MAX_LENGTH = 2000
 LABEL_MAX_LENGTH = 255
@@ -18,6 +19,8 @@ FIELD_TYPE_CHOICES = (
     ("CharField/tendenci.apps.forms_builder.forms.widgets.Description", _("Description")),
     ("CharField/tendenci.apps.forms_builder.forms.widgets.Header", _("Section Heading")),
 )
+if settings.CUSTOM_REG_FILE_UPLOAD_ENABLED:
+    FIELD_TYPE_CHOICES += (("FileField", _("File upload")),)
 
 USER_FIELD_CHOICES = (
     ('first_name', _('First Name')),

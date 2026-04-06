@@ -44,7 +44,13 @@
                     <li>{{ price_label }}:  {{ currency_symbol }}{{ field.value }}</li>
                 {% endif %}
             {% else %}
-                <li>{{ field.label }}:  {{ field.value|field_to_string }}</li>
+                <li>{{ field.label }}: 
+                {% if field.field.widget.input_type == 'file' %} 
+                  {{ field.data }}
+                {% else %}
+                  {{ field.value|field_to_string }}
+                {% endif %}
+                </li>
             {% endif %}
         {% endfor %}
 

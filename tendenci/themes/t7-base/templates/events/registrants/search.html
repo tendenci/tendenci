@@ -133,7 +133,13 @@
 
                         {% if registrant.custom_reg_form_entry and registrant.non_mapped_field_entries %}
                             {% for entry in registrant.non_mapped_field_entries %}
-                            <div>{{ entry.label }}: {{ entry.value }}</div>
+                            <div>{{ entry.field.label }}:
+                            	{% if entry.is_file %}
+                            		<a href="{{ entry.file_url }}" target="_blank">{{ entry.file_name }}</a>
+                            	{% else %}
+                            		{{ entry.value }}
+                            	{% endif %}
+                            </div>
                             {% endfor %}
                         {% endif %}
 
