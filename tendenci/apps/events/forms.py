@@ -351,9 +351,6 @@ class CustomRegFormForField(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CustomRegFormForField, self).__init__(*args, **kwargs)
-        # add option ("FileField", _("File upload"))
-        if settings.CUSTOM_REG_FILE_UPLOAD_ENABLED:
-            self.fields['field_type'].choices += (("FileField", _("File upload")),)
 
     def clean(self):
         cleaned_data = super(CustomRegFormForField, self).clean()
