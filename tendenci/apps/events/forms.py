@@ -2623,7 +2623,7 @@ class RegistrantBaseFormSet(BaseFormSet):
                         raise forms.ValidationError(_(f"{email} is NOT your email address."))       
                 
                 # check if this email address is already used
-                if Registrant.objects.filter(user__email__iexact=email,
+                if not self.edit_mode and Registrant.objects.filter(user__email__iexact=email,
                                              registration__event=self.event,
                                              cancel_dt__isnull=True).exists():
                     if self.user.is_authenticated and email == self.user.email:
