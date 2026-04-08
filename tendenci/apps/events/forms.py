@@ -498,7 +498,8 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
             #     field_args["validators"] = [FileValidator(allowed_extensions=['.jpg'])]
             self.fields[field_key] = field_class(**field_args)
             if field.field_type == 'FileField':
-                self.fields[field_key].validators = [FileValidator()]
+                # set max_size to 5M
+                self.fields[field_key].validators = [FileValidator(max_size=5242880)]
                 if self.edit_mode:
                     if 'initial' in kwargs and kwargs['initial'][field_key]:
                         # show the current file if exists
