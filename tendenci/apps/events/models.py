@@ -2673,7 +2673,8 @@ class EventFile(models.Model):
                              ('inactive', _('Inactive'))
                              )
     name = models.CharField(max_length=250)
-    file = models.FileField(upload_to=eventfile_directory)
+    file = models.FileField(upload_to=eventfile_directory, blank=True, null=True)
+    file_url = models.URLField(_("File URL"), blank=True, default='')
     guid = models.CharField(max_length=40)
 
     description = models.TextField(blank=True)

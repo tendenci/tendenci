@@ -114,7 +114,7 @@ SEARCH_CATEGORIES = (
 
 
 class EventFileForm(FormControlWidgetMixin, BetterModelForm):
-    label = _('Add a File')
+    label = _('Upload a File or add a URL')
     class Meta:
         model = EventFile
 
@@ -122,6 +122,7 @@ class EventFileForm(FormControlWidgetMixin, BetterModelForm):
             'name',
             'file_type',
             'file',
+            'file_url',
             'tags',
             'status_detail'
         )
@@ -129,21 +130,28 @@ class EventFileForm(FormControlWidgetMixin, BetterModelForm):
             'name',
             'file_type',
             'file',
+            'file_url',
             'tags',
             'status_detail'
             ]
 
-        # fieldsets = [(_('Add a File'), {
+        # fieldsets = [('', {
         #               'fields': [
         #                   'name',
         #                   'file_type',
-        #                   'file',                  
-        #                   'tags',
+        #
         #               ],
-        #               'legend': ''
+        #               'legend': '',
+        #               }),
+        #              ('', {
+        #               'fields': [
+        #                   'file',
+        #                   'file_url',                  
+        #               ],
+        #               'legend': _('Upload a file or add a URL'),
         #               }),
         #              (_('Administrator Only'), {
-        #               'fields': ['status_detail'],
+        #               'fields': ['tags', 'status_detail'],
         #               'classes': ['admin-only'],
         #             })]
 
@@ -155,6 +163,13 @@ class EventFileForm(FormControlWidgetMixin, BetterModelForm):
             if ('Audio', 'Audio') in self.fields['file_type'].widget.choices:
                 self.fields['file_type'].widget.choices.remove(('Audio', 'Audio'))
 
+    def clean(self):
+        cleaned_data = super(EventFileForm, self).clean()
+        file = self.cleaned_data.get('file', None)
+        file_url = self.cleaned_data.get('file_url', None)
+        if not file and not file_url:
+            raise forms.ValidationError("Please either upload a file or add a file URL.")
+        return cleaned_data
 
 class EventFileSearchForm(FormControlWidgetMixin, forms.Form):
     file_type = forms.ChoiceField(
