@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from operator import or_
 from functools import reduce
 import json
+from collections import OrderedDict
 
 from django.db import models
 from django.db.models import Q
@@ -12,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.utils import timezone
 
-from tendenci.apps.events.models import Event, Registrant, Type
+from tendenci.apps.events.models import Event, Registrant, Type, Speaker
 from tendenci.apps.events.utils import (registration_earliest_time,
                                         registration_has_started,
                                         registration_has_ended,)
@@ -477,6 +478,7 @@ class ListEventsNode(ListNode):
         start_dt = ''
         registered_only = False
         registration_open = False
+        event_id = None
 
         randomize = False
 
@@ -513,6 +515,13 @@ class ListEventsNode(ListNode):
             if 'user' in context:
                 if isinstance(context['user'], User):
                     user = context['user']
+
+        if 'event_id' in self.kwargs:
+            try:
+                event_id = Variable(self.kwargs['event_id'])
+                event_id = event_id.resolve(context)
+            except:
+                pass
 
         if 'limit' in self.kwargs:
             try:
@@ -607,6 +616,9 @@ class ListEventsNode(ListNode):
         if start_dt:
             items = items.filter(start_dt__gte=start_dt)
 
+        if event_id:
+            items = items.filter(id=event_id)
+
         # exclude private events
         items = items.filter(enable_private_slug=False)
 
@@ -683,6 +695,8 @@ def list_events(parser, token):
            Use this with a value of true to randomize the items included.
         ``start_dt``
            Specify the date that events should start after to be shown. MUST be in the format 1/20/2013-06:45
+        ``event_id``
+           The event id.
 
     Example::
 
@@ -714,4 +728,40 @@ def list_events(parser, token):
 @register.simple_tag
 def render_json_ld(structured_data):
     return mark_safe(f'<script type="application/ld+json">{json.dumps(structured_data)}</script>')
-    
+
+
+@register.simple_tag(takes_context=True)
+def dict_event_speakers(context, event_id, order_by='name'):
+    """
+    Returns a list of event speakers in an ordered dict, including speakers of sub-events of the event.
+    """
+    try:
+        event_id = int(event_id)
+    except:
+        return None
+    event = Event.objects.filter(id=event_id).first()
+
+    if not event:
+        return None
+
+    speakers = Speaker.objects.filter(Q(event=event) | Q(event__parent=event))
+    speakers = speakers.order_by(order_by)
+    # Make a distinct list of speakers, but we can't filter with distinct
+    # because speakers are individually entered for each event. 
+    # Even though two sub-events have the same speaker in terms of name, there is
+    # no relationship between them and will be treated as two different speakers
+    # by the system. However, they're most likely the same speaker.
+    # For this template tag, we will treat speakers with the same name as the same speaker,
+    # also, store the list of sub-events for this speaker.
+    unique_speakers = OrderedDict()
+    for speaker in speakers:
+        name = speaker.name.strip()
+        sub_event = speaker.event.filter(parent=event, status=True).first()
+        if sub_event:
+            if name not in unique_speakers:
+                unique_speakers[name] = speaker
+                unique_speakers[name].events = [sub_event]
+            else:
+                unique_speakers[name].events.append(sub_event)
+
+    return unique_speakers

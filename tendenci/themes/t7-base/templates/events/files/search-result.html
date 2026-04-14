@@ -14,14 +14,22 @@
    {% endif %}
  
     <div>
+      {% if event_file.file %}
     	{% if event_file.icon %}
             <img class="icon pull-left" style="margin-right: 10px;" src="{{ event_file.icon }}" alt="{{ event_file.name }}" title="{{ event_file.name }}" />
         {% endif %}
         <strong><a href="{% url 'event.file_view' event_file.id %}">{{ event_file.name }}</a></strong>
+      {% endif %}
+      {% if event_file.file_url %}
+         <strong><a href="{{ event_file.file_url }}" rel="noreferrer noopener" target="_blank">{{ event_file.name }} <span class="glyphicon glyphicon-new-window"></span> </a></strong> 
+         
+      {% endif %}
     </div>
 
     <div class="download">
+    	{% if event_file.file %}
         <a href="{% url 'event.file_download' event_file.id %}" title="Download">{% trans 'Download this ' %}{{ event_file.file_type }}</a>
+        {% endif %}
     </div>
     <div class="clearfix">&nbsp;</div>
     <div>
