@@ -756,10 +756,12 @@ def dict_event_speakers(context, event_id, order_by='name'):
     unique_speakers = OrderedDict()
     for speaker in speakers:
         name = speaker.name.strip()
-        if name not in unique_speakers:
-            speaker.events = [speaker.event.first()]
-            unique_speakers[name] = speaker
-        else:
-            unique_speakers[name].events.append(speaker.event.first())
+        sub_event = speaker.event.filter(parent=event, status=True).first()
+        if sub_event:
+            if name not in unique_speakers:
+                unique_speakers[name] = speaker
+                unique_speakers[name].events = [sub_event]
+            else:
+                unique_speakers[name].events.append(sub_event)
 
     return unique_speakers
