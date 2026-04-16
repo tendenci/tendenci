@@ -1,3 +1,10 @@
+### 16.01 [2026-4-15]
+
+* Added the upload option for custom event registration form.
+* Added the URL option to event assets/files.
+* Resolved an issue about user not being able to edit their own registration when the setting "Can Register Again" is False.
+
+
 ### 16.0 [2026-3-30]
 
 * **Breaking Changes: Requires Django 5.2 LTS**. Dropped the support for Django 4.2 LTS, which includes the backwards incompatible changes: Dropped support for Python 3.8 and 3.9. Dropped support for PostgreSQL 13. For migrating T15 sites to T16, please follow the guide in https://tendenci.readthedocs.io/en/latest/upgrade/upgrade-to-tendenci.html.
