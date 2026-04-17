@@ -7,6 +7,7 @@ import phonenumbers
 from PIL import Image
 from dateutil.parser import parse
 from datetime import datetime, time
+import bleach
 
 from decimal import Decimal
 from django.template import Library
@@ -22,6 +23,17 @@ from tendenci.apps.base.utils import strip_entities, strip_html
 from tendenci.apps.site_settings.utils import get_setting
 
 register = Library()
+
+
+@register.filter
+def remove_styles(value):
+    # A "striptags" replacement. It removes html tags but keeps the style tags.
+    # The "striptags" removes <style> tag but doesn't remove
+    # the content between <style> and </style>. As a result, 
+    # it leaves the CSS rules in there, which looks garbled for 
+    # articles created from newsletters that include <style> tags 
+    # with css rules. 
+    return bleach.clean(value, tags=['style'], strip=True)
 
 
 @register.filter
