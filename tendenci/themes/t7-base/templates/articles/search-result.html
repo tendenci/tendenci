@@ -1,3 +1,4 @@
+{% load base_filters %}
 <!-- UNCOMMENT TO APPLY PANELS -->
 
 <article>
@@ -20,7 +21,7 @@
     {% if article.summary %}
     {{ article.summary|striptags|truncatewords:140|safe }}
     {% else %}
-    {{ article.body|striptags|truncatewords:140|safe }}
+    {{ article.body|remove_styles|truncatewords:140|safe }}
     {% endif %}
   </p>
   <!-- </div> -->
