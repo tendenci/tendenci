@@ -55,7 +55,7 @@ xhtml2pdf==0.2.17
 reportlab==4.4.10
 python-magic
 nameparser
-Authlib==1.6.9
+Authlib==1.6.11
 django-admin-rangefilter==0.13.5
 # for forums tests
 django-q2==1.9.0
