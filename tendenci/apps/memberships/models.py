@@ -895,11 +895,13 @@ class MembershipDefault(TendenciBaseModel):
 
     def apply_a_chapter_membership(self, chapter, app, membership_type, request=None):
         """
-        Apply a chapter membership.
+        Apply or renew a chapter membership.
         """
         from tendenci.apps.chapters.models import ChapterMembership
-        
-        if not ChapterMembership.objects.filter(chapter=chapter, user=self.user).exists():
+        chapter_membership = ChapterMembership.objects.filter(chapter=chapter,
+                                                              user=self.user
+                                                              ).order_by('-id').first()
+        if not chapter_membership:
             params = {'chapter': chapter,
                       'app':  app,
                       'user': self.user,
@@ -923,6 +925,13 @@ class MembershipDefault(TendenciBaseModel):
             chapter_membership.save()
             # send email to admin
             chapter_membership.email_admin_join_notice(request)
+        else:
+            # renew this chapter_membership
+            if chapter_membership.get_status() in ['active', 'expired']:
+                renewed_chapter_membership = chapter_membership.renew()
+                renewed_chapter_membership.approve(request_user=request.user)
+                renewed_chapter_membership.email_admin_renew_notice(request)
+            
 
     def auto_apply_chapter_memberships(self, request):
         """
