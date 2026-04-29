@@ -929,8 +929,9 @@ class MembershipDefault(TendenciBaseModel):
             # renew this chapter_membership
             if chapter_membership.get_status() in ['active', 'expired']:
                 renewed_chapter_membership = chapter_membership.renew()
-                renewed_chapter_membership.approve(request_user=request.user)
-                renewed_chapter_membership.email_admin_renew_notice(request)
+                if renewed_chapter_membership:
+                    renewed_chapter_membership.approve(request_user=request.user)
+                    renewed_chapter_membership.email_admin_renew_notice(request)
             
 
     def auto_apply_chapter_memberships(self, request):
