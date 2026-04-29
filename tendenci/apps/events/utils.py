@@ -2477,8 +2477,6 @@ def handle_registration_payment(reg8n, redirect_url_only=False):
         if reg_conf.external_payment_link:
             # email registrant
             reg8n.send_registrant_notification()
-            # email admin
-            email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
             return reg_conf.external_payment_link
 
         return reverse('payment.pay_online', args=[reg8n.invoice.id, reg8n.invoice.guid])
