@@ -1008,7 +1008,7 @@ class ChapterMembership(TendenciBaseModel):
             # Supersede with national membership's expire_dt, if exists
             national_membership = self.national_membership
             if national_membership and national_membership.is_active():
-                if not national_membership.expire_dt or national_membership.expire_dt > self.expire_dt:
+                if not national_membership.expire_dt or national_membership.expire_dt != self.expire_dt:
                     self.expire_dt = national_membership.expire_dt
 
     def group_refresh(self):
@@ -1211,6 +1211,32 @@ class ChapterMembership(TendenciBaseModel):
 
         return False
 
+    def renew(self, request_user=None):
+        """
+        Renew this Chapter membership.
+            - Create new invoice.
+            - Archive old memberships [of same type].
+        """
+        if self.is_pending():
+            dupe = self
+        elif any((self.is_active(), self.is_expired())):
+            dupe = self.copy()
+            dupe.pk = None  # disconnect from db record
+        else:
+            return False
+
+        dupe.status = True
+        dupe.status_detail = 'active'
+
+        dupe.renewal = True
+        if dupe is not self:
+            dupe.renew_from_id = self.id
+
+        dupe.pend()
+        dupe.save()
+
+        return dupe
+
     def is_forever(self):
         """
         Returns boolean.
@@ -1285,6 +1311,42 @@ class ChapterMembership(TendenciBaseModel):
         """
         return self.status_detail.lower()
 
+    def copy(self):
+        """
+        Return a copy of the chapter_membership object
+        """
+        chapter_membership = ChapterMembership()
+
+        ignore_fields = [
+            'id',
+            'guid',
+            'renewal',
+            'renew_dt',
+            'renew_from_id',
+            'payment_method',
+            'payment_received_dt',
+            'invoice',
+            'status',
+            'status_detail',
+            'approved',
+            'approve_dt',
+            'approved_user',
+            'rejected',
+            'rejected_dt',
+            'rejected_user'
+        ]
+
+        field_names = [
+            field.name
+            for field in self.__class__._meta.fields
+            if field.name not in ignore_fields
+        ]
+
+        for name in field_names:
+            if hasattr(self, name):
+                setattr(chapter_membership, name, getattr(self, name))
+        return chapter_membership
+
     def in_grace_period(self):
         """ Returns True if a member's expiration date has passed but status detail is still active.
         """
@@ -1338,7 +1400,8 @@ class ChapterMembership(TendenciBaseModel):
 
         return notice_sent
 
-    def email_admin_join_notice(self, request):
+    def email_admin_join_notice(self, request, notie_type='join'):
+        # join or renewal
         # Who should be notified? site admin or chapter leaders?
         if self.chapter.contact_email:
             recipients = self.chapter.contact_email.split(',')
@@ -1348,14 +1411,21 @@ class ChapterMembership(TendenciBaseModel):
                             'module', 'chapters',
                             'chapterrecipients')
         if recipients:
+            if notie_type == 'join':
+                notice_name = 'chapter_membership_joined_to_admin'
+            else:
+                notice_name = 'chapter_membership_renewed_to_admin'
             send_email_notification(
-                    'chapter_membership_joined_to_admin',
+                    notice_name,
                     recipients,
                     {'chapter_membership': self,
                         'app': self.app,
                         'request': request
                     })
-                
+
+    def email_admin_renew_notice(self, request, notie_type='renew'):
+        self.email_admin_join_notice(request, notie_type=notie_type)
+             
 
     def auto_update_paid_object(self, request, payment):
         """

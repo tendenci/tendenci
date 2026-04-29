@@ -1062,17 +1062,9 @@ def chapter_membership_renew(request, chapter_membership_id=0,
             # log an event
             EventLog.objects.log(instance=chapter_membership)
 
-            # TODO: email notification to admin
-            # Who should be notified? site admin or chapter leaders?
-            send_email_notification(
-                    'chapter_membership_renewed_to_admin',
-                    get_notice_recipients(
-                        'module', 'chapters',
-                        'chapterrecipients'),
-                    {'chapter_membership': chapter_membership,
-                        'app': app,
-                        'request': request
-                    })
+            # send notification to admin
+            # chapter leaders or site admin?
+            chapter_membership.email_admin_renew_notice(request)
 
             # handle online payment
             if chapter_membership.payment_method.is_online and \
