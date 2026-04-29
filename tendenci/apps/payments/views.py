@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.utils.translation import gettext
 from django.contrib import messages
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.forms import PaymentSearchForm
@@ -31,8 +32,9 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
         if not 'confirmed' in request.GET:
             # Redirect to the page to get the confirm
             redirect_url = request.get_full_path()
-            redirect_url = redirect_url.replace('payonline', 'payonline-pre')
-            return HttpResponseRedirect(redirect_url)
+            if url_has_allowed_host_and_scheme(url=redirect_url, allowed_hosts={request.get_host()}):
+                redirect_url = redirect_url.replace('payonline', 'payonline-pre')
+                return HttpResponseRedirect(redirect_url)
 
     # tender the invoice
     if not invoice.is_tendered:
