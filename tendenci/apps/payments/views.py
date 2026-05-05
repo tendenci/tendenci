@@ -31,10 +31,21 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
     if get_setting('module', 'payments', 'requires_confirm'):
         if not 'confirmed' in request.GET:
             # Redirect to the page to get the confirm
-            redirect_url = request.get_full_path()
-            if url_has_allowed_host_and_scheme(url=redirect_url, allowed_hosts={request.get_host()}):
-                redirect_url = redirect_url.replace('payonline', 'payonline-pre')
-                return HttpResponseRedirect(redirect_url)
+            if merchant_account:
+                if guid:
+                    args = (merchant_account, invoice_id, guid)
+                else:
+                    args = (merchant_account, invoice_id)
+            else:
+                if guid:
+                    args = (invoice_id, guid)
+                else:
+                    args = (invoice_id,)
+            redirect_url = reverse('payment.pay_online_pre', args=args)
+            query_string = request.GET.urlencode()
+            if query_string:
+                redirect_url = f'{redirect_url}?{query_string}'
+            return HttpResponseRedirect(redirect_url)
 
     # tender the invoice
     if not invoice.is_tendered:
