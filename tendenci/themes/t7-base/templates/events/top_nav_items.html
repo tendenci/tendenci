@@ -127,12 +127,14 @@
                         </li>
                     {% endif %}
                     
-                    {% if request.user.is_authenticated %}
+                    {% if request.user.is_superuser %}
+                    {% if MODULE_EVENTS_ENABLEASSETS %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'event.files_search' %}">{% trans "Event Files" %}</a>
                             </span>
                         </li>
+                    {% endif %}
                     {% endif %}
                     
 
@@ -182,11 +184,13 @@
                         </li>
                         
                         {% if request.user.is_superuser %}
+                        {% if MODULE_EVENTS_ENABLEASSETS %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url "event.files_display" app_object.id %}">{% trans "View Event files" %}</a>
                             </span>
                         </li>
+                        {% endif %}
                         {% endif %}
 
                         {% if app_object.nested_events_enabled and app_object.parent %}
