@@ -160,8 +160,10 @@ class EventFileForm(FormControlWidgetMixin, BetterModelForm):
         super().__init__(*args, **kwargs)
         self.fields['file'].validators = [FileValidator()]
         if not settings.ALLOW_MP3_UPLOAD:
-            if ('Audio', 'Audio') in self.fields['file_type'].widget.choices:
-                self.fields['file_type'].widget.choices.remove(('Audio', 'Audio'))
+            if ('Audio', 'Audio') in self.fields['file_type'].choices:
+                choices = list(self.fields['file_type'].choices)
+                choices.remove(('Audio', 'Audio'))
+                self.fields['file_type'].choices = choices
 
     def clean(self):
         cleaned_data = super(EventFileForm, self).clean()
