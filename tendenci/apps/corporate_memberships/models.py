@@ -1217,6 +1217,15 @@ class CorpMembership(TendenciBaseModel):
                                        })
                         GroupMembership.objects.create(**opt)
 
+                    # add new member to the default group
+                    default_group_name = get_setting('module', 'users', 'defaultusergroup').strip()
+                    if default_group_name:
+                        [group] = Group.objects.filter(Q(name__iexact=default_group_name)
+                                                       | Q(label__iexact=default_group_name))[:1] or [None]
+                        # no need to check if group.is_member because group.add_user will check it
+                        if group:
+                            group.add_user(membership.user)
+
         return membership
 
     def approve_join(self, request, **kwargs):
