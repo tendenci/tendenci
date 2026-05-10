@@ -1740,7 +1740,10 @@ class MembershipDefault(TendenciBaseModel):
                                module_tax_rate_use_regions=get_setting('module', 'memberships', 'taxrateuseregions'))
 
             invoice.subtotal = price
-            invoice.total = price + invoice.tax + invoice.tax_2
+            if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added':
+                invoice.total = price + invoice.tax + invoice.tax_2
+            else: #tax included
+                invoice.total = price
             invoice.balance = invoice.total
 
             if self.renewal:

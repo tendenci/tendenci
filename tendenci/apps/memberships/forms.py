@@ -1347,11 +1347,17 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         if self.membership_app.include_tax:
             if (get_setting('module', 'invoices', 'taxrateuseregions') \
                 or get_setting('module', 'memberships', 'taxrateuseregions')):
-                self.fields['membership_type'].help_text = f'Tax will be applied based on your area'
+                if get_setting('module', 'invoices', 'taxmodel') == 'Tax Included':
+                    self.fields['membership_type'].help_text = f'Tax has been applied based on your area'
+                else: #tax added
+                    self.fields['membership_type'].help_text = f'Tax will be applied based on your area'
             else:
                 if self.membership_app.tax_rate:
                     tax_rate = self.membership_app.tax_rate * 100
-                    self.fields['membership_type'].help_text = f'{tax_rate:3.2f}% tax will be applied'
+                    if get_setting('module', 'invoices', 'taxmodel') == 'Tax Included':
+                        self.fields['membership_type'].help_text = f'(Includes {tax_rate:3.2f}% tax)'
+                    else: #tax added
+                        self.fields['membership_type'].help_text = f'{tax_rate:3.2f}% tax will be applied'
 
         if multiple_membership:
             self.fields['membership_type'].widget = forms.widgets.CheckboxSelectMultiple(
