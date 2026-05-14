@@ -13,7 +13,7 @@ authors = [
 ]
 description = "Tendenci - The Open Source Association Management System (AMS)"
 readme = "README.md"
-license = { file = "LICENSE" }
+license-files = ["LICENSE"]
 classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
