@@ -1,4 +1,13 @@
-### 16.01 [2026-4-15]
+### 16.11 [2026-5-13]
+
+* Updated membership renewal to auto-renew chapter membership when the setting "Auto Apply Chapter Memberships" is turned on.
+* Resolved the issue regarding event registration confirmation not being sent for events with external payment.
+* Fixed the issue about new members who are auto-joined with their corp membership not being added to the default group.
+* Fixed some format issues on membership details print view for printer.
+* Other bugfixes.
+
+
+### 16.1 [2026-4-15]
 
 * Added the upload option for custom event registration form.
 * Added the URL option to event assets/files.

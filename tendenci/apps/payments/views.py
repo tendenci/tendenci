@@ -42,9 +42,6 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
                 else:
                     args = (invoice_id,)
             redirect_url = reverse('payment.pay_online_pre', args=args)
-            query_string = request.GET.urlencode()
-            if query_string:
-                redirect_url = f'{redirect_url}?{query_string}'
             return HttpResponseRedirect(redirect_url)
 
     # tender the invoice

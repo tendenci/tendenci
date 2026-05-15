@@ -21,7 +21,7 @@
     {% if article.summary %}
     {{ article.summary|striptags|truncatewords:140|safe }}
     {% else %}
-    {{ article.body|remove_styles|truncatewords:140|safe }}
+    {{ article.body|striptags|truncatewords:140|safe }}
     {% endif %}
   </p>
   <!-- </div> -->
