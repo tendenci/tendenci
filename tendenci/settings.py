@@ -144,7 +144,7 @@ TEMPLATES = [
         'django.staticfiles': 'django.templatetags.static',
       },
       'builtins': [
-        'tendenci.apps.theme.templatetags.static',
+        'tendenci.apps.theme.templatetags.tendenci_static',
         'django.templatetags.i18n',
       ],
     },
