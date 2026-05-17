@@ -22,7 +22,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.apps.files.utils import generate_image_cache_key
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 register = Library()
 

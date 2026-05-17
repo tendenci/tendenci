@@ -67,7 +67,6 @@ def invoice_pdf(request, invoice):
 
 def link_callback(uri, rel):
     """Convert HTML URIs to absolute system paths"""
-    #from tendenci.apps.theme.templatetags.static import static
     import os
     from django.conf import settings
     if settings.MEDIA_URL and uri.startswith(settings.MEDIA_URL):
@@ -249,11 +248,11 @@ def get_invoice_data(invoice, field_names):
         data['Status'] = f'Balance: {currency_symbol}{invoice.balance}'
 
     return data
-    
+
 def iter_invoices(invoices, ):
     currency_symbol = get_setting('site', 'global', 'currencysymbol')
     field_names = ['Date', 'Invoice No.', 'Member/User', 'Item', f'Total Amount ({currency_symbol})', 'Taxes', f'balance ({currency_symbol})', 'Status']
-    
+
     writer = csv.DictWriter(Echo(), fieldnames=field_names)
     # write headers
     yield writer.writerow(dict(zip(field_names, field_names)))
@@ -261,7 +260,7 @@ def iter_invoices(invoices, ):
     for invoice in invoices:
         yield writer.writerow(get_invoice_data(invoice, field_names))
 
-    
-    
-    
-    
+
+
+
+

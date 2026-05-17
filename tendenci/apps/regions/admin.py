@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.regions.models import Region
 from tendenci.apps.regions.forms import RegionForm
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class RegionAdmin(TendenciBaseModelAdmin):

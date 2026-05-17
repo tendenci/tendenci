@@ -29,7 +29,7 @@ from tendenci.apps.memberships.utils import get_selected_demographic_field_names
 from tendenci.apps.memberships.middleware import ExceededMaxTypes
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 from tendenci.apps.event_logs.models import EventLog
 
 
@@ -173,7 +173,7 @@ def export_selected(modeladmin, request, queryset, export_fields='main_fields'):
     ids = queryset.values_list('id', flat=True)
     ids = ','.join([str(id) for id in ids])
     identifier = int(ttime.time())
-    run_membership_export(request, 
+    run_membership_export(request,
                           identifier=identifier,
                           export_fields=export_fields,
                           ids=ids)
@@ -212,7 +212,7 @@ def print_selected_invoices(modeladmin, request, queryset):
 
     ct_m = ContentType.objects.get_for_model(MembershipDefault)
     ct_mset = ContentType.objects.get_for_model(MembershipSet)
-    invoices = Invoice.objects.filter(Q(object_type=ct_m, object_id__in=queryset.values_list('id', flat=True)) | 
+    invoices = Invoice.objects.filter(Q(object_type=ct_m, object_id__in=queryset.values_list('id', flat=True)) |
                                       Q(object_type=ct_mset, object_id__in=queryset.values_list('membership_set_id', flat=True)))
     template_name = "invoices/print_invoices.html"
 

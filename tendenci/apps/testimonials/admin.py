@@ -9,7 +9,7 @@ from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.testimonials.models import Testimonial
 from tendenci.apps.testimonials.forms import TestimonialForm
 from tendenci.apps.perms.utils import update_perms_and_save
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class TestimonialAdmin(TendenciBaseModelAdmin):

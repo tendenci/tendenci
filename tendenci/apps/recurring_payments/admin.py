@@ -11,7 +11,7 @@ from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):

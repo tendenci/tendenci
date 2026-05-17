@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.boxes.models import Box
 from tendenci.apps.boxes.forms import BoxForm
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class BoxAdmin(TendenciBaseModelAdmin):

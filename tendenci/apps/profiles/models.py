@@ -26,7 +26,7 @@ from tendenci.apps.base.models import BaseImport, BaseImportData
 from tendenci.apps.base.utils import correct_filename
 from tendenci.libs.abstracts.models import TendenciBaseModel, UnsavedOneToOne
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.industries.models import Industry
 from tendenci.apps.perms.object_perms import ObjectPermission
@@ -171,7 +171,7 @@ class Profile(Person):
     first_responder = models.BooleanField(_('first responder'), default=False)
     agreed_to_tos = models.BooleanField(_('agrees to tos'), default=False)
     original_username = models.CharField(max_length=50)
-    
+
     # social media links
     linkedin = models.URLField(_('LinkedIn'), blank=True, default='')
     facebook = models.URLField(_('Facebook'), blank=True, default='')
@@ -419,7 +419,7 @@ class Profile(Person):
         if self.photo and self._original_photo:
             if self._original_photo != self.photo:
                 # remove existing photo from storage
-                self.delete_old_photo()  
+                self.delete_old_photo()
 
         # try:
         #     from tendenci.apps.campaign_monitor.utils import update_subscription
@@ -528,7 +528,7 @@ class Profile(Person):
 
         if user2_compare == self.user:
             return True
-        
+
         if self.membership and self.membership.corp_profile_id:
             corp_profile_id = self.membership.corp_profile_id
             if user2_compare.corpmembershiprep_set.filter(corp_profile_id=corp_profile_id).exists():
@@ -594,7 +594,7 @@ class Profile(Person):
     def chapter_membership(self):
         [chapter_membership] = self.chapter_memberships[:1] or [None]
         return chapter_membership
-    
+
     def chapter_memberships(self):
         return self.user.chaptermembership_set.exclude(
                status_detail='archive').order_by('chapter', '-create_dt')
@@ -603,7 +603,7 @@ class Profile(Person):
         """
         Names of chapters that this user is a member of.
         """
-        return ', '.join([m.chapter.title for m in self.chapter_memberships()]) 
+        return ', '.join([m.chapter.title for m in self.chapter_memberships()])
 
     def get_chapters(self):
         """
@@ -630,7 +630,7 @@ class Profile(Person):
                 membership.set_member_number()
                 membership.save()
             self.member_number = membership.member_number
-            # this is an active membership, check if it's user profile is active. 
+            # this is an active membership, check if it's user profile is active.
             if self.status_detail != 'active':
                 self.status_detail = 'active'
 
@@ -815,7 +815,7 @@ class Profile(Person):
 
         if not default_storage.exists(self.photo.name):
             return None
-            
+
         im = Image.open(default_storage.open(self.photo.name))
         im.thumbnail((size, size))
 

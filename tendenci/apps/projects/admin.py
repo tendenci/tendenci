@@ -6,7 +6,7 @@ from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 from tendenci.apps.projects.models import (
     Project,
     ProjectManager,
@@ -111,7 +111,7 @@ class DocumentsAdmin(admin.StackedInline):
 
 class ProjectAdmin(TendenciBaseModelAdmin):
     list_display = ['edit_link', 'view_on_site', 'project_name',
-                    'group_link', 'featured', 'start_dt', 'end_dt', 
+                    'group_link', 'featured', 'start_dt', 'end_dt',
                     'tags', 'status_detail']
     list_filter = ['status_detail']
     search_fields = ['project_name', 'company_name']
@@ -204,7 +204,7 @@ class ProjectAdmin(TendenciBaseModelAdmin):
             return ''
         group_url = reverse('group.detail',args=[instance.group.slug])
         group_name = instance.group.name
-                            
+
         return f'<a href="{group_url}" title="{group_name}">{group_name}</a>'
     group_link.short_description = _('group')
     group_link.admin_order_field = 'group'

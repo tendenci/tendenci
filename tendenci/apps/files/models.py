@@ -31,7 +31,7 @@ from tendenci.apps.files.managers import FileManager
 from tendenci.apps.base.utils import correct_filename
 from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 def file_directory(instance, filename):
@@ -136,7 +136,7 @@ class File(TendenciBaseModel):
             self.guid = str(uuid.uuid4())
             created = True
         self.f_type = self.type()
-        
+
         if not self.group:
             self.group_id = get_default_group()
 

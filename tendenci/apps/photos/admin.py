@@ -7,7 +7,7 @@ from tendenci.apps.photos.models import PhotoCategory
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import update_perms_and_save
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 class PhotoAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'update_dt', 'create_dt', 'tags', 'position')

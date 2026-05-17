@@ -18,7 +18,7 @@ from django.utils.html import strip_tags
 from tagging.models import TaggedItem
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import update_perms_and_save
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class TendenciBaseModelAdmin(admin.ModelAdmin):

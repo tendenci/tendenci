@@ -18,7 +18,7 @@ from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.forms import ProfileAdminForm
 from tendenci.apps.profiles.utils import iter_users
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class ProfileAdmin(TendenciBaseModelAdmin):
@@ -196,7 +196,7 @@ class MyUserAdmin(UserAdmin):
         if hasattr(obj, 'profile'):
             link_icon = static('images/icons/external_16x16.png')
             return f'<a href="{obj.profile.get_absolute_url()}" title="{obj.first_name} {obj.last_name}"><img src="{link_icon}" alt="external_16x16" title="external icon"/></a>'
-    
+
     def show_member_number(self, instance):
         [member_number] = Profile.objects.filter(user=instance).values_list('member_number', flat=True)[:1] or ['']
         return member_number

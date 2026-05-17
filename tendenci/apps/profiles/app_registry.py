@@ -3,7 +3,7 @@ from django.utils.translation import gettext as _
 from tendenci.apps.registry.sites import site
 from tendenci.apps.registry.base import PeopleRegistry, lazy_reverse
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class ProfileRegistry(PeopleRegistry):
