@@ -1,6 +1,6 @@
 import os
 from django.conf import settings
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 DEFAULT_CONFIG = getattr(settings, 'TINYMCE_DEFAULT_CONFIG',
         {'theme': "simple", 'relative_urls': False})

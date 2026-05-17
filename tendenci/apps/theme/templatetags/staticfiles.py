@@ -1,6 +1,6 @@
 from warnings import warn
 from django import template
-from .static import do_static as _do_static
+from .tendenci_static import do_static as _do_static
 
 register = template.Library()
 
