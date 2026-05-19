@@ -22,6 +22,8 @@
     <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">
         <a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">{% trans "View Submitted Application" %}</a>
         (<span style="color:{% if membership.is_pending %}red{% else %}green{% endif %};">{{ membership.get_status }}</span>)
+        <br />
+        <a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}?print">{% trans "Print View" %}</a>
     </a></div>
 
     {% if membership.is_pending %}

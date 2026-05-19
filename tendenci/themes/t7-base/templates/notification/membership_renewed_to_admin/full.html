@@ -21,7 +21,10 @@
     <div>{{ membership.user.email }}</div>
     <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_current_membership_url }}">
         {% trans "View Submitted Application" %}
-    </a></div>
+    	</a>
+    	<br />
+        <a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}?print">{% trans "Print View" %}</a>
+    </div>
 
     <div>========================</div>
 
