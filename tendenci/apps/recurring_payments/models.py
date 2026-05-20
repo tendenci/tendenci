@@ -477,7 +477,7 @@ class RecurringPayment(models.Model):
         inv.status = True
 
         if self.taxable and self.tax_rate:
-            inv.assign_tax([(amount, self.tax_rate)], self.user, module_tax_rate_use_regions=get_setting('module', 'memberships', 'taxrateuseregions'))
+            inv.assign_tax([(amount, self.tax_rate)], self.user, module_tax_rate_use_regions=get_setting('module', 'invoices', 'taxrateuseregions'))
         else:
             inv.tax_exempt = 1
             inv.tax = 0
