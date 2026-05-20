@@ -2514,6 +2514,7 @@ class Notice(models.Model):
         else:
             directory_url = ''
             directory_edit_url = ''
+        membership_url = membership.get_absolute_url()
         context.update({
             'first_name': membership.user.first_name,
             'last_name': membership.user.last_name,
@@ -2526,12 +2527,13 @@ class Notice(models.Model):
             'total_amount': total_amount,
             'payment_method': payment_method_name,
             'referer_url': '{}{}?next={}'.format(global_setting('siteurl'), reverse('auth_login'), membership.referer_url),
-            'membership_link': '{}{}'.format(global_setting('siteurl'), membership.get_absolute_url()),
-            'view_link': '{}{}'.format(global_setting('siteurl'), membership.get_absolute_url()),
+            'membership_link': '{}{}'.format(global_setting('siteurl'), membership_url),
+            'view_link': '{}{}'.format(global_setting('siteurl'), membership_url),
+            'print_link': '{}{}?print'.format(global_setting('siteurl'), membership_url),
             'invoice_link': '{}{}'.format(global_setting('siteurl'), invoice_link),
             'directory_url': directory_url,
             'directory_edit_url': directory_edit_url,
-            'renew_link': '{}{}'.format(global_setting('siteurl'), membership.get_absolute_url()),
+            'renew_link': '{}{}'.format(global_setting('siteurl'), membership_url),
             'link_to_setup_auto_renew': '{}{}'.format(global_setting('siteurl'), reverse('memberships.auto_renew_setup', args=[membership.user.id] )),
             'corporate_membership_notice': corporate_msg,
         })
