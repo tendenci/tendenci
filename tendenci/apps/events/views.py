@@ -4062,12 +4062,19 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
 
     if year <= 1900 or year >= 9999:
         raise Http404
+    if month < 1 or month > 12:
+        raise Http404
+    if day < 1 or day > 31:
+        raise Http404
 
     calendar.setfirstweekday(calendar.SUNDAY)
     Calendar = calendar.Calendar(calendar.SUNDAY)
     weekdays = calendar.weekheader(10).split()
 
-    tgtdate = date(year, month, day)
+    try:
+        tgtdate = date(year, month, day)
+    except ValueError:
+        raise Http404
     week_dates = get_week_days(tgtdate, Calendar)
 
     next_date = week_dates[6] + timedelta(days=1)
