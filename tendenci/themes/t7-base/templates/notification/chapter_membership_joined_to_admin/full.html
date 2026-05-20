@@ -16,7 +16,7 @@
     {% if chapter_membership.membership_type.price %}
         <div style="margin-bottom:20px;">{% trans "Membership Type:"%} {{ chapter_membership.membership_type }} {{ chapter_membership.membership_type.price|format_currency }}</div>
     {% else %}
-        <div style="margin-bottom:20px;">{% trans "Membership Type:"%} {{ membership_type }} (Free)</div>
+        <div style="margin-bottom:20px;">{% trans "Membership Type:"%} {{ chapter_membership.membership_type  }} (Free)</div>
     {% endif %}
 
     <div>{{ chapter_membership.user.first_name }} {{ chapter_membership.user.last_name }}</div>

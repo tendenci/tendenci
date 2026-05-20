@@ -937,6 +937,7 @@ def get_notice_token_help_text(notice=None):
                     'referer_url',
                     'membership_link',
                     'view_link',
+                    'print_link',
                     'invoice_link',
                     'renew_link',
                     'expire_dt',]
