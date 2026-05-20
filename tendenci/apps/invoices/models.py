@@ -184,16 +184,25 @@ class Invoice(models.Model):
                 self.tax_label_2 = region.tax_label_2
             for (price, _) in price_tax_rate_list:
                 if price:
-                    if self.tax_rate:
-                        self.tax += self.tax_rate * price
-                    if region.tax_rate_2:
-                        self.tax_2 += self.tax_rate_2 * price
+                    if get_setting('module', 'invoices', 'taxmodel') == 'Tax Included':
+                        # If present, assumes both taxes are calculated from the base price then added e.g. GST and PST used in some Canadian provinces.
+                        if self.tax_rate:
+                            self.tax +=  self.tax_rate * price / (1 + self.tax_rate + self.tax_rate_2)
+                        if self.tax_rate_2:
+                            self.tax_2 += self.tax_rate_2 * price / (1 + self.tax_rate + self.tax_rate_2)
+                    else: #tax added
+                        if self.tax_rate:
+                            self.tax += self.tax_rate * price
+                        if self.tax_rate_2:
+                            self.tax_2 += self.tax_rate_2 * price
         else:
             for (price, default_tax_rate) in price_tax_rate_list:
                 if price and default_tax_rate:
                     self.tax_rate = default_tax_rate
-                    self.tax += self.tax_rate * price
-
+                    if get_setting('module', 'invoices', 'taxmodel') == 'Tax Included':
+                        self.tax += price - price / (1 + self.tax_rate)
+                    else:
+                        self.tax += self.tax_rate * price
         return self
 
     def bill_to_user(self, user):

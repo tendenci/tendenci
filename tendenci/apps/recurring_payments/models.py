@@ -477,13 +477,16 @@ class RecurringPayment(models.Model):
         inv.status = True
 
         if self.taxable and self.tax_rate:
-            inv.tax = self.tax_rate * amount
+            inv.assign_tax([(amount, self.tax_rate)], self.user, module_tax_rate_use_regions=get_setting('module', 'invoices', 'taxrateuseregions'))
         else:
             inv.tax_exempt = 1
             inv.tax = 0
 
         inv.subtotal = amount
-        inv.total = inv.subtotal + inv.tax
+        if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added':
+            inv.total = inv.subtotal + inv.tax
+        else: #tax included
+            inv.total = inv.subtotal
 
         inv.balance = inv.total
         inv.estimate = True
