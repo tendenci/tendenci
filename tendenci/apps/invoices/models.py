@@ -189,7 +189,7 @@ class Invoice(models.Model):
                         if self.tax_rate:
                             self.tax +=  self.tax_rate * price / (1 + self.tax_rate + self.tax_rate_2)
                         if self.tax_rate_2:
-                            self.tax_2 += self.tax_2 * price / (1 + self.tax_rate + self.tax_rate_2)
+                            self.tax_2 += self.tax_rate_2 * price / (1 + self.tax_rate + self.tax_rate_2)
                     else: #tax added
                         if self.tax_rate:
                             self.tax += self.tax_rate * price
