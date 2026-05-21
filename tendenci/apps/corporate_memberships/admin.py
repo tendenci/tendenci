@@ -780,6 +780,45 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
     list_filter = ['is_dues_rep', 'is_member_rep']
 
     ordering = ['corp_profile']
+    actions = [
+        'export_selected',
+    ]
+
+    def iter_reps(self, corp_reps):
+        import csv
+        from tendenci.apps.base.utils import Echo
+        field_names = ['ID', 'Corp Profile', 'Rep Name', 'Rep Email', 'Is dues rep?', 'Is member rep?']
+        writer = csv.DictWriter(Echo(), fieldnames=field_names)
+        # write headers
+        yield writer.writerow(dict(zip(field_names, field_names)))
+    
+        for corp_rep in corp_reps:
+            rep_name = corp_rep.user.get_full_name()
+            if not rep_name:
+                rep_name = corp_rep.user.username
+            data_dict = {'ID': corp_rep.id,
+                         'Corp Profile': corp_rep.corp_profile.name,
+                         'Rep Name': rep_name,
+                         'Rep Email': corp_rep.user.email,
+                         'Is dues rep?': corp_rep.is_dues_rep,
+                         'Is member rep?': corp_rep.is_member_rep
+                         }
+            yield writer.writerow(data_dict)
+
+    def export_selected(self, request, queryset):
+        """
+        Export selected reps.
+        """
+        import time as ttime
+        from django.http import StreamingHttpResponse
+    
+        response = StreamingHttpResponse(
+            streaming_content=(self.iter_reps(queryset)),
+            content_type='text/csv',)
+        response['Content-Disposition'] = f'attachment;filename=corp_reps_export_{ttime.time()}.csv'
+        return response
+    
+    export_selected.short_description = 'Export selected'
 
     def get_queryset(self, request):
         """
