@@ -1,5 +1,6 @@
 {% extends "corporate_memberships/base.html" %}
 {% load corporate_memberships_tags %}
+{% load base_filters %}
 
 {% block title %}{% trans "Corporate Membership Approve / Disapprove" %}{% endblock %}
 
@@ -29,8 +30,18 @@
              {% if corporate_membership.is_pending %}
              <span class="text-danger">({% trans 'Pending' %})</span>
              {% endif %}
+             
          </td>
      </tr>
+     
+     {% if invoice %}
+     	<tr>
+     		<td class="field-label block-inline">{% trans 'Invoice:' %}</td>
+     	    <td class="block-inline">
+     	    	{% trans 'Balance Due' %}: {{ invoice.balance|format_currency }} (<a href="{% url "invoice.view" invoice.pk invoice.guid %}" target="_blank">{% trans 'View' %}</a>)
+     	    </td>
+     	</tr>
+    {% endif %}
      <tr>
          <td class="field-label block-inline">
              {{ field_labels.address }}:

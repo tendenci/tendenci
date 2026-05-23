@@ -219,11 +219,12 @@ def approve_selected(modeladmin, request, queryset):
 
     for corp_membership in corp_memberships:
         if corp_membership.renewal:
-            corp_membership.approve_renewal(request)
+            corp_membership.approve_renewal(request, mark_invoice_as_paid=True)
         else:
             corp_membership.approve_join(request,
                                 **{'create_new': True,
-                              'assign_to_user': None})
+                              'assign_to_user': None,
+                              'mark_invoice_as_paid': True})
 
 approve_selected.short_description = 'Approve selected'
 

@@ -1229,6 +1229,7 @@ class CorpMembership(TendenciBaseModel):
         return membership
 
     def approve_join(self, request, **kwargs):
+        mark_invoice_as_paid = kwargs.get('mark_invoice_as_paid', False)
         self.approved = True
         self.approved_denied_dt = timezone.now()
         if not request.user.is_anonymous:
@@ -1237,7 +1238,12 @@ class CorpMembership(TendenciBaseModel):
         self.status_detail = 'active'
         self.save()
         # mark invoice as paid
-        self.mark_invoice_as_paid(request.user)
+        if mark_invoice_as_paid:
+            self.mark_invoice_as_paid(request.user)
+        else:
+            if self.invoice and not self.invoice.is_tendered:
+                # just tender it
+                self.invoice.tender(request.user)
 
         created, username, password = self.handle_anonymous_creator(**kwargs)
 
@@ -1338,6 +1344,7 @@ class CorpMembership(TendenciBaseModel):
         if self.renewal and self.status_detail in [
                         'pending', 'paid - pending approval']:
             request_user = request.user
+            mark_invoice_as_paid = kwargs.get('mark_invoice_as_paid', False)
             # 2) approve corp_membership
             self.approved = True
             self.approved_denied_dt = timezone.now()
@@ -1424,7 +1431,12 @@ class CorpMembership(TendenciBaseModel):
                 memb_entry.save()
 
             # mark invoice as paid
-            self.mark_invoice_as_paid(request.user)
+            if mark_invoice_as_paid:
+                self.mark_invoice_as_paid(request.user)
+            else:
+                if self.invoice and not self.invoice.is_tendered:
+                    # just tender it
+                    self.invoice.tender(request.user)
 
             if get_setting('module', 'corporate_memberships', 'notificationson'):
                 if Notice.objects.filter(notice_time='attimeof',

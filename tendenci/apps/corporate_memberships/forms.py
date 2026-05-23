@@ -1089,6 +1089,7 @@ class CorpApproveForm(forms.Form):
         choices=[],
         widget=forms.RadioSelect,
         )
+    mark_invoice_as_paid = forms.BooleanField(initial=True, required=False)
 
     def suggested_users(self, first_name='', last_name='', email=''):
         """

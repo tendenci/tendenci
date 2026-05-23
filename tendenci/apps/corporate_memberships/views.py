@@ -1155,19 +1155,26 @@ def corpmembership_approve(request, id,
 
     approve_form = CorpApproveForm(request.POST or None,
                                    corporate_membership=corporate_membership)
+    invoice = corporate_membership.invoice
+    if invoice.balance <= 0:
+        del approve_form.fields['mark_invoice_as_paid']
+
     if request.method == "POST":
         if approve_form.is_valid():
+            mark_invoice_as_paid = approve_form.cleaned_data.get('mark_invoice_as_paid', False)
+            
             msg = ''
             if 'approve' in request.POST:
                 if corporate_membership.renewal:
                     # approve the renewal
-                    corporate_membership.approve_renewal(request)
+                    corporate_membership.approve_renewal(request, mark_invoice_as_paid=mark_invoice_as_paid)
                     msg = """Corporate membership "%s" renewal has been APPROVED.
                         """ % corporate_membership
                 else:
                     # approve join
                     params = {'create_new': True,
-                              'assign_to_user': None}
+                              'assign_to_user': None,
+                              'mark_invoice_as_paid': mark_invoice_as_paid}
                     if approve_form.fields and \
                     corporate_membership.anonymous_creator:
                         user_pk = int(approve_form.cleaned_data['users'])
@@ -1212,6 +1219,7 @@ def corpmembership_approve(request, id,
                'indiv_renew_entries': indiv_renew_entries,
                'new_expiration_dt': new_expiration_dt,
                'approve_form': approve_form,
+               'invoice': invoice,
                }
     return render_to_resp(request=request, template_name=template, context=context)
 
