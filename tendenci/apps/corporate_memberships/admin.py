@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.contrib.admin import SimpleListFilter
 from django.utils.translation import gettext_lazy as _
 from django.urls import path, re_path
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.safestring import mark_safe
 from django.contrib import messages
+from django.contrib.admin import SimpleListFilter
 
 from tendenci.apps.corporate_memberships.models import (
     CorporateMembershipType,
@@ -762,13 +762,79 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
     show_transcripts.short_description = 'Transcripts'
 
 
+class MemberStatusFilter(SimpleListFilter):
+    title = 'Membership Status Detail'
+    parameter_name = 'status_detail'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('active', 'Active'),
+            ('pending', 'Pending'),
+            ('expired', 'Expired'),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value in ('active', 'pending', 'expired'):
+            value = None
+        if not value:
+            return queryset
+        queryset = queryset.filter(corp_profile__id__in=CorpMembership.objects.filter(
+            status=True, status_detail=value).values_list('corp_profile_id', flat=True))
+        #print(queryset.query)
+        return queryset
+
 class CorpMembershipRepAdmin(admin.ModelAdmin):
     model = CorpMembershipRep
     list_display = ['id', 'profile', 'rep_name', 'rep_email',
-                    'is_dues_rep', 'is_member_rep']
-    list_filter = ['is_dues_rep', 'is_member_rep']
+                    'is_dues_rep', 'is_member_rep', 'expiration_date', 'status_detail']
+    list_filter = ['is_dues_rep', 'is_member_rep', MemberStatusFilter]
 
     ordering = ['corp_profile']
+
+    actions = [
+        'export_selected',
+    ]
+
+    def iter_reps(self, corp_reps):
+        import csv
+        from tendenci.apps.base.utils import Echo
+        field_names = ['ID', 'Corp Profile', 'Rep Name', 'Rep Email', 
+                       'Is dues rep?', 'Is member rep?',
+                       'Expiration Date', 'Status detail']
+        writer = csv.DictWriter(Echo(), fieldnames=field_names)
+        # write headers
+        yield writer.writerow(dict(zip(field_names, field_names)))
+    
+        for corp_rep in corp_reps:
+            rep_name = corp_rep.user.get_full_name()
+            if not rep_name:
+                rep_name = corp_rep.user.username
+            data_dict = {'ID': corp_rep.id,
+                         'Corp Profile': corp_rep.corp_profile.name,
+                         'Rep Name': rep_name,
+                         'Rep Email': corp_rep.user.email,
+                         'Is dues rep?': corp_rep.is_dues_rep,
+                         'Is member rep?': corp_rep.is_member_rep,
+                         'Expiration Date': self.expiration_date(corp_rep),
+                         'Status detail': self.status_detail(corp_rep)
+                         }
+            yield writer.writerow(data_dict)
+
+    def export_selected(self, request, queryset):
+        """
+        Export selected reps.
+        """
+        import time as ttime
+        from django.http import StreamingHttpResponse
+    
+        response = StreamingHttpResponse(
+            streaming_content=(self.iter_reps(queryset)),
+            content_type='text/csv',)
+        response['Content-Disposition'] = f'attachment;filename=corp_reps_export_{ttime.time()}.csv'
+        return response
+    
+    export_selected.short_description = 'Export selected'
 
     def get_queryset(self, request):
         """
@@ -800,6 +866,20 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
         return instance.user.email
     rep_email.short_description = u'Rep Email'
     rep_email.admin_order_field = 'user__email'
+
+    def status_detail(self, instance):
+        corp_membership = instance.corp_profile.corp_membership
+        if corp_membership:
+            return corp_membership.status_detail.capitalize()
+        return ''
+    status_detail.short_description = 'Status Detail'
+    
+    def expiration_date(self, instance):
+        corp_membership = instance.corp_profile.corp_membership
+        if not corp_membership or not corp_membership.expiration_dt:
+            return ''
+        return corp_membership.expiration_dt.strftime('%Y-%m-%d')
+    expiration_date.short_description = _('Expiration Date')
 
 
 admin.site.register(CorpMembership, CorpMembershipAdmin)
