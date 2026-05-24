@@ -7,6 +7,7 @@ from django.urls import path, re_path
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.safestring import mark_safe
 from django.contrib import messages
+from django.contrib.admin import SimpleListFilter
 
 from tendenci.apps.corporate_memberships.models import (
     CorporateMembershipType,
@@ -219,11 +220,12 @@ def approve_selected(modeladmin, request, queryset):
 
     for corp_membership in corp_memberships:
         if corp_membership.renewal:
-            corp_membership.approve_renewal(request)
+            corp_membership.approve_renewal(request, mark_invoice_as_paid=True)
         else:
             corp_membership.approve_join(request,
                                 **{'create_new': True,
-                              'assign_to_user': None})
+                              'assign_to_user': None,
+                              'mark_invoice_as_paid': True})
 
 approve_selected.short_description = 'Approve selected'
 
@@ -773,11 +775,33 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
     show_transcripts.short_description = 'Transcripts'
 
 
+class MemberStatusFilter(SimpleListFilter):
+    title = 'Membership Status Detail'
+    parameter_name = 'status_detail'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('active', 'Active'),
+            ('pending', 'Pending'),
+            ('expired', 'Expired'),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value in ('active', 'pending', 'expired'):
+            value = None
+        if not value:
+            return queryset
+        queryset = queryset.filter(corp_profile__id__in=CorpMembership.objects.filter(
+            status=True, status_detail=value).values_list('corp_profile_id', flat=True))
+        #print(queryset.query)
+        return queryset
+
 class CorpMembershipRepAdmin(admin.ModelAdmin):
     model = CorpMembershipRep
     list_display = ['id', 'profile', 'rep_name', 'rep_email',
-                    'is_dues_rep', 'is_member_rep']
-    list_filter = ['is_dues_rep', 'is_member_rep']
+                    'is_dues_rep', 'is_member_rep', 'expiration_date', 'status_detail']
+    list_filter = ['is_dues_rep', 'is_member_rep', MemberStatusFilter]
 
     ordering = ['corp_profile']
     actions = [
@@ -787,7 +811,9 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
     def iter_reps(self, corp_reps):
         import csv
         from tendenci.apps.base.utils import Echo
-        field_names = ['ID', 'Corp Profile', 'Rep Name', 'Rep Email', 'Is dues rep?', 'Is member rep?']
+        field_names = ['ID', 'Corp Profile', 'Rep Name', 'Rep Email', 
+                       'Is dues rep?', 'Is member rep?',
+                       'Expiration Date', 'Status detail']
         writer = csv.DictWriter(Echo(), fieldnames=field_names)
         # write headers
         yield writer.writerow(dict(zip(field_names, field_names)))
@@ -801,7 +827,9 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
                          'Rep Name': rep_name,
                          'Rep Email': corp_rep.user.email,
                          'Is dues rep?': corp_rep.is_dues_rep,
-                         'Is member rep?': corp_rep.is_member_rep
+                         'Is member rep?': corp_rep.is_member_rep,
+                         'Expiration Date': self.expiration_date(corp_rep),
+                         'Status detail': self.status_detail(corp_rep)
                          }
             yield writer.writerow(data_dict)
 
@@ -850,6 +878,20 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
         return instance.user.email
     rep_email.short_description = 'Rep Email'
     rep_email.admin_order_field = 'user__email'
+
+    def status_detail(self, instance):
+        corp_membership = instance.corp_profile.corp_membership
+        if corp_membership:
+            return corp_membership.status_detail.capitalize()
+        return ''
+    status_detail.short_description = 'Status Detail'
+    
+    def expiration_date(self, instance):
+        corp_membership = instance.corp_profile.corp_membership
+        if not corp_membership or not corp_membership.expiration_dt:
+            return ''
+        return corp_membership.expiration_dt.strftime('%Y-%m-%d')
+    expiration_date.short_description = _('Expiration Date')
 
 
 admin.site.register(CorpMembership, CorpMembershipAdmin)
