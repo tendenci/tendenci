@@ -15,10 +15,11 @@ def remove_old_static_refs_from_templates(apps, schema_editor):
     from tendenci.apps.theme.utils import get_theme_root
     STATIC_LOADER = '{% load static %}'
     dir_path = get_theme_root()
-    file_glob = f'{dir_path}/templates/*.html'
+    file_glob = f'{dir_path}/templates/**/*.html'
     for file in glob.glob(file_glob, recursive=True):
+        print(f'checking file [{file}]')
         with open(file) as f:
-            content = f.read
+            content = f.read()
             if STATIC_LOADER in content:
                 content = content.replace(STATIC_LOADER, '')
                 with open(file, 'w') as f:
