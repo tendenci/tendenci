@@ -1,5 +1,3 @@
-
-
 import math
 
 from django.contrib.auth.decorators import login_required
@@ -39,7 +37,7 @@ username_field = compat.get_username_field()
 Paginator, pure_pagination = compat.get_paginator_class()
 
 
-class PaginatorMixin(object):
+class PaginatorMixin:
     def get_paginator(self, queryset, per_page, orphans=0, allow_empty_first_page=True, **kwargs):
         kwargs = {}
         if pure_pagination:
@@ -47,14 +45,14 @@ class PaginatorMixin(object):
         return Paginator(queryset, per_page, orphans=0, allow_empty_first_page=True, **kwargs)
 
 
-class RedirectToLoginMixin(object):
+class RedirectToLoginMixin:
     """ mixin which redirects to settings.LOGIN_URL if the view encounters an PermissionDenied exception
         and the user is not authenticated. Views inheriting from this need to implement
         get_login_redirect_url(), which returns the URL to redirect to after login (parameter "next")
     """
     def dispatch(self, request, *args, **kwargs):
         try:
-            return super(RedirectToLoginMixin, self).dispatch(request, *args, **kwargs)
+            return super().dispatch(request, *args, **kwargs)
         except PermissionDenied:
             if not request.user.is_authenticated:
                 from django.contrib.auth.views import redirect_to_login
@@ -67,13 +65,13 @@ class RedirectToLoginMixin(object):
         return '/'
 
 
-class IsEnabledMixin(object):
+class IsEnabledMixin:
     """
     Mixin to check if forums is enabled.
     """
     @method_decorator(is_enabled('forums'))
     def dispatch(self, request, *args, **kwargs):
-        return super(IsEnabledMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class IndexView(IsEnabledMixin, generic.ListView):
@@ -82,7 +80,7 @@ class IndexView(IsEnabledMixin, generic.ListView):
     context_object_name = 'categories'
 
     def get_context_data(self, **kwargs):
-        ctx = super(IndexView, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         categories = ctx['categories']
         for category in categories:
             category.forums_accessed = perms.filter_forums(self.request.user, category.forums.filter(parent=None))
@@ -101,27 +99,27 @@ class CategoryView(IsEnabledMixin, RedirectToLoginMixin, generic.DetailView):
     def get_login_redirect_url(self):
         # returns super.get_object as there is a conflict with the perms in CategoryView.get_object
         # Would raise a PermissionDenied and never redirect
-        return super(CategoryView, self).get_object().get_absolute_url()
+        return super().get_object().get_absolute_url()
 
     def get_queryset(self):
         return Category.objects.all()
 
     def get_object(self, queryset=None):
-        obj = super(CategoryView, self).get_object(queryset)
+        obj = super().get_object(queryset)
         if not perms.may_view_category(self.request.user, obj):
             raise PermissionDenied
         return obj
 
     def get_context_data(self, **kwargs):
-        ctx = super(CategoryView, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx['category'].forums_accessed = perms.filter_forums(self.request.user, ctx['category'].forums.filter(parent=None))
         ctx['categories'] = [ctx['category']]
         return ctx
 
     def get(self, *args, **kwargs):
         if defaults.PYBB_NICE_URL and (('id' in kwargs) or ('pk' in kwargs)):
-            return redirect(super(CategoryView, self).get_object(), permanent=defaults.PYBB_NICE_URL_PERMANENT_REDIRECT)
-        return super(CategoryView, self).get(*args, **kwargs)
+            return redirect(super().get_object(), permanent=defaults.PYBB_NICE_URL_PERMANENT_REDIRECT)
+        return super().get(*args, **kwargs)
 
 
 class ForumView(IsEnabledMixin, RedirectToLoginMixin, PaginatorMixin, generic.ListView):
@@ -132,13 +130,13 @@ class ForumView(IsEnabledMixin, RedirectToLoginMixin, PaginatorMixin, generic.Li
 
     def dispatch(self, request, *args, **kwargs):
         self.forum = self.get_forum(**kwargs)
-        return super(ForumView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_login_redirect_url(self):
         return self.forum.get_absolute_url()
 
     def get_context_data(self, **kwargs):
-        ctx = super(ForumView, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx['forum'] = self.forum
         if self.request.user.is_authenticated:
             try:
@@ -173,7 +171,7 @@ class ForumView(IsEnabledMixin, RedirectToLoginMixin, PaginatorMixin, generic.Li
     def get(self, *args, **kwargs):
         if defaults.PYBB_NICE_URL and 'pk' in kwargs:
             return redirect(self.forum, permanent=defaults.PYBB_NICE_URL_PERMANENT_REDIRECT)
-        return super(ForumView, self).get(*args, **kwargs)
+        return super().get(*args, **kwargs)
 
 
 class ForumSubscriptionView(IsEnabledMixin, LoginRequiredMixin, generic.FormView):
@@ -187,7 +185,7 @@ class ForumSubscriptionView(IsEnabledMixin, LoginRequiredMixin, generic.FormView
         return self.forum.get_absolute_url()
 
     def get_form_kwargs(self, **kwargs):
-        kw = super(ForumSubscriptionView, self).get_form_kwargs(**kwargs)
+        kw = super().get_form_kwargs(**kwargs)
         self.get_objects()
         kw['instance'] = self.forum_subscription
         kw['user'] = self.request.user
@@ -195,7 +193,7 @@ class ForumSubscriptionView(IsEnabledMixin, LoginRequiredMixin, generic.FormView
         return kw
 
     def get_context_data(self, **kwargs):
-        ctx = super(ForumSubscriptionView, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx['forum'] = self.forum
         ctx['forum_subscription'] = self.forum_subscription
         return ctx
@@ -203,26 +201,26 @@ class ForumSubscriptionView(IsEnabledMixin, LoginRequiredMixin, generic.FormView
     def form_valid(self, form):
         result = form.process()
         if result == 'subscribe-all':
-            msg = _((
+            msg = _(
                 'You subscribed to all existant topics on this forum '
                 'and you will auto-subscribed to all its new topics.'
-            ))
+            )
         elif result == 'delete':
-            msg = _((
+            msg = _(
                 'You won\'t be notified anymore each time a new topic '
                 'is posted on this forum.'
-            ))
+            )
         elif result == 'delete-all':
-            msg = _((
+            msg = _(
                 'You have been unsubscribed to all current topics in this forum and you won\'t'
                 ' be auto-subscribed anymore for each new topic posted on this forum.'
-            ))
+            )
         else:
-            msg = _((
+            msg = _(
                 'You will be notified each time a new topic is posted on this forum.'
-            ))
+            )
         messages.success(self.request, msg, fail_silently=True)
-        return super(ForumSubscriptionView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_objects(self):
         self.forum = get_object_or_404(Forum.objects.all(), pk=self.kwargs['pk'])
@@ -247,7 +245,7 @@ class LatestTopicsView(IsEnabledMixin, PaginatorMixin, generic.ListView):
         return qs.order_by('-updated', '-id')
 
 
-class PybbFormsMixin(object):
+class PybbFormsMixin:
 
     post_form_class = PostForm
     admin_post_form_class = AdminPostForm
@@ -301,7 +299,7 @@ class TopicView(IsEnabledMixin, RedirectToLoginMixin, PaginatorMixin, PybbFormsM
                     first_unread_topic = self.topic.head
                 return HttpResponseRedirect(reverse('pybb:post', kwargs={'pk': first_unread_topic.id}))
 
-        return super(TopicView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         if not perms.may_view_topic(self.request.user, self.topic):
@@ -323,7 +321,7 @@ class TopicView(IsEnabledMixin, RedirectToLoginMixin, PaginatorMixin, PybbFormsM
         return qs
 
     def get_context_data(self, **kwargs):
-        ctx = super(TopicView, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
 
         if self.request.user.is_authenticated:
             self.request.user.is_moderator = perms.may_moderate_topic(self.request.user, self.topic)
@@ -396,14 +394,14 @@ class TopicView(IsEnabledMixin, RedirectToLoginMixin, PaginatorMixin, PybbFormsM
     def get(self, *args, **kwargs):
         if defaults.PYBB_NICE_URL and 'pk' in kwargs:
             return redirect(self.topic, permanent=defaults.PYBB_NICE_URL_PERMANENT_REDIRECT)
-        return super(TopicView, self).get(*args, **kwargs)
+        return super().get(*args, **kwargs)
 
 
 class PostEditMixin(PybbFormsMixin):
 
     @method_decorator(get_atomic_func())
     def post(self, request, *args, **kwargs):
-        return super(PostEditMixin, self).post(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
     def get_form_class(self):
         if perms.may_post_as_admin(self.request.user):
@@ -413,7 +411,7 @@ class PostEditMixin(PybbFormsMixin):
 
     def get_context_data(self, **kwargs):
 
-        ctx = super(PostEditMixin, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
 
         if perms.may_create_poll(self.request.user) and 'pollformset' not in kwargs:
             ctx['pollformset'] = self.get_poll_answer_formset_class()(
@@ -507,11 +505,11 @@ class AddPostView(IsEnabledMixin, PostEditMixin, generic.CreateView):
 
                 if self.quote and is_ajax(request):
                     return HttpResponse(self.quote)
-        return super(AddPostView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         ip = self.request.META.get('REMOTE_ADDR', '')
-        form_kwargs = super(AddPostView, self).get_form_kwargs()
+        form_kwargs = super().get_form_kwargs()
         form_kwargs.update(dict(topic=self.topic, forum=self.forum, user=self.user,
                            ip=ip, initial={}))
         if getattr(self, 'quote', None):
@@ -523,7 +521,7 @@ class AddPostView(IsEnabledMixin, PostEditMixin, generic.CreateView):
         return form_kwargs
 
     def get_context_data(self, **kwargs):
-        ctx = super(AddPostView, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx['forum'] = self.forum
         ctx['topic'] = self.topic
         return ctx
@@ -544,15 +542,15 @@ class EditPostView(IsEnabledMixin, PostEditMixin, generic.UpdateView):
     @method_decorator(login_required)
     @method_decorator(csrf_protect)
     def dispatch(self, request, *args, **kwargs):
-        return super(EditPostView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
-        form_kwargs = super(EditPostView, self).get_form_kwargs()
+        form_kwargs = super().get_form_kwargs()
         form_kwargs['may_create_poll'] = perms.may_create_poll(self.request.user)
         return form_kwargs
 
     def get_object(self, queryset=None):
-        post = super(EditPostView, self).get_object(queryset)
+        post = super().get_object(queryset)
         if not perms.may_edit_post(self.request.user, post):
             raise PermissionDenied
         return post
@@ -569,7 +567,7 @@ class UserView(generic.DetailView):
         return get_object_or_404(queryset, **{username_field: self.kwargs['username']})
 
     def get_context_data(self, **kwargs):
-        ctx = super(UserView, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx['topic_count'] = Topic.objects.filter(user=ctx['target_user']).count()
         return ctx
 
@@ -582,17 +580,17 @@ class UserPosts(IsEnabledMixin, PaginatorMixin, generic.ListView):
     def dispatch(self, request, *args, **kwargs):
         username = kwargs.pop('username')
         self.user = get_object_or_404(**{'klass': User, username_field: username})
-        return super(UserPosts, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = super(UserPosts, self).get_queryset()
+        qs = super().get_queryset()
         qs = qs.filter(user=self.user)
         qs = perms.filter_posts(self.request.user, qs).select_related('topic')
         qs = qs.order_by('-created', '-updated', '-id')
         return qs
 
     def get_context_data(self, **kwargs):
-        context = super(UserPosts, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['target_user'] = self.user
         return context
 
@@ -605,17 +603,17 @@ class UserTopics(IsEnabledMixin, PaginatorMixin, generic.ListView):
     def dispatch(self, request, *args, **kwargs):
         username = kwargs.pop('username')
         self.user = get_object_or_404(User, username=username)
-        return super(UserTopics, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = super(UserTopics, self).get_queryset()
+        qs = super().get_queryset()
         qs = qs.filter(user=self.user)
         qs = perms.filter_topics(self.user, qs)
         qs = qs.order_by('-updated', '-created', '-id')
         return qs
 
     def get_context_data(self, **kwargs):
-        context = super(UserTopics, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['target_user'] = self.user
         return context
 
@@ -626,7 +624,7 @@ class PostView(IsEnabledMixin, RedirectToLoginMixin, generic.RedirectView):
 
     def dispatch(self, request, *args, **kwargs):
         self.post = self.get_post(**kwargs)
-        return super(PostView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_login_redirect_url(self):
         return self.post.get_absolute_url()
@@ -667,12 +665,12 @@ class ProfileEditView(generic.UpdateView):
             from tendenci.apps.forums.forms import EditProfileForm
             return EditProfileForm
         else:
-            return super(ProfileEditView, self).get_form_class()
+            return super().get_form_class()
 
     @method_decorator(login_required)
     @method_decorator(csrf_protect)
     def dispatch(self, request, *args, **kwargs):
-        return super(ProfileEditView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('pybb:edit_profile')
@@ -767,7 +765,7 @@ class TopicPollVoteView(IsEnabledMixin, PybbFormsMixin, generic.UpdateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(TopicPollVoteView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_class(self):
         return self.get_poll_form_class()

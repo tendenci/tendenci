@@ -75,7 +75,6 @@ urlpatterns += [
 
     re_path(r'^redirects/', include('tendenci.apps.redirects.urls')),
     re_path(r'^mobile/', include('tendenci.apps.mobile.urls')),
-    #re_path(r'^campaign_monitor/', include('tendenci.apps.campaign_monitor.urls')),
     re_path(r'^discounts/', include('tendenci.apps.discounts.urls')),
     re_path(r'^versions/', include('tendenci.apps.versions.urls')),
     re_path(r'^reports/', include('tendenci.apps.reports.urls')),
@@ -190,11 +189,6 @@ urlpatterns += get_url_patterns()
 
 urlpatterns += [re_path(r'^en/$', RedirectView.as_view(url='/accounts/login/', permanent=True)),]
 
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns += [
-        re_path(r'^__debug__/', include(debug_toolbar.urls)),
-    ]
 
 # tack on the pages pattern at the very end so let custom and software patterns
 # happen first

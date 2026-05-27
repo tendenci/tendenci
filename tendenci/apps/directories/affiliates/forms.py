@@ -29,7 +29,7 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         self.to_directory = kwargs.pop('to_directory')
-        super(RequestAssociateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['from_directory_url'].help_text = _('Example: %s/%s/example/') % (
                                         get_setting('site', 'global', 'siteurl'),
                                         get_setting('module', 'directories', 'url'))
@@ -41,7 +41,7 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
         self.fields['request_as'].queryset = affiliate_cats_queryset
 
     def clean(self):
-        self.cleaned_data = super(RequestAssociateForm, self).clean()
+        self.cleaned_data = super().clean()
         from_directory_url = self.cleaned_data['from_directory_url']
         request_as = self.cleaned_data['request_as']
         
@@ -72,7 +72,7 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
         """
         Save the request form and send email notifications
         """
-        self.instance = super(RequestAssociateForm, self).save(*args, **kwargs)
+        self.instance = super().save(*args, **kwargs)
         [affiliate_request] = AffiliateRequest.objects.filter(
             to_directory=self.to_directory,
             from_directory=self.from_directory,

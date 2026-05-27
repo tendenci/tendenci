@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand
 
 from tendenci.apps.site_settings.models import Setting

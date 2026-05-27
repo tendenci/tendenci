@@ -11,7 +11,7 @@ class SettingAdmin(admin.ModelAdmin):
     )
 
     def queryset(self, request):
-        qs = super(SettingAdmin, self).queryset(request)
+        qs = super().queryset(request)
         if request.user.is_superuser:
             return qs
         return qs.filter(client_editable=True)

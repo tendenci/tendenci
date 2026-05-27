@@ -1,5 +1,3 @@
-
-from builtins import str
 import os
 from datetime import timedelta, datetime
 
@@ -9,6 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.base.http import Http403
 
@@ -117,7 +116,7 @@ def search(request, template_name="resumes/search.html"):
         elif search_method == 'contains':
             search_type = '__icontains'
 
-        search_filter = {'%s%s' % (search_criteria,
+        search_filter = {'{}{}'.format(search_criteria,
                                    search_type): search_text}
         resumes = resumes.filter(**search_filter)
 
@@ -128,7 +127,7 @@ def search(request, template_name="resumes/search.html"):
 
     EventLog.objects.log(**{
         'event_id' : 354000,
-        'event_data': '%s searched by %s' % ('Resume', request.user),
+        'event_data': '{} searched by {}'.format('Resume', request.user),
         'description': '%s searched' % 'Resume',
         'user': request.user,
         'request': request,
@@ -184,7 +183,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
                 resume.status_detail = 'pending'
 
             # set up the expiration time based on requested duration
-            now = datetime.now()
+            now = timezone.now()
             resume.expiration_dt = now + timedelta(days=resume.requested_duration)
 
             resume = update_perms_and_save(request, form, resume)
@@ -326,7 +325,7 @@ def approve(request, id, template_name="resumes/approve.html"):
     resume = get_object_or_404(Resume, pk=id)
 
     if request.method == "POST":
-        resume.activation_dt = datetime.now()
+        resume.activation_dt = timezone.now()
         resume.allow_anonymous_view = True
         resume.status = True
         resume.status_detail = 'active'

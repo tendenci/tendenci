@@ -1,7 +1,7 @@
-
 from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -89,7 +89,7 @@ class Command(BaseCommand):
         kwargs = {'site_url': get_setting('site', 'global', 'siteurl'),
                   'site_name': get_setting('site', 'global', 'sitedisplayname')}
         
-        now = datetime.now()
+        now = timezone.now()
         today_tuple = (datetime(now.year, now.month, now.day, 0, 0, 0),
                        datetime(now.year, now.month, now.day, 23, 59, 59))
 

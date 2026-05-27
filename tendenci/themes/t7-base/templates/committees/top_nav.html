@@ -3,7 +3,7 @@
 
 {% block nav_icon_url %}{% static 'famfamfam/icons/group_gear.png' %}{% endblock %}
 
-{% block nav_label %}{% trans 'Committees' %}{% endblock %}
+{% block nav_label %}{{ MODULE_COMMITTEES_LABEL_PLURAL }}{% endblock %}
 
 {% block current_app %}
     {% if committee %}

@@ -1,6 +1,7 @@
+{% load event_filters %}
 {% with registrant.credits_by_sub_event as sub_events_credits %}
 {% if sub_events_credits %}
-{% if sub_events_credits|length > 1 or registrant.event.has_any_child_events %}
+{% if sub_events_credits|show_cert_second_page or registrant.event.has_any_child_events %}
 <div class="certificate credits">
   <div class="row heading">
     <div class="title col-md-12">

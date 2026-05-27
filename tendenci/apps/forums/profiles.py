@@ -1,5 +1,3 @@
-# coding=utf-8
-from builtins import str
 from urllib.parse import urlencode
 import hashlib
 from django.conf import settings
@@ -27,7 +25,7 @@ class PybbProfile(models.Model):
     Abstract class for user profile, site profile should be inherted from this class
     """
 
-    class Meta(object):
+    class Meta:
         abstract = True
         permissions = (
             ("block_users", "Can block any user"),
@@ -49,7 +47,7 @@ class PybbProfile(models.Model):
 
     def save(self, *args, **kwargs):
         self.signature_html = util._get_markup_formatter()(self.signature)
-        super(PybbProfile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def avatar_url(self):

@@ -35,7 +35,7 @@
 
         <div class="notice-log-wrap">
         <h2><a href="{% url "corporate_membership.notice.log.view" log.id%}" title="{% trans 'View log recap' %}">{{ log.id }}</a>
-        <a href="{% url "admin:memberships_notice_change" log.notice.id %}" title="{% trans 'View notice' %}">{{ log.notice.notice_name }}</a></h2>
+        <a href="{% url "admin:corporate_memberships_notice_change" log.notice.id %}" title="{% trans 'View notice' %}">{{ log.notice.notice_name }}</a></h2>
           <div class="notice-log">
                   <div><b>{% trans "Sent Date" %}</b>: {{ log.notice_sent_dt|date }}</div>
                   <div>{% trans "Number emails sent: " %}<b>{{ log.num_sent }}</b></div>

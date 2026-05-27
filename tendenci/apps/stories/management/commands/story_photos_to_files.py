@@ -1,4 +1,3 @@
-
 import os
 import shutil
 import subprocess
@@ -26,14 +25,14 @@ class Command(BaseCommand):
                 photo = story.photo
                 file = photo.file
 
-            except (ValueError, IOError):
+            except (ValueError, OSError):
                 file = None
 
             if file:
                 src = photo.path
                 dest = photo.path.replace(settings.MEDIA_ROOT + '/stories', settings.MEDIA_ROOT + '/files/stories')
                 if src != dest:
-                    print("Moving %s to %s" % (src, dest))
+                    print("Moving {} to {}".format(src, dest))
                     dir = os.path.dirname(dest)
                     if not os.path.exists(dir):
                         os.makedirs(dir)
@@ -41,7 +40,7 @@ class Command(BaseCommand):
                     shutil.move(src, dest)
                     story.photo.save(dest.replace(settings.MEDIA_ROOT + '/files/stories/', ''), File(open(dest)))
                     story.save()
-                print("Creating StoryPhoto %s for %s" % (dest, story.title))
+                print("Creating StoryPhoto {} for {}".format(dest, story.title))
                 image = StoryPhoto(
                     creator = story.creator,
                     creator_username = story.creator_username,

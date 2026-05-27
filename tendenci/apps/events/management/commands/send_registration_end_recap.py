@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand
 
 
@@ -30,7 +29,7 @@ class Command(BaseCommand):
                 money_outstanding = event.money_outstanding
                 all_registrants = event.registrants()
                 registrants_with_balance = event.registrants(with_balance=True)
-                print('Sending email to admins for event %s.' % (event, ))
+                print('Sending email to admins for event {}.'.format(event))
                 send_email_notification(
                     'event_registration_end_recap',
                     email_list,

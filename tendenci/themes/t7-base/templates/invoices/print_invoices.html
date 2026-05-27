@@ -1,0 +1,81 @@
+{% extends "invoices/base-print.html" %}
+{% load invoice_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }} {% trans 'Invoices' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/invoices.css' %}?v=2.3">
+<style>
+.page-sep{
+    	border-top: 3px dashed #ccc;
+    }
+@media print {
+    .new-page {
+        page-break-before: always;
+    }
+    .page-sep, #print-tbn{
+    	display: none;
+    }
+    a {
+		text-decoration: none !important;
+	}
+	a[href]:after {
+    content: none !important;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+{% if back_link %}
+<div><a href="{{ back_link }}">&laquo; {% trans "Back" %}</a></div>
+{% endif %}
+{% if invoices %}
+    <div id="print-tbn" class="text-right">
+	<button type="button" class="btn btn-info btn-lg" onclick="window.print();">
+	<span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</button>
+	</div>
+{% endif %}
+{% for invoice in invoices %}
+  <div class="{% if forloop.counter0 == 0 %}first-new-page{% else %}new-page{% endif %}">
+  {% if invoice.region and invoice.region.invoice_header %}
+  {{ invoice.region.invoice_header|safe  }}
+  {% else %}
+  {% include "invoices/include/default_invoice_header.html" with obj=invoice.get_object obj_name=invoice.get_object_name %}
+  {% endif %}
+  
+  {% include "invoices/include/invoice_view_display.html" with obj=invoice.get_object obj_name=invoice.get_object_name %}
+
+  <div class="invoice-table">
+    <table class="table table-tendenci-reports" border="0" cellspacing="0" cellpadding="0">
+      <tr class="invoice-table-header">
+        <td>{% trans 'Description' %}</td>
+        <td class="td-right">{% trans 'Line Amount' %}</td>
+      </tr>
+      {% invoice_object_display request invoice %}
+    </table>
+  </div>
+
+  <div class="invoice-total-wrap">
+    <div class="invoice-total">
+      {% invoice_total_display request invoice %}
+    </div>
+    {% if invoice.is_void %}
+    <div class="void-stamp"><span>VOIDED</span></div>
+    {% endif %}
+  </div>
+  <div style="clear: both"></div>
+  {% if invoice.region and invoice.region.invoice_footer %}
+   {{ invoice.region.invoice_footer|safe  }}
+  {% else %}
+   {% include "invoices/include/default_invoice_footer.html" %}
+  {% endif %}
+ </div> 
+ <hr class="page-sep">
+{% endfor %}
+</div>
+{% endblock %}

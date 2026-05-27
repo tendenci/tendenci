@@ -28,7 +28,7 @@ class BoxForm(TendenciBaseForm):
             )
 
     def __init__(self, *args, **kwargs):
-        super(BoxForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:

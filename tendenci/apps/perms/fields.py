@@ -33,8 +33,8 @@ def group_choices():
     choices = []
     if groups:
         for g in groups:
-            choices.append(('%s_%s' % ('view', g.pk), g.name))
-            choices.append(('%s_%s' % ('change', g.pk), g.name))
+            choices.append(('{}_{}'.format('view', g.pk), g.name))
+            choices.append(('{}_{}'.format('change', g.pk), g.name))
         return tuple(choices)
     return choices
 
@@ -87,9 +87,9 @@ def groups_with_perms(instance):
     object_perms = ObjectPermission.objects.filter(**filters)
     for perm in object_perms:
         if 'view' in perm.codename:
-            group_perms.append('%s_%s' % ('view', perm.group.pk))
+            group_perms.append('{}_{}'.format('view', perm.group.pk))
         if 'change' in perm.codename:
-            group_perms.append('%s_%s' % ('change', perm.group.pk))
+            group_perms.append('{}_{}'.format('change', perm.group.pk))
 
     return list(set(group_perms))
 
@@ -119,17 +119,17 @@ class UserPermissionWidget(CheckboxSelectMultiple):
         attrs['name'] = name
 
         # set up output attributes
-        html = u''
-        table_rows = u''
+        html = ''
+        table_rows = ''
 
         # Normalize to strings
-        str_values = set([force_str(v) for v in value])
+        str_values = {force_str(v) for v in value}
 
         # setup the id attr
         if has_id:
             id = attrs['id']
         else:
-            id = u''
+            id = ''
 
         # set up the html for output
         html += """
@@ -147,7 +147,7 @@ class UserPermissionWidget(CheckboxSelectMultiple):
             change_input_value = force_str(next(user_perm)[0])
 
             if has_id:
-                final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
+                final_attrs = dict(attrs, id='{}_{}'.format(attrs['id'], i))
 
             cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
             cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
@@ -160,16 +160,16 @@ class UserPermissionWidget(CheckboxSelectMultiple):
                 tr_class = ''
 
             table_rows += """
-                <tr%(tr_class)s>
-                    <td>%(user_label)s</td>
-                    <td>%(view_checkbox)s</td>
-                    <td>%(change_checkbox)s</td>
+                <tr{tr_class}>
+                    <td>{user_label}</td>
+                    <td>{view_checkbox}</td>
+                    <td>{change_checkbox}</td>
                 </tr>
-            """ % {'tr_class': tr_class,
-                   'user_label': conditional_escape(force_str(user_label)),
-                   'view_checkbox': rendered_cb_view,
-                   'change_checkbox': rendered_cb_change
-                  }
+            """.format(tr_class=tr_class,
+                   user_label=conditional_escape(force_str(user_label)),
+                   view_checkbox=rendered_cb_view,
+                   change_checkbox=rendered_cb_change
+                  )
 
         html = html % {
                 'id': id,
@@ -192,7 +192,7 @@ class UserPermissionField(MultipleChoiceField):
             # in database setup we can't get database entries
             # when they do not exist
             pass
-        super(UserPermissionField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class MemberPermissionWidget(CheckboxSelectMultiple):
@@ -204,17 +204,17 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
         attrs['name'] = name
 
         # set up output attributes
-        html = u''
-        table_rows = u''
+        html = ''
+        table_rows = ''
 
         # Normalize to strings
-        str_values = set([force_str(v) for v in value])
+        str_values = {force_str(v) for v in value}
 
         # setup the id attr
         if has_id:
             id = attrs['id']
         else:
-            id = u''
+            id = ''
 
         # set up the html for output
         html += """
@@ -232,7 +232,7 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
             change_input_value = force_str(next(member_perm)[0])
 
             if has_id:
-                final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
+                final_attrs = dict(attrs, id='{}_{}'.format(attrs['id'], i))
 
             cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
             cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
@@ -245,16 +245,16 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
                 tr_class = ''
 
             table_rows += """
-                <tr%(tr_class)s>
-                    <td>%(member_label)s</td>
-                    <td>%(view_checkbox)s</td>
-                    <td>%(change_checkbox)s</td>
+                <tr{tr_class}>
+                    <td>{member_label}</td>
+                    <td>{view_checkbox}</td>
+                    <td>{change_checkbox}</td>
                 </tr>
-            """ % {'tr_class': tr_class,
-                   'member_label': conditional_escape(force_str(member_label)),
-                   'view_checkbox': rendered_cb_view,
-                   'change_checkbox': rendered_cb_change
-                  }
+            """.format(tr_class=tr_class,
+                   member_label=conditional_escape(force_str(member_label)),
+                   view_checkbox=rendered_cb_view,
+                   change_checkbox=rendered_cb_change
+                  )
 
         html = html % {
                 'id': id,
@@ -277,7 +277,7 @@ class MemberPermissionField(MultipleChoiceField):
             # in database setup we can't get database entries
             # when they do not exist
             pass
-        super(MemberPermissionField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class GroupPermissionWidget(CheckboxSelectMultiple):
@@ -289,17 +289,17 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
         attrs['name'] = name
 
         # set up output attributes
-        html = u''
-        table_rows = u''
+        html = ''
+        table_rows = ''
 
         # Normalize to strings
-        str_values = set([force_str(v) for v in value])
+        str_values = {force_str(v) for v in value}
 
         # setup the id attr
         if has_id:
             id = attrs['id']
         else:
-            id = u''
+            id = ''
 
         # set up the html for output
         html += """
@@ -317,7 +317,7 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
             change_input_value = force_str(next(group)[0])
 
             if has_id:
-                final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
+                final_attrs = dict(attrs, id='{}_{}'.format(attrs['id'], i))
 
             cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
             cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
@@ -330,16 +330,16 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
                 tr_class = ''
 
             table_rows += """
-                <tr%(tr_class)s>
-                    <td>%(group_name)s</td>
-                    <td>%(view_checkbox)s</td>
-                    <td>%(change_checkbox)s</td>
+                <tr{tr_class}>
+                    <td>{group_name}</td>
+                    <td>{view_checkbox}</td>
+                    <td>{change_checkbox}</td>
                 </tr>
-            """ % {'tr_class': tr_class,
-                   'group_name': conditional_escape(force_str(group_name)),
-                   'view_checkbox': rendered_cb_view,
-                   'change_checkbox': rendered_cb_change
-                  }
+            """.format(tr_class=tr_class,
+                   group_name=conditional_escape(force_str(group_name)),
+                   view_checkbox=rendered_cb_view,
+                   change_checkbox=rendered_cb_change
+                  )
 
         html = html % {
                 'id': id,
@@ -358,9 +358,9 @@ class GroupPermissionField(MultipleChoiceField):
     def __init__(self, *args, **kwargs):
         kwargs.update(group_perm_options)
         try:
-            kwargs.update({'choices': group_choices()})
+            kwargs.update({'choices': group_choices})
         except:
             # in database setup we can't get database entries
             # when they do not exist
             pass
-        super(GroupPermissionField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)

@@ -1,4 +1,3 @@
-
 from datetime import datetime
 import time
 from decimal import Decimal
@@ -8,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
@@ -19,11 +19,13 @@ from tendenci.apps.recurring_payments.models import (RecurringPayment,
 from tendenci.apps.recurring_payments.authnet.utils import get_token
 from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
 from tendenci.apps.payments.models import Payment
+from tendenci.apps.base.utils import generate_random_password
+
 
 UNSUCCESSFUL_TRANS_CODE = ['E00027']
 
 
-class RecurringPaymentEmailNotices(object):
+class RecurringPaymentEmailNotices:
     def __init__(self):
         self.site_display_name = get_setting('site', 'global', 'sitedisplayname')
         self.site_contact_name = get_setting('site', 'global', 'sitecontactname')
@@ -81,7 +83,7 @@ class RecurringPaymentEmailNotices(object):
                                                                             'dname':self.site_display_name})
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
     def email_admins_transaction_result(self, payment_transaction, success=True, **kwargs):
@@ -106,15 +108,15 @@ class RecurringPaymentEmailNotices(object):
                 self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
                 if not success:
-                    self.email.subject = _('Recurring payment transaction failed on %(dname)s' % {
-                                                                            'dname': self.site_display_name})
+                    self.email.subject = _('Recurring payment transaction failed on {dname}'.format(
+                                                                            dname=self.site_display_name))
                     self.email.priority = 1
                 else:
-                    self.email.subject = _('Recurring payment transaction processed on %(dname)s' % {
-                                                                                'dname': self.site_display_name})
+                    self.email.subject = _('Recurring payment transaction processed on {dname}'.format(
+                                                                                dname=self.site_display_name))
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
     def email_customer_transaction_result(self, payment_transaction, **kwargs):
@@ -139,12 +141,12 @@ class RecurringPaymentEmailNotices(object):
                     self.email.subject = _('Payment Received ')
                 else:
                     self.email.subject = _('Payment Failed ')
-                self.email.subject = _("%(subj)s for %(desc)s " % {
-                            'subj': self.email.subject,
-                            'desc': payment_transaction.recurring_payment.description})
+                self.email.subject = _("{subj} for {desc} ".format(
+                            subj=self.email.subject,
+                            desc=payment_transaction.recurring_payment.description))
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
     def email_admins_no_payment_profile(self, recurring_payment):
@@ -161,12 +163,12 @@ class RecurringPaymentEmailNotices(object):
                                                 })
                 self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
-                self.email.subject = _('Payment method not setup for %(rp)s on %(dname)s' % {
-                                    'rp': recurring_payment ,
-                                    'dname': self.site_display_name})
+                self.email.subject = _('Payment method not setup for {rp} on {dname}'.format(
+                                    rp=recurring_payment ,
+                                    dname=self.site_display_name))
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
     def email_customer_no_payment_profile(self, recurring_payment):
@@ -183,12 +185,12 @@ class RecurringPaymentEmailNotices(object):
                                                 })
                 self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
-                self.email.subject = _('Please update your payment method for %(rp)s on %(dname)s' % {
-                                    'rp': recurring_payment.description,
-                                    'dname': self.site_display_name})
+                self.email.subject = _('Please update your payment method for {rp} on {dname}'.format(
+                                    rp=recurring_payment.description,
+                                    dname=self.site_display_name))
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
     def email_admins_account_disabled(self, recurring_payment, user_by):
@@ -212,7 +214,7 @@ class RecurringPaymentEmailNotices(object):
                        'dname': self.site_display_name})
 
                 self.email.send()
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
 
@@ -247,7 +249,7 @@ def run_a_recurring_payment(rp, verbosity=0):
                                              recurring_payment=rp,
                                              invoice__balance__gt=0,
                                              invoice__is_void=False,
-                                             billing_dt__lte=datetime.now()
+                                             billing_dt__lte=timezone.now()
                                              ).order_by('id')
 
         if rp_invoices:
@@ -324,8 +326,8 @@ def run_a_recurring_payment(rp, verbosity=0):
                         num_processed += 1
 
                     if success:
-                        rp.last_payment_received_dt = datetime.now()
-                        rp_invoice.payment_received_dt = datetime.now()
+                        rp.last_payment_received_dt = timezone.now()
+                        rp_invoice.payment_received_dt = timezone.now()
                         rp_invoice.save()
                         rp.num_billing_cycle_completed += 1
                         print('...Success.')
@@ -464,7 +466,7 @@ def api_rp_setup(data):
         u.username = get_unique_username(u)
         raw_password = data.get('login_password')
         if not raw_password:
-            raw_password = User.objects.make_random_password(length=8)
+            raw_password = generate_random_password(length=8)
         u.set_password(raw_password)
         u.first_name = data.get('first_name', '')
         u.last_name = data.get('last_name', '')
@@ -527,7 +529,7 @@ def api_rp_setup(data):
     rp_invoice.invoice.tender(rp.user)
 
     # 5) create rp transaction
-    now = datetime.now()
+    now = timezone.now()
     payment = Payment()
     payment.payments_pop_by_invoice_user(rp.user,
                                          rp_invoice.invoice,
@@ -623,20 +625,20 @@ def api_add_rp(data):
         try:
             rp.billing_start_dt = dparser.parse(rp.billing_start_dt)
         except:
-            rp.billing_start_dt = datetime.now()
+            rp.billing_start_dt = timezone.now()
     else:
-        rp.billing_start_dt = datetime.now()
+        rp.billing_start_dt = timezone.now()
     if rp.trial_period_start_dt:
         try:
             rp.trial_period_start_dt = dparser.parse(rp.trial_period_start_dt)
         except:
-            rp.trial_period_start_dt = datetime.now()
+            rp.trial_period_start_dt = timezone.now()
 
     if rp.trial_period_end_dt:
         try:
             rp.trial_period_end_dt = dparser.parse(rp.trial_period_end_dt)
         except:
-            rp.trial_period_end_dt = datetime.now()
+            rp.trial_period_end_dt = timezone.now()
 
     rp.payment_amount = Decimal(rp.payment_amount)
 
@@ -672,7 +674,7 @@ def api_add_rp(data):
     u.username = get_unique_username(u)
     raw_password = data.get('password', '')
     if not raw_password:
-        raw_password = User.objects.make_random_password(length=8)
+        raw_password = generate_random_password(length=8)
     u.set_password(raw_password)
     u.first_name = data.get('first_name', '')
     u.last_name = data.get('last_name', '')
@@ -785,7 +787,7 @@ def api_verify_rp_payment_profile(data):
             # make a transaction NOW
             billing_cycle = {'start': rp.billing_start_dt,
                              'end': rp.billing_start_dt + relativedelta(months=rp.billing_frequency)}
-            billing_dt = datetime.now()
+            billing_dt = timezone.now()
             rp_invoice = rp.create_invoice(billing_cycle, billing_dt)
             payment_transaction = rp_invoice.make_payment_transaction(d['valid_cpp_id'])
             if not payment_transaction.status:
@@ -802,7 +804,7 @@ def api_verify_rp_payment_profile(data):
                 if rp.status_detail != 'active':
                     rp.status_detail = 'active'
 
-                now = datetime.now()
+                now = timezone.now()
                 rp.last_payment_received_dt = now
                 rp.num_billing_cycle_completed += 1
                 rp.save()
@@ -810,7 +812,7 @@ def api_verify_rp_payment_profile(data):
                 rp_invoice.save()
 
                 # send out the invoice view page
-                d['receipt_url'] = '%s%s' % (get_setting('site', 'global', 'siteurl'),
+                d['receipt_url'] = '{}{}'.format(get_setting('site', 'global', 'siteurl'),
                                              reverse('recurring_payment.transaction_receipt',
                                                 args=[rp.id,
                                                 payment_transaction.id,

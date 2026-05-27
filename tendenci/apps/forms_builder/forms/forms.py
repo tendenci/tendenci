@@ -1,4 +1,3 @@
-from builtins import str, isinstance
 from datetime import datetime
 from os.path import join
 from uuid import uuid4
@@ -12,12 +11,14 @@ from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.exceptions import ObjectDoesNotExist
-from tendenci.apps.base.utils import validate_email
+from django.utils import timezone
 
+from tendenci.apps.base.utils import validate_email
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.utils import has_perm
 # from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.utils import get_template_list, tcurrency
@@ -66,7 +67,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             self.auto_fields = self.auto_fields.none()
         
         self.session = {} if session is None else session
-        super(FormForForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         def add_fields(form, form_fields):
             instance_fields = {}
@@ -177,7 +178,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 if widget_name == 'selectdatewidget':
                     form.fields[field_key].widget.years = list(range(1920, THIS_YEAR + 10))
                 if widget_name in ('dateinput', 'selectdatewidget', 'datetimeinput'):
-                    form.fields[field_key].initial = datetime.now()
+                    form.fields[field_key].initial = timezone.now()
 
             for field_key, instance_field in instance_fields.items():
                 form.fields[field_key + "-id"] = forms.Field(widget=forms.HiddenInput(attrs={'value': instance_field.id}))
@@ -195,7 +196,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                         pricing_options.append(
                             (pricing.pk, mark_safe(
                                 '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' %
-                                (pricing.pk, form.data.get('custom_price_%s' %pricing.pk, str()), pricing.label, pricing.description)))
+                                (pricing.pk, form.data.get('custom_price_%s' %pricing.pk, ''), pricing.label, pricing.description)))
                         )
                     else:
                         if formforform.recurring_payment:
@@ -289,13 +290,13 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         Create a FormEntry instance and related FieldEntry instances for each
         form field.
         """
-        entry = super(FormForForm, self).save(commit=False)
+        entry = super().save(commit=False)
         entry.form = self.form
 
         # Entry time recorded only when the form is originally submitted.
         # Subsequent edits to the form entry do not alter the entry_time
         if not edit_mode:
-            entry.entry_time = datetime.now()
+            entry.entry_time = timezone.now()
 
         entry.save()
         for field in self.form_fields:
@@ -429,7 +430,7 @@ class FormAdminForm(TendenciBaseForm):
                  )
 
     def __init__(self, *args, **kwargs):
-        super(FormAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['intro'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['response'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -461,7 +462,7 @@ class FormAdminForm(TendenciBaseForm):
             if i > 0:
                 if i > 1:
                     slug = slug.rsplit("-", 1)[0]
-                slug = "%s-%s" % (slug, i)
+                slug = "{}-{}".format(slug, i)
             match = Form.objects.filter(slug=slug)
             if self.instance:
                 match = match.exclude(pk=self.instance.pk)
@@ -475,6 +476,19 @@ class FormForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('draft',_('Draft')),('published',_('Published')),))
+    intro = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label': Form._meta.app_label,
+        'storme_model': Form._meta.model_name.lower()}))
+    response = forms.CharField(required=False, label=_('Confirmation Text'),
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label': Form._meta.app_label,
+        'storme_model': Form._meta.model_name.lower()}), help_text=_("Optionally, after submission, display a page with this text. Alternately, specify a Completion URL."))
+
+    email_text = forms.CharField(required=False, label=_('Email Text to Submitter'),
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label': Form._meta.app_label,
+        'storme_model': Form._meta.model_name.lower()}))
     custom_payment = forms.BooleanField(label=_('Take Payment'), required=False)
 
     # payment_method_choices = list(PaymentMethod.objects.values_list('id','human_name'))
@@ -536,7 +550,7 @@ class FormForm(TendenciBaseForm):
                                     ],
                         'classes': ['permissions'],
                         }),
-                    (_('Administrator Only'), {
+                    (_('Publishing Status'), {
                         'fields': ['status_detail'],
                         'classes': ['admin-only'],
                     }),
@@ -546,9 +560,9 @@ class FormForm(TendenciBaseForm):
                     }),]
 
     def __init__(self, *args, **kwargs):
-        super(FormForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-        if not self.user.profile.is_superuser:
+        if not (self.user.profile.is_superuser or has_perm(self.user,'forms.publish_form')):
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
 
@@ -559,7 +573,7 @@ class FormForm(TendenciBaseForm):
             if i > 0:
                 if i > 1:
                     slug = slug.rsplit("-", 1)[0]
-                slug = "%s-%s" % (slug, i)
+                slug = "{}-{}".format(slug, i)
             match = Form.objects.filter(slug=slug)
             if self.instance:
                 match = match.exclude(pk=self.instance.pk)
@@ -571,7 +585,7 @@ class FormForm(TendenciBaseForm):
 class FormForField(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = Field
-        exclude = ["position", 'remember']
+        exclude = ["summary_position", 'remember']
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -688,7 +702,7 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         if kwargs.get('empty_permitted', True):
             kwargs['use_required_attribute'] = False
-        super(PricingForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # Setup initial values for billing_cycle and billing_dt_select
         # in order to have empty values for extra forms.
         if self.instance.pk:
@@ -697,8 +711,8 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['billing_cycle'].initial = [self.instance.billing_frequency,
                                                     self.instance.billing_period]
         else:
-            self.fields['billing_dt_select'].initial = [0, u'start']
-            self.fields['billing_cycle'].initial = [1, u'month']
+            self.fields['billing_dt_select'].initial = [0, 'start']
+            self.fields['billing_cycle'].initial = [1, 'month']
 
         # Add class for recurring payment fields
         recurring_payment_fields = [
@@ -717,7 +731,7 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
         return self.cleaned_data.get('tax_rate') or 0
 
     def save(self, **kwargs):
-        pricing = super(PricingForm, self).save(**kwargs)
+        pricing = super().save(**kwargs)
         if self.cleaned_data.get('billing_dt_select'):
             dt_select = self.cleaned_data.get('billing_dt_select').split(',')
             pricing.num_days = dt_select[0]

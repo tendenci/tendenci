@@ -107,6 +107,9 @@
   </div>
   {% endfor %}
   </div>
+  {% if not forloop.last %}
+  <hr>
+  {% endif %}
   {% empty %}
   <p>{% trans 'No CEUs available.' %}</p>
   {% endfor %}

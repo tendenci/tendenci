@@ -8,9 +8,9 @@ from tendenci.apps.sitemaps import TendenciSitemap
 from tendenci.apps.resumes.models import Resume
 
 class LatestEntriesFeed(SubFeed):
-    title =  _('%(dname)s Latest Resumes' % {'dname': get_setting('site','global','sitedisplayname')})
+    title =  _('{dname} Latest Resumes'.format(dname=get_setting('site','global','sitedisplayname')))
     link =  "/resumes/"
-    description =  _("Latest Resumes by %(dname)s" % {'dname': get_setting('site','global','sitedisplayname')})
+    description =  _("Latest Resumes by {dname}".format(dname=get_setting('site','global','sitedisplayname')))
 
     def items(self):
         items = Resume.objects.filter(**PUBLIC_FILTER).filter(syndicate=True).order_by('-create_dt')[:20]

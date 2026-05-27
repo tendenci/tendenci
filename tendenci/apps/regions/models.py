@@ -1,4 +1,3 @@
-from builtins import str
 import uuid
 
 from django.db import models
@@ -53,7 +52,7 @@ class Region(OrderingBaseModel, TendenciBaseModel):
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
 
-        super(Region, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def invoice_header_with_absurl(self):
         """

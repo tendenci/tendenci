@@ -121,13 +121,13 @@ def migrate_customized_directories_templates():
                   '{}/templates/directories/edit.html'.format(dir_path)]
     for file_path in files_list:
         if os.path.isfile(file_path):
-            with open(file_path, 'r') as f:
+            with open(file_path) as f:
                 content = f.read()
 
                 # add js link
-                p = r'{0}\s*{1}'.format(re.escape('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}">'),
+                p = r'{}\s*{}'.format(re.escape('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}">'),
                                         re.escape('</script>'))
-                content = re.sub(p, '{0}\n{1}'.format('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}"> </script>',
+                content = re.sub(p, '{}\n{}'.format('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}"> </script>',
                                                       '<script type="text/javascript">\n{% include \'directories/include/get_subcategories.js\' %} \n</script>'),
                                  content)
             with open(file_path, 'w') as f:
@@ -143,12 +143,12 @@ def migrate_customized_directories_templates():
                              ('{% if directory_cat.sub_category %}', '{% if directory.sub_cat %}'),
                              ('sub_category={{ directory_cat.sub_category.id }}">{{ directory_cat.sub_category }}', 'cat={{ directory_cat.pk }}&sub_cat={{ directory.sub_cat.pk }}">{{ directory.sub_cat.name }}'),
                              ]
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
             for (string_to_find, string_to_replace) in find_replace_list:
                 content = content.replace(string_to_find, string_to_replace)
 
-            p = r'{0}\s+{1}\s+{2}'.format(re.escape('<li>'),
+            p = r'{}\s+{}\s+{}'.format(re.escape('<li>'),
                                         re.escape("""<a href="{% url 'category.update' directory.opt_app_label directory.opt_module_name directory.pk %}">{% trans "Edit Categories" %}</a>"""),
                                         re.escape('</li>'))
             content = re.sub(p, '', content)
@@ -162,11 +162,11 @@ def migrate_customized_directories_templates():
         find_replace_list = [('form.category', 'form.cat'),
                              ('form.sub_category', 'form.sub_cat')
                              ]
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
 
             # remove
-            p = r'{0}\s*{1}\s*{2}'.format(re.escape('{% for form.category in form.category_list %}'),
+            p = r'{}\s*{}\s*{}'.format(re.escape('{% for form.category in form.category_list %}'),
                                                 re.escape(' {{ form.category.name }}'),
                                                 re.escape('{% endfor %}'))
             content = re.sub(p, '', content)
@@ -180,7 +180,7 @@ def migrate_customized_directories_templates():
     # directories/search.html
     file_path = '{}/templates/directories/search.html'.format(dir_path)
     if os.path.isfile(file_path):
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
             content = content.replace("var $catAndSubcatSelect = $('#id_category, #id_sub_category')",
                                       "var $catAndSubcatSelect = $('#id_cat, #id_sub_cat')")
@@ -190,9 +190,9 @@ def migrate_customized_directories_templates():
     #directories/top_nav_items.html
     file_path = '{}/templates/directories/top_nav_items.html'.format(dir_path)
     if os.path.isfile(file_path):
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
-            p = r'{0}\s+{1}\s+{2}\s+{3}\s+{4}'.format(
+            p = r'{}\s+{}\s+{}\s+{}\s+{}'.format(
                                         re.escape('<li class="content-item">'),
                                         re.escape('<span class="app-name">'),
                                         re.escape("""<a href="{% url 'category.update' app_object.opt_app_label app_object.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>"""),

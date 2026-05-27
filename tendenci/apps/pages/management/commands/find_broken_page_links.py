@@ -1,4 +1,3 @@
-
 import requests
 from requests.exceptions import (
     MissingSchema, InvalidSchema, InvalidURL, ConnectionError)
@@ -26,7 +25,7 @@ class Command(BaseCommand):
         broken_links = []
         for link in links:
 
-            url = link.get('href', u'')
+            url = link.get('href', '')
 
             try:
                 if url.startswith('/'):

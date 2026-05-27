@@ -1,4 +1,3 @@
-
 import re
 import os
 from django.core.management import call_command
@@ -34,7 +33,7 @@ class Command(BaseCommand):
             # Remove any comments from the file
             statement = re.sub(r"--.*([\n\Z]|$)", "", statement)
             if statement.strip():
-                sql_list.append(statement + u";")
+                sql_list.append(statement + ";")
 
         try:
             cursor = connection.cursor()

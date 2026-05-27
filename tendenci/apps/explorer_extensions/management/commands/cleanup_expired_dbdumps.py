@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
@@ -10,11 +9,11 @@ class Command(BaseCommand):
 
     """
     def handle(self, *args, **options):
-        import datetime
+        from django.utils import timezone
         from tendenci.apps.explorer_extensions.models import DatabaseDumpFile
         print("Start of db dump cleanup")
         for df in DatabaseDumpFile.objects.all():
-            if df.end_dt and df.end_dt < datetime.datetime.now():
+            if df.end_dt and df.end_dt < timezone.now():
                 print("Deleting DB dump file (pk=%d)" % df.id)
                 df.delete()
         print("End of db dump cleanup")

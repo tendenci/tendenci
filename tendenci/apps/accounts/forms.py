@@ -34,7 +34,7 @@ PASSWORD_HELP_TEXT_DEFAULT = _('Password must contain at least 1 number or 1 spe
 
 class SetPasswordCustomForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
-        super(SetPasswordCustomForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['new_password1'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
         self.password_regex = (get_setting('module', 'users', 'password_requirements_regex')).strip()
@@ -80,7 +80,7 @@ class RegistrationCustomForm(RegistrationForm):
     def __init__(self, *args, **kwargs):
         self.allow_same_email = kwargs.pop('allow_same_email', False)
 
-        super(RegistrationCustomForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.password_regex = (get_setting('module', 'users', 'password_requirements_regex')).strip()
         self.password_help_text = (get_setting('module', 'users', 'password_text')).strip()
         if not self.password_regex:
@@ -112,12 +112,12 @@ class RegistrationCustomForm(RegistrationForm):
     def clean_password1(self):
         password1 = self.cleaned_data.get('password1')
         if not re.match(self.password_regex, password1):
-            raise forms.ValidationError(mark_safe(_("The password does not meet the requirements: %(p)s" % {'p': self.password_help_text })))
+            raise forms.ValidationError(mark_safe(_("The password does not meet the requirements: {p}".format(p=self.password_help_text ))))
 
         return password1
 
     def clean(self):
-        cleaned_data = super(RegistrationCustomForm, self).clean()
+        cleaned_data = super().clean()
         if self._errors:
             return
         user = User.objects.filter(email__iexact=cleaned_data['email'])
@@ -183,7 +183,7 @@ class LoginForm(ProhibitNullCharactersValidatorMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
-        super(LoginForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # check if we need to hide the remember me checkbox
         # and set the default value for remember me
         self.hide_remember_me = get_setting('module', 'users', 'usershiderememberme')
@@ -195,7 +195,7 @@ class LoginForm(ProhibitNullCharactersValidatorMixin, forms.Form):
             self.fields['remember'].widget = forms.HiddenInput()
 
     def clean(self):
-        self.cleaned_data = super(LoginForm, self).clean()
+        self.cleaned_data = super().clean()
         if self._errors:
             return
         #invalidate('auth_user')
@@ -225,7 +225,7 @@ class LoginForm(ProhibitNullCharactersValidatorMixin, forms.Form):
 
             messages.add_message(
                 request, messages.SUCCESS,
-                _(u"Hello %(first_name)s %(last_name)s, you've successfully logged in." % {
+                _("Hello %(first_name)s %(last_name)s, you've successfully logged in." % {
                     'first_name' : self.user.first_name or self.user.username,
                     'last_name' : self.user.last_name }))
             if settings.SHOW_UPDATE_ALERT and request.user.is_superuser:

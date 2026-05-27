@@ -1,0 +1,79 @@
+Upgrade 14.X to 15.0
+====================
+
+.. note:: If you have addons on your site, make sure you have your addons upgraded to be Django 4.2 LTS compatible before upgrading your site to Tendenci 15.
+
+
+Step 1: Prepare for Upgrade
+---------------------------
+
+Back up your site and database! Note that Django 4.2 supports PostgreSQL 12 and higher. So, if your PostgreSQL version is below 12, please upgrade before proceeding. 
+
+Replace the content of the ``requirements/tendenci.txt`` with the following:
+::
+
+    tendenci>=15,<16
+    
+Update the conf/urls.py. Replace:
+::
+
+    from django.conf.urls import url, include
+    
+with the following, then in the `urlpatterns` list, replace `url` with `re_path`.
+::
+
+    from django.urls import re_path, include
+    
+
+
+We recommend to create a new virtual env instead of using the existing one.
+
+
+Step 2: Upgrade Tendenci
+------------------------
+
+Run:
+::
+
+    cd /var/www/mysite/
+    source /srv/mysite/bin/activate
+    # For production sites, run
+    pip install -r requirements/prod.txt --upgrade
+    # For dev sites on your local, run
+    pip install -r requirements/dev.txt --upgrade
+    python manage.py migrate
+    python manage.py deploy
+    python manage.py clear_cache
+
+
+Step 3: Upgrade System Commands
+-------------------------------
+
+Replace the virtualenv in:
+    - cron jobs 
+    - systemd unit file. 
+
+
+Step 4: Update Your Template base.html for Font Awesome v6
+----------------------------------------------------------
+
+Find:
+::
+
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.css' %}" type="text/css">
+
+   
+Replace with:
+::
+
+    <link rel="stylesheet" href="{% static 'font-awesome/css/fontawesome.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/brands.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/solid.min.css' %}" type="text/css">
+    <!-- support v4 icon references/syntax -->
+    <link href="{% static 'font-awesome/css/v4-shims.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'font-awesome/css/v4-font-face.min.css' %}" rel="stylesheet" />
+
+
+After update is done, restart your site.
+
+

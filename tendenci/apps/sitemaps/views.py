@@ -41,7 +41,7 @@ def _try_import(module):
 
 def create_sitemap(request):
     sitemap_classes = get_all_sitemaps()
-    sitemaps = dict([(cls.__name__, cls) for cls in sitemap_classes])
+    sitemaps = {cls.__name__: cls for cls in sitemap_classes}
     return sitemap(request, sitemaps)
 
 

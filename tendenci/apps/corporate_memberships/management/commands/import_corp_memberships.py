@@ -1,9 +1,9 @@
-
 from datetime import datetime
 
 from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -62,5 +62,5 @@ class Command(BaseCommand):
             mimport.save()
 
         mimport.status = 'completed'
-        mimport.complete_dt = datetime.now()
+        mimport.complete_dt = timezone.now()
         mimport.save()

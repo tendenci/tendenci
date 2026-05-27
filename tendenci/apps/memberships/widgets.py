@@ -67,7 +67,7 @@ class TypeExpMethodWidget(forms.MultiWidget):
             items.sort()
             self.widgets = [item[1] for item in items]
 
-        super(TypeExpMethodWidget, self).__init__(self.widgets, attrs)
+        super().__init__(self.widgets, attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
@@ -185,7 +185,7 @@ class TypeExpMethodWidget(forms.MultiWidget):
                                                             name, value, attrs,
                                                             self.pos_d['fixed_option2_month'][0], id_)
         FIXED_EXP_METHOD_CHOICE = (
-                                  ("0", mark_safe("%s %s %s" % (rendered_fixed_option1_month,
+                                  ("0", mark_safe("{} {} {}".format(rendered_fixed_option1_month,
                                                       rendered_fixed_option1_day,
                                                       rendered_fixed_option1_year))),
                                   ("1", mark_safe("%s %s of current/next year" %
@@ -217,23 +217,23 @@ class TypeExpMethodWidget(forms.MultiWidget):
 
         output_html = """
                         <div id="exp-method-box">
-                            <div>%s</div>
+                            <div>{}</div>
 
                             <div style="margin: 1em 0 0 3em;">
                                 <div id="rolling-box" class="form-group">
-                                    <div class="form-inline"><label for="%s_%s">Period</label> %s %s</div>
-                                    <div><label for="%s_%s">Expires On</label> %s</div>
-                                    <div><label for="%s_%s">Renew Expires On</label> %s</div>
+                                    <div class="form-inline"><label for="{}_{}">Period</label> {} {}</div>
+                                    <div><label for="{}_{}">Expires On</label> {}</div>
+                                    <div><label for="{}_{}">Renew Expires On</label> {}</div>
                                 </div>
 
                                 <div id="fixed-box" class="form-group">
-                                    <div><label for="%s_%s">Expires On</label> %s</div>
-                                    <div class="form-inline">%s For option 2, grace period %s day(s) before expiration then expires in the next year</div>
+                                    <div><label for="{}_{}">Expires On</label> {}</div>
+                                    <div class="form-inline">{} For option 2, grace period {} day(s) before expiration then expires in the next year</div>
                                 </div>
                             </div>
 
                         </div>
-                      """ % (rendered_period_type,
+                      """.format(rendered_period_type,
                            name, self.pos_d['period'][0],
                            rendered_period, rendered_period_unit,
                            name, self.pos_d['rolling_option'][0], rendered_rolling_option,
@@ -254,7 +254,7 @@ class TypeExpMethodWidget(forms.MultiWidget):
         else:
             widget_value = None
         if id_:
-            final_attrs = dict(attrs, id='%s_%s' % (id_, i))
+            final_attrs = dict(attrs, id='{}_{}'.format(id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
 
@@ -276,7 +276,7 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
             items.sort()
             self.widgets = [item[1] for item in items]
 
-        super(NoticeTimeTypeWidget, self).__init__(self.widgets, attrs)
+        super().__init__(self.widgets, attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
@@ -308,9 +308,9 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
 
         output_html = """
                         <div id="notice-time-type">
-                            %s day(s) %s %s
+                            {} day(s) {} {}
                         </div>
-                      """ % (rendered_num_days,
+                      """.format(rendered_num_days,
                              rendered_notice_time,
                              rendered_notice_type
                              )
@@ -328,7 +328,7 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
         else:
             widget_value = None
         if id_:
-            final_attrs = dict(attrs, id='%s_%s' % (id_, i))
+            final_attrs = dict(attrs, id='{}_{}'.format(id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
 
@@ -351,7 +351,7 @@ class DonationOptionAmountWidget(forms.MultiWidget):
             items.sort()
             self.widgets = [item[1] for item in items]
 
-        super(DonationOptionAmountWidget, self).__init__(self.widgets, attrs)
+        super().__init__(self.widgets, attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
@@ -368,7 +368,7 @@ class DonationOptionAmountWidget(forms.MultiWidget):
 
         # donation_option
         OPTION_CHOICE = (
-                          ("default", "%s%s" % (currency_symbol, self.default_amount)),
+                          ("default", "{}{}".format(currency_symbol, self.default_amount)),
                           ("custom", mark_safe('%s %s' %
                                           (currency_symbol, rendered_donation_amount))),
                         )
@@ -391,7 +391,7 @@ class DonationOptionAmountWidget(forms.MultiWidget):
         else:
             widget_value = None
         if id_:
-            final_attrs = dict(attrs, id='%s_%s' % (id_, i))
+            final_attrs = dict(attrs, id='{}_{}'.format(id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
 
@@ -403,7 +403,7 @@ class DonationOptionAmountWidget(forms.MultiWidget):
 class CustomRadioSelect(forms.RadioSelect):
     option_template_name = 'widgets/custom_radio_option.html'
     def create_option(self, *args, **kwargs):
-        option = super(CustomRadioSelect, self).create_option(*args, **kwargs)
+        option = super().create_option(*args, **kwargs)
 #         option['label'] = mark_safe(conditional_escape(force_str(self.choice_label)))
         return option
 
@@ -544,9 +544,9 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
         has_id = attrs and 'id' in attrs
         attrs = attrs.copy()
         attrs['name'] = name
-        output = [u'<div>']
+        output = ['<div>']
         # Normalize to strings
-        str_values = set([force_str(v) for v in value])
+        str_values = {force_str(v) for v in value}
 
         key = ''
         for i, (option_value, option_label) in enumerate(chain(self.choices,
@@ -572,20 +572,20 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
                                                         option_value,
                                                         option_label))
         for key in self.all_fields:
-            output.append(u'<div style="clear: both;"></div>')
-            output.append(u'<h3>')
+            output.append('<div style="clear: both;"></div>')
+            output.append('<h3>')
             output.append(self.all_fields[key]['title'])
-            output.append(u'</h3>')
-            output.append(u'<div class="fields-section">')
+            output.append('</h3>')
+            output.append('<div class="fields-section">')
             for i, option_value, option_label in \
                     self.all_fields[key]['options']:
                 # If an ID attribute was given, add a numeric index as a
                 # suffix, so that the checkboxes don't all have the same
                 # ID attribute.
                 if has_id:
-                    final_attrs = dict(attrs, id='%s_%s' % (attrs['id'],
+                    final_attrs = dict(attrs, id='{}_{}'.format(attrs['id'],
                                                                   i))
-                    label_for = u' for="%s"' % final_attrs['id']
+                    label_for = ' for="%s"' % final_attrs['id']
                 else:
                     label_for = ''
 
@@ -594,9 +594,9 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
                 option_value = force_str(option_value)
                 rendered_cb = cb.render(name, option_value)
                 option_label = conditional_escape(force_str(option_label))
-                output.append(u'<div class="field-box select-field"><label%s>%s %s</label></div>' % (label_for,
+                output.append('<div class="field-box select-field"><label{}>{} {}</label></div>'.format(label_for,
                                                                     rendered_cb,
                                                                     option_label))
-            output.append(u'</div>')
-        output.append(u'</div>')
-        return mark_safe(u'\n'.join(output))
+            output.append('</div>')
+        output.append('</div>')
+        return mark_safe('\n'.join(output))

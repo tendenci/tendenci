@@ -111,7 +111,7 @@ def google_cmaps_url(parser, token):
 def fb_like_button_iframe(url, show_faces='false', width=400, height=40):
     from tendenci.apps.site_settings.utils import get_setting
     site_url = get_setting('site', 'global', 'siteurl')
-    url = '%s%s' % (site_url,url)
+    url = '{}{}'.format(site_url,url)
     if show_faces.lower() == 'true':
         show_faces = 'true'
     else:
@@ -249,7 +249,7 @@ def do_assign(parser, token):
     """
     bits = token.contents.split()
     if len(bits) != 3:
-        raise TemplateSyntaxError(_("'%(b)s' tag takes two arguments" % {'b': bits[0]}))
+        raise TemplateSyntaxError(_("'{b}' tag takes two arguments".format(b=bits[0])))
     value = parser.compile_filter(bits[2])
     return AssignNode(bits[1], value)
 
@@ -647,6 +647,7 @@ class PhotoImageURL(Node):
         cached_image_url = cache.get(cache_key)
         if cached_image_url:
             if settings.USE_S3_STORAGE:
+                cached_image_url = re.sub(rf'^{settings.MEDIA_URL}', '', cached_image_url)
                 return default_storage.url(cached_image_url)
             return cached_image_url
 

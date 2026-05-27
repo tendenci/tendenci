@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 
 from tagging.fields import TagField
 from timezone_field import TimeZoneField
@@ -164,9 +165,9 @@ class Directory(TendenciBaseModel):
             slug = slugify(self.headline)
             count = str(Directory.objects.count())
             if len(slug) + len(count) >= 99:
-                self.slug = '%s-%s' % (slug[:99-len(count)], count)
+                self.slug = '{}-{}'.format(slug[:99-len(count)], count)
             else:
-                self.slug = '%s-%s' % (slug, count)
+                self.slug = '{}-{}'.format(slug, count)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -179,7 +180,7 @@ class Directory(TendenciBaseModel):
                 if region and region != self.region:
                     self.region = region
 
-        super(Directory, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if self.logo:
             if self.is_public():
                 set_s3_file_permission(self.logo.name, public=True)
@@ -210,7 +211,7 @@ class Directory(TendenciBaseModel):
 
     def get_logo_url(self):
         if not self.logo_file:
-            return u''
+            return ''
 
         return reverse('file', args=[self.logo_file.pk])
 
@@ -289,7 +290,7 @@ class Directory(TendenciBaseModel):
     def renew_window(self):
         days = get_setting('module', 'directories', 'renewaldays')
         days = int(days)
-        if self.expiration_dt and datetime.now() + timedelta(days) > self.expiration_dt:
+        if self.expiration_dt and timezone.now() + timedelta(days) > self.expiration_dt:
             return True
         else:
             return False
@@ -564,6 +565,7 @@ class Affiliateship(models.Model):
 
 class DirectoryPricing(models.Model):
     guid = models.CharField(max_length=40)
+    label = models.CharField(max_length=100, blank=True, default='')
     duration = models.IntegerField(blank=True, choices=ADMIN_DURATION_CHOICES)
     regular_price =models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     premium_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
@@ -587,8 +589,8 @@ class DirectoryPricing(models.Model):
 
     def __str__(self):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
-        price = "%s%s(R)/%s(P)" % (currency_symbol, self.regular_price, self.premium_price)
-        return "%s days for %s" % (self.duration_display(), price)
+        price = "{}{}(R)/{}(P)".format(currency_symbol, self.regular_price, self.premium_price)
+        return "{} days for {}".format(self.duration_display(), price)
 
     def save(self, user=None, *args, **kwargs):
         if not self.id:
@@ -602,7 +604,7 @@ class DirectoryPricing(models.Model):
         if not self.regular_price: self.regular_price = 0
         if not self.premium_price: self.premium_price = 0
 
-        super(DirectoryPricing, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def duration_display(self):
         if self.duration < 365:

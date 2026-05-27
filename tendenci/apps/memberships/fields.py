@@ -11,7 +11,7 @@ class TypeExpMethodField(forms.MultiValueField):
     def __init__(self, required=True, widget=TypeExpMethodWidget(attrs=None, fields_pos_d=None),
                 label=None, initial=None, help_text=None):
         myfields = ()
-        super(TypeExpMethodField, self).__init__(myfields, required=required, widget=widget,
+        super().__init__(myfields, required=required, widget=widget,
                                           label=label, initial=initial, help_text=help_text)
 
     def clean(self, value):
@@ -36,7 +36,7 @@ class DonationOptionAmountField(forms.MultiValueField):
     def __init__(self, required=True, widget=DonationOptionAmountWidget(attrs=None),
                 label=None, initial=None, help_text=None):
         myfields = ()
-        super(DonationOptionAmountField, self).__init__(myfields, required=required, widget=widget,
+        super().__init__(myfields, required=required, widget=widget,
                                           label=label, initial=initial, help_text=help_text)
 
     def clean(self, value):
@@ -58,7 +58,7 @@ class NoticeTimeTypeField(forms.MultiValueField):
     def __init__(self, required=True, widget=NoticeTimeTypeWidget(attrs=None),
                 label=None, initial=None, help_text=None):
         myfields = ()
-        super(NoticeTimeTypeField, self).__init__(myfields, required=required, widget=widget,
+        super().__init__(myfields, required=required, widget=widget,
                                           label=label, initial=initial, help_text=help_text)
 
     def clean(self, value):
@@ -73,9 +73,9 @@ class NoticeTimeTypeField(forms.MultiValueField):
 class PriceInput(forms.TextInput):
     def render(self, name, value, attrs=None, renderer=None):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
-        if currency_symbol == u'':
+        if currency_symbol == '':
             currency_symbol = '$'
-        return mark_safe('$ %s' % super(PriceInput, self).render(name, value, attrs))
+        return mark_safe('$ %s' % super().render(name, value, attrs))
 
 
 class AppFieldSelectionField(forms.MultipleChoiceField):
@@ -96,7 +96,7 @@ class AppFieldSelectionField(forms.MultipleChoiceField):
                 label = field_name
             kwargs['choices'].append((field_name, label))
 
-        super(AppFieldSelectionField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class MembershipTypeModelChoiceField(forms.ModelChoiceField):

@@ -19,7 +19,7 @@ class SettingForm(forms.ModelForm):
         properties.
         """
         self.request = kwargs.pop('request', None)
-        super(SettingForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         setting = self.instance
         if setting:
             if setting.input_type == 'select':
@@ -54,7 +54,7 @@ class SettingForm(forms.ModelForm):
         Clean method is based on clean_settings_form from tendenci.apps.site_settings.forms.
         """
         setting = self.instance
-        cleaned_data = super(SettingForm, self).clean()
+        cleaned_data = super().clean()
         if setting:
             try:
                 field_value = cleaned_data['value']
@@ -63,7 +63,7 @@ class SettingForm(forms.ModelForm):
 
             if setting.data_type == "boolean":
                 if field_value != 'true' and field_value != 'false':
-                    raise forms.ValidationError(_("'%(label)s' must be true or false" % {'label': setting.label}))
+                    raise forms.ValidationError(_("'{label}' must be true or false".format(label=setting.label)))
             if setting.data_type == "int":
                 if field_value != ' ':
                     if not field_value.isdigit():

@@ -87,7 +87,7 @@ def responders_list(request, template_name="social_services/responders.html"):
     skillset = SkillSet.objects.all()
 
     if lon and lat:
-        point = fromstr('POINT(%s %s)' % (lon, lat), srid=4326)
+        point = fromstr('POINT({} {})'.format(lon, lat), srid=4326)
         # Filter all responders within 20 miles of location given
         skillset = skillset.filter(loc__distance_lte=(point, D(mi=int(d))))
 
@@ -116,7 +116,7 @@ def relief_areas_list(request, template_name="social_services/relief-areas.html"
     relief_areas = ReliefAssessment.objects.all()
 
     if lon and lat:
-        point = fromstr('POINT(%s %s)' % (lon, lat), srid=4326)
+        point = fromstr('POINT({} {})'.format(lon, lat), srid=4326)
         # Filter all relief areas within 20 miles of location given
         relief_areas = relief_areas.filter(loc__distance_lte=(point, D(mi=int(d))))
 

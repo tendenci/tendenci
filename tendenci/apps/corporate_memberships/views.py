@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import math
 from decimal import Decimal
@@ -28,8 +27,8 @@ from django.db.models import ForeignKey, OneToOneField
 from django.db.models.fields import AutoField
 from django.utils.translation import gettext_lazy as _
 from django.db.models.functions import Lower
-from django.http.response import StreamingHttpResponse
 from django.conf import settings
+from django.utils import timezone
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
@@ -324,7 +323,7 @@ def corpmembership_add_pre(request,
             EventLog.objects.log(instance=creator)
 
             # redirect to add
-            return HttpResponseRedirect('%s%s' % (reverse('corpmembership.add',
+            return HttpResponseRedirect('{}{}'.format(reverse('corpmembership.add',
                                                           args=[app.slug]),
                                               '?hash=%s' % hash))
 
@@ -416,6 +415,9 @@ def corpmembership_add(request, slug='',
             # calculate the expiration
             corp_membership.expiration_dt = corp_memb_type.get_expiration_dt(
                                         join_dt=corp_membership.join_dt)
+            corp_membership.corp_price = corp_memb_type.price
+            if corp_memb_type.above_cap_price:
+                corp_membership.above_cap_price = corp_memb_type.above_cap_price
 
             # add invoice
             inv = corp_memb_inv_add(request.user, corp_membership, app=app)
@@ -583,12 +585,12 @@ def corpmembership_upgrade(request, id,
                 memberships.update(membership_type=membership_type)
 
             # log an event
-            description = 'Updated corp. membership type from (id: %s) to (id: %s)' % (
+            description = 'Updated corp. membership type from (id: {}) to (id: {})'.format(
                                         original_corp_memb_type.id,
                                         corp_membership.corporate_membership_type.id)
             EventLog.objects.log(instance=corp_membership, description=description)
 
-            msg_string = 'Successfully upgraded membership type from "%s" to "%s" for "%s"' % (
+            msg_string = 'Successfully upgraded membership type from "{}" to "{}" for "{}"'.format(
                                     original_corp_memb_type,
                                     corp_membership.corporate_membership_type,
                                     corp_profile.name)
@@ -661,6 +663,17 @@ def corpmembership_edit(request, id,
             # assign object permissions
             corp_membership_update_perms(corp_membership)
 
+            if request.user.is_superuser and 'expiration_dt' in corpmembership_form.cleaned_data:
+                if corp_membership._original_expiration_dt != corp_membership.expiration_dt:
+                    if corp_membership.is_active:
+                        # The expiration date has been changed. Sync it with the associated individual memberships (active only).
+                        for membership in MembershipDefault.objects.filter(
+                                             corporate_membership_id=corp_membership.pk,
+                                             status_detail='active'):
+                            if membership.expire_dt != corp_membership.expiration_dt:
+                                membership.expire_dt = corp_membership.expiration_dt
+                                membership.save()
+
             # update salesforce lead if applicable
             # sf = get_salesforce_access()
             # if sf:
@@ -713,11 +726,19 @@ def corpprofile_view(request, id, template="corporate_memberships/profiles/view.
                 raise Http403
 
     corp_membership = corp_profile.corp_membership
+    if not corp_membership:
+        # this one has been deleted by someone (an admin) - it shouldn't be deleted
+        corp_membership = CorpMembership.objects.all_inactive().filter(corp_profile_id=corp_profile.id).first()
+        if corp_membership and not corp_membership.status:
+            #corp_membership.status = True
+            #corp_membership.save(update_fields=['status'])
+            msg_string = f'NOTE: The associated corporate membership (ID: {corp_membership.id}) was deleted.'
+            messages.add_message(request, messages.WARNING, _(msg_string))
     reps = corp_profile.reps.all()
     memberships = MembershipDefault.objects.filter(
                         corp_profile_id=corp_profile.id
                         ).exclude(
-                        status_detail__in=('archive', 'pending'))
+                        status_detail__in=('archive', 'pending', 'expired'))
     members_count = memberships.count()
     members_first10 = memberships.order_by('user__first_name', 'user__last_name')[:10]
     all_records = corp_profile.corp_memberships.all().order_by('-create_dt')
@@ -1033,10 +1054,10 @@ def corpmembership_search(request, my_corps_only=False,
         if search_criteria in ['name', 'address', 'city', 'state',
                                'zip', 'country', 'phone',
                                'email', 'url']:
-            search_filter = {'corp_profile__%s%s' % (search_criteria,
+            search_filter = {'corp_profile__{}{}'.format(search_criteria,
                                              search_type): search_text}
         else:
-            search_filter = {'%s%s' % (search_criteria,
+            search_filter = {'{}{}'.format(search_criteria,
                                          search_type): search_text}
 
         corp_members = corp_members.filter(**search_filter)
@@ -1134,19 +1155,26 @@ def corpmembership_approve(request, id,
 
     approve_form = CorpApproveForm(request.POST or None,
                                    corporate_membership=corporate_membership)
+    invoice = corporate_membership.invoice
+    if invoice.balance <= 0:
+        del approve_form.fields['mark_invoice_as_paid']
+
     if request.method == "POST":
         if approve_form.is_valid():
+            mark_invoice_as_paid = approve_form.cleaned_data.get('mark_invoice_as_paid', False)
+            
             msg = ''
             if 'approve' in request.POST:
                 if corporate_membership.renewal:
                     # approve the renewal
-                    corporate_membership.approve_renewal(request)
+                    corporate_membership.approve_renewal(request, mark_invoice_as_paid=mark_invoice_as_paid)
                     msg = """Corporate membership "%s" renewal has been APPROVED.
                         """ % corporate_membership
                 else:
                     # approve join
                     params = {'create_new': True,
-                              'assign_to_user': None}
+                              'assign_to_user': None,
+                              'mark_invoice_as_paid': mark_invoice_as_paid}
                     if approve_form.fields and \
                     corporate_membership.anonymous_creator:
                         user_pk = int(approve_form.cleaned_data['users'])
@@ -1191,6 +1219,7 @@ def corpmembership_approve(request, id,
                'indiv_renew_entries': indiv_renew_entries,
                'new_expiration_dt': new_expiration_dt,
                'approve_form': approve_form,
+               'invoice': invoice,
                }
     return render_to_resp(request=request, template_name=template, context=context)
 
@@ -1215,6 +1244,17 @@ def corp_renew(request, id,
                              for admin approval.""" % corp_membership)
         return HttpResponseRedirect(reverse('corpmembership.view',
                                         args=[corp_membership.id]))
+
+    # avoid duplicates if a corp membership is already renewed and in pending
+    latest_renewed_in_pending = corp_membership.latest_renewed_in_pending()
+    if latest_renewed_in_pending:
+        messages.add_message(request, messages.INFO,
+                             """The corporate membership
+                             has been renewed and is pending
+                             for admin approval.""")
+        return HttpResponseRedirect(reverse('corpmembership.view',
+                                        args=[latest_renewed_in_pending.id]))
+
     if corp_membership.is_archive:
         # don't renew archive
         [latest_renewed] = CorpMembership.objects.filter(
@@ -1244,7 +1284,7 @@ def corp_renew(request, id,
                 new_corp_membership = form.save()
                 new_corp_membership.renewal = True
                 new_corp_membership.renew_from_id = corp_membership.id
-                new_corp_membership.renew_dt = datetime.now()
+                new_corp_membership.renew_dt = timezone.now()
                 new_corp_membership.status = True
                 new_corp_membership.status_detail = 'pending'
                 new_corp_membership.creator = request.user
@@ -1252,9 +1292,6 @@ def corp_renew(request, id,
                 new_corp_membership.owner = request.user
                 new_corp_membership.owner_username = request.user.username
                 new_corp_membership.expiration_dt = new_corp_membership.get_expiration_dt()
-
-                # archive old corp_memberships
-                new_corp_membership.archive_old()
 
                 # calculate the total price for invoice
                 corp_memb_type = form.cleaned_data[
@@ -1265,15 +1302,19 @@ def corp_renew(request, id,
                 indiv_renewal_price = corp_memb_type.membership_type.renewal_price
                 if not indiv_renewal_price:
                     indiv_renewal_price = 0
+                new_corp_membership.corp_price = corp_renewal_price
 
                 count_members = len(members)
                 if corp_memb_type.apply_cap and corp_memb_type.allow_above_cap and count_members > corp_memb_type.membership_cap:
                     count_ind_within_cap = corp_memb_type.membership_cap
                     count_ind_above_cap = count_members - count_ind_within_cap
+                    new_corp_membership.num_ind_above_cap = count_ind_above_cap
+                    new_corp_membership.above_cap_price = corp_memb_type.above_cap_price
                     renewal_total = corp_renewal_price + \
                                     indiv_renewal_price * count_ind_within_cap + \
                                     corp_memb_type.above_cap_price * count_ind_above_cap
                 else:
+                    new_corp_membership.above_cap_price = corp_memb_type.above_cap_price
                     renewal_total = corp_renewal_price + \
                             indiv_renewal_price * count_members
 
@@ -1567,7 +1608,7 @@ def roster_search(request,
         if search_criteria == 'username':
             filter_and.update({'user__username%s' % search_type: search_text})
         else:
-            filter_and.update({'user__profile__%s%s' % (search_criteria,
+            filter_and.update({'user__profile__{}{}'.format(search_criteria,
                                                         search_type
                                                         ):
                                search_text})
@@ -1908,6 +1949,11 @@ def corpmembership_export(request,
             corp_memb_field_list.remove('guid')
             corp_memb_field_list.remove('corp_profile')
             corp_memb_field_list.remove('anonymous_creator')
+            corp_memb_field_list.append('corporate_membership_type_name')
+            corp_memb_field_list.append('subtotal')
+            corp_memb_field_list.append('total')
+            corp_memb_field_list.append('tax')
+            corp_memb_field_list.append('balance')
 
             title_list = corp_profile_field_list + corp_memb_field_list
 
@@ -2108,7 +2154,8 @@ def report_active_corp_members_by_type(request,
     template='corporate_memberships/reports/report_by_type.html'):
     corp_mems = CorpMembership.objects.filter(
                             status=True,
-                            status_detail='active')
+                            status_detail='active',
+                            corp_profile__status=True)
     form = ReportByTypeForm(request.GET)
     if form.is_valid():
         days = int(form.cleaned_data.get('days') or 0)
@@ -2118,7 +2165,7 @@ def report_active_corp_members_by_type(request,
         corp_membership_type = 0
 
     if days:
-        compare_dt = datetime.now() - timedelta(days=days)
+        compare_dt = timezone.now() - timedelta(days=days)
         corp_mems = corp_mems.filter(join_dt__gte=compare_dt)
     if corp_membership_type:
         corp_mems = corp_mems.filter(corporate_membership_type=corp_membership_type)
@@ -2161,9 +2208,9 @@ def report_active_corp_members_by_type(request,
         table_data = []
         for corp_mem in corp_mems:
             corp_profile = corp_mem.corp_profile
-            invoice_pk = u''
+            invoice_pk = ''
             if corp_mem.invoice:
-                invoice_pk = u'%i' % corp_mem.invoice.pk
+                invoice_pk = '%i' % corp_mem.invoice.pk
             member_rep = corp_profile.get_member_rep()
             if member_rep:
                 member_rep_name = member_rep.user.get_full_name()
@@ -2201,7 +2248,8 @@ def report_active_corp_members_by_type(request,
 def report_corp_members_by_status(request,
     template='corporate_memberships/reports/report_by_status.html'):
     corp_mems = CorpMembership.objects.filter(
-                            status=True,).exclude(
+                            status=True,
+                            corp_profile__status=True).exclude(
                             status_detail='archive')
     form = ReportByStatusForm(request.GET)
     if form.is_valid():
@@ -2212,7 +2260,7 @@ def report_corp_members_by_status(request,
         status_detail = ''
 
     if days:
-        compare_dt = datetime.now() - timedelta(days=days)
+        compare_dt = timezone.now() - timedelta(days=days)
         corp_mems = corp_mems.filter(join_dt__gte=compare_dt)
     if status_detail:
         corp_mems = corp_mems.filter(status_detail=status_detail)
@@ -2236,6 +2284,18 @@ def report_corp_members_by_status(request,
     else:
         order_by_field =  allowed_sort_fields[sort]
     corp_mems = corp_mems.order_by(order_by_field)
+
+    if not status_detail:
+        exclude_list = []
+        for corp_mem in corp_mems:
+            corp_profile = corp_mem.corp_profile
+            if corp_mem.status_detail == 'pending':
+                active_corp_membership = corp_profile.active_corp_membership
+                if active_corp_membership:
+                    exclude_list.append(corp_mem.id)
+    
+        if exclude_list:
+            corp_mems = corp_mems.exclude(id__in=exclude_list)
 
     EventLog.objects.log()
 

@@ -5,11 +5,15 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.utils import timezone
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.donations.managers import DonationManager
 from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.regions.models import Region
+
 
 class Donation(models.Model):
     guid = models.CharField(max_length=50)
@@ -24,7 +28,7 @@ class Donation(models.Model):
     zip_code = models.CharField(max_length=50, default='', blank=True, null=True)
     country = models.CharField(max_length=50, default='', blank=True, null=True)
     email = models.CharField(max_length=50)
-    phone = models.CharField(max_length=50)
+    phone = models.CharField(max_length=50, default='', blank=True)
     referral_source = models.CharField(_('referred by'), max_length=200, default='', blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     donation_amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -69,7 +73,7 @@ class Donation(models.Model):
             self.owner=user
             self.owner_username=user.username
 
-        super(Donation, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
@@ -77,9 +81,12 @@ class Donation(models.Model):
         The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
-        description = f'Invoice {inv.id} Payment for Donation {inv.object_id}'
+        label = get_setting('module', 'donations', 'label') 
+        description = f'Invoice {inv.id} Payment for {label} ({inv.object_id})'
         if self.from_object:
             description += f" from {str(self.from_object)}"
+        if self.donate_to_entity:
+            description += f" to {self.donate_to_entity.entity_name}"
         return description
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
@@ -162,8 +169,8 @@ class Donation(models.Model):
         #self.ship_to_fax = make_payment.fax
         inv.ship_to_email = self.email
         inv.terms = "Due on Receipt"
-        inv.due_date = datetime.now()
-        inv.ship_date = datetime.now()
+        inv.due_date = timezone.now()
+        inv.ship_date = timezone.now()
         inv.message = 'Thank You.'
         inv.status = True
         
@@ -184,3 +191,9 @@ class Donation(models.Model):
         self.save()
     
         return inv
+
+    @property
+    def get_region(self):
+        if get_setting('site', 'global', 'stateusesregion'):
+            if self.state:
+                return Region.get_region_by_name(self.state)

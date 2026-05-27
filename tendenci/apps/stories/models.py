@@ -1,4 +1,3 @@
-from builtins import str
 import uuid
 
 from urllib.parse import urlparse
@@ -102,7 +101,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
             o = urlparse(url)
 
             if not o.scheme:  # if relative URL
-                url = '%s%s' % (get_setting('site', 'global', 'siteurl'), url)
+                url = '{}{}'.format(get_setting('site', 'global', 'siteurl'), url)
 
         return url
 
@@ -123,7 +122,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
                 self.position = 1
                 pass
 
-        super(Story, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if photo_upload and self.pk:
             image = StoryPhoto(

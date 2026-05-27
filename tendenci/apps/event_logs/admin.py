@@ -16,7 +16,7 @@ class EventLogColorAdmin(admin.ModelAdmin):
 
     @mark_safe
     def color(self, obj):
-        return '<span style="background-color: #%s"> #%s </span> ' % (obj.hex_color, obj.hex_color)
+        return '<span style="background-color: #{}"> #{} </span> '.format(obj.hex_color, obj.hex_color)
 
 
 class EventLogBaseColorAdmin(EventLogColorAdmin):

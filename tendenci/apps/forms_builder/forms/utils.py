@@ -6,6 +6,8 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
+from django.utils import timezone
+
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry
@@ -82,15 +84,15 @@ def generate_email_subject(form, form_entry):
     else:
         subject = "%s:" % (form.title)
         if form_entry.get_first_name():
-            subject = "%s %s" % (subject, form_entry.get_first_name())
+            subject = "{} {}".format(subject, form_entry.get_first_name())
         if form_entry.get_last_name():
-            subject = "%s %s" % (subject, form_entry.get_last_name())
+            subject = "{} {}".format(subject, form_entry.get_last_name())
         if form_entry.get_full_name():
-            subject = "%s %s" % (subject, form_entry.get_full_name())
+            subject = "{} {}".format(subject, form_entry.get_full_name())
         if form_entry.get_phone_number():
-            subject = "%s - %s" % (subject, form_entry.get_phone_number())
+            subject = "{} - {}".format(subject, form_entry.get_phone_number())
         if form_entry.get_email_address():
-            subject = "%s - %s" % (subject, form_entry.get_email_address())
+            subject = "{} - {}".format(subject, form_entry.get_email_address())
 
     return subject
 
@@ -104,7 +106,7 @@ def make_invoice_for_entry(entry, **kwargs):
     if price is None:
         price = kwargs.get('custom_price')
     amount = price * entry.quantity
-    now = datetime.now()
+    now = timezone.now()
 
     inv = Invoice()
     inv.title = "%s Invoice" % (entry.form.title)
@@ -119,7 +121,10 @@ def make_invoice_for_entry(entry, **kwargs):
     if entry.pricing and entry.pricing.taxable:        
         inv.assign_tax([(amount, entry.pricing.tax_rate)], entry.creator)
         inv.subtotal = amount
-        inv.total = amount + inv.tax + inv.tax_2
+        if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added': #tax added
+            inv.total = amount + inv.tax + inv.tax_2
+        else: #tax included
+            inv.total = amount
         inv.balance = inv.total
 
     if entry.creator and not entry.creator.is_anonymous:
@@ -170,9 +175,9 @@ def form_entries_to_csv_writer(csv_writer, form):
             if field.field_type == "FileField":
                 file_field_ids.append(field.id)
     if form.custom_payment:
-        columns.append(str("Pricing"))
-        columns.append(str("Price"))
-        columns.append(str("Payment Method"))
+        columns.append("Pricing")
+        columns.append("Price")
+        columns.append("Payment Method")
     csv_writer.writerow(columns)
     # Loop through each field value order by entry, building up each
     # entry as a row.
@@ -229,9 +234,12 @@ def iter_form_entries(form):
             if field.field_type == "FileField":
                 file_field_ids.append(field.id)
     if form.custom_payment:
-        columns.append(str("Pricing"))
-        columns.append(str("Price"))
-        columns.append(str("Payment Method"))
+        columns.append("Pricing")
+        field_indexes[-3] = ''
+        columns.append("Price")
+        field_indexes[-2] = ''
+        columns.append("Payment Method")
+        field_indexes[-1] = ''
 
     field_indexes[0] = 0
     writer = csv.DictWriter(Echo(), fieldnames=field_indexes)

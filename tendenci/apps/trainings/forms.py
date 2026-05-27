@@ -6,6 +6,7 @@ from django.contrib.admin.helpers import ActionForm
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.site_settings.utils import get_setting
 from .models import Course, Certification, TeachingActivity, OutsideSchool, Transcript
 
 
@@ -13,7 +14,7 @@ class UpdateTranscriptActionForm(ActionForm):
     cert = forms.ChoiceField(required=False, label=_(' '),  choices=())
     
     def __init__(self, *args, **kwargs):
-        super(UpdateTranscriptActionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         certs = Certification.objects.all().order_by('name')
             
         self.fields['cert'].choices = [(0,  '--- Select a Certification Track ---')] + [
@@ -71,12 +72,16 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
         fields = ['school_name',
                   'date',
                   'certification_track',
+                  'training_hours',
                   'description']
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
-        super(OutsideSchoolForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
+        credits_per_hour = get_setting('module', 'trainings', 'creditsperhour')
+        if credits_per_hour:
+            self.fields['training_hours'].help_text = f'each hour = {credits_per_hour} credits'
         self.fields['certification_track'].required = False
         if hasattr(self.request.user, 'corp_profile'):
             corp_profile = self.request.user.corp_profile
@@ -89,7 +94,7 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
             del self.fields['participants']
 
     def save(self, **kwargs):
-        outside_school = super(OutsideSchoolForm, self).save(commit=False)
+        outside_school = super().save(commit=False)
         if 'participants' not in self.fields:
             users = [self.request.user]
         else:
@@ -99,6 +104,7 @@ class OutsideSchoolForm(FormControlWidgetMixin, forms.ModelForm):
         kwargs = {'school_name': outside_school.school_name,
                   'date': outside_school.date,
                   'certification_track': outside_school.certification_track,
+                  'training_hours': outside_school.training_hours,
                   'description': outside_school.description,
                   'creator': self.request.user,
                   'owner': self.request.user}
@@ -117,7 +123,7 @@ class ParticipantsForm(FormControlWidgetMixin, forms.Form):
         self.request = kwargs.pop('request')
         self.corp_profile = kwargs.pop('corp_profile')
         self.hidden = kwargs.pop('hidden', False)
-        super(ParticipantsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.hidden:
             self.fields['p'].widget = forms.MultipleHiddenInput()
@@ -151,7 +157,7 @@ class CoursesInfoForm(FormControlWidgetMixin, forms.Form):
         self.request = kwargs.pop('request')
         self.participants = kwargs.pop('participants')
         #self.hide_courses = kwargs.pop('hide_courses')
-        super(CoursesInfoForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         online_qs = Course.objects.filter(
                             location_type='online',

@@ -105,7 +105,7 @@ class ThemeSelectForm(forms.Form):
         widget=forms.Select(attrs={'onchange': 'submit();'}))
 
     def __init__(self, *args, **kwargs):
-        super(ThemeSelectForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         THEME_CHOICES = ((x, x) for x in theme_choices())
         self.fields['theme_edit'].choices = THEME_CHOICES
 

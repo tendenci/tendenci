@@ -16,7 +16,7 @@ def open_search(request, template_name="search/open_search_xml.html"):
     )
 
 
-class SearchView(object):
+class SearchView:
     template = 'search/search.html'
     extra_context = {}
     query = ''
@@ -129,7 +129,7 @@ class FacetedSearchView(SearchView):
         return "FacetedSearchView"
 
     def extra_context(self):
-        extra = super(FacetedSearchView, self).extra_context()
+        extra = super().extra_context()
 
         if self.results == []:
             extra['facets'] = self.form.search().facet_counts()

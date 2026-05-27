@@ -15,11 +15,11 @@ class DirectoryAdmin(admin.ModelAdmin):
 # admin.site.register(Directory, DirectoryAdmin)
 
 class DirectoryPricingAdmin(admin.ModelAdmin):
-    list_display = ['duration', 'regular_price', 'premium_price',
+    list_display = ['id', 'label', 'duration', 'regular_price', 'premium_price',
                     'regular_price_member', 'premium_price_member',
                     'show_member_pricing', 'include_tax', 'tax_rate', 'status']
     fieldsets = (
-        (None, {'fields': ('duration', 'regular_price', 'premium_price',
+        (None, {'fields': ('label', 'duration', 'regular_price', 'premium_price',
                            'regular_price_member', 'premium_price_member',
                            'show_member_pricing', 'include_tax', 'tax_rate', 'status',)}),
     )
@@ -68,7 +68,7 @@ class DirectoryCategoryAdmin(admin.ModelAdmin):
         return ', '.join(DirectoryCategory.objects.filter(parent=instance).values_list('name', flat=True))
 
     def get_queryset(self, request):
-        qs = super(DirectoryCategoryAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.filter(parent__isnull=True)
 
 

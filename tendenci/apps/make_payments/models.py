@@ -49,7 +49,7 @@ class MakePayment(models.Model):
             self.owner=user
             self.owner_username=user.username
 
-        super(MakePayment, self).save()
+        super().save()
 
     def allow_view_by(self, user2_compare):
         if user2_compare.is_authenticated:
@@ -72,6 +72,8 @@ class MakePayment(models.Model):
                 inv.object_id,
                 self.comments,
             )
+        elif self.reference_number:
+            return self.reference_number
         return
 
     def get_acct_number(self, discount=False):

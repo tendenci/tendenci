@@ -16,6 +16,7 @@ import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
@@ -123,12 +124,12 @@ def search(request, my_directories_only=False, template_name="directories/search
             elif search_method == 'contains':
                 search_type = '__icontains'
 
-            search_filter = {'%s%s' % (search_category, search_type): query}
+            search_filter = {'{}{}'.format(search_category, search_type): query}
             directories = directories.filter( **search_filter)
 
     if not request.user.is_superuser:
-        directories = directories.exclude(activation_dt__gt=datetime.now())
-        directories = directories.exclude(expiration_dt__lt=datetime.now())
+        directories = directories.exclude(activation_dt__gt=timezone.now())
+        directories = directories.exclude(expiration_dt__lt=timezone.now())
 
     directories = directories.order_by('headline')
 
@@ -174,7 +175,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
 
     pricings = DirectoryPricing.objects.filter(status=True)
     if not pricings and has_perm(request.user, 'directories.add_directorypricing'):
-        msg_string = 'You need to add a %s Pricing before you can add %s.' % (get_setting('module', 'directories', 'label_plural'),get_setting('module', 'directories', 'label'))
+        msg_string = 'You need to add a {} Pricing before you can add {}.'.format(get_setting('module', 'directories', 'label_plural'),get_setting('module', 'directories', 'label'))
         messages.add_message(request, messages.WARNING, _(msg_string))
         return HttpResponseRedirect(reverse('directory_pricing.add'))
 
@@ -231,7 +232,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.status = True
                 directory.status_detail = 'pending'
             else:
-                directory.activation_dt = datetime.now()
+                directory.activation_dt = timezone.now()
                 # set the expiration date
                 directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
 
@@ -292,7 +293,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
     if request.user.is_superuser:
         if not directory.activation_dt:
             # auto-populate activation_dt
-            directory.activation_dt = datetime.now()
+            directory.activation_dt = timezone.now()
 
     form = form_class(request.POST or None, request.FILES or None,
                       instance=directory,
@@ -311,7 +312,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             if directory.logo:
                 try:
                     directory.logo.file.seek(0)
-                except IOError:
+                except OSError:
                     pass
                     #directory.logo = None
             
@@ -446,7 +447,7 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
                 directory_pricing.save(request.user)
 
                 if "_popup" in request.POST:
-                    return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % (escape(directory_pricing.pk), escape(directory_pricing)))
+                    return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "{}", "{}");</script>'.format(escape(directory_pricing.pk), escape(directory_pricing)))
 
                 return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
         else:
@@ -465,7 +466,8 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
 @login_required
 def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="directories/pricing-edit.html"):
     directory_pricing = get_object_or_404(DirectoryPricing, pk=id)
-    if not has_perm(request.user,'directories.change_directorypricing',directory_pricing): Http403
+    if not has_perm(request.user,'directories.change_directorypricing',directory_pricing):
+        raise Http403
 
     if request.method == "POST":
         form = form_class(request.POST, instance=directory_pricing, user=request.user)
@@ -575,7 +577,7 @@ def approve(request, id, template_name="directories/approve.html"):
     directory = get_object_or_404(Directory, pk=id)
 
     if request.method == "POST":
-        directory.activation_dt = datetime.now()
+        directory.activation_dt = timezone.now()
         directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
         directory.allow_anonymous_view = True
         directory.status = True
@@ -642,13 +644,13 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
                 directory.list_type = 'regular'
 
             if not directory.slug:
-                directory.slug = '%s-%s' % (slugify(directory.headline), Directory.objects.count())
+                directory.slug = '{}-{}'.format(slugify(directory.headline), Directory.objects.count())
 
             if not can_add_active and require_approval:
                 directory.status = True
                 directory.status_detail = 'pending'
             else:
-                directory.activation_dt = datetime.now()
+                directory.activation_dt = timezone.now()
                 # set the expiration date
                 directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
                 # mark renewal as not sent for new exp date

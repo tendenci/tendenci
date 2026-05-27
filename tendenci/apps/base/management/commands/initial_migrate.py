@@ -10,4 +10,4 @@ class Command(MigrateCommand):
     @no_translations
     def handle(self, *args, **options):
         options['skip_checks'] = True
-        super(Command, self).handle(*args, **options)
+        super().handle(*args, **options)

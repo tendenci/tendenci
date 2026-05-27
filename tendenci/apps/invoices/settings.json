@@ -118,7 +118,7 @@
         "updated_by": ""
     },
     {
-        "default_value": "Tax",
+        "default_value": "Tax Label",
         "description": "The label for the Tax.",
         "data_type": "string",
         "update_dt": "2024-07-16 15:00:00",
@@ -128,6 +128,23 @@
         "value": "Tax",
         "label": "Tax Label",
         "input_value": " ",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "invoices",
+        "store": true,
+        "updated_by": ""
+    },
+    {
+        "default_value": "Tax Added",
+        "description": "The model for the Tax: 'Tax Added' to price (US style) OR 'Tax Included' in price (EU style/VAT/GST)",
+        "data_type": "string",
+        "update_dt": "2025-12-15 18:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "taxmodel",
+        "value": "Tax Added",
+        "label": "Tax Model",
+        "input_value": "Tax Added, Tax Included",
         "parent_id": 0,
         "scope": "module",
         "scope_category": "invoices",

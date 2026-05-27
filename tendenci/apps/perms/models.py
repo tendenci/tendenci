@@ -128,7 +128,7 @@ class TendenciBaseModel(models.Model):
         if hasattr(self, 'meta'):
             canonical_url = self.get_meta('canonical_url')
             if canonical_url and canonical_url[0] == '/':
-                canonical_url = '{0}{1}'.format(get_setting('site', 'global', 'siteurl'), canonical_url)
+                canonical_url = '{}{}'.format(get_setting('site', 'global', 'siteurl'), canonical_url)
             return canonical_url
 
     class Meta:
@@ -151,7 +151,7 @@ class TendenciBaseModel(models.Model):
 
             if "log" in kwargs:
                 kwargs.pop('log')
-            super(TendenciBaseModel, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         if self.pk:
@@ -172,9 +172,9 @@ class TendenciBaseModel(models.Model):
             if 'SlugField' == f.get_internal_type():
                 # the length of slug field is 100. make sure the length of modified slug <= 100
                 if len(getattr(self, f.name)) + len(str(self.pk)) >= 99:
-                    setattr(self, f.name, '%s-%s' % (getattr(self, f.name)[:99-len(str(self.pk))], self.pk))
+                    setattr(self, f.name, '{}-{}'.format(getattr(self, f.name)[:99-len(str(self.pk))], self.pk))
                 else:
-                    setattr(self, f.name, '%s-%s' % (getattr(self, f.name), self.pk))
+                    setattr(self, f.name, '{}-{}'.format(getattr(self, f.name), self.pk))
 
         try:
             self.save(**{'log': False})
@@ -198,7 +198,7 @@ class TendenciBaseModel(models.Model):
                     EventLog.objects.log(instance=self, application=application)
 
         # delete object from the database.
-        super(TendenciBaseModel, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def update_category_subcategory(self, category_value, subcategory_value):
         category_removed = False

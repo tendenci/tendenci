@@ -1,17 +1,15 @@
-import imghdr
 from os.path import splitext, basename
 from datetime import datetime
 from datetime import timedelta
 
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from django.template.defaultfilters import filesizeformat
 
 from tendenci.apps.stories.models import Story
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.files.validators import FileValidator
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -36,7 +34,7 @@ class StoryForm(TendenciBaseForm):
     syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
-    photo_upload = forms.FileField(label=_('Photo'), required=False)
+    photo_upload = forms.ImageField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
     group = forms.ChoiceField(required=True, choices=[])
 
@@ -94,28 +92,6 @@ class StoryForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })]
 
-    def clean_photo_upload(self):
-        photo_upload = self.cleaned_data['photo_upload']
-        if photo_upload:
-            extension = splitext(photo_upload.name)[1]
-
-            # check the extension
-            if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
-
-            # check the image header
-            image_type = '.%s' % imghdr.what('', photo_upload.read())
-            if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
-
-            max_upload_size = get_max_file_upload_size()
-            if photo_upload.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(upload_size)s') % {
-                                            'max_upload_size': filesizeformat(max_upload_size),
-                                            'upload_size': filesizeformat(photo_upload.size)})
-
-        return photo_upload
-
     def clean_group(self):
         group_id = self.cleaned_data['group']
 
@@ -140,11 +116,13 @@ class StoryForm(TendenciBaseForm):
             return False
 
     def __init__(self, *args, **kwargs):
-        super(StoryForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.image:
-            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.image.pk, basename(self.instance.image.file.name))
         else:
             self.fields.pop('remove_photo')
+        if 'photo_upload' in self.fields:
+            self.fields['photo_upload'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
 
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
@@ -166,7 +144,7 @@ class StoryForm(TendenciBaseForm):
         self.fields['group'].choices = groups_list
 
     def save(self, *args, **kwargs):
-        story = super(StoryForm, self).save(*args, **kwargs)
+        story = super().save(*args, **kwargs)
         if self.cleaned_data.get('remove_photo'):
             story.image = None
         return story
@@ -184,7 +162,7 @@ class StoryAdminForm(TendenciBaseForm):
     syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
-    photo_upload = forms.FileField(label=_('Photo'), required=False)
+    photo_upload = forms.ImageField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
 
     class Meta:
@@ -253,37 +231,17 @@ class StoryAdminForm(TendenciBaseForm):
         else:
             return False
 
-    def clean_photo_upload(self):
-        photo_upload = self.cleaned_data['photo_upload']
-        if photo_upload:
-            extension = splitext(photo_upload.name)[1]
-
-            # check the extension
-            if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
-
-            # check the image header
-            image_type = '.%s' % imghdr.what('', photo_upload.read())
-            if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
-
-            max_upload_size = get_max_file_upload_size()
-            if photo_upload.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(upload_size)s') % {
-                                            'max_upload_size': filesizeformat(max_upload_size),
-                                            'upload_size': filesizeformat(photo_upload.size)})
-
-        return photo_upload
-
     def __init__(self, *args, **kwargs):
-        super(StoryAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.image:
-            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.image.pk, basename(self.instance.image.file.name))
         else:
             self.fields.pop('remove_photo')
+        if 'photo_upload' in self.fields:
+            self.fields['photo_upload'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
 
     def save(self, *args, **kwargs):
-        story = super(StoryAdminForm, self).save(*args, **kwargs)
+        story = super().save(*args, **kwargs)
         if self.cleaned_data.get('remove_photo'):
             story.image = None
         return story

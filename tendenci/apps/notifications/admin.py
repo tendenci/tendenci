@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -17,7 +16,7 @@ class NoticeTypeAdmin(admin.ModelAdmin):
         return obj is None
 
     def __init__(self, *args, **kwargs):
-        super(NoticeTypeAdmin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.list_display_links = ()
 
 
@@ -55,7 +54,7 @@ class NoticeEmailAdmin(admin.ModelAdmin):
         return obj is None
 
     def __init__(self, *args, **kwargs):
-        super(NoticeEmailAdmin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.list_display_links = ()
 
 # admin.site.register(NoticeType, NoticeTypeAdmin)

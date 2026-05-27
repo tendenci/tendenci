@@ -6,6 +6,8 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import path, re_path
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.safestring import mark_safe
+from django.contrib import messages
+from django.contrib.admin import SimpleListFilter
 
 from tendenci.apps.corporate_memberships.models import (
     CorporateMembershipType,
@@ -58,7 +60,7 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
         )
 
     def get_queryset(self, request):
-        qs = super(CorporateMembershipTypeAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         # filter out soft-deleted items
         return qs.filter(status=True)
 
@@ -80,10 +82,10 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def get_membership_type(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return '<a href="{}">{}</a>'.format(
               reverse('admin:memberships_membershiptype_change',
                       args=[instance.membership_type.id]),
-              instance.membership_type.name,)
+              instance.membership_type.name)
     get_membership_type.short_description = _('Membership Type (Individual)')
     get_membership_type.admin_order_field = 'membership_type'
     
@@ -91,14 +93,14 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
     def reps_groups(self, instance):
         reps_groups_links = ''
         if instance.pending_group:
-            reps_groups_links = '<a href="%s">%s</a>' % (
+            reps_groups_links = '<a href="{}">{}</a>'.format(
                   reverse('group.detail',
                           args=[instance.pending_group.slug]),
                           _('Pending'))
         if instance.active_group:
             if reps_groups_links:
                 reps_groups_links += '<br />'
-            reps_groups_links += '<a href="%s">%s</a>' % (
+            reps_groups_links += '<a href="{}">{}</a>'.format(
                   reverse('group.detail',
                           args=[instance.active_group.slug]),
                           _('Active'))
@@ -163,14 +165,14 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
                        static('css/corpmemberships-admin.css')], }
 
     def get_queryset(self, request):
-        qs = super(CorpMembershipAppAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         # filter out soft-deleted items
         return qs.filter(status=True)
 
     @mark_safe
     def dues_reps_group_with_link(self, instance):
         if instance.dues_reps_group:
-            return '<a href="%s">%s</a>' % (
+            return '<a href="{}">{}</a>'.format(
                   reverse('group.detail',
                           args=[instance.dues_reps_group.slug]),
                 instance.dues_reps_group.name)
@@ -180,7 +182,7 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
     @mark_safe
     def member_reps_group_with_link(self, instance):
         if instance.member_reps_group:
-            return '<a href="%s">%s</a>' % (
+            return '<a href="{}">{}</a>'.format(
                   reverse('group.detail',
                           args=[instance.member_reps_group.slug]),
                 instance.member_reps_group.name)
@@ -218,13 +220,91 @@ def approve_selected(modeladmin, request, queryset):
 
     for corp_membership in corp_memberships:
         if corp_membership.renewal:
-            corp_membership.approve_renewal(request)
+            corp_membership.approve_renewal(request, mark_invoice_as_paid=True)
         else:
             corp_membership.approve_join(request,
                                 **{'create_new': True,
-                              'assign_to_user': None})
+                              'assign_to_user': None,
+                              'mark_invoice_as_paid': True})
 
-approve_selected.short_description = u'Approve selected'
+approve_selected.short_description = 'Approve selected'
+
+
+def renew_selected(modeladmin, request, queryset):
+    """
+    Renew selected corp memberships.
+    """
+    corp_membs = queryset.filter(status_detail__in=['active', 'expired'])
+    if corp_membs.count() > 10:
+        corp_membs = corp_membs[:10]
+    corp_names = []
+    has_pending = False
+    return_url = None
+
+    for corp_memb in corp_membs:
+        # should it check if in renewal period?
+        #if copr_memb.expiration_dt:
+        if (corp_memb.can_renew() or corp_memb.is_expired) and \
+            not corp_memb.latest_renewed_in_pending():
+            new_corp_memb = corp_memb.renew(request)
+            if new_corp_memb.status_detail == 'pending':
+                has_pending = True
+            #copr_memb.send_notice_email(request, 'renewal')
+            corp_names.append(corp_memb.corp_profile.name)
+
+    if corp_names:
+        if has_pending:
+            msg_string = f'Renewal pending: {", ".join(corp_names)}. Total: {len(corp_names)}. Please make payment and mark as approved'
+        else:
+            msg_string = f'Successfully renewed: {", ".join(corp_names)}. Total: {len(corp_names)}'
+        return_url = request.path + '?o=-1'
+    else:
+        msg_string = 'Nothing to renew.'
+    messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+    if return_url:
+        return HttpResponseRedirect(return_url)
+
+renew_selected.short_description = 'Renew selected (select less than 10 please)'
+
+
+def export_selected_invoices(modeladmin, request, queryset):
+    """
+    Export invoices for the selected corp memberships.
+    """
+    import time as ttime
+    from django.http import StreamingHttpResponse
+    from tendenci.apps.invoices.models import Invoice
+    from tendenci.apps.invoices.utils import iter_invoices
+
+    invoices = Invoice.objects.filter(id__in=queryset.values_list('invoice_id', flat=True))
+    response = StreamingHttpResponse(
+        streaming_content=(iter_invoices(invoices)),
+        content_type='text/csv',)
+    response['Content-Disposition'] = f'attachment;filename=invoices_export_{ttime.time()}.csv'
+    return response
+
+export_selected_invoices.short_description = 'Export selected Invoices'
+
+
+def print_selected_invoices(modeladmin, request, queryset):
+    """
+    Print invoices for the selected corp memberships.
+    """
+    from tendenci.apps.invoices.models import Invoice
+    from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+
+    invoices = Invoice.objects.filter(id__in=queryset.values_list('invoice_id', flat=True))
+    template_name = "invoices/print_invoices.html"
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+        'print_view': True,
+        'invoices': invoices,
+        'back_link': request.get_full_path()})
+
+print_selected_invoices.short_description = 'Print selected Invoices'
+
 
 class CorpMembershipAdmin(TendenciBaseModelAdmin):
     list_display = ['profile',
@@ -242,7 +322,10 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     list_filter = ['corporate_membership_type', StatusDetailFilter, 'join_dt', 'expiration_dt']
     search_fields = ['corp_profile__name', 'corp_profile__account_id']
 
-    actions = [approve_selected,]
+    actions = [approve_selected,
+               renew_selected,
+               export_selected_invoices,
+               print_selected_invoices]
 
     fieldsets = (
         (None, {'fields': ()}),
@@ -252,8 +335,9 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
         """
         Excludes archive
         """
-        return super(CorpMembershipAdmin, self).get_queryset(request
-                    ).exclude(status_detail='archive'
+        return super().get_queryset(request
+                    ).exclude(status_detail='archive').exclude(
+                              corp_profile__status=False,
                               ).order_by('status_detail',
                                          'corp_profile__name')
 
@@ -264,10 +348,10 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def profile(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return '<a href="{}">{}</a>'.format(
               reverse('admin:corporate_memberships_corpprofile_change',
                       args=[instance.corp_profile.id]),
-              instance.corp_profile.name,)
+              instance.corp_profile.name)
     profile.short_description = _('Corp Profile')
     profile.admin_order_field = 'corp_profile__name'
 
@@ -284,10 +368,10 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     @mark_safe
     def cm_type(self, instance):
         if instance.corporate_membership_type:
-            return '<a href="%s">%s</a>' % (
+            return '<a href="{}">{}</a>'.format(
                   reverse('admin:corporate_memberships_corporatemembershiptype_change',
                           args=[instance.corporate_membership_type.id]),
-                  instance.corporate_membership_type.name,)
+                  instance.corporate_membership_type.name)
         return ''
     cm_type.short_description = _('Membership Type')
     cm_type.admin_order_field = 'corporate_membership_type'
@@ -315,9 +399,9 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def edit_link(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return '<a href="{}">{}</a>'.format(
                     reverse('corpmembership.edit',args=[instance.id]),
-                    _('Edit'),)
+                    _('Edit'))
     edit_link.short_description = _('edit')
 
     @mark_safe
@@ -333,7 +417,7 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
         for i, rep in enumerate(reps):
             if i > 0:
                 reps_display += '<br />'
-            reps_display += '<a href="%s">%s</a> ' % (
+            reps_display += '<a href="{}">{}</a> '.format(
                         reverse('profile',args=[rep.user.username]),
                         rep.user.get_full_name() or rep.user.username)
 
@@ -358,18 +442,18 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
         invoice = instance.invoice
         if invoice:
             if invoice.balance > 0:
-                return '<a href="%s">Invoice %s (%s)</a>' % (
+                return '<a href="{}">Invoice {} ({})</a>'.format(
                     invoice.get_absolute_url(),
                     invoice.pk,
                     tcurrency(invoice.balance)
                 )
             else:
-                return '<a href="%s">Invoice %s</a>' % (
+                return '<a href="{}">Invoice {}</a>'.format(
                     invoice.get_absolute_url(),
                     invoice.pk
                 )
         return ""
-    invoice_url.short_description = u'Invoice'
+    invoice_url.short_description = 'Invoice'
 
     def add_view(self, request, form_url='', extra_context=None):
         return HttpResponseRedirect(reverse('corpmembership.add'))
@@ -385,22 +469,18 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                                             object.id,
                                             object.corp_profile.id)
         EventLog.objects.log(instance=object, description=description)
-        super(CorpMembershipAdmin, self).log_deletion(request, object, object_repr)
+        super().log_deletion(request, object, object_repr)
 
 
 class NoticeAdmin(admin.ModelAdmin):
     @mark_safe
-    def notice_log(self):
-        if self.notice_time == 'attimeof':
+    def notice_log(self, obj):
+        if obj.notice_time == 'attimeof':
             return '--'
         return '<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
-                         reverse('corporate_membership.notice.log.search'), self.id)
+                         reverse('corporate_membership.notice.log.search'), obj.id)
 
-    list_display = ['id', 'notice_name', notice_log, 'content_type',
-                     'corporate_membership_type', 'status_detail']
-    if (get_setting('module', 'invoices', 'taxrateuseregions') \
-        or get_setting('module', 'memberships', 'taxrateuseregions')):
-        list_display += ['region', 'excluded_regions']
+    
     list_display_links  = ['notice_name']
     list_filter = ['notice_type', 'status_detail']
 
@@ -411,6 +491,15 @@ class NoticeAdmin(admin.ModelAdmin):
             "//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js",
             static('js/global/tinymce.event_handlers.js'),
         )
+
+    def get_list_display(self, request):
+        list_display = ['id', 'notice_name', 'notice_log', 'content_type',
+                     'corporate_membership_type', 'status_detail']
+        if (get_setting('module', 'invoices', 'taxrateuseregions') \
+            or get_setting('module', 'memberships', 'taxrateuseregions')):
+            list_display += ['region', 'excluded_regions']
+        return list_display
+        
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = (
@@ -447,7 +536,7 @@ class NoticeAdmin(admin.ModelAdmin):
         return instance
 
     def get_urls(self):
-        urls = super(NoticeAdmin, self).get_urls()
+        urls = super().get_urls()
         extra_urls = [
             re_path(r'^clone/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.clone),
@@ -543,7 +632,7 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
                         }),)
 
     def get_object(self, request, object_id, from_field=None):
-        obj = super(CorpMembershipAppField2Admin, self).get_object(request, object_id, from_field=from_field)
+        obj = super().get_object(request, object_id, from_field=from_field)
 
         # assign default field_type
         if obj:
@@ -556,7 +645,7 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
         return obj
 
     def change_view(self, request, object_id=None, form_url='', extra_context=None):
-        return super(CorpMembershipAppField2Admin, self).change_view(request, object_id, form_url,
+        return super().change_view(request, object_id, form_url,
                                extra_context=dict(show_delete=False))
 
 #     def has_delete_permission(self, request, obj=None):
@@ -620,14 +709,7 @@ class BranchInlineAdmin(admin.StackedInline):
 
 class CorpProfileAdmin(TendenciBaseModelAdmin):
     model = CorpProfile
-    list_display = ['name',]
-    if get_setting('module', 'trainings', 'enabled'):
-        list_display.append('show_transcripts')
     search_fields = ('name',)
-    inlines = (CorpMembershipRepInlineAdmin, BranchInlineAdmin,
-               CorpMembershipInlineAdmin)
-    if get_setting('module', 'corporate_memberships', 'useproducts'):
-        inlines = (ProductInline,) + inlines
     fieldsets = [(_('Company Details'), {
                       'fields': ('name',
                                  'account_id',
@@ -655,6 +737,19 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
 
     form = CorpProfileAdminForm
 
+    def get_list_display(self, request):
+        list_display = ['name',]
+        if get_setting('module', 'trainings', 'enabled'):
+            list_display.append('show_transcripts')
+        return list_display
+
+    def get_inlines(self, request, obj):
+        inlines = (CorpMembershipRepInlineAdmin, BranchInlineAdmin,
+               CorpMembershipInlineAdmin)
+        if get_setting('module', 'corporate_memberships', 'useproducts'):
+            inlines = (ProductInline,) + inlines
+        return inlines
+
     def has_add_permission(self, request):
         return False
 
@@ -680,44 +775,123 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
     show_transcripts.short_description = 'Transcripts'
 
 
+class MemberStatusFilter(SimpleListFilter):
+    title = 'Membership Status Detail'
+    parameter_name = 'status_detail'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('active', 'Active'),
+            ('pending', 'Pending'),
+            ('expired', 'Expired'),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value in ('active', 'pending', 'expired'):
+            value = None
+        if not value:
+            return queryset
+        queryset = queryset.filter(corp_profile__id__in=CorpMembership.objects.filter(
+            status=True, status_detail=value).values_list('corp_profile_id', flat=True))
+        #print(queryset.query)
+        return queryset
+
 class CorpMembershipRepAdmin(admin.ModelAdmin):
     model = CorpMembershipRep
     list_display = ['id', 'profile', 'rep_name', 'rep_email',
-                    'is_dues_rep', 'is_member_rep']
-    list_filter = ['is_dues_rep', 'is_member_rep']
+                    'is_dues_rep', 'is_member_rep', 'expiration_date', 'status_detail']
+    list_filter = ['is_dues_rep', 'is_member_rep', MemberStatusFilter]
 
     ordering = ['corp_profile']
+    actions = [
+        'export_selected',
+    ]
+
+    def iter_reps(self, corp_reps):
+        import csv
+        from tendenci.apps.base.utils import Echo
+        field_names = ['ID', 'Corp Profile', 'Rep Name', 'Rep Email', 
+                       'Is dues rep?', 'Is member rep?',
+                       'Expiration Date', 'Status detail']
+        writer = csv.DictWriter(Echo(), fieldnames=field_names)
+        # write headers
+        yield writer.writerow(dict(zip(field_names, field_names)))
+    
+        for corp_rep in corp_reps:
+            rep_name = corp_rep.user.get_full_name()
+            if not rep_name:
+                rep_name = corp_rep.user.username
+            data_dict = {'ID': corp_rep.id,
+                         'Corp Profile': corp_rep.corp_profile.name,
+                         'Rep Name': rep_name,
+                         'Rep Email': corp_rep.user.email,
+                         'Is dues rep?': corp_rep.is_dues_rep,
+                         'Is member rep?': corp_rep.is_member_rep,
+                         'Expiration Date': self.expiration_date(corp_rep),
+                         'Status detail': self.status_detail(corp_rep)
+                         }
+            yield writer.writerow(data_dict)
+
+    def export_selected(self, request, queryset):
+        """
+        Export selected reps.
+        """
+        import time as ttime
+        from django.http import StreamingHttpResponse
+    
+        response = StreamingHttpResponse(
+            streaming_content=(self.iter_reps(queryset)),
+            content_type='text/csv',)
+        response['Content-Disposition'] = f'attachment;filename=corp_reps_export_{ttime.time()}.csv'
+        return response
+    
+    export_selected.short_description = 'Export selected'
 
     def get_queryset(self, request):
         """
         Excludes those associated with the deleted corp profiles
         """
-        return super(CorpMembershipRepAdmin, self).get_queryset(request
+        return super().get_queryset(request
                     ).filter(corp_profile__status=True)
     
     @mark_safe
     def profile(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return '<a href="{}">{}</a>'.format(
               reverse('admin:corporate_memberships_corpprofile_change',
                       args=[instance.corp_profile.id]),
-              instance.corp_profile.name,)
+              instance.corp_profile.name)
     profile.short_description = _('Corp Profile')
     profile.admin_order_field = 'corp_profile__name'
 
     @mark_safe
     def rep_name(self, instance):
-        return '<a href="{0}">{1}</a>'.format(
+        return '<a href="{}">{}</a>'.format(
                 reverse('profile', args=[instance.user.username]),
                 instance.user.get_full_name() or instance.user.username,
 
             )
-    rep_name.short_description = u'Rep Name'
+    rep_name.short_description = 'Rep Name'
     rep_name.admin_order_field = 'user__first_name'
 
     def rep_email(self, instance):
         return instance.user.email
-    rep_email.short_description = u'Rep Email'
+    rep_email.short_description = 'Rep Email'
     rep_email.admin_order_field = 'user__email'
+
+    def status_detail(self, instance):
+        corp_membership = instance.corp_profile.corp_membership
+        if corp_membership:
+            return corp_membership.status_detail.capitalize()
+        return ''
+    status_detail.short_description = 'Status Detail'
+    
+    def expiration_date(self, instance):
+        corp_membership = instance.corp_profile.corp_membership
+        if not corp_membership or not corp_membership.expiration_dt:
+            return ''
+        return corp_membership.expiration_dt.strftime('%Y-%m-%d')
+    expiration_date.short_description = _('Expiration Date')
 
 
 admin.site.register(CorpMembership, CorpMembershipAdmin)

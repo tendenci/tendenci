@@ -16,11 +16,11 @@ class ProfileManager(TendenciBaseManager):
         Returns a SearchQuerySet.
         Filter out users if they have hide_in_search set to True.
         """
-        sqs = super(ProfileManager, self).search(query=query, *args, **kwargs)
+        sqs = super().search(query=query, *args, **kwargs)
         if not kwargs.get('user').profile.is_superuser:
             sqs = sqs.filter(hide_in_search=False)
         return sqs
 
 class ProfileActiveManager(TendenciBaseManager):
     def get_queryset(self):
-        return super(ProfileActiveManager, self).get_queryset().filter(status=True, status_detail='active', user__is_active=True)
+        return super().get_queryset().filter(status=True, status_detail='active', user__is_active=True)

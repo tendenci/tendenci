@@ -17,7 +17,7 @@ class MobileLinkNode(template.Node):
         except:
             redirect_url = self.redirect_url
 
-        return "<a href='%s?next=%s'>%s</a>" % (
+        return "<a href='{}?next={}'>{}</a>".format(
             reverse('toggle_mobile_mode'),
             redirect_url,
             self.link_name)

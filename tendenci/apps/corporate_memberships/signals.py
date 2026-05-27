@@ -1,4 +1,3 @@
-
 from django.utils.translation import gettext_noop as _
 
 from tendenci.apps.site_settings.utils import get_setting
@@ -90,7 +89,5 @@ def init_signals():
     from tendenci.apps.contributions.signals import save_contribution
 
     post_save.connect(save_contribution, sender=CorpMembership, weak=False)
-    reps_group = get_reps_group()
-    if reps_group:
-        post_save.connect(add_rep_to_group, sender=CorpMembershipRep, weak=False)
-        pre_delete.connect(remove_rep_from_group, sender=CorpMembershipRep, weak=False)
+    post_save.connect(add_rep_to_group, sender=CorpMembershipRep, weak=False)
+    pre_delete.connect(remove_rep_from_group, sender=CorpMembershipRep, weak=False)

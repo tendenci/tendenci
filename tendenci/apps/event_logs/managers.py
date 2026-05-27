@@ -1,4 +1,3 @@
-from builtins import str
 import inspect
 from datetime import datetime, timedelta
 from operator import and_
@@ -11,6 +10,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from django.conf import settings
 from django.utils.encoding import smart_bytes
+from django.utils import timezone
 
 from tendenci.apps.robots.models import Robot
 
@@ -42,12 +42,12 @@ class EventLogManager(Manager):
         if f_data['start_dt']:
             qs.append(Q(create_dt__gte=f_data['start_dt']))
         else:
-            qs.append(Q(create_dt__gte=datetime.now() - timedelta(weeks=4)))
+            qs.append(Q(create_dt__gte=timezone.now() - timedelta(weeks=4)))
 
         if f_data['end_dt']:
             qs.append(Q(create_dt__lte=f_data['end_dt']))
         else:
-            qs.append(Q(create_dt__lte=datetime.now()))
+            qs.append(Q(create_dt__lte=timezone.now()))
 
         if f_data['request_method']:
             if f_data['request_method'] != 'all':

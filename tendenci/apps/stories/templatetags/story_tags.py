@@ -1,4 +1,3 @@
-from builtins import str
 import random
 from datetime import datetime
 from operator import or_, and_
@@ -10,6 +9,7 @@ from django.db.models import Q
 from django.template import Library, TemplateSyntaxError, Variable
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 
 from tendenci.apps.stories.models import Story
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
@@ -56,10 +56,10 @@ def story_expiration(obj):
     t = '<span class="t-expires t-expires-%s">%s</span>'
 
     if obj.expires:
-        if obj.end_dt < datetime.now():
+        if obj.end_dt < timezone.now():
             value = t % ('inactive', ("Expired on %s" % obj.end_dt.strftime("%m/%d/%Y at %I:%M %p")))
         else:
-            if obj.start_dt > datetime.now():
+            if obj.start_dt > timezone.now():
                 value = t % ('inactive',("Starts on %s" % obj.start_dt.strftime("%m/%d/%Y at %I:%M %p")))
             else:
                 value = t % ('active', ("Expires on %s" % obj.end_dt.strftime("%m/%d/%Y at %I:%M %p")))
@@ -85,13 +85,13 @@ class ListStoriesNode(ListNode):
             raise AttributeError(_('Model.objects does not have a search method'))
 
     def render(self, context):
-        tags = u''
-        query = u''
+        tags = ''
+        query = ''
         user = AnonymousUser()
         limit = 3
-        order = u''
+        order = ''
         randomize = False
-        group = u''
+        group = ''
 
         if 'random' in self.kwargs:
             randomize = bool(self.kwargs['random'])
@@ -177,7 +177,7 @@ class ListStoriesNode(ListNode):
         objects = []
 
         # Removed seconds and microseconds so we can cache the query better
-        now = datetime.now().replace(second=0, microsecond=0)
+        now = timezone.now().replace(second=0, microsecond=0)
 
         # Custom filter for stories
         date_query = reduce(or_, [Q(end_dt__gte=now), Q(expires=False)])

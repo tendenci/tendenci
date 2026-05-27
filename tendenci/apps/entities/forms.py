@@ -56,7 +56,7 @@ class EntityForm(FormControlWidgetMixin, BetterModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
-        super(EntityForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if not self.user.profile.is_superuser:
             if 'admin_notes' in self.fields: self.fields.pop('admin_notes')

@@ -8,7 +8,7 @@ class Command(BaseCommand):
     Usage: python manage.py clean_chapter_memberships
     """
     def handle(self, *args, **kwargs):
-        from datetime import datetime
+        from django.utils import timezone
         from dateutil.relativedelta import relativedelta
         from tendenci.apps.chapters.models import ChapterMembership, ChapterMembershipType
         from tendenci.apps.user_groups.models import GroupMembership
@@ -19,7 +19,7 @@ class Command(BaseCommand):
             # get expired memberships out of grace period
             chapter_memberships = ChapterMembership.objects.filter(
                 membership_type=membership_type,
-                expire_dt__lt=datetime.now() - relativedelta(days=grace_period),
+                expire_dt__lt=timezone.now() - relativedelta(days=grace_period),
                 status=True).filter(status_detail='active')
 
             for m in chapter_memberships:

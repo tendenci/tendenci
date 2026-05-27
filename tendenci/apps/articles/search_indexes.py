@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from haystack import indexes
 
 from tendenci.apps.articles.models import Article
@@ -46,7 +46,7 @@ class ArticleIndex(TendenciBaseSearchIndex, indexes.Indexable):
 
     def prepare_can_syndicate(self, obj):
         try:
-            temp = obj.release_dt <= datetime.now()
+            temp = obj.release_dt <= timezone.now()
         except TypeError:
             temp = False
 

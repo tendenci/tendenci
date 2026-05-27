@@ -15,7 +15,7 @@
 	</font></p>
 
 	<p><font face="Arial, Helvetica, sans-serif" size="2">
-	{{ SITE_GLOBAL_SITEDISPLAYNAME }} thanks you for your donation of
+	{{ SITE_GLOBAL_SITEDISPLAYNAME }} thanks you for your {{ donation_label }} of
 	{% if donation.allocation %}
 		{{ donation.donation_amount|format_currency }} to be allocated to {{ donation.allocation }}.
 	{% else %}

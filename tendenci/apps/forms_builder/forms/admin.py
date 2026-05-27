@@ -36,7 +36,7 @@ class PricingAdminForm(PricingForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(PricingAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # tax rate
         if get_setting('module', 'invoices', 'taxrateuseregions'):
             self.fields['tax_rate'].help_text += "<br />Note that this rate will be served as the default rate. Please go to <a href='/admin/regions/region/'>Regions</a> to configure more tax rates."
@@ -141,13 +141,13 @@ class FormAdmin(TendenciBaseModelAdmin):
                     inline_class.verbose_name = obj.pricing_name
                     inline_class.verbose_name_plural = obj.pricing_name
 
-        return super(FormAdmin, self).change_view(request, object_id, form_url, extra_context)
+        return super().change_view(request, object_id, form_url, extra_context)
 
     def get_urls(self):
         """
         Add the export view to urls.
         """
-        urls = super(FormAdmin, self).get_urls()
+        urls = super().get_urls()
         extra_urls = [
             re_path(r'^export/(?P<form_id>\d+)/$',
                 self.admin_site.admin_view(self.export_view),
@@ -167,7 +167,7 @@ class FormAdmin(TendenciBaseModelAdmin):
         response = StreamingHttpResponse(
             streaming_content=(iter_form_entries(form)),
             content_type='text/csv',)
-        csvname = '%s-%s.csv' % (form.slug, slugify(datetime.now().ctime()))
+        csvname = '{}-{}.csv'.format(form.slug, slugify(datetime.now().ctime()))
         response['Content-Disposition'] = 'attachment; filename="%s"' % csvname
         
         return response
@@ -232,7 +232,7 @@ class FormEntryAdmin(admin.ModelAdmin):
             
             return queryset, may_have_duplicates
 
-        return super(FormEntryAdmin, self).get_search_results(request, queryset, search_term)
+        return super().get_search_results(request, queryset, search_term)
 
 
 admin.site.register(Form, FormAdmin)

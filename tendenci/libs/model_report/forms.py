@@ -1,5 +1,3 @@
-# coding=utf-8
-from builtins import str
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
@@ -28,7 +26,7 @@ class ConfigForm(forms.Form):
     serie_op = forms.ChoiceField(label=_('Serie operator'), choices=CHART_SERIE_OPERATOR, required=False)
 
     def __init__(self, *args, **kwargs):
-        super(ConfigForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         choices = [('', '')]
         for k, v in self.DEFAULT_CHART_TYPES:
             if k in self.chart_types:
@@ -60,7 +58,7 @@ class GroupByForm(forms.Form):
         pass
 
     def __init__(self, **kwargs):
-        super(GroupByForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         choices = [(None, '')]
         for i, (mfield, field, caption) in enumerate(self.groupby_fields):
             choices.append((field, caption))
@@ -72,7 +70,7 @@ class GroupByForm(forms.Form):
     def get_cleaned_data(self):
         cleaned_data = getattr(self, 'cleaned_data', {})
         if 'groupby' in cleaned_data:
-            if str(cleaned_data['groupby']) == u'None':
+            if str(cleaned_data['groupby']) == 'None':
                 cleaned_data['groupby'] = None
         return cleaned_data
 
@@ -104,14 +102,14 @@ class FilterForm(forms.BaseForm):
             elif hasattr(self.fields[k], 'as_boolean'):
                 if v:
                     filter_kwargs.pop(k)
-                    filter_kwargs[k] = (str(v) == u'True')
+                    filter_kwargs[k] = (str(v) == 'True')
         return filter_kwargs
 
     def get_cleaned_data(self):
         return getattr(self, 'cleaned_data', {})
 
     def __init__(self, *args, **kwargs):
-        super(FilterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.filter_report_is_all = '__all__' in self.fields and len(self.fields) == 1
         try:
             data_filters = {}

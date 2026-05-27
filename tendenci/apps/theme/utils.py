@@ -157,7 +157,8 @@ def get_theme_search_order(theme=None):
         if extends is None:
             # For backward compatibility, we must assume that themes with no
             # 'extends' value should extend t7-base
-            warn('Theme "%s" does not have an "extends" value, using "t7-base"'%(theme))
+            if theme:
+                warn('Theme "%s" does not have an "extends" value, using "t7-base"'%(theme))
             extends = ['t7-base']
         else:
             extends = [e.strip() for e in extends.split(',')]
@@ -232,7 +233,7 @@ def get_raw_content(relative_path, type=''):
                 raw_content = fp.read()
             break
         else:
-            warn("%s relative path %s not found" % (type, relative_path))
+            warn("{} relative path {} not found".format(type, relative_path))
 
     return raw_content
 

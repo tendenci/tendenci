@@ -1,10 +1,10 @@
-
 import uuid
 import re
 from datetime import datetime, timedelta
 from decimal import Decimal
 import math
 import stripe
+from zoneinfo import ZoneInfo
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -13,6 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Sum
 from django.db.models.signals import post_save, post_delete
 from django.conf import settings
+from django.utils import timezone
 
 from dateutil.relativedelta import relativedelta
 from tendenci.apps.invoices.models import Invoice
@@ -111,7 +112,7 @@ class RecurringPayment(models.Model):
         verbose_name_plural = _("Recurring Payments")
 
     def __str__(self):
-        return '%s - %s' % (self.user, self.description)
+        return '{} - {}'.format(self.user, self.description)
 
     def get_absolute_url(self):
         return reverse('recurring_payment.view_account', args=[self.id])
@@ -122,11 +123,11 @@ class RecurringPayment(models.Model):
             self.tax_exempt = 0
         if not self.id:
             self.platform = get_setting("site", "global", "merchantaccount").lower()
-        super(RecurringPayment, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def tax_rate_percentage(self):
-        return '%.2f%s' % (float(self.tax_rate * 100), '%')
+        return '{:.2f}{}'.format(float(self.tax_rate * 100), '%')
 
     @property
     def user_profile(self):
@@ -315,7 +316,7 @@ class RecurringPayment(models.Model):
         return valid_customer_payment_profile_ids, invalid_customer_payment_profile_ids
 
     def within_trial_period(self):
-        now = datetime.now()
+        now = timezone.now()
 
         # billing period has already started, skip the trial period.
         if now >= self.billing_start_dt:
@@ -395,7 +396,7 @@ class RecurringPayment(models.Model):
         """
         Check and generate invoices if needed.
         """
-        now = datetime.now()
+        now = timezone.now()
 
         if self.is_membership_auto_renew:
             # check and renew for memberships with auto-renew enabled
@@ -403,16 +404,26 @@ class RecurringPayment(models.Model):
             memberships = self.memberships
             if memberships:
                 for m in self.memberships:
-                    if m.expire_dt < datetime(now.year, now.month, now.day, 0, 0, 0) + timedelta(days=1):
-                        renewed_m = m.renew(m.user)
-                        renewed_m.status_detail = 'pending'
-                        renewed_m.save()
-                        invoice = renewed_m.get_invoice()
-                        rp_invoice = RecurringPaymentInvoice(
-                                 recurring_payment=self,
-                                 invoice=invoice,
-                                 billing_dt=now)
-                        rp_invoice.save()
+                    if m.expire_dt < datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=ZoneInfo(settings.TIME_ZONE)) + timedelta(days=1):
+                        if not m.user.membershipdefault_set.filter(
+                                renewal=True,
+                                renew_from_id=m.id,
+                                status_detail__in=['pending', 'active']
+                                ).exists():
+                            #renewed_m = m.renew(m.user)
+                            renewed_m = m.copy()
+                            renewed_m.renewal = True
+                            renewed_m.renew_from_id = m.id
+                            renewed_m.pend()
+                            renewed_m.save()
+                            renewed_m.save_invoice(status_detail='tendered')
+
+                            invoice = renewed_m.get_invoice()
+                            rp_invoice = RecurringPaymentInvoice(
+                                     recurring_payment=self,
+                                     invoice=invoice,
+                                     billing_dt=now)
+                            rp_invoice.save()
 
         else:
             if not last_billing_cycle:
@@ -459,20 +470,23 @@ class RecurringPayment(models.Model):
         inv.object_type = ContentType.objects.get(app_label=self._meta.app_label,
                                                   model=self._meta.model_name)
         inv.object_id = self.id
-        inv.title = "Recurring Payment Invoice for Billing Cycle %s - %s" % (
+        inv.title = "Recurring Payment Invoice for Billing Cycle {} - {}".format(
                                            billing_cycle['start'].strftime('%m/%d/%Y'),
                                            billing_cycle['end'].strftime('%m/%d/%Y'))
         inv.bill_to_user(self.user)
         inv.status = True
 
         if self.taxable and self.tax_rate:
-            inv.tax = self.tax_rate * amount
+            inv.assign_tax([(amount, self.tax_rate)], self.user, module_tax_rate_use_regions=get_setting('module', 'invoices', 'taxrateuseregions'))
         else:
             inv.tax_exempt = 1
             inv.tax = 0
 
         inv.subtotal = amount
-        inv.total = inv.subtotal + inv.tax
+        if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added':
+            inv.total = inv.subtotal + inv.tax
+        else: #tax included
+            inv.total = inv.subtotal
 
         inv.balance = inv.total
         inv.estimate = True
@@ -501,8 +515,8 @@ class RecurringPayment(models.Model):
         d = RecurringPaymentInvoice.objects.filter(
                                 recurring_payment=self,
                                 invoice__balance__gt=0,
-                                billing_cycle_start_dt__lte=datetime.now(),
-                                billing_cycle_end_dt__gte=datetime.now()
+                                billing_cycle_start_dt__lte=timezone.now(),
+                                billing_cycle_end_dt__gte=timezone.now()
                                 ).aggregate(current_balance=Sum('invoice__balance'))
         if not d['current_balance']:
             d['current_balance'] = 0
@@ -512,7 +526,7 @@ class RecurringPayment(models.Model):
         d = RecurringPaymentInvoice.objects.filter(
                                 recurring_payment=self,
                                 invoice__balance__gt=0,
-                                billing_dt__lte=datetime.now()
+                                billing_dt__lte=timezone.now()
                                 ).aggregate(outstanding_balance=Sum('invoice__balance'))
         if not d['outstanding_balance']:
             d['outstanding_balance'] = 0
@@ -597,7 +611,7 @@ class RecurringPaymentInvoice(models.Model):
 
         if self.billing_cycle_start_dt and self.billing_cycle_end_dt:
             description = self.recurring_payment.description
-            description += '(billing cycle from {0} to {1})'.format(
+            description += '(billing cycle from {} to {})'.format(
                             self.billing_cycle_start_dt.strftime('%m/%d/%Y'),
                             self.billing_cycle_end_dt.strftime('%m/%d/%Y'))
         else:
@@ -695,12 +709,12 @@ class RecurringPaymentInvoice(models.Model):
                 membership.approve()
                 # send notification to user
 
-            self.payment_received_dt = datetime.now()
+            self.payment_received_dt = timezone.now()
         else:
             if payment.status_detail == '':
                 payment.status_detail = 'not approved'
             payment.save()
-            self.last_payment_failed_dt = datetime.now()
+            self.last_payment_failed_dt = timezone.now()
 
         self.save()
 

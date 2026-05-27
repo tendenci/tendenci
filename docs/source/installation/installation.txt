@@ -15,7 +15,7 @@ recommend installing Tendenci within a virtual environment, which will enable yo
 System Requirements
 -------------------
 
-These instructions cover the installation of Tendenci on a system running Ubuntu 24.04 LTS, Ubuntu 22.04 LTS and Ubuntu 20.04 LTS. Unless specified, all commands apply for these Ubuntu versions. 
+These instructions cover the installation of Tendenci on a system running Ubuntu 24.04 LTS and Ubuntu 22.04 LTS. Unless specified, all commands apply for these Ubuntu versions. 
 
 It should technically be possible to install Tendenci on nearly any Linux, Mac, or Windows system,
 and some partial instructions for installing on macOS are included below.  However, we generally
@@ -32,7 +32,7 @@ If necessary, you may be able to run Tendenci on a VM with as little as 1 CPU co
 3GB of storage, but you will likely find that to be too slow/constrained even for testing purposes.
 
 
-Please note that Tendenci 15 requires Python 3.8 or newer. 
+Please note that Tendenci 16 requires Python 3.10 or newer. 
 
 
 System Preparation
@@ -52,11 +52,13 @@ Also ensure that Ubuntu is configured to automatically install security updates:
 
 
 
-Install the required system dependencies (Ubuntu 20.04 LTS comes with Python 3.8. Ubuntu 22.04 LTS comes with Python 3.10. So there is no need to install Python 3):
+Install the required system dependencies (Ubuntu 22.04 LTS comes with Python 3.10 and Ubuntu 24.04 LTS comes with Python 3.12. So there is no need to install Python 3):
 ::
 
     sudo apt install build-essential \
       libpq-dev python3-dev
+    # For Ubuntu 22.04 LTS, the following 2 packages might be needed when installing cairo, a dependency of xhtml2pdf.
+    sudo apt install libcairo2-dev pkg-config
 
 
 Add the universe repository:
@@ -263,19 +265,19 @@ Set ``TIME_ZONE`` to the local time zone configured on the system running Tenden
 Setting up the Site
 -------------------
 
-Copy "juniper" theme to the themes directory (adjust your path if your venv path is different or you're running a different python version rather than python 3.8):
+Copy "juniper" theme to the themes directory (adjust your path if your venv path is different or you're running a different python version rather than python 3.12):
 ::
 
     mkdir /var/www/mysite/themes/juniper
-    # replace 3.10 with your python version
-    cp -r /srv/venv_mysite/lib/python3.10/site-packages/tendenci/themes/juniper/* /var/www/mysite/themes/juniper/
+    # replace 3.12 with your python version
+    cp -r /srv/venv_mysite/lib/python3.12/site-packages/tendenci/themes/juniper/* /var/www/mysite/themes/juniper/
 
 
 Initialize the database and load some default data:
 ::
 
     cd /var/www/mysite/
-    python manage.py initial_migrate
+    python manage.py migrate --skip-checks
     python manage.py deploy
     
     python manage.py load_tendenci_defaults
@@ -341,7 +343,7 @@ Clone the Tendenci repository:
     cd /srv/
     git clone https://github.com/tendenci/tendenci.git tendenci-git
 
-Edit ``/var/www/mysite/requirements/tendenci.txt`` and comment out ``tendenci>=15,<16``
+Edit ``/var/www/mysite/requirements/tendenci.txt`` and comment out ``tendenci>=16,<17``
 
 Edit ``/var/www/mysite/requirements/common.txt`` and add:
 ::

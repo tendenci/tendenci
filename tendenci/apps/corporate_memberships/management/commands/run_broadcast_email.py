@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand, CommandError
 from django.template.loader import render_to_string
 
@@ -18,7 +17,7 @@ class Command(BaseCommand):
         parser.add_argument('id', type=int)
 
     def handle(self, *args, **options):
-        import datetime
+        from django.utils import timezone
         from django.contrib.auth.models import User
         from tendenci.apps.newsletters.utils import get_newsletter_connection
         from tendenci.apps.emails.models import Email
@@ -63,7 +62,7 @@ class Command(BaseCommand):
         
         bce.status = "completed"
         bce.total_sent = total_sent
-        bce.finish_dt = datetime.datetime.now()
+        bce.finish_dt = timezone.now()
         bce.save()
 
         # Sending summary to the creator

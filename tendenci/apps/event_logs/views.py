@@ -1,4 +1,3 @@
-from builtins import str
 from datetime import datetime, timedelta
 from os.path import join, isdir, normpath
 from os import mkdir
@@ -10,6 +9,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.conf import settings
 from django.db.models import Count
+from django.utils import timezone
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -42,8 +42,8 @@ def search(request, template_name="event_logs/search.html"):
     event_logs = []
 
     # defaults for date information
-    start_dt = datetime.now() - timedelta(weeks=4)
-    end_dt = datetime.now()
+    start_dt = timezone.now() - timedelta(weeks=4)
+    end_dt = timezone.now()
     date_range_query = '&start_dt_0=%s&start_dt_1=%s&end_dt_0=%s&end_dt_1=%s'
 
     if request.GET:

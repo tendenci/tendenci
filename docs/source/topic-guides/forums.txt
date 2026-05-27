@@ -1,0 +1,20 @@
+Forums
+======
+
+
+Forum Digest
+------------
+
+To turn on the forum digest feature, follow these steps:
+
+1) Set the settings `ENABLE_FORUM_DIGEST` to True in your `conf/settings.py.
+::
+
+	ENABLE_FORUM_DIGEST = True
+
+
+2) Set up 2 cron jobs, one for daily digest, the other for weekly digest. For example:
+::
+
+	30 7 * * * /srv/venv_mysite/bin/python /var/www/mysite/manage.py send_forum_digest --digest_type daily
+	30 7 * * 0 /srv/venv_mysite/bin/python /var/www/mysite/manage.py send_forum_digest --digest_type weekly

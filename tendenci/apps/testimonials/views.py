@@ -40,7 +40,7 @@ def search(request, template_name="testimonials/search.html"):
     if has_index and query:
         testimonials = Testimonial.objects.search(query, user=request.user)
     else:
-        filters = get_query_filters(request.user, 'testimonials.view_story')
+        filters = get_query_filters(request.user, 'testimonials.view_testimonial')
         testimonials = Testimonial.objects.filter(filters).distinct()
         if request.user.is_authenticated:
             testimonials = testimonials.select_related()

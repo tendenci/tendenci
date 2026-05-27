@@ -1,8 +1,7 @@
-
-
 import re
 import inspect
 
+from django.conf import settings
 from django import forms
 from django.core.exceptions import FieldError
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
@@ -37,7 +36,7 @@ class CategoryAdminForm(TendenciBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(CategoryAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['user_perms'].help_text = _('Select view/change to allow all ' +
                             'authenticated users to view or post (change) in this category')
         self.fields['member_perms'].help_text = _('Select view/change to allow all ' +
@@ -74,7 +73,7 @@ class PostForm(forms.ModelForm):
         widget=forms.Textarea(attrs={'class': 'no-markitup'}))
     slug = forms.CharField(label=_('Topic slug'), required=False)
 
-    class Meta(object):
+    class Meta:
         model = Post
         fields = ('body',)
         widgets = {
@@ -84,7 +83,7 @@ class PostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         # Move args to kwargs
         if args:
-            kwargs.update(dict(zip(inspect.getfullargspec(super(PostForm, self).__init__)[0][1:], args)))
+            kwargs.update(dict(zip(inspect.getfullargspec(super().__init__)[0][1:], args)))
         self.user = kwargs.pop('user', None)
         self.ip = kwargs.pop('ip', None)
         self.topic = kwargs.pop('topic', None)
@@ -99,7 +98,7 @@ class PostForm(forms.ModelForm):
             kwargs.setdefault('initial', {})['poll_type'] = kwargs['instance'].topic.poll_type
             kwargs.setdefault('initial', {})['poll_question'] = kwargs['instance'].topic.poll_question
 
-        super(PostForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         # remove topic specific fields
         if not (self.forum or (self.instance.pk and (self.instance.topic.head == self.instance))):
@@ -142,7 +141,7 @@ class PostForm(forms.ModelForm):
 
     def save(self, commit=True):
         if self.instance.pk:
-            post = super(PostForm, self).save(commit=False)
+            post = super().save(commit=False)
             if self.user:
                 post.user = self.user
             if post.topic.head == post:
@@ -197,7 +196,7 @@ class AdminPostForm(PostForm):
         if 'instance' in kwargs and kwargs['instance']:
             if kwargs['instance'].user:
                 kwargs.setdefault('initial', {}).update({'login': getattr(kwargs['instance'].user, username_field)})
-        super(AdminPostForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def save(self, *args, **kwargs):
         try:
@@ -211,17 +210,17 @@ class AdminPostForm(PostForm):
                 create_data = {'email': '%s@example.com' % self.cleaned_data['login'],
                                'is_staff': False}
             self.user = User.objects.create(**create_data)
-        return super(AdminPostForm, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 try:
     class EditProfileForm(forms.ModelForm):
-        class Meta(object):
+        class Meta:
             model = util.get_pybb_profile_model()
             fields = ['signature', 'time_zone', 'language', 'show_signatures', 'avatar']
 
         def __init__(self, *args, **kwargs):
-            super(EditProfileForm, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
             self.fields['signature'].widget = forms.Textarea(attrs={'rows': 2, 'cols:': 60})
             # remove avatar upload
             if 'avatar' in self.fields:
@@ -259,7 +258,7 @@ class PollForm(forms.Form):
     def __init__(self, topic, *args, **kwargs):
         self.topic = topic
 
-        super(PollForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         qs = PollAnswer.objects.filter(topic=topic)
         if topic.poll_type == Topic.POLL_TYPE_SINGLE:
@@ -281,7 +280,7 @@ class PollForm(forms.Form):
 
 class ForumSubscriptionForm(forms.Form):
     def __init__(self, user, forum, instance=None, *args, **kwargs):
-        super(ForumSubscriptionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.user = user
         self.forum = forum
         self.instance = instance
@@ -295,6 +294,11 @@ class ForumSubscriptionForm(forms.Form):
                 'unsubscribe', 
                 _('be unsubscribe from this forum')
             ))
+        digest_type_choices = list(ForumSubscription.DIGEST_TYPE_CHOICES)
+        digest_apply_to_choices = (
+            ('this', _('This forum Only')),
+            ('all', _('All forums I subscribed')),
+        )
 
         initial = ForumSubscription.TYPE_SUBSCRIBE if not instance else instance.type
         self.fields['type'] = forms.ChoiceField(
@@ -303,6 +307,16 @@ class ForumSubscriptionForm(forms.Form):
         self.fields['topics'] = forms.ChoiceField(
             label=_('Concerned topics'), choices=topic_choices, initial=topic_choices[1][0],
             widget=forms.RadioSelect())
+        if settings.ENABLE_FORUM_DIGEST:
+            digest_type_initial = '' if not instance else instance.digest_type
+            self.fields['digest_type'] = forms.ChoiceField(required=False,
+                label=_('Digest type'), choices=digest_type_choices, initial=digest_type_initial,
+                widget=forms.RadioSelect(),
+                help_text=_('If you opt in to receive daily or weekly digest emails, you will not receive instant updates.'))
+            self.fields['digest_type_apply_to'] = forms.ChoiceField(
+                label=_('Apply digest type to'), choices=digest_apply_to_choices,
+                initial='this',
+                widget=forms.RadioSelect())
     
     def process(self):
         """
@@ -319,5 +333,13 @@ class ForumSubscriptionForm(forms.Form):
                 self.instance.user = self.user
                 self.instance.forum = self.forum
             self.instance.type = int(self.cleaned_data.get('type'))
+            self.instance.digest_type = self.cleaned_data.get('digest_type', '')
             self.instance.save(all_topics=all_topics)
+            # 
+            if self.cleaned_data.get('digest_type_apply_to') == 'all':
+                for forum_subscription in ForumSubscription.objects.filter(
+                    user=self.user).exclude(id=self.instance.id):
+                    forum_subscription.digest_type = self.instance.digest_type
+                    forum_subscription.save()
+
             return 'subscribe-all' if all_topics else 'subscribe'

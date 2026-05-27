@@ -1,0 +1,27 @@
+{% load pybb_tags %}
+ <!DOCTYPE html>
+<html>
+<head>
+<title>Forum Digest</title>
+</head>
+
+<body>
+<h3>{{ forum.name }} - {{ digest_type|capfirst }} {% trans "Digest" %}</h3>
+{% for topic_name, posts in topics_dict.items %}
+	<strong>{{ topic_name }}</strong>
+	{% for post in posts %}
+	<p><i>{% pybb_time post.created %} {{ post.user }}:</i><br />
+	{{ post.body_html|safe }}</p>
+	{% endfor %}
+	<strong>{% trans "Click the link to respond:" %}</strong> <a href="{{site_url}}{{ posts.0.get_absolute_url }}">{{site_url}}{{ posts.0.get_absolute_url }}</a><br>
+	<p>&nbsp;</p>
+{% endfor %}
+<p>
+{% trans "Visit the forum:" %} <a href="{{site_url}}{{ forum.get_absolute_url }}">{{site_url}}{{ forum.get_absolute_url }}</a>
+</p>
+<p>
+{% trans "To manage your subscription for this forum, please visit the following link:" %} <a href="{{ site_url }}{{ manage_url }}">{{ site_url }}{{ manage_url }}</a>
+</p>
+</body>
+
+</html> 

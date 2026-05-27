@@ -1,5 +1,4 @@
 # models.py
-from builtins import str
 from dateutil.parser import parse
 
 from django.db import models

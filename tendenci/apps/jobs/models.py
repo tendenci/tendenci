@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 
 from tendenci.apps.categories.models import CategoryItem
 from tagging.fields import TagField
@@ -138,7 +139,7 @@ class BaseJob(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid4())
 
-        super(BaseJob, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -193,7 +194,7 @@ class BaseJob(TendenciBaseModel):
         if not request.user.profile.is_superuser:
             self.status_detail = 'paid - pending approval'
 
-        self.activation_dt = datetime.now()
+        self.activation_dt = timezone.now()
         self.expiration_dt = self.activation_dt + timedelta(days=self.requested_duration)
         self.save()
 
@@ -233,9 +234,9 @@ class Job(BaseJob):
             slug = slugify(self.title)
             count = str(Job.objects.count())
             if len(slug) + len(count) >= 99:
-                self.slug = '%s-%s' % (slug[:99-len(count)], count)
+                self.slug = '{}-{}'.format(slug[:99-len(count)], count)
             else:
-                self.slug = '%s-%s' % (slug, count)
+                self.slug = '{}-{}'.format(slug, count)
 
 
 class JobPricing(models.Model):
@@ -265,8 +266,8 @@ class JobPricing(models.Model):
         app_label = 'jobs'
 
     def __str__(self):
-        price = "%s/%s" % (self.regular_price, self.premium_price)
-        return "%s: %s Days for %s" % (self.get_title(), self.duration, price)
+        price = "{}/{}".format(self.regular_price, self.premium_price)
+        return "{}: {} Days for {}".format(self.get_title(), self.duration, price)
 
     def get_title(self):
         if self.title:
@@ -297,7 +298,7 @@ class JobPricing(models.Model):
         if not self.premium_price:
             self.premium_price = 0
 
-        super(JobPricing, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_price_for_user(self, user=AnonymousUser(), list_type='regular'):
         if not user.is_anonymous and user.profile.is_member:

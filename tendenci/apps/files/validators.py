@@ -10,7 +10,7 @@ from django.template.defaultfilters import filesizeformat
 from tendenci.apps.files.utils import get_max_file_upload_size, get_allowed_upload_file_exts, get_allowed_mimetypes
 
 
-class FileValidator(object):
+class FileValidator:
     """
     Validator for files, checking the size, extension and mimetype.
 
@@ -70,6 +70,7 @@ class FileValidator(object):
 
             # Check the content type
             try:
+                value.seek(0);
                 mime_type = magic.from_buffer(value.read(2048), mime=True)
                 if self.allowed_mimetypes and mime_type not in self.allowed_mimetypes:
                     message = self.mime_message % {

@@ -50,6 +50,7 @@ STATIC_URL = LOCAL_STATIC_URL  # Added 2012-03-01 to use cloudfront CDN
 # http://tendenci.com/photos/set/3/
 STOCK_STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-90/'
 
+FORMS_URLFIELD_ASSUME_HTTPS = True
 
 # ---------------------------------------------------------------------------- #
 # Django
@@ -58,6 +59,8 @@ STOCK_STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-90/'
 DEBUG = False
 
 SITE_ID = 1
+
+URLIZE_ASSUME_HTTPS = True
 
 # Maintaining the historical behavior, the default value for DEFAULT_AUTO_FIELD is AutoField.
 # Starting with 3.2 new projects are generated with DEFAULT_AUTO_FIELD set to BigAutoField.
@@ -194,6 +197,7 @@ INSTALLED_APPS = [
     'two_factor.plugins.email',
     'qr_code',
     'model_bakery',
+    'django_recaptcha',
 
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',
@@ -253,7 +257,6 @@ INSTALLED_APPS = [
     'tendenci.apps.resumes',
     'tendenci.apps.boxes',
     'tendenci.apps.mobile',
-    #'tendenci.apps.campaign_monitor',
     'tendenci.apps.theme',
     'tendenci.apps.discounts',
     'tendenci.apps.metrics',
@@ -496,7 +499,7 @@ EXTRA_LANG_INFO = {
         'bidi': False, # right-to-left
         'code': 'tl',
         'name': 'Tagalog',
-        'name_local': u'Tagalog', #unicode codepoints here
+        'name_local': 'Tagalog', #unicode codepoints here
     },
 #     'tl_PH': {
 #         'bidi': False, # right-to-left
@@ -508,7 +511,7 @@ EXTRA_LANG_INFO = {
         'bidi': True, # right-to-left
         'code': 'he',
         'name': 'Hebrew',
-        'name_local': u'Hebrew', #unicode codepoints here
+        'name_local': 'Hebrew', #unicode codepoints here
     },
 }
 
@@ -557,7 +560,7 @@ GAVATAR_DEFAULT_URL = 'images/icons/default-user-80.jpg'
 DEFAULT_IMAGE_URL = 'images/default-photo.jpg'
 
 # User agent for external retrieval of files/images
-TENDENCI_USER_AGENT = 'Tendenci/14 (+https://www.tendenci.com)'
+TENDENCI_USER_AGENT = 'Tendenci/16 (+https://www.tendenci.com)'
 
 # Google Static Maps URL signing secret used to generate a digital signature
 GOOGLE_SMAPS_URL_SIGNING_SECRET = ''
@@ -571,6 +574,8 @@ PHOTOS_MAXBLOCK = 2 ** 20  # prevents 'IOError: encoder error -2'
 # Events
 # Turn on/off the Gratuity feature - per Ed, allow it to be adjusted in conf/settings.py rather than site settings
 EVENTS_GRATUITY_ENABLED = False
+
+CUSTOM_REG_FILE_UPLOAD_ENABLED = False
 
 # EMail Settings for Newsletters
 NEWSLETTER_EMAIL_HOST = None
@@ -594,7 +599,10 @@ MOBILE_COOKIE_NAME = "tendenci_mobile"
 # Forums App
 PYBB_MARKUP = 'markdown'
 PYBB_NICE_URL = True
-PYBB_ATTACHMENT_ENABLE = True
+
+# If forum digest is enabled, make sure to set up 2 cron jobs
+# to run management command send_forum_digest daily and weekly. 
+ENABLE_FORUM_DIGEST = False
 
 # HelpDesk App
 HELPDESK_REDIRECT_TO_LOGIN_BY_DEFAULT = False
@@ -840,18 +848,3 @@ Q_CLUSTER = {
     "max_attempts": 1
 }
 
-# ---------------------------------------------------------------------------- #
-# Debugging Tools
-# ---------------------------------------------------------------------------- #
-
-DEBUG_TOOLBAR_ENABLED = False
-try:
-    import debug_toolbar  # noqa: F401
-    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
-    INSTALLED_APPS += ['debug_toolbar']
-    DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_TOOLBAR_CALLBACK': lambda req: DEBUG_TOOLBAR_ENABLED,
-        'SHOW_COLLAPSED': False,
-    }
-except ImportError:
-    pass

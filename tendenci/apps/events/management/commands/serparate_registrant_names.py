@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
@@ -15,22 +14,22 @@ class Command(BaseCommand):
 
         if len(name_list) == 5:
             prefix, first, middle, last, suffix = name_list
-            first_name = '%s %s %s' % (
+            first_name = '{} {} {}'.format(
                 prefix,
                 first,
                 middle,
             )
-            last_name = '%s %s' % (
+            last_name = '{} {}'.format(
                 last,
                 suffix,
             )
         elif len(name_list) == 4:
             first, middle, last, suffix = name_list
-            first_name = '%s %s' % (
+            first_name = '{} {}'.format(
                 first,
                 middle,
             )
-            last_name = '%s %s' % (
+            last_name = '{} {}'.format(
                 last,
                 suffix,
             )
@@ -38,12 +37,12 @@ class Command(BaseCommand):
             first, middle, last = name_list
             if last.lower() in suffixes:
                 first_name = first
-                last_name = '%s %s' % (
+                last_name = '{} {}'.format(
                     middle,
                     last,
                 )
             else:
-                first_name = '%s %s' % (
+                first_name = '{} {}'.format(
                     first,
                     middle,
                 )
@@ -80,7 +79,7 @@ class Command(BaseCommand):
                     registrant.last_name = ln
                     if verbosity == 2:
                         try:
-                            print('%s (%s -- %s)' % (registrant.name, registrant.last_name, registrant.first_name,))
+                            print('{} ({} -- {})'.format(registrant.name, registrant.last_name, registrant.first_name))
                         except:
                             pass
                     registrant.save()

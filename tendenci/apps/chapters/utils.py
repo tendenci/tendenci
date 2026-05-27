@@ -1,6 +1,7 @@
 from datetime import datetime, date, timedelta, time
 import dateutil.parser as dparser
 from decimal import Decimal
+import time as ttime
 
 from django.core import exceptions
 from django.contrib.auth.models import User
@@ -8,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django.template import Context, Template
 from django.template.loader import get_template
 from django.urls.base import reverse
+from django.utils import timezone
 
 from tendenci.apps.chapters.models import (
         Chapter, ChapterMembershipApp,
@@ -164,8 +166,12 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
         email.recipient = member.user.email
 
         if email.recipient:
-            view_url = '{0}{1}'.format(site_url, reverse('chapters.membership_details', args=[member.id]))
-            edit_url = '{0}{1}'.format(site_url, reverse('chapters.membership_edit', args=[member.id]))
+            view_url = '{}{}'.format(site_url, reverse('chapters.membership_details', args=[member.id]))
+            edit_url = '{}{}'.format(site_url, reverse('chapters.membership_edit', args=[member.id]))
+            if member.expire_dt:
+                expire_dt = ttime.strftime("%b %d, %Y", member.expire_dt.timetuple())
+            else:
+                expire_dt = ''
             template = Template(email.body)
             context = Context({'site_url': site_url,
                                'site_display_name': site_display_name,
@@ -173,6 +179,8 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
                                'last_name': last_name,
                                'view_url': view_url,
                                'edit_url': edit_url,
+                               'expire_dt': expire_dt,
+                               'renew_link': view_url,
                                'chapter_name': member.chapter.title})
             email.body = template.render(context)
             
@@ -198,7 +206,7 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
 
     opts = {}
     opts['summary'] = '<font face=""Arial"" color=""#000000"">'
-    opts['summary'] += 'Emails sent to {0} ({1})</font><br><br>'.format(dest, total_sent)
+    opts['summary'] += 'Emails sent to {} ({})</font><br><br>'.format(dest, total_sent)
     opts['summary'] += '<font face=""Arial"" color=""#000000"">'
     opts['summary'] += 'Email Sent Appears Below in Raw Format'
     opts['summary'] += '</font><br><br>'
@@ -223,7 +231,7 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
     yield rendered
 
 
-class ImportChapterMembership(object):
+class ImportChapterMembership:
     """
     Check and process (insert/update) a chapter membership.
     """
@@ -238,10 +246,10 @@ class ImportChapterMembership(object):
         self.mimport = mimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.chapter_membership_fields = dict([(field.name, field)
+        self.chapter_membership_fields = {field.name: field
                             for field in ChapterMembership._meta.fields
                             if field.get_internal_type() != 'AutoField' and
-                            field.name not in ['user', 'membership_type', 'chapter', 'guid']])
+                            field.name not in ['user', 'membership_type', 'chapter', 'guid']}
         self.private_settings = self.set_default_private_settings()
         # all chapter membership types
         self.all_membership_type_ids = ChapterMembershipType.objects.values_list(
@@ -484,7 +492,7 @@ class ImportChapterMembership(object):
         # no join_dt - set one
         if not hasattr(chapter_memb, 'join_dt') or not chapter_memb.join_dt:
             if chapter_memb.status and chapter_memb.status_detail == 'active':
-                chapter_memb.join_dt = datetime.now()
+                chapter_memb.join_dt = timezone.now()
 
         # no approved_dt - set one
         if not hasattr(chapter_memb, 'approved_dt') or not chapter_memb.approved_dt:
@@ -560,7 +568,7 @@ class ImportChapterMembership(object):
             return date
 
         if field_type == 'DateTimeField':
-            return datetime.now()
+            return timezone.now()
 
         if field_type == 'DecimalField':
             return Decimal(0)
@@ -632,7 +640,7 @@ class ImportChapterMembership(object):
                 if value == '':
                     value = None
                 if not field.null:
-                    value = datetime.now()
+                    value = timezone.now()
         elif field_type == 'DecimalField':
             try:
                 value = field.to_python(value)

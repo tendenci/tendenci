@@ -9,6 +9,8 @@ from django.utils.translation import ngettext
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
 from django.http import StreamingHttpResponse
+from django.utils.safestring import mark_safe
+from django.utils import timezone
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -16,10 +18,11 @@ from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.forms import ProfileAdminForm
 from tendenci.apps.profiles.utils import iter_users
+from tendenci.apps.theme.templatetags.static import static
 
 
 class ProfileAdmin(TendenciBaseModelAdmin):
-    list_display = ('username', 'account_id', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser', 'get_last_login')
+    list_display = ('username', 'account_id', 'member_number', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser', 'get_last_login')
     search_fields = ('account_id', 'display_name', 'user__first_name', 'user__last_name', 'user__username', 'user__email')
 
     fieldsets = (
@@ -70,13 +73,14 @@ class ProfileAdmin(TendenciBaseModelAdmin):
                                                 'sex',)}),
         (_('Administrator Information'), {'fields': ('account_id',
                                                      'admin_notes',
+                                                     'external_id',
                                                      'security_level',)}),)
     form = ProfileAdminForm
 
     ordering = ('user__last_name', 'user__first_name')
 
     def get_object(self, request, object_id, from_field=None):
-        obj = super(ProfileAdmin, self).get_object(request, object_id, from_field=from_field)
+        obj = super().get_object(request, object_id, from_field=from_field)
         # Avoid language being accidentally set to the first option 'ar'
         # because en-us is not an option in the language dropdown
         if obj and obj.language == 'en-us':
@@ -119,7 +123,7 @@ class ProfileAdmin(TendenciBaseModelAdmin):
     get_last_login.short_description = _('Last Login')
 
     def get_user(self, obj):
-        name = "%s %s" % (obj.user.first_name, obj.user.last_name)
+        name = "{} {}".format(obj.user.first_name, obj.user.last_name)
         name = name.strip()
 
         return name or obj.user.username
@@ -152,7 +156,7 @@ class LastLoginFilter(SimpleListFilter):
         if value == 999:
             queryset = queryset.filter(last_login__isnull=True)
         else:
-            dt = datetime.now() - timedelta(days=365 * value)
+            dt = timezone.now() - timedelta(days=365 * value)
             queryset = queryset.filter(last_login__lt=dt)
 
             #print(queryset.query)
@@ -171,7 +175,7 @@ def export_selected_users(modeladmin, request, queryset):
 
 
 class MyUserAdmin(UserAdmin):
-    list_display = ('id', 'username', 'email', 'first_name', 'last_name',
+    list_display = ('id', 'view_profile', 'username', 'email', 'first_name', 'last_name',
                     'show_member_number', 'is_staff', 'is_superuser', 'is_active', 'last_login')
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -186,13 +190,19 @@ class MyUserAdmin(UserAdmin):
     actions = [
         export_selected_users
     ]
+
+    @mark_safe
+    def view_profile(self, obj):
+        if hasattr(obj, 'profile'):
+            link_icon = static('images/icons/external_16x16.png')
+            return f'<a href="{obj.profile.get_absolute_url()}" title="{obj.first_name} {obj.last_name}"><img src="{link_icon}" alt="external_16x16" title="external icon"/></a>'
     
     def show_member_number(self, instance):
         [member_number] = Profile.objects.filter(user=instance).values_list('member_number', flat=True)[:1] or ['']
         return member_number
 
     def has_delete_permission(self, request, obj=None):
-        result = super(MyUserAdmin, self).has_delete_permission(request, obj=obj)
+        result = super().has_delete_permission(request, obj=obj)
 
         if obj:
             num_rps = obj.recurring_payments.filter(status=True, status_detail='active').count()

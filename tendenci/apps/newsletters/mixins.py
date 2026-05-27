@@ -9,24 +9,24 @@ from tendenci.apps.base.http import Http403
 from .models import Newsletter
 
 
-class NewsletterStatusMixin(object):
+class NewsletterStatusMixin:
     def dispatch(self, request, *args, **kwargs):
         pk = int(kwargs.get('pk'))
         newsletter = get_object_or_404(Newsletter, pk=pk)
         if newsletter.send_status != 'draft':
             return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
 
-        return super(NewsletterStatusMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
-class NewsletterEditLogMixin(object):
+class NewsletterEditLogMixin:
     def form_valid(self, form):
         # logging of edits done
         EventLog.objects.log(instance=self.get_object(), action='edit')
-        return super(NewsletterEditLogMixin, self).form_valid(form)
+        return super().form_valid(form)
 
 
-class NewsletterPermissionMixin(object):
+class NewsletterPermissionMixin:
     newsletter_permission = None
 
     def get_obj(self):
@@ -47,17 +47,17 @@ class NewsletterPermissionMixin(object):
         if not has_perm(request.user, perm, obj=obj):
             raise Http403
 
-        return super(NewsletterPermissionMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class NewsletterPermStatMixin(NewsletterPermissionMixin, NewsletterStatusMixin):
     pass
 
 
-class NewsletterPassedSLAMixin(object):
+class NewsletterPassedSLAMixin:
     def dispatch(self, request, *args, **kwargs):
         pk = int(kwargs.get('pk'))
         newsletter = get_object_or_404(Newsletter, pk=pk)
         if not newsletter.sla:
             return redirect(reverse('newsletter.action.step4', kwargs={'pk': newsletter.pk}))
-        return super(NewsletterPassedSLAMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)

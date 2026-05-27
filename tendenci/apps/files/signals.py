@@ -48,7 +48,7 @@ def save_files(sender, **kwargs):
             file_perm.pk = None
             file_perm.content_type = file_ct
             file_perm.object_id = file.pk
-            file_perm.codename = '%s_%s' % (file_perm.codename.split('_')[0], 'file')
+            file_perm.codename = '{}_{}'.format(file_perm.codename.split('_')[0], 'file')
             file_perm.save()
 
         # copy permission attributes

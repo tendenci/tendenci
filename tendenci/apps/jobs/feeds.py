@@ -8,7 +8,7 @@ from tendenci.apps.sitemaps import TendenciSitemap
 from tendenci.apps.jobs.models import Job
 
 class LatestEntriesFeed(SubFeed):
-    title = _('%(dname)s Latest Jobs' % {'dname': get_setting('site','global','sitedisplayname')})
+    title = _('{dname} Latest Jobs'.format(dname=get_setting('site','global','sitedisplayname')))
     link =  "/jobs/"
     description = _("Latest Jobs by %(dname)s" % {'dname' : get_setting('site','global','sitedisplayname')})
 

@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 # from captcha.fields import CaptchaField
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -72,19 +73,19 @@ class JobForm(TendenciBaseForm):
     start_dt = forms.SplitDateTimeField(
         required=False,
         label=_('Position starts on:'),
-        initial=datetime.now())
+        initial=timezone.now())
 
     activation_dt = forms.SplitDateTimeField(
         label=_('Activation Date/Time'),
-        initial=datetime.now())
+        initial=timezone.now())
 
     post_dt = forms.SplitDateTimeField(
         label=_('Post Date/Time'),
-        initial=datetime.now())
+        initial=timezone.now())
 
     expiration_dt = forms.SplitDateTimeField(
         label=_('Expiration Date/Time'),
-        initial=datetime.now())
+        initial=timezone.now())
 
     syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
 
@@ -244,10 +245,10 @@ class JobForm(TendenciBaseForm):
         if hasattr(self, 'user'):
             kwargs.update({'user': self.user})
         self.admin_backend = kwargs.pop('admin_backend', False)
-        super(JobForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['slug'].help_text = 'Letters, numbers or hyphens only. ex: my-job'
         if self.instance.header_image:
-            self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> %s: <a target="_blank" href="/files/%s/">%s</a>' % (_('Remove current image'), self.instance.header_image.id, basename(self.instance.header_image.file.name))
+            self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> {}: <a target="_blank" href="/files/{}/">{}</a>'.format(_('Remove current image'), self.instance.header_image.id, basename(self.instance.header_image.file.name))
         else:
             self.fields.pop('remove_photo')
         self.fields['header_image'].validators = [FileValidator(allowed_extensions=get_allowed_upload_file_exts('image'))]
@@ -262,7 +263,7 @@ class JobForm(TendenciBaseForm):
 
         # cat and sub_cat
         if self.user.profile.is_superuser:
-            self.fields['sub_cat'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
+            self.fields['sub_cat'].help_text = mark_safe('<a href="{}">{}</a>'.format(
                                         reverse('admin:jobs_category_changelist'),
                                         _('Manage Categories'),))
         if self.instance and self.instance.pk:
@@ -274,7 +275,7 @@ class JobForm(TendenciBaseForm):
             post_data = None
         if post_data:
             cat = post_data.get('cat', '0')
-            if cat and cat != '0' and cat != u'':
+            if cat and cat != '0' and cat != '':
                 cat = JobCategory.objects.get(pk=int(cat))
                 self.fields['sub_cat'].queryset = JobCategory.objects.filter(parent=cat)
 
@@ -375,7 +376,7 @@ class JobForm(TendenciBaseForm):
         Assigns the requested_duration of a job based on the
         chosen pricing.
         """
-        job = super(JobForm, self).save(commit=False)
+        job = super().save(commit=False)
         if self.cleaned_data.get('remove_photo'):
             job.header_image = None
         if 'pricing' in self.cleaned_data:
@@ -395,7 +396,7 @@ class JobForm(TendenciBaseForm):
                 header_image.creator_username = request.user.username
                 header_image.owner = request.user
                 header_image.owner_username = request.user.username
-                filename = "%s-%s" % (job.slug, f.name)
+                filename = "{}-{}".format(job.slug, f.name)
                 f.file.seek(0)
                 header_image.file.save(filename, f)
                 job.header_image = header_image
@@ -410,12 +411,12 @@ class JobAdminForm(JobForm):
         if hasattr(self, 'user'):
             kwargs.update({'user': self.user})
         kwargs.update({'admin_backend': True})
-        super(JobAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if hasattr(self, 'user'):
-            self.fields['activation_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
-            self.fields['expiration_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
-            self.fields['post_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
+            self.fields['activation_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=timezone.now())
+            self.fields['expiration_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=timezone.now())
+            self.fields['post_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=timezone.now())
 
     def clean_syndicate(self):
         """
@@ -456,7 +457,7 @@ class JobPricingForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(JobPricingForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # tax rate
         if get_setting('module', 'invoices', 'taxrateuseregions'):
             self.fields['tax_rate'].help_text += "<br />Note that this rate will be served as the default rate. Please go to <a href='/admin/regions/region/'>Regions</a> to configure more tax rates."
@@ -476,7 +477,7 @@ class JobSearchForm(FormControlWidgetMixin, forms.Form):
     skills = forms.CharField(required=False, max_length=500,)
 
     def __init__(self, *args, **kwargs):
-        super(JobSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['q'].widget.attrs.update({'placeholder': _('Enter job title / keywords')})
         self.fields['location'].widget.attrs.update({'placeholder': _('Enter job location')})
         self.fields['skills'].widget.attrs.update({'placeholder': _('Enter job skills')})

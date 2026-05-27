@@ -36,7 +36,7 @@ class Contribution(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid4())
 
-        super(Contribution, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title

@@ -1,4 +1,3 @@
-from builtins import str
 from haystack import indexes
 
 from tendenci.apps.events.models import Event, Registrant

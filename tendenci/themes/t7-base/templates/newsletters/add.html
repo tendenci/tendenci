@@ -42,21 +42,23 @@
       <form name="newsletteraddform" id="newsletteraddform" method="post" action=".">{% csrf_token %}
         <div class="form-group">
           <p class="headers" title="This field is required.">
-            <label>*Send To:</label>
+            <label>*{% trans "Send To:" %}</label>
+            <br /><small>{% trans "Please select Members or a User Group to send your newsletter to." %}</small>
           </p>
 
-          {% comment %}commenting it out for now.
-          will add back later when membership is available:{% endcomment %}
           <div>
             {{ form.member_only }}
             {% trans "Members Only" %}
-            &nbsp;&nbsp; or &nbsp;&nbsp;
+            &nbsp;&nbsp; 
+            <span id="group-wrap">
+            or &nbsp;&nbsp;
 
             {% if form.group.errors %}
             {{ form.group.errors }}
             {% endif %}
 
-            {% trans "Usergroup" %}{{ form.group }}
+            {% trans "Usergroup" %} {{ form.group }}
+            </span>
           </div>
           <!-- <p>{% trans "Include email2?" %} {{ form.send_to_email2 }}
           {% trans "Yes, send to user's second email address" %}
@@ -255,6 +257,18 @@
   }
   }
 
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+    	$('input[id=id_member_only]').change(function() {
+    		if($(this).is(':checked')){
+        		$("#group-wrap").hide();
+        	}else{
+        		$("#group-wrap").show();
+        	}
+        });
+    });
 </script>
 
 {% endblock %}

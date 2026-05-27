@@ -40,7 +40,7 @@ class RecurringPaymentForm(forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(RecurringPaymentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # billing_cycle
         if self.instance.pk:
@@ -60,7 +60,7 @@ class RecurringPaymentForm(forms.ModelForm):
 
         self.fields['billing_dt_select'].initial = initial_list
 
-        self.fields['user'].choices = [(u.id, '%s %s (%s) - %s' % (
+        self.fields['user'].choices = [(u.id, '{} {} ({}) - {}'.format(
                         u.first_name, u.last_name, u.username, u.email
                         )) for u in User.objects.filter(is_active=1).order_by('first_name', 'last_name')]
         self.fields['user'].help_text = """If not found in the list,

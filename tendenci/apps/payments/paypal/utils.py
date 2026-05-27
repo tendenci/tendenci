@@ -19,7 +19,7 @@ def prepare_paypal_form(request, payment):
     amount = "%.2f" % payment.amount
     image_url = get_setting('site', 'global', 'merchantlogo')
     site_url = get_setting('site', 'global', 'siteurl')
-    notify_url = '%s%s' % (site_url, reverse('paypal.ipn'))
+    notify_url = '{}{}'.format(site_url, reverse('paypal.ipn'))
     currency_code = get_setting('site', 'global', 'currency')
     if not currency_code:
         currency_code = 'USD'
@@ -53,6 +53,7 @@ def parse_pdt_validation(data):
     result_params = {}
     success = False
     items_list = data.split('\n')
+    print('items_list=', items_list)
 
     for i, item in enumerate(items_list):
         if i == 0:
@@ -185,9 +186,11 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
 
     if validate_type == 'PDT':
         success, response_d = validate_with_paypal(request, validate_type)
+        print(success)
+        print(response_d)
     else:
         success = validate_with_paypal(request, validate_type)[0]
-        response_d = dict([(x[0].lower(), x[1]) for x in response_d.items()])
+        response_d = {x[0].lower(): x[1] for x in response_d.items()}
 
     if not success:
         raise Http404

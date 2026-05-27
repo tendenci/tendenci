@@ -2,7 +2,7 @@ from haystack import indexes
 
 from tendenci.apps.donations.models import Donation
 
-class DonationIndex(indexes.SearchIndex):
+class DonationIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     donation_amount = indexes.FloatField(model_attr='donation_amount')
     allocation = indexes.CharField(model_attr='allocation')

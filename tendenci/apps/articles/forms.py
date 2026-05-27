@@ -69,7 +69,7 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
     search_category = forms.ChoiceField(
         choices=SEARCH_CATEGORIES_ADMIN,
         required=False,
-        label=_(u'Search by')
+        label=_('Search by')
     )
     q = forms.CharField(required=False)
     category = CategoryField(label=_('All Categories'), choices=[], required=False)
@@ -80,7 +80,7 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         is_superuser = kwargs.pop('is_superuser', None)
-        super(ArticleSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         
         # group
         group_choices = get_search_group_choices()
@@ -218,7 +218,7 @@ class ArticleForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(ArticleForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
@@ -250,7 +250,7 @@ class ArticleForm(TendenciBaseForm):
         self.fields['release_dt'].initial = datetime.now()
 
     def save(self, *args, **kwargs):
-        article = super(ArticleForm, self).save(*args, **kwargs)
+        article = super().save(*args, **kwargs)
 
         content_type = ContentType.objects.get_for_model(Article)
         thumbnail_file = self.cleaned_data['thumbnail_file']

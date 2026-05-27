@@ -37,7 +37,7 @@ MEMBERSHIPTYPE_DICT = None
 class ReportBandNewMems(ReportBand):
     def __init__(self, *args, **kwargs):
         kwargs.pop('days_ago')
-        super(ReportBandNewMems, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 class ReportNewMems(Report):
     title = _("New Memberships")
@@ -46,7 +46,7 @@ class ReportNewMems(Report):
     page_size = landscape(A5)
 
     def __init__(self, *args, **kwargs):
-        super(ReportNewMems, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     class band_page_header(ReportBand):
         height = 1.2*cm
@@ -78,14 +78,14 @@ class ReportNewMems(Report):
 
 def id_format(value, instance):
     link = reverse('membership.details', args=[value])
-    html = "<a href=\"%s\">%s</a>" % (link, value)
+    html = "<a href=\"{}\">{}</a>".format(link, value)
     return mark_safe(html)
 
 
 def membership_type_format(value, instance=None):
     global MEMBERSHIPTYPE_DICT
     if not MEMBERSHIPTYPE_DICT:
-        MEMBERSHIPTYPE_DICT = dict((m.id, m.name) for m in MembershipType.objects.all())
+        MEMBERSHIPTYPE_DICT = {m.id: m.name for m in MembershipType.objects.all()}
     return MEMBERSHIPTYPE_DICT.get(value, value)
 
 class MembershipReport(ReportAdmin):

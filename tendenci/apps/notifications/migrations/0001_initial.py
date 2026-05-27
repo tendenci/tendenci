@@ -1,5 +1,3 @@
-
-
 from django.db import models, migrations
 import django.db.models.deletion
 import datetime
@@ -123,6 +121,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='noticesetting',
-            unique_together=set([('user', 'notice_type', 'medium')]),
+            unique_together={('user', 'notice_type', 'medium')},
         ),
     ]

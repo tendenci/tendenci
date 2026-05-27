@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand
 
 
@@ -23,7 +22,7 @@ class Command(BaseCommand):
                 else:
                     perm = 'private'
 
-                print('Setting %s to %s' % (tfile.file.name,
+                print('Setting {} to {}'.format(tfile.file.name,
                                             perm))
 
                 set_s3_file_permission(tfile.file.name,

@@ -1,4 +1,3 @@
-
 from haystack.query import SearchQuerySet
 from haystack.backends import SQ
 
@@ -133,7 +132,7 @@ def assign_files_perms(instance, **kwargs):
             file_perm.pk = None
             file_perm.content_type = file_ct
             file_perm.object_id = file.pk
-            file_perm.codename = '%s_%s' % (file_perm.codename.split('_')[0], 'file')
+            file_perm.codename = '{}_{}'.format(file_perm.codename.split('_')[0], 'file')
             file_perm.save()
 
         # copy permission attributes
@@ -201,7 +200,7 @@ def get_query_filters(user, perm, **kwargs):
     group_perm = Q()
     group_q = Q()
 
-    if not isinstance(user, User) or user.is_anonymous:
+    if not isinstance(user, User) or user.is_anonymous or not hasattr(user, 'profile'):
         anon_q = Q(allow_anonymous_view=True)
         status_q = Q(status=True)
         status_detail_q = Q(status_detail__in=['active', 'published'])

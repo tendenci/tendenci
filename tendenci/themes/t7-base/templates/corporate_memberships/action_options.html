@@ -13,6 +13,10 @@
     {% endwith %}
 {% endif %}
 
+{% with corp_membership.latest_renewed_in_pending as pending_corp_mem %}
+{% if pending_corp_mem %}
+	<br />{% blocktrans with pending_corp_mem.renew_dt|date:"d-M-Y" as renew_dt %} Renewed on {{ renew_dt }} {% endblocktrans %} <span class="t-status-pending">{{ pending_corp_mem.real_time_status_detail|capfirst }}</span> <br /><a href="{% url 'corpmembership.view' pending_corp_mem.id %}">{% trans "View Renewed Application" %}</a><br />
+{% else %}
 {% if corp_membership.is_renewal_pending %}
     {% blocktrans with corp_membership.renew_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %}<br />
     {% if request.user.is_superuser %}
@@ -33,6 +37,8 @@
         {% endif %}
     {% endif %}
 {% endif %}
+{% endif %}
+{% endwith %}
 
 {% if request.user.is_superuser and corp_membership.is_pending %}
 <a href="{% url 'corpmembership.edit' corp_membership.id %}" title="Admin: Edit">{% trans "Edit" %}</a>

@@ -66,7 +66,7 @@ class Committee(BasePage):
     def save(self, *args, **kwargs):
         photo_upload = kwargs.pop('photo', None)
 
-        super(Committee, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if photo_upload and self.pk:
             image = File(content_type=ContentType.objects.get_for_model(self.__class__),
                          object_id=self.pk,
@@ -122,7 +122,7 @@ class Committee(BasePage):
 
 
 class Position(models.Model):
-    title = models.CharField(_(u'title'), max_length=200)
+    title = models.CharField(_('title'), max_length=200)
 
     class Meta:
         app_label = 'committees'

@@ -1,5 +1,3 @@
-from builtins import str
-
 from django.utils.translation import gettext_lazy as _
 import json
 from django.views.decorators.csrf import csrf_exempt
@@ -83,7 +81,7 @@ def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
             discount = form.save(commit=False)
             discount = update_perms_and_save(request, form, discount)
             form.save_m2m()
-            messages.add_message(request, messages.SUCCESS, _('Successfully added %(d)s' % {'d': discount}))
+            messages.add_message(request, messages.SUCCESS, _('Successfully added {d}'.format(d=discount)))
             return redirect('discount.detail', id=discount.id)
     else:
         form = form_class(user=request.user)
@@ -106,7 +104,7 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
             discount = form.save(commit=False)
             discount = update_perms_and_save(request, form, discount)
             form.save_m2m()
-            messages.add_message(request, messages.SUCCESS, _('Successfully updated %(d)s' % {'d': discount}))
+            messages.add_message(request, messages.SUCCESS, _('Successfully updated {d}'.format(d=discount)))
             return redirect('discount.detail', id=discount.id)
     else:
         form = form_class(instance=discount, user=request.user)
@@ -148,7 +146,7 @@ def discounted_price(request, form_class=DiscountCodeForm):
                     "error": False,
                     "price": str(form.new_price()[0]),
                     "discount": str(form.new_price()[1]),
-                    "message": _("Your discount of $ %(p)s has been added." % {'p': str(form.new_price()[1])}),
+                    "message": _("Your discount of $ {p} has been added.".format(p=str(form.new_price()[1]))),
                 }, cls=LazyEncoder), content_type="text/plain")
         return HttpResponse(json.dumps(
             {
@@ -172,14 +170,14 @@ def discounted_prices(request, check=False, form_class=DiscountHandlingForm):
                 return HttpResponse(json.dumps(
                 {
                     "error": False,
-                    "message": _("A discount of $%(d)s has been added." % { 'd': form.discount.value}),
+                    "message": _("A discount of ${d} has been added.".format( d=form.discount.value)),
                 }, cls=LazyEncoder), content_type="text/plain")
 
             price_list, discount_total, discount_list, msg = form.get_discounted_prices()
             total = sum(price_list)
             new_prices = ';'.join([str(price) for price in price_list])
             if sum(discount_list) > 0:
-                discount_detail = '(%s)' % (', '.join(([str(price) for price in discount_list if price >0])))
+                discount_detail = '(%s)' % (', '.join([str(price) for price in discount_list if price >0]))
             else:
                 discount_detail = ''
             return HttpResponse(json.dumps(

@@ -6,6 +6,6 @@ class Higher_LogicConfig(AppConfig):
     verbose_name = 'Higher Logic'
 
     def ready(self):
-        super(Higher_LogicConfig, self).ready()
+        super().ready()
         from .signals import init_signals
         init_signals()

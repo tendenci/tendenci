@@ -25,5 +25,5 @@ class ProfilesConfig(AppConfig):
     verbose_name = 'Profiles'
 
     def ready(self):
-        super(ProfilesConfig, self).ready()
+        super().ready()
         post_migrate.connect(create_notice_types, sender=self)

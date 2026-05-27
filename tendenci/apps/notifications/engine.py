@@ -1,4 +1,3 @@
-
 import sys
 import time
 import logging
@@ -56,8 +55,8 @@ def send_all():
             exc_class, e, t = sys.exc_info()
             # email people
             current_site = Site.objects.get_current()
-            subject = "[%s emit_notices] %r" % (current_site.name, e)
-            message = "%s" % ("\n".join(traceback.format_exception(*sys.exc_info())),)
+            subject = "[{} emit_notices] {!r}".format(current_site.name, e)
+            message = "{}".format("\n".join(traceback.format_exception(*sys.exc_info())))
             mail_admins(subject, message, fail_silently=True)
             # log it as critical
             logging.critical("an exception occurred: %r" % e)
@@ -67,5 +66,5 @@ def send_all():
         logging.debug("released.")
 
     logging.info("")
-    logging.info("%s batches, %s sent" % (batches, sent,))
+    logging.info("{} batches, {} sent".format(batches, sent))
     logging.info("done in %.2f seconds" % (time.time() - start_time))

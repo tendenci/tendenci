@@ -91,7 +91,7 @@ def create_exclusions(days, occurrences, verbose, queues):
                     esc.save()
 
                     if verbose:
-                        print("Created exclusion for %s %s" % (day_name, workdate))
+                        print("Created exclusion for {} {}".format(day_name, workdate))
 
                     for q in queues:
                         esc.queues.add(q)

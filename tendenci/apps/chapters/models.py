@@ -16,12 +16,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
-from django.template.defaultfilters import slugify
+from django.utils.text import slugify
 from django import forms
 from django.utils.safestring import mark_safe
 from django.template import engines
 from django.core.files.storage import default_storage
 from importlib import import_module
+from django.utils import timezone
 
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.pages.models import BasePage
@@ -120,7 +121,7 @@ class Chapter(BasePage):
 
         photo_upload = kwargs.pop('photo', None)
 
-        super(Chapter, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if photo_upload and self.pk:
             image = File(content_type=ContentType.objects.get_for_model(self.__class__),
                          object_id=self.pk,
@@ -140,7 +141,7 @@ class Chapter(BasePage):
             # create a group for this type
             group = Group()
             group.name = f'{self.title}'[:200]
-            group.slug = slugify(group.name)
+            group.slug = slugify(group.name, allow_unicode=True)
             # ensure uniqueness of the slug
             if Group.objects.filter(slug=group.slug).exists():
                 tmp_groups = Group.objects.filter(slug__istartswith=group.slug)
@@ -273,7 +274,7 @@ class Chapter(BasePage):
 
 
 class Position(models.Model):
-    title = models.CharField(_(u'title'), max_length=200)
+    title = models.CharField(_('title'), max_length=200)
 
     class Meta:
         app_label = 'chapters'
@@ -325,7 +326,7 @@ class CoordinatingAgency(models.Model):
     def save(self, *args, **kwargs):
         if not self.entity:
             self.entity = Entity.objects.first()
-        super(CoordinatingAgency, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if not self.group:
             self._auto_generate_group()
         self._populate_group()
@@ -466,7 +467,7 @@ class ChapterMembershipType(OrderingBaseModel, TendenciBaseModel):
         Save MembershipType instance.
         """
         self.guid = self.guid or uuid.uuid4().hex
-        super(ChapterMembershipType, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_price_display(self, renew_mode=False, chapter=None):
         price = self.price
@@ -500,7 +501,7 @@ class ChapterMembershipType(OrderingBaseModel, TendenciBaseModel):
                                                               renew_dt=chapter_membership.renew_dt,
                                                               previous_expire_dt=None)
         """
-        now = datetime.now()
+        now = timezone.now()
 
         if not join_dt or not isinstance(join_dt, datetime):
             join_dt = now
@@ -679,7 +680,7 @@ class ChapterMembership(TendenciBaseModel):
         return f"Chapter Membership {self.pk} for {self.user.get_full_name()} in chapter {self.chapter}"
 
     def save(self, *args, **kwargs):
-        super(ChapterMembership, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         # add this chapter member to the coordinating group
         coord_group = self.chapter.get_coordinating_agency_group()
         if coord_group and not coord_group.is_member(self.user):
@@ -805,7 +806,7 @@ class ChapterMembership(TendenciBaseModel):
 
         # assert that we're within the renewal period
         start_dt, end_dt = renewal_period
-        return (datetime.now() >= start_dt and datetime.now() <= end_dt)
+        return (timezone.now() >= start_dt and timezone.now() <= end_dt)
 
     def get_actions(self, user):
         """
@@ -884,11 +885,14 @@ class ChapterMembership(TendenciBaseModel):
             price = self.get_price()
             invoice.assign_tax([(price, 0)], self.user)
             invoice.subtotal = price
-            invoice.total = price + invoice.tax + invoice.tax_2
+            if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added':
+                invoice.total = price + invoice.tax + invoice.tax_2
+            else: #Tax Included
+                invoice.total = price
             invoice.balance = invoice.total
     
-            invoice.due_date = datetime.now()
-            invoice.ship_date = datetime.now()
+            invoice.due_date = timezone.now()
+            invoice.ship_date = timezone.now()
     
             invoice.save()
             self.invoice = invoice
@@ -1000,6 +1004,13 @@ class ChapterMembership(TendenciBaseModel):
                 renewal=self.renewal, join_dt=self.join_dt
             )
 
+        if get_setting('module', 'chapters', 'usenationalexpiredt'):
+            # Supersede with national membership's expire_dt, if exists
+            national_membership = self.national_membership
+            if national_membership and national_membership.is_active():
+                if not national_membership.expire_dt or national_membership.expire_dt != self.expire_dt:
+                    self.expire_dt = national_membership.expire_dt
+
     def group_refresh(self):
         """
         Look at the memberships status and decide
@@ -1052,7 +1063,7 @@ class ChapterMembership(TendenciBaseModel):
         if not all(good):
             return False
 
-        NOW = datetime.now()
+        NOW = timezone.now()
 
         self.status = True
         self.status_detail = 'active'
@@ -1147,7 +1158,7 @@ class ChapterMembership(TendenciBaseModel):
         if self.is_expired() or self.status_detail == 'archive':
             return False
 
-        NOW = datetime.now()
+        NOW = timezone.now()
 
         self.status = True
         self.status_detail = 'disapproved'
@@ -1200,6 +1211,32 @@ class ChapterMembership(TendenciBaseModel):
 
         return False
 
+    def renew(self, request_user=None):
+        """
+        Renew this Chapter membership.
+            - Create new invoice.
+            - Archive old memberships [of same type].
+        """
+        if self.is_pending():
+            dupe = self
+        elif any((self.is_active(), self.is_expired())):
+            dupe = self.copy()
+            dupe.pk = None  # disconnect from db record
+        else:
+            return False
+
+        dupe.status = True
+        dupe.status_detail = 'active'
+
+        dupe.renewal = True
+        if dupe is not self:
+            dupe.renew_from_id = self.id
+
+        dupe.pend()
+        dupe.save()
+
+        return dupe
+
     def is_forever(self):
         """
         Returns boolean.
@@ -1226,7 +1263,7 @@ class ChapterMembership(TendenciBaseModel):
         """
         if self.status and self.status_detail.lower() in ('active', 'expired'):
             if self.expire_dt:
-                return self.expire_dt <= datetime.now() and \
+                return self.expire_dt <= timezone.now() and \
                     (not self.in_grace_period())
         return False
 
@@ -1274,6 +1311,42 @@ class ChapterMembership(TendenciBaseModel):
         """
         return self.status_detail.lower()
 
+    def copy(self):
+        """
+        Return a copy of the chapter_membership object
+        """
+        chapter_membership = ChapterMembership()
+
+        ignore_fields = [
+            'id',
+            'guid',
+            'renewal',
+            'renew_dt',
+            'renew_from_id',
+            'payment_method',
+            'payment_received_dt',
+            'invoice',
+            'status',
+            'status_detail',
+            'approved',
+            'approve_dt',
+            'approved_user',
+            'rejected',
+            'rejected_dt',
+            'rejected_user'
+        ]
+
+        field_names = [
+            field.name
+            for field in self.__class__._meta.fields
+            if field.name not in ignore_fields
+        ]
+
+        for name in field_names:
+            if hasattr(self, name):
+                setattr(chapter_membership, name, getattr(self, name))
+        return chapter_membership
+
     def in_grace_period(self):
         """ Returns True if a member's expiration date has passed but status detail is still active.
         """
@@ -1283,8 +1356,8 @@ class ChapterMembership(TendenciBaseModel):
             return False
 
         return all([
-            self.expire_dt < datetime.now(),
-            expire_with_grace_period_dt > datetime.now(),
+            self.expire_dt < timezone.now(),
+            expire_with_grace_period_dt > timezone.now(),
             self.status_detail == "active"])
 
     def get_renewal_period_dt(self):
@@ -1327,7 +1400,8 @@ class ChapterMembership(TendenciBaseModel):
 
         return notice_sent
 
-    def email_admin_join_notice(self, request):
+    def email_admin_join_notice(self, request, notie_type='join'):
+        # join or renewal
         # Who should be notified? site admin or chapter leaders?
         if self.chapter.contact_email:
             recipients = self.chapter.contact_email.split(',')
@@ -1337,14 +1411,21 @@ class ChapterMembership(TendenciBaseModel):
                             'module', 'chapters',
                             'chapterrecipients')
         if recipients:
+            if notie_type == 'join':
+                notice_name = 'chapter_membership_joined_to_admin'
+            else:
+                notice_name = 'chapter_membership_renewed_to_admin'
             send_email_notification(
-                    'chapter_membership_joined_to_admin',
+                    notice_name,
                     recipients,
                     {'chapter_membership': self,
                         'app': self.app,
                         'request': request
                     })
-                
+
+    def email_admin_renew_notice(self, request, notie_type='renew'):
+        self.email_admin_join_notice(request, notie_type=notie_type)
+             
 
     def auto_update_paid_object(self, request, payment):
         """
@@ -1402,7 +1483,7 @@ class ChapterMembershipApp(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid4())
-        super(ChapterMembershipApp, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def render_items(self, context):
         for field_name in ['name', 'description', 'confirmation_text']:
@@ -1548,8 +1629,8 @@ class ChapterMembershipAppField(OrderingBaseModel):
         fld = None
         field_type = 'CharField'
 
-        chapter_membership_fields = dict([(field.name, field)
-                        for field in ChapterMembership._meta.fields])
+        chapter_membership_fields = {field.name: field
+                        for field in ChapterMembership._meta.fields}
         if field_name in chapter_membership_fields:
             fld = chapter_membership_fields[field_name]
 
@@ -1720,7 +1801,7 @@ class Notice(models.Model):
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
-        super(Notice, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_default_context(self, chapter_membership):
         """
@@ -1730,7 +1811,7 @@ class Notice(models.Model):
         site_contact_name = get_setting('site', 'global', 'sitecontactname')
         site_contact_email = get_setting('site', 'global', 'sitecontactemail')
         site_url = get_setting('site', 'global', 'siteurl')
-        now = datetime.now()
+        now = timezone.now()
         nowstr = time.strftime("%d-%b-%y %I:%M %p", now.timetuple())
         global_context = {'site_display_name': site_display_name,
                           'site_contact_name': site_contact_name,
@@ -1751,12 +1832,12 @@ class Notice(models.Model):
             payment_method_name = ''
 
         view_link = f'{site_url}{chapter_membership.get_absolute_url()}'
-        edit_link = '{0}{1}'.format(site_url, reverse('chapters.membership_edit',
+        edit_link = '{}{}'.format(site_url, reverse('chapters.membership_edit',
                                     args=[chapter_membership.id]))
-        renew_link = '{0}{1}'.format(site_url, reverse('chapters.membership_renew',
+        renew_link = '{}{}'.format(site_url, reverse('chapters.membership_renew',
                                     args=[chapter_membership.id]))
         if chapter_membership.invoice:
-            invoice_link = '{0}{1}'.format(site_url, reverse('invoice.view',
+            invoice_link = '{}{}'.format(site_url, reverse('invoice.view',
                                         args=[chapter_membership.invoice.id]))
             total_amount = chapter_membership.invoice.total
         else:
@@ -1868,9 +1949,9 @@ class Notice(models.Model):
         Gather a list of chapter memberships that meet the criteria of this notice
         and send email notifications to the members.
         """
-        self.chapter_memberships_processed = []
+        self.chapter_memberships_processed = {}
         num_sent = 0
-        now = datetime.now()
+        now = timezone.now()
         if self.notice_time in ['before', 'after']:
             if self.notice_time == 'before':
                 start_dt = now + timedelta(days=self.num_days)
@@ -1948,8 +2029,13 @@ class Notice(models.Model):
                     boo_sent = self.email_chapter_member(chapter_membership, verbosity=verbosity)
                     if boo_sent:
                         num_sent += 1
-                        if memberships_count <= 50:
-                            self.chapter_memberships_processed.append(chapter_membership)
+                        chapter = chapter_membership.chapter
+                        if chapter not in self.chapter_memberships_processed:
+                            self.chapter_memberships_processed[chapter] = {'count': 1, 'members': []}
+                        else:
+                            self.chapter_memberships_processed[chapter]['count'] += 1
+                        if memberships_count <= 50 or self.chapter_memberships_processed[chapter]['count'] <= 20:
+                            self.chapter_memberships_processed[chapter]['members'].append(chapter_membership)
 
                         # log record
                         notice_log_record = NoticeDefaultLogRecord(
@@ -2099,7 +2185,7 @@ class ChapterMembershipImport(BaseImport):
         import csv
         if not self.recap_file and self.header_line:
             file_name = 'chapter_memberships_import_%d_recap.csv' % self.id
-            file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
+            file_path = '{}/{}'.format(os.path.split(self.upload_file.name)[0],
                                    file_name)
             header_row = self.header_line.split(',')
             if 'status' in header_row:

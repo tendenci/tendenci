@@ -47,13 +47,13 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
         app_label = 'testimonials'
 
     def __str__(self):
-        return '%s %s %s' % (self.first_name, self.last_name, self._meta.verbose_name)
+        return '{} {} {}'.format(self.first_name, self.last_name, self._meta.verbose_name)
 
     def get_absolute_url(self):
         return reverse('testimonial.view', args=[self.pk])
 
     def first_last_name(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        return '{} {}'.format(self.first_name, self.last_name)
 
     def photo(self):
         if self.image and self.image.file:
@@ -78,7 +78,7 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
                 # First row
                 self.position = 1
 
-        super(Testimonial, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if photo_upload and self.pk:
             image = TestimonialPhoto(

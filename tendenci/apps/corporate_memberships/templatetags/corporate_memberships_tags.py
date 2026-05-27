@@ -16,7 +16,7 @@ register = Library()
 
 
 @register.inclusion_tag(
-        "memberships/applications/render_membership_field.html")
+        "corporate_memberships/applications/render_corpmembership_field.html")
 def render_corpmembership_field(request, field_obj,
                                 corpprofile_form,
                             corpmembership_form):
@@ -55,7 +55,7 @@ def individual_pricing_desp(corp_membership):
         else:
             membership_price = tcurrency(membership_type.price)
             if membership_type.admin_fee:
-                membership_price = '%s + %s' % (
+                membership_price = '{} + {}'.format(
                                     membership_price,
                                     tcurrency(membership_type.admin_fee))
 
@@ -201,7 +201,7 @@ class ListCorpMembershipNode(Node):
         return items
 
     def render(self, context):
-        query = u''
+        query = ''
         user = AnonymousUser()
         limit = None
         order = '-join_dt'

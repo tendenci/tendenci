@@ -35,6 +35,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.urls.resolvers import NoReverseMatch
+from django.utils import timezone
 
 #from geraldo.generators import PDFGenerator
 
@@ -81,7 +82,7 @@ from tendenci.apps.regions.models import Region
 from tendenci.apps.base.forms import CaptchaForm
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.theme.utils import get_template_content_raw
-from tendenci.apps.base.utils import get_next_url
+from tendenci.apps.base.utils import get_next_url, generate_random_password
 
 
 @login_required
@@ -265,7 +266,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     if request.user.profile.is_superuser or has_approve_perm:
         GET_KEYS = request.GET
 
-        if 'approve' in GET_KEYS:
+        if 'approve' in GET_KEYS and not membership.is_approved():
             is_renewal = membership.is_renewal()
             membership.approve(request)
             membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
@@ -411,8 +412,8 @@ def message_pending_members(request, email_id=None, form_class=MessageForm, temp
                 [membership] = request.user.membershipdefault_set.exclude(status_detail='archive')[:1] or [0]
                 if membership:
                     site_url = get_setting('site', 'global', 'siteurl')
-                    context.update({'view_url': '{0}{1}'.format(site_url, reverse('membership.details', args=[membership.id])),
-                                    'edit_url': '{0}{1}'.format(site_url, reverse('membership_default.edit', args=[membership.id]))})
+                    context.update({'view_url': '{}{}'.format(site_url, reverse('membership.details', args=[membership.id])),
+                                    'edit_url': '{}{}'.format(site_url, reverse('membership_default.edit', args=[membership.id]))})
                 email.body = template.render(context)
                 email.send()
                 email.body = tmp_body
@@ -1020,7 +1021,7 @@ def membership_default_export_download(request, identifier):
         if not (corp_profile and corp_profile.is_rep(request.user)):
             raise Http403
 
-    file_name = '%s_%s.csv' % (identifier, cp_id)
+    file_name = '{}_{}.csv'.format(identifier, cp_id)
     file_path = 'export/memberships/%s' % file_name
     if not default_storage.exists(file_path):
         raise Http404
@@ -1113,7 +1114,7 @@ def membership_default_add_legacy(request):
     if username:
         [u] = User.objects.filter(username=username)[:1] or [None]
         if u:
-            redirect_url = '%s?username=%s' % (redirect_url, u.username)
+            redirect_url = '{}?username={}'.format(redirect_url, u.username)
     return redirect(redirect_url)
 
 
@@ -1184,7 +1185,7 @@ def membership_default_add(request, slug='', membership_id=None,
             messages.add_message(request, messages.INFO, msg_string)
             return HttpResponseRedirect(reverse('profile', args=[membership_renewed.user.username]))
 
-    membership_type_id = request.GET.get('membership_type_id', u'')
+    membership_type_id = request.GET.get('membership_type_id', '')
     if membership_type_id.isdigit():
         membership_type_id = int(membership_type_id)
     else:
@@ -1209,7 +1210,7 @@ def membership_default_add(request, slug='', membership_id=None,
 
             if username:
                 return HttpResponseRedirect(
-                    '%s?username=%s' % (redirect_url, u.username))
+                    '{}?username={}'.format(redirect_url, u.username))
             return redirect(redirect_url)
 
         # check if they have verified their email or entered the secret code
@@ -1254,7 +1255,9 @@ def membership_default_add(request, slug='', membership_id=None,
             renewed_corp = corp_membership.get_latest_renewed()
             renewal_blocked = False # renewal blocked to user
             corp_expired = False
-            if corp_membership.is_expired or (membership.expire_dt >= corp_membership.expiration_dt and not renewed_corp):
+            if corp_membership.is_expired or (membership.expire_dt and corp_membership.expiration_dt \
+                                              and membership.expire_dt >= corp_membership.expiration_dt \
+                                              and not renewed_corp):
                 corp_expired = True
             elif not get_setting('module', 'memberships', 'orgmembercanrenew'):
                 if not (request.user.is_superuser or is_corp_rep):
@@ -1320,7 +1323,7 @@ def membership_default_add(request, slug='', membership_id=None,
 
             if username and u:
                 return HttpResponseRedirect(
-                    '%s?username=%s' % (redirect_url, url_quote(u.username)))
+                    '{}?username={}'.format(redirect_url, url_quote(u.username)))
             return redirect(redirect_url)
 
     if not (request.user.is_superuser or (join_under_corporate and is_corp_rep)):
@@ -1552,27 +1555,28 @@ def membership_default_add(request, slug='', membership_id=None,
                 if auto_renew_discount:
                     discount_amount += discount_amount
 
-            invoice = membership_set.save_invoice(memberships, app, discount_code=discount_code, discount_amount=discount_amount)
-            invoice.entity = memberships[0].entity
-
-            if discount_code and discount:
-                for dmount in discount_list:
-                    if dmount > 0:
-                        DiscountUse.objects.create(discount=discount, invoice=invoice)
-
+            donation_amount = None
+            donation_apply_tax = get_setting('module', 'donations', 'apply_tax')
             if app.donation_enabled:
                 # check for donation
                 donation_option, donation_amount = membership_form2.cleaned_data.get('donation_option_value', (None, None))
                 if donation_option:
                     if donation_option == 'default':
                         donation_amount = app.donation_default_amount
-                    if donation_amount > Decimal(0):
-                        membership_set.donation_amount = donation_amount
-                        membership_set.save()
-                        invoice.subtotal += donation_amount
-                        invoice.total += donation_amount
-                        invoice.balance += donation_amount
-                        invoice.save()
+
+            invoice = membership_set.save_invoice(memberships, app, discount_code=discount_code,
+                                                  discount_amount=discount_amount,
+                                                  donation_amount=donation_amount,
+                                                  donation_apply_tax=donation_apply_tax)
+            invoice.entity = memberships[0].entity
+            if donation_amount and donation_amount > Decimal(0):
+                membership_set.donation_amount = donation_amount
+                membership_set.save()
+
+            if discount_code and discount:
+                for dmount in discount_list:
+                    if dmount > 0:
+                        DiscountUse.objects.create(discount=discount, invoice=invoice)
 
             memberships_join_notified = []
             memberships_renewal_notified = []
@@ -1615,7 +1619,7 @@ def membership_default_add(request, slug='', membership_id=None,
                         notice_sent = membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
 
                 # application complete
-                membership.application_complete_dt = datetime.now()
+                membership.application_complete_dt = timezone.now()
                 membership.application_complete_user = membership.user
 
                 # save application fields
@@ -2002,12 +2006,12 @@ def membership_default_corp_pre_add(request, cm_id=None,
                                                 indiv_veri.guid]))
                 if form.auth_method == 'secret_code':
                     # secret code hash
-                    random_string = User.objects.make_random_password(
+                    random_string = generate_random_password(
                                     length=4,
                                     allowed_chars='abcdefghjkmnpqrstuvwxyz')
                     request.session['corp_hash_random_string'] = random_string
                     secret_code = form.cleaned_data['secret_code']
-                    secret_hash = md5(('%s%s' % (secret_code, random_string)).encode()).hexdigest()
+                    secret_hash = md5(('{}{}'.format(secret_code, random_string)).encode()).hexdigest()
                     return redirect(reverse('membership.add_via_corp_secret_code',
                                             args=[
                                                 corporate_membership_id,
@@ -2018,7 +2022,7 @@ def membership_default_corp_pre_add(request, cm_id=None,
             redirect_url = reverse('membership_default.add_under_corp', args=[corporate_membership_id])
 
             if u:
-                return HttpResponseRedirect('%s?username=%s' % (redirect_url, u.username))
+                return HttpResponseRedirect('{}?username={}'.format(redirect_url, u.username))
             return redirect(redirect_url)
 
     c = {'app': app, "form": form}
@@ -2039,7 +2043,7 @@ def verify_email(request,
     indiv_veri = get_object_or_404(IndivEmailVerification, id=id, guid=guid)
     if not indiv_veri.verified:
         indiv_veri.verified = True
-        indiv_veri.verified_dt = datetime.now()
+        indiv_veri.verified_dt = timezone.now()
         if request.user and not request.user.is_anonymous:
             indiv_veri.updated_by = request.user
         indiv_veri.save()
@@ -2121,26 +2125,26 @@ def expire(request, id, template_name="memberships/applications/expire.html"):
 
 @staff_member_required
 def membership_join_report(request):
-    TODAY = date.today()
+    TODAY = timezone.datetime.today()
     memberships = MembershipDefault.objects.filter(status=True,
                                                    status_detail__in=["active", 'archive'])
-    membership_type = u''
-    membership_status = u''
-    start_date = u''
-    end_date = u''
+    membership_type = ''
+    membership_status = ''
+    start_date = ''
+    end_date = ''
 
-    start_date = TODAY - relativedelta(months=1)
-    end_date = TODAY
+    start_date = timezone.make_aware(TODAY - relativedelta(months=1))
+    end_date = timezone.make_aware(TODAY)
 
     if request.method == 'POST':
         form = ReportForm(request.POST)
 
         if form.is_valid():
 
-            membership_type = form.cleaned_data.get('membership_type', u'')
-            membership_status = form.cleaned_data.get('membership_status', u'')
-            start_date = form.cleaned_data.get('start_date', u'')
-            end_date = form.cleaned_data.get('end_date', u'')
+            membership_type = form.cleaned_data.get('membership_type', '')
+            membership_status = form.cleaned_data.get('membership_status', '')
+            start_date = form.cleaned_data.get('start_date', '')
+            end_date = form.cleaned_data.get('end_date', '')
 
             if membership_type:
                 memberships = memberships.filter(membership_type=membership_type)
@@ -2152,7 +2156,7 @@ def membership_join_report(request):
             'start_date': start_date.strftime('%m/%d/%Y'),
             'end_date': end_date.strftime('%m/%d/%Y')})
 
-    end_date_time = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59)
+    end_date_time = timezone.make_aware(datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59))
     memberships = memberships.filter(application_approved_dt__gte=start_date,
                                      application_approved_dt__lt=end_date_time)
     memberships = memberships.filter(renewal=False).distinct('user__id', 'membership_type__id')
@@ -2226,7 +2230,7 @@ def report_list(request, template_name='reports/membership_report_list.html'):
 def report_active_members(request, template_name='reports/membership_list.html'):
     if request.GET.get('days'):
         days = int(request.GET.get('days'))
-        compare_dt = datetime.now() - timedelta(days=days)
+        compare_dt = timezone.now() - timedelta(days=days)
         mems = MembershipDefault.objects.filter(status=True, status_detail="active", join_dt__gte=compare_dt).order_by('join_dt')
     else:
         days = 0
@@ -2359,7 +2363,7 @@ def report_expired_members(request, template_name='reports/membership_list.html'
     """
     if request.GET.get('days'):
         days = int(request.GET.get('days'))
-        compare_dt = datetime.now() - timedelta(days=days)
+        compare_dt = timezone.now() - timedelta(days=days)
         mems = MembershipDefault.objects.filter(status_detail="expired", expire_dt__gte=compare_dt).order_by('expire_dt')
     else:
         days = 0
@@ -2443,9 +2447,9 @@ def report_expired_members(request, template_name='reports/membership_list.html'
         table_data = []
         for mem in mems:
 
-            invoice_pk = u''
+            invoice_pk = ''
             if mem.get_invoice():
-                invoice_pk = u'%i' % mem.get_invoice().pk
+                invoice_pk = '%i' % mem.get_invoice().pk
 
             table_data.append([
                 mem.user.username,
@@ -2626,7 +2630,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
         days = int(request.GET.get('days'))
     else:
         days = 30
-    compare_dt = datetime.now() - timedelta(days=days)
+    compare_dt = timezone.now() - timedelta(days=days)
     members = MembershipDefault.objects.filter(renewal=1, renew_dt__gte=compare_dt).order_by('renew_dt')
 
     # returns csv response ---------------
@@ -2636,6 +2640,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
         table_header = [
             'id',
             'member number',
+            'member type',
             'last name',
             'first name',
             'email',
@@ -2652,6 +2657,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
             table_data.append([
                 mem.id,
                 mem.member_number,
+                mem.membership_type.name,
                 mem.user.last_name,
                 mem.user.first_name,
                 mem.user.email,
@@ -2732,7 +2738,7 @@ def report_grace_period_members(request, template_name='reports/grace_period_mem
 
 @staff_member_required
 def report_active_members_ytd(request, template_name='reports/active_members_ytd.html'):
-    this_year = datetime.now().year
+    this_year = timezone.now().year
     years = [this_year - i for i in range(5) ]
     year_selected = request.GET.get('year', this_year)
     try:
@@ -2755,7 +2761,8 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
     for index, month in enumerate(itermonths):
         index = index + 1
         start_dt = datetime(year_selected, index, 1)
-        end_dt = start_dt + relativedelta(months=1)
+        end_dt = timezone.make_aware(start_dt + relativedelta(months=1))
+        start_dt = timezone.make_aware(start_dt)
         members = active_mems.filter(application_approved_dt__gte=start_dt,
                                       application_approved_dt__lt=end_dt)
         new_mems = members.filter(renewal=False).distinct('user__id',
@@ -2792,7 +2799,7 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
 
 @staff_member_required
 def report_members_ytd_type(request, template_name='reports/members_ytd_type.html'):
-    year = datetime.now().year
+    year = timezone.now().year
     years = [year, year - 1, year - 2, year - 3, year - 4]
     if request.GET.get('year'):
         year = int(request.GET.get('year'))

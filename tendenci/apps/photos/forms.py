@@ -15,12 +15,12 @@ from tendenci.apps.base.forms import FormControlWidgetMixin
 class PhotoBaseFormSet(BaseModelFormSet):
     def __init__(self,  *args, **kwargs): 
         self.photo_set = kwargs.pop("photo_set", None)
-        super(PhotoBaseFormSet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _construct_form(self, i, **kwargs):
         if hasattr(self, 'photo_set'):
             kwargs['photo_set'] = self.photo_set
-        return super(PhotoBaseFormSet, self)._construct_form(i, **kwargs)
+        return super()._construct_form(i, **kwargs)
 
 
 class PhotoForm(forms.ModelForm):
@@ -42,7 +42,7 @@ class PhotoForm(forms.ModelForm):
         ),
 
     def __init__(self, photo_set, *args, **kwargs):
-        super(PhotoForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if photo_set.cat:
             self.fields['cat'].queryset = PhotoCategory.objects.filter(parent_id=photo_set.cat.id)
         else:
@@ -57,7 +57,7 @@ class PhotoSetSearchForm(FormControlWidgetMixin, forms.Form):
                                       required=False)
 
     def __init__(self, *args, **kwargs):
-        super(PhotoSetSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['q'].widget.attrs.update({'placeholder': _('Enter name / keywords')})
 
         # setup categories
@@ -80,7 +80,7 @@ class LicenseField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         if obj.id == 1:
             return obj.name
-        return mark_safe("%s -- <a href='%s'>see details</a>" % (obj.name, obj.deed))
+        return mark_safe("{} -- <a href='{}'>see details</a>".format(obj.name, obj.deed))
 
 class PhotoAdminForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
@@ -153,7 +153,7 @@ class PhotoBatchEditForm(TendenciBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(PhotoBatchEditForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if 'group' in self.fields:
             self.fields['group'].initial = Group.objects.get_initial_group_id()
 
@@ -215,7 +215,7 @@ class PhotoEditForm(TendenciBaseForm):
     safetylevel = forms.HiddenInput()
 
     def __init__(self, *args, **kwargs):
-        super(PhotoEditForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         if self.user and not self.user.profile.is_superuser:
@@ -285,7 +285,7 @@ class PhotoSetForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(PhotoSetForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         if self.user and not self.user.profile.is_superuser:
@@ -316,7 +316,7 @@ class PhotoSetForm(TendenciBaseForm):
                 cat = None
 
         if self.user and self.user.profile.is_superuser:
-            self.fields['cat'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
+            self.fields['cat'].help_text = mark_safe('<a href="{}">{}</a>'.format(
                         reverse('admin:photos_photocategory_changelist'),
                             _('Manage Categories'),))
 

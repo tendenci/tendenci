@@ -1,12 +1,10 @@
-
-
 from django.db import migrations
 # from tendenci.apps.testimonials.models import Testimonial
 
 
 def assign_position(apps, schema_editor):
     Testimonial = apps.get_model("testimonials", "Testimonial")
-    for i, t in enumerate(Testimonial.objects.all().order_by(('create_dt'))):
+    for i, t in enumerate(Testimonial.objects.all().order_by('create_dt')):
         t.position = i
         t.save()
 

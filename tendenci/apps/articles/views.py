@@ -1,7 +1,6 @@
 import subprocess
 import time
 
-from builtins import str
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
@@ -17,6 +16,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
@@ -45,7 +45,7 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
         version = get_object_or_404(Version, hash=hash)
         current_article = get_object_or_404(Article, pk=version.object_id)
         article = version.get_version_object()
-        msg_string = 'You are viewing a previous version of this article. View the <a href="%s%s">Current Version</a>.' % (get_setting('site', 'global', 'siteurl'), current_article.get_absolute_url())
+        msg_string = 'You are viewing a previous version of this article. View the <a href="{}{}">Current Version</a>.'.format(get_setting('site', 'global', 'siteurl'), current_article.get_absolute_url())
         messages.add_message(request, messages.WARNING, _(msg_string))
     else:
         article = get_object_or_404(Article, slug=slug)
@@ -58,7 +58,7 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
     if not article.release_dt_local and article.release_dt:
         article.assign_release_dt_local()
 
-    if not article.release_dt_local or article.release_dt_local >= datetime.now():
+    if not article.release_dt_local or article.release_dt_local >= timezone.now():
         if not any([
             has_perm(request.user, 'articles.view_article'),
             request.user == article.owner,
@@ -139,9 +139,9 @@ def search(request, template_name="articles/search.html"):
 
     if not has_perm(request.user, 'articles.view_article'):
         if request.user.is_anonymous:
-            articles = articles.filter(release_dt_local__lte=datetime.now())
+            articles = articles.filter(release_dt_local__lte=timezone.now())
         else:
-            articles = articles.filter(Q(release_dt_local__lte=datetime.now()) | Q(owner=request.user) | Q(creator=request.user))
+            articles = articles.filter(Q(release_dt_local__lte=timezone.now()) | Q(owner=request.user) | Q(creator=request.user))
 
     # Query list of category and subcategory for dropdown filters
     if category:
@@ -187,7 +187,7 @@ def search_redirect(request):
 def print_view(request, slug, template_name="articles/print-view.html"):
     article = get_object_or_404(Article, slug=slug)
 
-    if article.release_dt >= datetime.now():
+    if article.release_dt >= timezone.now():
         if not any([
             has_perm(request.user, 'articles.view_article'),
             request.user == article.owner,

@@ -7,6 +7,7 @@ from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.conf import settings
+from django.utils import timezone
 
 from tagging.fields import TagField
 from timezone_field import TimeZoneField
@@ -106,7 +107,7 @@ class News(TendenciBaseModel):
         self.assign_release_dt_local()
 
         photo_upload = kwargs.pop('photo', None)
-        super(News, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if photo_upload and self.pk:
             image = NewsImage(
@@ -151,7 +152,7 @@ class News(TendenciBaseModel):
     def is_released(self):
         if not self.release_dt_local:
             self.assign_release_dt_local()
-        return self.release_dt_local <= datetime.now()
+        return self.release_dt_local <= timezone.now()
 
     @property
     def has_google_author(self):
@@ -174,7 +175,7 @@ class News(TendenciBaseModel):
         then
             the corresponding release_dt_local will be: 2014-05-09 05:30:00
         """
-        now = datetime.now()
+        now = timezone.now()
         now_with_tz = adjust_datetime_to_timezone(now, settings.TIME_ZONE)
         if self.timezone and self.release_dt and self.timezone.key != settings.TIME_ZONE:
             time_diff = adjust_datetime_to_timezone(now, self.timezone) - now_with_tz

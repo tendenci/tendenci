@@ -29,7 +29,7 @@ class Reg8nDtWidget(Widget):
             ))
 
         # string format template
-        html = u"<div>%s to %s</div>" % tuple(str_format_kwargs)
+        html = "<div>%s to %s</div>" % tuple(str_format_kwargs)
         return mark_safe(html)
 
 
@@ -43,7 +43,7 @@ class Reg8nDtField(ChoiceField):
     widget = Reg8nDtWidget
 
     def __init__(self, *args, **kwargs):
-        super(Reg8nDtField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.build_widget_reg8n_dict()
 
     def build_widget_reg8n_dict(self, *args, **kwargs):
@@ -84,7 +84,7 @@ class UseCustomRegField(MultiValueField):
         help_text=None
     ):
         myfields = ()
-        super(UseCustomRegField, self).__init__(
+        super().__init__(
             myfields, required=required, widget=widget, label=label, initial=initial, help_text=help_text)
 
     def clean(self, value):
@@ -94,11 +94,11 @@ class UseCustomRegField(MultiValueField):
         for i, item in enumerate(data_list):
             if type(item) is bool:
                 if item is False:
-                    data_list[i] = u'0'
+                    data_list[i] = '0'
                 else:
-                    data_list[i] = u'1'
+                    data_list[i] = '1'
             if item is None:
-                data_list[i] = u''
+                data_list[i] = ''
 
         if data_list:
             return ','.join(data_list)

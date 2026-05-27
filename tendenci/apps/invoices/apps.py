@@ -14,5 +14,5 @@ class InvoicesConfig(AppConfig):
     verbose_name = 'Invoices'
 
     def ready(self):
-        super(InvoicesConfig, self).ready()
+        super().ready()
         post_migrate.connect(create_notice_types, sender=self)

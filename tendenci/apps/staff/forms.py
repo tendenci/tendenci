@@ -1,4 +1,3 @@
-import imghdr
 from os.path import splitext
 
 from django import forms
@@ -9,6 +8,7 @@ from tendenci.apps.staff.models import Staff, StaffFile, Department, Position
 #from tendenci.apps.files.models import File
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.files.validators import FileValidator
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -24,7 +24,7 @@ class StaffSearchForm(FormControlWidgetMixin, forms.Form):
     position = forms.ChoiceField(label=_('Position'), required=False, choices=[])
     
     def __init__(self, *args, **kwargs):
-        super(StaffSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # department
         department_choices = Department.objects.values_list('id', 'name').order_by('name')
@@ -58,28 +58,14 @@ class StaffForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(choices=(('active','Active'),('inactive','Inactive')))
 
-    def clean_photo(self):
-        photo = self.cleaned_data['photo']
-        if photo:
-            extension = splitext(photo.name)[1]
-
-            # check the extension
-            if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
-
-            # check the image header
-            image_type = '.%s' % imghdr.what('', photo.read())
-            if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
-
-        return photo
-
     def __init__(self, *args, **kwargs):
-        super(StaffForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['biography'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['biography'].widget.mce_attrs['app_instance_id'] = 0
+        if 'photo' in self.fields:
+            self.fields['photo'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
 
     class Meta:
         model = Staff
@@ -114,4 +100,4 @@ class FileForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(FileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)

@@ -110,7 +110,7 @@ class SpeakerFile(File):
                 # First row
                 self.position = 0
 
-        return super(SpeakerFile, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     class Meta:
         ordering = ('position',)

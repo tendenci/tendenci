@@ -31,10 +31,10 @@ class PhotoMeta():
         if object.name:
             value += object.name
 
-        value = '%s photos for %s' % (value, site_name)
+        value = '{} photos for {}'.format(value, site_name)
 
         if geo_location:
-            value = '%s in %s' % (value, geo_location)
+            value = '{} in {}'.format(value, geo_location)
 
         return value
 
@@ -56,9 +56,9 @@ class PhotoMeta():
         ### Build string -----------------------
         value = object.name
 
-        value = '%s : %s' % (value, content)
+        value = '{} : {}'.format(value, content)
 
-        value = '%s Photo Sets for %s, %s' % (
+        value = '{} Photo Sets for {}, {}'.format(
             value, site_name, geo_location)
 
         value = value.strip()
@@ -87,12 +87,12 @@ class PhotoMeta():
             if not item.strip():
                 list.remove(item)
 
-        value = '%s %s, %s' % (value, ', '.join(list), dynamic_keywords)
+        value = '{} {}, {}'.format(value, ', '.join(list), dynamic_keywords)
 
         return value
 
     def get_canonical_url(self):
-        return '{0}{1}'.format(get_setting('site', 'global', 'siteurl'), self.object.get_absolute_url())
+        return '{}{}'.format(get_setting('site', 'global', 'siteurl'), self.object.get_absolute_url())
 
     def get_meta(self, object, name):
 

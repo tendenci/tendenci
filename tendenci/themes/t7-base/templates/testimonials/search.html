@@ -25,7 +25,7 @@
     
     <div class="tsm-search-wrap">
         {% for testimonial in testimonials %}
-            {% search_result testimonial %}
+        {% include 'testimonials/search-result.html' %}
         {% empty %}
             <p>0 Testimonials Found</p>
         {% endfor %}

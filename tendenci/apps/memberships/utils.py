@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import csv
 import re
@@ -30,6 +29,7 @@ from django.core.files.base import ContentFile
 from django.template import Context, Template
 from django.template.loader import get_template
 from django.utils.html import escape
+from django.utils import timezone
 
 from tendenci.apps.theme.shortcuts import _strip_content_above_doctype
 from tendenci.apps.newsletters.utils import get_newsletter_connection, is_newsletter_relay_set
@@ -125,7 +125,7 @@ def iter_memberships(memberships, app_fields):
 def get_default_membership_fields(use_for_corp=False):
     json_file_path = os.path.join(settings.TENDENCI_ROOT,
         'addons/memberships/fixtures/default_membership_application_fields.json')
-    json_file = open(json_file_path, 'r')
+    json_file = open(json_file_path)
     data = ''.join(json_file.read())
     json_file.close()
 
@@ -149,7 +149,7 @@ def get_default_membership_fields(use_for_corp=False):
 def get_default_membership_corp_fields():
     json_file_path = os.path.join(settings.TENDENCI_ROOT,
         'addons/memberships/fixtures/default_membership_application_fields_for_corp.json')
-    json_file = open(json_file_path, 'r')
+    json_file = open(json_file_path)
     data = ''.join(json_file.read())
     json_file.close()
 
@@ -162,7 +162,8 @@ def get_corporate_membership_choices(active_only=True):
     cm_list = [(0, 'SELECT ONE')]
     from tendenci.apps.corporate_memberships.models import CorpMembership
 
-    corp_membs = CorpMembership.objects.exclude(status_detail='archive')
+    corp_membs = CorpMembership.objects.exclude(status_detail='archive'
+                                                ).exclude(corp_profile__status=False)
     if active_only:
         corp_membs = corp_membs.filter(status_detail='active')
     corp_membs = corp_membs.order_by('corp_profile__name')
@@ -171,7 +172,7 @@ def get_corporate_membership_choices(active_only=True):
         if corp_memb.status_detail == 'active':
             cm_list.append((corp_memb.id, corp_memb.corp_profile.name))
         else:
-            cm_list.append((corp_memb.id, '%s (%s)' % (corp_memb.corp_profile.name, corp_memb.status_detail)))
+            cm_list.append((corp_memb.id, '{} ({})'.format(corp_memb.corp_profile.name, corp_memb.status_detail)))
 
     return cm_list
 
@@ -212,9 +213,9 @@ def get_selected_demographic_fields(membership_app, forms):
     """
     Get the selected demographic fields for the app.
     """
-    demographic_field_dict = dict([(field.name, field)
+    demographic_field_dict = {field.name: field
                         for field in MembershipDemographic._meta.fields
-                        if field.get_internal_type() != 'AutoField'])
+                        if field.get_internal_type() != 'AutoField'}
     app_fields = MembershipAppField.objects.filter(
                                 membership_app=membership_app,
                                 display=True
@@ -288,7 +289,7 @@ def run_membership_export(request,
         user_id=0, cp_id=0, ids=''):
     if not identifier:
         identifier = int(ttime.time())
-    temp_file_path = 'export/memberships/{0}_{1}_temp.csv'.format(identifier, cp_id)
+    temp_file_path = 'export/memberships/{}_{}_temp.csv'.format(identifier, cp_id)
     default_storage.save(temp_file_path, ContentFile(b''))
     
     # start the process
@@ -311,8 +312,8 @@ def get_membership_rows(
         membership_field_list,
         invoice_field_list,
         foreign_keys,
-        export_type=u'all',
-        export_status_detail=u'',
+        export_type='all',
+        export_status_detail='',
         cp_id=0,
         ids=''):
 
@@ -376,8 +377,11 @@ def get_membership_rows(
                     field_name, demographic, field_name in foreign_keys)
 
         for field_name in membership_field_list:
-            row_dict[field_name] = get_obj_field_value(
-                field_name, membership, field_name in foreign_keys)
+            if field_name == 'corp_profile_name':
+                row_dict[field_name] = membership.get_corporate_profile_name()
+            else:
+                row_dict[field_name] = get_obj_field_value(
+                    field_name, membership, field_name in foreign_keys)
 
         if invoice:
             for field_name in invoice_field_list:
@@ -398,7 +402,7 @@ def process_export(
         export_fields='all_fields',
         export_type='all',
         export_status_detail='active',
-        identifier=u'', user_id=0, cp_id=0, ids=''):
+        identifier='', user_id=0, cp_id=0, ids=''):
     from tendenci.apps.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':
@@ -439,6 +443,7 @@ def process_export(
             'app',
             'membership_type',
             'corp_profile_id',
+            'corp_profile_name',
             'corporate_membership_id',
             'join_dt',
             'expire_dt',
@@ -486,6 +491,7 @@ def process_export(
         membership_field_list = [
             smart_str(field.name) for field in MembershipDefault._meta.fields
             if not field.__class__ == AutoField]
+        membership_field_list.insert(membership_field_list.index('corp_profile_id')+1, 'corp_profile_name')
         membership_field_list.remove('user')
 
         # invoice ---------
@@ -613,7 +619,7 @@ def process_export(
         download_url = reverse('memberships.default_export_download', args=[identifier])
 
         if cp_id:
-            download_url = '%s?cp_id=%s' % (download_url, cp_id)
+            download_url = '{}?cp_id={}'.format(download_url, cp_id)
         site_url = get_setting('site', 'global', 'siteurl')
         site_display_name = get_setting('site', 'global', 'sitedisplayname')
         parms = {
@@ -658,7 +664,7 @@ def csv_to_dict(file_path, **kwargs):
         return []
 
     normalize_newline(file_path)
-    csv_file = csv.reader(default_storage.open(file_path, 'rU'))
+    csv_file = csv.reader(default_storage.open(file_path, 'r'))
     colnames = next(csv_file)  # row 1;
 
     if machine_name:
@@ -917,7 +923,7 @@ def get_notice_token_help_text(notice=None):
 
             help_text += "<ul>"
             for field in fields:
-                help_text += '<li>{{ %s }} - (for %s)</li>' % (field.field_name, field.label)
+                help_text += '<li>{{{{ {} }}}} - (for {})</li>'.format(field.field_name, field.label)
             help_text += "</ul>"
     else:
         help_text += '<div>No field tokens because there is no ' + \
@@ -931,6 +937,7 @@ def get_notice_token_help_text(notice=None):
                     'referer_url',
                     'membership_link',
                     'view_link',
+                    'print_link',
                     'invoice_link',
                     'renew_link',
                     'expire_dt',]
@@ -1050,6 +1057,8 @@ def memb_import_parse_csv(mimport):
         data_list = []
     
         for row in csv_reader:
+            if not row:
+                continue
             data_list.append(dict(zip(fieldnames, row)))
     
         return fieldnames, data_list
@@ -1152,7 +1161,7 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
     return None
 
 
-class ImportMembDefault(object):
+class ImportMembDefault:
     """
     Check and process (insert/update) a membership.
     """
@@ -1167,17 +1176,17 @@ class ImportMembDefault(object):
         self.mimport = mimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.user_fields = dict([(field.name, field)
+        self.user_fields = {field.name: field
                             for field in User._meta.fields
-                            if field.get_internal_type() != 'AutoField'])
-        self.profile_fields = dict([(field.name, field)
+                            if field.get_internal_type() != 'AutoField'}
+        self.profile_fields = {field.name: field
                             for field in Profile._meta.fields
                             if field.get_internal_type() != 'AutoField' and
-                            field.name not in ['user', 'guid']])
-        self.membershipdemographic_fields = dict([(field.name, field)
+                            field.name not in ['user', 'guid']}
+        self.membershipdemographic_fields = {field.name: field
                             for field in MembershipDemographic._meta.fields
                             if field.get_internal_type() != 'AutoField' and
-                            field.name not in ['user']])
+                            field.name not in ['user']}
         self.education_fields = ['school1', 'major1', 'degree1', 'graduation_year1',
                                   'school2', 'major2', 'degree2', 'graduation_year2',
                                   'school3', 'major3', 'degree3', 'graduation_year3',
@@ -1189,10 +1198,10 @@ class ImportMembDefault(object):
         self.allow_null_fields = ['account_id']
         self.should_handle_demographic = False
         self.should_handle_education = False
-        self.membership_fields = dict([(field.name, field)
+        self.membership_fields = {field.name: field
                             for field in MembershipDefault._meta.fields
                             if field.get_internal_type() != 'AutoField' and
-                            field.name not in ['user', 'guid']])
+                            field.name not in ['user', 'guid']}
         self.private_settings = self.set_default_private_settings()
         self.t4_timezone_map = {'AST': 'Canada/Atlantic',
                              'EST': 'US/Eastern',
@@ -1213,14 +1222,14 @@ class ImportMembDefault(object):
                                     if mt.membershipapp_set.all().exists()
                                     ]
         self.membership_apps = MembershipApp.objects.all()
-        self.membership_app_ids_dict = dict([(app.id, app
-                                    ) for app in self.membership_apps])
-        self.membership_app_names_dict = dict([(app.name, app
-                                    ) for app in self.membership_apps])
+        self.membership_app_ids_dict = {app.id: app
+                                     for app in self.membership_apps}
+        self.membership_app_names_dict = {app.name: app
+                                     for app in self.membership_apps}
         # membership_type to app map
         # the two lists are: apps and apps for corp individuals
-        self.membership_types_to_apps_map = dict([(mt_id, ([], [])
-                                    ) for mt_id in self.membership_type_ids])
+        self.membership_types_to_apps_map = {mt_id: ([], [])
+                                     for mt_id in self.membership_type_ids}
         for app in self.membership_apps:
             mt_ids = app.membership_types.all().values_list('id', flat=True)
             for mt_id in self.membership_type_ids:
@@ -1428,7 +1437,7 @@ class ImportMembDefault(object):
         user = None
         memb = None
         user_display = {
-            'error': u'',
+            'error': '',
             'user': None,
             'action': ''
         }
@@ -1547,14 +1556,14 @@ class ImportMembDefault(object):
                 return
 
         user_display.update({
-            'first_name': self.memb_data.get('first_name', u''),
-            'last_name': self.memb_data.get('last_name', u''),
-            'account_id': self.memb_data.get('account_id', u''),
-            'email': self.memb_data.get('email', u''),
-            'username': self.memb_data.get('username', u''),
-            'member_number': self.memb_data.get('member_number', u''),
-            'phone': self.memb_data.get('phone', u''),
-            'company': self.memb_data.get('company', u'').strip(),
+            'first_name': self.memb_data.get('first_name', ''),
+            'last_name': self.memb_data.get('last_name', ''),
+            'account_id': self.memb_data.get('account_id', ''),
+            'email': self.memb_data.get('email', ''),
+            'username': self.memb_data.get('username', ''),
+            'member_number': self.memb_data.get('member_number', ''),
+            'phone': self.memb_data.get('phone', ''),
+            'company': self.memb_data.get('company', '').strip(),
         })
 
         return user_display
@@ -1606,12 +1615,12 @@ class ImportMembDefault(object):
         self.assign_import_values_from_dict(user, action_info['user_action'])
 
         user.username = user.username or spawn_username(
-            fn=memb_data.get('first_name', u''),
-            ln=memb_data.get('last_name', u''),
-            em=memb_data.get('email', u''))
+            fn=memb_data.get('first_name', ''),
+            ln=memb_data.get('last_name', ''),
+            em=memb_data.get('email', ''))
 
         # clean username
-        user.username = re.sub(r'[^\w+-.@]', u'', user.username)
+        user.username = re.sub(r'[^\w+-.@]', '', user.username)
 
         # make sure username is unique.
         if action_info['user_action'] == 'insert':
@@ -1739,7 +1748,7 @@ class ImportMembDefault(object):
         # no join_dt - set one
         if not hasattr(memb, 'join_dt') or not memb.join_dt:
             if memb.status and memb.status_detail == 'active':
-                memb.join_dt = datetime.now()
+                memb.join_dt = timezone.now()
 
         # no application_approved_dt - set one
         if not hasattr(memb, 'application_approved_dt') or not memb.application_approved_dt:
@@ -1800,7 +1809,7 @@ class ImportMembDefault(object):
     def is_active(self, memb):
         return all([memb.status,
                     memb.status_detail == 'active',
-                    not memb.expire_dt or memb.expire_dt > datetime.now()
+                    not memb.expire_dt or memb.expire_dt > timezone.now()
                     ])
 
     def assign_import_values_from_dict(self, instance, action):
@@ -1854,7 +1863,7 @@ class ImportMembDefault(object):
             return date
 
         if field_type == 'DateTimeField':
-            return datetime.now()
+            return timezone.now()
 
         if field_type == 'DecimalField':
             return Decimal(0)
@@ -1937,7 +1946,7 @@ class ImportMembDefault(object):
                 if value == '':
                     value = None
                 if not field.null:
-                    value = datetime.now()
+                    value = timezone.now()
         elif field_type == 'DecimalField':
             try:
                 value = field.to_python(value)
@@ -2030,7 +2039,7 @@ def get_membership_summary_data():
     total_expired = 0
     total_in_grace_period = 0
     total_total = 0
-    now = datetime.now()
+    now = timezone.now()
     for membership_type in memb_types:
         grace_period = membership_type.expiration_grace_period
         date_to_expire = now - relativedelta(days=grace_period)
@@ -2109,8 +2118,8 @@ def email_pending_members(email, **kwargs):
             email.recipient = member.user.email
     
             if email.recipient:
-                view_url = '{0}{1}'.format(site_url, reverse('membership.details', args=[member.id]))
-                edit_url = '{0}{1}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
+                view_url = '{}{}'.format(site_url, reverse('membership.details', args=[member.id]))
+                edit_url = '{}{}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
                 template = Template(email.body)
                 context = Context({'site_url': site_url,
                                    'site_display_name': site_display_name,
@@ -2145,8 +2154,8 @@ def email_pending_members(email, **kwargs):
                 email.recipient = rep.user.email
 
                 if email.recipient:
-                    view_url = '{0}{1}'.format(site_url, reverse('corpmembership.view', args=[corp_member.id]))
-                    edit_url = '{0}{1}'.format(site_url, reverse('corpmembership.edit', args=[corp_member.id]))
+                    view_url = '{}{}'.format(site_url, reverse('corpmembership.view', args=[corp_member.id]))
+                    edit_url = '{}{}'.format(site_url, reverse('corpmembership.edit', args=[corp_member.id]))
                     template = Template(email.body)
                     context = Context({'site_url': site_url,
                                        'site_display_name': site_display_name,
@@ -2178,7 +2187,7 @@ def email_pending_members(email, **kwargs):
             dest = corpmembership_type.name
     opts = {}
     opts['summary'] = '<font face=""Arial"" color=""#000000"">'
-    opts['summary'] += 'Emails sent to {0} ({1})</font><br><br>'.format(dest, total_sent)
+    opts['summary'] += 'Emails sent to {} ({})</font><br><br>'.format(dest, total_sent)
     opts['summary'] += '<font face=""Arial"" color=""#000000"">'
     opts['summary'] += 'Email Sent Appears Below in Raw Format'
     opts['summary'] += '</font><br><br>'
@@ -2234,15 +2243,22 @@ def email_membership_members(email, memberships, **kwargs):
         email.recipient = member.user.email
 
         if email.recipient:
-            view_url = '{0}{1}'.format(site_url, reverse('membership.details', args=[member.id]))
-            edit_url = '{0}{1}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
+            view_url = '{}{}'.format(site_url, reverse('membership.details', args=[member.id]))
+            edit_url = '{}{}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
+            if member.expire_dt:
+                expire_dt = ttime.strftime("%b %d, %Y", member.expire_dt.timetuple())
+            else:
+                expire_dt = ''
+            renew_link = '{}{}'.format(site_url, member.get_absolute_url())
             template = Template(email.body)
             context = Context({'site_url': site_url,
                                'site_display_name': site_display_name,
                                "first_name": first_name,
                                'last_name': last_name,
                                'view_url': view_url,
-                               'edit_url': edit_url,})
+                               'edit_url': edit_url,
+                               'expire_dt': expire_dt,
+                               'renew_link': renew_link})
             email.body = template.render(context)
             
             # replace relative to absolute urls
@@ -2267,7 +2283,7 @@ def email_membership_members(email, memberships, **kwargs):
 
     opts = {}
     opts['summary'] = '<font face=""Arial"" color=""#000000"">'
-    opts['summary'] += 'Emails sent to {0} ({1})</font><br><br>'.format(dest, total_sent)
+    opts['summary'] += 'Emails sent to {} ({})</font><br><br>'.format(dest, total_sent)
     opts['summary'] += '<font face=""Arial"" color=""#000000"">'
     opts['summary'] += 'Email Sent Appears Below in Raw Format'
     opts['summary'] += '</font><br><br>'

@@ -18,7 +18,7 @@ class EmergencyAnnouncementAdminForm(TendenciBaseForm):
                   'user_perms', 'member_perms', 'group_perms')
 
     def __init__(self, *args, **kwargs):
-        super(EmergencyAnnouncementAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:

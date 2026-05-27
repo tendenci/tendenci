@@ -34,6 +34,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='category',
-            unique_together=set([('slug', 'parent')]),
+            unique_together={('slug', 'parent')},
         ),
     ]

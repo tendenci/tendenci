@@ -43,7 +43,7 @@ def payment_thankyou_display(request, payment):
                                                     'model_name': obj._meta.model_name,
                                                     'payment':payment},
                                                     request=request)
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
             template_name = "%s/payment_thankyou_header.html" % (app_label)
@@ -53,7 +53,7 @@ def payment_thankyou_display(request, payment):
                                                     'model_name': obj._meta.model_name,
                                                    'payment':payment},
                                                    request=request)
-            except (TemplateDoesNotExist, IOError):
+            except (TemplateDoesNotExist, OSError):
                 pass
 
     return {'request': request,

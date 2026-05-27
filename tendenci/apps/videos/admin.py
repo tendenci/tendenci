@@ -44,7 +44,7 @@ class VideoAdmin(TendenciBaseModelAdmin):
 
         if dt:
             return dt.strftime('%x')
-        return u''
+        return ''
     get_release_dt.short_description = _('Release Date')
     list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt', 'show_group', 'status_detail']
     list_editable = ['category', 'video_type']
@@ -92,7 +92,7 @@ class VideoAdmin(TendenciBaseModelAdmin):
     show_group.admin_order_field = 'group'
 
     def get_fieldsets(self, request, obj=None):
-        fieldsets = super(VideoAdmin, self).get_fieldsets(request, obj)
+        fieldsets = super().get_fieldsets(request, obj)
         if not obj or (obj and not obj.image):
             fields = list(fieldsets[0][1]['fields'])
             if 'clear_image' in fields:

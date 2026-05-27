@@ -1,5 +1,3 @@
-from builtins import str
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, Http404
@@ -192,7 +190,7 @@ def edit(request, id, form_class=PageForm,
                 header.creator_username = request.user.username
                 header.owner = request.user
                 header.owner_username = request.user.username
-                filename = "%s-%s" % (page.slug, f.name)
+                filename = "{}-{}".format(page.slug, f.name)
                 f.file.seek(0)
                 header.file.save(filename, f)
                 page.header_image = header
@@ -213,7 +211,7 @@ def edit(request, id, form_class=PageForm,
                 checklist_update('update-about')
 
             messages.add_message(request, messages.SUCCESS,
-                                 _('Successfully updated %(p)s' % {'p': str(page)}))
+                                 _('Successfully updated {p}'.format(p=str(page))))
 
             if not request.user.profile.is_superuser:
                 # send notification to administrators
@@ -283,7 +281,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
             page.save()  # save relationship
 
             messages.add_message(request, messages.SUCCESS,
-                                 _('Successfully updated meta for %(p)s' % {'p': str(page)}))
+                                 _('Successfully updated meta for {p}'.format(p=str(page))))
 
             return HttpResponseRedirect(reverse('page', args=[page.slug]))
     else:
@@ -329,7 +327,7 @@ def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
                 header.creator_username = request.user.username
                 header.owner = request.user
                 header.owner_username = request.user.username
-                filename = "%s-%s" % (page.slug, f.name)
+                filename = "{}-{}".format(page.slug, f.name)
                 f.file.seek(0)
                 header.file.save(filename, f, save=False)
                 page.header_image = header
@@ -353,7 +351,7 @@ def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
                 page = update_perms_and_save(request, form, page)
 
                 messages.add_message(request, messages.SUCCESS,
-                                 _('Successfully updated %(p)s' % {'p': str(page)}))
+                                 _('Successfully updated {p}'.format(p=str(page))))
                 if not request.user.profile.is_superuser:
                     # send notification to administrators
                     recipients = get_notice_recipients('module', 'pages',
@@ -412,7 +410,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
                 header.creator_username = request.user.username
                 header.owner = request.user
                 header.owner_username = request.user.username
-                filename = "%s-%s" % (page.slug, f.name)
+                filename = "{}-{}".format(page.slug, f.name)
                 f.file.seek(0)
                 header.file.save(filename, f)
                 page.header_image = header
@@ -430,7 +428,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
                                     )
 
             messages.add_message(request, messages.SUCCESS,
-                                 _('Successfully added %(p)s' % {'p': str(page)}))
+                                 _('Successfully added {p}'.format(p=str(page))))
 
             checklist_update('add-page')
 
@@ -478,7 +476,7 @@ def delete(request, id, template_name="pages/delete.html"):
     if request.method == "POST":
         EventLog.objects.log(instance=page)
         messages.add_message(request, messages.SUCCESS,
-                             _('Successfully deleted %(p)s' % { 'p': str(page)}))
+                             _('Successfully deleted {p}'.format( p=str(page))))
 
         # send notification to administrators
         recipients = get_notice_recipients('module', 'pages', 'pagerecipients')

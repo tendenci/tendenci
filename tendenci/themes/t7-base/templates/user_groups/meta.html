@@ -61,10 +61,10 @@
                                 {% if group.allow_self_remove and user.is_authenticated or can_add_member %}
                                     <li><a href="{% url "group.selfremove" group.slug %}" title="Remove myself from group">{% trans "Remove myself from group" %}</a></li>
                                 {% endif %}
-                                {% else %}
-                                    {% if group.allow_self_add and user.is_authenticated or can_add_member %}
-                                        <li><a href="{% url "group.selfadd" group.slug %}" class="option-link addmember" title="Add myself to group">{% trans "Add Myself to Group" %}</a></li>
-                                    {% endif %}
+                            {% else %}
+                                {% if group.allow_self_add and user.is_authenticated %}
+                                    <li><a href="{% url "group.selfadd" group.slug %}" class="option-link addmember" title="Add myself to group">{% trans "Add Myself to Group" %}</a></li>
+                                {% endif %}
                             {% endif %}
 
                         </ul>

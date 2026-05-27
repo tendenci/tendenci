@@ -5,6 +5,7 @@ import pytz
 
 from django.core import exceptions
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.corporate_memberships.models import (
@@ -18,7 +19,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.entities.models import Entity
 
 
-class CorpMembershipImportProcessor(object):
+class CorpMembershipImportProcessor:
     """
     Check and process (insert/update) a corporate membership.
     """
@@ -33,16 +34,16 @@ class CorpMembershipImportProcessor(object):
         self.mimport = mimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.corp_profile_fields = dict([(field.name, field)
+        self.corp_profile_fields = {field.name: field
                             for field in CorpProfile._meta.fields
                             if field.get_internal_type() != 'AutoField' and
-                            field.name not in ['guid']])
-        self.corp_membership_fields = dict([(field.name, field)
+                            field.name not in ['guid']}
+        self.corp_membership_fields = {field.name: field
                             for field in CorpMembership._meta.fields \
                             # comment it out if you want to make id import possible
                             if field.get_internal_type() != 'AutoField' and \
                             field.name not in ['user', 'guid',
-                                               'corp_profile']])
+                                               'corp_profile']}
         # Track account_ids in file to handle duplicate account_ids within the same file.
         self.account_ids_in_file = list()
         # Allow specific fields to be null, even when clean_data would normally provide a
@@ -380,7 +381,7 @@ class CorpMembershipImportProcessor(object):
         # no join_dt - set one
         if not hasattr(corp_memb, 'join_dt') or not corp_memb.join_dt:
             if corp_memb.status and corp_memb.status_detail == 'active':
-                corp_memb.join_dt = datetime.now()
+                corp_memb.join_dt = timezone.now()
 
         # no expire_dt - get it via corporate_membership_type
         if not hasattr(corp_memb, 'expiration_dt') or not corp_memb.expiration_dt:
@@ -425,7 +426,7 @@ class CorpMembershipImportProcessor(object):
         return all([
                 corp_memb.status,
                 corp_memb.status_detail == 'active',
-                not corp_memb.expiration_dt or corp_memb.expiration_dt > datetime.now()
+                not corp_memb.expiration_dt or corp_memb.expiration_dt > timezone.now()
                 ])
 
     def assign_import_values_from_dict(self, instance, action):
@@ -491,7 +492,7 @@ class CorpMembershipImportProcessor(object):
             return date
 
         if field_type == 'DateTimeField':
-            return datetime.now()
+            return timezone.now()
 
         if field_type == 'DecimalField':
             return Decimal(0)
@@ -574,7 +575,7 @@ class CorpMembershipImportProcessor(object):
                 if value == '':
                     value = None
                 if not field.null:
-                    value = datetime.now()
+                    value = timezone.now()
         elif field_type == 'DecimalField':
             try:
                 value = field.to_python(value)

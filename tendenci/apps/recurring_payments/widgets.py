@@ -7,7 +7,7 @@ from tendenci.apps.recurring_payments.models import BILLING_PERIOD_CHOICES, DUE_
 class BillingDateSelectInput(forms.TextInput):
     def render(self, name, value, attrs=None, renderer=None):
         return mark_safe('%s day(s) after billing cycle end date'
-                         % super(BillingDateSelectInput, self).render(name, value, attrs))
+                         % super().render(name, value, attrs))
 
 
 class BillingDateSelectWidget(forms.MultiWidget):
@@ -22,7 +22,7 @@ class BillingDateSelectWidget(forms.MultiWidget):
             items.sort()
             self.widgets = [item[1] for item in items]
 
-        super(BillingDateSelectWidget, self).__init__(self.widgets, attrs)
+        super().__init__(self.widgets, attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
@@ -44,9 +44,9 @@ class BillingDateSelectWidget(forms.MultiWidget):
 
         output_html = """
                         <div id="billing_dt_select">
-                            %s<p>day(s) after billing cycle</p>%s<p>date</p>
+                            {}<p>day(s) after billing cycle</p>{}<p>date</p>
                         </div>
-                      """ % (rendered_num_days,
+                      """.format(rendered_num_days,
                              rendered_due_sore
                              )
 
@@ -63,7 +63,7 @@ class BillingDateSelectWidget(forms.MultiWidget):
         else:
             widget_value = None
         if id_:
-            final_attrs = dict(attrs, id='%s_%s' % (id_, i))
+            final_attrs = dict(attrs, id='{}_{}'.format(id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
 
@@ -85,7 +85,7 @@ class BillingCycleWidget(forms.MultiWidget):
             items.sort()
             self.widgets = [item[1] for item in items]
 
-        super(BillingCycleWidget, self).__init__(self.widgets, attrs)
+        super().__init__(self.widgets, attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
@@ -107,9 +107,9 @@ class BillingCycleWidget(forms.MultiWidget):
 
         output_html = """
                         <div id="t-recurring-payment-billing-cycle">
-                            <p>Every</p>%s%s
+                            <p>Every</p>{}{}
                         </div>
-                      """ % (rendered_billing_frequency,
+                      """.format(rendered_billing_frequency,
                              rendered_billing_period
                              )
 
@@ -126,7 +126,7 @@ class BillingCycleWidget(forms.MultiWidget):
         else:
             widget_value = None
         if id_:
-            final_attrs = dict(attrs, id='%s_%s' % (id_, i))
+            final_attrs = dict(attrs, id='{}_{}'.format(id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
 

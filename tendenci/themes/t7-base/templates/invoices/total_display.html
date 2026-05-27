@@ -66,6 +66,7 @@
     <td>{% trans "Balance due:" %}</td>
     <td class="td-right">{{ invoice.balance|format_currency }}</td>
   </tr>
+  {% if not print_view %}
   {% if invoice.balance > 0 and merchant_login %}
   <tr>
     <td colspan="2">
@@ -74,5 +75,6 @@
       </a>
     </td>
   </tr>
+  {% endif %}
   {% endif %}
 </table>

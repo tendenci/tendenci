@@ -1,5 +1,3 @@
-
-
 from django.utils import translation
 from django.utils.deprecation import MiddlewareMixin
 

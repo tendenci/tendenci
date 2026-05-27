@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.utils.translation import gettext_lazy as _
 from django.template import Library, TemplateSyntaxError
+from django.utils import timezone
 
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.articles.models import Article
@@ -50,7 +51,7 @@ class ListArticlesNode(ListNode):
         """
         Filters out articles that aren't yet released.
         """
-        now = datetime.now().replace(second=0, microsecond=0)
+        now = timezone.now().replace(second=0, microsecond=0)
         items = items.filter(release_dt_local__lte=now)
         return items
 

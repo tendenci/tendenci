@@ -16,7 +16,7 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
             items.sort()
             self.widgets = [item[1] for item in items]
 
-        super(NoticeTimeTypeWidget, self).__init__(self.widgets, attrs)
+        super().__init__(self.widgets, attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
@@ -48,9 +48,9 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
 
         output_html = """
                         <div id="notice-time-type">
-                            %s day(s) %s %s
+                            {} day(s) {} {}
                         </div>
-                      """ % (rendered_num_days,
+                      """.format(rendered_num_days,
                              rendered_notice_time,
                              rendered_notice_type
                              )
@@ -68,7 +68,7 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
         else:
             widget_value = None
         if id_:
-            final_attrs = dict(attrs, id='%s_%s' % (id_, i))
+            final_attrs = dict(attrs, id='{}_{}'.format(id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
 

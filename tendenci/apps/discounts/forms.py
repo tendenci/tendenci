@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.forms.utils import ErrorList
+from django.utils import timezone
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.discounts.models import Discount
@@ -67,7 +68,7 @@ class DiscountForm(TendenciBaseForm):
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
     def __init__(self, *args, **kwargs):
-        super(DiscountForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.user and not self.user.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
@@ -88,14 +89,14 @@ class DiscountForm(TendenciBaseForm):
         return data
 
     def clean(self):
-        cleaned_data = super(DiscountForm, self).clean()
+        cleaned_data = super().clean()
         start_dt = cleaned_data.get("start_dt")
         end_dt = cleaned_data.get("end_dt")
 
         if start_dt and end_dt:
             if start_dt > end_dt:
                 errors = self._errors.setdefault("end_dt", ErrorList())
-                errors.append(_(u"This cannot be earlier than the start date."))
+                errors.append(_("This cannot be earlier than the start date."))
 
         # Always return the full collection of cleaned data.
         return cleaned_data
@@ -149,7 +150,7 @@ class DiscountHandlingForm(forms.Form):
             raise forms.ValidationError(_('This is not a valid discount code.'))
 
         if not self.discount.never_expires:
-            now = datetime.now()
+            now = timezone.now()
             if self.discount.start_dt > now:
                 raise forms.ValidationError(_('This discount code is not in effect yet.'))
             if self.discount.end_dt <= now:

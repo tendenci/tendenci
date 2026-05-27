@@ -35,10 +35,10 @@ class UpdateTracker(models.Model):
 
     def save(self, *args, **kwargs):
         self.__class__.objects.exclude(id=self.id).delete()
-        super(UpdateTracker, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return "%s: status = %s" % (self.id, self.is_updating)
+        return "{}: status = {}".format(self.id, self.is_updating)
 
 
 class ChecklistItem(OrderingBaseModel):

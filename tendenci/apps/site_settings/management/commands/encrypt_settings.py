@@ -1,5 +1,3 @@
-
-
 from django.core.management.base import BaseCommand
 
 from tendenci.apps.site_settings.models import Setting
@@ -19,6 +17,6 @@ class Command(BaseCommand):
         settings = Setting.objects.all()
         for setting in settings:
             if not setting.is_secure:
-                print("Encrypting %s %s %s" % (setting.scope, setting.scope_category, setting.name))
+                print("Encrypting {} {} {}".format(setting.scope, setting.scope_category, setting.name))
                 setting.set_value(setting.value)
                 setting.save()

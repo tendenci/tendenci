@@ -59,7 +59,7 @@ class Command(BaseCommand):
         files_to_update = {'requirements/tendenci.txt': 'https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/requirements/tendenci.txt'}
         for key, value in files_to_update.items():
             try:
-                subprocess.check_output('curl {0} > {1}/{2}'.format(value, project_root, key),
+                subprocess.check_output('curl {} > {}/{}'.format(value, project_root, key),
                                         stderr=subprocess.STDOUT, shell=True)
             except subprocess.CalledProcessError as e:
                 err_list.append(e.output)
@@ -69,7 +69,7 @@ class Command(BaseCommand):
             try:
                 if verbosity >1:
                     print("Updating tendenci...")
-                update_cmd = '{0} -m pip install -r {1}/{2} --upgrade'.format(python_executable(), project_root, 'requirements/tendenci.txt')
+                update_cmd = '{} -m pip install -r {}/{} --upgrade'.format(python_executable(), project_root, 'requirements/tendenci.txt')
                 subprocess.check_output('cd {}; {}'.format(project_root, update_cmd),
                                         stderr=subprocess.STDOUT, shell=True)
             except subprocess.CalledProcessError as e:
@@ -78,7 +78,7 @@ class Command(BaseCommand):
         if not err_list:
             # run migrate
             try:
-                subprocess.check_output("cd {0}; {1} manage.py migrate".format(latest_version, python_executable()),
+                subprocess.check_output("cd {}; {} manage.py migrate".format(latest_version, python_executable()),
 
                                         stderr=subprocess.STDOUT, shell=True)
             except subprocess.CalledProcessError as e:
@@ -86,9 +86,9 @@ class Command(BaseCommand):
                 known_error2 = 'relation "djcelery_crontabschedule" already exists'
                 if known_error in e.output or known_error2 in e.output:
                     try:
-                        subprocess.check_output("cd {0}; {1} manage.py migrate djcelery 0001 --fake".format(latest_version, python_executable()),
+                        subprocess.check_output("cd {}; {} manage.py migrate djcelery 0001 --fake".format(latest_version, python_executable()),
                                             stderr=subprocess.STDOUT, shell=True)
-                        subprocess.check_output("cd {0}; {1} manage.py migrate".format(latest_version, python_executable()),
+                        subprocess.check_output("cd {}; {} manage.py migrate".format(latest_version, python_executable()),
                                             stderr=subprocess.STDOUT, shell=True)
                     except subprocess.CalledProcessError as e:
                         err_list.append(e.output)

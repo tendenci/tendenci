@@ -32,6 +32,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from datetime import datetime, timedelta
+        from django.utils import timezone
         from tendenci.apps.base.utils import validate_email
         from tendenci.apps.emails.models import Email
         from tendenci.apps.memberships.models import MembershipDefault
@@ -47,7 +48,7 @@ class Command(BaseCommand):
 
         # get events with this event type
         events = Event.objects.filter(type_id=event_type_id,
-                                         start_dt__lt=datetime.now(),
+                                         start_dt__lt=timezone.now(),
                                          ).order_by('-start_dt')
         event_ids_last_4 = events.values_list('id', flat=True)[:4] # latest 4 events
         event_ids_last_3 = events.values_list('id', flat=True)[:3] # latest 3 events
@@ -80,7 +81,7 @@ class Command(BaseCommand):
                     cancel_dt__isnull=True).count() == 2 and \
                 Registrant.objects.filter(
                     registration__event_id__in=list(events.filter(
-                        start_dt__lt=(datetime.now() - timedelta(days=3*365))
+                        start_dt__lt=(timezone.now() - timedelta(days=3*365))
                         ).values_list('id', flat=True)),
                     user=membership.user,
                     cancel_dt__isnull=True).exists()
@@ -92,7 +93,7 @@ class Command(BaseCommand):
                     cancel_dt__isnull=True).count() == 1 and \
                 Registrant.objects.filter(
                     registration__event_id__in=list(events.filter(
-                        start_dt__lt=(datetime.now() - timedelta(days=2*365))
+                        start_dt__lt=(timezone.now() - timedelta(days=2*365))
                         ).values_list('id', flat=True)),
                     user=membership.user,
                     cancel_dt__isnull=True).exists()

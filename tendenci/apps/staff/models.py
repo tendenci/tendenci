@@ -70,7 +70,7 @@ class Staff(OrderingBaseModel, TendenciBaseModel):
                 # First row
                 self.position = 0
 
-        return super(Staff, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('staff.view', args=[self.slug])
@@ -139,7 +139,7 @@ class StaffFile(OrderingBaseModel, File):
                 # First row
                 self.position = 0
 
-        return super(StaffFile, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     class Meta:
         ordering = ('position',)

@@ -30,7 +30,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
         js = (static('js/global/tinymce.event_handlers.js'),)
 
     def __init__(self, *args, **kwargs):
-        super(TendenciBaseModelAdmin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Update the list_display to add view_on_site and edit_link if they
         # are not already added. - JMO 2012-05-15
@@ -61,7 +61,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
             return None
 
         link_icon = static('images/icons/external_16x16.png')
-        link = '<a href="%s" title="%s"><img src="%s" alt="external_16x16" title="external icon"/></a>' % (
+        link = '<a href="{}" title="{}"><img src="{}" alt="external_16x16" title="external icon"/></a>'.format(
             obj.get_absolute_url(),
             strip_tags(obj),
             link_icon,
@@ -73,7 +73,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
     def owner_link(self, obj):
         link = ''
         if obj.owner_username:
-            link = '<a href="%s" title="%s">%s</a>' % (
+            link = '<a href="{}" title="{}">{}</a>'.format(
                 reverse('profile', args=[obj.owner_username]),
                 obj.owner_username,
                 obj.owner_username,
@@ -110,7 +110,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
         return instance
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        result = super(TendenciBaseModelAdmin, self).change_view(
+        result = super().change_view(
             request, object_id, form_url=form_url, extra_context=extra_context)
         if '_addanother' not in request.POST and '_continue' not in request.POST and 'next' in request.GET:
             result['Location'] = iri_to_uri("%s") % request.GET.get('next')
@@ -118,7 +118,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
 
     def log_deletion(self, request, object, object_repr):
         #application = inspect.getmodule(self).__name__
-        super(TendenciBaseModelAdmin, self).log_deletion(request, object, object_repr)
+        super().log_deletion(request, object, object_repr)
 
 
 def soft_delete_selected(modeladmin, request, queryset):
@@ -191,7 +191,7 @@ def soft_delete_selected(modeladmin, request, queryset):
     # Display the confirmation page
     request.current_app = modeladmin.admin_site.name
     return TemplateResponse(request=request, template=[
-        "admin/%s/%s/soft_delete_selected_confirmation.html" % (app_label, opts.object_name.lower()),
+        "admin/{}/{}/soft_delete_selected_confirmation.html".format(app_label, opts.object_name.lower()),
         "admin/%s/soft_delete_selected_confirmation.html" % app_label,
         "admin/soft_delete_selected_confirmation.html"
     ], context=context)

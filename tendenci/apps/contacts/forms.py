@@ -22,7 +22,7 @@ class ContactForm(forms.ModelForm):
             'message',
         )
     def __init__(self, *args, **kwargs):
-        super(ContactForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['timezone'].initial = settings.TIME_ZONE
 
 class SubmitContactForm(forms.Form):

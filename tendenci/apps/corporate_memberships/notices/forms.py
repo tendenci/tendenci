@@ -13,5 +13,5 @@ class NoticeLogSearchForm(forms.Form):
     notice_id = forms.ChoiceField(required=False)
 
     def __init__(self, *args, **kwargs):
-        super(NoticeLogSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['notice_id'].choices = get_membership_notice_choices()

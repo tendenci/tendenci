@@ -44,10 +44,10 @@ class DirectoryMeta():
             if category:
                 value += category
             if category and subcategory:
-                value = '%s : %s' % (value, subcategory)
+                value = '{} : {}'.format(value, subcategory)
 
         if geo_location:
-            value = '%s in %s' % (value, geo_location)
+            value = '{} in {}'.format(value, geo_location)
 
         return value
 
@@ -75,17 +75,17 @@ class DirectoryMeta():
         ### Build string -----------------------
         value = object.headline
 
-        value = '%s : %s' % (value, content)
+        value = '{} : {}'.format(value, content)
 
         if primary_keywords:
-            value = '%s %s' % (value, primary_keywords)
+            value = '{} {}'.format(value, primary_keywords)
         else:
             if category:
-                value = '%s %s' % (value, category)
+                value = '{} {}'.format(value, category)
             if category and subcategory:
-                value = '%s : %s' % (value, subcategory)
+                value = '{} : {}'.format(value, subcategory)
 
-        value = '%s Directories for %s %s' % (
+        value = '{} Directories for {} {}'.format(
             value, site_name, geo_location)
 
         value = value.strip()
@@ -106,7 +106,7 @@ class DirectoryMeta():
         value = ''
 
         if primary_keywords:
-            value = '%s %s' % (value, primary_keywords)
+            value = '{} {}'.format(value, primary_keywords)
             value = value.strip()
 
         if object.headline:
@@ -122,7 +122,7 @@ class DirectoryMeta():
                 if not item.strip():
                     list.remove(item)
 
-            value = '%s %s, %s' % (value, ', '.join(list), dynamic_keywords)
+            value = '{} {}, {}'.format(value, ', '.join(list), dynamic_keywords)
 
         else:
             list = [
@@ -132,12 +132,12 @@ class DirectoryMeta():
                 'white paper',
                 secondary_keywords,
             ]
-            value = '%s %s' % (value, ''.join(list))
+            value = '{} {}'.format(value, ''.join(list))
 
         return value
 
     def get_canonical_url(self):
-        return '{0}{1}'.format(get_setting('site', 'global', 'siteurl'), self.object.get_absolute_url())
+        return '{}{}'.format(get_setting('site', 'global', 'siteurl'), self.object.get_absolute_url())
 
     def get_meta(self, object, name):
 

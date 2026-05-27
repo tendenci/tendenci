@@ -1,8 +1,6 @@
-from builtins import str
 import os
 import csv
 import zipfile
-from io import open
 from os.path import join
 from os import unlink
 from time import time
@@ -126,9 +124,9 @@ class FormsExportTask(celery.Task):
 
         fields = form_fields
         for i in range(0, max_fields):
-            fields = fields + ["field %s %s" % (i, f) for f in field_fields]
+            fields = fields + ["field {} {}".format(i, f) for f in field_fields]
         for i in range(0, max_pricings):
-            fields = fields + ["pricing %s %s" % (i, f) for f in pricing_fields]
+            fields = fields + ["pricing {} {}".format(i, f) for f in pricing_fields]
         return render_csv(file_name, fields, data_row_list)
 
 
@@ -163,7 +161,7 @@ class FormEntriesExportTask(celery.Task):
                             # TODO: for large files, we may need to copy down
                             # the files before adding them to the zip file.
                             zip.writestr(archive_name, default_storage.open(file_path).read())
-                        except IOError:
+                        except OSError:
                             pass
                     else:
                         file_path = join(settings.MEDIA_ROOT,field.value)

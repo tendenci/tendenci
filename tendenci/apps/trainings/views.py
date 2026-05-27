@@ -75,7 +75,7 @@ class TeachingActivityListView(LoginRequiredMixin, ListView):
                 user=self.request.user)
 
     def get_context_data(self, **kwargs):
-        context = super(TeachingActivityListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['o'] = self.request.GET.get('o', '')
         context['s'] = self.request.GET.get('s', '')
         if context['o'] == 'desc':
@@ -101,7 +101,7 @@ class OutsideSchoolCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateVie
         return reverse('trainings.outside_schools')
 
     def get_form_kwargs(self):
-        kwargs = super(OutsideSchoolCreateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
@@ -127,7 +127,7 @@ class OutsideSchoolListView(LoginRequiredMixin, ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
-        context = super(OutsideSchoolListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['o'] = self.request.GET.get('o', '')
         context['s'] = self.request.GET.get('s', '')
         if context['o'] == 'desc':

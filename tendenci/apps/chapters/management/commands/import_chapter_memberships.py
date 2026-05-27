@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 from django.core.management.base import BaseCommand
@@ -21,6 +20,7 @@ class Command(BaseCommand):
         parser.add_argument('user_id', type=int)
 
     def handle(self, *args,  **options):
+        from django.utils import timezone
         from tendenci.apps.chapters.models import ChapterMembershipImport, ChapterMembershipImportData
         from tendenci.apps.chapters.utils import ImportChapterMembership
 
@@ -50,7 +50,7 @@ class Command(BaseCommand):
             mimport.save()
 
         mimport.status = 'completed'
-        mimport.complete_dt = datetime.now()
+        mimport.complete_dt = timezone.now()
         mimport.save()
 
         # generate a recap file

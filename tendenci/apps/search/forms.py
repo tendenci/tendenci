@@ -1,4 +1,3 @@
-from builtins import str
 import operator
 from functools import reduce
 
@@ -50,7 +49,7 @@ def model_choices(site=None):
     for m in site.get_indexed_models():
         if m._meta.model_name.lower() in registered_apps_names:
             if get_setting("module", m._meta.app_label, "enabled") is not False:
-                choices.append(("%s.%s" % (m._meta.app_label, m._meta.model_name),
+                choices.append(("{}.{}".format(m._meta.app_label, m._meta.model_name),
                                 capfirst(str(m._meta.verbose_name_plural))))
 
     return sorted(choices, key=lambda x: x[1])
@@ -82,7 +81,7 @@ class SearchForm(forms.Form):
         except KeyError:
             pass
 
-        super(SearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def search(self, order_by='newest'):
         self.clean()
@@ -105,7 +104,7 @@ class SearchForm(forms.Form):
 
         # making a special case for corp memb because it needs to utilize two settings
         # (anonymoussearchcorporatemembers and membersearchcorporatemembers)
-        if CorpMemb and self.cleaned_data['models'] == ["%s.%s" % (CorpMemb._meta.app_label,
+        if CorpMemb and self.cleaned_data['models'] == ["{}.{}".format(CorpMemb._meta.app_label,
                                                                    CorpMemb._meta.model_name)]:
             filter_and, filter_or = CorpMemb.get_search_filter(user)
             q_obj = None
@@ -199,14 +198,14 @@ class SearchForm(forms.Form):
 
 class HighlightedSearchForm(SearchForm):
     def search(self):
-        return super(HighlightedSearchForm, self).search().highlight()
+        return super().search().highlight()
 
 
 class FacetedSearchForm(SearchForm):
     selected_facets = forms.CharField(required=False, widget=forms.HiddenInput)
 
     def search(self):
-        sqs = super(FacetedSearchForm, self).search()
+        sqs = super().search()
 
         if self.cleaned_data['selected_facets']:
             sqs = sqs.narrow(self.cleaned_data['selected_facets'])
@@ -223,7 +222,7 @@ class ModelSearchForm(SearchForm):
     sort_by = forms.ChoiceField(choices=SORT_CHOICES, required=False)
 
     def __init__(self, *args, **kwargs):
-        super(ModelSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Check to see if users should be included in global search
         include_users = False
@@ -265,7 +264,7 @@ class ModelSearchForm(SearchForm):
     def search(self, order_by=None):
         if not order_by:
             order_by = self.cleaned_data['sort_by']
-        sqs = super(ModelSearchForm, self).search(order_by=order_by)
+        sqs = super().search(order_by=order_by)
         sqs = sqs.models(*self.get_models())
         if order_by == 'most_viewed':
             # we need to query for number of views
@@ -285,14 +284,14 @@ class ModelSearchForm(SearchForm):
 
 class HighlightedModelSearchForm(ModelSearchForm):
     def search(self):
-        return super(HighlightedModelSearchForm, self).search().highlight()
+        return super().search().highlight()
 
 
 class FacetedModelSearchForm(ModelSearchForm):
     selected_facets = forms.CharField(required=False, widget=forms.HiddenInput)
 
     def search(self):
-        sqs = super(FacetedModelSearchForm, self).search()
+        sqs = super().search()
 
         if self.cleaned_data['selected_facets']:
             sqs = sqs.narrow(self.cleaned_data['selected_facets'])

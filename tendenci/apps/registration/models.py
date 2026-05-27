@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.utils import timezone
 
 
 SHA1_RE = re.compile(r'^[a-f0-9]{40}$')
@@ -209,7 +210,7 @@ class RegistrationProfile(models.Model):
     ``RegistrationManager``.
 
     """
-    ACTIVATED = u"ALREADY_ACTIVATED"
+    ACTIVATED = "ALREADY_ACTIVATED"
 
     user = models.OneToOneField(User, verbose_name=_('user'), on_delete=models.CASCADE)
     activation_key = models.CharField(_('activation key'), max_length=40)
@@ -249,5 +250,5 @@ class RegistrationProfile(models.Model):
         expiration_date = datetime.timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)
         return self.activation_key == self.ACTIVATED or \
                (not from_memberships and \
-                (self.create_dt + expiration_date <= datetime.datetime.now()))
+                (self.create_dt + expiration_date <= timezone.now()))
     activation_key_expired.boolean = True

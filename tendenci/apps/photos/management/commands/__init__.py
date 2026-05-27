@@ -1,6 +1,3 @@
-
-from builtins import input
-
 def get_response(msg, func=int, default=None):
     while True:
         resp = input(msg)

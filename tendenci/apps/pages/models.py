@@ -50,7 +50,7 @@ class BasePage(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.guid:
             self.guid = str(uuid.uuid4())
-        super(BasePage, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if self.header_image:
             if self.is_public():
                 set_s3_file_permission(self.header_image.file, public=True)
@@ -115,7 +115,7 @@ class Page(BasePage):
         if not self.group:
             self.group_id = get_default_group()
 
-        super(Page, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_meta(self, name):
         """

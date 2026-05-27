@@ -7,9 +7,10 @@ class Command(BaseCommand):
     example: python manage.py expire_resumes
     """
     def handle(self, *args, **kwargs):
+        from django.utils import timezone
         from tendenci.apps.resumes.models import Resume
         for resume in Resume.objects.filter(status_detail='active'):
-            if resume.expiration_dt < datetime.now():
+            if resume.expiration_dt < timezone.now():
                 resume.status_detail = 'expired'
                 resume.save()
         call_command('update_index', *["resumes"])

@@ -10,7 +10,6 @@ scripts/get_email.py - Designed to be run from cron, this script checks the
                        adding to existing tickets if needed)
 """
 
-from builtins import str
 
 import email
 import imaplib
@@ -25,6 +24,8 @@ from email.utils import parseaddr, collapse_rfc2231_value
 
 from email_reply_parser import EmailReplyParser
 
+from django.utils.encoding import smart_str
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from django.db.models import Q
@@ -166,7 +167,7 @@ def decodeUnknown(charset, string):
 
 def decode_mail_headers(string):
     decoded = email.header.decode_header(string)
-    return u' '.join([str(msg, encoding=charset, errors='replace') if charset else str(msg) for msg, charset in decoded])
+    return ' '.join([str(msg, encoding=charset, errors='replace') if charset else str(msg) for msg, charset in decoded])
 
 
 def is_no_reply_address(email_addr):
@@ -249,10 +250,10 @@ def ticket_from_message(message, queue, quiet):
                 ext = mimetypes.guess_extension(part.get_content_type())
                 name = "part-%i%s" % (counter, ext)
 
-            files.append({
-                'filename': name,
-                'content': part.get_payload(decode=True),
-                'type': part.get_content_type()},
+            files.append(SimpleUploadedFile(
+                name,
+                part.get_payload(decode=True),
+                part.get_content_type())
                 )
 
         counter += 1
@@ -266,11 +267,13 @@ def ticket_from_message(message, queue, quiet):
         body = _('No plain-text email body available. Please see attachment email_html_body.html.')
 
     if body_html:
-        files.append({
-            'filename': _("email_html_body.html"),
-            'content': body_html,
-            'type': 'text/html',
-        })
+        files.append(
+            SimpleUploadedFile(
+                _("email_html_body.html"),
+                body_html.encode("utf-8"),
+                "text/html",
+            )
+        )
 
     now = timezone.now()
 
@@ -312,7 +315,7 @@ def ticket_from_message(message, queue, quiet):
 
     f = FollowUp(
         ticket = t,
-        title = _('E-Mail Received from %(sender_email)s' % {'sender_email': sender_email}),
+        title = _('E-Mail Received from {sender_email}'.format(sender_email=sender_email)),
         date = timezone.now(),
         public = True,
         comment = body,
@@ -320,25 +323,30 @@ def ticket_from_message(message, queue, quiet):
 
     if t.status == Ticket.REOPENED_STATUS:
         f.new_status = Ticket.REOPENED_STATUS
-        f.title = _('Ticket Re-Opened by E-Mail Received from %(sender_email)s' % {'sender_email': sender_email})
+        f.title = _('Ticket Re-Opened by E-Mail Received from {sender_email}'.format(sender_email=sender_email))
 
     f.save()
 
     if not quiet:
-        print((" [%s-%s] %s" % (t.queue.slug, t.id, t.title,)).encode('ascii', 'replace'))
+        print((" [{}-{}] {}".format(t.queue.slug, t.id, t.title)).encode('ascii', 'replace'))
 
     for file in files:
-        if file['content']:
-            filename = file['filename'].replace(' ', '_')
+        if file.size:
+            filename = smart_str(file.name)
+            filename = filename.replace(' ', '_')
             filename = re.sub(r'[^a-zA-Z0-9._-]+', '', filename)
             a = Attachment(
                 followup=f,
+                file=file,
                 filename=filename,
-                mime_type=file['type'],
-                size=len(file['content']),
+                mime_type=file.content_type
+                or mimetypes.guess_type(filename, strict=False)[0]
+                or "application/octet-stream",
+                size=file.size,
                 )
-            a.file.save(filename, ContentFile(file['content']), save=False)
+            a.full_clean()
             a.save()
+
             if not quiet:
                 print("    - %s" % filename)
 

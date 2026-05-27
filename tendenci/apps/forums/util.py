@@ -1,5 +1,3 @@
-
-
 import os
 import warnings
 import uuid
@@ -161,7 +159,7 @@ def build_cache_key(key_name, **kwargs):
         raise ValueError('Wrong key_name parameter passed: %s' % key_name)
 
 
-class FilePathGenerator(object):
+class FilePathGenerator:
     """
     Special class for generating random filenames
     Can be deconstructed for correct migration
@@ -181,5 +179,5 @@ class FilePathGenerator(object):
         - users can upload images with unicode in filenames wich can confuse browsers and filesystem
         """
         ext = filename.split('.')[-1]
-        filename = "%s.%s" % (uuid.uuid4(), ext)
+        filename = "{}.{}".format(uuid.uuid4(), ext)
         return os.path.join(self.to, filename)

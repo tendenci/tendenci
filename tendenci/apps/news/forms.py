@@ -1,22 +1,20 @@
-import imghdr
 from os.path import splitext, basename
 from datetime import datetime
 
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
-from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 
 from tendenci.apps.news.models import News
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.fields import EmailVerificationField
-from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.perms.utils import get_query_filters, get_groups_query_filters
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.files.validators import FileValidator
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -49,7 +47,7 @@ class NewsForm(TendenciBaseForm):
                                          initial=News.CONTRIBUTOR_AUTHOR,
                                          widget=forms.RadioSelect())
 
-    photo_upload = forms.FileField(label=_('Thumbnail Image'), required=False, help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. It will not display on the news page.'))
+    photo_upload = forms.ImageField(label=_('Thumbnail Image'), required=False, help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. It will not display on the news page.'))
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
 
     groups = forms.ModelMultipleChoiceField(required=True, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
@@ -126,7 +124,9 @@ class NewsForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(NewsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        if 'photo_upload' in self.fields:
+            self.fields['photo_upload'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
         if not hasattr(self, 'admin_backend'):
             self.admin_backend = False
         if self.instance.pk:
@@ -153,32 +153,10 @@ class NewsForm(TendenciBaseForm):
 
         # only show the remove photo checkbox if there is already a thumbnail
         if self.instance.thumbnail:
-            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.thumbnail.pk, basename(self.instance.thumbnail.file.name))
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.thumbnail.pk, basename(self.instance.thumbnail.file.name))
         else:
             self.fields.pop('remove_photo')
         self.fields['release_dt'].initial = datetime.now()
-
-    def clean_photo_upload(self):
-        photo_upload = self.cleaned_data['photo_upload']
-        if photo_upload:
-            extension = splitext(photo_upload.name)[1]
-
-            # check the extension
-            if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
-
-            # check the image header
-            image_type = '.%s' % imghdr.what('', photo_upload.read())
-            if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
-
-            max_upload_size = get_max_file_upload_size()
-            if photo_upload.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(upload_size)s') % {
-                                            'max_upload_size': filesizeformat(max_upload_size),
-                                            'upload_size': filesizeformat(photo_upload.size)})
-
-        return photo_upload
 
     def clean_syndicate(self):
         """
@@ -195,7 +173,7 @@ class NewsForm(TendenciBaseForm):
             return False
 
     def save(self, *args, **kwargs):
-        news = super(NewsForm, self).save(*args, **kwargs)
+        news = super().save(*args, **kwargs)
         if self.cleaned_data.get('remove_photo'):
             news.thumbnail = None
         return news
@@ -207,7 +185,7 @@ class NewsSearchForm(FormControlWidgetMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
-        super(NewsSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
         group_choices = Group.objects.filter(group_filters).distinct(

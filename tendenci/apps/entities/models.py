@@ -40,6 +40,8 @@ class Entity(models.Model):
     
     show_for_donation = models.BooleanField(_('Use for Donation Allocation'), default=False,
             help_text=_('If checked, it will appear as an option for donation allocation on the donation form.'),)
+    #donation_default_amount = models.CharField(max_length=30, blank=True, default='',
+    #                                            help_text=_('Comma separated. Example for multiple amounts, 2500,5000'))
 
     # Model removed from TendenciBaseModel. Those fields added below
     allow_anonymous_view = models.BooleanField(_("Public can view"), default=True)
@@ -76,7 +78,7 @@ class Entity(models.Model):
         if not self.guid:
             self.guid = str(uuid.uuid4())
 
-        super(Entity, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @staticmethod
     def get_search_filter(user):

@@ -1,4 +1,3 @@
-from builtins import str
 import uuid
 
 from django.db import models
@@ -56,7 +55,7 @@ class Career(TendenciBaseModel):
         verbose_name_plural = _("Careers")
 
     def __str__(self):
-        return '%s - %s' % (self.company, self.user)
+        return '{} - {}'.format(self.company, self.user)
 
 #    def get_absolute_url(self):
 #        return reverse('career', args=[self.pk])
@@ -64,4 +63,4 @@ class Career(TendenciBaseModel):
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
 
-        super(Career, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)

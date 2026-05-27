@@ -1,4 +1,3 @@
-import imghdr
 from datetime import datetime
 from os.path import splitext
 
@@ -22,9 +21,9 @@ from tendenci.apps.directories.utils import (get_payment_method_choices,
 from tendenci.apps.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField, StateSelectField
-from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.regions.models import Region
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.files.validators import FileValidator
 
 
 ALLOWED_LOGO_EXT = (
@@ -79,7 +78,7 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         is_superuser = kwargs.pop('is_superuser', None)
-        super(DirectorySearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if not is_superuser:
             self.fields['search_category'].choices = SEARCH_CATEGORIES
@@ -98,7 +97,7 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
             self.fields.pop('sub_cat')
 
     def clean(self):
-        cleaned_data = super(DirectorySearchForm, self).clean()
+        cleaned_data = super().clean()
         q = cleaned_data.get('q', None)
         cat = cleaned_data.get('search_category', None)
 
@@ -154,7 +153,7 @@ class DirectoryForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Directory._meta.app_label,
         'storme_model':Directory._meta.model_name.lower()}))
 
-    logo = forms.FileField(
+    logo = forms.ImageField(
       required=False,
       help_text=_('Company logo. Only jpg, gif, or png images.'))
 
@@ -302,7 +301,7 @@ class DirectoryForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(DirectoryForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         #self.fields['headline'].help_text = _('Company or Organization name')
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -325,6 +324,7 @@ class DirectoryForm(TendenciBaseForm):
                 self.fields['logo'].help_text=_('Only jpg, gif, or png images.')
                 self.logo_extension_error_message = _('The photo must be of jpg, gif, or png image type.')
                 self.logo_mime_error_message = _('The photo is an invalid image. Try uploading another photo.')
+        self.fields['logo'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
             
 
         if not self.user.profile.is_superuser:
@@ -345,7 +345,7 @@ class DirectoryForm(TendenciBaseForm):
         self.fields['sub_cats'].choices = _get_sub_cats_choices(directory=self.instance)
         
         if self.user.profile.is_superuser:
-            self.fields['sub_cats'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
+            self.fields['sub_cats'].help_text = mark_safe('<a href="{}">{}</a>'.format(
                                         reverse('admin:directories_category_changelist'),
                                         _('Manage Categories'),))
 #         if self.instance and self.instance.pk:
@@ -387,7 +387,7 @@ class DirectoryForm(TendenciBaseForm):
 
         if 'sub_cats' not in self.fields:
             if self.user.profile.is_superuser:
-                self.fields['cats'].help_text += mark_safe('<br /><a href="{0}">{1}</a>'.format(
+                self.fields['cats'].help_text += mark_safe('<br /><a href="{}">{}</a>'.format(
                             reverse('admin:directories_category_changelist'),
                             _('Manage Categories'),))
  
@@ -426,31 +426,6 @@ class DirectoryForm(TendenciBaseForm):
         else:
             return False
 
-    def clean_logo(self):
-        logo = self.cleaned_data['logo']
-        if logo:
-            try:
-                extension = splitext(logo.name)[1]
-
-                # check the extension
-                if extension.lower() not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(self.logo_extension_error_message)
-
-                # check the image header
-                image_type = '.%s' % imghdr.what('', logo.read())
-                if image_type not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(self.logo_mime_error_message)
-
-                max_upload_size = get_max_file_upload_size()
-                if logo.size > max_upload_size:
-                    raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(logo_size)s') % {
-                                                    'max_upload_size': filesizeformat(max_upload_size),
-                                                    'logo_size': filesizeformat(logo.size)})
-            except IOError:
-                logo = None
-
-        return logo
-
     def clean_headline(self):
         """
         remove extra leading and trailing white spaces
@@ -459,7 +434,7 @@ class DirectoryForm(TendenciBaseForm):
 
     def save(self, *args, **kwargs):
         from tendenci.apps.files.models import File
-        directory = super(DirectoryForm, self).save(*args, **kwargs)
+        directory = super().save(*args, **kwargs)
 
         content_type = ContentType.objects.get(
                 app_label=Directory._meta.app_label,
@@ -506,7 +481,8 @@ class DirectoryPricingForm(forms.ModelForm):
 
     class Meta:
         model = DirectoryPricing
-        fields = ('duration',
+        fields = ('label',
+                  'duration',
                   'regular_price',
                   'premium_price',
                   'regular_price_member',
@@ -518,7 +494,7 @@ class DirectoryPricingForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
-        super(DirectoryPricingForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if user and user.profile.is_superuser:
             self.fields['duration'] = forms.ChoiceField(initial=14, choices=ADMIN_DURATION_CHOICES)
         else:
@@ -550,7 +526,7 @@ class DirectoryRenewForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(DirectoryRenewForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if 'payment_method' in self.fields:
             self.fields['payment_method'].widget = forms.RadioSelect()
@@ -559,7 +535,7 @@ class DirectoryRenewForm(TendenciBaseForm):
             self.fields['pricing'].choices = get_duration_choices(self.user)
 
     def save(self, *args, **kwargs):
-        directory = super(DirectoryRenewForm, self).save(*args, **kwargs)
+        directory = super().save(*args, **kwargs)
         if 'pricing' in self.cleaned_data:
             directory.requested_duration = self.cleaned_data['pricing'].duration
         return directory

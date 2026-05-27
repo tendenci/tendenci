@@ -50,7 +50,7 @@ class BillingInfoForm(FormControlWidgetMixin, forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(BillingInfoForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['address2'].width = 7
         self.fields['state'].width = 5
         self.fields['zip'].required = True

@@ -1,4 +1,3 @@
-from builtins import str
 import hashlib
 import os
 import mimetypes
@@ -28,7 +27,8 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import get_notice_recipients, has_perm
 from tendenci.apps.files.managers import FileManager
-from tendenci.apps.base.utils import extract_pdf, correct_filename
+#from tendenci.apps.base.utils import extract_pdf, correct_filename
+from tendenci.apps.base.utils import correct_filename
 from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
@@ -49,9 +49,9 @@ def file_directory(instance, filename):
         content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', str(content_type))
         content_type = content_type.lower()
 
-        return 'files/%s/%s/%s' % (content_type, hex_digest, filename)
+        return 'files/{}/{}/{}'.format(content_type, hex_digest, filename)
 
-    return 'files/files/%s/%s' % (hex_digest, filename)
+    return 'files/files/{}/{}'.format(hex_digest, filename)
 
 
 class File(TendenciBaseModel):
@@ -86,7 +86,7 @@ class File(TendenciBaseModel):
         app_label = 'files'
 
     def __init__(self, *args, **kwargs):
-        super(File, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._originaldict = {}
         for field in self._meta.get_fields():
@@ -140,7 +140,7 @@ class File(TendenciBaseModel):
         if not self.group:
             self.group_id = get_default_group()
 
-        super(File, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if self.is_public_file():
             set_s3_file_permission(self.file, public=True)
@@ -216,7 +216,7 @@ class File(TendenciBaseModel):
             self.file.delete(save=False)
 
         # delete database record
-        super(File, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def basename(self):
         return os.path.basename(str(self.file.name))
@@ -228,7 +228,7 @@ class File(TendenciBaseModel):
         return self.name or os.path.splitext(self.basename())[0]
 
     def get_name_ext(self):
-        return "%s%s" % (self.get_name(), self.ext())
+        return "{}{}".format(self.get_name(), self.ext())
 
     def type(self):
         ext = self.ext().lower()
@@ -307,25 +307,25 @@ class File(TendenciBaseModel):
         except:
             return 0
 
-    def read(self):
-        """Returns a file's text data
-        For now this only considers pdf files.
-        if the file cannot be read this will return an empty string.
-        """
-
-        if not settings.USE_S3_STORAGE:
-            if not os.path.exists(self.file.path):
-                return str()
-
-        if settings.INDEX_FILE_CONTENT:
-            if self.type() == 'pdf':
-
-                try:
-                    return extract_pdf(self.file.file)
-                except:
-                    return str()
-
-        return str()
+    # def read(self):
+    #     """Returns a file's text data
+    #     For now this only considers pdf files.
+    #     if the file cannot be read this will return an empty string.
+    #     """
+    #
+    #     if not settings.USE_S3_STORAGE:
+    #         if not os.path.exists(self.file.path):
+    #             return str()
+    #
+    #     if settings.INDEX_FILE_CONTENT:
+    #         if self.type() == 'pdf':
+    #
+    #             try:
+    #                 return extract_pdf(self.file.file)
+    #             except:
+    #                 return str()
+    #
+    #     return str()
 
     def is_public_file(self):
         return all([
@@ -347,7 +347,7 @@ class File(TendenciBaseModel):
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
             return self.file.url
         else:
-            return "%s%s" % (settings.MEDIA_URL, self.file)
+            return "{}{}".format(settings.MEDIA_URL, self.file)
 
     def get_content(self):
         if self.content_type and self.object_id:

@@ -1,10 +1,12 @@
-from builtins import str
 import uuid
 from hashlib import md5
 import jwt
 import json
 import operator
 import pytz
+import hashlib
+import os
+import mimetypes
 from model_utils import FieldTracker
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -26,6 +28,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.fields import AutoField
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Q
+from django.utils import timezone
 
 from tagging.fields import TagField
 from timezone_field import TimeZoneField
@@ -41,6 +44,7 @@ from tendenci.apps.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.apps.user_groups.models import GroupMembership
+from tendenci.apps.base.utils import correct_filename
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.files.models import File
@@ -57,6 +61,7 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.trainings.models import Course, Certification
 from tendenci.apps.zoom import ZoomClient
+from tendenci.apps.theme.templatetags.static import static
 
 # from south.modelsinspector import add_introspection_rules
 # add_introspection_rules([], [r'^timezone_field\.TimeZoneField'])
@@ -84,7 +89,7 @@ class TypeColorSet(models.Model):
         app_label = 'events'
 
     def __str__(self):
-        return '%s #%s' % (self.pk, self.bg_color)
+        return '{} #{}'.format(self.pk, self.bg_color)
 
 
 class Type(models.Model):
@@ -130,7 +135,7 @@ class Type(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Type, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Place(models.Model):
@@ -190,11 +195,11 @@ class Place(models.Model):
         app_label = 'events'
 
     def __init__(self, *args, **kwargs):
-        super(Place, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._original_name = self.name
 
     def __str__(self):
-        str_place = '%s %s %s %s %s' % (
+        str_place = '{} {} {} {} {}'.format(
             self.name, self.address, ', '.join(self.city_state()), self.zip, self.country)
         str_place = str_place.strip()
         if str_place == '':
@@ -697,7 +702,7 @@ class RegConfPricing(OrderingBaseModel):
         if not self.reg_conf.enabled or not self.status:
             return False
         if hasattr(self, 'event'):
-            if localize_date(datetime.now()) > localize_date(self.event.end_dt, from_tz=self.timezone):
+            if localize_date(timezone.now()) > localize_date(self.event.end_dt, from_tz=self.timezone):
                 return False
         return True
 
@@ -747,20 +752,20 @@ class RegConfPricing(OrderingBaseModel):
 
     @property
     def registration_has_started(self):
-        if localize_date(datetime.now()) >= localize_date(self.start_dt, from_tz=self.timezone):
+        if localize_date(timezone.now()) >= localize_date(self.start_dt, from_tz=self.timezone):
             return True
         return False
 
     @property
     def registration_has_ended(self):
-        if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
+        if localize_date(timezone.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
 
     @property
     def registration_has_recently_ended(self):
-        if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
-            delta = localize_date(datetime.now()) - localize_date(self.end_dt, from_tz=self.timezone)
+        if localize_date(timezone.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
+            delta = localize_date(timezone.now()) - localize_date(self.end_dt, from_tz=self.timezone)
             # Only include events that is within the 1-2 days window.
             if delta > timedelta(days=2):
                 return False
@@ -778,7 +783,7 @@ class RegConfPricing(OrderingBaseModel):
     @property
     def within_time(self):
         if localize_date(self.start_dt, from_tz=self.timezone) \
-            <= localize_date(datetime.now())                    \
+            <= localize_date(timezone.now())                    \
             <= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
@@ -790,7 +795,7 @@ class RegConfPricing(OrderingBaseModel):
     @staticmethod
     def get_access_filter(user, is_strict=False, spots_available=-1):
         if user.profile.is_superuser: return None, None
-        now = datetime.now()
+        now = timezone.now()
         filter_and, filter_or = None, None
 
         # Hide non-member pricing if setting turned on
@@ -805,17 +810,25 @@ class RegConfPricing(OrderingBaseModel):
                             }
             else:
                 # user is a member
-                filter_or = {'allow_member': True}
+                if get_setting('module', 'events', 'hide_non_member_pricing'):
+                    filter_or = {'allow_member': True}
+                else:
+                    filter_or = {'allow_anonymous': True,
+                                 'allow_user': True,
+                                 'allow_member': True}
+
+            if not user.is_anonymous and user.group_member.exists():
+                # get a list of groups for this user
+                groups_id_list = user.group_member.values_list('group__id', flat=True)
+                if groups_id_list:
+                    filter_or.update({'groups__in': groups_id_list})
 
         else:
             filter_or = {'allow_anonymous': True,
                         'allow_user': True,
-                        'allow_member': True}
-        if not user.is_anonymous and user.group_member.exists():
-            # get a list of groups for this user
-            groups_id_list = user.group_member.values_list('group__id', flat=True)
-            if groups_id_list:
-                filter_or.update({'groups__in': groups_id_list})
+                        'allow_member': True,
+                        'groups__isnull': False}
+        
 
         filter_and = {'start_dt__lt': now,
                       'end_dt__gt': now,
@@ -830,7 +843,7 @@ class RegConfPricing(OrderingBaseModel):
     @staticmethod
     def get_assets_purchase_access_filter(user):
         if user.profile.is_superuser: return None, None
-        now = datetime.now()
+        now = timezone.now()
         filter_and, filter_or = None, None
 
         if user.is_anonymous:
@@ -1029,7 +1042,7 @@ class Registration(models.Model):
             self.invoice.payment_set.filter(status_detail='').exists():
             # the payment was attempted a day ago but not finished - we can say
             # it is abandoned
-            if self.invoice.create_dt + timedelta(days=1) < datetime.now():
+            if self.invoice.create_dt + timedelta(days=1) < timezone.now():
                 return True
         return False
 
@@ -1187,7 +1200,7 @@ class Registration(models.Model):
                 refund_amount += registrant.amount
 
         # check for tax and tax_2
-        if self.invoice:
+        if self.invoice and get_setting('module','invoices', 'taxmodel') == 'Tax Added':
             if self.invoice.tax:
                 refund_amount += self.invoice.tax
             if self.invoice.tax_2:
@@ -1234,7 +1247,11 @@ class Registration(models.Model):
         else:
             balance = 0
         if self.reg_conf_price is None or self.reg_conf_price.payment_required is None:
-            payment_required = config.payment_required
+            registrant = self.registrant
+            if registrant and registrant.pricing:
+                payment_required = registrant.pricing.payment_required or config.payment_required
+            else:
+                payment_required = config.payment_required
         else:
             payment_required = self.reg_conf_price.payment_required
 
@@ -1281,7 +1298,7 @@ class Registration(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.guid = str(uuid.uuid4())
-        super(Registration, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_invoice(self):
         object_type = ContentType.objects.get(app_label=self._meta.app_label,
@@ -1345,12 +1362,12 @@ class Registration(models.Model):
         invoice.owner_id = self.owner_id
 
         # update invoice with details
-        invoice.title = "Registration %s for Event: %s" % (self.pk, self.event.title)
+        invoice.title = "Registration {} for Event: {}".format(self.pk, self.event.title)
         invoice.estimate = ('estimate' == status_detail)
         invoice.status_detail = status_detail
-        invoice.tender_date = datetime.now()
-        invoice.due_date = datetime.now()
-        invoice.ship_date = datetime.now()
+        invoice.tender_date = timezone.now()
+        invoice.due_date = timezone.now()
+        invoice.ship_date = timezone.now()
         invoice.admin_notes = admin_notes
         invoice.gratuity = self.gratuity
 
@@ -1366,7 +1383,10 @@ class Registration(models.Model):
         invoice.assign_tax(price_tax_rate_list, primary_registrant.user)
 
         invoice.subtotal = self.amount_paid
-        invoice.total = invoice.subtotal + invoice.tax + invoice.tax_2
+        if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added':
+            invoice.total = invoice.subtotal + invoice.tax + invoice.tax_2
+        else: #tax inclucded
+            invoice.total = invoice.subtotal
             
         if invoice.gratuity:
             invoice.total += invoice.subtotal * invoice.gratuity
@@ -1531,7 +1551,7 @@ class Registrant(models.Model):
         if self.custom_reg_form_entry:
             return self.custom_reg_form_entry.get_lastname_firstname()
         else:
-            return '%s, %s' % (self.last_name, self.first_name)
+            return '{}, {}'.format(self.last_name, self.first_name)
 
     @property
     def registration_closed(self):
@@ -1577,14 +1597,14 @@ class Registrant(models.Model):
     def past_attendance_dates(self):
         """Attendance dates for sessions in the past"""
         if self.attendance_dates:
-            return [x for x in self.attendance_dates if parse(x).date() <= datetime.now().date()]
+            return [x for x in self.attendance_dates if parse(x).date() <= timezone.now().date()]
         return list()
 
     @property
     def upcoming_attendance_dates(self):
         """Attendance dates for future sessions"""
         if self.attendance_dates:
-            return [x for x in self.attendance_dates if parse(x).date() > datetime.now().date()]
+            return [x for x in self.attendance_dates if parse(x).date() > timezone.now().date()]
         return list()
 
     @property
@@ -1755,7 +1775,7 @@ class Registrant(models.Model):
 
             credits[date].append({
                 'event_code': event.event_code,
-                'title': event.title if len(event.title) <= 60 else event.short_name,
+                'title': event.short_name if event.short_name else event.title,
                 'credits': cpe_credits,
                 'irs_credits': irs_credits,
 
@@ -1809,7 +1829,7 @@ class Registrant(models.Model):
         params = dict()
         if not is_admin:
             # Remove past events from deletion list if not an admin
-            params = {'child_event__start_dt__date__gt': datetime.now().date()}
+            params = {'child_event__start_dt__date__gt': timezone.now().date()}
         # Remove any upcoming records that have been updated to 'not attending'
         self.registrantchildevent_set.filter(**params).exclude(
             child_event_id__in=child_event_pks,
@@ -1906,7 +1926,7 @@ class Registrant(models.Model):
         child_event = self.child_events.filter(child_event=event).first()
         if child_event and not child_event.checked_in:
             child_event.checked_in = True
-            child_event.checked_in_dt = datetime.now()
+            child_event.checked_in_dt = timezone.now()
             child_event.save()
 
 
@@ -1919,7 +1939,7 @@ class Registrant(models.Model):
             _(f'Registrant was not successfully checked {error_message_var}. Please try again')
 
         setattr(self, check_in_or_out, True)
-        setattr(self, datetime_field, datetime.now())
+        setattr(self, datetime_field, timezone.now())
 
         try:
             self.save(update_fields=[check_in_or_out, datetime_field])
@@ -2009,7 +2029,7 @@ class Registrant(models.Model):
 
         can_refund = False
         can_auto_refund = False
-        self.cancel_dt = datetime.now()
+        self.cancel_dt = timezone.now()
         self.save()
 
         # update the amount_paid in registration
@@ -2019,7 +2039,7 @@ class Registrant(models.Model):
                 self.registration.save()
 
             # update the invoice if invoice is not tendered
-            if not self.invoice.is_tendered:
+            if self.invoice and not self.invoice.is_tendered:
                 self.invoice.total -= self.amount
                 self.invoice.subtotal -= self.amount
                 self.invoice.balance -= self.amount
@@ -2143,7 +2163,7 @@ class Registrant(models.Model):
             self.position_title = self.custom_reg_form_entry.get_value_of_mapped_field('position_title')
             self.company_name = self.custom_reg_form_entry.get_value_of_mapped_field('company_name')
         if self.first_name or self.last_name:
-            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
+            self.name = ('{} {}'.format(self.first_name, self.last_name)).strip()
         self.save()
 
     def assign_mapped_fields(self):
@@ -2155,7 +2175,7 @@ class Registrant(models.Model):
             for field in user_fields:
                 setattr(self, 'field', self.custom_reg_form_entry.get_value_of_mapped_field(field))
 
-            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
+            self.name = ('{} {}'.format(self.first_name, self.last_name)).strip()
 
     def populate_custom_form_entry(self):
         """
@@ -2168,7 +2188,7 @@ class Registrant(models.Model):
             if reg_conf.use_custom_reg_form:
                 custom_reg_form = reg_conf.reg_form
                 # add an entry for this registrant
-                entry = CustomRegFormEntry.objects.create(entry_time=datetime.now(),
+                entry = CustomRegFormEntry.objects.create(entry_time=timezone.now(),
                                                   form=custom_reg_form)
                 self.custom_reg_form_entry = entry
                 self.save()
@@ -2272,16 +2292,19 @@ class AssetsPurchase(models.Model):
         invoice.owner = self.user
 
         # update invoice with details
-        invoice.title = "Assets purchaser %s for Event: %s" % (self.pk, self.event.title)
+        invoice.title = "Assets purchaser {} for Event: {}".format(self.pk, self.event.title)
         invoice.estimate = ('estimate' == status_detail)
         invoice.status_detail = status_detail
-        invoice.tender_date = datetime.now()
-        invoice.due_date = datetime.now()
-        invoice.ship_date = datetime.now()
+        invoice.tender_date = timezone.now()
+        invoice.due_date = timezone.now()
+        invoice.ship_date = timezone.now()
 
         invoice.assign_tax([(self.amount, 0)], request_user)
         invoice.subtotal = self.amount
-        invoice.total = self.amount + invoice.tax + invoice.tax_2
+        if get_setting('module','invoices','taxmodal') == 'Tax Added':
+            invoice.total = self.amount + invoice.tax + invoice.tax_2
+        else: #tax included
+            invoice.total = self.amount
         invoice.balance = invoice.total
         invoice.save()
 
@@ -2364,7 +2387,7 @@ class RegistrantChildEvent(models.Model):
     def check_in(self):
         """Check in this registrant to this child event"""
         self.checked_in = True
-        self.checked_in_dt = datetime.now()
+        self.checked_in_dt = timezone.now()
         self.save()
         self.child_event.assign_credits(self.registrant)
 
@@ -2538,7 +2561,7 @@ class Organizer(ImageUploader, models.Model):
         app_label = 'events'
 
     def __init__(self, *args, **kwargs):
-        super(Organizer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._original_name = self.name
 
     def __str__(self):
@@ -2565,7 +2588,7 @@ class Speaker(OrderingBaseModel):
         app_label = 'events'
 
     def __init__(self, *args, **kwargs):
-        super(Speaker, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._original_name = self.name
 
     def __str__(self):
@@ -2621,15 +2644,142 @@ class RecurringEvent(models.Model):
         elif self.repeat_type == self.RECUR_YEARLY:
             repeat_type = 'year(s)'
         ends_on = self.ends_on.strftime("%b %d %Y")
-        return _("Repeats every %(frequency)s %(repeat_type)s until %(ends_on)s" % {
-                            'frequency': self.frequency,
-                            'repeat_type': repeat_type,
-                            'ends_on': ends_on})
+        return _("Repeats every {frequency} {repeat_type} until {ends_on}".format(
+                            frequency=self.frequency,
+                            repeat_type=repeat_type,
+                            ends_on=ends_on))
 
 
 class EventPhoto(File):
     class Meta:
         app_label = 'events'
+
+
+def eventfile_directory(instance, filename):
+    filename = correct_filename(filename)
+    m = hashlib.md5()
+    m.update(filename.encode())
+    hex_digest = m.hexdigest()[:8]
+    return 'events/files/{}/{}'.format(hex_digest, filename)
+
+
+class EventFile(models.Model):
+    FILE_TYPE_CHOICES = [
+                ('Document', _('Document')),
+                ('Image', _('Image')),
+                ('Video', _('Video')),
+                ('Audio', _('Audio')),
+                ('Slide Show', _('Slide Show'))
+                ]
+    STATUS_DETAIL_CHOICES = (('pending', _('Pending')),
+                             ('active', _('Active')),
+                             ('inactive', _('Inactive'))
+                             )
+    name = models.CharField(max_length=250)
+    file = models.FileField(upload_to=eventfile_directory, blank=True, null=True)
+    file_url = models.URLField(_("File URL"), blank=True, default='')
+    guid = models.CharField(max_length=40)
+
+    description = models.TextField(blank=True)
+    # file type - image, video, or text...
+    file_type = models.CharField(max_length=20, blank=True,
+                                 default='Document',
+                                 choices=FILE_TYPE_CHOICES)
+    event = models.ForeignKey('Event',
+                              related_name='files',
+                              on_delete=models.CASCADE)
+    tags = TagField(null=True, blank=True)
+
+    create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
+    update_dt = models.DateTimeField(_("Last Updated"), auto_now=True)
+    creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="%(app_label)s_%(class)s_creator", editable=False)
+    creator_username = models.CharField(max_length=150)
+    owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="%(app_label)s_%(class)s_owner")
+    owner_username = models.CharField(max_length=150)
+    status_detail = models.CharField(max_length=50, default='active',
+                                     choices=STATUS_DETAIL_CHOICES)
+
+
+    class Meta:
+        app_label = 'events'
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid4())
+        super().save(*args, **kwargs)
+
+    def allow_view_by(self, user):
+        if user.profile.is_superuser:
+            return True
+
+        if has_perm(user, 'events.view_eventfile'):
+            return True
+
+        if self.status_detail == 'active':
+            if self.event.is_registrant_user(user):
+                return True
+
+        return False
+
+    def allow_edit_by(self, user):
+        if user.profile.is_superuser:
+            return True
+
+        if has_perm(user, 'events.change_eventfile'):
+            return True
+
+        return False
+
+    def icon(self):
+        if not self.file_type:
+            return None
+
+        # map file-type to image file
+        icons = {
+            'Image': 'icon-ms-image-2007.png',
+            'Document': 'articles-color-64x64.png',
+            'Audio': 'icon-wmv.png',
+            'Video': 'icon-wmv.png',
+            'Zip': 'icon-zip.gif',
+            'Slide Show': 'icon-ms-powerpoint-2007.gif',
+        }
+        ext = self.ext()
+        if ext in ['.docx', '.doc']:
+            icon_name = 'icon-ms-word-2007.gif'
+        elif ext in ['.xlsx', '.xls']:
+            icon_name = 'icon-ms-excel-2007.gif'
+        elif ext in ['.pdf']:
+            icon_name = 'icon-pdf.png'
+        elif ext in ['.zip']:
+            icon_name = 'icon-zip.gif'
+        elif ext in ['.png', '.jpg', '.jpeg']:
+            icon_name = icons['Image']
+        else:
+            icon_name = icons[self.file_type]
+
+        # return image path
+        return static(f'images/icons/{icon_name}')
+
+    def basename(self):
+        return os.path.basename(str(self.file.name))
+
+    def ext(self):
+        return os.path.splitext(self.basename())[-1]
+
+    def mime_type(self):
+        mtypes = [  # list of uncommon mimetypes
+            ('application/msword', '.docx',),
+            ('application/ms-powerpoint', '.pptx'),
+            ('application/ms-excel', '.xlsx'),
+            ('video/x-ms-wmv', '.wmv'),
+        ]
+        # add mimetypes
+        for mtype, ext in mtypes:
+            mimetypes.add_type(mtype, ext)
+        # get mimetype
+        return mimetypes.types_map.get(self.ext(), 'application/octet-stream')
 
 
 class Event(TendenciBaseModel):
@@ -2694,10 +2844,10 @@ class Event(TendenciBaseModel):
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False, on_delete=models.CASCADE)
     mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
     enable_private_slug = models.BooleanField(_('Enable Private URL'), blank=True, default=False) # hide from lists
-    private_slug = models.CharField(max_length=500, blank=True, default=u'')
+    private_slug = models.CharField(max_length=500, blank=True, default='')
     password = models.CharField(max_length=50, blank=True)
     on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
-    external_url = models.URLField(_('External URL'), default=u'', blank=True)
+    external_url = models.URLField(_('External URL'), default='', blank=True)
     image = models.ForeignKey(EventPhoto,
         help_text=_('Photo that represents this event.'), null=True, blank=True, on_delete=models.SET_NULL)
     certificate_image = models.ForeignKey(CertificateImage,
@@ -2733,9 +2883,11 @@ class Event(TendenciBaseModel):
         app_label = 'events'
 
     def __init__(self, *args, **kwargs):
-        super(Event, self).__init__(*args, **kwargs)
-        self.private_slug = self.private_slug or Event.make_slug()
-        self._original_repeat_of = self.repeat_of
+        super().__init__(*args, **kwargs)
+        self.private_slug = self.private_slug or self.make_slug()
+        # Commenting it out - This line of code is causing an error on dumpdata:
+        # "RecursionError: maximum recursion depth exceeded while calling a Python object"
+        #self._original_repeat_of = self.repeat_of
 
     @property
     def title_with_event_code(self):
@@ -2899,7 +3051,7 @@ class Event(TendenciBaseModel):
     def upcoming_child_events(self):
         """All upcoming child events available for registration"""
         return self.child_events.filter(
-            start_dt__date__gt=datetime.now().date(),
+            start_dt__date__gt=timezone.now().date(),
             registration_configuration__enabled=True
         )
 
@@ -3024,11 +3176,11 @@ class Event(TendenciBaseModel):
         event starts. Meeting will be available to join up until
         the end_dt (allows participants to re-join if they lose connection)
         """
-        ten_minutes_prior = datetime.now() >= self.start_dt - timedelta(minutes=10)
+        ten_minutes_prior = timezone.now() >= self.start_dt - timedelta(minutes=10)
 
         return (
             ten_minutes_prior and
-            datetime.now() < self.end_dt and
+            timezone.now() < self.end_dt and
             self.zoom_integration_setup
         )
 
@@ -3045,7 +3197,7 @@ class Event(TendenciBaseModel):
     @property
     def use_zoom_integration(self):
         """Use Zoom for this Event"""
-        return self.place.use_zoom_integration if self.place else None
+        return self.place.use_zoom_integration and self.place.zoom_api_configuration if self.place else None
 
     @property
     def is_zoom_webinar(self):
@@ -3077,7 +3229,7 @@ class Event(TendenciBaseModel):
         if not self.zoom_api_configuration:
             raise Exception(_("Zoom API not configured"))
 
-        max_exp = datetime.now().astimezone(pytz.UTC) + timedelta(hours=24)
+        max_exp = timezone.now().astimezone(pytz.UTC) + timedelta(hours=24)
         end_dt = self.end_dt.astimezone(pytz.UTC)
 
         payload = {
@@ -3099,7 +3251,7 @@ class Event(TendenciBaseModel):
         """
         return (
             self.zoom_integration_setup and
-            datetime.now() >= self.end_dt and
+            timezone.now() >= self.end_dt and
             (
                 not self.registrantcredits_set.exists() or
                 self.registrantcredits_set.filter(released=False).exists()
@@ -3212,8 +3364,14 @@ class Event(TendenciBaseModel):
         # For each user that answered questions, count the number
         # of questions answered within a credit period
         for question in questions_answered:
-            # Get registrant by username
+            # Zoom gets passed the full name and the username so that
+            # the participant list in Zoom is understandable, so we
+            # need to split them apart again here. Format is:
+            # fullname | username.
             user_name = question.get('name')
+            if ' | ' in user_name:
+                user_name = user_name.split(' | ')[-1]
+            # Get registrant by username
             registrant = self.get_registrant_by_user_name(user_name)
             if not registrant:
                 continue
@@ -3449,8 +3607,12 @@ class Event(TendenciBaseModel):
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
 
-    def is_registrant_user(self, user):
+    def is_registrant_user(self, user, paid_only=None):
         if hasattr(user, 'registrant_set'):
+            if paid_only:
+                return user.registrant_set.filter(
+                    registration__event=self, cancel_dt__isnull=True,
+                    registration__invoice__balance__lte=0).exists()
             return user.registrant_set.filter(
                 registration__event=self, cancel_dt__isnull=True).exists()
         return False
@@ -3478,20 +3640,22 @@ class Event(TendenciBaseModel):
         # Without this set, we would not identify the original as being the same
         # as a repeated event.
         
+        # Commenting it out - the _original_repeat_of assigment is causing
+        # error on the command dumpdata: "RecursionError: maximum recursion depth exceeded while calling a Python object" 
         # Check if repeat_of has been removed or switched to another sub event
-        if self.repeat_of != self._original_repeat_of:
-            if not self.repeat_of:
-                # 1) removed - re-assign a new unique uuid 
-                self.repeat_uuid = uuid.uuid4()
-            else:
-                # 2) switched to another event - find the new repeat_uuid
-                self.repeat_uuid = self.repeat_of.repeat_uuid or uuid.uuid4()
-        else:
-            self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
+        # if self.repeat_of != self._original_repeat_of:
+        #     if not self.repeat_of:
+        #         # 1) removed - re-assign a new unique uuid 
+        #         self.repeat_uuid = uuid.uuid4()
+        #     else:
+        #         # 2) switched to another event - find the new repeat_uuid
+        #         self.repeat_uuid = self.repeat_of.repeat_uuid or uuid.uuid4()
+        # else:
+        self.repeat_uuid = self.repeat_uuid or uuid.uuid4()
 
         self.guid = self.guid or str(uuid.uuid4())
 
-        super(Event, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if self.image:
             set_s3_file_permission(self.image.file, public=self.is_public())
@@ -3538,7 +3702,7 @@ class Event(TendenciBaseModel):
         """Time to show reminder to switch check-in session."""
         if not self.check_in_reminders:
             return None
-        return datetime.now() >= self.start_dt + timedelta(minutes=int(self.check_in_reminders))
+        return timezone.now() >= self.start_dt + timedelta(minutes=int(self.check_in_reminders))
     
     @property
     def should_show_check_in_reminder(self):
@@ -3605,11 +3769,11 @@ class Event(TendenciBaseModel):
         Indicate whether cancelleation is allowed.
         """
         cancel_by_dt = self.registration_configuration.cancel_by_dt
-        return not cancel_by_dt or cancel_by_dt + timedelta(days=1) >= datetime.now()
+        return not cancel_by_dt or cancel_by_dt + timedelta(days=1) >= timezone.now()
 
     @property
     def is_over(self):
-        return self.end_dt <= datetime.now()
+        return self.end_dt <= timezone.now()
 
     @property
     def available_for_purchase(self):
@@ -3854,7 +4018,7 @@ class Event(TendenciBaseModel):
         This is used to provide a list of potential attendance dates
         to filter sub-events by date. Includes dates for upcoming sessions only.
         """
-        params = {'start_dt__date__gt': datetime.now()}
+        params = {'start_dt__date__gt': timezone.now()}
         return self.get_child_events_days(params)
 
     @property
@@ -3977,7 +4141,7 @@ class Event(TendenciBaseModel):
 
         return total_registered - self.total_checked_in
 
-    @classmethod
+    #@classmethod
     def make_slug(self, length=7):
         """
         Returns newly generated slug
@@ -3995,10 +4159,10 @@ class Event(TendenciBaseModel):
             get_global_setting)
 
         pk = self.pk or 'id'
-        private_slug = self.private_slug or Event.make_slug()
+        private_slug = self.private_slug or self.make_slug()
 
         if absolute_url:
-            return '%s/%s/%s/%s' % (
+            return '{}/{}/{}/{}'.format(
                 get_global_setting('siteurl'),
                 get_module_setting('events', 'url') or 'events',
                 pk,
@@ -4007,7 +4171,7 @@ class Event(TendenciBaseModel):
         self.private_slug = private_slug
         return private_slug
 
-    def is_private(self, slug=u''):
+    def is_private(self, slug=''):
         """
         Check if event is private (i.e. if private enabled)
         """
@@ -4050,6 +4214,27 @@ class Event(TendenciBaseModel):
     def primary_group(self):
         primary_eventgroup = self.group_relations.filter(is_primary=True).first()
         return primary_eventgroup.group if primary_eventgroup else None
+
+    def set_primary_group(self):
+        if hasattr(self, 'primary_group_selected') and self.primary_group_selected:
+            for groupevent in self.group_relations.all():
+                if groupevent.group == self.primary_group_selected:
+                    groupevent.is_primary = True
+                else:
+                    groupevent.is_primary = False
+                groupevent.save()
+
+    def allow_view_eventfiles_by(self, user):
+        if user.profile.is_superuser:
+            return True
+
+        if has_perm(user, 'events.view_eventfile'):
+            return True
+
+        if self.is_registrant_user(user, paid_only=True):
+            return True
+
+        return False
 
 
 class EventGroup(models.Model):
@@ -4125,8 +4310,8 @@ class CustomRegForm(models.Model):
         """
         Clone this custom registration form and associate it with the event if provided.
         """
-        params = dict([(field.name, getattr(self, field.name))
-                       for field in self._meta.fields if not field.__class__==AutoField])
+        params = {field.name: getattr(self, field.name)
+                       for field in self._meta.fields if not field.__class__==AutoField}
         cloned_obj = self.__class__.objects.create(**params)
         # clone fiellds
         fields = self.fields.all()
@@ -4177,8 +4362,8 @@ class CustomRegField(OrderingBaseModel):
         """
         Clone this custom registration field, and associate it with the form if provided.
         """
-        params = dict([(field.name, getattr(self, field.name))
-                       for field in self._meta.fields if not field.__class__==AutoField])
+        params = {field.name: getattr(self, field.name)
+                       for field in self._meta.fields if not field.__class__==AutoField}
         cloned_field = self.__class__.objects.create(**params)
 
         if form:
@@ -4246,7 +4431,7 @@ class CustomRegFormEntry(models.Model):
         return ''
 
     def get_lastname_firstname(self):
-        name = '%s, %s' % (self.get_value_of_mapped_field('last_name'),
+        name = '{}, {}'.format(self.get_value_of_mapped_field('last_name'),
                          self.get_value_of_mapped_field('first_name'))
         return name.strip()
 
@@ -4269,6 +4454,11 @@ class CustomRegFormEntry(models.Model):
             entry_list.append({'label': field_entry.field.label, 'value': field_entry.value})
         return entry_list
 
+    def get_non_mapped_field_entries(self):
+        field_entries = self.field_entries
+        mapped_fields = [item[0] for item in USER_FIELD_CHOICES]
+        return field_entries.exclude(field__map_to_field__in=mapped_fields).order_by('field')
+
     def roster_field_entry_list(self):
         list_on_roster = []
         field_entries = self.field_entries.exclude(field__map_to_field__in=[
@@ -4279,7 +4469,14 @@ class CustomRegFormEntry(models.Model):
                                     ]).filter(field__display_on_roster=1).order_by('field')
 
         for field_entry in field_entries:
-            list_on_roster.append({'label': field_entry.field.label, 'value': field_entry.value})
+            value = field_entry.value
+            is_file = field_entry.is_file()
+            file_url = None
+            if is_file:
+                value = os.path.basename(value)
+                file_url = field_entry.file_url()
+                print('file_url=', file_url)
+            list_on_roster.append({'label': field_entry.field.label, 'value': value, 'is_file': is_file, 'file_url':file_url})
         return list_on_roster
 
     def set_group_subscribers(self, user):
@@ -4301,6 +4498,18 @@ class CustomRegFieldEntry(models.Model):
 
     class Meta:
         app_label = 'events'
+
+    def is_file(self):
+        return self.value and self.field.field_type == 'FileField'
+
+    def file_name(self):
+        #return self.value
+        return os.path.basename(self.value)
+
+    def file_url(self):
+        if not self.value:
+            return ''
+        return reverse('event.registrant_file', args=[self.pk])
 
 class Addon(OrderingBaseModel):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
@@ -4332,7 +4541,7 @@ class Addon(OrderingBaseModel):
             self.save(*args, **kwargs)
         else:
             # actual delete of an Addon
-            super(Addon, self).delete(*args, **kwargs)
+            super().delete(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -4341,12 +4550,12 @@ class Addon(OrderingBaseModel):
         if not self.reg_conf.enabled or not self.status:
             return False
         if hasattr(self, 'event'):
-            if datetime.now() > self.event.end_dt:
+            if timezone.now() > self.event.end_dt:
                 return False
         return True
 
     def field_name(self):
-        return "%s_%s" % (self.pk, self.title.lower().replace(' ', '').replace('-', ''))
+        return "{}_{}".format(self.pk, self.title.lower().replace(' ', '').replace('-', ''))
 
     def has_options(self):
         return self.options.exists()
@@ -4391,7 +4600,7 @@ class RegAddon(models.Model):
         app_label = 'events'
 
     def __str__(self):
-        return "%s: %s" % (self.registration.pk, self.addon.title)
+        return "{}: {}".format(self.registration.pk, self.addon.title)
 
     def get_option(self):
         if self.regaddonoption_set.exists():
@@ -4412,4 +4621,4 @@ class RegAddonOption(models.Model):
 
     def __str__(self):
         #return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
-        return "%s: %s" % (self.regaddon.pk, self.option.title)
+        return "{}: {}".format(self.regaddon.pk, self.option.title)

@@ -48,7 +48,7 @@
         </div>
     {% endif %}
 
-        <form action="" method="post">{% csrf_token %}
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ formset.management_form }}
             {% for form, registrant in formset.forms|zip:registrants %}

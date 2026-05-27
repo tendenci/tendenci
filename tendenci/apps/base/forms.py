@@ -10,15 +10,18 @@ from django.forms.fields import CharField
 from django.utils.translation import gettext_lazy as _
 # from captcha.fields import CaptchaField, CaptchaTextInput
 from captcha.fields import CaptchaField
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV3
 
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.libs.recaptcha.fields import ReCaptchaField
-from tendenci.libs.recaptcha.widgets import ReCaptchaV3
+from tendenci.apps.base.widgets import ReCaptchaV2
+# from tendenci.libs.recaptcha.fields import ReCaptchaField
+# from tendenci.libs.recaptcha.widgets import ReCaptchaV3
 SIMPLE_ANSWER = 22
 SIMPLE_QUESTION = _('What is 9 + 13? (security question -just so we know you\'re not a bot)')
 
 slug_re = compile(r'^[-\w\/]+$')
-validate_slug = RegexValidator(slug_re, _(u"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."), 'invalid')
+validate_slug = RegexValidator(slug_re, _("Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."), 'invalid')
 
 
 class NextURLForm(forms.Form):
@@ -27,7 +30,7 @@ class NextURLForm(forms.Form):
                             regex=r'^/\S+$',)],)
 
 
-class ProhibitNullCharactersValidatorMixin(object):
+class ProhibitNullCharactersValidatorMixin:
     """
     Mixin to validate if any of the strings in cleaned_data contain the null character.
     
@@ -41,17 +44,17 @@ class ProhibitNullCharactersValidatorMixin(object):
             if '\x00' in str(v):
                 raise forms.ValidationError(message, code)
 
-        return super(ProhibitNullCharactersValidatorMixin, self).clean(*args, **kwargs)
+        return super().clean(*args, **kwargs)
 
 
-class FormControlWidgetMixin(object):
+class FormControlWidgetMixin:
     """
     Mixin that adds 'form-control' class to all fields of a form
 
     """
 
     def __init__(self, *args, **kwargs):
-        super(FormControlWidgetMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.add_form_control_class()
 
@@ -84,13 +87,13 @@ class SlugField(CharField):
         Straight copy from django with modifications
     """
     default_error_messages = {
-        'invalid': _(u"Enter a valid 'slug' consisting of letters, numbers,"
-                    u" underscores (_), front-slashes (/) or hyphens."),
+        'invalid': _("Enter a valid 'slug' consisting of letters, numbers,"
+                    " underscores (_), front-slashes (/) or hyphens."),
     }
     default_validators = [validate_slug]
 
     def __init__(self, help_text=None, *args, **kwargs):
-        super(SlugField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean(self, value):
         value = self.to_python(value)
@@ -106,7 +109,7 @@ class SimpleMathField(forms.IntegerField):
     def __init__(self, *args, **kwargs):
         kwargs['required'] = True
         kwargs['label'] = SIMPLE_QUESTION
-        super(SimpleMathField, self).__init__((), *args, **kwargs)
+        super().__init__((), *args, **kwargs)
 
     def clean(self, value):
         try:
@@ -119,12 +122,12 @@ class SimpleMathField(forms.IntegerField):
         return value
 
 class PasswordForm(forms.Form):
-    password = forms.CharField(label=_(u'Password'),
+    password = forms.CharField(label=_('Password'),
         widget=forms.PasswordInput())
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
-        super(PasswordForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean(self):
         password = self.cleaned_data['password']
@@ -148,7 +151,7 @@ def CustomCatpchaField(**kwargs):
             # set required_score
             recaptcha_field.widget.attrs.update({'required_score': score_threshold})
             return recaptcha_field
-        return ReCaptchaField(label='')
+        return ReCaptchaField(label='', widget=ReCaptchaV2)
 
     return CaptchaField(**kwargs)
 
@@ -158,7 +161,7 @@ class CaptchaForm(FormControlWidgetMixin, forms.Form):
 
 
 class AddonUploadForm(forms.Form):
-    addon = forms.FileField(label=_(u'File'),
+    addon = forms.FileField(label=_('File'),
                            help_text=_("Enter the zip file of the module."))
 
     def clean_addon(self):

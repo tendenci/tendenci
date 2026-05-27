@@ -50,7 +50,7 @@ input[id="id_captcha_1"] {
  	color: red;
  	list-style: none;
  	font-size: 0.8em;
- 	margin: 0 0 0 11em;
+ 	/*margin: 0 0 0 11em;*/
  }
  .required{
  	font-weight: bold;

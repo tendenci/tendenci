@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import simplejson as json
 from urllib.request import urlopen
@@ -30,6 +29,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
+from django.utils import timezone
 
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.user_groups.models import Group
@@ -74,7 +74,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             if default_storage.exists(cached_image):
                 return redirect(default_storage.url(cached_image))
             return redirect(cached_image)
-        return redirect('%s%s' % (get_setting('site', 'global', 'siteurl'), cached_image))
+        return redirect('{}{}'.format(get_setting('site', 'global', 'siteurl'), cached_image))
 
     # basic permissions
     if not has_view_perm(request.user, 'files.view_file', file):
@@ -96,11 +96,11 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     try:
         data = file.file.read()
         file.file.close()
-    except IOError:  # no such file or directory
+    except OSError:  # no such file or directory
         raise Http404
 
     if download:  # log download
-        attachment = u'attachment;'
+        attachment = 'attachment;'
         EventLog.objects.log(**{
             'event_id': 185000,
             'event_data': '%s %s (%d) dowloaded by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
@@ -110,7 +110,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             'instance': file,
         })
     else:  # log view
-        attachment = u''
+        attachment = ''
         if file.type() != 'image':
             EventLog.objects.log(**{
                 'event_id': 186000,
@@ -138,7 +138,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
         response = HttpResponse(content_type=file.mime_type())
-        response['Content-Disposition'] = '%s filename="%s"' % (attachment, file.get_name())
+        response['Content-Disposition'] = '{} filename="{}"'.format(attachment, file.get_name())
 
         params = {'quality': quality}
         if image.format == 'GIF':
@@ -151,13 +151,13 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
         if file.is_public_file():
             file_name = file.get_name()
-            file_path = 'cached%s%s' % (request.path, file_name)
+            file_path = 'cached{}{}'.format(request.path, file_name)
             if not default_storage.exists(file_path):
                 default_storage.save(file_path, ContentFile(response.content))
             if settings.USE_S3_STORAGE:
                 cache.set(cache_key, file_path)
             else:
-                full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
+                full_file_path = "{}{}".format(settings.MEDIA_URL, file_path)
                 cache.set(cache_key, full_file_path)
             cache_group_key = "files_cache_set.%s" % file.pk
             cache_group_list = cache.get(cache_group_key)
@@ -190,9 +190,9 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
     # return response
     if file.get_name().endswith(file.ext()):
-        response['Content-Disposition'] = '%s filename="%s"' % (attachment, file.get_name())
+        response['Content-Disposition'] = '{} filename="{}"'.format(attachment, file.get_name())
     else:
-        response['Content-Disposition'] = '%s filename="%s"' % (attachment, file.get_name_ext())
+        response['Content-Disposition'] = '{} filename="{}"'.format(attachment, file.get_name_ext())
     return response
 
 
@@ -204,7 +204,7 @@ def search(request, template_name="files/search.html"):
     If a search index is available, this page will also
     have the option to search through files.
     """
-    query = u''
+    query = ''
     category = None
     sub_category = None
     group = None
@@ -342,10 +342,10 @@ class FileTinymceCreateView(CreateView):
     def dispatch(self, request, *args, **kwargs):
         if not has_perm(request.user, 'files.add_file'):
             return HttpResponseForbidden()
-        return super(FileTinymceCreateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(FileTinymceCreateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['app_label'] = self.request.GET.get('app_label', '')
         context['model'] = self.request.GET.get('model', '')
         context['object_id'] = self.request.GET.get('object_id', 0)
@@ -482,9 +482,9 @@ def bulk_add(request, template_name="files/bulk-add.html"):
         return response
     else:
         file_formset = FileFormSet({
-            'form-TOTAL_FORMS': u'0',
-            'form-INITIAL_FORMS': u'0',
-            'form-MAX_NUM_FORMS': u'',
+            'form-TOTAL_FORMS': '0',
+            'form-INITIAL_FORMS': '0',
+            'form-MAX_NUM_FORMS': '',
         })
 
     return render_to_resp(
@@ -521,7 +521,7 @@ def add(request, form_class=FileForm,template_name="files/add.html"):
 
             ## update the category of the file
             category_removed = False
-            category = file.file_cat.name if file.file_cat else u''
+            category = file.file_cat.name if file.file_cat else ''
             if category:
                 Category.objects.update(file, category, 'category')
             else:  # remove
@@ -531,7 +531,7 @@ def add(request, form_class=FileForm,template_name="files/add.html"):
 
             if not category_removed:
                 # update the sub category of the article
-                sub_category = file.file_sub_cat.name if file.file_sub_cat else u''
+                sub_category = file.file_sub_cat.name if file.file_sub_cat else ''
                 if sub_category:
                     Category.objects.update(file, sub_category, 'sub_category')
                 else:  # remove
@@ -592,7 +592,7 @@ def tinymce_fb(request, template_name="files/templates/tinymce_fb.html"):
     """
     Get a list of files (images) for tinymce file browser.
     """
-    query = u''
+    query = ''
     try:
         page_num = int(request.GET.get('page', 1))
     except:
@@ -665,8 +665,8 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
     """
     Displays a table of files sorted by views/downloads.
     """
-    start_dt = date.today() + relativedelta(months=-2)
-    end_dt = datetime.now()
+    start_dt = timezone.make_aware(timezone.datetime.today() + relativedelta(months=-2))
+    end_dt = timezone.now()
     file_type = 'all'
 
     form = form_class(
@@ -679,8 +679,8 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
-            start_dt = form.cleaned_data['start_dt']
-            end_dt = form.cleaned_data['end_dt']
+            start_dt = timezone.make_aware(form.cleaned_data['start_dt'])
+            end_dt = timezone.make_aware(form.cleaned_data['end_dt'])
             file_type = form.cleaned_data['file_type']
 
     event_logs = EventLog.objects.values('object_id').filter(
@@ -720,7 +720,7 @@ def redirect_to_s3(request, path, file_type='themes'):
     if path:
         if file_type == 'static':
             # static files such as tinymce and webfonts need to be served internally.
-            full_path = '%s/%s' % (settings.STATIC_ROOT, path)
+            full_path = '{}/{}'.format(settings.STATIC_ROOT, path)
             if not os.path.isfile(full_path):
                 raise Http404
             with open(full_path) as f:
@@ -731,7 +731,7 @@ def redirect_to_s3(request, path, file_type='themes'):
                     content_type = mimetypes.guess_type(full_path)[0]
                 return HttpResponse(content, content_type=content_type)
         else:
-            url = '%s/%s' % (settings.THEMES_DIR, path)
+            url = '{}/{}'.format(settings.THEMES_DIR, path)
         return HttpResponseRedirect(url)
     raise Http404
 
@@ -740,7 +740,7 @@ class JSONResponse(HttpResponse):
     """JSON response class."""
     def __init__(self, obj='', json_opts={}, content_type="application/json", *args, **kwargs):
         content = simplejson.dumps(obj, **json_opts)
-        super(JSONResponse, self).__init__(content, content_type, *args, **kwargs)
+        super().__init__(content, content_type, *args, **kwargs)
 
 
 @csrf_exempt

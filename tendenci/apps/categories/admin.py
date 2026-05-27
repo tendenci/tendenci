@@ -37,7 +37,7 @@ class CategoryItemAdmin(admin.ModelAdmin):
     view_on_site = False
 
     def __init__(self,*args,**kwargs):
-        super(CategoryItemAdmin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         admin.views.main.EMPTY_CHANGELIST_VALUE = '-'
 
     def has_add_permission(self, request):
@@ -54,12 +54,12 @@ class CategoryItemAdmin(admin.ModelAdmin):
         if instance.content_type and instance.object_id:
             obj = instance.content_type.get_object_for_this_type(id=instance.object_id)
             if obj:
-                return '<a href="{0}">{1}</a>'.format(
+                return '<a href="{}">{}</a>'.format(
                         obj.get_absolute_url(),
                         instance.object,
                     )
         return ""
-    show_object.short_description = u'Object'
+    show_object.short_description = 'Object'
 
 
 admin.site.register(Category, CategoryAdmin)

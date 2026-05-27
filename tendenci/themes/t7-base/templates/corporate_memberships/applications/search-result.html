@@ -62,7 +62,7 @@
 
                     {% if allow_edit or request.user.profile.is_superuser and corporate_membership.corporate_membership_type %}
                         <li>
-                            <strong>{% trans "Member Type:" %}</strong> <span>{{ corporate_membership.corporate_membership_type }}{% if corporate_membership.invoice %} - {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corporate_membership.invoice.total|floatformat:"2" }}{% if request.user.is_superuser %}<a href="{% url 'invoice.view' corporate_membership.invoice.id %}">{% trans "View Invoice" %}</a>{% endif %}{% endif %}</span>
+                            <strong>{% trans "Member Type:" %}</strong> <span>{{ corporate_membership.corporate_membership_type }}{% if corporate_membership.invoice %} - {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corporate_membership.invoice.total|floatformat:"2" }}{% if request.user.is_superuser %} <a href="{% url 'invoice.view' corporate_membership.invoice.id %}">{% trans "View Invoice" %}</a>{% endif %}{% endif %}</span>
                         </li>
                     {% endif %}
 
@@ -96,25 +96,49 @@
                     {% endif %}
                     {% endif %}
 
-                    {% if request.user.is_superuser and corporate_membership.is_join_pending %}
+                    {% if request.user.is_superuser %}
+                    	{% if corporate_membership.is_join_pending %}
                         <li class="pending-info-box">
                             <strong>{% trans "Admin:" %}</strong> <a href="{% url 'corpmembership.approve' corporate_membership.pk %}">{% trans "Approve/Disapprove" %}</a>
                         </li>
+                        {% elif corporate_membership.is_renewal_pending %}
+                        	<li>
+                        	    <i>{% blocktrans with corporate_membership.renew_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %} 
+                        	    ({% trans "Status:" %} <span class="t-status-pending">{{ corporate_membership.real_time_status_detail|capfirst }}</span>)</i><br />
+                        	    <a class="btn btn-info" href="{% url "corpmembership.approve" corporate_membership.id %}" title="Admin: Approve/Disapprove">{% trans "Admin: Approve / Disapprove" %}</a>
+                        	</li>
+                        {% endif %}
                     {% endif %}
 
+					{% with corporate_membership.latest_renewed_in_pending as pending_corp_mem %}
                     {% if corporate_membership.can_renew %}
-                        {% if allow_edit %}
-                            <li>
-                                <a href="{% url 'corpmembership.renew' corporate_membership.id %}" class="btn btn-warning">{% trans "Renew" %}</a>
-                            </li>
+                    	{% if pending_corp_mem %}
+                    		<li>
+	                         <i>{% blocktrans with pending_corp_mem.renew_dt|date:"d-M-Y" as renew_dt %} Renewed on {{ renew_dt }} {% endblocktrans %}</i> <br />
+	                         <a href="{% url 'corpmembership.view' pending_corp_mem.id %}">{% trans "View Renewed Application" %}</a> (<span class="t-status-pending">{{ pending_corp_mem.real_time_status_detail|capfirst }}</span>)<br />
+	                        </li>
+                    	{% else %}
+	                        {% if allow_edit %}
+	                            <li>
+	                                <a href="{% url 'corpmembership.renew' corporate_membership.id %}" class="btn btn-warning">{% trans "Renew" %}</a>
+	                            </li>
+	                        {% endif %}
                         {% endif %}
                     {% else %}
                         {% if corporate_membership.is_expired and request.user.is_superuser %}
+                        	{% if pending_corp_mem %}
+                    		<li>
+	                         {% blocktrans with pending_corp_mem.renew_dt|date:"d-M-Y" as renew_dt %} Renewed on {{ renew_dt }} {% endblocktrans %} <br /><a href="{% url 'corpmembership.view' pending_corp_mem.id %}">{% trans "View Renewed Application" %}</a>
+	                          (<span class="t-status-pending">{{ pending_corp_mem.real_time_status_detail|capfirst }}</span>)<br />
+	                        </li>
+                    	    {% else %}
                             <li>
                                 <a href="{% url 'corpmembership.renew' corporate_membership.id %}" class="btn btn-warning">{% trans "Admin: Renew" %}</a>
                             </li>
+                           {% endif %}
                         {% endif %}
                     {% endif %}
+                    {% endwith %}
                 </ul>
             </div>
 

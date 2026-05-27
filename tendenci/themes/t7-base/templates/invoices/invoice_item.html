@@ -48,6 +48,12 @@
     {% else %}
     {% endif %}
   </td>
+  <td>
+    {% if invoice.total_taxes > 0  %}
+    {{ invoice.total_taxes|format_currency }}
+    {% else %}
+    {% endif %}
+  </td>
   <!-- Status -->
   <td {% if invoice.balance %}class="body-copy-yellow"{% endif %}>
     {% if invoice.balance == 0 %}

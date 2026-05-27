@@ -13,13 +13,13 @@ class RangeWidget(forms.MultiWidget):
     def __init__(self, widget, *args, **kwargs):
         widgets = (widget, widget)
         kwargs['attrs'] = {'class': 'vDatepicker'}
-        super(RangeWidget, self).__init__(widgets=widgets, *args, **kwargs)
+        super().__init__(widgets=widgets, *args, **kwargs)
 
     def decompress(self, value):
         return value
 
     def get_context(self, name, value, attrs):
-        context = super(RangeWidget, self).get_context(name, value, attrs)
+        context = super().get_context(name, value, attrs)
         widgets = context['widget']['subwidgets']
         context['min'] = DateInput(widgets[0]['attrs']).render(widgets[0]['name'], widgets[0]['value'] or '')
         context['max'] = DateInput(widgets[1]['attrs']).render(widgets[1]['name'], widgets[1]['value'] or '')
@@ -31,8 +31,8 @@ class RangeField(forms.MultiValueField):
     Field to filter date values by range.
     """
     default_error_messages = {
-        'invalid_start': _(u'Enter a valid start value.'),
-        'invalid_end': _(u'Enter a valid end value.'),
+        'invalid_start': _('Enter a valid start value.'),
+        'invalid_end': _('Enter a valid end value.'),
     }
 
     def __init__(self, field_class, widget=forms.TextInput, *args, **kwargs):
@@ -41,7 +41,7 @@ class RangeField(forms.MultiValueField):
 
         fields = (field_class(), field_class())
 
-        super(RangeField, self).__init__(
+        super().__init__(
                 fields=fields,
                 widget=RangeWidget(widget),
                 *args, **kwargs

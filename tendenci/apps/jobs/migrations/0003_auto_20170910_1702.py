@@ -1,5 +1,3 @@
-
-
 import os
 from django.db import migrations
 from django.template.defaultfilters import slugify
@@ -124,19 +122,19 @@ def migrate_customized_jobs_templates():
                   '{}/templates/jobs/edit.html'.format(dir_path)]
     for file_path in files_list:
         if os.path.isfile(file_path):
-            with open(file_path, 'r') as f:
+            with open(file_path) as f:
                 content = f.read()
 
                 # remove categoryform
-                p = r'{0}([\d\D\s\S\w\W]*?){1}([\d\D\s\S\w\W]*?){2}'.format(re.escape('<fieldset class="boxy-grey" >'),
+                p = r'{}([\d\D\s\S\w\W]*?){}([\d\D\s\S\w\W]*?){}'.format(re.escape('<fieldset class="boxy-grey" >'),
                                                                             re.escape('{{ categoryform|styled_form }}'),
                                                                             re.escape('</fieldset>'))
                 content = re.sub(p, '', content)
 
                 # add js link
-                p = r'{0}\s*{1}'.format(re.escape('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}">'),
+                p = r'{}\s*{}'.format(re.escape('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}">'),
                                         re.escape('</script>'))
-                content = re.sub(p, '{0}\n{1}'.format('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}"> </script>',
+                content = re.sub(p, '{}\n{}'.format('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}"> </script>',
                                                       '<script type="text/javascript">{% include \'jobs/include/get_subcategories.js\' %} </script>)'),
                                  content)
             with open(file_path, 'w') as f:
@@ -152,12 +150,12 @@ def migrate_customized_jobs_templates():
                              ('{% if job_cat.sub_category %}', '{% if job.sub_cat %}'),
                              ('subcategories={{ job_cat.sub_category.pk }}">{{ job_cat.sub_category }}', 'cat={{ job_cat.pk }}&sub_cat={{ job.sub_cat.pk }}">{{ job.sub_cat.name }}'),
                              ]
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
             for (string_to_find, string_to_replace) in find_replace_list:
                 content = content.replace(string_to_find, string_to_replace)
 
-            p = r'{0}\s+{1}\s+{2}'.format(re.escape('<li>'),
+            p = r'{}\s+{}\s+{}'.format(re.escape('<li>'),
                                         re.escape("""<a href="{% url 'category.update' job.opt_app_label job.opt_module_name job.pk %}">{% trans "Edit Categories" %}</a>"""),
                                         re.escape('</li>'))
             content = re.sub(p, '', content)
@@ -171,7 +169,7 @@ def migrate_customized_jobs_templates():
         find_replace_list = [('form.categories', 'form.cat'),
                              ('form.subcategories', 'form.sub_cat')
                              ]
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
             for (string_to_find, string_to_replace) in find_replace_list:
                 content = content.replace(string_to_find, string_to_replace)
@@ -182,7 +180,7 @@ def migrate_customized_jobs_templates():
     # jobs/search.html
     file_path = '{}/templates/jobs/search.html'.format(dir_path)
     if os.path.isfile(file_path):
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
             content = content.replace("var $catAndSubcatSelect = $('#id_categories, #id_subcategories')",
                                       "var $catAndSubcatSelect = $('#id_cat, #id_sub_cat')")
@@ -192,9 +190,9 @@ def migrate_customized_jobs_templates():
     #jobs/top_nav_items.html
     file_path = '{}/templates/jobs/top_nav_items.html'.format(dir_path)
     if os.path.isfile(file_path):
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
-            p = r'{0}\s+{1}\s+{2}\s+{3}\s+{4}'.format(
+            p = r'{}\s+{}\s+{}\s+{}\s+{}'.format(
                                         re.escape('<li class="content-item">'),
                                         re.escape('<span class="app-name">'),
                                         re.escape("""<a href="{% url 'category.update' app_object.opt_app_label job.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>"""),

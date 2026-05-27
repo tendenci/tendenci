@@ -1,5 +1,3 @@
-
-
 from django.db import migrations
 import timezone_field.fields
 from tendenci.apps.base.utils import get_timezone_choices

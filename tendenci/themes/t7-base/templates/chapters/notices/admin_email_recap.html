@@ -21,11 +21,12 @@
 
     {% if notice.log.num_sent <= 50 %}
         <ol>
-        {% for member in notice.members_sent %}
+        {% for chapter, chapter_members_info in notice.chapter_memberships_processed.items %}
+        {% for member in chapter_members_info.members %}
             <li>{{ member.user.get_full_name }} - {{ site_url }}{{ member.get_absolute_url }}</li>
         {% endfor %}
+        {% endfor %}
         </ol>
-        <br />
     {% endif %}
     	<ul>
 	     <li><a href="{{ site_url }}{% url 'admin:chapters_noticedefaultlogrecord_changelist' %}?notice_log__id__exact={{ notice.log.id }}">{% trans "View Log Records" %}</a> </li>

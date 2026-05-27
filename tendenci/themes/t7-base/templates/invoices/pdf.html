@@ -6,7 +6,14 @@
 <head>
 <meta charset="UTF-8">
 <title>{% if obj_name %}{{ obj_name|capfirst}} {% endif %} {% trans "Invoice" %}</title>
-<style>
+
+<style>   
+body{
+	font-size: 13px;
+/* 	font-family:  "Verdana", sans-serif; */
+	font-weight: 300;
+	color: #000;
+}
 td.td-right {
     text-align: right;
 }
@@ -26,22 +33,37 @@ div.invoice-meta{
 
 }
 .table.table-tendenci-reports {
-    border: 1px solid #cccccc;
+	border-collapse: collapse;
+    border: 1px solid #dddddd;
 }
 .invoice-table-header{
     font-style: bold;
+}
+/* div#invoice-header{
+	width: 95%;
+} */
+div#invoice-header table tr td:last-child {
+  width: 50%;
+}
+#invoice-footer {     
+  -pdf-keep-in-frame-mode: shrink; /* Shrinks content to fit if needed */     
+  page-break-inside: avoid;
+}
+#invoice-footer table{
+  border: 1px solid #dddddd;
 }
 </style>
 </head>
 
 <body>
 <div class="t">
+<div id="invoice-header">
   {% if invoice.region and invoice.region.invoice_header %}
   {{ invoice.region.invoice_header_with_absurl|safe  }}
   {% else %}
   {% include "invoices/include/default_invoice_header.html" %}
  {% endif %}
- 
+</div>
   
 {% include "invoices/include/invoice_view_display.html" %}
 <br />
@@ -128,12 +150,13 @@ div.invoice-meta{
     </div>
   </div>
   <div style="clear: both"></div>
-  
+   <div id="invoice-footer">
   {% if invoice.region and invoice.region.invoice_footer %}
    {{ invoice.region.invoice_footer_with_absurl|safe  }}
   {% else %}
   {% include "invoices/include/default_invoice_footer.html" %}
  {% endif %}
+ </div>
 </div>
 </body>
 

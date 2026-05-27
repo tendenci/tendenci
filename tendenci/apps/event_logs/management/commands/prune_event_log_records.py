@@ -12,11 +12,12 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
+        from django.utils import timezone
         from tendenci.apps.event_logs.models import EventLog
         from datetime import datetime, timedelta
 
         if settings.KEEP_EVENT_LOG_FOR_DAYS > 0:
-            cutoff_date = datetime.now() - timedelta(days = settings.KEEP_EVENT_LOG_FOR_DAYS)
+            cutoff_date = timezone.now() - timedelta(days = settings.KEEP_EVENT_LOG_FOR_DAYS)
             deleted_count = EventLog.objects.filter(create_dt__lte=cutoff_date).delete()[0]
             if deleted_count > 0:
                 print("{} EventLog records were deleted as they were older than {}".format(deleted_count, cutoff_date.strftime("%d %b %Y %H:%M:%S")))

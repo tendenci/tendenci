@@ -1,11 +1,12 @@
-from builtins import object, str
 import os
 import re
+import string
+import secrets
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 import codecs
-import csv
+# import csv
 import hashlib
 import hmac
 import base64
@@ -16,12 +17,12 @@ import socket
 from PIL import Image
 from io import BytesIO, StringIO
 import requests
-from pdfminer.pdfparser import PDFParser
-from pdfminer.pdfdocument import PDFDocument
-from pdfminer.pdfpage import PDFPage
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import PDFPageAggregator
-from pdfminer.layout import LAParams, LTTextBox, LTTextLine
+# from pdfminer.pdfparser import PDFParser
+# from pdfminer.pdfdocument import PDFDocument
+# from pdfminer.pdfpage import PDFPage
+# from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+# from pdfminer.converter import PDFPageAggregator
+# from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from PIL import Image as pil
 from PIL import ImageFile
 from localflavor.us.us_states import US_STATES
@@ -176,14 +177,14 @@ class LazyEncoder(DjangoJSONEncoder):
     def default(self, obj):
         if isinstance(obj, Promise):
             return force_str(obj)
-        return super(LazyEncoder, self).default(obj)
+        return super().default(obj)
 
 
 def get_languages_with_local_name():
     """
     Get a list of tuples of available languages with local name.
     """
-    return [(ll['code'], '%s (%s)' % (ll['name_local'], ll['code'])) for ll in
+    return [(ll['code'], '{} ({})'.format(ll['name_local'], ll['code'])) for ll in
             [translation.get_language_info(l[0])
              for l in settings.LANGUAGES]]
 
@@ -206,10 +207,10 @@ def get_deleted_objects(objs, user):
     def format_callback(obj):
         opts = obj._meta
 
-        no_edit_link = '%s: %s' % (capfirst(opts.verbose_name),
+        no_edit_link = '{}: {}'.format(capfirst(opts.verbose_name),
                                    force_str(obj))
 
-        p = '%s.%s' % (opts.app_label,
+        p = '{}.{}'.format(opts.app_label,
                            get_permission_codename('delete', opts))
         if not user.has_perm(p):
             perms_needed.add(opts.verbose_name)
@@ -238,7 +239,7 @@ def get_timezone_choices():
     choices = []
     for tz in pytz.common_timezones:
         ofs = datetime.now(pytz.timezone(tz)).strftime("%z")
-        choices.append((int(ofs), tz, "(GMT%s) %s" % (ofs, tz)))
+        choices.append((int(ofs), tz, "(GMT{}) {}".format(ofs, tz)))
     choices.sort()
     return [t[1:] for t in choices]
 
@@ -334,11 +335,11 @@ def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_
     """
     if isinstance(start_dt, datetime) and isinstance(end_dt, datetime):
         if start_dt.date() == end_dt.date():
-            return '%s %s - %s' % (start_dt.strftime(format_date),
+            return '{} {} - {}'.format(start_dt.strftime(format_date),
                                    start_dt.strftime(format_time),
                                    end_dt.strftime(format_time))
         else:
-            return '%s %s - %s %s' % (start_dt.strftime(format_date),
+            return '{} {} - {} {}'.format(start_dt.strftime(format_date),
                                       start_dt.strftime(format_time),
                                       end_dt.strftime(format_date),
                                       end_dt.strftime(format_time))
@@ -373,7 +374,7 @@ def get_unique_username(user):
             user.username = user.email
     if not user.username:
         if user.first_name and user.last_name:
-            user.username = '%s%s' % (user.first_name[0], user.last_name)
+            user.username = '{}{}'.format(user.first_name[0], user.last_name)
     if not user.username:
         user.username = str(uuid.uuid4())[:7]
     if len(user.username) > 20:
@@ -388,7 +389,7 @@ def get_unique_username(user):
         while str(num) in t_list:
             num += 1
 
-        user.username = '%s%s' % (user.username, str(num))
+        user.username = '{}{}'.format(user.username, str(num))
 
     return user.username
 
@@ -460,7 +461,7 @@ def generate_meta_keywords(value):
 
         # get the density, and word into a tuple
         one_words_length = len(one_words)
-        unique_words = set(word for word in one_words)
+        unique_words = {word for word in one_words}
         one_words = [(word, round((one_words.count(word)*100.00/one_words_length),2)) for word in unique_words]
 
         # sort the tuple by the density
@@ -500,7 +501,7 @@ def generate_meta_keywords(value):
 
         # get the density, and word into a tuple
         two_words_length = len(two_words)
-        unique_words = set(words for words in two_words)
+        unique_words = {words for words in two_words}
         two_words = [(words, round((two_words.count(words)*100.00/two_words_length),2)) for words in unique_words]
 
         # sort the tuple by the density
@@ -546,7 +547,7 @@ def filelog(*args, **kwargs):
     f.close()
 
 
-class FormDateTimes(object):
+class FormDateTimes:
     """
         Object that creates the start and end dates and times
         for a form that needs them
@@ -747,7 +748,7 @@ def template_exists(template):
     """
     try:
         get_template(template)
-    except (TemplateDoesNotExist, IOError):
+    except (TemplateDoesNotExist, OSError):
         return False
     return True
 
@@ -862,7 +863,7 @@ def get_pagination_page_range(num_pages, max_num_in_group=10,
     return page_range
 
 
-class UTF8Recoder(object):
+class UTF8Recoder:
     """
     Iterator that reads an encoded stream and reencodes the input to UTF-8
     """
@@ -976,26 +977,26 @@ def checklist_update(key):
         item.save()
 
 
-def extract_pdf(fp):
-    """
-    Extract text from PDF file.
-    """
-    rsrcmgr = PDFResourceManager()
-    laparams = LAParams()
-    device = PDFPageAggregator(rsrcmgr, laparams=laparams)
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
-    text_content = [] # a list of strings, each representing text collected from each page of the pdf
-    for page in PDFPage.create_pages(PDFDocument(PDFParser(fp))):
-        interpreter.process_page(page) # LTPage object for this page
-        layout = device.get_result() # layout is an LTPage object which may contain child objects
-        for lt_obj in layout: # extract text from text objects
-            if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
-                if isinstance(lt_obj.get_text(), str):
-                    text_content.append(lt_obj.get_text())
-                else:
-                    text_content.append(lt_obj.get_text().decode())
-    device.close()
-    return '\n\n'.join(text_content)
+# def extract_pdf(fp):
+#     """
+#     Extract text from PDF file.
+#     """
+#     rsrcmgr = PDFResourceManager()
+#     laparams = LAParams()
+#     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+#     interpreter = PDFPageInterpreter(rsrcmgr, device)
+#     text_content = [] # a list of strings, each representing text collected from each page of the pdf
+#     for page in PDFPage.create_pages(PDFDocument(PDFParser(fp))):
+#         interpreter.process_page(page) # LTPage object for this page
+#         layout = device.get_result() # layout is an LTPage object which may contain child objects
+#         for lt_obj in layout: # extract text from text objects
+#             if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
+#                 if isinstance(lt_obj.get_text(), str):
+#                     text_content.append(lt_obj.get_text())
+#                 else:
+#                     text_content.append(lt_obj.get_text().decode())
+#     device.close()
+#     return '\n\n'.join(text_content)
 
 
 def normalize_field_names(fieldnames):
@@ -1023,6 +1024,22 @@ def validate_email(s, quiet=True):
     return False
 
 
+def generate_random_password(length=10, allowed_chars=string.ascii_letters + string.digits):
+    return ''.join(secrets.choice(allowed_chars) for i in range(length))
+
+
+def is_positive_and_not_zerotype(value):
+    """
+    Checks if a value is positive and has a non-zero truthy value.
+    Handles cases where the value is not a comparable type (e.g. a string that can't be converted)
+    Effectively excludes 0, 0.0, None, [], '', etc.
+    """
+    try:
+        return value > 0 and bool(value)
+    except (TypeError, ValueError):
+        return False
+
+
 def get_latest_version():
     from xmlrpc import client as xmlrpc_client
     with xmlrpc_client.ServerProxy('http://pypi.python.org/pypi') as proxy:
@@ -1035,7 +1052,7 @@ def add_tendenci_footer(email_content, content_type='html'):
         return email_content + '\n\n' + footer
     # Sorry but have to put html code here instead of in a template
     footer = '''<br /><div style="text-align:center; font-size:90%;">
-    {0} <a href="https://www.tendenci.com" style="text-decoration: none;">{1}</a>
+    {} <a href="https://www.tendenci.com" style="text-decoration: none;">{}</a>
     <div>
     <div style="margin:5px auto;">
     <a href="https://www.tendenci.com" style="text-decoration: none;">

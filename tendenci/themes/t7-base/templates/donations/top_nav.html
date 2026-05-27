@@ -3,7 +3,7 @@
 
 {% block nav_icon_url %}{% static 'famfamfam/icons/money.png' %}{% endblock %}
 
-{% block nav_label %}{% trans 'Donations' %}{% endblock %}
+{% block nav_label %}{% firstof MODULE_DONATIONS_LABEL_PLURAL trans "Donations" %}{% endblock %}
 
 {% block current_app %}
     {% if donation %}

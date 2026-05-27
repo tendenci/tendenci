@@ -17,7 +17,7 @@
 {% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "membership_default.add_under_corp" object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url "membership_default.add_under_corp" object.id %}</a>
 </p>
 
-{% if membership_added %}
+{% if membership_added and membership_added.id %}
 <p>
 {% trans 'Note that an individual membership has been automatically added under your corporate:' %} 
 <a href="{{ SITE_GLOBAL_SITEURL }}{% url "membership.details" membership_added.id %}">{{ SITE_GLOBAL_SITEURL }}{% url "membership.details" membership_added.id %}</a>

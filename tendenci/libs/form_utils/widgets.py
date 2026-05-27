@@ -19,7 +19,7 @@ try:
     def thumbnail(image_path, width, height):
         geometry_string = 'x'.join([str(width), str(height)])
         t = get_thumbnail(image_path, geometry_string)
-        return u'<img src="%s" alt="%s" />' % (t.url, image_path)
+        return '<img src="{}" alt="{}" />'.format(t.url, image_path)
 except ImportError:
     try:
         from easy_thumbnails.files import get_thumbnailer
@@ -28,11 +28,11 @@ except ImportError:
             thumbnail_options = dict(size=(width, height), crop=True)
             thumbnail = get_thumbnailer(image_path).get_thumbnail(
                 thumbnail_options)
-            return u'<img src="%s" alt="%s" />' % (thumbnail.url, image_path)
+            return '<img src="{}" alt="{}" />'.format(thumbnail.url, image_path)
     except ImportError:
         def thumbnail(image_path, width, height):
             absolute_url = posixpath.join(settings.MEDIA_URL, image_path)
-            return u'<img src="%s" alt="%s" />' % (absolute_url, image_path)
+            return '<img src="{}" alt="{}" />'.format(absolute_url, image_path)
 
 
 class ImageWidget(forms.FileInput):
@@ -43,10 +43,10 @@ class ImageWidget(forms.FileInput):
             self.template = template
         self.width = width
         self.height = height
-        super(ImageWidget, self).__init__(attrs)
+        super().__init__(attrs)
 
     def render(self, name, value, attrs=None):
-        input_html = super(ImageWidget, self).render(name, value, attrs)
+        input_html = super().render(name, value, attrs)
         if hasattr(value, 'width') and hasattr(value, 'height'):
             image_html = thumbnail(value.name, self.width, self.height)
             output = self.template % {'input': input_html,
@@ -65,7 +65,7 @@ class ClearableFileInput(forms.MultiWidget):
         if template is not None:
             self.template = template
         file_widget = file_widget or self.default_file_widget_class()
-        super(ClearableFileInput, self).__init__(
+        super().__init__(
             widgets=[file_widget, forms.CheckboxInput()],
             attrs=attrs)
 
@@ -74,7 +74,7 @@ class ClearableFileInput(forms.MultiWidget):
             self.value = value[0]
         else:
             self.value = value
-        return super(ClearableFileInput, self).render(name, value, attrs)
+        return super().render(name, value, attrs)
 
     def decompress(self, value):
         # the clear checkbox is never initially checked
@@ -101,21 +101,21 @@ class AutoResizeTextarea(forms.Textarea):
     def __init__(self, *args, **kwargs):
         attrs = kwargs.setdefault('attrs', {})
         try:
-            attrs['class'] = "%s autoresize" % (attrs['class'],)
+            attrs['class'] = "{} autoresize".format(attrs['class'])
         except KeyError:
             attrs['class'] = 'autoresize'
         attrs.setdefault('cols', 80)
         attrs.setdefault('rows', 5)
-        super(AutoResizeTextarea, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class InlineAutoResizeTextarea(AutoResizeTextarea):
     def __init__(self, *args, **kwargs):
         attrs = kwargs.setdefault('attrs', {})
         try:
-            attrs['class'] = "%s inline" % (attrs['class'],)
+            attrs['class'] = "{} inline".format(attrs['class'])
         except KeyError:
             attrs['class'] = 'inline'
         attrs.setdefault('cols', 40)
         attrs.setdefault('rows', 2)
-        super(InlineAutoResizeTextarea, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)

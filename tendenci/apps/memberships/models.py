@@ -1,4 +1,3 @@
-from builtins import str
 import os
 import hashlib
 import uuid
@@ -22,8 +21,9 @@ from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from django.db.models.fields import AutoField
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 
-from tendenci.apps.base.utils import day_validate, is_blank, tcurrency
+from tendenci.apps.base.utils import day_validate, is_blank, tcurrency, is_positive_and_not_zerotype
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.utils import get_notice_recipients
@@ -97,9 +97,9 @@ VALID_MEMBERSHIP_STATUS_DETAIL = ['active', 'pending', 'expired', 'archive', 'di
 
 
 class MembershipType(OrderingBaseModel, TendenciBaseModel):
-    PRICE_FORMAT = u'%s - %s'
-    ADMIN_FEE_FORMAT = u' (+%s admin fee)'
-    RENEW_FORMAT = u' Renewal'
+    PRICE_FORMAT = '%s - %s'
+    ADMIN_FEE_FORMAT = ' (+%s admin fee)'
+    RENEW_FORMAT = ' Renewal'
 
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
@@ -179,7 +179,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
         Save MembershipType instance.
         """
         self.guid = self.guid or uuid.uuid4().hex
-        super(MembershipType, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None, previous_expire_dt=None):
         """
@@ -196,7 +196,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
                                                               renew_dt=membership.renew_dt,
                                                               previous_expire_dt=None)
         """
-        now = datetime.now()
+        now = timezone.now()
 
         if not join_dt or not isinstance(join_dt, datetime):
             join_dt = now
@@ -373,7 +373,8 @@ class MembershipSet(models.Model):
     def memberships(self):
         return MembershipDefault.objects.filter(membership_set=self).order_by('create_dt')
 
-    def save_invoice(self, memberships, app=None, discount_code=None, discount_amount=None):
+    def save_invoice(self, memberships, app=None, discount_code=None, discount_amount=None,
+                    donation_amount=None, donation_apply_tax=False):
         invoice = Invoice()
         invoice.title = "Membership Invoice"
         invoice.estimate = True
@@ -398,6 +399,11 @@ class MembershipSet(models.Model):
                 invoice.discount_amount = discount_amount
                 price -= discount_amount
 
+        if is_positive_and_not_zerotype(donation_amount) and donation_apply_tax: 
+            # add the donation amount to the price so that 
+            # it can calculate the tax for donation as well
+            price += donation_amount
+
         default_tax_rate = 0
         if app and app.include_tax:
             default_tax_rate = app.tax_rate
@@ -406,15 +412,24 @@ class MembershipSet(models.Model):
                            module_tax_rate_use_regions=get_setting('module', 'memberships', 'taxrateuseregions'))
 
         invoice.subtotal = price
-        invoice.total = price + invoice.tax + invoice.tax_2
+        if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added': #tax added
+            invoice.total = price + invoice.tax + invoice.tax_2
+        else: #tax included
+            invoice.total = price
         invoice.balance = invoice.total
+        if is_positive_and_not_zerotype(donation_amount) and not donation_apply_tax:
+            # Since tax is not applied to donation,
+            # donation_amount hasn't been added yet
+            invoice.subtotal += donation_amount
+            invoice.total += donation_amount
+            invoice.balance += donation_amount
         
         membership = memberships[0]
         if membership.renewal:
             membership.assign_payment_credits(invoice)
 
-        invoice.due_date = datetime.now()
-        invoice.ship_date = datetime.now()
+        invoice.due_date = timezone.now()
+        invoice.ship_date = timezone.now()
 
         invoice.save()
         self.invoice = invoice
@@ -449,7 +464,7 @@ class MembershipSet(models.Model):
         description = ''
         donation_amount = inv.get_donation_amount()
         if donation_amount:
-            donation_msg = '(Donation: %s%s)' % (get_setting('site', 'global', 'currencysymbol'),
+            donation_msg = '(Donation: {}{})'.format(get_setting('site', 'global', 'currencysymbol'),
                                                donation_amount)
         else:
             donation_msg = ''
@@ -497,14 +512,14 @@ class MembershipDefault(TendenciBaseModel):
     referer_url = models.CharField(max_length=500, blank=True, editable=False)
     referral_source = models.CharField(max_length=150, blank=True)
     referral_source_other = models.CharField(max_length=150, blank=True)
-    referral_source_member_name = models.CharField(max_length=50, blank=True, default=u'')
-    referral_source_member_number = models.CharField(max_length=50, blank=True, default=u'')
+    referral_source_member_name = models.CharField(max_length=50, blank=True, default='')
+    referral_source_member_number = models.CharField(max_length=50, blank=True, default='')
     affiliation_member_number = models.CharField(max_length=50, blank=True)
     join_dt = models.DateTimeField(_('Join Date'), blank=True, null=True)
     expire_dt = models.DateTimeField(_('Expire Date'), blank=True, null=True)
     renew_dt = models.DateTimeField(_('Renew Date'), blank=True, null=True)
-    primary_practice = models.CharField(max_length=100, blank=True, default=u'')
-    how_long_in_practice = models.CharField(max_length=50, blank=True, default=u'')
+    primary_practice = models.CharField(max_length=100, blank=True, default='')
+    how_long_in_practice = models.CharField(max_length=50, blank=True, default='')
     notes = models.TextField(blank=True)
     admin_notes = models.TextField(blank=True)
     newsletter_type = models.CharField(max_length=50, blank=True)
@@ -556,18 +571,18 @@ class MembershipDefault(TendenciBaseModel):
     corp_profile_id = models.IntegerField(blank=True, default=0)
     corporate_membership_id = models.IntegerField(
         _('Corporate Membership'), blank=True, null=True)
-    home_state = models.CharField(max_length=50, blank=True, default=u'')
+    home_state = models.CharField(max_length=50, blank=True, default='')
     year_left_native_country = models.IntegerField(blank=True, null=True)
-    network_sectors = models.CharField(max_length=250, blank=True, default=u'')
-    networking = models.CharField(max_length=250, blank=True, default=u'')
+    network_sectors = models.CharField(max_length=250, blank=True, default='')
+    networking = models.CharField(max_length=250, blank=True, default='')
     government_worker = models.BooleanField(default=False)
-    government_agency = models.CharField(max_length=250, blank=True, default=u'')
-    license_number = models.CharField(max_length=50, blank=True, default=u'')
-    license_state = models.CharField(max_length=50, blank=True, default=u'')
+    government_agency = models.CharField(max_length=250, blank=True, default='')
+    license_number = models.CharField(max_length=50, blank=True, default='')
+    license_state = models.CharField(max_length=50, blank=True, default='')
     industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.SET_NULL)
     region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
-    company_size = models.CharField(max_length=50, blank=True, default=u'')
-    promotion_code = models.CharField(max_length=50, blank=True, default=u'')
+    company_size = models.CharField(max_length=50, blank=True, default='')
+    promotion_code = models.CharField(max_length=50, blank=True, default='')
     directory = models.ForeignKey(Directory, blank=True, null=True, on_delete=models.SET_NULL)
     groups = models.ManyToManyField(Group)
 
@@ -577,13 +592,13 @@ class MembershipDefault(TendenciBaseModel):
     objects = MembershipDefaultManager()
 
     class Meta:
-        verbose_name = _(u'Membership')
-        verbose_name_plural = _(u'Memberships')
+        verbose_name = _('Membership')
+        verbose_name_plural = _('Memberships')
         permissions = (("approve_membershipdefault", _("Can approve memberships")),)
         app_label = 'memberships'
 
     def __init__(self, *args, **kwargs):
-        super(MembershipDefault, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not self.auto_renew:
             self.auto_renew = False
 
@@ -624,7 +639,7 @@ class MembershipDefault(TendenciBaseModel):
         # the default 'active' is causing problems
         if not self.status_detail:
             self.status_detail = 'pending'
-        super(MembershipDefault, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def demographics(self):
@@ -653,14 +668,14 @@ class MembershipDefault(TendenciBaseModel):
     def delete(self, **kwargs):
         # Make sure profile member number and group are removed before deleting this membership
         self.expire(self.user)
-        return super(MembershipDefault, self).delete(**kwargs)
+        return super().delete(**kwargs)
 
     def demographic_sort_key(self, field_name):
         """
         Returns the key to sort on when
         using the list.sort method.
         """
-        digit = field_name.replace('ud', u'')
+        digit = field_name.replace('ud', '')
         return int(digit) if digit.isdigit() else 0
 
     def get_demographics(self):
@@ -812,6 +827,18 @@ class MembershipDefault(TendenciBaseModel):
 
         return corporate_membership
 
+    def get_corporate_profile_name(self):
+        """
+        Returns corporate profile name if available.
+        """
+        from tendenci.apps.corporate_memberships.models import CorpProfile
+        if self.corp_profile_id:
+            corp_name_list = CorpProfile.objects.filter(
+            pk=self.corp_profile_id).values_list('name', flat=True)
+            return corp_name_list[0] if corp_name_list else ''
+
+        return ''
+
     def send_email(self, request, notice_type):
         """
         Convenience method for sending
@@ -868,11 +895,13 @@ class MembershipDefault(TendenciBaseModel):
 
     def apply_a_chapter_membership(self, chapter, app, membership_type, request=None):
         """
-        Apply a chapter membership.
+        Apply or renew a chapter membership.
         """
         from tendenci.apps.chapters.models import ChapterMembership
-        
-        if not ChapterMembership.objects.filter(chapter=chapter, user=self.user).exists():
+        chapter_membership = ChapterMembership.objects.filter(chapter=chapter,
+                                                              user=self.user
+                                                              ).order_by('-id').first()
+        if not chapter_membership:
             params = {'chapter': chapter,
                       'app':  app,
                       'user': self.user,
@@ -896,6 +925,14 @@ class MembershipDefault(TendenciBaseModel):
             chapter_membership.save()
             # send email to admin
             chapter_membership.email_admin_join_notice(request)
+        else:
+            # renew this chapter_membership
+            if chapter_membership.get_status() in ['active', 'expired']:
+                renewed_chapter_membership = chapter_membership.renew()
+                if renewed_chapter_membership:
+                    renewed_chapter_membership.approve(request_user=request.user)
+                    renewed_chapter_membership.email_admin_renew_notice(request)
+            
 
     def auto_apply_chapter_memberships(self, request):
         """
@@ -943,7 +980,7 @@ class MembershipDefault(TendenciBaseModel):
         if not all(good):
             return False
 
-        NOW = datetime.now()
+        NOW = timezone.now()
 
         self.status = True
         self.status_detail = 'active'
@@ -1004,12 +1041,13 @@ class MembershipDefault(TendenciBaseModel):
 
         if not self.renewal:
             # add new member to the default group
-            default_group_name = get_setting('module', 'users', 'defaultusergroup')
-            [group] = Group.objects.filter(Q(name__iexact=default_group_name)
-                                           | Q(label__iexact=default_group_name))[:1] or [None]
-            # no need to check if group.is_member because group.add_user will check it
-            if group:
-                group.add_user(self.user)
+            default_group_name = get_setting('module', 'users', 'defaultusergroup').strip()
+            if default_group_name:
+                [group] = Group.objects.filter(Q(name__iexact=default_group_name)
+                                               | Q(label__iexact=default_group_name))[:1] or [None]
+                # no need to check if group.is_member because group.add_user will check it
+                if group:
+                    group.add_user(self.user)
                 
             if get_setting('module',  'memberships', 'adddirectory'):
                 # add a directory entry for this membership
@@ -1036,7 +1074,7 @@ class MembershipDefault(TendenciBaseModel):
             - Archive old memberships [of same type].
             - Show member number on profile.
         """
-        NOW = datetime.now()
+        NOW = timezone.now()
 
         if self.is_pending():
             dupe = self
@@ -1105,7 +1143,7 @@ class MembershipDefault(TendenciBaseModel):
         if not all(good):
             return False
 
-        NOW = datetime.now()
+        NOW = timezone.now()
 
         self.status = True
         self.status_detail = 'disapproved'
@@ -1150,7 +1188,7 @@ class MembershipDefault(TendenciBaseModel):
         """
 
         if self.is_approved() or (self.is_expired() and self.status_detail == 'active'):
-            NOW = datetime.now()
+            NOW = timezone.now()
 
             self.status = True
             self.status_detail = 'expired'
@@ -1252,7 +1290,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         if self.status and self.status_detail.lower() in ('active', 'expired'):
             if self.expire_dt:
-                return self.expire_dt <= datetime.now() and \
+                return self.expire_dt <= timezone.now() and \
                     (not self.in_grace_period())
         return False
 
@@ -1416,11 +1454,11 @@ class MembershipDefault(TendenciBaseModel):
         """
         from tendenci.apps.memberships.utils import spawn_username
 
-        un = kwargs.get('username', u'')
-        pw = kwargs.get('password', u'')
-        fn = kwargs.get('first_name', u'')
-        ln = kwargs.get('last_name', u'')
-        em = kwargs.get('email', u'')
+        un = kwargs.get('username', '')
+        pw = kwargs.get('password', '')
+        fn = kwargs.get('first_name', '')
+        ln = kwargs.get('last_name', '')
+        em = kwargs.get('email', '')
 
         user = None
         created = False
@@ -1461,8 +1499,8 @@ class MembershipDefault(TendenciBaseModel):
             return False
 
         return all([
-            self.expire_dt < datetime.now(),
-            expire_with_grace_period_dt > datetime.now(),
+            self.expire_dt < timezone.now(),
+            expire_with_grace_period_dt > timezone.now(),
             self.status_detail == "active"])
 
     def get_renewal_period_dt(self):
@@ -1531,7 +1569,7 @@ class MembershipDefault(TendenciBaseModel):
 
         # assert that we're within the renewal period
         start_dt, end_dt = renewal_period
-        return (datetime.now() >= start_dt and datetime.now() <= end_dt)
+        return (timezone.now() >= start_dt and timezone.now() <= end_dt)
 
     def past_renewal(self):
         """
@@ -1551,7 +1589,7 @@ class MembershipDefault(TendenciBaseModel):
         # assert that we're within the renewal period
         end_dt = renewal_period[1]
 
-        return datetime.now() > end_dt
+        return timezone.now() > end_dt
 
     def get_since_dt(self):
         memberships = MembershipDefault.objects.filter(
@@ -1578,9 +1616,9 @@ class MembershipDefault(TendenciBaseModel):
 
         is_superuser = kwargs.get('is_superuser', False)
 
-        form_link = u''
+        form_link = ''
         if self.app:
-            form_link = '%s?username=%s&membership_type=%s' % (
+            form_link = '{}?username={}&membership_type={}'.format(
                 reverse('membership_default.renew', kwargs={'slug': self.app.slug, 'membership_id': self.id}),
                 self.user.username,
                 self.membership_type.pk)
@@ -1590,9 +1628,9 @@ class MembershipDefault(TendenciBaseModel):
         expire_link = '%s?expire' % reverse('membership.details', args=[self.pk])
 
         if self.can_renew() and form_link:
-            renew = {form_link: u'Renew Membership'}
+            renew = {form_link: 'Renew Membership'}
         elif is_superuser and form_link:
-            renew = {form_link: u'Admin: Renew Membership'}
+            renew = {form_link: 'Admin: Renew Membership'}
         else:
             renew = {}
 
@@ -1601,7 +1639,7 @@ class MembershipDefault(TendenciBaseModel):
                 actions.update(renew)
             actions.update({
                 # '?action=pend': u'Make Pending',
-                expire_link: u'Expire Membership'})
+                expire_link: 'Expire Membership'})
         elif status == 'disapproved':
             pass
             # actions.update({
@@ -1609,13 +1647,13 @@ class MembershipDefault(TendenciBaseModel):
             #     expire_link: u'Expire Membership'})
         elif status == 'pending':
             actions.update({
-                approve_link: u'Approve',
-                disapprove_link: u'Disapprove',
-                expire_link: u'Expire Membership'})
+                approve_link: 'Approve',
+                disapprove_link: 'Disapprove',
+                expire_link: 'Expire Membership'})
         elif status == 'expired':
             actions.update(renew)
             actions.update({
-                approve_link: u'Approve Membership'})
+                approve_link: 'Approve Membership'})
 
         return actions
 
@@ -1702,14 +1740,17 @@ class MembershipDefault(TendenciBaseModel):
                                module_tax_rate_use_regions=get_setting('module', 'memberships', 'taxrateuseregions'))
 
             invoice.subtotal = price
-            invoice.total = price + invoice.tax + invoice.tax_2
+            if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added':
+                invoice.total = price + invoice.tax + invoice.tax_2
+            else: #tax included
+                invoice.total = price
             invoice.balance = invoice.total
 
             if self.renewal:
                 self.assign_payment_credits(invoice)
 
-        invoice.due_date = invoice.due_date or datetime.now()
-        invoice.ship_date = invoice.ship_date or datetime.now()
+        invoice.due_date = invoice.due_date or timezone.now()
+        invoice.ship_date = invoice.ship_date or timezone.now()
 
         invoice.save()
 
@@ -1915,7 +1956,7 @@ class MembershipDefault(TendenciBaseModel):
             return self.member_number
 
         memberships = self.qs_memberships().exclude(
-            member_number__exact=u'').order_by('-pk')
+            member_number__exact='').order_by('-pk')
 
         if memberships:
             self.member_number = memberships[0].member_number
@@ -1984,7 +2025,7 @@ class MembershipDefault(TendenciBaseModel):
 
     @mark_safe
     def membership_type_link(self):
-        link = '<a href="%s">%s</a>' % (
+        link = '<a href="{}">{}</a>'.format(
                 reverse('admin:memberships_membershiptype_change',
                         args=[self.membership_type.id]),
                         self.membership_type.name)
@@ -1992,13 +2033,13 @@ class MembershipDefault(TendenciBaseModel):
             from tendenci.apps.corporate_memberships.models import CorpMembership
             [corp_member] = CorpMembership.objects.filter(id=self.corporate_membership_id)[:1] or [None]
             if corp_member:
-                link = '%s (<a href="%s">corp</a> %s)' % (
+                link = '{} (<a href="{}">corp</a> {})'.format(
                     link,
                     reverse('corpmembership.view',
                             args=[self.corporate_membership_id]),
                     corp_member.status_detail)
         return link
-    membership_type_link.short_description = u'Membership Type'
+    membership_type_link.short_description = 'Membership Type'
 
     def auto_update_paid_object(self, request, payment):
         """
@@ -2103,7 +2144,7 @@ class MembershipDefault(TendenciBaseModel):
                                      object_content_type=ct,
                                      platform= kwargs.get('platform', 'authorizenet'),
                                      description='Membership Auto Renew',
-                                     billing_start_dt=datetime.now(),
+                                     billing_start_dt=timezone.now(),
                                      payment_amount=0,
                                      creator=request_user,
                                      creator_username=request_user.username,
@@ -2124,10 +2165,10 @@ class MembershipDefault(TendenciBaseModel):
 
     def next_auto_renew_date(self):
         if self.status_detail != 'archive' and self.expire_dt and self.auto_renew:
-            if self.expire_dt > datetime.now():
+            if self.expire_dt > timezone.now():
                 return self.expire_dt
             else:
-                return datetime.now() + timedelta(days=1)
+                return timezone.now() + timedelta(days=1)
         return None
 
     def can_auto_renew(self):
@@ -2211,19 +2252,19 @@ class MembershipDefault(TendenciBaseModel):
         if not site_url:
             site_url = get_setting('site', 'global', 'siteurl')
         if self.directory:
-            directory_url = '{0}{1}'.format(site_url, reverse('directory',
+            directory_url = '{}{}'.format(site_url, reverse('directory',
                                                  args=[self.directory.slug]))
-            directory_edit_url = '{0}{1}'.format(site_url, reverse('directory.edit',
+            directory_edit_url = '{}{}'.format(site_url, reverse('directory.edit',
                                 args=[self.directory.id]))
         else:
             directory_url = ''
             directory_edit_url = ''
         invoice = self.get_invoice()
         if invoice:
-            invoice_link = '%s%s' % (site_url, invoice.get_absolute_url())
+            invoice_link = '{}{}'.format(site_url, invoice.get_absolute_url())
         else:
             invoice_link = ''
-        return {'membership_link': '%s%s' % (site_url, self.get_absolute_url()),
+        return {'membership_link': '{}{}'.format(site_url, self.get_absolute_url()),
                   'directory_url': directory_url,
                   'directory_edit_url': directory_edit_url, 
                   'membership_type': self.membership_type.name,
@@ -2302,7 +2343,7 @@ class MembershipImport(models.Model):
         import csv
         if not self.recap_file and self.header_line:
             file_name = 'membership_import_%d_recap.csv' % self.id
-            file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
+            file_path = '{}/{}'.format(os.path.split(self.upload_file.name)[0],
                                    file_name)
             with default_storage.open(file_path, 'w') as f:
                 recap_writer = csv.writer(f)
@@ -2418,7 +2459,7 @@ class Notice(models.Model):
         Returns a dictionary with default context items.
         """
         global_setting = partial(get_setting, 'site', 'global')
-        corporate_msg = u''
+        corporate_msg = ''
 
         context = {}
 
@@ -2426,7 +2467,7 @@ class Notice(models.Model):
             'site_contact_name': global_setting('sitecontactname'),
             'site_contact_email': global_setting('sitecontactemail'),
             'site_display_name': global_setting('sitedisplayname'),
-            'time_submitted': time.strftime("%d-%b-%y %I:%M %p", datetime.now().timetuple()),
+            'time_submitted': time.strftime("%d-%b-%y %I:%M %p", timezone.now().timetuple()),
         })
 
         # return basic context
@@ -2466,13 +2507,14 @@ class Notice(models.Model):
             total_amount = ''
         if membership.directory:
             site_url = global_setting('siteurl')
-            directory_url = '{0}{1}'.format(site_url, reverse('directory',
+            directory_url = '{}{}'.format(site_url, reverse('directory',
                                     args=[membership.directory.slug]))
-            directory_edit_url = '{0}{1}'.format(site_url, reverse('directory.edit',
+            directory_edit_url = '{}{}'.format(site_url, reverse('directory.edit',
                                     args=[membership.directory.id]))
         else:
             directory_url = ''
             directory_edit_url = ''
+        membership_url = membership.get_absolute_url()
         context.update({
             'first_name': membership.user.first_name,
             'last_name': membership.user.last_name,
@@ -2484,14 +2526,15 @@ class Notice(models.Model):
             'donation_amount': donation_amount,
             'total_amount': total_amount,
             'payment_method': payment_method_name,
-            'referer_url': '%s%s?next=%s' % (global_setting('siteurl'), reverse('auth_login'), membership.referer_url),
-            'membership_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
-            'view_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
-            'invoice_link': '%s%s' % (global_setting('siteurl'), invoice_link),
+            'referer_url': '{}{}?next={}'.format(global_setting('siteurl'), reverse('auth_login'), membership.referer_url),
+            'membership_link': '{}{}'.format(global_setting('siteurl'), membership_url),
+            'view_link': '{}{}'.format(global_setting('siteurl'), membership_url),
+            'print_link': '{}{}?print'.format(global_setting('siteurl'), membership_url),
+            'invoice_link': '{}{}'.format(global_setting('siteurl'), invoice_link),
             'directory_url': directory_url,
             'directory_edit_url': directory_edit_url,
-            'renew_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
-            'link_to_setup_auto_renew': '%s%s' % (global_setting('siteurl'), reverse('memberships.auto_renew_setup', args=[membership.user.id] )),
+            'renew_link': '{}{}'.format(global_setting('siteurl'), membership_url),
+            'link_to_setup_auto_renew': '{}{}'.format(global_setting('siteurl'), reverse('memberships.auto_renew_setup', args=[membership.user.id] )),
             'corporate_membership_notice': corporate_msg,
         })
 
@@ -2641,7 +2684,7 @@ class Notice(models.Model):
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
-        super(Notice, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class NoticeLog(models.Model):
@@ -2712,14 +2755,14 @@ class MembershipApp(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid4())
-        super(MembershipApp, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def clone(self):
         """
         Clone this app.
         """
-        params = dict([(field.name, getattr(self, field.name))
-                       for field in self._meta.fields if not field.__class__==AutoField])
+        params = {field.name: getattr(self, field.name)
+                       for field in self._meta.fields if not field.__class__==AutoField}
         params['slug'] = '%s-%d' % (params['slug'], int(time.time()))
         params['name'] = 'Clone of %s' % params['name']
         params['slug'] = params['slug'][:200]
@@ -2747,7 +2790,7 @@ class MembershipApp(TendenciBaseModel):
 
     @mark_safe
     def application_form_link(self):
-        return '<a href="%s">%s</a>' % (
+        return '<a href="{}">{}</a>'.format(
             self.get_absolute_url(), self.slug
         )
 
@@ -2812,15 +2855,15 @@ class MembershipAppField(OrderingBaseModel):
 
     def __str__(self):
         if self.field_name:
-            return '%s (field name: %s)' % (self.label, self.field_name)
+            return '{} (field name: {})'.format(self.label, self.field_name)
         return '%s' % self.label
 
     def clone(self, membership_app):
         """
         Clone this field.
         """
-        params = dict([(field.name, getattr(self, field.name))
-                       for field in self._meta.fields if not field.__class__==AutoField])
+        params = {field.name: getattr(self, field.name)
+                       for field in self._meta.fields if not field.__class__==AutoField}
         cloned_field = self.__class__.objects.create(**params)
 
         cloned_field.membership_app = membership_app
@@ -2886,22 +2929,22 @@ class MembershipAppField(OrderingBaseModel):
         """
         available_field_types = [choice[0] for choice in
                                  MembershipAppField.FIELD_TYPE_CHOICES]
-        user_fields = dict([(field.name, field)
+        user_fields = {field.name: field
                         for field in User._meta.fields
-                        if field.get_internal_type() != 'AutoField'])
+                        if field.get_internal_type() != 'AutoField'}
         fld = None
         field_type = 'CharField'
 
         if field_name in user_fields:
             fld = user_fields[field_name]
         if not fld:
-            profile_fields = dict([(field.name, field)
-                            for field in Profile._meta.fields])
+            profile_fields = {field.name: field
+                            for field in Profile._meta.fields}
             if field_name in profile_fields:
                 fld = profile_fields[field_name]
         if not fld:
-            membership_fields = dict([(field.name, field)
-                            for field in MembershipDefault._meta.fields])
+            membership_fields = {field.name: field
+                            for field in MembershipDefault._meta.fields}
             if field_name in membership_fields:
                 fld = membership_fields[field_name]
 
@@ -2920,36 +2963,36 @@ class MembershipAppField(OrderingBaseModel):
 class MembershipDemographic(models.Model):
     user = models.OneToOneField(User, related_name="demographics", verbose_name=_('user'), on_delete=models.CASCADE)
 
-    ud1 = models.TextField(blank=True, default=u'', null=True)
-    ud2 = models.TextField(blank=True, default=u'', null=True)
-    ud3 = models.TextField(blank=True, default=u'', null=True)
-    ud4 = models.TextField(blank=True, default=u'', null=True)
-    ud5 = models.TextField(blank=True, default=u'', null=True)
-    ud6 = models.TextField(blank=True, default=u'', null=True)
-    ud7 = models.TextField(blank=True, default=u'', null=True)
-    ud8 = models.TextField(blank=True, default=u'', null=True)
-    ud9 = models.TextField(blank=True, default=u'', null=True)
-    ud10 = models.TextField(blank=True, default=u'', null=True)
-    ud11 = models.TextField(blank=True, default=u'', null=True)
-    ud12 = models.TextField(blank=True, default=u'', null=True)
-    ud13 = models.TextField(blank=True, default=u'', null=True)
-    ud14 = models.TextField(blank=True, default=u'', null=True)
-    ud15 = models.TextField(blank=True, default=u'', null=True)
-    ud16 = models.TextField(blank=True, default=u'', null=True)
-    ud17 = models.TextField(blank=True, default=u'', null=True)
-    ud18 = models.TextField(blank=True, default=u'', null=True)
-    ud19 = models.TextField(blank=True, default=u'', null=True)
-    ud20 = models.TextField(blank=True, default=u'', null=True)
-    ud21 = models.TextField(blank=True, default=u'', null=True)
-    ud22 = models.TextField(blank=True, default=u'', null=True)
-    ud23 = models.TextField(blank=True, default=u'', null=True)
-    ud24 = models.TextField(blank=True, default=u'', null=True)
-    ud25 = models.TextField(blank=True, default=u'', null=True)
-    ud26 = models.TextField(blank=True, default=u'', null=True)
-    ud27 = models.TextField(blank=True, default=u'', null=True)
-    ud28 = models.TextField(blank=True, default=u'', null=True)
-    ud29 = models.TextField(blank=True, default=u'', null=True)
-    ud30 = models.TextField(blank=True, default=u'', null=True)
+    ud1 = models.TextField(blank=True, default='', null=True)
+    ud2 = models.TextField(blank=True, default='', null=True)
+    ud3 = models.TextField(blank=True, default='', null=True)
+    ud4 = models.TextField(blank=True, default='', null=True)
+    ud5 = models.TextField(blank=True, default='', null=True)
+    ud6 = models.TextField(blank=True, default='', null=True)
+    ud7 = models.TextField(blank=True, default='', null=True)
+    ud8 = models.TextField(blank=True, default='', null=True)
+    ud9 = models.TextField(blank=True, default='', null=True)
+    ud10 = models.TextField(blank=True, default='', null=True)
+    ud11 = models.TextField(blank=True, default='', null=True)
+    ud12 = models.TextField(blank=True, default='', null=True)
+    ud13 = models.TextField(blank=True, default='', null=True)
+    ud14 = models.TextField(blank=True, default='', null=True)
+    ud15 = models.TextField(blank=True, default='', null=True)
+    ud16 = models.TextField(blank=True, default='', null=True)
+    ud17 = models.TextField(blank=True, default='', null=True)
+    ud18 = models.TextField(blank=True, default='', null=True)
+    ud19 = models.TextField(blank=True, default='', null=True)
+    ud20 = models.TextField(blank=True, default='', null=True)
+    ud21 = models.TextField(blank=True, default='', null=True)
+    ud22 = models.TextField(blank=True, default='', null=True)
+    ud23 = models.TextField(blank=True, default='', null=True)
+    ud24 = models.TextField(blank=True, default='', null=True)
+    ud25 = models.TextField(blank=True, default='', null=True)
+    ud26 = models.TextField(blank=True, default='', null=True)
+    ud27 = models.TextField(blank=True, default='', null=True)
+    ud28 = models.TextField(blank=True, default='', null=True)
+    ud29 = models.TextField(blank=True, default='', null=True)
+    ud30 = models.TextField(blank=True, default='', null=True)
 
     class Meta:
         app_label = 'memberships'

@@ -7,7 +7,7 @@ class DirectoriesConfig(AppConfig):
     verbose_name = 'Directories'
 
     def ready(self):
-        super(DirectoriesConfig, self).ready()
+        super().ready()
         from tendenci.apps.directories.affiliates import models
         from tendenci.apps.directories.signals import init_signals, create_notice_types
         init_signals()

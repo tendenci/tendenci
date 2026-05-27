@@ -106,7 +106,7 @@ def get_setting(scope, scope_category, name):
             # test is get_value will work
             value = setting.get_value().strip()
         except AttributeError:
-            return u''
+            return ''
         # convert data types
         if setting.data_type == 'boolean':
             value = value[0].lower() == 't'
@@ -129,7 +129,7 @@ def get_setting(scope, scope_category, name):
             value = tfile
         return value
 
-    return u''
+    return ''
 
 
 def get_global_setting(name):
@@ -201,7 +201,7 @@ def get_box_list(user):
     return l
 
 
-def get_group_list(user):
+def get_group_list(user, show_all=False):
     """
     Generate a list of 2-tuples of group id and group name
     This will be used as a special select
@@ -209,8 +209,9 @@ def get_group_list(user):
     from tendenci.apps.user_groups.models import Group
     groups = Group.objects.filter(status=True,
                                   status_detail='active'
-                                  ).exclude(type='system_generated'
                                   ).order_by('name')
+    if not show_all:
+        groups = groups.filter(type='distribution')
     if not groups.exists():
         # no groups - create one
         groups = [Group.objects.get_or_create_default(user)]

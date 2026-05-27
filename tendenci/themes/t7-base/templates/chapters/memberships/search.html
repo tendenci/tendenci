@@ -13,22 +13,8 @@
     {{ block.super }}
 
 <style>
-div.ex1 {
-	max-height: 100vh;
-	overflow-y: auto;
-	/*position: sticky;*/
-	top: 0;
-}
-#members-search-form .control-label {
-	text-align: left!important;
-	width: 100%;
-	font-size: 1.1em;
-}
 h3{
 	border-bottom: 1px solid #ccc; padding: 10px 0;
-}
-#members-wrap{
-	overflow-x: auto;
 }
 .clearall, #export-btn{
 	margin-left: 8px;
@@ -40,6 +26,20 @@ h3{
 	padding-top: 10px;
 }
 
+#members-search-fields{
+	display: flex;
+	flex-wrap: wrap;
+}
+#members-search-fields .form-group{
+	margin: 5px;
+    padding: 5px;
+}
+@media (max-width: 600px) {
+  #members-search-fields {
+    flex-direction: column;
+  }
+}
+
 </style>
 {% endblock %}
 
@@ -48,39 +48,35 @@ h3{
         <h1>{% trans "Chapter Members Search" %}</h1>
 
 		<div class="row">
-			<div class="col-sm-3 ex1">
-				<h3>{% trans "Filter By" %}</h3>
-				<i>{% trans "** Scroll down for more fields" %}</i>
 				<form id="members-search-form" action="." method="get">
-				<div id="profile-search-fields">
-					<div class="form-group">
-					    <div class="col-sm-offset-1">
-					        <button type="submit" class="btn btn-success">
-								<i class="glyphicon glyphicon-search" alt="Search Users"></i>
-					            {% trans "Search" %}
-					        </button>
-							<a href="" class="clearall">{% trans "Clear All" %}</a>
-							<button type="submit" name="export" id="export-btn" class="btn btn-xs btn-info">{% trans 'Export' %}</button>
-					    </div>
-					</div>
+				<div class="form-group">
+				    <div><a class="btn btn-default" role="button" data-toggle="collapse" href="#search-wrap" aria-expanded="false" aria-controls="search-wrap">{% trans "Filter By" %}</a>
+				        <button type="submit" class="btn btn-success">
+							<i class="glyphicon glyphicon-search" alt="Search Users"></i>
+				            {% trans "Search" %}
+				        </button>
+						<button type="submit" name="export" id="export-btn" class="btn btn-info">{% trans 'Export' %}</button>
+				    </div>
+				</div>
+				<hr>
+				<div class="collapse in" id="search-wrap">
+					<div id="members-search-fields">
+					{% for field in search_form %}
+						<div class="form-group">
+					    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+					    {{ field }}
+					  </div>
+					{% endfor %}
 				
-					{{ search_form|styled_form }}
-				
-					<div class="form-group">
-					    <div class="col-sm-offset-1">
-					        <button type="submit" class="btn btn-success">
-								<i class="glyphicon glyphicon-search" alt="Search Users"></i>
-					            {% trans "Search" %}
-					        </button>
-							<a href="" class="clearall">{% trans "Clear All" %}</a>
-					    </div>
 					</div>
+				    <div>
+						<a href="" class="clearall">{% trans "Clear All" %}</a>
+				    </div>
 				
 				</div>
-				</form>
+			</form>
 
-			</div>
-			<div class="col-sm-9">
+			<div class="">
 				{% if chapter %}
 				<h3>{% trans "Chapter:" %} <a href="{{ chapter.get_absolute_url }}">{{ chapter.title }}</a></h3>
 				{% elif coordinator_states %}
@@ -110,18 +106,20 @@ h3{
 					<th>{% trans "Chapter" %}</th>
 					{% endif %}
 					<th>{% trans "User" %}</th>
-					<th nowrap>{% trans "Membership Type" %}</th>
+					<th nowrap>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Membership Type" %}</th>
+					<th nowrap>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Membership Dues/Balance" %}</th>
+					
+					<th nowrap>{% trans "Create Date" %}</th>
+					<th nowrap>{% trans "Join Date" %}</th>
+					<th nowrap>{% trans "Expire Date" %}</th>
+					<th nowrap>{% trans "Renew Date" %}</th>
+					
+					<th nowrap>{% trans "Status Detail" %}</th>
+					<th nowrap>{% trans "Chapter Membership Type" %}</th>
 					<th nowrap>{% trans "Chapter Dues/Balance" %}</th>
-					<th nowrap>{% trans "National Membership Type" %}</th>
-					<th nowrap>{% trans "National Dues/Balance" %}</th>
 					{% for app_field in app_fields %}
 						<th nowrap>{{ app_field.label }}</th>
 					{% endfor %}
-					<th nowrap>{% trans "Create Date" %}</th>
-					<th nowrap>{% trans "Join Date" %}</th>
-					<th nowrap>{% trans "Renew Date" %}</th>
-					<th nowrap>{% trans "Expire Date" %}</th>
-					<th nowrap>{% trans "Status Detail" %}</th>
 					</tr>
 			
 					{% for chapter_membership in chapter_memberships %}
@@ -133,12 +131,6 @@ h3{
 						<td><a href="{% url 'chapters.detail' chapter_membership.chapter.slug %}">{{ chapter_membership.chapter.title }}</a></td>
 						{% endif %}
 						<td nowrap>{{ chapter_membership.user.get_full_name }}</td>
-						<td nowrap>{{ chapter_membership.membership_type.name }}</td>
-						<td nowrap>
-						{% if chapter_membership.invoice %}
-                        <a href="{% url "invoice.view" chapter_membership.invoice.pk %}">{{ chapter_membership.invoice.balance|format_currency }}</a>
-                    	{% endif %}
-						</td>
 						<td nowrap>{{ chapter_membership.national_membership_type }}</td>
 						<td nowrap>
 						{% with chapter_membership.national_membership_invoice as national_invoice %}
@@ -147,17 +139,24 @@ h3{
                     	{% endif %}
 						{% endwith %}
 						</td>
-						{% render_chapter_member_row chapter_membership app_fields %}
 						<td nowrap>{{ chapter_membership.create_dt|date:"N j, Y" }}</td>
 						<td nowrap>{{ chapter_membership.join_dt|date:"N j, Y" }}</td>
-						<td nowrap>{% if chapter_membership.renew_dt %}{{ chapter_membership.renew_dt|date:"N j, Y" }}{% endif %}</td>
 						<td nowrap>{% if chapter_membership.expire_dt %}{{ chapter_membership.expire_dt|date:"N j, Y" }}{% endif %}</td>
+						<td nowrap>{% if chapter_membership.renew_dt %}{{ chapter_membership.renew_dt|date:"N j, Y" }}{% endif %}</td>
+						
 						<td nowrap>{{ chapter_membership.status_detail }}</td>
+						<td nowrap>{{ chapter_membership.membership_type.name }}</td>
+						<td nowrap>
+						{% if chapter_membership.invoice %}
+                        <a href="{% url "invoice.view" chapter_membership.invoice.pk %}">{{ chapter_membership.invoice.balance|format_currency }}</a>
+                    	{% endif %}
+						</td>
+						
+						{% render_chapter_member_row chapter_membership app_fields %}
 					</tr>
 					{% endfor %}
 				</table>
 				</div>
-				<i>{% trans "** Scroll left to view more columns" %}</i>
 				{% endif %}
 
 		
@@ -207,6 +206,7 @@ h3{
 					</div>
 				 
 				</div>
+				<br />
 				{% endif %}
 			</form>	
 			</div>

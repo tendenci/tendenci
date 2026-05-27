@@ -82,7 +82,7 @@ class Video(OrderingBaseModel, TendenciBaseModel):
                 # First row
                 self.position = 0
 
-        return super(Video, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     class Meta:
         #permissions = (("view_video","Can view video"),)
@@ -207,7 +207,7 @@ class OembedlyCache(models.Model):
                             url=get_embed_ready_url(url))
                     #return 'Unable to embed code for <a href="%s">%s</a>' % (url, url)
                 except Exception as e:
-                    return 'Unable to embed code for <a href="%s">%s</a><br>Error: %s' % (url, url, e)
+                    return 'Unable to embed code for <a href="{}">{}</a><br>Error: {}'.format(url, url, e)
                 obj = OembedlyCache(url=url, width=width, height=height, code=code, thumbnail=thumbnail)
                 obj.save()
     

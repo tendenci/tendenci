@@ -25,6 +25,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 from django.utils.html import strip_tags
 from django.db.models.functions import Lower
+from django.utils import timezone
 # from django.views.generic import UpdateView
 # from django.utils.decorators import method_decorator
 from django.http import JsonResponse
@@ -190,11 +191,11 @@ def index(request, username='', template_name="profiles/index.html"):
                                                  object_content_type__model='membershipdefault').exists():
             auto_renew_is_set = True
 
-    registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=datetime.now())
+    registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=timezone.now())
     
     if request.user.is_superuser:
         # a list of upcoming events (up to 10) that this user has not registered yet (or canceled)
-        upcoming_events = Event.objects.exclude_children().filter(start_dt__gt=datetime.now())
+        upcoming_events = Event.objects.exclude_children().filter(start_dt__gt=timezone.now())
         registered_event_ids = registrations.filter(cancel_dt__isnull=True).values_list('registration__event_id', flat=True)
         if registered_event_ids:
             upcoming_events = upcoming_events.exclude(id__in=registered_event_ids)
@@ -232,7 +233,7 @@ def index(request, username='', template_name="profiles/index.html"):
     else:
         membership_apps = None
 
-    directories = set([m.directory for m in memberships.exclude(directory_id__isnull=True) if m.directory])
+    directories = {m.directory for m in memberships.exclude(directory_id__isnull=True) if m.directory}
     corps_list = user_this.corpmembershiprep_set.filter(corp_profile__status=True
                             ).values_list('corp_profile__id', 'corp_profile__name')
     if corps_list and get_setting('module', 'corporate_memberships', 'donationsepinv'):
@@ -453,12 +454,12 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         elif search_method == 'contains':
             search_type = '__icontains'
         if search_criteria in ['username', 'first_name', 'last_name', 'email']:
-            search_filter = {'user__%s%s' % (search_criteria,
+            search_filter = {'user__{}{}'.format(search_criteria,
                                              search_type): search_text}
         elif search_criteria == 'region':
             search_filter = {f'region__region_name{search_type}': search_text}
         else:
-            search_filter = {'%s%s' % (search_criteria,
+            search_filter = {'{}{}'.format(search_criteria,
                                          search_type): search_text}
 
         profiles = profiles.filter(**search_filter)
@@ -819,12 +820,12 @@ def password_change_done(request, id, template_name='registration/custom_passwor
 
 def _user_events(from_date):
     return User.objects.all()\
-                .filter(eventlog__create_dt__gte=from_date)\
+                .filter(eventlog__create_dt__gte=timezone.make_aware(from_date))\
                 .annotate(event_count=Count('eventlog__pk'))
 
 @staff_member_required
 def user_activity_report(request, template_name='reports/user_activity.html'):
-    now = datetime.now()
+    now = timezone.now()
     users30days = _user_events(now-timedelta(days=10))
     users60days = _user_events(now-timedelta(days=60))
     users90days = _user_events(now-timedelta(days=90))
@@ -986,7 +987,7 @@ def admin_users_report(request, template_name='reports/admin_users.html'):
 
 @staff_member_required
 def user_access_report(request):
-    now = datetime.now()
+    now = timezone.now()
     logins_qs = EventLog.objects.filter(application="accounts",action="login")
 
     total_users = User.objects.all().count()
@@ -1050,7 +1051,7 @@ def user_groups_edit(request, username, form_class=UserGroupsForm, template_name
         if form.is_valid():
             form.save()
             messages.add_message(request, messages.SUCCESS, _('Successfully edited groups for %(full_name)s' % { 'full_name' : user.get_full_name()}))
-            return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-groups'))
+            return HttpResponseRedirect("{}{}".format(reverse('profile', args=[user.username]),'#userview-groups'))
     else:
         form = form_class(user, request.user, request)
 
@@ -1080,7 +1081,7 @@ def user_role_edit(request, username, membership_id, form_class=GroupMembershipE
         if form.is_valid():
             form.save()
             messages.add_message(request, messages.SUCCESS, _('Successfully edited membership for %(g)s' % {'g':membership.group}))
-            return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-groups'))
+            return HttpResponseRedirect("{}{}".format(reverse('profile', args=[user.username]),'#userview-groups'))
     else:
         form = form_class(instance=membership)
 
@@ -1093,7 +1094,7 @@ def user_role_edit(request, username, membership_id, form_class=GroupMembershipE
 def user_membership_add(request, username, form_class=UserMembershipForm, template_name="profiles/add_membership.html"):
     user = get_object_or_404(User, username=username)
     redirect_url = reverse('membership_default.add')
-    redirect_url = '%s?username=%s' % (redirect_url, user.username)
+    redirect_url = '{}?username={}'.format(redirect_url, user.username)
     # this view is redundant and not handling membership add well.
     # redirect to membership add
     return redirect(redirect_url)
@@ -1114,7 +1115,7 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
             membership = update_perms_and_save(request, form, membership)
             messages.add_message(request, messages.SUCCESS, _('Successfully updated memberships for %s' % { 'full_name': user.get_full_name()}))
             membership.populate_or_clear_member_id()
-            return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-memberships'))
+            return HttpResponseRedirect("{}{}".format(reverse('profile', args=[user.username]),'#userview-memberships'))
 
     return render_to_resp(request=request, template_name=template_name, context={
                             'form': form,
@@ -1289,7 +1290,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
 
             if master and users:
                 # get description for event log before users get deleted
-                description = 'Master user: %s, merged user(s): %s.' % (
+                description = 'Master user: {}, merged user(s): {}.'.format(
                                 '%s %s (%s)(id=%d)' % (master_user.first_name,
                                                master_user.last_name,
                                                master_user.username,
@@ -1395,7 +1396,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                 # log an event
                 EventLog.objects.log(description=description[:120])
                 #invalidate('profiles_profile')
-                messages.add_message(request, messages.SUCCESS, _('Successfully merged users. %(desc)s' % { 'desc': description}))
+                messages.add_message(request, messages.SUCCESS, _('Successfully merged users. {desc}'.format( desc=description)))
 
             return redirect("profile.search")
 
@@ -1470,7 +1471,8 @@ def profile_export_download(request, identifier):
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="profiles_export_%s"' % file_name
-    response.content = default_storage.open(file_path).read()
+    with default_storage.open(file_path) as f:
+        response.content = f.read()
     return response
 
 

@@ -1,4 +1,3 @@
-from builtins import str
 from bs4 import BeautifulSoup
 
 from django.db import models
@@ -50,7 +49,7 @@ class StudyGroup(BasePage):
     def save(self, *args, **kwargs):
         photo_upload = kwargs.pop('photo', None)
 
-        super(StudyGroup, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if photo_upload and self.pk:
             image = File(content_type=ContentType.objects.get_for_model(self.__class__),
                          object_id=self.pk,
@@ -87,7 +86,7 @@ class StudyGroup(BasePage):
 
 
 class Position(models.Model):
-    title = models.CharField(_(u'title'), max_length=200)
+    title = models.CharField(_('title'), max_length=200)
     group = models.ForeignKey(Group, help_text='Group with associated permissions for this officer position.', null=True, on_delete=models.CASCADE)
 
     class Meta:
@@ -117,7 +116,7 @@ class Officer(models.Model):
                 if gm:
                     gm[0].delete()
 
-        super(Officer, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         officer = self
 
         if officer.position:

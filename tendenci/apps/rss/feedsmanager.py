@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.utils import timezone
 
 from django.contrib.syndication.views import Feed
 from django.conf import settings
@@ -7,7 +8,7 @@ from django.conf import settings
 class SubFeed(Feed):
 
     def __init__(self):
-        super(SubFeed, self).__init__()
+        super().__init__()
         self.__qualname__ = self.__class__.__name__  # https://code.djangoproject.com/ticket/29296
 
     def items(self):
@@ -26,7 +27,7 @@ class SubFeed(Feed):
         return ''
 
     def item_pubdate(self, item):
-        return datetime.now()
+        return timezone.now()
 
 _feeds_cache = []
 

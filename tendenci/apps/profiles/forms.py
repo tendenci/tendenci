@@ -84,7 +84,7 @@ class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
     def __init__(self, *args, **kwargs):
         mts = kwargs.pop('mts')
         self.user = kwargs.pop('user')
-        super(ProfileSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['first_name'].widget.attrs.update({'placeholder': _('Enter first name')})
         self.fields['last_name'].widget.attrs.update({'placeholder': _('Enter last name')})
         self.fields['email'].widget.attrs.update({'placeholder': _('Enter email')})
@@ -183,7 +183,7 @@ class ProfileForm(TendenciBaseForm):
     username = forms.RegexField(regex=r'^[\w.@+-]+$',
                                 max_length=150,
                                 widget=forms.TextInput(attrs=attrs_dict),
-                                label=_(u'Username'),
+                                label=_('Username'),
                                 help_text = _("Required. Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_)."),
                                 error_messages={
                                     'invalid': _('Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).')
@@ -294,7 +294,7 @@ class ProfileForm(TendenciBaseForm):
         else:
             self.required_fields_list = None
 
-        super(ProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.user_this:
             self.fields['first_name'].initial = self.user_this.first_name
@@ -330,15 +330,6 @@ class ProfileForm(TendenciBaseForm):
 
         if not self.user_current.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-
-        # we make first_name, last_name, email, username and password as required field regardless
-        # the rest of fields will be decided by the setting - UsersRequiredFields
-        if self.required_fields_list:
-            for field in self.required_fields_list:
-                for myfield in self.fields:
-                    if field == self.fields[myfield].label:
-                        self.fields[myfield].required = True
-                        continue
 
         if 'password1' in self.fields:
             self.password_regex = (get_setting('module', 'users', 'password_requirements_regex')).strip()
@@ -376,6 +367,16 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['region']
             else:
                 self.fields['region'].queryset = region_queryset
+                if not get_setting('module', 'invoices', 'taxrateuseregions'):
+                    self.fields['region'].required = False
+
+        # we make first_name, last_name, email, username and password as required field regardless
+        # the rest of fields will be decided by the setting - UsersRequiredFields
+        if self.required_fields_list:
+            myfield_names = self.fields.keys()
+            for field_name in self.required_fields_list:
+                if field_name in myfield_names:
+                    self.fields[field_name].required = True
 
     def clean_username(self):
         """
@@ -388,7 +389,7 @@ class ProfileForm(TendenciBaseForm):
                 return self.cleaned_data['username']
         except User.DoesNotExist:
             return self.cleaned_data['username']
-        raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+        raise forms.ValidationError(_('This username is already taken. Please choose another.'))
 
     def clean_password1(self):
         password1 = self.cleaned_data.get('password1')
@@ -430,7 +431,7 @@ class ProfileForm(TendenciBaseForm):
         if not self.user_this:
             if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
                 if self.cleaned_data['password1'] != self.cleaned_data['password2']:
-                    raise forms.ValidationError(_(u'You must type the same password each time'))
+                    raise forms.ValidationError(_('You must type the same password each time'))
         return self.cleaned_data
 
     def save(self, request, user_edit, *args, **kwargs):
@@ -461,7 +462,7 @@ class ProfileForm(TendenciBaseForm):
         self.instance.owner = request.user
         self.instance.owner_username = request.user.username
 
-        return super(ProfileForm, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class ProfileAdminForm(TendenciBaseForm):
@@ -477,7 +478,7 @@ class ProfileAdminForm(TendenciBaseForm):
     username = forms.RegexField(regex=r'^[\w.@+-]+$',
                                 max_length=150,
                                 widget=forms.TextInput(attrs=attrs_dict),
-                                label=_(u'Username'),
+                                label=_('Username'),
                                 help_text = _("Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."))
     password1 = forms.CharField(label=_("Password"), widget=forms.PasswordInput(attrs=attrs_dict))
     password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput(attrs=attrs_dict),
@@ -554,7 +555,7 @@ class ProfileAdminForm(TendenciBaseForm):
                 )
 
     def __init__(self, *args, **kwargs):
-        super(ProfileAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.instance.id:
             self.fields['first_name'].initial = self.instance.user.first_name
@@ -590,7 +591,7 @@ class ProfileAdminForm(TendenciBaseForm):
                 return self.cleaned_data['username']
         except User.DoesNotExist:
             return self.cleaned_data['username']
-        raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+        raise forms.ValidationError(_('This username is already taken. Please choose another.'))
 
     def clean(self):
         """
@@ -603,7 +604,7 @@ class ProfileAdminForm(TendenciBaseForm):
         if not self.instance.id:
             if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
                 if self.cleaned_data['password1'] != self.cleaned_data['password2']:
-                    raise forms.ValidationError(_(u'You must type the same password each time'))
+                    raise forms.ValidationError(_('You must type the same password each time'))
         return self.cleaned_data
 
     def save(self, *args, **kwargs):
@@ -656,7 +657,7 @@ class ProfileAdminForm(TendenciBaseForm):
         self.instance.user.save()
         self.instance.save()
 
-        return super(ProfileAdminForm, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class UserForm(forms.ModelForm):
@@ -675,7 +676,7 @@ class PhotoUploadForm(FormControlWidgetMixin, forms.ModelForm):
         fields= ('photo',)
 
     def __init__(self, *args, **kwargs):
-        super(PhotoUploadForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['photo'].validators = [FileValidator(allowed_extensions=('.jpeg', '.jpg', '.png',))]
 
 
@@ -686,7 +687,7 @@ class UserPermissionForm(forms.ModelForm):
         fields = ('user_permissions',)
 
     def __init__(self, *args, **kwargs):
-        super(UserPermissionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # filter out the unwanted permissions,
         # only display the permissions for the apps in APPS
         from django.contrib.contenttypes.models import ContentType
@@ -705,7 +706,7 @@ class UserGroupsForm(forms.Form):
         self.user = user
         self.editor = editor
         self.request = request
-        super(UserGroupsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['groups'].initial = self.fields['groups'].queryset.filter(members__in=[self.user])
 
@@ -778,7 +779,7 @@ class UserGroupsForm(forms.Form):
 
 class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
     def __init__(self, user, *args, **kwargs):
-        super(ValidatingPasswordChangeForm, self).__init__(user, *args, **kwargs)
+        super().__init__(user, *args, **kwargs)
 
         self.fields['old_password'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
         self.fields['new_password1'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
@@ -857,7 +858,7 @@ class UserMembershipForm(TendenciBaseForm):
             })]
 
     def __init__(self, *args, **kwargs):
-        super(UserMembershipForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class ProfileMergeForm(forms.Form):
@@ -872,7 +873,7 @@ class ProfileMergeForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         choices = kwargs.pop('list', None)
-        super(ProfileMergeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         queryset = Profile.objects.filter(user__in=choices).order_by('-user__last_login')
 
@@ -923,14 +924,14 @@ class UserUploadForm(forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(UserUploadForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['upload_file'].validators = [FileValidator(allowed_extensions=['.csv'], allowed_mimetypes=['text/csv', 'text/plain', 'application/csv'])]
         self.fields['key'].initial = 'email'
         # move the choices down here to fix the error
         #  django.db.utils.ProgrammingError: relation "user_groups_group" does not exist
         GROUP_CHOICES = [(0, _('Select One'))] + [(group.id, group.name) for group in
                      Group.objects.filter(status=True, status_detail='active'
-                                          ).exclude(type='membership')]
+                                          ).exclude(type__in=['membership', 'system_generated'])]
         self.fields['group_id'].choices = GROUP_CHOICES
 
     def clean_upload_file(self):

@@ -1,9 +1,9 @@
-from builtins import str
 import random
 from datetime import datetime, timedelta
 from operator import or_
 from functools import reduce
 import json
+from collections import OrderedDict
 
 from django.db import models
 from django.db.models import Q
@@ -11,8 +11,9 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 
-from tendenci.apps.events.models import Event, Registrant, Type
+from tendenci.apps.events.models import Event, Registrant, Type, Speaker
 from tendenci.apps.events.utils import (registration_earliest_time,
                                         registration_has_started,
                                         registration_has_ended,)
@@ -194,7 +195,7 @@ def registration_pricing_and_button(context, event, user):
             registrant = registrants.first()
 
     context.update({
-        'now': datetime.now(),
+        'now': timezone.now(),
         'event': event,
         'limit': limit,
         'spots_taken': spots_taken,
@@ -305,7 +306,17 @@ class EventListNode(Node):
         elif query and cat:
             events = events.filter(**{cat : query})
 
-        context[self.context_var] = events
+        if get_setting('module', 'events', 'nested_events'):
+            # exclude parent events
+            events_to_display = []
+            for event in events:
+                if event.has_any_child_events:
+                    continue
+                events_to_display.append(event)
+    
+            context[self.context_var] = events_to_display
+        else:
+            context[self.context_var] = events
         return ''
 
 
@@ -456,15 +467,18 @@ class ListEventsNode(ListNode):
             raise AttributeError(_('Model.objects does not have a search method'))
 
     def render(self, context):
-        tags = u''
-        query = u''
+        tags = ''
+        query = ''
         user = AnonymousUser()
         limit = 3
         order = 'next_upcoming'
         event_type = ''
-        group = u''
-        start_dt = u''
+        #group = ''
+        groups_list = []
+        start_dt = ''
         registered_only = False
+        registration_open = False
+        event_id = None
 
         randomize = False
 
@@ -501,6 +515,13 @@ class ListEventsNode(ListNode):
             if 'user' in context:
                 if isinstance(context['user'], User):
                     user = context['user']
+
+        if 'event_id' in self.kwargs:
+            try:
+                event_id = Variable(self.kwargs['event_id'])
+                event_id = event_id.resolve(context)
+            except:
+                pass
 
         if 'limit' in self.kwargs:
             try:
@@ -540,15 +561,22 @@ class ListEventsNode(ListNode):
                 group = self.kwargs['group']
 
             try:
-                group = int(group)
+                for g in group.split(','):
+                    groups_list.append(int(g))
             except:
-                group = None
+                groups_list = None
         if 'registered_only' in self.kwargs:
             try:
                 registered_only = Variable(self.kwargs['registered_only'])
                 registered_only = registered_only.resolve(context)
             except:
                 registered_only = self.kwargs['registered_only']
+        if 'registration_open' in self.kwargs:
+            try:
+                registration_open = Variable(self.kwargs['registration_open'])
+                registration_open = registration_open.resolve(context)
+            except:
+                registration_open = self.kwargs['registration_open']
 
         filters = get_query_filters(user, 'events.view_event')
         items = Event.objects.filter(filters)
@@ -578,15 +606,18 @@ class ListEventsNode(ListNode):
             tag_query = reduce(or_, tag_queries)
             items = items.filter(tag_query)
 
-        if hasattr(self.model, 'group') and group:
-            items = items.filter(groups=group)
-        if hasattr(self.model, 'groups') and group:
-            items = items.filter(groups__in=[group])
+        if hasattr(self.model, 'group') and groups_list:
+            items = items.filter(group__in=groups_list)
+        if hasattr(self.model, 'groups') and groups_list:
+            items = items.filter(groups__in=groups_list)
 
         objects = []
 
         if start_dt:
             items = items.filter(start_dt__gte=start_dt)
+
+        if event_id:
+            items = items.filter(id=event_id)
 
         # exclude private events
         items = items.filter(enable_private_slug=False)
@@ -596,29 +627,32 @@ class ListEventsNode(ListNode):
             if order == "next_upcoming":
                 if not start_dt:
                     # Removed seconds and microseconds so we can cache the query better
-                    now = datetime.now().replace(second=0, microsecond=0)
+                    now = timezone.now().replace(second=0, microsecond=0)
                     items = items.filter(start_dt__gt=now)
                 items = items.order_by("start_dt", '-priority')
             elif order == "current_and_upcoming":
                 if not start_dt:
-                    now = datetime.now().replace(second=0, microsecond=0)
+                    now = timezone.now().replace(second=0, microsecond=0)
                     items = items.filter(Q(start_dt__gt=now) | Q(end_dt__gt=now))
                 items = items.order_by("start_dt", '-priority')
             elif order == "current_and_upcoming_by_hour":
-                now = datetime.now().replace(second=0, microsecond=0)
-                today = datetime.now().replace(second=0, hour=0, minute=0, microsecond=0)
+                now = timezone.now().replace(second=0, microsecond=0)
+                today = timezone.now().replace(second=0, hour=0, minute=0, microsecond=0)
                 tomorrow = today + timedelta(days=1)
                 items = items.filter(Q(start_dt__lte=tomorrow) & Q(end_dt__gte=today)).extra(select={'hour': 'extract( hour from start_dt )'}).extra(select={'minute': 'extract( minute from start_dt )'}).extra(where=["extract( hour from start_dt ) >= %s"], params=[now.hour])
                 items = items.distinct()
                 items = items.order_by('hour', 'minute', '-priority')
             elif order == "past":
-                items = items.filter(start_dt__lt=datetime.now())
+                items = items.filter(start_dt__lt=timezone.now())
                 items = items.order_by("-start_dt", '-priority')
             else:
                 items = items.order_by(order)
 
         if user and user.is_authenticated and registered_only:
             items = [item for item in items if item.is_registrant_user(user)]
+
+        if registration_open:
+            items = [item for item in items if registration_has_started(item) and not registration_has_ended(item)]
 
         if randomize:
             items = list(items)
@@ -661,6 +695,8 @@ def list_events(parser, token):
            Use this with a value of true to randomize the items included.
         ``start_dt``
            Specify the date that events should start after to be shown. MUST be in the format 1/20/2013-06:45
+        ``event_id``
+           The event id.
 
     Example::
 
@@ -692,4 +728,40 @@ def list_events(parser, token):
 @register.simple_tag
 def render_json_ld(structured_data):
     return mark_safe(f'<script type="application/ld+json">{json.dumps(structured_data)}</script>')
-    
+
+
+@register.simple_tag(takes_context=True)
+def dict_event_speakers(context, event_id, order_by='name'):
+    """
+    Returns a list of event speakers in an ordered dict, including speakers of sub-events of the event.
+    """
+    try:
+        event_id = int(event_id)
+    except:
+        return None
+    event = Event.objects.filter(id=event_id).first()
+
+    if not event:
+        return None
+
+    speakers = Speaker.objects.filter(Q(event=event) | Q(event__parent=event))
+    speakers = speakers.order_by(order_by)
+    # Make a distinct list of speakers, but we can't filter with distinct
+    # because speakers are individually entered for each event. 
+    # Even though two sub-events have the same speaker in terms of name, there is
+    # no relationship between them and will be treated as two different speakers
+    # by the system. However, they're most likely the same speaker.
+    # For this template tag, we will treat speakers with the same name as the same speaker,
+    # also, store the list of sub-events for this speaker.
+    unique_speakers = OrderedDict()
+    for speaker in speakers:
+        name = speaker.name.strip()
+        sub_event = speaker.event.filter(parent=event, status=True).first()
+        if sub_event:
+            if name not in unique_speakers:
+                unique_speakers[name] = speaker
+                unique_speakers[name].events = [sub_event]
+            else:
+                unique_speakers[name].events.append(sub_event)
+
+    return unique_speakers

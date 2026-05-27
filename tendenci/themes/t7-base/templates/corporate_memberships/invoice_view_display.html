@@ -6,7 +6,18 @@
             {% trans 'Corporate Membership for' %}
         	{{ obj|truncatewords:10 }}
         	#<a href="{% url "corpmembership.view" obj.id %}" title="Corporate Membership">{{ obj.id }}</a>
-        	({% if obj.renewal %}{{ obj.renew_dt|date:'N d, Y' }}{% else %}{{ obj.join_dt|date:'N d, Y' }}{% endif %} - {% if obj.expiration_dt %}{{ obj.expiration_dt|date:'N d, Y' }}{% endif %})
+            ({% if obj.renewal %}
+             {% with obj.get_previous_expire_dt as previous_expire_dt %}
+                {% if previous_expire_dt > obj.renew_dt %}
+                  {{ previous_expire_dt|date:'N d, Y' }}
+                {% else %}
+                  {{ obj.renew_dt|date:'N d, Y' }}
+                {% endif %}
+             {% endwith %}
+             {% else %}
+               {{ obj.join_dt|date:'N d, Y' }}
+             {% endif %} - 
+             {% if obj.expiration_dt %}{{ obj.expiration_dt|date:'N d, Y' }}{% endif %})
         {% else %}
             {% trans "Corporate Membership information not available" %}
         {% endif%}

@@ -20,7 +20,7 @@ class EmailBlock(TendenciBaseModel):
         self.email = self.email.lower()
         self.email_domain = self.email_domain.lower()
 
-        super(EmailBlock, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         self.hard_delete()

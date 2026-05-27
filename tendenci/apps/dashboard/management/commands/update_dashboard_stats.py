@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 from decimal import Decimal
 import simplejson as json
@@ -8,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.urls import reverse
 from django.db.models import Sum, Q
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -33,7 +33,7 @@ class Command(BaseCommand):
         forms.value = json.dumps(self.get_forms(5, 30))
         forms.save()
 
-        print("Creating dashboard statistics for pages traffic", datetime.now())
+        print("Creating dashboard statistics for pages traffic", timezone.now())
         stat_type,created = DashboardStatType.objects.get_or_create(name="pages_30_traffic")
         if created:
             stat_type.description = "Top 5 Pages"
@@ -42,7 +42,7 @@ class Command(BaseCommand):
         pages_traffic.value = json.dumps(self.get_pages_traffic(5, 30))
         pages_traffic.save()
 
-        print("Creating dashboard statistics for events traffic", datetime.now())
+        print("Creating dashboard statistics for events traffic", timezone.now())
         stat_type,created = DashboardStatType.objects.get_or_create(name="events_30_traffic")
         if created:
             stat_type.description = "Top 5 Events"
@@ -51,7 +51,7 @@ class Command(BaseCommand):
         events_traffic.value = json.dumps(self.get_events_traffic(5, 30))
         events_traffic.save()
 
-        print("Creating dashboard statistics for memberships", datetime.now())
+        print("Creating dashboard statistics for memberships", timezone.now())
         stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_count")
         if created:
             stat_type.description = "Members"
@@ -147,7 +147,7 @@ class Command(BaseCommand):
         from tendenci.apps.events.models import Event
         from tendenci.apps.site_settings.utils import get_setting
 
-        now = datetime.now().replace(second=0, microsecond=0)
+        now = timezone.now().replace(second=0, microsecond=0)
         events = Event.objects.filter(start_dt__gt=now).order_by('start_dt')
         events = events.select_related()[:items]
         events_list = []
@@ -161,7 +161,7 @@ class Command(BaseCommand):
                 if limit == 0:
                     registration = "%s" % count
                 else:
-                    registration = "%s/%s" % (count, limit)
+                    registration = "{}/{}".format(count, limit)
                 registrations = event.registration_set.all()
                 total = registrations.aggregate(Sum('invoice__total'))
                 total = total['invoice__total__sum']
@@ -171,7 +171,7 @@ class Command(BaseCommand):
                 reg_paid_count = Decimal(registrations.filter(invoice__balance=0).count())
                 if reg_count != 0:
                     invoice_percentage = (reg_paid_count / reg_count)
-                    invoice_percentage = '{0:.2%}'.format(invoice_percentage)
+                    invoice_percentage = '{:.2%}'.format(invoice_percentage)
 
             events_list.append([event.start_dt.strftime('%a, %b %d, %Y'),
                                 event.title,
@@ -184,7 +184,7 @@ class Command(BaseCommand):
     def get_forms(self, items, days):
         from tendenci.apps.forms_builder.forms.models import Form
 
-        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        dt = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         forms = Form.objects.extra(select={
             'submissions': "SELECT COUNT(*) " +
                            "FROM forms_formentry " +
@@ -204,7 +204,7 @@ class Command(BaseCommand):
         from tendenci.apps.pages.models import Page
         from tendenci.apps.event_logs.models import EventLog
 
-        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        dt = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         cid = ContentType.objects.get_for_model(Page)
         total_count = EventLog.objects.filter(content_type=cid, create_dt__gte=dt).count()
 
@@ -212,11 +212,11 @@ class Command(BaseCommand):
         cursor.execute("""
             SELECT object_id, count(*) as total_views
             FROM event_logs_eventlog
-            WHERE create_dt >= '%s'
-            AND content_type_id = %s
+            WHERE create_dt >= '{}'
+            AND content_type_id = {}
             GROUP BY object_id
             ORDER BY total_views DESC
-            LIMIT %s""" % (dt, cid.pk, items))
+            LIMIT {}""".format(dt, cid.pk, items))
         rows = cursor.fetchall()
 
         pages_list = [['','',total_count]]
@@ -235,7 +235,7 @@ class Command(BaseCommand):
         from tendenci.apps.events.models import Event
         from tendenci.apps.event_logs.models import EventLog
 
-        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        dt = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         cid = ContentType.objects.get_for_model(Event)
         total_count = EventLog.objects.filter(content_type=cid, create_dt__gte=dt).count()
 
@@ -243,11 +243,11 @@ class Command(BaseCommand):
         cursor.execute("""
             SELECT object_id, count(*) as total_views
             FROM event_logs_eventlog
-            WHERE create_dt >= '%s'
-            AND content_type_id = %s
+            WHERE create_dt >= '{}'
+            AND content_type_id = {}
             GROUP BY object_id
             ORDER BY total_views DESC
-            LIMIT %s""" % (dt, cid.pk, items))
+            LIMIT {}""".format(dt, cid.pk, items))
         rows = cursor.fetchall()
 
         events_list = [['','',total_count]]
@@ -265,7 +265,7 @@ class Command(BaseCommand):
     def get_new_corp_memberships(self, items, days):
         from tendenci.apps.corporate_memberships.models import CorpMembership
 
-        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        dt = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         corp_memberships = CorpMembership.objects.filter(join_dt__gte=dt, status_detail="active")
         corp_memberships = corp_memberships.order_by("-join_dt")[:items]
         corp_mem_list = []
@@ -277,7 +277,7 @@ class Command(BaseCommand):
     def get_renew_corp_memberships(self, items, days):
         from tendenci.apps.corporate_memberships.models import CorpMembership
 
-        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        dt = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         corp_memberships = CorpMembership.objects.filter(renew_dt__gte=dt, status_detail="active")
         corp_memberships = corp_memberships.order_by("-renew_dt")[:items]
         corp_mem_list = []
@@ -289,8 +289,8 @@ class Command(BaseCommand):
     def get_expired_corp_memberships(self, items, days):
         from tendenci.apps.corporate_memberships.models import CorpMembership
 
-        now = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
-        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        now = timezone.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+        dt = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         active_qs = Q(status_detail__iexact='active')
         expired_qs = Q(status_detail__iexact='expired')
 
@@ -306,8 +306,8 @@ class Command(BaseCommand):
     def get_expiring_corp_memberships(self, items, days):
         from tendenci.apps.corporate_memberships.models import CorpMembership
 
-        now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        dt = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999) + timedelta(days=days)
+        now = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        dt = timezone.now().replace(hour=23, minute=59, second=59, microsecond=999999) + timedelta(days=days)
         corp_memberships = CorpMembership.objects.filter(expiration_dt__gte=now,
                                                          expiration_dt__lte=dt,
                                                          status_detail="active")
@@ -341,8 +341,8 @@ class Command(BaseCommand):
     def get_membership_count(self, days):
         from tendenci.apps.memberships.models import MembershipDefault
 
-        now = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
-        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        now = timezone.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+        dt = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
 
         active_qs = Q(status_detail__iexact='active')
         expired_qs = Q(status_detail__iexact='expired')
@@ -369,7 +369,7 @@ class Command(BaseCommand):
     def get_new_memberships(self, items, days):
         from tendenci.apps.memberships.models import MembershipDefault
 
-        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        dt = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         memberships = MembershipDefault.objects.filter(application_approved_dt__gte=dt,
                                                        status_detail="active")
         count = memberships.count()
@@ -383,7 +383,7 @@ class Command(BaseCommand):
     def get_renew_memberships(self, items, days):
         from tendenci.apps.memberships.models import MembershipDefault
 
-        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        dt = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         memberships = MembershipDefault.objects.filter(renew_dt__gte=dt, status_detail="active")
         count = memberships.count()
         mem_list = [count]
@@ -396,8 +396,8 @@ class Command(BaseCommand):
     def get_expired_memberships(self, items, days):
         from tendenci.apps.memberships.models import MembershipDefault
 
-        now = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
-        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        now = timezone.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+        dt = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         active_qs = Q(status_detail__iexact='active')
         expired_qs = Q(status_detail__iexact='expired')
 
@@ -414,8 +414,8 @@ class Command(BaseCommand):
     def get_expiring_memberships(self, items, days):
         from tendenci.apps.memberships.models import MembershipDefault
 
-        now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        dt = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999) + timedelta(days=days)
+        now = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        dt = timezone.now().replace(hour=23, minute=59, second=59, microsecond=999999) + timedelta(days=days)
         memberships = MembershipDefault.objects.filter(expire_dt__gte=now,
                                                        expire_dt__lte=dt,
                                                        status_detail="active")

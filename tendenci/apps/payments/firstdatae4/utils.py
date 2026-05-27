@@ -95,7 +95,7 @@ def firstdatae4_thankyou_processing(request, response_d, **kwargs):
             t_id = response_d.get('x_trans_id', '')
             amount = response_d.get('x_amount', 0)
     
-            s = '%s%s%s%s' % (response_key, api_login_id, t_id, amount)
+            s = '{}{}{}{}'.format(response_key, api_login_id, t_id, amount)
             my_md5_hash = hashlib.md5(s.encode()).hexdigest()
     
             #if settings.FIRSTDATA_USE_RELAY_RESPONSE:

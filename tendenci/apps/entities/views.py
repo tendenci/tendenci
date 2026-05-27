@@ -67,7 +67,7 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
                 entity.allow_member_view = form.cleaned_data['allow_member_view']
                 entity.save()
 
-                messages.add_message(request, messages.SUCCESS, _('Successfully added %(e)s' % { 'e': entity }))
+                messages.add_message(request, messages.SUCCESS, _('Successfully added {e}'.format( e=entity )))
 
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))
         else:

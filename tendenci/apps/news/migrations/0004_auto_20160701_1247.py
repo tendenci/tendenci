@@ -1,5 +1,3 @@
-
-
 from django.db import migrations
 
 def news_group_to_groups(apps, schema_editor):

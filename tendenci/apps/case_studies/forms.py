@@ -26,7 +26,7 @@ class CaseStudyForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(choices=(('active','Active'),('inactive','Inactive')))
 
     def __init__(self, *args, **kwargs):
-        super(CaseStudyForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['overview'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['execution'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -63,5 +63,5 @@ class FileForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(FileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['file'].validators = [FileValidator(allowed_extensions=get_allowed_upload_file_exts(file_type='image'))]

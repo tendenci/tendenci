@@ -25,7 +25,7 @@ class Metric(models.Model):
         elif value < 0:
             css = "neg"
         if value != 0:
-            return mark_safe('<span class="%s">%s</span>' % (css, value))
+            return mark_safe('<span class="{}">{}</span>'.format(css, value))
         else:
             return '-'
 

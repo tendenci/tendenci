@@ -4,11 +4,12 @@ from django.db import migrations
 
 
 def populate_region(apps, schema_editor):
-    from tendenci.apps.profiles.models import Profile
+    #from tendenci.apps.profiles.models import Profile
+    Profile = apps.get_model('profiles', 'Profile')
     for profile in Profile.objects.all():
-        if profile.membership and profile.membership.region:
+        if hasattr(profile, 'membership') and profile.membership and profile.membership.region:
             profile.region = profile.membership.region
-            profile.save()
+            profile.save(update_fields=['region'])
     
 
 class Migration(migrations.Migration):

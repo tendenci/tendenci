@@ -18,7 +18,7 @@ class RegAddonForm(forms.Form):
         self.valid_addons = kwargs.pop('valid_addons', [])
         self.form_index = kwargs.pop('form_index', None)
         self.chosen_addon = None
-        super(RegAddonForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # initialize addon options and reg_set field
         self.fields['addon'] = forms.ModelChoiceField(

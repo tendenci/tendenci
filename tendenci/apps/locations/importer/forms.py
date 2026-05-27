@@ -17,7 +17,7 @@ class ImportMapForm(forms.Form):
     def __init__(self, *args, **kwargs):
 
         locport = kwargs.pop('locport')
-        super(ImportMapForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         #file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
         file_path = str(locport.get_file().file.name)

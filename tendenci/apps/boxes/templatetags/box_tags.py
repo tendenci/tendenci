@@ -1,5 +1,3 @@
-from builtins import str
-
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser, User
 from django.utils.translation import gettext_lazy as _
@@ -36,14 +34,14 @@ class GetBoxNode(Node):
                     box = box.distinct()
             context['box'] = box[0]
             template = context.template.engine.get_template('boxes/edit-link.html')
-            output = '<div id="box-%s" class="boxes">%s %s</div>' % (
+            output = '<div id="box-{}" class="boxes">{} {}</div>'.format(
                 box[0].pk,
                 box[0].content,
                 template.render(context=context),
             )
             return output
         except:
-            return str()
+            return ''
 
 
 @register.tag
@@ -92,7 +90,7 @@ class GetBoxTitleNode(Node):
             box = box[0]
             return box.title
         except:
-            return str()
+            return ''
 @register.tag
 def box_title(parser, token):
     """

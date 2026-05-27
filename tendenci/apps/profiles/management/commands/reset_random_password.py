@@ -16,8 +16,9 @@ class Command(BaseCommand):
             help='one or more usernames')
 
     def handle(self, usernames, **options):
+        from tendenci.apps.base.utils import generate_random_password
         for username in usernames:
             [u] = User.objects.filter(username=username)[:1] or [None]
             if u:
-                u.set_password(User.objects.make_random_password())
+                u.set_password(generate_random_password())
                 u.save()

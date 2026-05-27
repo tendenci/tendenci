@@ -1,5 +1,3 @@
-
-
 from django.db import migrations, models
 import django.db.models.deletion
 from django.conf import settings
@@ -29,6 +27,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='ticketcustomfieldvalue',
-            unique_together=set([('ticket', 'field')]),
+            unique_together={('ticket', 'field')},
         ),
     ]

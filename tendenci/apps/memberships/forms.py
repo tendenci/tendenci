@@ -1,4 +1,3 @@
-from builtins import str
 import decimal
 from datetime import datetime
 import requests
@@ -48,7 +47,7 @@ from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.emails.models import Email
 from tendenci.apps.base.utils import validate_email
-from tendenci.apps.base.utils import get_timezone_choices
+from tendenci.apps.base.utils import get_timezone_choices, generate_random_password
 from tendenci.apps.regions.models import Region
 
 
@@ -149,7 +148,7 @@ class MemberSearchForm(FormControlWidgetMixin, forms.Form):
     def __init__(self, *args, **kwargs):
         app_fields = kwargs.pop('app_fields')
         user = kwargs.pop('user')
-        super(MemberSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # status_detail
         self.fields['status_detail'] = forms.ChoiceField(
@@ -177,7 +176,7 @@ def get_suggestions(entry):
         auth_ln = entry.user.last_name
         auth_un = entry.user.username
         auth_em = entry.user.email
-        user_set[entry.user.pk] = '%s %s %s %s' % (auth_fn, auth_ln, auth_un, auth_em)
+        user_set[entry.user.pk] = '{} {} {} {}'.format(auth_fn, auth_ln, auth_un, auth_em)
 
     if entry.first_name and entry.last_name:
         #mentioned_fn = entry.first_name
@@ -197,7 +196,7 @@ def get_suggestions(entry):
     sqs_users = [sq.object.user for sq in sqs]
 
     for u in sqs_users:
-        user_set[u.pk] = '%s %s %s %s' % (u.first_name, u.last_name, u.username, u.email)
+        user_set[u.pk] = '{} {} {} {}'.format(u.first_name, u.last_name, u.username, u.email)
 
     user_set[0] = 'Create new user'
 
@@ -249,7 +248,7 @@ class MembershipTypeForm(TendenciBaseForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(MembershipTypeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.type_exp_method_fields = type_exp_method_fields
 
@@ -277,7 +276,7 @@ class MembershipTypeForm(TendenciBaseForm):
                                                                     fields_pos_d=fields_pos_d)
 
     def clean(self):
-        cleaned_data = super(MembershipTypeForm, self).clean()
+        cleaned_data = super().clean()
         # Make sure Expiretion Grace Period <= Renewal Period End
         if 'expiration_grace_period' in self.cleaned_data \
             and 'renewal_period_end' in self.cleaned_data:
@@ -367,7 +366,7 @@ class MembershipTypeForm(TendenciBaseForm):
         return value
 
     def save(self, *args, **kwargs):
-        return super(MembershipTypeForm, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class EmailMembersForm(FormControlWidgetMixin, forms.ModelForm):
@@ -392,7 +391,7 @@ class EmailMembersForm(FormControlWidgetMixin, forms.ModelForm):
                   'reply_to',)
 
     def __init__(self, *args, **kwargs):
-        super(EmailMembersForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.id:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
@@ -431,7 +430,7 @@ class MessageForm(FormControlWidgetMixin, forms.ModelForm):
                   'reply_to',)
 
     def __init__(self, *args, **kwargs):
-        super(MessageForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.id:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
@@ -464,21 +463,22 @@ class MembershipDefaultUploadForm(forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(MembershipDefaultUploadForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['interactive'].initial = 1
         self.fields['interactive'].widget = forms.HiddenInput()
         self.fields['key'].initial = 'email/member_number/fn_ln_phone'
+        self.fields['upload_file'].validators = [FileValidator(allowed_extensions=('.csv',), allowed_mimetypes=('text/csv', 'text/plain'))]
 
     def clean_upload_file(self):
         key = self.cleaned_data['key']
         upload_file = self.cleaned_data['upload_file']
         if not key:
             raise forms.ValidationError(_('Please specify the key to identify duplicates'))
-
+        upload_file.seek(0)
         file_content = upload_file.read()
         encoding = chardet.detect(file_content)['encoding']
         file_content = file_content.decode(encoding)
-        upload_file.seek(0)
+        #upload_file.seek(0)
         header_line_index = file_content.find('\n')
         header_list = ((file_content[:header_line_index]
                             ).strip('\r')).split(',')
@@ -559,7 +559,7 @@ class MembershipAppForm(TendenciBaseForm):
             )
 
     def __init__(self, *args, **kwargs):
-        super(MembershipAppForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs[
                             'app_instance_id'] = self.instance.pk
@@ -582,7 +582,7 @@ class AutoRenewSetupForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         memberships = kwargs.pop('memberships')
-        super(AutoRenewSetupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['selected_m'].choices = [(m.id, m.id) for m in memberships]
 
 
@@ -605,7 +605,7 @@ class MembershipAppFieldAdminForm(forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(MembershipAppFieldAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance:
             if not self.instance.field_name:
                 self.fields['field_type'].choices = MembershipAppField.FIELD_TYPE_CHOICES2
@@ -617,7 +617,7 @@ class MembershipAppFieldAdminForm(forms.ModelForm):
                                                 ("StateProvinceField", _("States/Provinces")),)
 
     def save(self, *args, **kwargs):
-        self.instance = super(MembershipAppFieldAdminForm, self).save(*args, **kwargs)
+        self.instance = super().save(*args, **kwargs)
         if self.instance:
             if not self.instance.field_name:
                 if self.instance.field_type != 'section_break':
@@ -745,7 +745,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         self.request = kwargs.pop('request')
         self.is_corp_rep = kwargs.pop('is_corp_rep', None)
         self.edit_mode = kwargs.pop('edit_mode', False)
-        super(UserForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         del self.fields['groups']
 
@@ -766,7 +766,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         if 'password' in self_fields_keys:
             passwd = app_field_objs.filter(field_name='password')[0]
             self.fields['password'] = forms.CharField(
-                initial=u'',
+                initial='',
                 label=passwd.label,
                 widget=forms.PasswordInput,
                 required=False,
@@ -775,7 +775,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['password'].widget.attrs.update({'size': 28})
 
             self.fields['confirm_password'] = forms.CharField(
-                initial=u'',
+                initial='',
                 label=_("Confirm password"),
                 widget=forms.PasswordInput,
                 required=False,
@@ -932,7 +932,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         Get or create (user and profile) object
         """
         kwargs['commit'] = False
-        super(UserForm, self).save(**kwargs)
+        super().save(**kwargs)
 
         user_attrs = {
             'username': self.cleaned_data.get('username'),
@@ -942,7 +942,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             'last_name': self.cleaned_data.get('last_name'),
         }
         if not user_attrs['password']:
-            user_attrs['password'] = User.objects.make_random_password(length=8)
+            user_attrs['password'] = generate_random_password(length=8)
 
         # all fields are required in order to pull
         # an existing user record
@@ -992,7 +992,7 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
         fields = "__all__"
 
     def __init__(self, app_field_objs, *args, **kwargs):
-        super(ProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         del self.fields['referral_source']
 
@@ -1008,7 +1008,7 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
         request_user = kwargs.pop('request_user')
 
         kwargs['commit'] = False
-        profile = super(ProfileForm, self).save(*args, **kwargs)
+        profile = super().save(*args, **kwargs)
 
         for k, v in self.cleaned_data.items():
 
@@ -1049,7 +1049,7 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
 
     def __init__(self, app_field_objs, *args, **kwargs):
         user = kwargs.pop('user', None)
-        super(EducationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.blank_form = False
         if user:
             self.user = user
@@ -1148,7 +1148,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         self.membership = kwargs.pop('membership', None)
-        super(DemographicsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         
         self.field_names = [name for name in self.fields]
         # change the default widget to TextInput instead of TextArea
@@ -1184,7 +1184,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                 if self.demographics and field_name in self.fields:
                     ud_field = MembershipAppField.objects.get(field_name=field_name,
                         membership_app=self.app, display=True)
-                    if ud_field.field_type == u'FileField':
+                    if ud_field.field_type == 'FileField':
                         self.fields[field_name] = forms.FileField(label=ud_field.label, required=False, validators=[FileValidator()])
                         file_instance = get_ud_file_instance(self.demographics, field_name)
 
@@ -1233,7 +1233,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                     file_instance = get_ud_file_instance(self.demographics, key)
                     if file_instance:
                         file_instance.delete()
-                        data = u''
+                        data = ''
                         pks.update({ key : data })
 
                 if new_file:
@@ -1248,14 +1248,14 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
 
                     file_instance.save()
                     data = {
-                        'type' : u'file',
+                        'type' : 'file',
                         'pk' : str(file_instance.pk),
                         'html' : '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
                     }
                     data = str(data)
                     pks.update({ key : data })
 
-        demographic = super(DemographicsForm, self).save(commit=commit, *args, **kwargs)
+        demographic = super().save(commit=commit, *args, **kwargs)
         if pks:
             for key, data in pks.items():
                 setattr(demographic, key, data)
@@ -1321,7 +1321,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         else:
             self.corp_app_authentication_method = ''
 
-        super(MembershipDefault2Form, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         
         if 'industry' in self.fields:
             # the industry has been moved to profile
@@ -1347,11 +1347,17 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         if self.membership_app.include_tax:
             if (get_setting('module', 'invoices', 'taxrateuseregions') \
                 or get_setting('module', 'memberships', 'taxrateuseregions')):
-                self.fields['membership_type'].help_text = f'Tax will be applied based on your area'
+                if get_setting('module', 'invoices', 'taxmodel') == 'Tax Included':
+                    self.fields['membership_type'].help_text = f'Tax has been applied based on your area'
+                else: #tax added
+                    self.fields['membership_type'].help_text = f'Tax will be applied based on your area'
             else:
                 if self.membership_app.tax_rate:
                     tax_rate = self.membership_app.tax_rate * 100
-                    self.fields['membership_type'].help_text = f'{tax_rate:3.2f}% tax will be applied'
+                    if get_setting('module', 'invoices', 'taxmodel') == 'Tax Included':
+                        self.fields['membership_type'].help_text = f'(Includes {tax_rate:3.2f}% tax)'
+                    else: #tax added
+                        self.fields['membership_type'].help_text = f'{tax_rate:3.2f}% tax will be applied'
 
         if multiple_membership:
             self.fields['membership_type'].widget = forms.widgets.CheckboxSelectMultiple(
@@ -1463,6 +1469,8 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                 try:
                     donation_amount = donation_amount.replace('$', '').replace(',', '')
                     donation_amount = decimal.Decimal(donation_amount)
+                    if donation_amount < 0:
+                        raise forms.ValidationError(_("Negative donation amount entered! Please correct it."))
                     return (donation_option, donation_amount)
                 except decimal.InvalidOperation:
                     raise forms.ValidationError(_("Please enter a valid donation amount."))
@@ -1496,7 +1504,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                 request_user = request.user
 
         kwargs['commit'] = False
-        membership = super(MembershipDefault2Form, self).save(*args, **kwargs)
+        membership = super().save(*args, **kwargs)
 
 #         is_renewal = False
 #         if request_user:
@@ -1507,11 +1515,12 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
 
         # assign corp_profile_id
         if membership.corporate_membership_id:
-            corp_membership = CorpMembership.objects.get(
-                pk=membership.corporate_membership_id
-            )
-            membership.corp_profile_id = corp_membership.corp_profile.id
-            membership.entity = corp_membership.corp_profile.entity
+            if not membership.corp_profile_id:
+                corp_membership = CorpMembership.objects.get(
+                    pk=membership.corporate_membership_id
+                )
+                membership.corp_profile_id = corp_membership.corp_profile.id
+                membership.entity = corp_membership.corp_profile.entity
         else:
             # detach if no corporate_membership
             if membership.corp_profile_id:
@@ -1573,8 +1582,8 @@ class MembershipExportForm(forms.Form):
     export_type = forms.ChoiceField(choices=())
 
     def __init__(self, *args, **kwargs):
-        super(MembershipExportForm, self).__init__(*args, **kwargs)
-        EXPORT_TYPE_CHOICES = [(u'all', _('Export All Types'))] + \
+        super().__init__(*args, **kwargs)
+        EXPORT_TYPE_CHOICES = [('all', _('Export All Types'))] + \
                 list(MembershipType.objects.values_list('pk', 'name'))
         self.fields['export_type'].choices = EXPORT_TYPE_CHOICES
 
@@ -1602,7 +1611,7 @@ class NoticeForm(forms.ModelForm):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(NoticeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['email_content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
@@ -1644,7 +1653,7 @@ class AppCorpPreForm(FormControlWidgetMixin, forms.Form):
                     Thanks!"""))
 
     def __init__(self, *args, **kwargs):
-        super(AppCorpPreForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.auth_method = ''
         self.corporate_membership_id = 0
 
@@ -1713,32 +1722,32 @@ class MembershipDefaultForm(TendenciBaseForm):
     """
 
     salutation = forms.CharField(required=False)
-    first_name = forms.CharField(initial=u'')
-    last_name = forms.CharField(initial=u'')
+    first_name = forms.CharField(initial='')
+    last_name = forms.CharField(initial='')
     account_id = forms.IntegerField(required=False)
-    email = forms.CharField(initial=u'')
-    email2 = forms.CharField(initial=u'', required=False)
-    display_name = forms.CharField(initial=u'', required=False)
-    company = forms.CharField(initial=u'', required=False)
-    position_title = forms.CharField(initial=u'', required=False)
-    education = forms.CharField(label=_('Highest Level of Education'), initial=u'', required=False)
-    department = forms.CharField(initial=u'', required=False)
-    address = forms.CharField(initial=u'', required=False)
-    address2 = forms.CharField(initial=u'', required=False)
-    address_type = forms.CharField(initial=u'', required=False)
-    city = forms.CharField(initial=u'', required=False)
-    state = forms.CharField(initial=u'', required=False)
-    zipcode = forms.CharField(initial=u'', required=False)
+    email = forms.CharField(initial='')
+    email2 = forms.CharField(initial='', required=False)
+    display_name = forms.CharField(initial='', required=False)
+    company = forms.CharField(initial='', required=False)
+    position_title = forms.CharField(initial='', required=False)
+    education = forms.CharField(label=_('Highest Level of Education'), initial='', required=False)
+    department = forms.CharField(initial='', required=False)
+    address = forms.CharField(initial='', required=False)
+    address2 = forms.CharField(initial='', required=False)
+    address_type = forms.CharField(initial='', required=False)
+    city = forms.CharField(initial='', required=False)
+    state = forms.CharField(initial='', required=False)
+    zipcode = forms.CharField(initial='', required=False)
     country = CountrySelectField(label=_('Country'), required=False)
-    phone = forms.CharField(initial=u'', required=False)
-    phone2 = forms.CharField(initial=u'', required=False)
-    work_phone = forms.CharField(initial=u'', required=False)
-    home_phone = forms.CharField(initial=u'', required=False)
-    mobile_phone = forms.CharField(initial=u'', required=False)
-    pager = forms.CharField(initial=u'', required=False)
-    fax = forms.CharField(initial=u'', required=False)
-    url = forms.CharField(initial=u'', required=False)
-    url2 = forms.CharField(initial=u'', required=False)
+    phone = forms.CharField(initial='', required=False)
+    phone2 = forms.CharField(initial='', required=False)
+    work_phone = forms.CharField(initial='', required=False)
+    home_phone = forms.CharField(initial='', required=False)
+    mobile_phone = forms.CharField(initial='', required=False)
+    pager = forms.CharField(initial='', required=False)
+    fax = forms.CharField(initial='', required=False)
+    url = forms.CharField(initial='', required=False)
+    url2 = forms.CharField(initial='', required=False)
 
     hide_in_search = forms.BooleanField(required=False)
     hide_address = forms.BooleanField(required=False)
@@ -1746,11 +1755,11 @@ class MembershipDefaultForm(TendenciBaseForm):
     hide_phone = forms.BooleanField(required=False)
 
     # alternate address goes here
-    address_2 = forms.CharField(initial=u'', required=False, max_length=64)
-    address2_2 = forms.CharField(initial=u'', required=False, max_length=64)
-    city_2 = forms.CharField(initial=u'', required=False, max_length=35)
-    state_2 = forms.CharField(initial=u'', required=False, max_length=35)
-    zipcode_2 = forms.CharField(initial=u'', required=False, max_length=16)
+    address_2 = forms.CharField(initial='', required=False, max_length=64)
+    address2_2 = forms.CharField(initial='', required=False, max_length=64)
+    city_2 = forms.CharField(initial='', required=False, max_length=35)
+    state_2 = forms.CharField(initial='', required=False, max_length=35)
+    zipcode_2 = forms.CharField(initial='', required=False, max_length=16)
     country_2 = CountrySelectField(label=_('Country'), required=False)
 
     dob = forms.DateTimeField(required=False)
@@ -1758,46 +1767,46 @@ class MembershipDefaultForm(TendenciBaseForm):
     career_start_dt = forms.DateTimeField(required=False)
     career_end_dt = forms.DateTimeField(required=False)
 
-    sex = forms.CharField(label=_('Gender'), initial=u'', required=False)
-    spouse = forms.CharField(initial=u'', required=False)
-    profession = forms.CharField(initial=u'', required=False)
-    custom1 = forms.CharField(initial=u'', required=False)
-    custom2 = forms.CharField(initial=u'', required=False)
-    custom3 = forms.CharField(initial=u'', required=False)
-    custom4 = forms.CharField(initial=u'', required=False)
+    sex = forms.CharField(label=_('Gender'), initial='', required=False)
+    spouse = forms.CharField(initial='', required=False)
+    profession = forms.CharField(initial='', required=False)
+    custom1 = forms.CharField(initial='', required=False)
+    custom2 = forms.CharField(initial='', required=False)
+    custom3 = forms.CharField(initial='', required=False)
+    custom4 = forms.CharField(initial='', required=False)
 
-    username = forms.CharField(initial=u'', required=False)
-    password = forms.CharField(initial=u'', widget=forms.PasswordInput, required=False)
-    confirm_password = forms.CharField(initial=u'', widget=forms.PasswordInput, required=False)
+    username = forms.CharField(initial='', required=False)
+    password = forms.CharField(initial='', widget=forms.PasswordInput, required=False)
+    confirm_password = forms.CharField(initial='', widget=forms.PasswordInput, required=False)
 
     same_as_primary = forms.BooleanField(required=False)
-    extra_address = forms.CharField(initial=u'', required=False)
-    extra_address2 = forms.CharField(initial=u'', required=False)
-    extra_city = forms.CharField(initial=u'', required=False)
-    extra_state = forms.CharField(initial=u'', required=False)
-    extra_zip_code = forms.CharField(initial=u'', required=False)
-    extra_country = forms.CharField(initial=u'', required=False)
-    extra_address_type = forms.CharField(initial=u'', required=False)
+    extra_address = forms.CharField(initial='', required=False)
+    extra_address2 = forms.CharField(initial='', required=False)
+    extra_city = forms.CharField(initial='', required=False)
+    extra_state = forms.CharField(initial='', required=False)
+    extra_zip_code = forms.CharField(initial='', required=False)
+    extra_country = forms.CharField(initial='', required=False)
+    extra_address_type = forms.CharField(initial='', required=False)
 
     #education fields here
-    school1 = forms.CharField(initial=u'', required=False)
-    major1 = forms.CharField(initial=u'', required=False)
-    degree1 = forms.CharField(initial=u'', required=False)
+    school1 = forms.CharField(initial='', required=False)
+    major1 = forms.CharField(initial='', required=False)
+    degree1 = forms.CharField(initial='', required=False)
     graduation_dt1 = forms.ChoiceField(label=_('Graduation Year1'),
                                        required=False, choices=YEAR_CHOICES)
-    school2 = forms.CharField(initial=u'', required=False)
-    major2 = forms.CharField(initial=u'', required=False)
-    degree2 = forms.CharField(initial=u'', required=False)
+    school2 = forms.CharField(initial='', required=False)
+    major2 = forms.CharField(initial='', required=False)
+    degree2 = forms.CharField(initial='', required=False)
     graduation_dt2 = forms.ChoiceField(label=_('Graduation Year2'),
                                        required=False, choices=YEAR_CHOICES)
-    school3 = forms.CharField(initial=u'', required=False)
-    major3 = forms.CharField(initial=u'', required=False)
-    degree3 = forms.CharField(initial=u'', required=False)
+    school3 = forms.CharField(initial='', required=False)
+    major3 = forms.CharField(initial='', required=False)
+    degree3 = forms.CharField(initial='', required=False)
     graduation_dt3 = forms.ChoiceField(label=_('Graduation Year3'),
                                        required=False, choices=YEAR_CHOICES)
-    school4 = forms.CharField(initial=u'', required=False)
-    major4 = forms.CharField(initial=u'', required=False)
-    degree4 = forms.CharField(initial=u'', required=False)
+    school4 = forms.CharField(initial='', required=False)
+    major4 = forms.CharField(initial='', required=False)
+    degree4 = forms.CharField(initial='', required=False)
     graduation_dt4 = forms.ChoiceField(label=_('Graduation Year4'),
                                        required=False, choices=YEAR_CHOICES)
 
@@ -1903,7 +1912,7 @@ class MembershipDefaultForm(TendenciBaseForm):
         instance = kwargs.get('instance', None)
         if instance and instance.user.profile:
             instance.industry = instance.user.profile.industry
-        super(MembershipDefaultForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # initialize field widgets ---------------------------
         self.fields['payment_method'].empty_label = None
@@ -1921,7 +1930,8 @@ class MembershipDefaultForm(TendenciBaseForm):
         self.fields['corporate_membership_id'].widget = forms.widgets.Select(
                                         choices=get_corporate_membership_choices(active_only=False))
         self.fields['corporate_membership_id'].queryset = CorpMembership.objects.filter(
-                                        status=True).exclude(
+                                        status=True,
+                                        corp_profile__status=True).exclude(
                                         status_detail__in=['archive', 'inactive'])
 
         mts = MembershipType.objects.filter(status=True, status_detail='active')
@@ -1940,12 +1950,12 @@ class MembershipDefaultForm(TendenciBaseForm):
             admin_fee = admin_fee or float()
 
             if renew_mode:
-                mt_choices.append((pk, '%s $%s' % (name, renewal_price)))
+                mt_choices.append((pk, '{} ${}'.format(name, renewal_price)))
             else:
                 if admin_fee:
-                    mt_choices.append((pk, '%s $%s ($%s admin fee)' % (name, price, admin_fee)))
+                    mt_choices.append((pk, '{} ${} (${} admin fee)'.format(name, price, admin_fee)))
                 else:
-                    mt_choices.append((pk, '%s $%s' % (name, price)))
+                    mt_choices.append((pk, '{} ${}'.format(name, price)))
 
         self.fields['membership_type'].choices = mt_choices
 
@@ -2059,7 +2069,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             if demographics:
                 ud_field = MembershipAppField.objects.get(field_name=field_name,
                     membership_app=app, display=True)
-                if ud_field.field_type == u'FileField':
+                if ud_field.field_type == 'FileField':
                     self.fields[field_name] = forms.FileField(label=ud_field.label, required=False)
                     file_instance = get_ud_file_instance(demographics, field_name)
 
@@ -2080,13 +2090,13 @@ class MembershipDefaultForm(TendenciBaseForm):
         """
         Validating username and password fields.
         """
-        super(MembershipDefaultForm, self).clean()
+        super().clean()
 
         data = self.cleaned_data
 
-        un = data.get('username', u'').strip()
-        pw = data.get('password', u'').strip()
-        pw_confirm = data.get('confirm_password', u'').strip()
+        un = data.get('username', '').strip()
+        pw = data.get('password', '').strip()
+        pw_confirm = data.get('confirm_password', '').strip()
 
         if un and pw:
             # assert passwords match
@@ -2136,7 +2146,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             if isinstance(request.user, User):
                 request_user = request.user
 
-        membership = super(MembershipDefaultForm, self).save(*args, **kwargs)
+        membership = super().save(*args, **kwargs)
 
         if request_user:
             # this form is just on membership edit
@@ -2269,7 +2279,7 @@ class MembershipDefaultForm(TendenciBaseForm):
         ]
 
         for i in user_attrs:
-            setattr(membership.user, i, self.cleaned_data.get(i, u''))
+            setattr(membership.user, i, self.cleaned_data.get(i, ''))
         membership.user.save()
         # -----------------------------------------------------------
 
@@ -2319,7 +2329,7 @@ class MembershipDefaultForm(TendenciBaseForm):
         ]
 
         for i in profile_attrs:
-            setattr(membership.user.profile, i, self.cleaned_data.get(i, u''))
+            setattr(membership.user.profile, i, self.cleaned_data.get(i, ''))
         membership.user.profile.save()
         # -----------------------------------------------------------------
 
@@ -2332,7 +2342,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             for field_name in self.demographic_field_names:
                 ud_field = MembershipAppField.objects.get(field_name=field_name,
                      membership_app=self._app, display=True)
-                if ud_field.field_type == u'FileField':
+                if ud_field.field_type == 'FileField':
                     # get the file instance
                     new_file = self.cleaned_data.get(field_name, None)
                     # check if cleared:
@@ -2354,7 +2364,7 @@ class MembershipDefaultForm(TendenciBaseForm):
 
                         file_instance.save()
                         data = {
-                            'type' : u'file',
+                            'type' : 'file',
                             'pk' : str(file_instance.pk),
                             'html' : '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
                         }

@@ -2,17 +2,23 @@
 #           donationsrecipients,
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
+
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.site_settings.utils import get_setting
 
 def donation_inv_add(user, donation, **kwargs):
     inv = Invoice()
     inv.title = "Donation Invoice"
-    inv.bill_to = donation.first_name + ' ' + donation.last_name
+    if donation.company:
+        inv.bill_to = donation.company
+    else:
+        inv.bill_to = donation.first_name + ' ' + donation.last_name
     inv.bill_to_first_name = donation.first_name
     inv.bill_to_last_name = donation.last_name
     inv.bill_to_company = donation.company
     inv.bill_to_address = donation.address
+    inv.bill_to_address2 = donation.address2
     inv.bill_to_city = donation.city
     inv.bill_to_state = donation.state
     inv.bill_to_zip_code = donation.zip_code
@@ -32,8 +38,8 @@ def donation_inv_add(user, donation, **kwargs):
     #self.ship_to_fax = make_payment.fax
     inv.ship_to_email =donation.email
     inv.terms = "Due on Receipt"
-    inv.due_date = datetime.now()
-    inv.ship_date = datetime.now()
+    inv.due_date = timezone.now()
+    inv.ship_date = timezone.now()
     inv.message = 'Thank You.'
     inv.status = True
     
@@ -45,9 +51,18 @@ def donation_inv_add(user, donation, **kwargs):
     inv.object_type = ContentType.objects.get(app_label=donation._meta.app_label,
                                               model=donation._meta.model_name)
     inv.object_id = donation.id
+
     inv.subtotal = donation.donation_amount
-    inv.total = donation.donation_amount
-    inv.balance = donation.donation_amount
+    inv.total = inv.subtotal
+    
+    # tax
+    if get_setting('module', 'donations', 'apply_tax'):
+        region = donation.get_region
+        if region:
+            inv.assign_tax([(donation.donation_amount, region.tax_rate)], user, region=region)
+            inv.total += inv.tax + inv.tax_2
+
+    inv.balance = inv.total
 
     inv.save(user)
     donation.invoice = inv
@@ -59,11 +74,14 @@ def donation_email_user(request, donation, invoice, **kwargs):
     from django.template.loader import render_to_string
     from django.conf import settings
 
+    donation_label = get_setting('module', 'donations', 'label').lower()
     subject = render_to_string(template_name='donations/email_user_subject.txt',
-                               context={'donation':donation},
+                               context={'donation':donation,
+                                        'donation_label': donation_label},
                                request=request)
     body = render_to_string(template_name='donations/email_user.txt', context={'donation':donation,
-                                                        'invoice':invoice},
+                                                        'invoice':invoice,
+                                                        'donation_label': donation_label},
                                                         request=request)
     sender = settings.DEFAULT_FROM_EMAIL
     recipient = donation.email
@@ -84,8 +102,14 @@ def get_payment_method_choices(user):
         if donation_payment_types:
             donation_payment_types_list = donation_payment_types.split(',')
             donation_payment_types_list = [item.strip() for item in donation_payment_types_list]
+            choices = []
+            for item in donation_payment_types_list:
+                if '|' in item:
+                    choices.append(item.split('|'))
+                else:
+                    choices.append((item, item))
 
-            return [(item, item) for item in donation_payment_types_list]
+            return choices
         else:
             return ()
 

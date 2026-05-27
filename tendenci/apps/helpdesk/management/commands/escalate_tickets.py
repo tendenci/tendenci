@@ -130,7 +130,7 @@ def escalate_tickets(queues, verbose):
                     )
 
             if verbose:
-                print("  - Esclating %s from %s>%s" % (
+                print("  - Esclating {} from {}>{}".format(
                     t.ticket,
                     t.priority+1,
                     t.priority

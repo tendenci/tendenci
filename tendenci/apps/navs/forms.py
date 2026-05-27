@@ -43,7 +43,7 @@ class NavForm(TendenciBaseForm):
                     })
                     ]
     def __init__(self, *args, **kwargs):
-        super(NavForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['title'].validators.append(UnicodeNameValidator())
 
 
@@ -52,7 +52,7 @@ class PageSelectForm(forms.Form):
                 queryset = Page.objects.exclude(status_detail='archive').order_by('title'), widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, *args, **kwargs):
-        super(PageSelectForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 class ItemForm(forms.ModelForm):
 
@@ -70,7 +70,7 @@ class ItemForm(forms.ModelForm):
             )
 
     def __init__(self, *args, **kwargs):
-        super(ItemForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         #we dont need the select widget for this since it will be hidden
         self.fields['page'].required = False
         self.fields['page'].widget = forms.TextInput()
@@ -114,7 +114,7 @@ class ItemAdminForm(forms.ModelForm):
             )
 
     def __init__(self, *args, **kwargs):
-        super(ItemAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['page'].required = False
         self.fields['level'].widget = forms.HiddenInput()
 
@@ -136,4 +136,4 @@ class ItemAdminForm(forms.ModelForm):
         self.instance.url = self.cleaned_data.get('url_field')
         self.instance.page = self.cleaned_data.get('page', None)
 
-        return super(ItemAdminForm, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)

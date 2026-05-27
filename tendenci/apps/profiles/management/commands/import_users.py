@@ -1,4 +1,3 @@
-
 from datetime import datetime
 import traceback
 from django.core.management.base import BaseCommand

@@ -1410,7 +1410,7 @@ class EXIF_header:
                                                           values, field_offset,
                                                           count * typelen)
                 if self.debug:
-                    print(' debug:   %s: %s' % (tag_name,
+                    print(' debug:   {}: {}'.format(tag_name,
                                                 repr(self.tags[ifd_name + ' ' + tag_name])))
 
             if tag_name == stop_tag:

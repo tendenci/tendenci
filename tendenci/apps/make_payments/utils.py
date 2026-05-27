@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.invoices.models import Invoice
@@ -13,8 +14,8 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     inv.bill_to_first_name = make_payment.first_name
     inv.bill_to_last_name = make_payment.last_name
     inv.bill_to_company = make_payment.company
-    inv.bill_to_address = '%s %s' % (make_payment.address,
-                                     make_payment.address2)
+    inv.bill_to_address = make_payment.address
+    inv.bill_to_address2 = make_payment.address2
     inv.bill_to_city = make_payment.city
     inv.bill_to_state =  make_payment.state
     inv.bill_to_zip_code = make_payment.zip_code
@@ -25,7 +26,7 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     inv.ship_to_first_name = make_payment.first_name
     inv.ship_to_last_name = make_payment.last_name
     inv.ship_to_company = make_payment.company
-    inv.ship_to_address = '%s %s' % (make_payment.address,
+    inv.ship_to_address = '{} {}'.format(make_payment.address,
                                      make_payment.address2)
     inv.ship_to_city = make_payment.city or ''
     inv.ship_to_state = make_payment.state or ''
@@ -34,8 +35,8 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     inv.ship_to_phone =  make_payment.phone or ''
     inv.ship_to_email = make_payment.email or ''
     inv.terms = "Due on Receipt"
-    inv.due_date = datetime.now()
-    inv.ship_date = datetime.now()
+    inv.due_date = timezone.now()
+    inv.ship_date = timezone.now()
     inv.message = 'Thank You.'
     inv.status = True
 

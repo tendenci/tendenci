@@ -1,4 +1,3 @@
-
 from django.contrib.auth.models import User
 from tastypie import fields
 from tendenci.apps.api_tasty.resources import TendenciResource

@@ -121,11 +121,11 @@ class NewsletterTemplate(models.Model):
 
     def get_media_url(self):
         if self.zip_file:
-            return "%snewsletters/%s" % (settings.MEDIA_URL, self.template_id)
+            return "{}newsletters/{}".format(settings.MEDIA_URL, self.template_id)
         return ''
 
     def save(self, *args, **kwargs):
-        super(NewsletterTemplate, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if self.html_file:
             set_s3_file_permission(self.html_file.file, public=True)
         if self.zip_file:
@@ -266,7 +266,7 @@ class Newsletter(models.Model):
 
         return ''
 
-    def clone(self):
+    def clone(self, request_user=None):
         """
         Clone this newsletter and return the cloned newsletter.
         """
@@ -291,7 +291,7 @@ class Newsletter(models.Model):
         for name in field_names:
             if hasattr(self, name):
                 setattr(newsletter_new, name, getattr(self, name))
-        newsletter_new.date_created = datetime.datetime.now()
+        newsletter_new.date_created = timezone.now()
         newsletter_new.subject = '(Cloned) {}'.format(self.subject)
         newsletter_new.actionname = newsletter_new.subject
 
@@ -308,6 +308,11 @@ class Newsletter(models.Model):
             for name in email_field_names:
                 if hasattr(self.email, name):
                     setattr(email_new, name, getattr(self.email, name))
+            if request_user:
+                email_new.creator = request_user
+                email_new.creator_username = request_user.username
+                email_new.owner = request_user
+                email_new.owner_username = request_user.username
             email_new.save()
 
             newsletter_new.email = email_new
@@ -360,6 +365,7 @@ class Newsletter(models.Model):
         content = content.replace('[site_mailing_address]', get_setting('site', 'global', 'sitemailingaddress'))
         content = content.replace('[site_contact_email]', get_setting('site', 'global', 'sitecontactemail'))
         content = content.replace('[site_phone_number]', get_setting('site', 'global', 'sitephonenumber'))
+        content = content.replace('[browser_view_url]', self.get_browser_view_url())
 
         return content
 
@@ -467,14 +473,14 @@ class Newsletter(models.Model):
             slug = slugify(self.email.subject)
             if len(slug) > 100 or Article.objects.filter(slug=slug).exists():
                 count = str(Article.objects.count())
-                slug = '{0}-{1}'.format(slug[:99-len(count)], count)
+                slug = '{}-{}'.format(slug[:99-len(count)], count)
             
             article = Article.objects.create(
                 creator=user,
                 creator_username=user.username,
                 owner=user,
                 owner_username=user.username,
-                release_dt=datetime.datetime.now(),
+                release_dt=timezone.now(),
                 headline=self.email.subject[:200],
                 slug=slug,
                 body=email_body.replace('[browser_view_url]', reverse('newsletter.view_from_browser', args=[self.id])))
@@ -523,11 +529,11 @@ class Newsletter(models.Model):
             self.actionname = self.subject
         if "log" in kwargs:
             kwargs.pop('log')
-        super(Newsletter, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_browser_view_url(self):
         site_url = get_setting('site', 'global', 'siteurl')
-        return "%s%s?key=%s" % (site_url, reverse('newsletter.view_from_browser', args=[self.pk]), self.security_key)
+        return "{}{}?key={}".format(site_url, reverse('newsletter.view_from_browser', args=[self.pk]), self.security_key)
 
 
 class NewsletterRecurringData(models.Model):

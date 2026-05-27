@@ -61,6 +61,50 @@
     .form-horizontal .form-group{
         margin-bottom: 8px !important;
     }
+    
+    .form-group:hover{
+    	/*padding: 0 3px;*/
+    	/*color: #663366;*/
+    	/*background-color: #f2f2f2;*/
+     }
+    
+    form#t-corp-form{
+    	margin: auto;
+      }
+    @media all and (min-width: 1200px) 
+    { 
+      form#t-corp-form{
+		padding: 0 140px;
+		/*max-width: 896px;*/
+       }
+    }
+    @media all and (min-width: 800px) 
+    { 
+      form#t-corp-form{
+		padding: 0 100px;
+		/*max-width: 896px;*/
+       }
+      .form-group .form-control{
+    	width: auto !important;
+       }
+    }
+    @media all and (max-width: 799px) 
+    { 
+      form#t-corp-form{
+		padding: 0 30px;
+		/*max-width: 896px;*/
+      }
+      .form-group .form-control{
+    	width: 100%;
+       }
+    }
+    .form-group label{
+    	font-weight: normal;
+    }
+    .form-group label.required{
+    	font-weight: bolder;
+    }
+    
 </style>
 {% endblock %}
 
@@ -70,7 +114,7 @@
         <h1>{{ app.name }}</h1>
         {{ app.description|safe }}
 
-   <form id="t-corp-form" class="form-horizontal clearfix" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+   <form id="t-corp-form" class="clearfix" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
 
     {% if corpmembership_form.errors.values or corpprofile_form.errors.values %}
         <div class="form-errors">
@@ -113,7 +157,7 @@
         {% endfor %}
 
         <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-9">
+            <div class="col-sm-offset-1 col-sm-11">
                 <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
             </div>
         </div>

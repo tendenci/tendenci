@@ -9,7 +9,13 @@
      {% endif %}
 
      {% if newsletter.date_created %}
-     <li><strong>{% trans "Created:" %}</strong> {{ newsletter.date_created }}</li>
+     <li><strong>{% trans "Created:" %}</strong> {{ newsletter.date_created }}
+     {% if user.profile.is_superuser %}
+     {% if newsletter.email.creator %}
+     <strong>{% trans "By:" %}</strong> <a href="{% url 'profile' newsletter.email.creator.username %}">{{ newsletter.email.creator  }}</a>
+     {% endif %}
+     {% endif %}
+     </li>
      {% endif %}
      {% if newsletter.date_submitted %}
      <li><strong>{% trans "Submitted:" %}</strong> {{ newsletter.date_submitted }}</li>

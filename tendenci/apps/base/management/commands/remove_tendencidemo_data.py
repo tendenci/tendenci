@@ -1,5 +1,3 @@
-
-
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import FieldError
@@ -63,10 +61,10 @@ def add_arguments(self, parser):
             if m.__module__ == module:
                 try:
                     instances = m.objects.filter(tags__contains='tendencidemo')
-                    print("module -- %s %s" % (m.__module__, m.__name__))
+                    print("module -- {} {}".format(m.__module__, m.__name__))
                     for instance in instances:
                         if instance.owner == instance.creator:
-                            print("%s -- %s" % (m.__name__, instance))
+                            print("{} -- {}".format(m.__name__, instance))
                             links = [f.get_accessor_name() for f in instance._meta.get_fields()
                                      if (f.one_to_many or f.one_to_one) and f.auto_created and not f.concrete]
                             print("looking at related objects...")
@@ -79,14 +77,14 @@ def add_arguments(self, parser):
                                 except Exception:
                                     pass
 
-                            print("deleting %s -- %s" % (m.__name__, instance))
+                            print("deleting {} -- {}".format(m.__name__, instance))
                             instance.delete()
                     print("")
                     print("")
                 except FieldError:
                     pass # model has no tag field
                 except Exception:
-                    print("Error in deleting %s -- %s" % (m.__module__, m.__name__))
+                    print("Error in deleting {} -- {}".format(m.__module__, m.__name__))
                     import sys
                     import traceback
                     traceback.print_exc(file=sys.stdout)

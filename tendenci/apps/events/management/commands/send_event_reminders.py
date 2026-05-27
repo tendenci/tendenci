@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
@@ -15,6 +14,7 @@ class Command(BaseCommand):
     
 
     def handle(self, *args, **options):
+        from django.utils import timezone
         from tendenci.apps.events.models import Event, Registrant, Organizer
         from tendenci.apps.emails.models import Email
         from tendenci.apps.site_settings.utils import get_setting
@@ -48,7 +48,7 @@ class Command(BaseCommand):
                     email.recipient = get_setting('site', 'global',
                                                   'sitecontactemail')
     
-            email.subject = '%s Event Reminders Distributed for: %s' % (
+            email.subject = '{} Event Reminders Distributed for: {}'.format(
                                     get_setting('site', 'global',
                                                 'sitedisplayname'),
                                     event.title
@@ -64,7 +64,7 @@ class Command(BaseCommand):
             for registrant in registrants:
                 if registrant.email:
                     if verbosity == 2:
-                        print('Sending reminder email to %s %s' % (
+                        print('Sending reminder email to {} {}'.format(
                                     registrant.first_name,
                                     registrant.last_name))
                     email.recipient = registrant.email
@@ -91,7 +91,7 @@ class Command(BaseCommand):
 
         verbosity = options['verbosity']
         site_url = get_setting('site', 'global', 'siteurl')
-        now = datetime.now()
+        now = timezone.now()
         today_tuple = (datetime(now.year, now.month, now.day, 0, 0, 0),
                        datetime(now.year, now.month, now.day, 23, 59, 59))
 

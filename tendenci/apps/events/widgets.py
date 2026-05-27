@@ -30,7 +30,7 @@ class UseCustomRegWidget(forms.MultiWidget):
             BootstrapRadioSelect(),
         )
 
-        super(UseCustomRegWidget, self).__init__(self.widgets, attrs)
+        super().__init__(self.widgets, attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
@@ -80,13 +80,13 @@ class UseCustomRegWidget(forms.MultiWidget):
         output_html = """
             <div id="t-events-use-customreg-box">
                 <div id="t-events-use-customreg-checkbox" class="checkbox">
-                    <label for="id_%s_%s">%s Use Custom Registration Form</label>
+                    <label for="id_{}_{}">{} Use Custom Registration Form</label>
                 </div>
 
-                <div id="t-events-one-or-separate-form">%s</div>
-                %s
+                <div id="t-events-one-or-separate-form">{}</div>
+                {}
             </div>
-        """ % (
+        """.format(
            name, '0',
            rendered_use_custom_reg_form,
            rendered_bind_reg_form_to_conf_only,
@@ -107,7 +107,7 @@ class UseCustomRegWidget(forms.MultiWidget):
             widget_value = None
 
         if id_:
-            final_attrs = dict(attrs, id='%s_%s' % (id_, i))
+            final_attrs = dict(attrs, id='{}_{}'.format(id_, i))
 
         if widget.__class__.__name__.lower() != 'select':
             classes = final_attrs.get('class', None)

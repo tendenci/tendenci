@@ -11,8 +11,8 @@ class JobRegistry(CoreRegistry):
     version = '1.0'
     author = _('Tendenci - The Open Source AMS for Associations')
     author_email = 'programmers@tendenci.com'
-    description = _('Create and Manage a %(label)s Bank to offer free and paid postings' % {
-        'label': get_setting('module', 'jobs', 'label')})
+    description = _('Create and Manage a {label} Bank to offer free and paid postings'.format(
+        label=get_setting('module', 'jobs', 'label')))
     icon = static('images/icons/jobs-color-64x64.png')
 
     # jobs - GREEN base - complement is DEEP RED

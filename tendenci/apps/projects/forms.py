@@ -1,4 +1,3 @@
-import imghdr
 from os.path import splitext, basename
 from django import forms
 from django.utils.translation import gettext_lazy as _
@@ -27,7 +26,7 @@ class ProjectSearchForm(FormControlWidgetMixin, forms.Form):
                                       required=False)
 
     def __init__(self, *args, **kwargs):
-        super(ProjectSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['category'].queryset = Category.objects.all()
 
 
@@ -113,27 +112,27 @@ class ProjectForm(TendenciBaseForm):
         widget=TinyMCE(
             attrs={'style':'width:100%'},
             mce_attrs={
-                'storme_app_label':u'projects',
+                'storme_app_label':'projects',
                 'storme_model':Project._meta.model_name.lower()
             }))
     video_description = forms.CharField(required=False,
         widget=TinyMCE(
             attrs={'style':'width:100%'},
             mce_attrs={
-                'storme_app_label':u'projects',
+                'storme_app_label':'projects',
                 'storme_model':Project._meta.model_name.lower()
             }))
     resolution = forms.CharField(required=False,
         widget=TinyMCE(
             attrs={'style':'width:100%'},
             mce_attrs={
-                'storme_app_label':u'projects',
+                'storme_app_label':'projects',
                 'storme_model':Project._meta.model_name.lower()
             }))
 
     def __init__(self, *args, **kwargs):
         self.request_user = kwargs.pop('request_user', None)
-        super(ProjectForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['project_name'].label = get_setting('module', 'projects', 'projectnamelabel') or _('Project Name')
         self.fields['company_name'].label = get_setting('module', 'projects', 'companynamelabel') or _('Company Name')
@@ -160,7 +159,7 @@ class ProjectForm(TendenciBaseForm):
 class ProjectFrontForm(ProjectForm):
 
     def __init__(self, *args, **kwargs):
-        super(ProjectFrontForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         exclude_fields = get_setting('module', 'projects', 'excludefields').split(',')
         for field_name in exclude_fields:
             field_name = field_name.strip()
@@ -174,7 +173,7 @@ class PhotoForm(forms.ModelForm):
         fields = ['title', 'photo_description', 'file']
 
     def __init__(self, *args, **kwargs):
-        super(PhotoForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['file'].label = _("Photo")
         self.fields['file'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
         self.fields['file'].widget.attrs.update({'accept': "image/*"})
@@ -183,7 +182,7 @@ class PhotoForm(forms.ModelForm):
 class PhotoFrontForm(FormControlWidgetMixin, PhotoForm):
 
     def __init__(self, *args, **kwargs):
-        super(PhotoFrontForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['title'].required = False
         del self.fields['photo_description']
         #self.fields['file'].required = False
@@ -202,7 +201,7 @@ class DocumentsForm(FormControlWidgetMixin, forms.ModelForm):
         fields = ['doc_type', 'document_dt', 'other', 'file']
 
     def __init__(self, *args, **kwargs):
-        super(DocumentsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['file'].label = _("File")
         self.fields['file'].validators = [FileValidator()]
         
@@ -210,7 +209,7 @@ class DocumentsForm(FormControlWidgetMixin, forms.ModelForm):
 class DocumentsFrontForm(DocumentsForm):
 
     def __init__(self, *args, **kwargs):
-        super(DocumentsFrontForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['document_dt'].widget.attrs.update({'class': "form-control documents-date"})
         del self.fields['doc_type']
         del self.fields['other']
@@ -229,7 +228,7 @@ class TeamMembersForm(FormControlWidgetMixin, forms.ModelForm):
         fields = ['first_name', 'last_name', 'title', 'email', 'phone', 'role', 'team_description', 'file']
 
     def __init__(self, *args, **kwargs):
-        super(TeamMembersForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['file'].label = _("Picture")
         self.fields['file'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
         self.fields['file'].widget.attrs.update({'accept': "image/*"})
@@ -238,7 +237,7 @@ class TeamMembersForm(FormControlWidgetMixin, forms.ModelForm):
 class TeamMembersFrontForm(TeamMembersForm):
 
     def __init__(self, *args, **kwargs):
-        super(TeamMembersFrontForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         del self.fields['role']
         del self.fields['team_description']
 
@@ -251,7 +250,7 @@ TeamMembersFormSet = inlineformset_factory(
 
 
 class CategoryAdminForm(forms.ModelForm):
-    photo_upload = forms.FileField(label=_('Photo'), required=False)
+    photo_upload = forms.ImageField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
 
     class Meta:
@@ -269,30 +268,17 @@ class CategoryAdminForm(forms.ModelForm):
                                  ],
                       })]
 
-    def clean_photo_upload(self):
-        photo_upload = self.cleaned_data['photo_upload']
-        if photo_upload:
-            extension = splitext(photo_upload.name)[1]
-
-            # check the extension
-            if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
-
-            # check the image header
-            image_type = '.%s' % imghdr.what('', photo_upload.read())
-            if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
-        return photo_upload
-
     def __init__(self, *args, **kwargs):
-        super(CategoryAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.image:
-            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.image.pk, basename(self.instance.image.file.name))
         else:
             self.fields.pop('remove_photo')
+        if 'photo_upload' in self.fields:
+            self.fields['photo_upload'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
 
     def save(self, *args, **kwargs):
-        category = super(CategoryAdminForm, self).save(*args, **kwargs)
+        category = super().save(*args, **kwargs)
         if self.cleaned_data.get('remove_photo'):
             category.image = None
         return category

@@ -108,7 +108,7 @@ class AkismetError(Exception):
 class APIKeyError(AkismetError):
     """Invalid API key."""
 
-class Akismet(object):
+class Akismet:
     """A class for working with the akismet API"""
 
     baseurl = 'rest.akismet.com/1.1/'
@@ -126,7 +126,7 @@ class Akismet(object):
 
         This comprises of api key plus the baseurl.
         """
-        return 'http://%s.%s' % (self.key, self.baseurl)
+        return 'http://{}.{}'.format(self.key, self.baseurl)
 
     def _safeRequest(self, url, data, headers):
         try:

@@ -10,7 +10,7 @@ class RedirectForm(forms.ModelForm):
         help_text=_("You may only redirect from a disabled app. You do not need to enter a From URL if you choose an app. All URLs related to this app will be redirected to the URL you enter in the To URL field."))
 
     def __init__(self, *args, **kwargs):
-        super(RedirectForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         app_choices = [('', '------')]
         for app in site.get_registered_apps().core:
             if not app.get('enabled'):
@@ -46,7 +46,7 @@ class RedirectForm(forms.ModelForm):
         return value
 
     def clean(self):
-        cleaned_data = super(RedirectForm, self).clean()
+        cleaned_data = super().clean()
         from_app = cleaned_data.get('from_app')
         from_url = cleaned_data.get('from_url')
         if not from_app and not from_url:

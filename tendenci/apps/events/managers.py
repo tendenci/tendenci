@@ -6,6 +6,7 @@ from functools import reduce
 from django.db.models import Manager
 from django.db.models import Q
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from tendenci.apps.perms.managers import TendenciBaseManager
 
@@ -16,7 +17,7 @@ class EventManager(TendenciBaseManager):
         Uses haystack to query events.
         Returns a SearchQuerySet
         """
-        sqs = super(EventManager, self).search(query=query, *args, **kwargs)
+        sqs = super().search(query=query, *args, **kwargs)
 
         start_dt, end_dt = kwargs.get('date_range', (None, None))
 
@@ -77,31 +78,31 @@ class EventManager(TendenciBaseManager):
         """
         Exclude events with status_detail 'template'.
         """
-        return super(EventManager, self).get_queryset().exclude(status_detail='template')
+        return super().get_queryset().exclude(status_detail='template')
     
     def get_queryset_templates(self):
         """
         Returns events with status_detail 'template'.
         """
-        return super(EventManager, self).get_queryset().filter(status_detail='template')
+        return super().get_queryset().filter(status_detail='template')
     
     def get_all(self):
         """
         Gets all events including status_detail 'template'.
         """
-        return super(EventManager, self).get_queryset()
+        return super().get_queryset()
 
     def available_parent_events(self):
         """Returns all available upcoming parent events"""
         return self.filter(
-            end_dt__gt=datetime.now(),
+            end_dt__gt=timezone.now(),
             event_relationship=self.model.EventRelationship.PARENT,
         )
 
     def available_child_events(self):
         """Returns all upcoming child events available to use as 'repeat_of'"""
         return self.filter(
-            start_dt__gt=datetime.now(),
+            start_dt__gt=timezone.now(),
             event_relationship=self.model.EventRelationship.CHILD,
             repeat_of__isnull=True,
         ).order_by('parent_id')
@@ -141,7 +142,7 @@ class RegistrantManager(Manager):
         # let the parent search know that we have started a SQS
         kwargs.update({'sqs': sqs})
 
-        sqs = super(RegistrantManager, self).search(
+        sqs = super().search(
             query=query, *args, **kwargs)
 
         return sqs

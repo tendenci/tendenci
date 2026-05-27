@@ -1,0 +1,14 @@
+{% extends "accounts/base.html" %}
+
+
+{% block title %}{% trans "Logout confirmation" %}{% endblock %}
+
+{% block content %}
+    <p>{% trans "To log out, please press the button below." %}</p>
+	<form method="post" action="{% url 'auth_logout' %}">
+    {% csrf_token %}
+    <button class="btn btn-primary" type="submit">{% trans "Log Out" %}</button>
+    </form>
+   
+
+{% endblock %}

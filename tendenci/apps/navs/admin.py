@@ -17,7 +17,7 @@ class ItemAdmin(admin.TabularInline):
     template = 'admin/navs/edit_inline/tabular.html'
 
     def formfield_for_dbfield(self, db_field, **kwargs):
-        formfield = super(ItemAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        formfield = super().formfield_for_dbfield(db_field, **kwargs)
         if db_field.name == 'page':
             formfield.choices = formfield.choices
         return formfield

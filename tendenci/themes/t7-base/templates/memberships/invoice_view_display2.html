@@ -37,7 +37,7 @@
                 {% trans "Donation Amount " %}
             </td>
             <td class="td-right">
-                {{ obj.donation_amount }}
+                {{ obj.donation_amount|format_currency }}
             </td>
         </tr>
        {% endif %}

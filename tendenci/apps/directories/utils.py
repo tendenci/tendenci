@@ -13,6 +13,7 @@ from django.db.models.fields import AutoField
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.invoices.models import Invoice
@@ -50,10 +51,10 @@ def get_duration_choices(user):
                 continue
         else:
             if pricing.show_member_pricing and user.profile.is_member:
-                prices = "%s%s(R)/%s(P)" % (currency_symbol,pricing.regular_price_member,
+                prices = "{}{}(R)/{}(P)".format(currency_symbol,pricing.regular_price_member,
                                             pricing.premium_price_member)
             else:
-                prices = "%s%s(R)/%s(P)" % (currency_symbol, pricing.regular_price,
+                prices = "{}{}(R)/{}(P)".format(currency_symbol, pricing.regular_price,
                                     pricing.premium_price)
             choice = (pricing.pk, _(f'{pricing.duration_display()} for {prices}'))
         choices.append(choice)
@@ -87,10 +88,10 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.ship_to_user(user)
 
             inv.bill_to_company = directory.headline
-            if directory.address2:
+            if directory.address:
                 inv.bill_to_address = directory.address
                 if directory.address2:
-                    inv.bill_to_address += ', ' + directory.address2
+                    inv.bill_to_address2 = directory.address2
             inv.bill_to_city = directory.city
             inv.bill_to_state = directory.state
             inv.bill_to_zip_code = directory.zip_code
@@ -100,8 +101,8 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.bill_to_email = directory.email
 
             inv.terms = "Due on Receipt"
-            inv.due_date = datetime.now()
-            inv.ship_date = datetime.now()
+            inv.due_date = timezone.now()
+            inv.ship_date = timezone.now()
             inv.message = 'Thank You.'
             inv.status = True
 
@@ -167,7 +168,7 @@ def is_free_listing(user, pricing_id, list_type):
 
 
 def process_export(export_fields='all_fields', export_status_detail='',
-                   identifier=u'', user_id=0):
+                   identifier='', user_id=0):
     from tendenci.apps.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':

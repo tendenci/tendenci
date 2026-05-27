@@ -23,9 +23,9 @@ def remove_fb_like_from_custom_templates(apps, schema_editor):
     # pages/meta.html
     file_path = '{}/templates/pages/meta.html'.format(dir_path)
     if os.path.isfile(file_path):
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
-            p = r'{0}([\d\D\s\S\w\W]*?){1}'.format(re.escape('{% if show_fb_connect|default:False %}'),
+            p = r'{}([\d\D\s\S\w\W]*?){}'.format(re.escape('{% if show_fb_connect|default:False %}'),
                                                                 re.escape('{% endif %}'))
             content = re.sub(p, '', content)
             

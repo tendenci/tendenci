@@ -34,7 +34,7 @@ class GroupSearchForm(forms.Form):
     q = forms.CharField(required=False)
 
     def clean(self):
-        cleaned_data = super(GroupSearchForm, self).clean()
+        cleaned_data = super().clean()
         q = self.cleaned_data.get('q', None)
         cat = self.cleaned_data.get('search_category', None)
 
@@ -86,7 +86,7 @@ class GroupAdminForm(TendenciBaseForm):
           )
 
     def __init__(self, *args, **kwargs):
-        super(GroupAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # filter out the unwanted permissions,
         content_types = ContentType.objects.exclude(app_label='auth')
         self.fields['permissions'].queryset = Permission.objects.filter(
@@ -139,6 +139,7 @@ class GroupForm(TendenciBaseForm):
                                  'slug',
                                  'entity',
                                  'dashboard_url',
+                                 'type',
                                  'email_recipient',
                                  'logo',
                                  'show_as_option',
@@ -165,7 +166,7 @@ class GroupForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        super(GroupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not self.user.profile.is_superuser:
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
@@ -175,6 +176,17 @@ class GroupForm(TendenciBaseForm):
         self.fields['entity'].empty_label = None
         self.fields['logo'].validators = [FileValidator(allowed_extensions=('.jpeg', '.jpg', '.png', '.gif',))]
         self.fields['logo'].required = False
+        del self.fields['type']
+        if self.instance and self.instance.type in ('membership', 'system_generated'):
+            del self.fields['allow_self_add']
+            del self.fields['allow_self_remove']
+
+    def clean_auto_respond_priority(self):
+        auto_respond_priority = self.cleaned_data['auto_respond_priority']
+        if auto_respond_priority is None:
+            return 0
+
+        return self.cleaned_data['auto_respond_priority']
 
     def clean_name(self):
         name = self.cleaned_data['name']
@@ -187,7 +199,7 @@ class GroupForm(TendenciBaseForm):
 
 class GroupMembershipForm(forms.ModelForm):
     def __init__(self, group=None, user_id=None, *args, **kwargs):
-        super(GroupMembershipForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if group:
             # exclude those already joined
             exclude_userid = [user.id for user in group.members.all()]
@@ -206,7 +218,7 @@ class GroupMembershipForm(forms.ModelForm):
 class GroupMembershipBulkForm(forms.Form):
     def __init__(self, group, *args, **kwargs):
         member_label = kwargs.pop('member_label', 'username')
-        super(GroupMembershipBulkForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['members'].initial = group.members.all()
         self.fields['members'].choices = member_choices(group, member_label)
 
@@ -226,7 +238,7 @@ class GroupPermissionForm(forms.ModelForm):
         fields = ('permissions',)
 
     def __init__(self, *args, **kwargs):
-        super(GroupPermissionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # filter out the unwanted permissions,
         # only display the permissions for the apps in APPS
         content_types = ContentType.objects.exclude(app_label='auth').exclude(model='membershipset')
@@ -243,18 +255,18 @@ class GroupMembershipEditForm(forms.ModelForm):
 
 class MessageForm(forms.Form):
     """Handles Message Form"""
-    to_addr = forms.CharField(label=_(u'To'))
-    from_addr = forms.CharField(label=_(u'From'))
+    to_addr = forms.CharField(label=_('To'))
+    from_addr = forms.CharField(label=_('From'))
     subject = forms.CharField()
     body = forms.CharField(widget=forms.Textarea)
-    is_test = forms.BooleanField(label=_(u'Send test email to me only'), required=False, initial=True)
+    is_test = forms.BooleanField(label=_('Send test email to me only'), required=False, initial=True)
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('request')
         num_members = kwargs.pop('num_members')
-        super(MessageForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-        self.fields['to_addr'].initial = 'All %s member%s' % (num_members, pluralize(num_members))
+        self.fields['to_addr'].initial = 'All {} member{}'.format(num_members, pluralize(num_members))
         self.fields['to_addr'].widget.attrs['readonly'] = True
 
         self.fields['from_addr'].initial = get_setting('site', 'global', 'siteemailnoreplyaddress')

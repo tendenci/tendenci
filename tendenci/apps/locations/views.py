@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.decorators import password_required
@@ -223,7 +224,7 @@ def locations_import_upload(request, template_name='locations/import-upload-file
 
     return render_to_resp(request=request, template_name=template_name, context={
             'form': form,
-            'now': datetime.now(),
+            'now': timezone.now(),
         })
 
 
@@ -253,7 +254,7 @@ def locations_import_preview(request, id, template_name='locations/import-map-fi
                 'stats': stats,
                 'locport': locport,
                 'form': form,
-                'now': datetime.now(),
+                'now': timezone.now(),
             })
 
     else:
@@ -262,7 +263,7 @@ def locations_import_preview(request, id, template_name='locations/import-map-fi
     return render_to_resp(request=request, template_name=template_name, context={
         'form': form,
         'locport': locport,
-        'now': datetime.now(),
+        'now': timezone.now(),
         })
 
 
@@ -291,7 +292,7 @@ def locations_import_confirm(request, id, template_name='locations/import-confir
                 return render_to_resp(request=request, template_name=template_name, context={
                     'locations': locations,
                     'stats': stats,
-                    'now': datetime.now(),
+                    'now': timezone.now(),
                 })
             else:
                 result = ImportLocationsTask.delay(request.user, file_path, cleaned_data)
@@ -320,12 +321,12 @@ def locations_import_status(request, task_id, template_name='locations/import-co
         return render_to_resp(request=request, template_name=template_name, context={
             'locations': locations,
             'stats':stats,
-            'now': datetime.now(),
+            'now': timezone.now(),
         })
     else:
         return render_to_resp(request=request, template_name='memberships/import-status.html', context={
             'task': task,
-            'now': datetime.now(),
+            'now': timezone.now(),
         })
 
 

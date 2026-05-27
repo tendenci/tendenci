@@ -1,5 +1,3 @@
-
-
 from django.db import migrations
 from tendenci.apps.forums.models import create_or_check_slug
 

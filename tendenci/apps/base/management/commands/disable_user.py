@@ -1,5 +1,3 @@
-
-
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
 
@@ -45,7 +43,7 @@ class Command(BaseCommand):
         if username and email:
             users = User.objects.filter(username=username, email__iexact=email)
             if not users:
-                print('User with username=%s and email=%s could not be found' % (username, email))
+                print('User with username={} and email={} could not be found'.format(username, email))
         elif username:
             users = User.objects.filter(username=username)
             if not users:

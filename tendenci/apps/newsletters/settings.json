@@ -32,5 +32,22 @@
         "scope_category": "newsletters",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, member content will be pulled in to newsletter templates (default false).",
+        "data_type": "boolean",
+        "update_dt": "2025-08-11 21:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "allowmembercontent",
+        "value": "false",
+        "label": "Allow member content",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "newsletters",
+        "store": true,
+        "updated_by": ""
     }
 ]

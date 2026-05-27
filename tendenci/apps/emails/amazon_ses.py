@@ -19,7 +19,6 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
-from builtins import str
 from http import client as http_client
 from urllib.parse import urlencode
 import hashlib
@@ -48,7 +47,7 @@ class AmazonSES:
         dateValue = d.strftime('%a, %d %b %Y %H:%M:%S GMT')
         headers['Date'] = dateValue
         signature = self._getSignature(dateValue)
-        headers['X-Amzn-Authorization'] = 'AWS3-HTTPS AWSAccessKeyId=%s, Algorithm=HMACSHA256, Signature=%s' % (self._accessKeyID, signature)
+        headers['X-Amzn-Authorization'] = 'AWS3-HTTPS AWSAccessKeyId={}, Algorithm=HMACSHA256, Signature={}'.format(self._accessKeyID, signature)
         return headers
 
     def _performAction(self, actionName, params=None):
@@ -185,12 +184,12 @@ class AmazonResponseParser:
             return node.text
 
         def _fixTag(self, namespace, tag):
-            return '{%s}%s' % (namespace, tag)
+            return '{{{}}}{}'.format(namespace, tag)
 
         def _findNode(self, rootElement, namespace, *args):
             match = '.'
             for s in args:
-                match += '/{%s}%s' % (namespace, s)
+                match += '/{{{}}}{}'.format(namespace, s)
             return rootElement.find(match)
 
     def __init__(self):
@@ -259,5 +258,5 @@ class AmazonResponseParser:
                 result = self._parseListVerifiedEmails(actionName, xmlResponse)
             else:
                 #raise AmazonAPIError('Action %s is not supported. Please contact: vladimir@tagmask.com' % (actionName,))
-                raise AmazonAPIError('Action %s is not supported.' % (actionName,))
+                raise AmazonAPIError('Action {} is not supported.'.format(actionName))
         return result

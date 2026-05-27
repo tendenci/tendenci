@@ -1,5 +1,3 @@
-
-
 import re
 from django.utils.html import escape
 from ..defaults import PYBB_SMILES, PYBB_SMILES_PREFIX
@@ -32,7 +30,7 @@ def rstrip_str(user, str):
     return '\n'.join([s.rstrip() for s in str.splitlines()])
 
 
-class BaseParser(object):
+class BaseParser:
     widget_class = Textarea
 
     def format(self, text):

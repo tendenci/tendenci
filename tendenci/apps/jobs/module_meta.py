@@ -21,14 +21,14 @@ class JobMeta():
 
         # location
         if object.location:
-            value = '%s - %s' % (value, object.location)
+            value = '{} - {}'.format(value, object.location)
 
         # description
         # TODO truncate at 400 characters
         #if object.description:
         #    value = '%s - %s' % (value, object.description)
 
-        value = '%s - employment opportunity or job position %s' % (value, site_name)
+        value = '{} - employment opportunity or job position {}'.format(value, site_name)
 
         return value
 
@@ -47,14 +47,14 @@ class JobMeta():
 
         # location
         if object.location:
-            value = '%s - %s' % (value, object.location)
+            value = '{} - {}'.format(value, object.location)
 
         # description
         # TODO truncate at 450 characters
         if object.description:
-            value = '%s - %s' % (value, object.description)
+            value = '{} - {}'.format(value, object.description)
 
-        value = '%s - employment opportunity %s' % (value, site_name)
+        value = '{} - employment opportunity {}'.format(value, site_name)
 
         value = strip_tags(value)
 
@@ -80,12 +80,12 @@ class JobMeta():
         for item in list:
             if not item.strip():
                 list.remove(item)
-            value = '%s, %s' % (', '.join(list), dynamic_keywords)
+            value = '{}, {}'.format(', '.join(list), dynamic_keywords)
 
         return value
 
     def get_canonical_url(self):
-        return '{0}{1}'.format(get_setting('site', 'global', 'siteurl'), self.object.get_absolute_url())
+        return '{}{}'.format(get_setting('site', 'global', 'siteurl'), self.object.get_absolute_url())
 
     def get_meta(self, object, name):
 

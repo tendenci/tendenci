@@ -1,5 +1,3 @@
-
-
 def get_privacy_settings(instance):
     """
     Returns a dictionary of all Tendenci

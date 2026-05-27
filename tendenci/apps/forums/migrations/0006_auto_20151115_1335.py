@@ -1,5 +1,3 @@
-
-
 from django.db import migrations, models
 import datetime
 import django.db.models.deletion

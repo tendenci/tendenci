@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.template import Library, TemplateSyntaxError
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.news.models import News
@@ -47,7 +48,7 @@ class ListNewsNode(ListNode):
     perms = 'news.view_news'
 
     def custom_model_filter(self, qset, user):
-        return qset.filter(release_dt_local__lte=datetime.now())
+        return qset.filter(release_dt_local__lte=timezone.now())
 
 
 @register.tag

@@ -1,6 +1,6 @@
 from django.urls import path, re_path
-from django.contrib.auth.views import (PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetDoneView,
-                                       LogoutView)
+from django.contrib.auth.views import (PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetDoneView)
+
 from . import views, forms
 from tendenci.apps.registration import views as reg_views
 from tendenci.apps.profiles import views as prof_views
@@ -22,7 +22,7 @@ urlpatterns = [
         name='auth_login'),
 
     re_path(r'^logout/$',
-        LogoutView.as_view(template_name='accounts/logout.html'),
+        views.LogoutView.as_view(template_name='accounts/logout.html'),
         name='auth_logout'),
 
     re_path(r'^password/change/(?P<id>\d+)/$',

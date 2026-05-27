@@ -1,8 +1,7 @@
 #process_unindexed.py
-from datetime import datetime
-
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -24,7 +23,7 @@ class Command(BaseCommand):
             if app not in items:
                 items.append(app)
 
-                age = datetime.now() - unindexed_items[0].create_dt
+                age = timezone.now() - unindexed_items[0].create_dt
                 age = (int(age.days)*60*60*24) + age.seconds
                 age = (age / 3600) + 1
                 ages.append(int(age))

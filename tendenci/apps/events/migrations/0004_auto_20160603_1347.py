@@ -1,5 +1,3 @@
-
-
 from django.db import migrations, models
 import timezone_field.fields
 import tendenci.apps.user_groups.utils

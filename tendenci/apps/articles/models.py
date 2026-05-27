@@ -7,6 +7,7 @@ from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.conf import settings
+from django.utils import timezone
 
 from tagging.fields import TagField
 from timezone_field import TimeZoneField
@@ -102,7 +103,7 @@ class Article(TendenciBaseModel):
 
     def get_thumbnail_url(self):
         if not self.thumbnail:
-            return u''
+            return ''
 
         return reverse('file', args=[self.thumbnail.pk])
 
@@ -110,13 +111,13 @@ class Article(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid4())
         self.assign_release_dt_local()
-        super(Article, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def is_released(self):
         if not self.release_dt_local:
             self.assign_release_dt_local()
-        return self.release_dt_local <= datetime.now()
+        return self.release_dt_local <= timezone.now()
 
     def assign_release_dt_local(self):
         """
@@ -131,7 +132,7 @@ class Article(TendenciBaseModel):
         then
             the corresponding release_dt_local will be: 2014-05-09 05:30:00
         """
-        now = datetime.now()
+        now = timezone.now()
         now_with_tz = adjust_datetime_to_timezone(now, settings.TIME_ZONE)
         if self.timezone and self.release_dt and self.timezone.key != settings.TIME_ZONE:
             time_diff = adjust_datetime_to_timezone(now, self.timezone) - now_with_tz
@@ -140,7 +141,7 @@ class Article(TendenciBaseModel):
             self.release_dt_local = self.release_dt
 
     def age(self):
-        return datetime.now() - self.create_dt
+        return timezone.now() - self.create_dt
 
     @property
     def category_set(self):

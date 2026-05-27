@@ -30,7 +30,7 @@ class ThemeLoader(DjangoLoader):
 
     def __init__(self, engine, *args, **kwargs):
         self.cached_theme_search_info = (None, None)
-        super(ThemeLoader, self).__init__(engine)
+        super().__init__(engine)
 
     def get_template_sources(self, template_name, template_dirs=None):
         """
@@ -82,14 +82,14 @@ class ThemeLoader(DjangoLoader):
 
     def get_contents(self, origin):
         if not origin.use_s3_theme:
+            if not os.path.isfile(origin.name):
+                raise TemplateDoesNotExist(origin)
+
             try:
                 with open(origin.name) as fp:
                     return fp.read()
-            # Python 3 only
-            #except FileNotFoundError:
-            #    raise TemplateDoesNotExist(origin)
             # Python 2 and 3
-            except IOError as e:
+            except OSError as e:
                 if e.errno == errno.ENOENT:
                     raise TemplateDoesNotExist(origin)
                 raise
@@ -133,7 +133,7 @@ class CachedLoader(DjangoCachedLoader):
         disable_cache = (request and 'theme' in request.session)
 
         if not disable_cache:
-            return super(CachedLoader, self).get_template(*args, **kwargs)
+            return super().get_template(*args, **kwargs)
 
         # django.template.loaders.cached.Loader calls super().get_template()
         # (where super is django.template.loaders.base.Loader) to get templates

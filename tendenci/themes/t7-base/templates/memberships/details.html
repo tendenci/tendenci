@@ -11,7 +11,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}?v=1.2">
 {% endblock %}
 
 {% block content %}
@@ -108,7 +108,7 @@
                                 <ul class="nav nav-pills nav-stacked">
                                     {% for address, label in membership|get_actions:request.user %}
                                         {% if address %}
-                                        <li><a href="{{ address }}">{{ label }}</a></li>
+                                        <li><a href="{{ address }}" class="action-{{ label|lower }}">{{ label }}</a></li>
                                         {% else %}
                                         <li>{{ label }}</li>
                                         {% endif %}
@@ -682,3 +682,17 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    
+    <script type="text/javascript" >
+	$("a.action-approve").click(function (event) {
+   		if ($(this).hasClass("disabled")) {
+        	event.preventDefault();
+    	}
+    	$(this).addClass("disabled");
+	});
+	</script>
+{% endblock %}   
+    

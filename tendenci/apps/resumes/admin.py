@@ -63,7 +63,7 @@ class ResumeAdmin(TendenciBaseModelAdmin):
     ordering = ['-update_dt']
 
     def get_form(self, request, obj=None, **kwargs):
-        FormModel = super(ResumeAdmin, self).get_form(request, obj, **kwargs)
+        FormModel = super().get_form(request, obj, **kwargs)
         FormModel.user = request.user
         return FormModel
 

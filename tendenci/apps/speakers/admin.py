@@ -62,7 +62,7 @@ class SpeakerAdmin(TendenciBaseModelAdmin):
     inlines = (FileAdmin,)
 
     def __init__(self, *args, **kwargs):
-        super(SpeakerAdmin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.list_editable = ['name', 'ordering']
 
     class Media:

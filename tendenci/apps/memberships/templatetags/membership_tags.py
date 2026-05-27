@@ -142,6 +142,7 @@ class ListMembershipNode(Node):
         new_member_only = False
         exclude_expired = False
         membership_type = None
+        start_dt = None
         objects = []
 
         if 'user' in self.kwargs:

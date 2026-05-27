@@ -303,7 +303,7 @@ def base_file(request, file_name):
 
     try:
         t = get_template(file_name)
-    except (TemplateDoesNotExist, IOError):
+    except (TemplateDoesNotExist, OSError):
         raise Http404
 
     return HttpResponse(t.render(request=request))
@@ -387,12 +387,12 @@ def addon_upload(request, template_name="base/addon_upload.html"):
     if request.method == 'POST':
         if form.is_valid():
             identifier = str(int(time.time()))
-            temp_file_path = 'uploads/addons/%s_%s' % (identifier, form.cleaned_data['addon'])
+            temp_file_path = 'uploads/addons/{}_{}'.format(identifier, form.cleaned_data['addon'])
             default_storage.save(temp_file_path, form.cleaned_data['addon'])
             request.session[identifier] = temp_file_path
 
             EventLog.objects.log(
-                event_data='%s uploaded by %s' % (form.cleaned_data['addon'], request.user),
+                event_data='{} uploaded by {}'.format(form.cleaned_data['addon'], request.user),
                 description='%s' % form.cleaned_data['addon'])
 
             return redirect('addon.upload.preview', identifier)

@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.utils.translation import gettext
 from django.contrib import messages
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.forms import PaymentSearchForm
@@ -30,8 +31,17 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
     if get_setting('module', 'payments', 'requires_confirm'):
         if not 'confirmed' in request.GET:
             # Redirect to the page to get the confirm
-            redirect_url = request.get_full_path()
-            redirect_url = redirect_url.replace('payonline', 'payonline-pre')
+            if merchant_account:
+                if guid:
+                    args = (merchant_account, invoice_id, guid)
+                else:
+                    args = (merchant_account, invoice_id)
+            else:
+                if guid:
+                    args = (invoice_id, guid)
+                else:
+                    args = (invoice_id,)
+            redirect_url = reverse('payment.pay_online_pre', args=args)
             return HttpResponseRedirect(redirect_url)
 
     # tender the invoice
@@ -187,7 +197,7 @@ def search(request, template_name='payments/search.html'):
             search_type = '__istartswith'
         elif search_method == 'contains':
             search_type = '__icontains'
-        search_filter = {'%s%s' % (search_criteria,
+        search_filter = {'{}{}'.format(search_criteria,
                                    search_type): search_text}
         payments = payments.filter(**search_filter)
 

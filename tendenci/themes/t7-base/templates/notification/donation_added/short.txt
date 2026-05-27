@@ -1,2 +1,2 @@
 
-{% blocktrans with ln=donation.last_name fn=donation.first_name %}Donation given by {{ ln }}, {{ fn }} on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}
+{% blocktrans with ln=donation.last_name fn=donation.first_name %}{{ donation_label }} given by {{ ln }}, {{ fn }} on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

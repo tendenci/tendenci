@@ -48,4 +48,4 @@ class Box(OrderingBaseModel, TendenciBaseModel):
                 # First row
                 self.ordering = 0
 
-        return super(Box, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)

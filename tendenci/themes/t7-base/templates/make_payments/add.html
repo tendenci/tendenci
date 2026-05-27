@@ -11,20 +11,28 @@
 {% block content %}
 <div class="t">
 
-<h1>{% trans "Make a Payment" %}</h1>
+<h1>{% trans "Make an Online Payment" %}</h1>
 
 <form id="t-make-payments-form" class="form-horizontal"  method="post" action="{% url "make_payment.add" %}">{% csrf_token %}
     <div class="forms">
     {{ form|styled_form }}
-    <div class="submitbutton">
+    <div class="form-group">
+     <div class="col-sm-offset-3 col-sm-9">
         <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Make a Payment' %}" />
     </div>
     </div>
+    </div>
 </form>
-
+<p>&nbsp;<p>
 </div>
 {% endblock %}
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+    
+  <script type="text/javascript">
+    $(document).ready(function() {
+    	$('input[name=payment_method]').closest('.form-group').hide();
+    });
+  </script>
 {% endblock %}

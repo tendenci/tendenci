@@ -42,6 +42,14 @@
                     </li>
 
                     {% if can_add_newsletter %}
+                    	{% if request.user.is_superuser or request.user.is_staff %}
+                         <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:newsletters_newsletter_changelist' %}">{% trans "Search (Admin)" %}</a>
+                            </span>
+                        </li>
+                        {% endif %}
+                        
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'newsletter.orig.generator' %}">{% trans "Add Newsletter" %}</a>
