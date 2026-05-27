@@ -794,6 +794,9 @@ class MemberStatusFilter(SimpleListFilter):
             return queryset
         queryset = queryset.filter(corp_profile__id__in=CorpMembership.objects.filter(
             status=True, status_detail=value).values_list('corp_profile_id', flat=True))
+        if value == 'expired':
+            queryset = queryset.exclude(corp_profile__id__in=CorpMembership.objects.filter(
+            status=True, status_detail='pending').values_list('corp_profile_id', flat=True))
         #print(queryset.query)
         return queryset
 
