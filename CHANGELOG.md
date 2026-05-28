@@ -1,3 +1,14 @@
+### 16.13 [2026-5-27]
+
+* Updated the corp reps list at admin backend to have the export option, two extra fields (status detail and expiration date of the associated corp membership), as well as a custom filter to filter by corp membership status detail.
+* Added the option to mark invoice as paid (or not) on corp membership approval.
+* Additional fixes for GST/VAT (tax included) countries (Thanks to @rockinrobstar).
+* Added the print option for membership notification to admin.
+* Improved message about the "Join" button appearing 10 minutes prior to a Zoom event (Thanks to @bje-).
+* Fixed the issue about clicking on a tag not working for events search.
+* Other bugfixes.
+
+
 ### 16.11 [2026-5-13]
 
 * Updated membership renewal to auto-renew chapter membership when the setting "Auto Apply Chapter Memberships" is turned on.
