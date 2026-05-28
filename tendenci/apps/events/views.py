@@ -2050,6 +2050,7 @@ def add(request, year=None, month=None, day=None, is_template=False, parent_even
                     freq = int(form_event.cleaned_data['frequency'])
                     r_type = int(form_event.cleaned_data['repeat_type'])
                     end_recurring = form_event.cleaned_data['end_recurring']
+                    end_recurring = datetime(end_recurring.year, end_recurring.month, end_recurring.day, 23, 59, 59, tzinfo=event.timezone)
                     recur_every = form_event.cleaned_data['recurs_on']
                     recur_event = RecurringEvent(repeat_type=r_type,
                                                  frequency=freq,

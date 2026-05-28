@@ -45,6 +45,7 @@ from django.contrib.auth import get_permission_codename
 from django.utils.html import format_html, strip_tags
 from django.utils.translation import gettext as _
 from django.core.validators import EmailValidator
+from django.utils import timezone
 
 from django.utils.functional import Promise
 from django.core.serializers.json import DjangoJSONEncoder
@@ -334,6 +335,10 @@ def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_
                                                                     - GJQ 8/12/2010
     """
     if isinstance(start_dt, datetime) and isinstance(end_dt, datetime):
+        # convert into current active timezone before formating (for
+        # timezone-aware datetime)
+        start_dt = timezone.localtime(start_dt)
+        end_dt = timezone.localtime(end_dt)
         if start_dt.date() == end_dt.date():
             return '{} {} - {}'.format(start_dt.strftime(format_date),
                                    start_dt.strftime(format_time),
