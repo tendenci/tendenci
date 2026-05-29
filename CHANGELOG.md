@@ -1,3 +1,9 @@
+### 16.14 [2026-5-28]
+
+* Fixed an error when joining Zoom webinar.
+* Resolved an issue for the management command send_event_reminders.py. 
+
+
 ### 16.13 [2026-5-27]
 
 * Updated the corp reps list at admin backend to have the export option, two extra fields (status detail and expiration date of the associated corp membership), as well as a custom filter to filter by corp membership status detail.
