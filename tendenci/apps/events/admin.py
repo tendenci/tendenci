@@ -30,7 +30,7 @@ from tendenci.apps.events.utils import iter_registrant_credits
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import delete_settings_cache, get_setting
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 from tendenci.apps.base.utils import tcurrency
 
 
@@ -422,7 +422,7 @@ class CreditNameFilter(admin.SimpleListFilter):
         ceu_cats_list = []
         for ceu_cat in ceu_categories:
             ceu_cats_list.append((str(ceu_cat.id), f'{ceu_cat.parent.name} - {ceu_cat.name}'))
-                                    
+
         return ceu_cats_list
 
     def queryset(self, request, queryset):
@@ -455,7 +455,7 @@ class RegistrantCreditsAdmin(admin.ModelAdmin):
         """Release all credits"""
         queryset.update(released=True)
     release.short_description=_("Release selected credits")
-    
+
     def unrelease(self, request, queryset):
         """Un-Release all selected credits"""
         queryset.update(released=False)

@@ -30,7 +30,7 @@ from tendenci.apps.base.utils import tcurrency
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 from tendenci.apps.perms.utils import update_perms_and_save
 
 
@@ -88,7 +88,7 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
               instance.membership_type.name)
     get_membership_type.short_description = _('Membership Type (Individual)')
     get_membership_type.admin_order_field = 'membership_type'
-    
+
     @mark_safe
     def reps_groups(self, instance):
         reps_groups_links = ''
@@ -480,7 +480,7 @@ class NoticeAdmin(admin.ModelAdmin):
         return '<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
                          reverse('corporate_membership.notice.log.search'), obj.id)
 
-    
+
     list_display_links  = ['notice_name']
     list_filter = ['notice_type', 'status_detail']
 
@@ -499,7 +499,7 @@ class NoticeAdmin(admin.ModelAdmin):
             or get_setting('module', 'memberships', 'taxrateuseregions')):
             list_display += ['region', 'excluded_regions']
         return list_display
-        
+
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = (
@@ -513,7 +513,7 @@ class NoticeAdmin(admin.ModelAdmin):
             fieldsets[0][1]['fields'].remove('region')
             fieldsets[0][1]['fields'].remove('regions_to_exclude')
         return fieldsets
-        
+
 
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
@@ -760,7 +760,7 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
         instance = form.save(commit=False)
         instance.owner = request.user
         update_perms_and_save(request, form, instance)
-        
+
         form.save_logo(instance, request.user)
         return instance
 
@@ -857,7 +857,7 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
         """
         return super().get_queryset(request
                     ).filter(corp_profile__status=True)
-    
+
     @mark_safe
     def profile(self, instance):
         return '<a href="{}">{}</a>'.format(

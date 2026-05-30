@@ -10,7 +10,7 @@ from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.committees.models import Committee, Position, Officer
 from tendenci.apps.committees.forms import CommitteeAdminForm, CommitteeAdminChangelistForm, UserModelChoiceField
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class OfficerAdminInline(admin.TabularInline):
@@ -108,7 +108,7 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
             photo = form.cleaned_data['photo_upload']
             if photo:
                 instance.save(photo=photo)
-        
+
         return instance
 
     def save_related(self, request, form, formsets, change):
@@ -157,7 +157,7 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
     def group_link(self, instance):
         group_url = reverse('group.detail',args=[instance.group.slug])
         group_name = instance.group.name
-                            
+
         return f'<a href="{group_url}" title="{group_name}">{group_name}</a>'
     group_link.short_description = _('group')
     group_link.admin_order_field = 'group'

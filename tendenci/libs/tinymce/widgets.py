@@ -21,7 +21,7 @@ from django.utils.translation import get_language, gettext as _
 from django.utils.encoding import smart_str
 import json
 import tendenci.libs.tinymce.settings as tinymce_settings
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class TinyMCE(forms.Textarea):

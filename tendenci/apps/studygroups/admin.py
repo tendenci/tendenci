@@ -10,7 +10,7 @@ from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.studygroups.models import StudyGroup, Position, Officer
 from tendenci.apps.studygroups.forms import StudyGroupAdminForm, StudyGroupAdminChangelistForm
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class OfficerAdminInline(admin.TabularInline):

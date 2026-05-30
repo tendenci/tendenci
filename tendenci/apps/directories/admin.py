@@ -6,7 +6,7 @@ from tendenci.apps.directories.models import DirectoryPricing
 from tendenci.apps.directories.affiliates.models import Connection
 from tendenci.apps.directories.forms import DirectoryPricingForm
 from tendenci.apps.directories.models import Category as DirectoryCategory
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class DirectoryAdmin(admin.ModelAdmin):
@@ -52,7 +52,7 @@ class DirectoryCategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ['name']}
     fieldsets = ((None, {'fields': ('name', 'slug')}),)
     ordering = ['position']
-    
+
     class Media:
         css = {
             "all": (static("css/websymbols.css"),)
@@ -77,7 +77,7 @@ class ConnectionAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('cat', 'affliated_cats')}),
     )
-    
+
     def allow_associated_by(self, instance):
         return ', '.join([c.name for c in instance.affliated_cats.all()])
     allow_associated_by.short_description = 'Can be associated by'

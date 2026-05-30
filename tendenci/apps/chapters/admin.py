@@ -30,7 +30,7 @@ from tendenci.apps.chapters.forms import (ChapterAdminForm,
                         ChapterMembershipAppFieldAdminForm,
                         NoticeForm,
                         CoordinatingAgencyAdminForm)
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -122,7 +122,7 @@ class ChapterMembershipAppAdmin(TendenciBaseModelAdmin):
     search_fields = ('name', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'description',
-                           'confirmation_text', 'renewal_description', 
+                           'confirmation_text', 'renewal_description',
                            'renewal_confirmation_text', 'notes',
                            'membership_types', 'payment_methods',
                            'use_captcha')},),
@@ -156,7 +156,7 @@ class ChapterMembershipAppAdmin(TendenciBaseModelAdmin):
             request,
             messages.ERROR,
             _('Currently support one application ONLY.'))
-            
+
             return redirect(reverse(
                 'admin:chapters_chaptermembershipapp_changelist',
             ))
@@ -290,7 +290,7 @@ class ChapterMembershipAdmin(admin.ModelAdmin):
                     'chapter_link',
                     'm_type',
                     'approved',
-                    'join_date', 
+                    'join_date',
                     'renewal',
                     'renew_date',
                     'expire_date',
@@ -314,7 +314,7 @@ class ChapterMembershipAdmin(admin.ModelAdmin):
 #                 reverse('chapters.membership_edit',args=[instance.id]),
 #                 _('Edit'),)
 #     edit_link.short_description = _('edit')
-    
+
     @mark_safe
     def view_on_site(self, obj):
         if not hasattr(obj, 'get_absolute_url'):
@@ -343,7 +343,7 @@ class ChapterMembershipAdmin(admin.ModelAdmin):
             if name:
                 return f'<a href="{profile_url}">{name}</a>'
             return f'<a href="{profile_url}">{instance.user.username}</a>'
- 
+
         return "-"
     user_link.short_description = _('User')
     user_link.allow_tags = True
@@ -364,7 +364,7 @@ class ChapterMembershipAdmin(admin.ModelAdmin):
         invoice = instance.invoice
         if invoice:
             if invoice.balance > 0:
-                return f'<a href="{invoice.get_absolute_url()}">Invoice {invoice.pk} ({tcurrency(invoice.balance)})</a>' 
+                return f'<a href="{invoice.get_absolute_url()}">Invoice {invoice.pk} ({tcurrency(invoice.balance)})</a>'
             else:
                 return f'<a href="{invoice.get_absolute_url()}">Invoice {invoice.pk}</a>'
         return ""
@@ -379,7 +379,7 @@ class ChapterMembershipAdmin(admin.ModelAdmin):
         return f'<a href="{mtype_url}">{instance.membership_type.name}</a>'
     m_type.short_description = _('Membership Type')
     m_type.admin_order_field = 'membership_type'
-    
+
     def join_date(self, instance):
         if not instance.join_dt:
             return ''
@@ -434,7 +434,7 @@ class NoticeAdmin(admin.ModelAdmin):
     @mark_safe
     def notice_logs(self, obj):
         logs_url = reverse('admin:chapters_noticelog_changelist')
-        return f'<a href="{logs_url}?notice__id__exact={obj.id}">View logs</a>' 
+        return f'<a href="{logs_url}?notice__id__exact={obj.id}">View logs</a>'
 
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
@@ -473,7 +473,7 @@ class NoticeLogAdmin(admin.ModelAdmin):
     @mark_safe
     def log_records(self, obj):
         logs_url = reverse('admin:chapters_noticedefaultlogrecord_changelist')
-        return f'<a href="{logs_url}?notice_log__id__exact={obj.id}">View log records</a>' 
+        return f'<a href="{logs_url}?notice_log__id__exact={obj.id}">View log records</a>'
 
     def get_actions(self, request):
         return None
@@ -483,7 +483,7 @@ class NoticeLogAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-    
+
     def has_change_permission(self, request, obj=None):
         return False
 
@@ -498,12 +498,12 @@ class NoticeDefaultLogRecordAdmin(admin.ModelAdmin):
         return f'<a href="{notice_url}">{obj.notice_log.notice.notice_name}</a>'
     show_notice.short_description = 'Notice'
     show_notice.allow_tags = True
-    
+
     def sent_date(self, obj):
         return obj.create_dt
     sent_date.short_description = 'Sent date'
     sent_date.admin_order_field = 'create_dt'
-    
+
     def get_actions(self, request):
         return None
 
@@ -512,7 +512,7 @@ class NoticeDefaultLogRecordAdmin(admin.ModelAdmin):
 
 #     def has_delete_permission(self, request, obj=None):
 #         return False
-    
+
     def has_change_permission(self, request, obj=None):
         return False
 
@@ -603,7 +603,7 @@ class ChapterAdmin(TendenciBaseModelAdmin):
         We return our custom form to filter out inactive groups.
         """
         return ChapterAdminChangelistForm
-    
+
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
         instance = update_perms_and_save(request, form, instance)
@@ -647,22 +647,22 @@ class ChapterAdmin(TendenciBaseModelAdmin):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:chapters_chapter_change', args=[obj.pk])
         return link
     edit_link.short_description = 'edit'
-    
+
     @mark_safe
     def group_link(self, instance):
         group_url = reverse('group.detail',args=[instance.group.slug])
         group_name = instance.group.name
-                            
+
         return f'<a href="{group_url}" title="{group_name}">{group_name}</a>'
     group_link.short_description = _('group')
     group_link.admin_order_field = 'group'
-    
+
     @mark_safe
     def newsletter_group_link(self, instance):
         if instance.newsletter_group:
             group_url = reverse('group.detail',args=[instance.newsletter_group.slug])
             group_name = instance.newsletter_group.name
-                                
+
             return f'<a href="{group_url}" title="{group_name}">{group_name}</a>'
         return ''
     newsletter_group_link.short_description = _('newsletter group')
@@ -703,13 +703,13 @@ class CoordinatingAgencyAdmin(admin.ModelAdmin):
     inlines = [
         CoordinatorInline,
     ]
-    exclude = ('coordinators',) 
+    exclude = ('coordinators',)
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         # update group perms to coordinators
         form.instance.update_group_perms()
-        
+
 
     def edit_link(self, obj):
         return "Edit"
@@ -720,7 +720,7 @@ class CoordinatingAgencyAdmin(admin.ModelAdmin):
         coordinators = instance.coordinators.all().order_by('first_name', 'last_name')
         display = ''
         if coordinators:
-            
+
             for i, user in enumerate(coordinators):
                 profile_url = reverse('profile',
                           args=[user.username])
@@ -728,7 +728,7 @@ class CoordinatingAgencyAdmin(admin.ModelAdmin):
                 if i > 0:
                     display += "<br />"
                 display += f'<a href="{profile_url}">{name} - {user.email}</a>'
- 
+
         return display
     coordinators_list.short_description = _('Coordinators')
     coordinators_list.allow_tags = True
@@ -737,7 +737,7 @@ class CoordinatingAgencyAdmin(admin.ModelAdmin):
     def group_link(self, instance):
         group_url = reverse('group.detail',args=[instance.group.slug])
         group_name = instance.group.name
-                            
+
         return f'<a href="{group_url}" title="{group_name}">{group_name}</a>'
     group_link.short_description = _('group')
     group_link.admin_order_field = 'group'

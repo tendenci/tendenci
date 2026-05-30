@@ -2,7 +2,7 @@ import re
 from django.utils.html import escape
 from ..defaults import PYBB_SMILES, PYBB_SMILES_PREFIX
 from django.forms import Textarea
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 def smile_it(s):

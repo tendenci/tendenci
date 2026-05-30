@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.base.admin import ReadOnlyMixin
 from tendenci.apps.payments.models import Payment, PaymentMethod, Refund
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class PaymentAdmin(admin.ModelAdmin):
@@ -17,7 +17,7 @@ class PaymentAdmin(admin.ModelAdmin):
         'description',
     ]
     fields = ['invoice', 'amount', 'trans_id', 'first_name', 'last_name',
-              'company', 'description', 'address', 'city', 'state', 'zip', 
+              'company', 'description', 'address', 'city', 'state', 'zip',
               'country', 'status_detail']
     readonly_fields = ['invoice', 'amount', 'trans_id', 'status_detail']
 
@@ -50,7 +50,7 @@ class PaymentAdmin(admin.ModelAdmin):
             elif hasattr(obj, 'get_absolute_url'):
                 obj_url = obj.get_absolute_url()
                 return f'{instance.invoice.object_type}: <a href="{obj_url}">{instance.invoice.get_object()}</a>'
-            
+
             return f'{instance.invoice.object_type}: {instance.invoice.get_object()}'
         return ""
     show_product.short_description = _('Item')
@@ -65,7 +65,7 @@ class PaymentAdmin(admin.ModelAdmin):
             if not instance.last_name:
                 instance.last_name = ''
             return f'{instance.first_name} {instance.last_name}'
- 
+
         return ""
     payer.short_description = _('User')
     payer.allow_tags = True

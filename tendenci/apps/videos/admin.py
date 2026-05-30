@@ -7,7 +7,7 @@ from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.videos.models import Video, Category, VideoType
 from tendenci.apps.videos.forms import VideoForm
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class VideoInline(admin.TabularInline):

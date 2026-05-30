@@ -6,7 +6,7 @@ from django.utils.html import strip_tags
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.case_studies.models import CaseStudy, Image
 from tendenci.apps.case_studies.forms import CaseStudyForm, FileForm
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class FileAdmin(admin.StackedInline):

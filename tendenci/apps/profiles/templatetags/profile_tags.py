@@ -2,7 +2,7 @@ from django.template import Library
 from django.conf import settings
 from django.template.loader import render_to_string
 
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 register = Library()

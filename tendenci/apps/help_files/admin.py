@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.help_files.models import Topic, HelpFile, Request
 from tendenci.apps.help_files.forms import HelpFileAdminForm
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class HelpFileAdmin(TendenciBaseModelAdmin):

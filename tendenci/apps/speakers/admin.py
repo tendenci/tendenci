@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 from .models import Speaker, SpeakerFile, Track
 from .forms import SpeakerForm, FileForm
 

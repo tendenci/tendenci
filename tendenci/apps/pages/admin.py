@@ -9,7 +9,7 @@ from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.pages.models import Page
 from tendenci.apps.pages.forms import PageAdminForm
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -125,7 +125,7 @@ class PageAdmin(admin.ModelAdmin):
                 meta = instance.meta
             else:
                 meta = MetaTags()
-            
+
             meta.title = form.cleaned_data['meta_title']
             meta.description = form.cleaned_data['meta_description']
             meta.keywords = form.cleaned_data['meta_keywords']

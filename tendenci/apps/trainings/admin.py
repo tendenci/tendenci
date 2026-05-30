@@ -14,7 +14,7 @@ from django.db.models import Sum
 from django.db.models import F
 
 from tendenci.libs.utils import python_executable
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 from .models import (SchoolCategory, Certification,
                      CertCat, Course, Transcript,
                      TeachingActivity,
@@ -46,10 +46,10 @@ class TeachingActivityAdmin(admin.ModelAdmin):
             'status_detail',
             'date',
             'description',
-            
+
         )},),
     )
-    
+
     autocomplete_fields = ('user',)
 
     class Media:
@@ -93,7 +93,7 @@ class OutsideSchoolAdmin(admin.ModelAdmin):
             'certification_track',
             'status_detail',
             'description',
-            
+
         )},),
     )
     autocomplete_fields = ('user',)
@@ -209,7 +209,7 @@ class ExamAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
-    
+
     @mark_safe
     def show_user(self, instance):
         if instance.user:
@@ -265,7 +265,7 @@ class TranscriptAdmin(admin.ModelAdmin):
                     'certification_track',
                     'date',
                     'apply_to',
-                    'status', 
+                    'status',
                     ]
     list_display_links = ('edit_link',)
     search_fields = ['user__first_name',
@@ -334,7 +334,7 @@ class TranscriptAdmin(admin.ModelAdmin):
     #             return course.name
     #     return ""
     # show_course.short_description = 'Course'
-    
+
     @mark_safe
     def show_user(self, instance):
         if instance.user:
@@ -370,7 +370,7 @@ class CreditsFilter(SimpleListFilter):
     #
     #     if value == 1:
     #         required_credits_list = []
-    #         credits_needed = Decimal(3.5) # <=3.5 more credits needed towards any certification. hard-code it here for now 
+    #         credits_needed = Decimal(3.5) # <=3.5 more credits needed towards any certification. hard-code it here for now
     #         filter_or_list = []
     #         filter_exclude_list = []
     #         for cert in Certification.objects.all():
@@ -405,7 +405,7 @@ class CreditsFilter(SimpleListFilter):
             return queryset
 
         if value == 1:
-            credits_needed = Decimal(3.5) # <=3.5 more credits needed towards any certification. hard-code it here for now 
+            credits_needed = Decimal(3.5) # <=3.5 more credits needed towards any certification. hard-code it here for now
             queryset = queryset.filter(applicable_credits__gte=F('certification__required_credits') - credits_needed)
             queryset = queryset.exclude(applicable_credits__gte=F('certification__required_credits'))
 
@@ -453,7 +453,7 @@ class UserCertDataAdmin(admin.ModelAdmin):
             'diamond_9_dt',
         )},),
     )
-    
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(certification__enable_diamond=True)
@@ -475,7 +475,7 @@ class UserCertDataAdmin(admin.ModelAdmin):
                 )
         return ""
     show_user.short_description = 'User'
-   
+
     @mark_safe
     def show_transcript(self, instance):
         if instance.user:
@@ -524,9 +524,9 @@ class UserCreditAdmin(UserCertDataAdmin):
 
     def show_total_credits(self, instance):
         if instance:
-            return f'{instance.applicable_credits}/{instance.certification.required_credits}'    
+            return f'{instance.applicable_credits}/{instance.certification.required_credits}'
     show_total_credits.short_description = 'Applicable credits/Credits needed'
-    
+
     # def credits_required(self, instance):
     #     if instance.certification:
     #         return instance.certification.cert_required_credits()
@@ -559,12 +559,12 @@ class BluevoltExamImportAdmin(admin.ModelAdmin):
         if not change:
             obj.run_by = request.user
             obj.save()
-            
+
             subprocess.Popen([python_executable(), "manage.py",
                               "import_bluevolt_exams",
                               "--import_id",
-                              str(obj.id)])  
-    
+                              str(obj.id)])
+
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         extra_context = extra_context or {}
         extra_context['show_save_and_add_another'] = False
@@ -572,7 +572,7 @@ class BluevoltExamImportAdmin(admin.ModelAdmin):
         if object_id:
             extra_context['show_save'] = False
         return super().changeform_view(request, object_id, form_url, extra_context)
-    
+
     def get_form(self, request, obj=None, **kwargs):
         if not obj: # add
             kwargs['fields'] = ['date_from', 'date_to']

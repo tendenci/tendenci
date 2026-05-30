@@ -2,7 +2,7 @@ from warnings import warn
 from datetime import datetime
 from django.conf import settings
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 def static_url(request):
