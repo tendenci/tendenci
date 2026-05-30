@@ -92,8 +92,8 @@ class Command(BaseCommand):
         verbosity = options['verbosity']
         site_url = get_setting('site', 'global', 'siteurl')
         now = timezone.now()
-        today_tuple = (datetime(now.year, now.month, now.day, 0, 0, 0),
-                       datetime(now.year, now.month, now.day, 23, 59, 59))
+        today_tuple = (timezone.make_aware(datetime(now.year, now.month, now.day, 0, 0, 0)),
+                       timezone.make_aware(datetime(now.year, now.month, now.day, 23, 59, 59)))
 
         # get a list of upcoming events that are specified to send reminders.
         events = Event.objects.filter(start_dt__gt=now,
