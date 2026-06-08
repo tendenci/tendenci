@@ -1,4 +1,4 @@
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 from bbcode import Parser
 from django.forms import Textarea
 from django.template.loader import get_template

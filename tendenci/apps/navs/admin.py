@@ -4,7 +4,7 @@ from django.utils.translation import ngettext
 from django.contrib import messages
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 from tendenci.apps.navs.forms import NavForm, ItemAdminForm
 from tendenci.apps.navs.models import Nav, NavItem
 
@@ -60,7 +60,7 @@ class NavAdmin(TendenciBaseModelAdmin):
                 '%d navs were successfully marked as Inactive.',
                 updated,
             ) % updated, messages.SUCCESS)
-    
+
     inactivate_selected.short_description = 'Mark selected navs as Inactive'
 
     def has_delete_permission(self, request, obj=None):

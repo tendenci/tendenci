@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.staff.models import Staff, Position, Department, StaffFile
 from tendenci.apps.staff.forms import StaffForm, FileForm
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class FileAdmin(admin.StackedInline):

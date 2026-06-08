@@ -1,4 +1,4 @@
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 from markdown import Markdown
 import bleach

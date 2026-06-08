@@ -4,7 +4,7 @@ from tendenci.apps.registry.sites import site
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.jobs.models import Job
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class JobRegistry(CoreRegistry):

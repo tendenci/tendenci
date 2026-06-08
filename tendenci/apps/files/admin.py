@@ -9,7 +9,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.files.models import File, MultipleFile, FilesCategory
 from tendenci.apps.files.forms import MultiFileForm, FilewithCategoryForm, FileCategoryForm
-from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.theme.templatetags.tendenci_static import static
 
 
 class FileAdmin(TendenciBaseModelAdmin):
