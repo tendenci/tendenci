@@ -8,7 +8,7 @@ import time as ttime
 from datetime import datetime, timedelta
 from datetime import date
 import csv
-from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY, YEARLY
+from dateutil_rs.rrule import rrule, DAILY, WEEKLY, MONTHLY, YEARLY
 from decimal import Decimal
 import dateutil.parser as dparser
 
