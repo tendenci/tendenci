@@ -1,3 +1,10 @@
+### 16.15 [2026-6-11]
+
+* Renamed templatetags static to resolve the issue [#1408](https://github.com/tendenci/tendenci/issues/1408) (Thanks to @rob-hills).
+* Turned off the setting USE_TZ by default. Reasons: 1) No added value as Postgresql already stores the datetime fields with timezone. 2) It doesn't seamlessly work with the events that need multiple timezones support).
+* Other bugfixes.
+
+
 ### 16.14 [2026-5-28]
 
 * Fixed an error when joining Zoom webinar.
