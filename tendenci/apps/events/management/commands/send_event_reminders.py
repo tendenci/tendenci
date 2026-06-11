@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
+from django.conf import settings
 
 
 class Command(BaseCommand):
@@ -9,9 +10,6 @@ class Command(BaseCommand):
 
     Usage: ./manage.py send_event_reminders --verbosity=2
     """
-    
-
-    
 
     def handle(self, *args, **options):
         from django.utils import timezone
@@ -92,8 +90,12 @@ class Command(BaseCommand):
         verbosity = options['verbosity']
         site_url = get_setting('site', 'global', 'siteurl')
         now = timezone.now()
-        today_tuple = (timezone.make_aware(datetime(now.year, now.month, now.day, 0, 0, 0)),
-                       timezone.make_aware(datetime(now.year, now.month, now.day, 23, 59, 59)))
+        if settings.USE_TZ:
+            today_tuple = (timezone.make_aware(datetime(now.year, now.month, now.day, 0, 0, 0)),
+                           timezone.make_aware(datetime(now.year, now.month, now.day, 23, 59, 59)))
+        else:
+            today_tuple = (datetime(now.year, now.month, now.day, 0, 0, 0),
+                           datetime(now.year, now.month, now.day, 23, 59, 59))
 
         # get a list of upcoming events that are specified to send reminders.
         events = Event.objects.filter(start_dt__gt=now,

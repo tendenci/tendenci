@@ -26,6 +26,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.html import strip_tags
 from django.db.models.functions import Lower
 from django.utils import timezone
+from django.conf import settings
 # from django.views.generic import UpdateView
 # from django.utils.decorators import method_decorator
 from django.http import JsonResponse
@@ -819,8 +820,10 @@ def password_change_done(request, id, template_name='registration/custom_passwor
 ### REPORTS ###########################################################################
 
 def _user_events(from_date):
+    if settings.USE_TZ:
+        from_date = timezone.make_aware(from_date)
     return User.objects.all()\
-                .filter(eventlog__create_dt__gte=timezone.make_aware(from_date))\
+                .filter(eventlog__create_dt__gte=from_date)\
                 .annotate(event_count=Count('eventlog__pk'))
 
 @staff_member_required

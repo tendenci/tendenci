@@ -2885,6 +2885,7 @@ class Event(TendenciBaseModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.private_slug = self.private_slug or self.make_slug()
+            
         # Commenting it out - This line of code is causing an error on dumpdata:
         # "RecursionError: maximum recursion depth exceeded while calling a Python object"
         #self._original_repeat_of = self.repeat_of
@@ -3960,14 +3961,27 @@ class Event(TendenciBaseModel):
         for n in range((end_date - start_date).days):
             yield start_date + timedelta(n)
 
+    def is_same_day(self, start_dt, end_dt):
+        """
+        Check if start_dt and end_dt are the same day
+        """
+        if settings.USE_TZ:
+            if self.timezone and self.timezone.key != settings.TIME_ZONE:
+                if timezone.is_aware(start_dt):
+                    start_dt = start_dt.astimezone(self.timezone)
+                if timezone.is_aware(end_dt):
+                    end_dt = end_dt.astimezone(self.timezone)
+
+        return start_dt.date() == end_dt.date()
+            
+
     def date_spans(self):
         """
         Returns a list of date spans.
         e.g. s['start_dt'], s['end_dt'], s['same_date']
         """
-
         if self.on_weekend or self.has_any_child_events:
-            same_date = self.start_dt.date() == self.end_dt.date()
+            same_date = self.is_same_day(self.start_dt, self.end_dt)
             yield {'start_dt':self.start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
             return
 
@@ -3982,12 +3996,12 @@ class Event(TendenciBaseModel):
                 end_dt = date.replace(hour=self.end_dt.hour, minute=self.end_dt.minute, second=self.end_dt.second)
 
             if start_dt and end_dt:
-                same_date = start_dt.date() == end_dt.date()
+                same_date = self.is_same_day(start_dt, end_dt)
                 yield {'start_dt':start_dt, 'end_dt':end_dt, 'same_date':same_date}
                 start_dt = end_dt = None  # reset
 
         if start_dt and not end_dt:
-            same_date = start_dt.date() == self.end_dt.date()
+            same_date = self.is_same_day(start_dt, self.end_dt)
             yield {'start_dt':start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
 
     def get_child_events_days(self, params):

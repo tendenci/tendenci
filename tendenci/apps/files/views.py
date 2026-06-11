@@ -665,7 +665,9 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
     """
     Displays a table of files sorted by views/downloads.
     """
-    start_dt = timezone.make_aware(timezone.datetime.today() + relativedelta(months=-2))
+    start_dt = timezone.datetime.today() + relativedelta(months=-2)
+    if settings.USE_TZ:
+        start_dt = timezone.make_aware(start_dt)
     end_dt = timezone.now()
     file_type = 'all'
 
@@ -679,8 +681,11 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
-            start_dt = timezone.make_aware(form.cleaned_data['start_dt'])
-            end_dt = timezone.make_aware(form.cleaned_data['end_dt'])
+            start_dt = form.cleaned_data['start_dt']
+            end_dt = form.cleaned_data['end_dt']
+            if settings.USE_TZ:
+                start_dt = timezone.make_aware(start_dt)
+                end_dt = timezone.make_aware(end_dt)
             file_type = form.cleaned_data['file_type']
 
     event_logs = EventLog.objects.values('object_id').filter(

@@ -2133,8 +2133,11 @@ def membership_join_report(request):
     start_date = ''
     end_date = ''
 
-    start_date = timezone.make_aware(TODAY - relativedelta(months=1))
-    end_date = timezone.make_aware(TODAY)
+    start_date = TODAY - relativedelta(months=1)
+    end_date = TODAY
+    if settings.USE_TZ:
+        start_date = timezone.make_aware(start_date)
+        end_date = timezone.make_aware(end_date)
 
     if request.method == 'POST':
         form = ReportForm(request.POST)
@@ -2156,7 +2159,9 @@ def membership_join_report(request):
             'start_date': start_date.strftime('%m/%d/%Y'),
             'end_date': end_date.strftime('%m/%d/%Y')})
 
-    end_date_time = timezone.make_aware(datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59))
+    end_date_time = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59)
+    if settings.USE_TZ:
+        end_date_time = timezone.make_aware(end_date_time)
     memberships = memberships.filter(application_approved_dt__gte=start_date,
                                      application_approved_dt__lt=end_date_time)
     memberships = memberships.filter(renewal=False).distinct('user__id', 'membership_type__id')
@@ -2761,8 +2766,10 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
     for index, month in enumerate(itermonths):
         index = index + 1
         start_dt = datetime(year_selected, index, 1)
-        end_dt = timezone.make_aware(start_dt + relativedelta(months=1))
-        start_dt = timezone.make_aware(start_dt)
+        end_dt = start_dt + relativedelta(months=1)
+        if settings.USE_TZ:
+            end_dt = timezone.make_aware(end_dt)
+            start_dt = timezone.make_aware(start_dt)
         members = active_mems.filter(application_approved_dt__gte=start_dt,
                                       application_approved_dt__lt=end_dt)
         new_mems = members.filter(renewal=False).distinct('user__id',

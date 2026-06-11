@@ -282,6 +282,9 @@ def details(request, id=None, private_slug='', template_name="events/view.html")
         return HttpResponseRedirect(reverse('event.month'))
 
     event = get_object_or_404(Event.objects.get_all(), pk=id)
+    if settings.USE_TZ:
+        if event.timezone and event.timezone.key != settings.TIME_ZONE:
+            timezone.activate(event.timezone)
 
     days = []
     if not event.on_weekend:
@@ -353,7 +356,7 @@ def details(request, id=None, private_slug='', template_name="events/view.html")
         if event.files.all().exists() and event.allow_view_eventfiles_by(request.user):
             can_view_eventfiles = True
 
-    return render_to_resp(request=request, template_name=template_name, context={
+    return_val = render_to_resp(request=request, template_name=template_name, context={
         'days': days,
         'event': event,
         'speakers': speakers,
@@ -373,6 +376,10 @@ def details(request, id=None, private_slug='', template_name="events/view.html")
         'registrant_user': request.user if my_registrants and my_registrants[0].reg8n_status() != 'payment-required' else None,
         'my_registrants': my_registrants,
     })
+    if settings.USE_TZ:
+        if event.timezone and event.timezone.key != settings.TIME_ZONE:
+            timezone.deactivate()
+    return return_val
 
 
 @is_enabled('events')
@@ -476,11 +483,16 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         end_dt = form.cleaned_data.get('end_dt', None)
         cat = form.cleaned_data.get('search_category', None)
         try:
-            start_dt = timezone.make_aware(datetime.strptime(start_dt, '%Y-%m-%d'))
+            start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
+            if settings.USE_TZ:
+                start_dt = timezone.make_aware(start_dt)        
         except:
             start_dt = timezone.now()
         try:
-            end_dt = timezone.make_aware(datetime.strptime(end_dt, '%Y-%m-%d'))
+            if settings.USE_TZ:
+                end_dt = timezone.make_aware(datetime.strptime(end_dt, '%Y-%m-%d'))
+            else:
+                end_dt = datetime.strptime(end_dt, '%Y-%m-%d')
         except:
             end_dt = None
 
@@ -6217,7 +6229,11 @@ def reports_financial(request, template_name="events/financial_reports.html"):
         sort_by = form.cleaned_data.get('sort_by') or 'start_dt'
         sort_direction = form.cleaned_data.get('sort_direction')
     else:
-        events = events.filter(Q(start_dt__gte=timezone.make_aware(form.initial_start_dt)) & Q(start_dt__lte=timezone.make_aware(form.initial_end_dt)))
+        if settings.USE_TZ:
+            events = events.filter(Q(start_dt__gte=timezone.make_aware(form.initial_start_dt)) & Q(start_dt__lte=timezone.make_aware(form.initial_end_dt)))
+        else:
+            events = events.filter(Q(start_dt__gte=form.initial_start_dt) & Q(start_dt__lte=form.initial_end_dt))
+
 
     if event_type:
         events = events.filter(type_id=event_type)
