@@ -347,11 +347,13 @@
                             {% endif %}
 
                             {% if can_edit_event or can_view_registrant %}
+                                {% if not event.parent %} 
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'event.registrant.search' app_object.pk %}">{% trans "Search Registrants" %}</a>
                                     </span>
                                 </li>
+								{% endif %}
 
 								{% if event.nested_events_enabled and event.parent %}
 								<li class="content-item">
