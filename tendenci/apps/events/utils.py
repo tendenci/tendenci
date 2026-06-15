@@ -32,7 +32,7 @@ from django.utils import timezone
 from tendenci.apps.events.models import (Event, Place, Speaker, Organizer, Sponsor,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption, CustomRegField, Type,
-    TypeColorSet, RecurringEvent, EventCredit, EventStaff)
+    TypeColorSet, RecurringEvent, EventCredit, EventStaff, RegistrantChildEvent)
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.site_settings.utils import get_setting
@@ -831,17 +831,37 @@ def email_registrants(event, email, **kwargs):
     #reg8ns = Registration.objects.filter(event=event)
 
     payment_status = kwargs.get('payment_status', 'all')
-
-    if payment_status == 'all':
-        registrants = event.registrants()
-    elif payment_status == 'paid':
-        registrants = event.registrants(with_balance=False)
-    elif payment_status == 'not-paid':
-        registrants = event.registrants(with_balance=True)
-    else:
+    if payment_status not in ('all', 'paid', 'not-paid'):
         raise Exception(
             'Acceptable payment_status field value not found'
         )
+    if payment_status == 'paid':
+        with_balance = False
+    elif payment_status == 'not-paid':
+        with_balance = True
+    else:
+        with_balance = None
+
+    if event.parent:
+        # this event is a child event
+        if with_balance is not None:
+            registrants = event.parent.registrants(with_balance=with_balance)
+        else:
+            registrants = event.parent.registrants()
+    else:
+        if with_balance is not None:
+            registrants = event.registrants(with_balance=with_balance)
+        else:
+            registrants = event.registrants()
+
+    if event.parent:
+        child_event_registrant_ids = RegistrantChildEvent.objects.filter(
+                            child_event=event).values_list('registrant_id', flat=True)
+        registrants = registrants.filter(id__in=child_event_registrant_ids)
+
+    count = registrants.count()
+    if count == 0:
+        return count
 
     # i had these two lines initially to temporarily hold the original email body
     # please DO NOT remove them. Otherwise, all recipients would have the same names.
@@ -880,6 +900,7 @@ def email_registrants(event, email, **kwargs):
             email.send()
 
         email.body = tmp_body  # restore to the original
+    return count
 
 def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
     site_label = get_setting('site', 'global', 'sitedisplayname')

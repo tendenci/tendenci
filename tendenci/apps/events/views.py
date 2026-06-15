@@ -5103,31 +5103,37 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
 
             registrant_kwargs = {}
             registrant_kwargs['payment_status'] = form.cleaned_data['payment_status']
-            email_registrants(event, email, **registrant_kwargs)
+            total_sent = email_registrants(event, email, **registrant_kwargs)
 
-            registrant_kwargs['summary'] = '<font face=""Arial"" color=""#000000"">'
-            registrant_kwargs['summary'] += 'Emails sent as a result of Calendar Event Notification</font><br><br>'
-            registrant_kwargs['summary'] += '<font face=""Arial"" color=""#000000"">'
-            registrant_kwargs['summary'] += '<br><br>Email Sent Appears Below in Raw Format'
-            registrant_kwargs['summary'] += '</font><br><br>'
-            registrant_kwargs['summary'] += email.body
-
-            # send summary
-            email.subject = 'SUMMARY: %s' % email.subject
-            email.body = registrant_kwargs['summary']
-            email.recipient = request.user.email
-            email.send()
-
-            # send another copy to the site webmaster
-            email.recipient = get_setting('site', 'global', 'sitewebmasteremail')
-            if email.recipient:
-                email.subject = 'WEBMASTER SUMMARY: %s' % email.subject
-                email.body = '<h2>Site Webmaster Notification of Calendar Event Send</h2>%s' % email.body
+            if total_sent > 0:
+                registrant_kwargs['summary'] = '<font face=""Arial"" color=""#000000"">'
+                registrant_kwargs['summary'] += 'Emails sent as a result of Calendar Event Notification</font><br><br>'
+                registrant_kwargs['summary'] += '<font face=""Arial"" color=""#000000"">'
+                registrant_kwargs['summary'] += '<br><br>Email Sent Appears Below in Raw Format'
+                registrant_kwargs['summary'] += '</font><br><br>'
+                registrant_kwargs['summary'] += email.body
+    
+                # send summary
+                email.subject = 'SUMMARY: %s' % email.subject
+                email.body = registrant_kwargs['summary']
+                email.recipient = request.user.email
                 email.send()
-
-            EventLog.objects.log(instance=email)
-            msg_string = 'Successfully sent email "{}" to event registrants for event "{}".'.format(subject, event.title)
-            messages.add_message(request, messages.SUCCESS, msg_string)
+    
+                # send another copy to the site webmaster
+                email.recipient = get_setting('site', 'global', 'sitewebmasteremail')
+                if email.recipient:
+                    email.subject = 'WEBMASTER SUMMARY: %s' % email.subject
+                    email.body = '<h2>Site Webmaster Notification of Calendar Event Send</h2>%s' % email.body
+                    email.send()
+    
+                EventLog.objects.log(instance=email)
+                msg_string = 'Successfully sent email "{}" to event registrants for event "{}".'.format(subject, event.title)
+                messages.add_message(request, messages.SUCCESS, msg_string)
+            else:
+                msg_string = 'No registrants found for event "{}".'.format(event.title)
+                if registrant_kwargs['payment_status'] and registrant_kwargs['payment_status'] != 'all':
+                    msg_string = 'No registrants found for event "{}" with payment status "{}".'.format(event.title, registrant_kwargs['payment_status'])
+                messages.add_message(request, messages.WARNING, msg_string)
 
             return HttpResponseRedirect(reverse('event', args=([event_id])))
 

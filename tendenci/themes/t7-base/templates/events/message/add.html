@@ -22,7 +22,13 @@
 
             <div class="recipient-set">{{ form.payment_status }}</div>
 
-            <div class="message-item"><a href="{% url "event.registrant.roster" event.id %}">{% trans "View all registrant(s)" %}</a></div>
+            <div class="message-item">
+            {% if event.parent %} 
+            <a href="{% url "event.registrant.sub_event.roster" event.id %}">{% trans "View all registrant(s)" %}</a>
+            {% else %}
+            <a href="{% url "event.registrant.roster" event.id %}">{% trans "View all registrant(s)" %}</a>
+            {% endif %}
+            </div>
 
             <div class="message-item">
                 <p><strong>{{ form.subject.label }}:</strong></p>
