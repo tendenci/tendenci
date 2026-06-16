@@ -89,8 +89,14 @@
 	          {% endif %}
 	          <li><a href="{% url "event.ics_single" event.pk %}">{% trans "Export" %}</a></li>
 	          <li><a href="{% url "event.edit.meta" event.pk %}">{% trans "Edit Meta" %}</a></li>
+	          {% if not event.parent %} 
 	          <li><a href="{% url "event.registrant.search" event.pk %}">{% trans "Registrants" %}</a></li>
+	          {% endif %}
+	          {% if event.nested_events_enabled and event.parent %}
+	          <li><a href="{% url "event.registrant.sub_event.roster" event.pk %}">{% trans "Registrant Roster" %}</a></li>
+	          {% else %}
 	          <li><a href="{% url "event.registrant.roster" event.pk %}">{% trans "Registrant Roster" %}</a></li>
+	          {% endif %}
 	          
           {% endif %}
           
