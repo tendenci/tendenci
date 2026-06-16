@@ -71,12 +71,16 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
     if settings.USE_S3_STORAGE:
         if not default_storage.exists(file.name):
             raise Http404
-        image = Image.open(default_storage.open(file.name))
+        try:
+            image = Image.open(default_storage.open(file.name))
+        except Image.UnidentifiedImageError:
+            print('Skipping corrupted image')
+            raise Http404
     else:
         if hasattr(file, 'path') and exists(file.path):
             try:
                 image = Image.open(file.path)  # get image
-            except Image.DecompressionBombError:
+            except (Image.DecompressionBombError, Image.UnidentifiedImageError):
                 raise Http404
         else:
             raise Http404
