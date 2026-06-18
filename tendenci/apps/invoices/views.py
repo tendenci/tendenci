@@ -204,6 +204,9 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
         form = MarkAsPaidForm(request.POST, request=request, invoice=invoice)
 
         if form.is_valid():
+            if not invoice.is_tendered:
+                invoice.tender(request.user)
+
             update_obj = form.cleaned_data.get('update_obj', None)
 
             # make payment record
