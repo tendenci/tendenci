@@ -933,6 +933,7 @@ class UserUploadForm(forms.ModelForm):
                      Group.objects.filter(status=True, status_detail='active'
                                           ).exclude(type__in=['membership', 'system_generated'])]
         self.fields['group_id'].choices = GROUP_CHOICES
+        self.fields['exclude_is_active'].initial = True
 
     def clean_upload_file(self):
         key = self.cleaned_data['key']
