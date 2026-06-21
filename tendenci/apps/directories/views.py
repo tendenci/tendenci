@@ -17,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from django.db.models.query_utils import Q
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
@@ -128,8 +129,9 @@ def search(request, my_directories_only=False, template_name="directories/search
             directories = directories.filter( **search_filter)
 
     if not request.user.is_superuser:
-        directories = directories.exclude(activation_dt__gt=timezone.now())
-        directories = directories.exclude(expiration_dt__lt=timezone.now())
+        now = timezone.now()
+        directories = directories.filter(Q(expiration_dt__isnull=True) | Q(expiration_dt__gt=now))
+        directories = directories.exclude(activation_dt__gt=now)
 
     directories = directories.order_by('headline')
 
@@ -576,9 +578,12 @@ def approve(request, id, template_name="directories/approve.html"):
 
     directory = get_object_or_404(Directory, pk=id)
 
+    if not directory.is_pending():
+        return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
+
     if request.method == "POST":
         directory.activation_dt = timezone.now()
-        directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
+        directory.expiration_dt = directory.get_expiration_dt()
         directory.allow_anonymous_view = True
         directory.status = True
         directory.status_detail = 'active'

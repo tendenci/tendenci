@@ -310,8 +310,10 @@ class DirectoryForm(TendenciBaseForm):
                                                         ('inactive',_('Inactive')),
                                                         ('pending',_('Pending')),
                                                         ('paid - pending approval', _('Paid - Pending Approval')),)
+            self.is_associated_with_membership = self.instance.is_associated_with_membership()
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+            self.is_associated_with_membership = False
 
         if self.instance.logo:
             self.initial['logo'] = self.instance.logo
@@ -332,10 +334,14 @@ class DirectoryForm(TendenciBaseForm):
 
         if 'payment_method' in self.fields:
             self.fields['payment_method'] = forms.ChoiceField(widget=forms.RadioSelect, choices=get_payment_method_choices(self.user))
+
         if 'pricing' in self.fields:
-            self.fields['pricing'].choices = get_duration_choices(self.user)
-            if not self.user.is_superuser:
-                self.fields['pricing'].help_text = ''
+            if self.is_associated_with_membership:
+                del self.fields['pricing']
+            else:
+                self.fields['pricing'].choices = get_duration_choices(self.user)
+                if not self.user.is_superuser:
+                    self.fields['pricing'].help_text = ''
 
         self.fields['timezone'].initial = settings.TIME_ZONE
         self.fields['timezone'].required = False

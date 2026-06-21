@@ -572,7 +572,7 @@ class CorpProfile(TendenciBaseModel):
                           'logo_file': self.logo,
                           'slug': self.get_directory_slug(),
                           'guid': str(uuid.uuid4()),
-                          'requested_duration': 365,
+                          #'requested_duration': 365,
                           'address': self.address,
                           'address2': self.address2,
                           'city': self.city,
@@ -1365,9 +1365,10 @@ class CorpMembership(TendenciBaseModel):
             # directory
             if self.corp_profile.directory:
                 directory = self.corp_profile.directory
+                directory.expiration_dt = self.expiration_dt
                 if directory.status_detail != 'active':
                     directory.status_detail = 'active'
-                    directory.save()
+                directory.save()
 
             # 2) approve the individual memberships
             group = self.corporate_membership_type.membership_type.group

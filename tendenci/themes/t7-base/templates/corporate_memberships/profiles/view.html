@@ -281,8 +281,9 @@
 
 {% include "corporate_memberships/timeline.html" %}
 
+{% with corp_membership as corporate_membership %}
 {% include "corporate_memberships/directory_link.html" %}
-
+{% endwith %}
   </div>
 </div> 
   {% if request.user.is_superuser or is_rep %}

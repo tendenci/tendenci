@@ -1305,6 +1305,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         self.membership_app = kwargs.pop('membership_app')
         multiple_membership = kwargs.pop('multiple_membership', False)
         self.is_renewal = kwargs.pop('is_renewal', False)
+        self.directory = kwargs.pop('directory', None)
         self.renew_from_id = kwargs.pop('renew_from_id', None)
         self.edit_mode = kwargs.pop('edit_mode', False)
 
@@ -1545,6 +1546,9 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         membership.renewal = self.is_renewal
         if self.renew_from_id:
             membership.renew_from_id = self.renew_from_id
+
+            if self.directory:
+                membership.directory = self.directory
 
         # set app
         membership.app = self.membership_app

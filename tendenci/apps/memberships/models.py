@@ -1055,9 +1055,10 @@ class MembershipDefault(TendenciBaseModel):
         else:
             # directory - set to active on renewal
             if self.directory:
+                self.directory.expiration_dt = self.expire_dt
                 if self.directory.status_detail != 'active':
                     self.directory.status_detail = 'active'
-                    self.directory.save()
+                self.directory.save()
 
         # auto-apply chapter membership, if enabled
         if request and self.chapter:

@@ -378,6 +378,27 @@ class Directory(TendenciBaseModel):
         if membership:
             return membership.membership_type
 
+    def is_associated_with_membership(self):
+        """
+        Check if this directory is associated with a membership or a corporate membership.
+        """
+        return self.get_corp_profile() or self.membershipdefault_set.all().exists()
+
+    def get_expiration_dt(self):
+        corp_profile = self.get_corp_profile()
+        if corp_profile:
+            corp_membership = corp_profile.corp_membership
+            if corp_membership:
+                return corp_membership.expiration_dt
+        membership = self.get_membership()
+        if membership:
+            return membership.expire_dt
+
+        return self.activation_dt + timedelta(days=self.requested_duration)    
+
+    def is_pending(self):
+        return self.status_detail in ('paid - pending approval', 'pending')
+
     def is_owner(self, user_this):
         if not user_this or not user_this.is_authenticated:
             return False

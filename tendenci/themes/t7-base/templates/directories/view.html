@@ -20,7 +20,7 @@
 				{% if request.user.is_superuser or directory_owner_with_membership %}
 	           	<a href="{% url 'directory.edit' directory.id %}" class="btn btn-default">{% trans "Edit" %}</a>
 	            {% endif %}
-                {% if directory.status_detail == 'pending' %}
+                {% if directory.is_pending %}
             	{% if request.user.is_superuser %}
 	     	     <a href="{% url 'directory.approve' directory.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
             	{% endif %}
