@@ -175,7 +175,7 @@ div.small-font {
         <!-- event description -->
         <div class="content">
           <h4 class="time-period">Description</h4>
-          <div class="event-desc">{{ event.description|safe }}</div>
+          <div class="event-desc" itemprop="description">{{ event.description|safe }}</div>
         </div>
         
         <br />
@@ -349,40 +349,42 @@ div.small-font {
         
       </div>
       
-      <div class="vitals place" itemprop="location" itemscope itemtype="https://schema.org/PostalAddress">
+      <div class="vitals place" itemprop="location" itemscope itemtype="https://schema.org/Place">
         <h4 class="time-period">{% trans "Location" %}</h4>
-        <p><strong>{{ event.place.name }}</strong></p>
-        <p>
-			{% if event.place.virtual %}
-				{% include 'events/include/display_virtual.html' %}
-			{% else %}
-			  {{ event.place.address }}<br />
-	          {{ event.place.city_state|join:", "}} {{ event.place.zip }}<br />
-			  {% if event.place.county %}
-				{{ event.place.county }}<br />
-			  {% endif %}
-	          {{ event.place.country }}
-			{% endif %}
-			{% if event.place.national %}
-				{% include 'events/include/display_national.html' %}
-			{% endif %}
-		</p>
-        
-        {% if event.place.description|striptags|wordcount > 50 %}
-        <div class="line event-place-desc-short">
-          {{ event.place.description|striptags|truncatewords:"50"|safe }}
-        </div>
-        <div class="line event-place-desc-long">
-          {{ event.place.description|safe|linebreaks }}
-        </div>
-        {% else %}
-        <div class="line event-place-desc-short">
-          {{ event.place.description|safe|linebreaks }}
-        </div>
-        {% endif %}
-        {% if event.place.description|striptags|wordcount > 50 %}
-        <a class="line event-place-desc-toggle" href="#">{% trans "Full Description" %}</a>
-        {% endif %}
+        <p><strong itemprop="name">{{ event.place.name }}</strong></p>
+          <div class="vitals place" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+            <p>
+    			{% if event.place.virtual %}
+    			    <span itemprop="name">{% include 'events/include/display_virtual.html' %}</span>
+    			{% else %}
+    			  <span itemprop="streetAddress">{{ event.place.address }}</span><br />
+    	          <span itemprop="addressLocality">{{ event.place.city_state|join:", "}}</span> <span itemprop="postalCode">{{ event.place.zip }}</span><br />
+    			  {% if event.place.county %}
+    				{{ event.place.county }}<br />
+    			  {% endif %}
+    	          <span itemprop="addressCountry">{{ event.place.country }}</span>
+    			{% endif %}
+    			{% if event.place.national %}
+    				{% include 'events/include/display_national.html' %}
+    			{% endif %}
+    		</p>
+            
+            {% if event.place.description|striptags|wordcount > 50 %}
+            <div class="line event-place-desc-short">
+              {{ event.place.description|striptags|truncatewords:"50"|safe }}
+            </div>
+            <div class="line event-place-desc-long">
+              <span itemprop="description">{{ event.place.description|safe|linebreaks }}</span>
+            </div>
+            {% else %}
+            <div class="line event-place-desc-short">
+              <span itemprop="description">{{ event.place.description|safe|linebreaks }}</span>
+            </div>
+            {% endif %}
+            {% if event.place.description|striptags|wordcount > 50 %}
+            <a class="line event-place-desc-toggle" href="#">{% trans "Full Description" %}</a>
+            {% endif %}
+          </div>
       </div>
       
       {% if event.registration_configuration.enabled %}
