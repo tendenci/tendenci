@@ -56,7 +56,7 @@
          
 	          ({% trans "Ends" %} 
 	          {{ price.end_dt|date:"m/d/Y" }})
-	          <span itemprop="priceCurrency" content="USD" />
+	          <span itemprop="priceCurrency" content="{{ SITE_GLOBAL_CURRENCY }}" />
 		{% if MODULE_EVENTS_RBONPRICINGLIST %}
           </span>
 		{% endif %}
