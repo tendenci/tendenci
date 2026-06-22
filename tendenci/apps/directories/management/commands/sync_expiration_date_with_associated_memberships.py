@@ -15,9 +15,21 @@ class Command(BaseCommand):
         for directory in Directory.objects.filter(status=True):
             if directory.is_associated_with_membership():
                 if directory.expiration_dt:
-                    new_expiration_dt = directory.get_expiration_dt()
+                    corp_profile = directory.get_corp_profile()
+                    if corp_profile:
+                        corp_membership = corp_profile.corp_memberships.filter(
+                                    status=True,
+                                    status_detail = 'active').first()
+                        if corp_membership:
+                            new_expiration_dt = corp_membership.expiration_dt
+                        else:
+                            continue
+                    else:
+                        new_expiration_dt = directory.get_expiration_dt()
+
                     if new_expiration_dt > now:
                         if directory.expiration_dt < new_expiration_dt:
+                            
                             print('Updating ', directory)
                             directory.expiration_dt = new_expiration_dt
                             if directory.status_detail == 'inactive':
