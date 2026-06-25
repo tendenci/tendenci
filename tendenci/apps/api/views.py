@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-import simplejson
+import json
 from django.views.decorators.csrf import csrf_exempt
 from .utils import validate_api_request
 
@@ -34,8 +34,8 @@ def api_rp(request):
     #result_code_error = {'result_code': 'E005'}  # Not currently used
 
     try:
-        data = simplejson.loads(request.raw_post_data)
-    except simplejson.JSONDecodeError:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
         data = ''
 
     if not isinstance(data, dict):
@@ -70,4 +70,4 @@ def api_rp(request):
     else:
         ret_data.update(result_code_invalid)
 
-    return HttpResponse(simplejson.dumps(ret_data), content_type='application/json')
+    return HttpResponse(json.dumps(ret_data), content_type='application/json')
