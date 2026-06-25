@@ -9,8 +9,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.registry.sites import site as registry_site
 from tendenci.apps.event_logs.models import EventLog
+
 try:
     from tendenci.apps.corporate_memberships.models import CorpMembership as CorpMemb
 except:
@@ -34,26 +34,6 @@ apps_not_to_search = [
     'nav',
 ]
 
-registered_apps = registry_site.get_registered_apps()
-registered_apps_names = [app['model']._meta.model_name for app in registered_apps
-                        if app['verbose_name'].lower() not in apps_not_to_search]
-registered_apps_models = [app['model'] for app in registered_apps
-                         if app['verbose_name'].lower() not in apps_not_to_search]
-
-
-def model_choices(site=None):
-    if site is None:
-        site = haystack.connections['default'].unified_index()
-
-    choices = []
-    for m in site.get_indexed_models():
-        if m._meta.model_name.lower() in registered_apps_names:
-            if get_setting("module", m._meta.app_label, "enabled") is not False:
-                choices.append(("{}.{}".format(m._meta.app_label, m._meta.model_name),
-                                capfirst(str(m._meta.verbose_name_plural))))
-
-    return sorted(choices, key=lambda x: x[1])
-
 
 class SearchForm(forms.Form):
     q = forms.CharField(required=False, label=_('Search'), max_length=255)
@@ -62,6 +42,8 @@ class SearchForm(forms.Form):
         self.searchqueryset = kwargs.get('searchqueryset', None)
         self.load_all = kwargs.get('load_all', False)
         self.user = kwargs.get('user', None)
+        self.registered_models = self.get_registered_models()
+        self.registered_names = [model._meta.model_name for model in self.registered_models]
 
         if self.searchqueryset is None:
             self.searchqueryset = SearchQuerySet()
@@ -82,6 +64,21 @@ class SearchForm(forms.Form):
             pass
 
         super().__init__(*args, **kwargs)
+
+    def get_registered_models(self):
+        site = haystack.connections['default'].unified_index()
+        registered_models = [m for m in site.get_indexed_models()
+                             if m._meta.model_name not in apps_not_to_search
+                             and get_setting("module", m._meta.app_label, "enabled") is not False]
+        return sorted(registered_models, key=lambda m: m._meta.model_name)
+
+    def model_choices(self):
+        choices = []
+        for m in self.registered_models:
+            choices.append(("{}.{}".format(m._meta.app_label, m._meta.model_name),
+                            capfirst(str(m._meta.verbose_name_plural))))
+    
+        return sorted(choices, key=lambda x: x[1])
 
     def search(self, order_by='newest'):
         self.clean()
@@ -224,31 +221,32 @@ class ModelSearchForm(SearchForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Check to see if users should be included in global search
-        include_users = False
+        # Commenting it out as there is no indexes search for users and memberships.
+        # # Check to see if users should be included in global search
+        # include_users = False
+        #
+        # if kwargs['user'].profile.is_superuser or get_setting('module', 'users', 'allowanonymoususersearchuser') \
+        # or (kwargs['user'].is_authenticated and get_setting('module', 'users', 'allowusersearch')):
+        #     include_users = True
+        #
+        # if include_users:
+        #     for app in registered_apps:
+        #         if app['verbose_name'].lower() == 'user':
+        #             registered_apps_models.append(app['model'])
+        #             registered_apps_names.append(app['model']._meta.model_name)
+        # else:
+        #     for app in registered_apps:
+        #         if app['verbose_name'].lower() in ['user', 'membership']:
+        #             try:
+        #                 models_index = registered_apps_models.index(app['model'])
+        #                 registered_apps_models.pop(models_index)
+        #                 names_index = registered_apps_names.index(app['model']._meta.model_name)
+        #                 registered_apps_names.pop(names_index)
+        #             except Exception:
+        #                 pass
 
-        if kwargs['user'].profile.is_superuser or get_setting('module', 'users', 'allowanonymoususersearchuser') \
-        or (kwargs['user'].is_authenticated and get_setting('module', 'users', 'allowusersearch')):
-            include_users = True
-
-        if include_users:
-            for app in registered_apps:
-                if app['verbose_name'].lower() == 'user':
-                    registered_apps_models.append(app['model'])
-                    registered_apps_names.append(app['model']._meta.model_name)
-        else:
-            for app in registered_apps:
-                if app['verbose_name'].lower() in ['user', 'membership']:
-                    try:
-                        models_index = registered_apps_models.index(app['model'])
-                        registered_apps_models.pop(models_index)
-                        names_index = registered_apps_names.index(app['model']._meta.model_name)
-                        registered_apps_names.pop(names_index)
-                    except Exception:
-                        pass
-
-        self.models = registered_apps_models
-        self.fields['models'] = forms.MultipleChoiceField(choices=model_choices(), required=False, label=_('Search In'), widget=forms.CheckboxSelectMultiple)
+        self.models = self.registered_models
+        self.fields['models'] = forms.MultipleChoiceField(choices=self.model_choices(), required=False, label=_('Search In'), widget=forms.CheckboxSelectMultiple)
 
     def get_models(self):
         """Return an alphabetical list of model classes in the index."""
