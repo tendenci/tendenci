@@ -5,10 +5,9 @@ from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.base.utils import strip_html
 
 
-class VideoIndex(TendenciBaseSearchIndex):
+class VideoIndex(TendenciBaseSearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr='title')
     description = indexes.CharField(model_attr='description')
-    ordering = indexes.IntegerField(model_attr='ordering')
     category = indexes.CharField()
 
     # RSS fields
