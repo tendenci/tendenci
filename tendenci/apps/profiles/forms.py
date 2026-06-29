@@ -370,6 +370,8 @@ class ProfileForm(TendenciBaseForm):
                 if not get_setting('module', 'invoices', 'taxrateuseregions'):
                     self.fields['region'].required = False
 
+        self.fields['hide_email'].help_text = _('If you are hiding email it is best not to make your email your username.')
+
         # we make first_name, last_name, email, username and password as required field regardless
         # the rest of fields will be decided by the setting - UsersRequiredFields
         if self.required_fields_list:
