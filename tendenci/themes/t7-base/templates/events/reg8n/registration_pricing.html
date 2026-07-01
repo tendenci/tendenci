@@ -45,7 +45,9 @@
         {% for price in pricing %}
         <li>
 		{% if MODULE_EVENTS_RBONPRICINGLIST %}
-		   <input style="vertical-align:top;" type="radio" name="pricing_id" value="{{ price.id }}">
+			{% if pricing|length > 1 %}
+		   <input style="vertical-align:top;" type="radio" name="pricing_id" value="{{ price.id }}" />
+			{% endif %}
           <span for="price-{{ price.id }}">
 		{% endif %}
 				{{ price.title }}{% if price.target_display %} ({{ price.target_display }}) {% endif %}
