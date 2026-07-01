@@ -318,6 +318,12 @@ class Newsletter(models.Model):
             newsletter_new.email = email_new
 
         newsletter_new.save()
+        
+        # replace browser_view_url with the new one
+        newsletter_new.email.body = newsletter_new.email.body.replace(
+                                    self.get_browser_view_url(),
+                                    newsletter_new.get_browser_view_url())
+        newsletter_new.email.save()
 
         return newsletter_new
 
