@@ -147,10 +147,9 @@ def CustomCatpchaField(**kwargs):
             if score_threshold > 1 or score_threshold < 0:
                 score_threshold = 0.5
 
-            recaptcha_field = ReCaptchaField(label='', widget=ReCaptchaV3)
-            # set required_score
-            recaptcha_field.widget.attrs.update({'required_score': score_threshold})
+            recaptcha_field = ReCaptchaField(label='', widget=ReCaptchaV3(required_score=score_threshold))
             return recaptcha_field
+
         return ReCaptchaField(label='', widget=ReCaptchaV2)
 
     return CaptchaField(**kwargs)

@@ -1,0 +1,51 @@
+{# The provided implementation caters for only one reCAPTCHA on a page. Override this template and its logic as needed. #}
+<script>
+function loadRecaptchaApiJsOnce(url, callback) {
+    // Check and load the Recaptcha API js if not already loaded.
+    const scripts = document.querySelectorAll(`script[src="${url}"]`);
+    if (scripts.length > 0) {
+        return;
+    }
+
+    // If not, create and load the script
+    const script = document.createElement('script');
+    script.src = url;
+    script.onload = () => {
+        if (callback) callback();
+    };
+    document.head.appendChild(script);    
+}
+
+function recaptchaFormSubmit() {
+	grecaptcha.ready(function() {
+	    document.querySelectorAll('.g-recaptcha').forEach(element => {
+		    element.form.addEventListener('submit', function(event) {
+		    event.preventDefault();
+		    const clickedButton = event.submitter;
+		    {% if action %}
+            grecaptcha.execute('{{ public_key }}', {action: '{{ action|escape }}'})
+            {% else %}
+            grecaptcha.execute('{{ public_key }}', {})
+            {% endif %}
+	        .then(function(token) {
+	          console.log("reCAPTCHA validated. Setting input value...")
+              element.value = token;
+              // insert hidden input for submit button
+              const hiddenInput = document.createElement('input');
+              hiddenInput.type = 'hidden';
+              hiddenInput.name = clickedButton.name;
+              hiddenInput.value = clickedButton.value;
+              element.form.appendChild(hiddenInput);
+			  //console.log("token=", token);
+              element.form.submit();
+	        });
+	    });
+	  });
+	});
+}
+
+loadRecaptchaApiJsOnce("https://{{ recaptcha_domain }}/recaptcha/api.js?render={{ public_key }}{% if api_params %}&{{ api_params }}{% endif %}", recaptchaFormSubmit);
+
+</script>
+
+
