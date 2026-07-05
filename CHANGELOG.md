@@ -1,3 +1,13 @@
+### 16.16 [2026-7-5]
+
+* Synced the expiration date of directories with their associated memberships or corp memberships on join and renewal.
+* Resolved multiple warnings for index search.
+* Resolved 2 issues in Recaptcha V3: 1) not working with event registration. 2) not working on pages with multiple forms (either embedded or regular forms).
+* Fixed the issue about newsletter clone not updating the link "browser_view_url" to reflect the cloned one.
+* Updated event pricing display to hide the radio button if there is only one price.(Thanks to @tristanjl)
+* Other bugfixes.
+
+
 ### 16.15 [2026-6-11]
 
 * Renamed templatetags static to resolve the issue [#1408](https://github.com/tendenci/tendenci/issues/1408) (Thanks to @rob-hills).
