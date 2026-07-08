@@ -46,7 +46,7 @@
             <td class="officer-position">{{ officer.position }}</td>
             
             <td class="officer-name">
-              <a href="{% url 'profile' officer.user.username  %}">
+              <a rel="nofollow" href="{% url 'profile' officer.user.username  %}">
                 {% if officer.user.get_full_name %}
                 {{ officer.user.get_full_name }}
                 {% else %}
