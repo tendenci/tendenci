@@ -4161,8 +4161,12 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
 
 @is_enabled('events')
 def day_view(request, year=None, month=None, day=None, template_name='events/day-view.html'):
+    # set min and max constraints
+    MIN_YEAR = 1900
+    MAX_YEAR = datetime.now().year + 2
+
     year = int(year)
-    if year <= 1900:
+    if year <= MIN_YEAR or year > MAX_YEAR:
         raise Http404
 
     query = request.GET.get('q', None)
@@ -4176,17 +4180,23 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
 
     day_date = datetime(year=int(year), month=int(month), day=int(day))
     yesterday = day_date - timedelta(days=1)
-    yesterday_url = reverse('event.day', args=(
-            int(yesterday.year),
-            int(yesterday.month),
-            int(yesterday.day)
-        ))
+    if yesterday.year > MIN_YEAR: 
+        yesterday_url = reverse('event.day', args=(
+                int(yesterday.year),
+                int(yesterday.month),
+                int(yesterday.day)
+            ))
+    else:
+        yesterday_url = ''
     tomorrow = day_date + timedelta(days=1)
-    tomorrow_url = reverse('event.day', args=(
-            int(tomorrow.year),
-            int(tomorrow.month),
-            int(tomorrow.day)
-        ))
+    if tomorrow.year <= MAX_YEAR:
+        tomorrow_url = reverse('event.day', args=(
+                int(tomorrow.year),
+                int(tomorrow.month),
+                int(tomorrow.day)
+            ))
+    else:
+        tomorrow_url = ''
 
     # Check for empty pages for far-reaching years
     if abs(year - date.today().year) > 6:

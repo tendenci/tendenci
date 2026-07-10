@@ -48,12 +48,16 @@
 </form>
 
     <div class="days-nav">
+    	{% if yesterday_url %}
         <div class="yesterday-link">
             <a href="{{ yesterday_url }}">&laquo; {{ yesterday|date:"SHORT_DATE_FORMAT" }}</a>
         </div>
+        {% endif %}
+        {% if tomorrow_url %}
         <div class="tomorrow-link">
             <a href="{{ tomorrow_url }}">{{ tomorrow|date:"SHORT_DATE_FORMAT" }} &raquo;</a>
         </div>
+        {% endif %}
         <div style="clear: both;"></div>
     </div>
 
