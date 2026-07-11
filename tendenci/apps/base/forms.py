@@ -137,6 +137,7 @@ class PasswordForm(forms.Form):
 
 
 def CustomCatpchaField(**kwargs):
+    action = kwargs.pop('action', '')
     if settings.RECAPTCHA_PUBLIC_KEY and settings.RECAPTCHA_PRIVATE_KEY:
         if settings.USE_RECAPTCHA_V3:
             score_threshold = get_setting('site', 'global', 'recaptchascorelimit')
@@ -146,8 +147,10 @@ def CustomCatpchaField(**kwargs):
                 score_threshold = 0.5
             if score_threshold > 1 or score_threshold < 0:
                 score_threshold = 0.5
-
-            recaptcha_field = ReCaptchaField(label='', widget=ReCaptchaV3(required_score=score_threshold))
+            params = {'required_score': score_threshold}
+            if action:
+                params['action'] = action.replace('-', '_')
+            recaptcha_field = ReCaptchaField(label='', widget=ReCaptchaV3(**params))
             return recaptcha_field
 
         return ReCaptchaField(label='', widget=ReCaptchaV2)

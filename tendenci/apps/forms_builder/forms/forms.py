@@ -247,7 +247,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         if (get_setting('site', 'global', 'captcha')
                 and not user.is_authenticated
                 and not any([f.remembered for f in self.form_fields])):
-            self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
+            self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'), action=self.form.slug)
 
         self.add_form_control_class()
 
