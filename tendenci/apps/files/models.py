@@ -66,7 +66,7 @@ class File(TendenciBaseModel):
     is_public = models.BooleanField(default=True)
     group = models.ForeignKey(
         Group, null=True, default=None, on_delete=models.SET_NULL)
-    tags = TagField(null=True, blank=True)
+    tags = TagField(blank=True)
     categories = GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
 
     file_cat = models.ForeignKey('FilesCategory', verbose_name=_("Category"),

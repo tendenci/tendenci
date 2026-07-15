@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(blank=True)),
                 ('object_id', models.IntegerField(null=True, blank=True)),
                 ('is_public', models.BooleanField(default=True)),
-                ('tags', tagging.fields.TagField(max_length=255, null=True, blank=True)),
+                ('tags', tagging.fields.TagField(max_length=255, blank=True)),
                 ('content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('creator', models.ForeignKey(related_name='%(app_label)s_%(class)s_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='%(app_label)s_%(class)s_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),

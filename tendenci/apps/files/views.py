@@ -293,7 +293,7 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
             file = form.save(commit=False)
 
             # update all permissions and save the model
-            file = update_perms_and_save(request, form, file)
+            update_perms_and_save(request, form, file)
 
             #setup categories
             category = Category.objects.get_for_object(file, 'category')
