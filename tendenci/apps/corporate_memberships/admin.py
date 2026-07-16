@@ -738,7 +738,7 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
     form = CorpProfileAdminForm
 
     def get_list_display(self, request):
-        list_display = ['name',]
+        list_display = ['id', 'name',]
         if get_setting('module', 'trainings', 'enabled'):
             list_display.append('show_transcripts')
         return list_display

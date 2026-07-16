@@ -270,5 +270,22 @@
         "scope_category": "corporate_memberships",
         "store": false,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, the application form will be displayed on renewal so that corp members can edit their corp profile (default: false).",
+        "data_type": "boolean",
+        "update_dt": "2026-07-14 18:30:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "appformonrenew",
+        "value": "false",
+        "label": "Show Application Form on Renewal",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "corporate_memberships",
+        "store": false,
+        "updated_by": ""
     }
 ]

@@ -1267,6 +1267,21 @@ def corp_renew(request, id,
                                         args=[latest_renewed.id]))
 
     corpmembership_app = CorpMembershipApp.objects.current_app()
+    show_app_form = get_setting('module', 'corporate_memberships', 'appformonrenew')
+    if show_app_form:
+        app_fields = corpmembership_app.fields.filter(display=True,
+                                                      admin_only=False
+                                                      ).exclude(field_name='expiration_dt'
+                                                                ).order_by('position')
+        corpprofile_form = CorpProfileForm(app_fields,
+                                         request.POST or None,
+                                         request.FILES or None,
+                                         instance=corp_membership.corp_profile,
+                                         request_user=request.user,
+                                         corpmembership_app=corpmembership_app)
+    else:
+        app_fields = None
+        corpprofile_form = None
     new_corp_membership = corp_membership.copy()
     form = CorpMembershipRenewForm(
                             request.POST or None,
@@ -1275,10 +1290,11 @@ def corp_renew(request, id,
                             corpmembership_app=corpmembership_app
                                    )
     if request.method == "POST":
-        if form.is_valid():
+        if (corpprofile_form is None or corpprofile_form.is_valid()) and form.is_valid():
             if 'update_summary' in request.POST:
                 pass
             else:
+                
                 members = form.cleaned_data['members']
                 # create a new corp_membership entry
                 new_corp_membership = form.save()
@@ -1292,6 +1308,9 @@ def corp_renew(request, id,
                 new_corp_membership.owner = request.user
                 new_corp_membership.owner_username = request.user.username
                 new_corp_membership.expiration_dt = new_corp_membership.get_expiration_dt()
+                if corpprofile_form:
+                    corp_profile = corpprofile_form.save()
+                    new_corp_membership.corp_profile = corp_profile
 
                 # calculate the total price for invoice
                 corp_memb_type = form.cleaned_data[
@@ -1479,7 +1498,10 @@ def corp_renew(request, id,
             payment_credits = corp_membership.invoice.balance * (-1)  
     context = {"corp_membership": corp_membership,
                'corp_profile': corp_membership.corp_profile,
+               'show_app_form': show_app_form,
                'corp_app': corpmembership_app,
+               'corpprofile_form': corpprofile_form,
+               "app_fields": app_fields,
                'form': form,
                'summary_data': summary_data,
                'cap_enabled': cap_enabled,

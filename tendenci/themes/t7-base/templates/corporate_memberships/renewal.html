@@ -70,11 +70,14 @@ div.id_payment_method ul{
 div.forms{
     width: 100%;
 }
-#renewal_form label{
-    font-weight: normal !important;
+#id_corporate_membership_type label, #id_payment_method label{
+	font-weight: normal !important;
 }
+/* #renewal_form label{
+    font-weight: normal !important;
+} */
 #renewal_form .field-label{
-    font-weight: bolder;
+/*     font-weight: bolder; */
     font-size: 1.3em;
     margin: 1em 0 3px;
 }
@@ -85,6 +88,31 @@ div.forms{
 .submit-btn-wrap{
     margin: 1em 0 1em;
 }
+
+@media all and (min-width: 800px) 
+{ 
+    form#t-corp-form{
+        padding: 0 100px;
+     }
+    .form-group .form-control{
+  	    width: auto !important;
+     }
+  }
+@media all and (max-width: 799px) 
+{ 
+    form#t-corp-form{
+        padding: 0 30px;
+    }
+    .form-group .form-control{
+  	width: 100%;
+    }
+}
+ .form-group label{
+  	font-weight: normal;
+ }
+ .form-group label.required{
+  	font-weight: bolder;
+ }   
 </style>
 {% endblock %}
 
@@ -92,7 +120,7 @@ div.forms{
 <div class="t">
      <h1>{% trans "Corporate Membership Renewal" %}</h1>
 
-<form action="" method="post">{% csrf_token %}
+<form id="t-corp-form" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
 
 <div id="main-forms">
 <div class="forms" id="renewal_form">
@@ -138,8 +166,25 @@ div.forms{
 
    <div style="height:1px;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
 
-  {% if form.errors %}<p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>{% endif %}
+  {% if corpprofile_form and corpprofile_form.errors or form.errors %}<p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>{% endif %}
 
+	{% if corpprofile_form and corpprofile_form.errors.values %}
+        <div class="alert alert-danger" role="alert">
+            {% for error in corpprofile_form.non_field_errors %}
+            <p><a href="#" class="alert-link">{{ error }}</a></p>
+            {% endfor %}
+
+            {% for field in corpprofile_form %}
+                {% if field.errors %}
+                      {% for error in field.errors %}
+                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">
+                        {{ field.label }}</a> - {{ error }}</p>
+                      {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    
     {% if form.errors.values %}
         <div class="alert alert-danger" role="alert">
             {% for error in form.non_field_errors %}
@@ -150,14 +195,20 @@ div.forms{
                 {% if field.errors %}
                       {% for error in field.errors %}
                         <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
-                        {{ field.label }} - {{ error }}
-                        </a></p>
+                        {{ field.label }}</a> - {{ error }}</p>
                       {% endfor %}
                 {% endif %}
             {% endfor %}
         </div>
     {% endif %}
-
+    
+    {% if show_app_form %}
+    {% for field_obj in app_fields %}
+        {% render_corpmembership_field request field_obj corpprofile_form %}
+    {% endfor %}
+    <p>&nbsp;</p>
+    {% endif %}
+	
     <div class="form-field">
         <div class="{{ form.corporate_membership_type.auto_id }}{{ form.corporate_membership_type.field.css_classes }}">
             <div class="field-label{% if form.corporate_membership_type.field.required %} required{% endif %}">
