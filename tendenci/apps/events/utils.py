@@ -2171,7 +2171,7 @@ def create_member_registration(user, event, form, for_member=False):
                  'owner': user}
 
     if for_member:
-        member_ids = [mem_id.strip() for mem_id in form.cleaned_data['member_ids'].split(',')]
+        member_ids = [mem_id.strip() for mem_id in form.cleaned_data['member_ids'].split(',') if mem_id.strip() !='']
         user_ids = Profile.objects.filter(member_number__in=member_ids,
                                           status_detail='active').values_list('user_id', flat=True)
     else:
