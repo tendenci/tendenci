@@ -397,6 +397,10 @@ class RecurringPayment(models.Model):
         Check and generate invoices if needed.
         """
         now = timezone.now()
+        if timezone.is_aware(now):
+            tomorrow = datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=ZoneInfo(settings.TIME_ZONE)) + timedelta(days=1)
+        else:
+            tomorrow = datetime(now.year, now.month, now.day, 0, 0, 0) + timedelta(days=1)
 
         if self.is_membership_auto_renew:
             # check and renew for memberships with auto-renew enabled
@@ -404,7 +408,7 @@ class RecurringPayment(models.Model):
             memberships = self.memberships
             if memberships:
                 for m in self.memberships:
-                    if m.expire_dt < datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=ZoneInfo(settings.TIME_ZONE)) + timedelta(days=1):
+                    if m.expire_dt < tomorrow:
                         if not m.user.membershipdefault_set.filter(
                                 renewal=True,
                                 renew_from_id=m.id,
