@@ -2416,6 +2416,9 @@ def member_register(request, event_id, form_class=MemberRegistrationForm,
             msg_string += f'<br /><br />'
             msg_string += f'<a style="color: inherit;" href="{reverse("event.user_register", args=[event.pk])}">Register More Users</a>'
             messages.add_message(request, messages.SUCCESS, _(msg_string))
+            # log an event
+            if registration_ids:
+                EventLog.objects.log(instance=event, description=f"Registration IDs: {str(registration_ids)}")
             return HttpResponseRedirect(reverse('event', args=[event_id]))
 
     
