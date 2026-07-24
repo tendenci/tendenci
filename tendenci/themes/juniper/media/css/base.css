@@ -630,6 +630,6 @@ label.required:after {
 .t-status-pending {
     color: #8a6d3b;
 }
-.t-perm-private {
+.t-perm-private, .t-perm-members {
     color: gold;
 }
