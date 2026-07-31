@@ -828,6 +828,7 @@ form.connect-with li {
 @media print {
    .member-roster-membership {page-break-inside: avoid;}
    a[href]:after {content: none !important;}
+   #announcement-bar{display: none !important;}
 }
 
 /* Members YTD by Type */
