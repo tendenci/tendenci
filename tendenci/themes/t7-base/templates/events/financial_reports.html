@@ -14,14 +14,14 @@
 <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
 <link rel="stylesheet" href="{% static 'css/events.css' %}">
 <style>
-input#id_start_dt_0, input#id_start_dt_1, 
+input#id_start_dt_0, input#id_start_dt_1,
 input#id_end_dt_0, input#id_end_dt_1,
 select#id_sort_by, select#id_sort_direction{
-	display: inline !important;
-	width: 40%;
+    display: inline !important;
+    width: 40%;
 }
 select#id_event_type{
-	width: 80%;
+    width: 80%;
 }
 
 </style>
@@ -32,54 +32,54 @@ select#id_event_type{
 <div class="t">
     <h1>{% trans 'Events Financial Report' %}</h1>
     <hr>
-   	<form class="form-horizontal" action='' method="GET">
+       <form class="form-horizontal" action='' method="GET">
         <div id="ef_search-fields" class="form collapse in">
         <div class="form-group">
-		    <label for="start_dt" class="col-sm-3 control-label">{{ form.start_dt.label }}</label>
-		    <div class="col-sm-9">
-		      {{ form.start_dt }}
-		    </div>
-	  	</div>
-	  	<div class="form-group">
-		    <label for="end_dt" class="col-sm-3 control-label">{{ form.end_dt.label }}</label>
-		    <div class="col-sm-9">
-		      {{ form.end_dt }}
-		    </div>
-	  	</div>
-	  	<div class="form-group">
-		    <label for="event_type" class="col-sm-3 control-label">{{ form.event_type.label }}</label>
-		    <div class="col-sm-9">
-		      {{ form.event_type }}
-		    </div>
-	  	</div>
-	  	<div class="form-group">
-		    <label for="sort_by" class="col-sm-3 control-label">{{ form.sort_by.label }}</label>
-		    <div class="col-sm-9">
-		      {{ form.sort_by }} {{ form.sort_direction }}
-		    </div>
-	  	</div>
-	  	
-	  	<div class="form-group">
-		    <div class="col-sm-3">&nbsp;</div>
-		    <div class="col-sm-9">
-		      <input class="btn btn-default" type="submit" value="{% trans 'Run' %}" />
+            <label for="start_dt" class="col-sm-3 control-label">{{ form.start_dt.label }}</label>
+            <div class="col-sm-9">
+              {{ form.start_dt }}
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="end_dt" class="col-sm-3 control-label">{{ form.end_dt.label }}</label>
+            <div class="col-sm-9">
+              {{ form.end_dt }}
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="event_type" class="col-sm-3 control-label">{{ form.event_type.label }}</label>
+            <div class="col-sm-9">
+              {{ form.event_type }}
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="sort_by" class="col-sm-3 control-label">{{ form.sort_by.label }}</label>
+            <div class="col-sm-9">
+              {{ form.sort_by }} {{ form.sort_direction }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-sm-3">&nbsp;</div>
+            <div class="col-sm-9">
+              <input class="btn btn-default" type="submit" value="{% trans 'Run' %}" />
               <input class="btn btn-success" type="submit" name="export" value="{% trans 'Export' %}" />
-		    </div>
-	  	</div>
+            </div>
+          </div>
 
         </div>
-        
+
       <div class="pull-right">
-		<a href="#ef_search-fields" data-toggle="collapse">Hide/Show Search Form</a>
-		</div>  
+        <a href="#ef_search-fields" data-toggle="collapse">Hide/Show Search Form</a>
+        </div>
    </form>
    {% autopaginate events 20 %}
    {% with events|discount_used as show_discount_count %}
     <table class="table table-striped">
         <thead>
             <tr>
-            	<th>{% trans 'Event ID' %}</th>
-            	<th>{% trans 'Event Title' %}</th>
+                <th>{% trans 'Event ID' %}</th>
+                <th>{% trans 'Event Title' %}</th>
                 <th>{% trans 'Event Date' %}</th>
                 <th>{% trans 'Group Name' %}</th>
                 <th>{% trans '# of Registrants' %}</th>
@@ -96,8 +96,8 @@ select#id_event_type{
         <tbody>
         {% for event in events %}
             <tr>
-            	<td><a href="{% url 'event' event.id %}">{{ event.id }}</a></td>
-            	<td><a href="{% url 'event' event.id %}">{{ event.title }}</a></td>
+                <td><a href="{% url 'event' event.id %}">{{ event.id }}</a></td>
+                <td><a href="{% url 'event' event.id %}">{{ event.title }}</a></td>
                 <td>{{ event.start_dt }}</td>
                 <td>
                 {% for group in event.groups.all %}

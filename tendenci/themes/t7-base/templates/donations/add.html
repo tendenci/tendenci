@@ -9,66 +9,66 @@
 <link rel="stylesheet" href="{% static 'css/donations.css' %}">
 <style>
  #donation-form .control-label{
- 	/*white-space: nowrap;*/
+     /*white-space: nowrap;*/
  }
- 
+
 </style>
 {% endblock %}
 
 {% block content %}
 <div id="add-donation">
-  
+
   <div class="page-header">
     <h1>{{ MODULE_DONATIONS_LABEL_PLURAL }}</h1>
   </div>
-  
+
   <p>{% blocktrans with mylabel=MODULE_DONATIONS_LABEL|lower %}Complete the form below to make a {{ mylabel }}{% endblocktrans %}.
     The required fields are marked with <em class="body-copy-alert">*</em>. <br />Thank You!</p>
   <br />
-  
+
    <form method="post" action="." id="donation-form">{% csrf_token %}
     {{ form|styled_form }}
-  
-    
+
+
     {% if use_captcha %}
     <div class="form-group">
-    	<div class="col-sm-offset-3 col-sm-9">
-      	{% if captcha_form.captcha.errors %}
-     	 <div class="errs">{{ captcha_form.captcha.errors }}</div>
-      	{% endif %}
-      	<label for="id_captcha" class="field-label"></label>
-      	{{ captcha_form.captcha }}
-   		 </div>
+        <div class="col-sm-offset-3 col-sm-9">
+          {% if captcha_form.captcha.errors %}
+          <div class="errs">{{ captcha_form.captcha.errors }}</div>
+          {% endif %}
+          <label for="id_captcha" class="field-label"></label>
+          {{ captcha_form.captcha }}
+            </div>
     </div>
-    
+
     {% endif %}
-    
+
     <div class="form-group">
-    	<div class="col-sm-offset-3 col-sm-9">
-      	<input class="btn btn-default" type="submit" name="submit" value="{% trans 'Submit' %}" />
-    	</div>
+        <div class="col-sm-offset-3 col-sm-9">
+          <input class="btn btn-default" type="submit" name="submit" value="{% trans 'Submit' %}" />
+        </div>
     </div>
-    
+
   </form>
-  
-  
+
+
 </div>
 {% endblock %}
 
 {% block extra_body %}
  {{ block.super }}
-  
+
  <script type="text/javascript">
   $(document).ready(function () {
    {% if form.hide_amount %}
-   		$('#id_donation_amount').closest('.form-group').hide();
-   		
-   		$('input[name=donate_to_entity_id]').change(function() {
-   		    var amount = $(this).next('span').data('amount');
-   			//console.log(amount);
-   			$('#id_donation_amount option[value="' + amount + '"]').prop("selected", true);
-   		 });
-   {% endif %}   
+           $('#id_donation_amount').closest('.form-group').hide();
+
+           $('input[name=donate_to_entity_id]').change(function() {
+               var amount = $(this).next('span').data('amount');
+               //console.log(amount);
+               $('#id_donation_amount option[value="' + amount + '"]').prop("selected", true);
+            });
+   {% endif %}
   });
- </script>  
-{% endblock %}   
+ </script>
+{% endblock %}

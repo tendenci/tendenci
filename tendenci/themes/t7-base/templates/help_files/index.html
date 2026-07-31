@@ -13,19 +13,19 @@
 
 {% has_perm request.user help_files.add_helpfile as can_add %}
 <div id="help-files-index">
-  
+
   <div class="page-header">
     <h1>{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</h1>
   </div>
-  
+
     {% help_file_search %}
 
   <br />
-  
+
   <div class="row">
-    
+
  <div class="col-md-5">
-   
+
    <div class="panel panel-default">
      <div class="panel-heading">
        {% trans "Featured" %}
@@ -38,8 +38,8 @@
        </ul>
      </div>
    </div>
-   
-    
+
+
    <div class="panel panel-default">
      <div class="panel-heading">
        {% trans "FAQ" %}
@@ -52,7 +52,7 @@
        </ul>
      </div>
    </div>
-   
+
    <div class="panel panel-default">
      <div class="panel-heading">
        {% trans "Most viewed" %}
@@ -65,12 +65,12 @@
        </ul>
      </div>
    </div>
-   
+
 <!-- FEATURED PANEL -->
-   
+
  </div><!-- PANEL WIDTH OUTER -->
-  
- 
+
+
     <div class="col-md-7">
       <div class="left-col">
         <div class="topics">
@@ -87,10 +87,10 @@
           </ul>
         </div>
       </div>
-     
-        
+
+
       <div style="clear: both;"></div>
-      
+
     </div>
   </div>
 

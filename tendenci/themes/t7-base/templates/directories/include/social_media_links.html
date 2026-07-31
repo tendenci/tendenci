@@ -1,8 +1,8 @@
 {% if directory.has_social_media %}
 <div class="social-media-wrap">
-	{% blocktrans with name=directory.headline %}
-	Connect with {{ name }}
-	{% endblocktrans %}
+    {% blocktrans with name=directory.headline %}
+    Connect with {{ name }}
+    {% endblocktrans %}
   {% with name=directory.headline %}
    {% if directory.linkedin %}
     <a href="{{ directory.linkedin }}" title="{% blocktrans %}Follow {{ name }} on Linkedin{% endblocktrans %}"><span class="fa fa-linkedin-square" style="color: #0077B7;"></span></a>

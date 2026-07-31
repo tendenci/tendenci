@@ -10,28 +10,28 @@
 
 <style>
 .selector select[multiple], select[size]{
-	height: 250px;
+    height: 250px;
 }
 .selector-available h2, .selector-chosen h2{
-	font-size: 1.3em;
+    font-size: 1.3em;
 }
 .edit-group-perms .selector { width: 840px; }
 .edit-group-perms .selector select { width: 640px; }
 .edit-group-perms .selector-available, .edit-group-perms .selector-chosen { display: block; width: 640px; text-align: center; margin-bottom: 5px; }
 .selector ul.selector-chooser { display: block; background-image: none; width: 640px;  height: 28px;  margin: 3px 0 !important; padding: 5px;}
 .edit-group-perms .selector ul.selector-chooser li {
- display: inline; 
+ display: inline;
  float: left;
  padding: 0 148px; }
  .selector-remove{
- 	padding-left: 16px
+     padding-left: 16px
  }
 .edit-group-perms .selector-chosen .selector-filter { display: none; }
 .selector .selector-available input {
     width: 90%;
 }
 .selector-available, .selector-chosen, .selector ul.selector-chooser {
-	float: none;
+    float: none;
 }
 .selector-add {
     background: url(/static/themes/t7-base/images/admin/selector_stacked-add.gif) top center no-repeat;
@@ -72,7 +72,7 @@
                             <label for="id_permissions" style="float:left; padding-right: 1em;">
                                 <b>{% trans "Group Permissions" %}:</b>
                             </label>
-							<br />
+                            <br />
                             {{ form.permissions }}
                         </div>
 

@@ -16,21 +16,21 @@
 {% block content %}
 <div class="page-header">
   <button type="button" id="simple-form-button" class="btn btn-primary pull-right" onclick="simple()" value="Simple Form">Simple Form</button>
-  
+
   <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Add" %}</h1>
   {% if is_template %}
   <p class="alert alert-info">{% trans "You're adding an event template." %}</p>
   {% endif %}
 </div>
 
-<p id="simple-form-alert" class="alert alert-success" role="alert"> 
+<p id="simple-form-alert" class="alert alert-success" role="alert">
   This is the simple form, click again for the Extended form.
 </p>
 
     <form id="t-events-form" class="form-horizontal" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
-        
+
       {{ multi_event_forms|styled_multi_forms }}
-      
+
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
                 <button type="submit" class="btn btn-primary text-capitalize">
@@ -62,17 +62,17 @@
 
 <script>
   $('#simple-form-alert').hide()
-  
-  function simple() {  
-  
-  var change = document.getElementById("simple-form-button");    
+
+  function simple() {
+
+  var change = document.getElementById("simple-form-button");
   if (change.innerHTML == "Simple Form"){
   change.innerHTML = "Extended Form";
   }
   else {
   change.innerHTML = "Simple Form";
   }
-  
+
   $('.permissions').toggle();
   $('.admin-only').toggle();
   $('#t-formsbuilder-form-organizer').toggle();
@@ -93,8 +93,8 @@
         //script for hiding and showing the 'On weekend' field
         //when nesessary.
         $(document).ready(function() {
-            
-        	// Date and time picker for start_dt and end_dt
+
+            // Date and time picker for start_dt and end_dt
             $('#id_start_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
             $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
             $('#id_end_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
@@ -158,11 +158,11 @@
             hide_forms_on_enabled_fn();
         });
     </script>
-    
+
     <script type="text/javascript">
         {% include 'events/include/event_handle_groups.js' %}
     </script>
-    
+
     <script type="text/javascript">
         {% include 'events/include/event_toggle_weekend.js' %}
     </script>
@@ -181,7 +181,7 @@
         <script type="text/javascript">
         {% include 'events/include/guests.js' %}
     </script>
-    
+
     <script type="text/javascript">
         {% include 'events/include/event_toggle_reply_to.js' %}
     </script>

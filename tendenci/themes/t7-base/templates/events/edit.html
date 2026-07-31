@@ -94,25 +94,25 @@
                 {% review_and_edit_credits event %}
             {% endif %}
             {% if label == "file_add" and can_add_file %}
-            	<div class="text-warning"><i>{% trans 'Note that, files uploaded here can be viewable by users who have registered this event.' %}</i></div>
-            	<div id="event-files-list" style="max-height: 500px; overflow-x: auto;">
+                <div class="text-warning"><i>{% trans 'Note that, files uploaded here can be viewable by users who have registered this event.' %}</i></div>
+                <div id="event-files-list" style="max-height: 500px; overflow-x: auto;">
                 {% include "events/include/event-files-list.html" %}
                 </div>
             {% endif %}
             {{ multi_event_forms|styled_multi_forms }}
             {% if MODULE_EVENTS_ENABLEASSETS and can_add_file %}
-            	{% if label != "file_add" %}
-            	<input class="btn btn-default" type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
-            	{% endif %}
+                {% if label != "file_add" %}
+                <input class="btn btn-default" type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
+                {% endif %}
             {% else %}
-            	{% if label != "pricing" %}
-            	<input class="btn btn-default" type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
-            	{% endif %}
+                {% if label != "pricing" %}
+                <input class="btn btn-default" type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
+                {% endif %}
             {% endif %}
             <input class="btn btn-primary" type="submit" value="{% if label == "file_add" %}{% trans 'Add File' %}{% else %}{% trans 'Save Changes' %}{% endif %}" name="_save"/>
-  			{% if label == "file_add" %}
-  			<div class="pull-right"><a href="{% url 'event' event.id %}" class="btn btn-default">{% trans 'Go to Event' %}</a></div>
-  			{% endif %}
+              {% if label == "file_add" %}
+              <div class="pull-right"><a href="{% url 'event' event.id %}" class="btn btn-default">{% trans 'Go to Event' %}</a></div>
+              {% endif %}
         </div>
         </form>
 
@@ -136,7 +136,7 @@
     <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/events_formset.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
-   
+
     <script type="text/javascript">
         var displayConfirmation = true;
         $('#confirm-dialog').dialog({
@@ -178,23 +178,23 @@
      {% include 'events/include/event_form_custom_reg.js' %}
     </script>
     <script type="text/javascript">
-    	function is_weekend(dt_str){
-    		var mydate = new Date(dt_str);
-    		mydate.setDate(mydate.getDate() + 1); // add 1 day because time is not specified when converted to date
-    		if(mydate.getDay() == 6 || mydate.getDay() == 0) {
-    			return true;
-    		}else{
-    		    return false;
-    		}
-    	}
-    
+        function is_weekend(dt_str){
+            var mydate = new Date(dt_str);
+            mydate.setDate(mydate.getDate() + 1); // add 1 day because time is not specified when converted to date
+            if(mydate.getDay() == 6 || mydate.getDay() == 0) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+
         $(document).ready(function() {
-        	// Date and time picker for start_dt and end_dt
+            // Date and time picker for start_dt and end_dt
             $('#id_start_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
             $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
             $('#id_end_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
             $('#id_end_dt_1').timepicker({'timeFormat': 'h:i A'});
-            
+
             allDay = $('#id_all_day');
             start_dt_field = $('input#id_start_dt_0').closest('.form-group');
             end_dt_field = $('input#id_end_dt_0').closest('.form-group');
@@ -228,11 +228,11 @@
             $('.regconfpricing_formset .section-description').addClass('well');
         });
     </script>
-    
+
     <script type="text/javascript">
         {% include 'events/include/event_handle_groups.js' %}
     </script>
-    
+
     <script type="text/javascript">
         {% include 'events/include/event_toggle_weekend.js' %}
     </script>
@@ -243,12 +243,12 @@
     <script type="text/javascript">
         {% include 'events/include/guests.js' %}
     </script>
-    
+
      <script type="text/javascript">
         {% include 'events/include/event_toggle_reply_to.js' %}
     </script>
 
-	{% include 'events/include/event_file_js.html' %}
+    {% include 'events/include/event_file_js.html' %}
 
     {% include 'tags/autocomplete.html' %}
 {% endblock %}

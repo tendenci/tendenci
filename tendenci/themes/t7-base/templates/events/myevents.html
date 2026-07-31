@@ -23,22 +23,22 @@
     {% else %}
     <h2>{{ user }}</h2>
     {% endif %}
-    
+
     <a href="/profiles/">Edit Profile</a>
-    
-    
+
+
     <ul class="list-inline">
       <li><a class="show-all-link" href="{% url "event.myevents" %}?all=true">{% trans "ALL EVENTS" %}</a></li>
       <li><a class="show-all-link" href="{% url "event.myevents" %}">{% trans "UPCOMING EVENTS" %}</a></li>
     </ul>
   </div>
 
-   
-  
+
+
   <div class="col-sm-8 col-sm-offset-2">
-    
+
     {% autopaginate events 10 %}
-    
+
     <div class="events-wrap">
       {% for event in events %}
       {% search_result event %}
@@ -46,11 +46,11 @@
       {% trans "You're not registered for any upcoming events." %}<a href="{% url 'events' %}">{% trans "View our upcoming events!" %}</a>
       {% endfor %}
     </div>
-    
+
     {% paginate %}
-    
+
   </div>
-  
+
 </div>
 
 {% endblock %}

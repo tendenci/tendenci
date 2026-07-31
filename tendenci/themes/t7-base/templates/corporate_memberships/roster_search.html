@@ -28,15 +28,15 @@
         background-color: #EFFBFB;
     }
     #id_search_criteria, #id_search_text, #id_search_method{
-	height: 40px;
-	padding: 10px 15px;
-	font-size: 15px;
-	line-height: 1.4;
-	color: #2c3e50;
-	background-color: #ffffff;
-	background-image: none;
-	border: 1px solid #dce4ec;
-	border-radius: 4px;
+    height: 40px;
+    padding: 10px 15px;
+    font-size: 15px;
+    line-height: 1.4;
+    color: #2c3e50;
+    background-color: #ffffff;
+    background-image: none;
+    border: 1px solid #dce4ec;
+    border-radius: 4px;
     }
     .t-search h2 {
       margin: 0 auto 10px 0;
@@ -98,7 +98,7 @@
 <div class="row">
     <div class="col-sm-8 form-group">
     <label for="id_cm_id" class="col-sm-4 control-label">{{ form.cm_id.label }}</label>
-    	<div class="col-sm-8">
+        <div class="col-sm-8">
          {{ form.cm_id }}
          </div>
     </div>
@@ -107,13 +107,13 @@
 <div class="row">
     <div class="col-sm-6 form-group">
     <label for="id_first_name" class="col-sm-4 control-label">{{ form.first_name.label }}</label>
-    	<div class="col-sm-8">
+        <div class="col-sm-8">
          {{ form.first_name }}
          </div>
     </div>
     <div class="col-sm-6 form-group">
     <label for="id_last_name" class="col-sm-4 control-label">{{ form.last_name.label }}</label>
-    	<div class="col-sm-8">
+        <div class="col-sm-8">
         {{ form.last_name }}
         </div>
     </div>
@@ -121,32 +121,32 @@
 <div class="row">
      <div class="col-sm-6 form-group">
      <label for="id_email" class="col-sm-4 control-label">{{ form.email.label }}</label>
-     	<div class="col-sm-8">
+         <div class="col-sm-8">
        {{ form.email }}
        </div>
     </div>
     <div class="col-sm-6 form-group">
-    	<div class="col-sm-offset-4 col-sm-8">
-	         <div class="checkbox">
-	        <label>
-	          {{ form.active_only }} {{ form.active_only.label }}
-	        </label>
-	     </div>
+        <div class="col-sm-offset-4 col-sm-8">
+             <div class="checkbox">
+            <label>
+              {{ form.active_only }} {{ form.active_only.label }}
+            </label>
+         </div>
       </div>
-    </div>  
+    </div>
 </div>
-  
+
 <div class="row">
-	<div class="col-md-12 form-group">
-	<label class="col-sm-2 control-label">{% trans 'Search By'%}</label>
-	<div class="col-sm-10">
-   	 		{{ form.search_criteria }} &nbsp;
-   	 		{{ form.search_text }}
-   	 		<button class="btn btn-success" type="submit">
-	        <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i> {% trans 'Search' %}
+    <div class="col-md-12 form-group">
+    <label class="col-sm-2 control-label">{% trans 'Search By'%}</label>
+    <div class="col-sm-10">
+                {{ form.search_criteria }} &nbsp;
+                {{ form.search_text }}
+                <button class="btn btn-success" type="submit">
+            <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i> {% trans 'Search' %}
              </button>
 
-  	</div>
+      </div>
 </div>
 </div>
 
@@ -243,13 +243,13 @@
                                 <b>{% trans "Expire Date:" %}</b> {{ membership.expire_dt }}<br />
                             {% endif %}
                         {% endif %}
-                       
+
                        {% if MODULE_TRAININGS_ENABLED %}
                        {% if request.user.profile.is_superuser or is_rep %}
                        <a href="{% url 'trainings.transcripts_user' profile.user.id %}">{% trans "View Transcript" %}</a>
                        {% endif %}
                        {% endif %}
-                        
+
                     </div>
                 </div>
             </div>

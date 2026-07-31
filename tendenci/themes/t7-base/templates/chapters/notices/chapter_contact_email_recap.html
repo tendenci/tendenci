@@ -16,12 +16,12 @@
      <li>{{ member.user.get_full_name }} - {{ site_url }}{{ member.get_absolute_url }}</li>
  {% endfor %}
  </ol>
-      
+
 <ul>
   <li><a href="{{ site_url }}{% url 'chapters.memberships_search_single_chapter' chapter.id %}">{% trans "View All Chapter Members" %}</a> </li>
 </ul>
 <br /><br />
-    
+
 
 {% trans "Thanks!" %}
 <br /><br />

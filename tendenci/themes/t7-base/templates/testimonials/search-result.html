@@ -12,7 +12,7 @@
       {% endfilter %}
     </a>
   </div>
-  
+
   <div class="tsm-person-box">
     <p class="tsm-person-info">
       {{ testimonial.first_name }}&nbsp;{{ testimonial.last_name }}
@@ -44,15 +44,15 @@
     {% endif %}
     {% if testimonial.country %}
     &nbsp;{{ testimonial.country }}
-    {% endif %}  
+    {% endif %}
   </p>
-    {% endif %} 
+    {% endif %}
     -->
     {% endcomment %}
   </div>
-  
+
   {% if can_delete %}
   {% testimonial_options request.user testimonial %}
   {% endif %}
-  
+
 </div>

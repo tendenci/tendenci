@@ -5,7 +5,7 @@
 {% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="form-inline" action="{% url 'case_study' %}" method="get" role="search">
   <div class="form-group">
-    <div class="input-group add-on">      
+    <div class="input-group add-on">
       <input class="form-control" type="text" name="q" value="{{ request.GET.q|striptags }}" placeholder="Search" />
       <div class="input-group-btn">
         <button class="btn btn-default" type="submit">
@@ -14,7 +14,7 @@
       </div>
     </div>
   </div>
-  
+
   {% has_perm user case_studies.add_casestudy as can_add_case_study %}
   {% if can_add_case_study %}
   <div class="form-group pull-right">
@@ -22,6 +22,6 @@
       {% trans 'Add Case Study' %}</a>
   </div>
   {% endif %}
-  
+
 </form>
 {% endif %}

@@ -1,11 +1,11 @@
  {% load base_filters %}
  <!-- CHAPTER MEMBERSHIPS -->
   {% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
-      
+
       <h3>{% trans 'Chapter Memberships' %}</h3>
-      
+
      {% with profile.chapter_memberships as chapter_memberships %}
-      
+
      {% if chapter_memberships %}
       <div class="table-responsive">
         <table class="table">
@@ -17,16 +17,16 @@
             </td>
             <td>
               {{ chapter_membership.join_dt|date:"M j, Y" }}
-              
+
               {% if not chapter_membership.is_pending %} - {% firstof chapter_membership.expire_dt|date:"M j, Y" "Forever" %}
-              
+
               &#43; (grace period:
               {{ chapter_membership.membership_type.expiration_grace_period }} days)
-              
+
               {% endif %}
-              
+
               <span class="inner-mitm">{{ chapter_membership.get_status|capfirst}}</span>
-              
+
             </td>
             <td>
               {% with chapter_membership.invoice as invoice %}
@@ -41,7 +41,7 @@
           {% endfor %}
         </table>
       </div>
-      
+
       {% else %}
       <p>{% trans 'Not a chapter member.' %}</p>
       {% endif %}

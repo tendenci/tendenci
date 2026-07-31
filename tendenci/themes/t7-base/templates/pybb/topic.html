@@ -21,23 +21,23 @@
 {% endblock %}
 
 <div class="topic">
-  
+
   <div class="page-header">
     <h1>{{ topic.name }}</h1>
   </div>
-  
+
   {% with _('Posts') as label %}
   {% include "pybb/pagination.html" %}
   {% endwith %}
-  
+
   {% if topic.poll_type %}
   {% include 'pybb/poll.html' %}
   {% endif %}
-  
+
   {% if not user.is_authenticated %}
   {% include 'pybb/_need_to_login_message.html' %}
   {% endif %}
-  
+
   <div class="posts">
     {% if first_post %}{% if first_post != post_list.0 %}
     {% with first_post as post %}
@@ -53,7 +53,7 @@
   {% with _('Posts') as label %}
   {% include "pybb/pagination.html" %}
   {% endwith %}
-  
+
   {% if user.is_authenticated %}
   {% if user.is_moderator or user.is_subscribed or user|pybb_may_subscribe_topic:topic %}
   <div class="controls">
@@ -63,7 +63,7 @@
     {% else %}
     <a href="{% url 'pybb:stick_topic' topic.id %}">{% trans "Stick topic" %}</a> /
     {% endif %}
-    
+
     {% if topic.closed %}
     <a href="{% url 'pybb:open_topic' topic.id %}">{% trans "Open topic" %}</a> /
     {% else %}
@@ -84,11 +84,11 @@
   </div>
   {% endif %}
   {% endif %}
-  
+
   {% if user|pybb_may_create_post:topic %}
   {% include "pybb/post_form.html" %}
   {% endif %}
-  
+
   {% if user.is_staff %}
   <div class="subscriber-list col-sm-9">
     {% trans "Subscribers" %}:

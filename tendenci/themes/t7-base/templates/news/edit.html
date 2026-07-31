@@ -18,26 +18,26 @@
   <div class="page-header">
     <h1>{% firstof MODULE_NEWS_LABEL trans 'News' %} {% trans "Edit" %}</h1>
   </div>
-  
+
   <div class="news-wrap">
-    
+
     <form action="{% url "news.edit" news.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
       <div class="forms">
         {{ form|styled_form }}
-        
+
         <br />
-        
+
         <input type="submit" class="btn btn-default" value="{% trans 'Save Changes' %}" />
         {% has_perm user news.delete_news news as can_delete %}
         {% if can_delete %}
         <a class="btn btn-danger pull-right" href="{% url 'news.delete' news.pk %}">{% trans "Delete" %}</a>
         {% endif %}
-        
+
         <br /><br />
       </div>
     </form>
   </div>
-  
+
 </div>
 {% endblock %}
 
@@ -52,7 +52,7 @@
 <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
 <script type="text/javascript">
   $(document).ready(function(){
-  
+
   // delete confirmation
   $('.delete').on("click", function(){
   var delete_news = confirm("Permenantly delete {% firstof MODULE_NEWS_LABEL 'News' %}?");    // confirm
@@ -71,7 +71,7 @@
 </script>
 <script type="text/javascript">
   $(document).ready(function() {
-	// Release Datetime
+    // Release Datetime
       $('#id_release_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
       $('#id_release_dt_1').timepicker({'timeFormat': 'h:i A'});
   });

@@ -65,29 +65,29 @@ div.small-font {
 
 <div id="events-view">
   <div class="event-wrap" itemscope itemtype="https://schema.org/Event">
-    
+
     <!-- TOP -->
     <br />
 
     {% if event.status_detail == 'template' %}
-    <div class="alert alert-info" role="alert">{% trans 'This is a event template.' %} 
+    <div class="alert alert-info" role="alert">{% trans 'This is a event template.' %}
     <a href="{% url 'event.add_from_template' event.pk %}" class="alert-link">{% trans 'Add an event using this template.' %}</a>
     </div>
     {% endif %}
     <div class="col-xs-12 well">
-      
+
        {% if event.image %}
       <div class="col-sm-5 col-xs-12">
         <div class="photo">
           <img class="img-responsive" itemprop="image" src="{% image_url event.image %}" title="{{ event.title|truncatechars:123 }}" alt="{{ event.title|truncatechars:123 }}" />
         </div>
       </div>
-      
+
       <div class="col-sm-7 col-xs-12">
         {% else %}
       <div class="col-sm-12">
         {% endif %}
-          
+
         <div class="time-period">
           <h3>
             {% for span in event.date_spans %}
@@ -114,44 +114,44 @@ div.small-font {
         </div>
         <div class="col-xs-7">
           <p><strong>{{ event.place.name }}</strong><br />
-			{% if event.place.virtual %}
-				{% include 'events/include/display_virtual.html' %}
-			{% else %}
-	            {{ event.place.address }} <br />
-	            {{ event.place.city_state|join:", "}} {{ event.place.zip }} <br />
-	            {% if event.place.county %}
-	            {{ event.place.county }}<br />
-	            {% endif %}
-	            {{ event.place.country }}
-			{% endif %}
-			{% if event.place.national %}
-				{% include 'events/include/display_national.html' %}
-		    {% endif %}
-            {% if registrant_user and event.enable_zoom_meeting %}
-	            <div class="btn btn-success">
-		        <a href="{% url 'event.zoom' event.pk %}" style="color:white;">
-			    {% if event.place.is_zoom_webinar %}
-			      {% trans "Join Webinar" %}
-			    {% else %}
-		       	      {% trans "Join Meeting" %}
-		       	{% endif %}
-			    </a>
-	            </div>
+            {% if event.place.virtual %}
+                {% include 'events/include/display_virtual.html' %}
             {% else %}
-	            <div>
-	              {% if registrant_user and event.zoom_integration_setup %}
-	              	  {% if event.place.is_zoom_webinar %}
-	              	  {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
-		              You can join the Zoom webinar from 10 minutes prior to <strong>{{ start_dt }}</strong>.
-		              {% endblocktrans %}
-	              	  {% else %}
-		              {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
-		              You can join the Zoom meeting from 10 minutes prior to <strong>{{ start_dt }}</strong>.
-		              {% endblocktrans %}
+                {{ event.place.address }} <br />
+                {{ event.place.city_state|join:", "}} {{ event.place.zip }} <br />
+                {% if event.place.county %}
+                {{ event.place.county }}<br />
+                {% endif %}
+                {{ event.place.country }}
+            {% endif %}
+            {% if event.place.national %}
+                {% include 'events/include/display_national.html' %}
+            {% endif %}
+            {% if registrant_user and event.enable_zoom_meeting %}
+                <div class="btn btn-success">
+                <a href="{% url 'event.zoom' event.pk %}" style="color:white;">
+                {% if event.place.is_zoom_webinar %}
+                  {% trans "Join Webinar" %}
+                {% else %}
+                         {% trans "Join Meeting" %}
+                   {% endif %}
+                </a>
+                </div>
+            {% else %}
+                <div>
+                  {% if registrant_user and event.zoom_integration_setup %}
+                        {% if event.place.is_zoom_webinar %}
+                        {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
+                      You can join the Zoom webinar from 10 minutes prior to <strong>{{ start_dt }}</strong>.
+                      {% endblocktrans %}
+                        {% else %}
+                      {% blocktrans with event.start_dt as start_dt and event.end_dt as end_dt %}
+                      You can join the Zoom meeting from 10 minutes prior to <strong>{{ start_dt }}</strong>.
+                      {% endblocktrans %}
                               {% endif %}
-		          Come back then to find a "Join" button.
-	            {% endif %}
-	            </div>
+                  Come back then to find a "Join" button.
+                {% endif %}
+                </div>
             {% endif %}
 
           </p>
@@ -159,15 +159,15 @@ div.small-font {
         <div class="col-xs-5">
           {% if event.registration_configuration.enabled %}
           {% if MODULE_EVENTS_CANREGISTERAGAIN or not my_registrants or request.user.is_superuser %}
-         		{% registration_pricing_and_button event request.user %}
+                 {% registration_pricing_and_button event request.user %}
            {% endif %}
           {% endif %}
         </div>
       </div>
-      
+
     </div>
     <!-- END: TOP -->
-    
+
     <div class="info col-md-8 col-sm-8 col-xs-12">
       <br />
       <!-- Event Details -->
@@ -177,7 +177,7 @@ div.small-font {
           <h4 class="time-period">Description</h4>
           <div class="event-desc" itemprop="description">{{ event.description|safe }}</div>
         </div>
-        
+
         <br />
         {% if speakers_length >= 1 %}
         <h4 class="time-period">Featured Speakers</h4>
@@ -216,12 +216,12 @@ div.small-font {
         <a class="btn btn-default" href="{% url "event.speakers" event.pk %}">{% trans "View all speakers" %}</a>
         {% endif %}
         {% endif %}
-        
+
         {% if organizer.name %}
         <br /><br />
         <div class="organizer-wrap">
           <div class="organizer">
-            <h4 class="time-period">{% trans "Organizer" %}</h4> 
+            <h4 class="time-period">{% trans "Organizer" %}</h4>
             <p>{{ organizer.name }}</p>
           </div>
           {% if organizer.description|striptags|wordcount > 50 %}
@@ -241,12 +241,12 @@ div.small-font {
           {% endif %}
         </div>
         {% endif %}
-        
+
         {% if sponsor and sponsor.description %}
         <br /><br />
         <div class="sponsor-wrap">
           <div class="sponsor">
-            <h4 class="time-period">{% trans "Sponsor(s)" %}</h4> 
+            <h4 class="time-period">{% trans "Sponsor(s)" %}</h4>
           </div>
           <div class="sponsor-desc-short">
             {{ sponsor.description|safe }}
@@ -262,7 +262,7 @@ div.small-font {
 
         {% if addons %}
         <hr/>
-        <h4 class="time-period">{% trans "Addons" %}</h4> 
+        <h4 class="time-period">{% trans "Addons" %}</h4>
         <div class="addons-wrap">
           {% for addon in addons %}
           <h2>{{ addon.title }}</h2>
@@ -287,7 +287,7 @@ div.small-font {
       {% comment %}
       <div class="files-wrap">
         {% if event_files %}
-        <h4 class="time-period">{% trans "Event Files" %}</h4> 
+        <h4 class="time-period">{% trans "Event Files" %}</h4>
         {% for file in event_files %}
         {% file_detail file %}
         {% endfor %}
@@ -314,31 +314,31 @@ div.small-font {
      {% endcomment %}
       -->
     </div> <!-- end info -->
-    
-    
+
+
     <!-- START SIDEBAR -->
     <div class="vitals col-md-4 col-sm-4 col-xs-12">
       <br />
       {% if event.external_url %}
       <h4><a href="{{ event.external_url }}" target="_blank">{% trans "View this event's webpage" %} &raquo;</a></h4>
       {% endif %}
-      
+
       <div class="vitals">
         <h4 class="time-period">{% trans "Date and Time" %}</h4>
-        
+
         {% for span in event.date_spans %}
         {% if span.same_date %}
         <p><time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, N j, Y" }}</time></p>
-        
+
         {% if not forloop.last %} and {% endif %}
         {% else %}
         <p><time datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, M. j" }}</time></p> -
         <p><time datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"D, M. j, Y" }}</time></p>
         {% if not forloop.last %} and {% endif %}
         {% endif %}
-        
+
         {% endfor %}
-        
+
         <p>
           {% if not event.all_day %}
           {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}
@@ -346,29 +346,29 @@ div.small-font {
           {% if not event.all_day %}
           {{ event.timezone.key|timezone_label }}</p>
         {% endif %}
-        
+
       </div>
-      
+
       <div class="vitals place" itemprop="location" itemscope itemtype="https://schema.org/Place">
         <h4 class="time-period">{% trans "Location" %}</h4>
         <p><strong itemprop="name">{{ event.place.name }}</strong></p>
           <div class="vitals place" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
             <p>
-    			{% if event.place.virtual %}
-    			    <span itemprop="name">{% include 'events/include/display_virtual.html' %}</span>
-    			{% else %}
-    			  <span itemprop="streetAddress">{{ event.place.address }}</span><br />
-    	          <span itemprop="addressLocality">{{ event.place.city_state|join:", "}}</span> <span itemprop="postalCode">{{ event.place.zip }}</span><br />
-    			  {% if event.place.county %}
-    				{{ event.place.county }}<br />
-    			  {% endif %}
-    	          <span itemprop="addressCountry">{{ event.place.country }}</span>
-    			{% endif %}
-    			{% if event.place.national %}
-    				{% include 'events/include/display_national.html' %}
-    			{% endif %}
-    		</p>
-            
+                {% if event.place.virtual %}
+                    <span itemprop="name">{% include 'events/include/display_virtual.html' %}</span>
+                {% else %}
+                  <span itemprop="streetAddress">{{ event.place.address }}</span><br />
+                  <span itemprop="addressLocality">{{ event.place.city_state|join:", "}}</span> <span itemprop="postalCode">{{ event.place.zip }}</span><br />
+                  {% if event.place.county %}
+                    {{ event.place.county }}<br />
+                  {% endif %}
+                  <span itemprop="addressCountry">{{ event.place.country }}</span>
+                {% endif %}
+                {% if event.place.national %}
+                    {% include 'events/include/display_national.html' %}
+                {% endif %}
+            </p>
+
             {% if event.place.description|striptags|wordcount > 50 %}
             <div class="line event-place-desc-short">
               {{ event.place.description|striptags|truncatewords:"50"|safe }}
@@ -386,21 +386,21 @@ div.small-font {
             {% endif %}
           </div>
       </div>
-      
+
       {% if event.registration_configuration.enabled %}
       <div class="vitals">
       {% if not MODULE_EVENTS_CANREGISTERAGAIN and my_registrants and not request.user.is_superuser %}
-      	{% if my_registrants and my_registrants.0.reg8n_status == 'payment-required' and event.registration_configuration.can_pay_online %}
-       	<a class="btn btn-lg btn-warning" href="{% url "payment.pay_online" my_registrants.0.registration.invoice.pk my_registrants.0.registration.invoice.guid %}">
+          {% if my_registrants and my_registrants.0.reg8n_status == 'payment-required' and event.registration_configuration.can_pay_online %}
+           <a class="btn btn-lg btn-warning" href="{% url "payment.pay_online" my_registrants.0.registration.invoice.pk my_registrants.0.registration.invoice.guid %}">
               {% trans "Complete my registration!" %}</a>
-       	{% else %}
+           {% else %}
           {% if my_registrants.count == 1 %}
-	        <a class="btn btn-success" href="{% url 'event.registration_confirmation' event.id my_registrants.0.registration.id %}">{% trans "View/Update My Registration" %}</a>
-	 		{% else %}
-	 		<a class="btn btn-success" href="{% url 'profile' request.user.username %}">{% trans "View My Registration" %}</a>
-	 		{% endif %}
-	 	{% endif %}
-	   {% else %}
+            <a class="btn btn-success" href="{% url 'event.registration_confirmation' event.id my_registrants.0.registration.id %}">{% trans "View/Update My Registration" %}</a>
+             {% else %}
+             <a class="btn btn-success" href="{% url 'profile' request.user.username %}">{% trans "View My Registration" %}</a>
+             {% endif %}
+         {% endif %}
+       {% else %}
         <h4 class="time-period">
           {% if not free_event %}
           {% trans 'Pricing' %}
@@ -413,55 +413,55 @@ div.small-font {
       {% endif %}
       </div>
 
-       
+
         {% if can_view_attendees %}
             <div class="vitals">
-				<a href="{% url 'event.attendees' event.id %}">{% trans "View Attendees" %}</a>
+                <a href="{% url 'event.attendees' event.id %}">{% trans "View Attendees" %}</a>
             </div>
         {% endif %}
       {% endif %}
-      
+
       {% if can_view_eventfiles %}
             <div class="vitals">
-				<a href="{% url 'event.files_display' event.id %}" title="View Event Files">{% trans "View Event Files" %}</a>
+                <a href="{% url 'event.files_display' event.id %}" title="View Event Files">{% trans "View Event Files" %}</a>
             </div>
       {% endif %}
-      
+
       <br />
-      
+
       {% url "event" event.pk as the_url %}
       <p class="fb-like-event">{% fb_like_button_iframe the_url %}</p>
-      
+
       {% include 'social_media/icons.html' %}
-    </div> 
+    </div>
     <!-- END SIDEBAR -->
-    
+
     <div style="clear:both;"></div>
   </div>
-  
+
 </div>
 
 <!-- LOCATION BOTTOM -->
 <div class="col-xs-12">
   <div class="hr"></div>
   {% if not event.place.virtual %}
-	  {% if event.place.address and event.place.city_state %}
-	  <h4 class="time-period">Location</h4>
-	  <div class="map">
-	    <iframe width="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;iwloc=near&amp;output=embed"></iframe>
-	    <br />
-	    <a class="btn btn-default pull-right" href="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed">{% trans 'View Larger Map' %}</a>
-	    <br />
-	    <div class="text-center">
-	      <h3><strong>{{ event.place.name }}</strong></h3>
-	      <h4>{{ event.place.address }}<br />
-	        {{ event.place.city_state|join:", "}} {{ event.place.zip }}<br />
-	        {{ event.place.country }}</h4>
-	    </div>
-	  </div>
-	  {% endif %}
+      {% if event.place.address and event.place.city_state %}
+      <h4 class="time-period">Location</h4>
+      <div class="map">
+        <iframe width="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;iwloc=near&amp;output=embed"></iframe>
+        <br />
+        <a class="btn btn-default pull-right" href="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed">{% trans 'View Larger Map' %}</a>
+        <br />
+        <div class="text-center">
+          <h3><strong>{{ event.place.name }}</strong></h3>
+          <h4>{{ event.place.address }}<br />
+            {{ event.place.city_state|join:", "}} {{ event.place.zip }}<br />
+            {{ event.place.country }}</h4>
+        </div>
+      </div>
+      {% endif %}
   {% endif %}
-    
+
     <br />
     <!-- FOOTER / META -->
     <div class="t-footer-meta">
@@ -475,7 +475,7 @@ div.small-font {
     </div>
     {% include 'events/meta.html' %}
     <br />
-    
+
 </div>
 
 {% endblock %}
@@ -492,7 +492,7 @@ div.small-font {
   gravity: 'e',
   live: true
   });
-  
+
   $('.files-wrap').hide();
   $('a#event_detail_tab').on("click", function(){
   var _this = $(this);
@@ -510,42 +510,42 @@ div.small-font {
   $('.files-wrap').show();
   return false;
   });
-  
+
   // speaker description toggle
   $('div.speaker-desc-long').hide();
   $('a.speaker-desc-toggle').on("click", function() {
   var _this = $(this);
   var speaker_wrap = _this.parents('.speaker-wrap');
-  
+
   _this.hide();
   speaker_wrap.find('div.speaker-desc-short').hide();
   speaker_wrap.find('div.speaker-desc-long').show();
   return false;
   });
-  
+
   // organizer description toggle
   $('div.organizer-desc-long').hide();
   $('a.organizer-desc-toggle').on("click", function() {
   var _this = $(this);
   var speaker_wrap = _this.parents('.organizer-wrap');
-  
+
   _this.hide();
   speaker_wrap.find('div.organizer-desc-short').hide();
   speaker_wrap.find('div.organizer-desc-long').show();
   return false;
   });
-  
+
   // event description toggle
   $('a.event-place-desc-toggle').on("click", function() {
   var _this = $(this);
   var speaker_wrap = _this.parents('.place');
-  
+
   _this.hide();
   speaker_wrap.find('div.event-place-desc-short').hide();
   speaker_wrap.find('div.event-place-desc-long').show();
   return false;
   });
-  
+
   // // Dialog
   // $('#event_export_dialog').dialog({
   // autoOpen: false,
@@ -560,7 +560,7 @@ div.small-font {
   // $('#event_export_link').on("click", function(){
   // $('#event_export_dialog').show();
   // $('#event_export_dialog').dialog('open');
-  // 
+  //
   // return false;
   // });
   });

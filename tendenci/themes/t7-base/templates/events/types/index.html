@@ -26,7 +26,7 @@
          {{ formset.management_form }}
          {% for form in formset.forms %}
          {{ form.id }}
-	
+
              <div class="item">
                  <div class="errs">{{ form.name.errors }}</div>
                  <label>{{ form.name.label_tag }}</label>
@@ -50,7 +50,7 @@
                  <div class="help">{{ form.DELETE.help_text }}</div>
                  <div class="clear"></div>
              </div>
-	<hr />
+    <hr />
          {% endfor %}
 
          <input class="btn btn-default" type="Submit" value="{% trans 'Save Changes' %}" />

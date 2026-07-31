@@ -2,7 +2,7 @@
 {% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="form-inline" action="{% url 'speakers' %}" method="get" role="search">
   <div class="form-group">
-    <div class="input-group add-on">      
+    <div class="input-group add-on">
       <input class="form-control" type="text" name="q" value="{{ request.GET.q|striptags }}" placeholder="Search" />
       <div class="input-group-btn">
         <button class="btn btn-default" type="submit">
@@ -11,7 +11,7 @@
       </div>
     </div>
   </div>
-  
+
   {% if can_add_speaker %}
   <div class="form-group pull-right">
     <a class="btn btn-primary" href="{% url "admin:speakers_speaker_add" %}">
@@ -19,7 +19,7 @@
     </a>
   </div>
   {% endif %}
-  
+
 </form>
 <br />
 {% endif %}

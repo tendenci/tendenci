@@ -15,33 +15,33 @@
             {% if obj_name == 'registration' %}
             <a href="{% url 'event.registration_confirmation' object.event.pk object.pk %}">{{ object }}</a><br>
             {% else %}
-            	{% if request.user.is_superuser %}
-            	<a href="{% url 'admin:events_assetspurchase_change' object.pk %}">{{ object }}</a><br>
-            	{% else %}
-            	{{ object }}<br>
-            	{% endif %}
+                {% if request.user.is_superuser %}
+                <a href="{% url 'admin:events_assetspurchase_change' object.pk %}">{{ object }}</a><br>
+                {% else %}
+                {{ object }}<br>
+                {% endif %}
             {% endif %}
             <strong>{% trans 'Event Date' %}:</strong> {{ object.event.start_dt }}
             {% else %}
-	            {% if invoice.bill_to %}
-	                 {{ invoice.bill_to }}<br>
-	                 {% if obj_name == "Corporate Membership" %}
-	                 	{% if invoice.bill_to != invoice.bill_to_company %}
-	            		{{ invoice.bill_to_company }}<br>
-	            		{% endif %}
-	            	{% endif %}
-	            {% else %}
-	                {% if invoice.bill_to_first_name or invoice.bill_to_last_name %}
-	                    {% if invoice.bill_to_first_name %} {{ invoice.bill_to_first_name }} {% endif %} {% if invoice.bill_to_last_name %}{{ invoice.bill_to_last_name }}<br> {% endif %}
-	
-	                {% else %}
-	                     {{ SITE_GLOBAL_SITEDISPLAYNAME }}<br>
-	                {% endif %}
-	            {% endif %}
+                {% if invoice.bill_to %}
+                     {{ invoice.bill_to }}<br>
+                     {% if obj_name == "Corporate Membership" %}
+                         {% if invoice.bill_to != invoice.bill_to_company %}
+                        {{ invoice.bill_to_company }}<br>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    {% if invoice.bill_to_first_name or invoice.bill_to_last_name %}
+                        {% if invoice.bill_to_first_name %} {{ invoice.bill_to_first_name }} {% endif %} {% if invoice.bill_to_last_name %}{{ invoice.bill_to_last_name }}<br> {% endif %}
 
-            	{% if invoice.bill_to_address %} {{ invoice.bill_to_address }}<br>{% endif %}
-            	{% if invoice.bill_to_address2 %} {{ invoice.bill_to_address2 }}<br>{% endif %}
-            	{% if invoice.bill_to_city %}{{ invoice.bill_to_city}},{% endif %} {% if invoice.bill_to_state %}{{ invoice.bill_to_state }}{% endif %} {% if invoice.bill_to_zip_code %}{{ invoice.bill_to_zip_code }}{% endif %}
+                    {% else %}
+                         {{ SITE_GLOBAL_SITEDISPLAYNAME }}<br>
+                    {% endif %}
+                {% endif %}
+
+                {% if invoice.bill_to_address %} {{ invoice.bill_to_address }}<br>{% endif %}
+                {% if invoice.bill_to_address2 %} {{ invoice.bill_to_address2 }}<br>{% endif %}
+                {% if invoice.bill_to_city %}{{ invoice.bill_to_city}},{% endif %} {% if invoice.bill_to_state %}{{ invoice.bill_to_state }}{% endif %} {% if invoice.bill_to_zip_code %}{{ invoice.bill_to_zip_code }}{% endif %}
             {% endif %}
           </td>
         </tr>
@@ -55,14 +55,14 @@
           {% if invoice.is_void %}
           <td class="invoice-status-red td-right">{{ invoice.get_status|title }}</td>
           {% elif invoice.total > 0 %}
-	          {% if invoice.balance <= 0 %}
-	          <td class="invoice-status td-right">{% trans "Paid" %}</td>
-	          {% else %}
-	          <td class="invoice-status-red td-right">{% trans "Pending Payment" %}</td>
-	          {% endif %}
-	     {% else %}
-	      <td class="invoice-status td-right">{% trans "Free" %}</td>
-	     {% endif %}
+              {% if invoice.balance <= 0 %}
+              <td class="invoice-status td-right">{% trans "Paid" %}</td>
+              {% else %}
+              <td class="invoice-status-red td-right">{% trans "Pending Payment" %}</td>
+              {% endif %}
+         {% else %}
+          <td class="invoice-status td-right">{% trans "Free" %}</td>
+         {% endif %}
         </tr>
         {% if invoice.is_void and invoice.void_date %}
         {% if invoice.void_date %}
@@ -84,7 +84,7 @@
         </tr>
       </table>
     </div>
-    
+
 
     <div class="invoice-meta-clear"></div>
   </div>

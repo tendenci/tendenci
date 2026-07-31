@@ -69,48 +69,48 @@
       {% if form.void_reason.errors %}
         {{ form.void_reason.errors }}
         {% endif %}
-	    <label for="void_reason" class="col-sm-3 control-label">{{ form.void_reason.label }}</label>
-	    <div class="col-sm-6">
-	     {{ form.void_reason }}
-	    </div>
-	  </div>
-	  
-	  {% if form.cancle_registration %}
-	  <div class="form-group">
-	    <div class="col-sm-offset-3 col-sm-9">
-	      <div class="checkbox">
-	        <label>
-	          {{ form.cancle_registration }} {{ form.cancle_registration.label }}
-	        </label>
-	      </div>
-	    </div>
-	  </div>
+        <label for="void_reason" class="col-sm-3 control-label">{{ form.void_reason.label }}</label>
+        <div class="col-sm-6">
+         {{ form.void_reason }}
+        </div>
+      </div>
+
+      {% if form.cancle_registration %}
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+          <div class="checkbox">
+            <label>
+              {{ form.cancle_registration }} {{ form.cancle_registration.label }}
+            </label>
+          </div>
+        </div>
+      </div>
      {% endif %}
-     
+
      {% if form.delete_membership %}
-	  <div class="form-group">
-	    <div class="col-sm-offset-3 col-sm-9">
-	      <div class="checkbox">
-	        <label>
-	          {{ form.delete_membership }} {{ form.delete_membership.label }}
-	        </label>
-	      </div>
-	    </div>
-	  </div>
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+          <div class="checkbox">
+            <label>
+              {{ form.delete_membership }} {{ form.delete_membership.label }}
+            </label>
+          </div>
+        </div>
+      </div>
      {% endif %}
-     
+
      <div class="form-group">
-	    <div class="col-sm-offset-2 col-sm-10">
-	        <p class="text-danger">
-	        {% trans 'Are you sure you want to void this invoice?' %} <br />
-	        {% trans 'This action can NOT be undone!' %}
-	        </p>
-	    
-	      <a class="btn btn-default" href="{% url "invoice.view" invoice.pk %}">{% trans 'No, take me back' %}</a>&nbsp;&nbsp;&nbsp;
-     	 <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Yes, void this invoice' %}" />
-	    </div>
-	  </div>
-  
+        <div class="col-sm-offset-2 col-sm-10">
+            <p class="text-danger">
+            {% trans 'Are you sure you want to void this invoice?' %} <br />
+            {% trans 'This action can NOT be undone!' %}
+            </p>
+
+          <a class="btn btn-default" href="{% url "invoice.view" invoice.pk %}">{% trans 'No, take me back' %}</a>&nbsp;&nbsp;&nbsp;
+          <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Yes, void this invoice' %}" />
+        </div>
+      </div>
+
     </form>
     <br /><br />
 

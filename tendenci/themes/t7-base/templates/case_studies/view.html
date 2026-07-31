@@ -36,7 +36,7 @@
 <div id="view-case-study">
     <div class="cs-view">
       <div class="quick-options">{% case_study_options request.user case_study %}</div>
-      
+
       <div class="page-header">
         <h1>{{ case_study.client }} Case Study</h1>
       </div>
@@ -62,12 +62,12 @@
                 <h2>{% trans 'Overview' %}</h2>
                 <p>{{ case_study.overview|safe }}</p>
             {% endif %}
-            
+
             {% if case_study.execution %}
                 <h2>{% trans 'Execution' %}</h2>
                 <p>{{ case_study.execution|safe }}</p>
             {% endif %}
-            
+
             {% if case_study.results %}
                 <h2>{% trans 'Results' %}</h2>
                 <p>{{ case_study.results|safe }}</p>
@@ -91,14 +91,14 @@
       </div>
       {% endif %}
 
-<!-- START: GO BACK BUTTON -->      
+<!-- START: GO BACK BUTTON -->
       <nav aria-label="View More Case Studies">
         <ul class="pager">
           <li class="previous"><a href="{% url "case_study" %}"><span aria-hidden="true">&larr;</span> {% trans 'Search other case studies' %}</a></li>
         </ul>
-      </nav>  
+      </nav>
 <!-- END: GO BACK BUTTON -->
-      
+
     </div>
 </div>
 

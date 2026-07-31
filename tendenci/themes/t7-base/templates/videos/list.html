@@ -9,14 +9,14 @@
   <div class="page-header">
     <h1>{% if category %}{{category|title}} {% endif %}{% trans 'Videos' %}</h1>
   </div>
-  
+
   {% if can_add_video %}
   <div><a href="{% url 'admin:videos_video_add' %}">{% trans 'Add Video' %}</a></div>
   {% endif %}
-  
-  
+
+
   <form class="form-inline" action="{% url 'video.search' %}" method="get" role="search">
-    
+
     <div class="form-group">
       <select  class="form-control" name="cat">
         <option value="">{% trans 'All Categories' %}</option>
@@ -33,9 +33,9 @@
         {% endfor %}
       </select>
     </div>
-    
+
     <div class="form-group">
-      <div class="input-group add-on">      
+      <div class="input-group add-on">
         <input class="form-control" type="text" name="q" value="{{ request.GET.q|striptags }}" placeholder="Search" />
         <div class="input-group-btn">
           <button class="btn btn-default" type="submit">
@@ -44,25 +44,25 @@
         </div>
       </div>
     </div>
-    
+
   </form>
   <br />
-  
-  <div class="container-fluid">  
+
+  <div class="container-fluid">
     <div class="grid">
-      
+
       <div class="grid-sizer col-xs-12"></div>
       {% autopaginate videos 15 %}
       {% for video in videos %}
-      
+
       <div class="grid-item col-md-4 col-sm-4 col-xs-4">
         {% search_result video %}
       </div>
-      
+
       {% endfor %}
     </div>
     {% paginate %}
   </div>
-  
+
 </div>
 {% endblock %}

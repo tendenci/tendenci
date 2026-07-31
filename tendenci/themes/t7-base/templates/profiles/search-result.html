@@ -5,9 +5,9 @@
 
 
 {% if profile.user %}
-	{% has_perm request.user profiles.change_profile profile as can_edit_profile %}
+    {% has_perm request.user profiles.change_profile profile as can_edit_profile %}
         {% has_perm request.user memberships.change_membershipdefault as can_edit_memberships %}
-	
+
     <div class="wrap-search-item">
         {% with profile.membership as membership %}
             <div class="" style="padding:10px;">
@@ -23,11 +23,11 @@
                     </h2>
                     <div class="col-md-3 col-xs-12" style="line-height:46px;">
                         {% if membership and can_edit_memberships %}
-	                        {% if request.user.profile.is_superuser %}
-	                            <a href="{% url 'admin:memberships_membershipdefault_change' membership.pk %}">{% trans "Edit Membership" %}</a>
-				{% else %}
-	                            <a href="{% url 'membership_default.edit' membership.pk %}">{% trans "Edit Membership" %}</a>
-	                        {% endif %}
+                            {% if request.user.profile.is_superuser %}
+                                <a href="{% url 'admin:memberships_membershipdefault_change' membership.pk %}">{% trans "Edit Membership" %}</a>
+                {% else %}
+                                <a href="{% url 'membership_default.edit' membership.pk %}">{% trans "Edit Membership" %}</a>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -42,12 +42,12 @@
                     </div>
 
                     <div class="col-md-4 col-xs-12">
-                    	{% include "profiles/include/social_media_links.html" %}
-                    
-						{% if show_industry and profile.industry %}
-							<b>{% trans "Industry:" %}</b> <span style="white-space:nowrap">{{ profile.industry }}</span><br />
-						{% endif %}
-							
+                        {% include "profiles/include/social_media_links.html" %}
+
+                        {% if show_industry and profile.industry %}
+                            <b>{% trans "Industry:" %}</b> <span style="white-space:nowrap">{{ profile.industry }}</span><br />
+                        {% endif %}
+
                         {% if profile.company %}
                             <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
                         {% endif %}
@@ -70,7 +70,7 @@
                             {% endif %}
                         {% endif %}
 
-		        {% if request.user == profile.user or can_edit_memberships %}
+                {% if request.user == profile.user or can_edit_memberships %}
                         {% if membership.membership_type %}
                             <b>{% trans "Membership Type:" %}</b> <span style="white-space:nowrap">{{ membership.membership_type }}</span><br />
                         {% endif %}
@@ -78,30 +78,30 @@
                         {% if membership.status_detail %}
                             <b>{% trans "Membership Status:" %}</b> {{ membership.status_detail }}<br />
                         {% endif %}
-			{% endif %}
+            {% endif %}
                     </div>
 
                     <div class="col-md-4 col-xs-12">
-                    	{% if MODULE_CHAPTERS_ENABLED %}
-	                    	{% with profile.get_chapters as chapters %}
-	     					{% if chapters %}
-	     					<b>{% trans "Chapter" %}{{ chapters|pluralize }}:</b> 
-	     					{% for chapter in chapters %}{% if forloop.counter0 > 0 %}, {% endif %}<a href="{{ chapter.get_absolute_url }}">{{ chapter.title }}</a>
-							{% endfor %}
-							<br />
-	     					{% endif %}
-	              			{% endwith %}
-              			{% endif %}
-              			
-     					{% if membership.chapter %}
+                        {% if MODULE_CHAPTERS_ENABLED %}
+                            {% with profile.get_chapters as chapters %}
+                             {% if chapters %}
+                             <b>{% trans "Chapter" %}{{ chapters|pluralize }}:</b>
+                             {% for chapter in chapters %}{% if forloop.counter0 > 0 %}, {% endif %}<a href="{{ chapter.get_absolute_url }}">{{ chapter.title }}</a>
+                            {% endfor %}
+                            <br />
+                             {% endif %}
+                              {% endwith %}
+                          {% endif %}
+
+                         {% if membership.chapter %}
                             <b>{% trans "Chapter:" %}</b> {{ membership.chapter }}<br />
                         {% endif %}
                         {% if not profile.hide_phone or can_edit_profile %}
-	                        {% if profile.phone %}
+                            {% if profile.phone %}
                                 <b>{% trans "Phone:" %}</b> {{ profile.phone|phonenumber }}<br />
-	                        {% endif %}
-	
-	                        {% if profile.mobile_phone %}
+                            {% endif %}
+
+                            {% if profile.mobile_phone %}
                                 <b>{% trans "Mobile Phone:" %}</b> {{ profile.mobile_phone|phonenumber }}<br />
                             {% endif %}
                         {% endif %}
@@ -132,9 +132,9 @@
                 {% endif %}
             </div>
         {% endwith %}
-	
+
          {% if can_edit_profile %}
         {% profile_meta %}
-	 {% endif %}
+     {% endif %}
     </div>
 {% endif %}

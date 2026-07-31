@@ -12,23 +12,23 @@
 {% block content %}
 <div id="video-details">
   {% tags_for_object video as tags %}
-  
+
   <div class="page-header">
     <h1>{{ video.title }}</h1>
   </div>
-  
+
   <div class="embed-responsive embed-responsive-16by9">
     <div class="embed-responsive-item">
       {{ video|video_embed:"600" }}
     </div>
   </div>
-  
+
   <br>
-  
+
   <p>{{ video.description|safe }}</p>
-  
-  <nav class="navbar navbar-default">   
-    <div class="container-fluid">    
+
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
       {% if tags %}
       <div class="tags">
         Tags: {% for tag in tags %}
@@ -37,15 +37,15 @@
       </div>
       {% endif %}
       {% if video.status_detail != "active" %}
-      
+
         <li><span class="copyright body-copy-alerts"><em>{{ video.status_detail }}</em></span></li>
         {% endif %}
       <ul class="nav navbar-nav">
         {% video_options request.user video %}
       </ul>
     </div>
-  </nav>  
-  
+  </nav>
+
 </div>
 {% endblock %}
 

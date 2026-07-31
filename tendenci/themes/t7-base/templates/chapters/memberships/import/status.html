@@ -20,9 +20,9 @@
     <div id="import-wrap">
 
         <h1>{% trans "Import Chapter Memberships" %}</h1>
-		{% if mimport.chapter %}
-		<h3>{% trans "Import Into Chapter:" %} <a href="{% url 'chapters.detail' mimport.chapter.slug %}">{{ mimport.chapter.title }}</a></h3>
-		{% endif %}
+        {% if mimport.chapter %}
+        <h3>{% trans "Import Into Chapter:" %} <a href="{% url 'chapters.detail' mimport.chapter.slug %}">{{ mimport.chapter.title }}</a></h3>
+        {% endif %}
 
          <h3 class="import-step">{% trans "Step 3/3 - Status" %}</h3>
 

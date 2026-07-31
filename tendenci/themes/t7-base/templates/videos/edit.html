@@ -18,12 +18,12 @@
   <div class="page-header">
     <h1>{% firstof MODULE_VIDEOS_LABEL trans 'Video' %} {% if edit_mode %}{% trans "Edit" %}{% else %}{% trans "Add" %}{% endif %}</h1>
   </div>
-  
+
   <div>
     <form action="." method="post" enctype="multipart/form-data">{% csrf_token %}
       <div class="forms">
         {{ form|styled_form }}
-        
+
         <br />
         <input type="submit" class="btn btn-default" value="{% trans 'Save Changes' %}" />
         <br /><br />
@@ -31,7 +31,7 @@
     </form>
 
   </div>
-  
+
 </div>
 {% endblock %}
 
@@ -47,7 +47,7 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-		// Slugify
+        // Slugify
         var slugit = new Slugify({
             input_element : '#id_title',
             slug_element : '#id_slug',
@@ -61,10 +61,10 @@
         $('#id_release_dt_1').timepicker({'timeFormat': 'h:i A'});
     });
 
-	$("#id_tags").tagit({
-	  availableTags: [{% all_tags_list %}],
-	  allowSpaces: true
-	  });
+    $("#id_tags").tagit({
+      availableTags: [{% all_tags_list %}],
+      allowSpaces: true
+      });
 </script>
 
 {% include 'tags/autocomplete.html' %}

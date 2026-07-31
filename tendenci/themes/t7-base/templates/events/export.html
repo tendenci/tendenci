@@ -24,34 +24,34 @@
      <h1>{% trans "Events Export" %}</h1>
 
      <div class="content">
-         <form action="." method="POST" >{% csrf_token %}             
-		<div class="form-group">
-		    <label for="start_dt" class="col-sm-3 control-label">{{ form.start_dt.label }}</label>
-		    <div class="col-sm-9 date">
-		      {{ form.start_dt }}
-		      {% if form.start_dt.errors %}
-		      {{ form.start_dt.errors}}
-		      {% endif %}
-		    </div>
-	  	</div>  
-	  	
-	  	<div class="form-group">
-		    <label for="end_dt" class="col-sm-3 control-label">{{ form.end_dt.label }}</label>
-		    <div class="col-sm-9 date">
-		      {{ form.end_dt }}
-		      {% if form.end_dt.errors %}
-		      {{ form.end_dt.errors}}
-		      {% endif %}
-		    </div>
-	  	</div> 
-	  	
-	  	<div class="form-group">
-		    <label for="by_type" class="col-sm-3 control-label">{{ form.by_type.label }}</label>
-		    <div class="col-sm-9">
-		      {{ form.by_type }}
-		    </div>
-	  	</div> 
-  	 
+         <form action="." method="POST" >{% csrf_token %}
+        <div class="form-group">
+            <label for="start_dt" class="col-sm-3 control-label">{{ form.start_dt.label }}</label>
+            <div class="col-sm-9 date">
+              {{ form.start_dt }}
+              {% if form.start_dt.errors %}
+              {{ form.start_dt.errors}}
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="end_dt" class="col-sm-3 control-label">{{ form.end_dt.label }}</label>
+            <div class="col-sm-9 date">
+              {{ form.end_dt }}
+              {% if form.end_dt.errors %}
+              {{ form.end_dt.errors}}
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="by_type" class="col-sm-3 control-label">{{ form.by_type.label }}</label>
+            <div class="col-sm-9">
+              {{ form.by_type }}
+            </div>
+          </div>
+
              <div class="col-sm-offset-3">
                  <input class="btn btn-default" type="submit" value="{% trans 'Export' %}" />
              </div>
@@ -66,9 +66,9 @@
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
     $(function() {
-    	$('#id_start_dt').datepicker({ dateFormat: 'yy-mm-dd' });
+        $('#id_start_dt').datepicker({ dateFormat: 'yy-mm-dd' });
         $('#id_end_dt').datepicker({ dateFormat: 'yy-mm-dd' });
 
-    }); 
+    });
     </script>
 {% endblock %}

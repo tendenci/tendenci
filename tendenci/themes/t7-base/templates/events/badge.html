@@ -33,7 +33,7 @@
   }
   .badge-section .col-md-6.qr {
       width: 38%;
-  } 
+  }
   .badge-section .qr svg {
       width: 39mm !important;
       height: 38mm !important;
@@ -95,7 +95,7 @@
       .badge-back .row:nth-child(odd) {
           background-color: #D9D9D9 !important;
           -webkit-print-color-adjust: exact;
-      } 
+      }
   }
 </style>
 
@@ -108,18 +108,18 @@
 
     <div class="contents">
       <div class="row">
-      	<div class="row">
-	        <div class="col-md-6 info">
-	          <div class="name">
-	            {{ registrant.first_name }} {{ registrant.last_name }}
-	          </div>
-	          <div>
-	            {{ registrant.company_name }}
-	          </div>
-	          <div>
-	            {{ registrant.pricing.title }}
-	          </div>
-	        </div>
+          <div class="row">
+            <div class="col-md-6 info">
+              <div class="name">
+                {{ registrant.first_name }} {{ registrant.last_name }}
+              </div>
+              <div>
+                {{ registrant.company_name }}
+              </div>
+              <div>
+                {{ registrant.pricing.title }}
+              </div>
+            </div>
         </div>
         <div class="row">
           <div class="col-md-6 qr">

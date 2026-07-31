@@ -9,16 +9,16 @@
   <div class="project-wrap">
   <div class="view-all"><p><a href="{% url 'projects.search' %}">View All Projects</a></p></div>
     <h1>{{ project.project_name }}</h1>
-    
+
     {% if can_edit %}
     <div class="pull-right clearfix">
     <a href="{% url 'projects.edit' project.id %}" class="btn btn-default">{% trans "Edit" %}</a>
-    	{% if request.user.is_superuser and project.status_detail == 'pending' %}
-     	<a href="{% url 'projects.approve' project.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
+        {% if request.user.is_superuser and project.status_detail == 'pending' %}
+         <a href="{% url 'projects.approve' project.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
         {% endif %}
     </div>
     {% endif %}
-    
+
     {% if project.video_title %}
     <h2>{{ project.video_title }}</h2>
     {% endif %}
@@ -31,16 +31,16 @@
       {{ project.video_embed_code|safe }}
     {% endif %}
 
-	{% if project.company_name %}
+    {% if project.company_name %}
     <h3>{% trans "Company:" %}</h3> <p>{{ project.company_name}}</p>
     {% endif %}
-    
+
     {% with project.category.all as cats %}
     {% if cats %}
     <h3>{% trans "Category:" %}</h3> <p>{{ cats.0.name}}</p>
     {% endif %}
     {% endwith %}
-    
+
     {% if project.end_dt  %}
     <h3>{% trans "Dates:" %}</h3><p>{{ project.start_dt }} - {{ project.end_dt }}</p>
     {% endif %}
@@ -59,35 +59,35 @@
     </div>
     {% endif %}
 
-    
-	{% if team_members %}
-	 <hr>
+
+    {% if team_members %}
+     <hr>
     <div class="project-teammembers">
-    	<h3>{% trans "Team Members" %}</h3>
+        <h3>{% trans "Team Members" %}</h3>
       <div id="teammembers-wrap" class="clearfix">
           {% for team_member in team_members %}
           <div style="float: left; margin: 15px;">
-            <img src="{% image_url team_member size=150x150 crop=True %}" /> 
+            <img src="{% image_url team_member size=150x150 crop=True %}" />
             {{ team_member.first_name }} {{ team_member.last_name }}
              {% if team_member.title %}- {{ team_member.title }}{% endif %}
-		  </div>
+          </div>
           {% endfor %}
       </div>
     </div>
      {% endif %}
-     
+
      {% if documents %}
      <hr>
     <div class="project-documents">
-    	<h3>{% trans "Documents" %}</h3>
-      	<table class="table">
+        <h3>{% trans "Documents" %}</h3>
+          <table class="table">
           {% for document in documents %}
           <tr class="project-document">
-	          <td style="width: 5em;">
-	          	<img class="pull-left" src="{{ document.icon }}" alt="{{ document|truncatechars:123 }}" title="{{ document|truncatechars:123 }}" />
-	          </td>
-          	  <td><a href="{% url 'file' document.pk %}">{{ document.get_name|truncatechars:50 }}</a> 
-          	  {% if document.document_dt %}{{ document.document_dt }}{% endif %}</td>
+              <td style="width: 5em;">
+                  <img class="pull-left" src="{{ document.icon }}" alt="{{ document|truncatechars:123 }}" title="{{ document|truncatechars:123 }}" />
+              </td>
+                <td><a href="{% url 'file' document.pk %}">{{ document.get_name|truncatechars:50 }}</a>
+                {% if document.document_dt %}{{ document.document_dt }}{% endif %}</td>
           </tr>
           {% endfor %}
           </table>

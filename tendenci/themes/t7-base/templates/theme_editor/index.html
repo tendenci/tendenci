@@ -36,30 +36,30 @@
     <tr>
         <td width="20%" valign="top">
             <div id="right_files_list">
-	            <div class="well well-small">
-	                <h4>{% if theme_read_only %}{% trans "Choose a folder or file to view:" %}{% else %}{% trans "Choose a folder or file to edit:" %}{% endif %}</h4>
-	                <ul id="file-tree">
-	                {% for key,value in all_files_folders.items %}
-	                    {% if value.items %}
-	                        {% for key,value in value.items|sortcontents %}
-	                            {% if key == "contents" %}
-	                                {% for item in value %}
-	                                    <li {% if current_file_path == item.path %}class="highlight"{% endif %}>
-	                                    {% if item.editable %}
-	                                        <a href="{% url "theme_editor.editor" %}?file={{ item.path }}&theme_edit={{ current_theme }}">{{ item.name }}</a>
-	                                    {% else %}
-	                                        <span class="non-editable-file">{{ item.name|safe }}<span class="links"> <a href="{{ item.url }}" target="_blank" title="{% trans 'View this file in a new window.' %}"><span class="glyph">K</span></a> <a href="{% url "theme_editor.delete" %}?file={{ item.path }}&theme_edit={{ current_theme }}" class="delete" title="{% trans 'Delete this file.' %}"><span class="glyph">×</span></a></span></span>
-	                                    {% endif %}
-	                                    </li>
-	                                {% endfor %}
-	                            {% else %}
-	                                {% folder_structure value %}
-	                            {% endif %}
-	                        {% endfor %}
-	                    {% endif %}
-	                {% endfor %}
-	                </ul>
-	             </div>
+                <div class="well well-small">
+                    <h4>{% if theme_read_only %}{% trans "Choose a folder or file to view:" %}{% else %}{% trans "Choose a folder or file to edit:" %}{% endif %}</h4>
+                    <ul id="file-tree">
+                    {% for key,value in all_files_folders.items %}
+                        {% if value.items %}
+                            {% for key,value in value.items|sortcontents %}
+                                {% if key == "contents" %}
+                                    {% for item in value %}
+                                        <li {% if current_file_path == item.path %}class="highlight"{% endif %}>
+                                        {% if item.editable %}
+                                            <a href="{% url "theme_editor.editor" %}?file={{ item.path }}&theme_edit={{ current_theme }}">{{ item.name }}</a>
+                                        {% else %}
+                                            <span class="non-editable-file">{{ item.name|safe }}<span class="links"> <a href="{{ item.url }}" target="_blank" title="{% trans 'View this file in a new window.' %}"><span class="glyph">K</span></a> <a href="{% url "theme_editor.delete" %}?file={{ item.path }}&theme_edit={{ current_theme }}" class="delete" title="{% trans 'Delete this file.' %}"><span class="glyph">×</span></a></span></span>
+                                        {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    {% folder_structure value %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    </ul>
+                 </div>
                      {% if not theme_read_only %}
                      <div class="well well-small">
                      <h4>{% trans 'Customize more templates' %}:</h4>
@@ -77,7 +77,7 @@
 
            </div>
         </td>
-         
+
         <td width="80%" id="editor-td" >
             {% if is_file %}
 
@@ -120,7 +120,7 @@
                 <p>{% trans "No file selected. Select a file or directory from the list on the right." %}</p>
             {% endif %}
         </td>
-        
+
     </tr>
 </table>
 

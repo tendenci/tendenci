@@ -31,14 +31,14 @@
                     {% trans "Print Page" %}</a>
 
                 {% if member_can_edit_records and user == membership.user %}
-                	<a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Your Membership" %}</a>
+                    <a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Your Membership" %}</a>
                 {% else %}
-					{% if can_edit_memberships %}
-					<a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Membership" %}</a>
-					 {% endif %}
+                    {% if can_edit_memberships %}
+                    <a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Membership" %}</a>
+                     {% endif %}
                 {% endif %}
 
-				{% if request.user.is_staff and can_edit_memberships %}
+                {% if request.user.is_staff and can_edit_memberships %}
                 <a href="{% url "admin:memberships_membershipdefault_change" membership.pk %}?next={{ request.path }}">
                     {% trans "Admin:Edit Membership" %}</a>
                 {% endif %}
@@ -622,21 +622,21 @@
 
 
             {% if MODULE_MEMBERSHIPS_ADDDIRECTORY %}
-	            {% if membership.directory %}
-	                 {% if request.user.is_superuser or request.user == membership.user %}
-			            <div class="field">
-			                <div class="label label-info">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</div>
-			                <div class="value"><a href="{% url 'directory' membership.directory.slug  %}">{{ membership.directory }}</a></div>
-			            </div>
-	                 {% endif %}
-	            {% else %}
+                {% if membership.directory %}
+                     {% if request.user.is_superuser or request.user == membership.user %}
+                        <div class="field">
+                            <div class="label label-info">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</div>
+                            <div class="value"><a href="{% url 'directory' membership.directory.slug  %}">{{ membership.directory }}</a></div>
+                        </div>
+                     {% endif %}
+                {% else %}
                         {% if request.user.is_superuser and membership.status_detail == 'active' %}
-			            <div class="field">
-			                <div class="label label-info">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</div>
-			                <div>{% trans 'None' %} <a href="{% url 'membership.add_directory' membership.id  %}">{% trans 'Admin: Add a Directory' %}</a></div>
-			            </div>
-	                 {% endif %}
-	            {% endif %}
+                        <div class="field">
+                            <div class="label label-info">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</div>
+                            <div>{% trans 'None' %} <a href="{% url 'membership.add_directory' membership.id  %}">{% trans 'Admin: Add a Directory' %}</a></div>
+                        </div>
+                     {% endif %}
+                {% endif %}
             {% endif %}
 
         </fieldset>
@@ -685,14 +685,14 @@
 
 {% block extra_body %}
     {{ block.super }}
-    
+
     <script type="text/javascript" >
-	$("a.action-approve").click(function (event) {
-   		if ($(this).hasClass("disabled")) {
-        	event.preventDefault();
-    	}
-    	$(this).addClass("disabled");
-	});
-	</script>
-{% endblock %}   
-    
+    $("a.action-approve").click(function (event) {
+           if ($(this).hasClass("disabled")) {
+            event.preventDefault();
+        }
+        $(this).addClass("disabled");
+    });
+    </script>
+{% endblock %}
+

@@ -7,12 +7,12 @@
 <meta charset="UTF-8">
 <title>{% if obj_name %}{{ obj_name|capfirst}} {% endif %} {% trans "Invoice" %}</title>
 
-<style>   
+<style>
 body{
-	font-size: 13px;
-/* 	font-family:  "Verdana", sans-serif; */
-	font-weight: 300;
-	color: #000;
+    font-size: 13px;
+/*     font-family:  "Verdana", sans-serif; */
+    font-weight: 300;
+    color: #000;
 }
 td.td-right {
     text-align: right;
@@ -33,20 +33,20 @@ div.invoice-meta{
 
 }
 .table.table-tendenci-reports {
-	border-collapse: collapse;
+    border-collapse: collapse;
     border: 1px solid #dddddd;
 }
 .invoice-table-header{
     font-style: bold;
 }
 /* div#invoice-header{
-	width: 95%;
+    width: 95%;
 } */
 div#invoice-header table tr td:last-child {
   width: 50%;
 }
-#invoice-footer {     
-  -pdf-keep-in-frame-mode: shrink; /* Shrinks content to fit if needed */     
+#invoice-footer {
+  -pdf-keep-in-frame-mode: shrink; /* Shrinks content to fit if needed */
   page-break-inside: avoid;
 }
 #invoice-footer table{
@@ -64,7 +64,7 @@ div#invoice-header table tr td:last-child {
   {% include "invoices/include/default_invoice_header.html" %}
  {% endif %}
 </div>
-  
+
 {% include "invoices/include/invoice_view_display.html" %}
 <br />
 
@@ -87,12 +87,12 @@ div#invoice-header table tr td:last-child {
     <td class="td-right">{% trans "Method:" %} &nbsp;&nbsp;&nbsp;{{ payment_method }}</td>
   </tr>
   {% endif%}
-  
+
   <tr>
     <td></td>
     <td class="td-right">{% trans "Sub Total:" %} &nbsp;&nbsp;&nbsp;{{ invoice.subtotal|add_decimal:invoice.discount_amount|format_currency }}</td>
   </tr>
-  
+
   {% if invoice.variance and invoice.variance != 0 %}
   {% if invoice.total != tmp_total %}
   <tr>
@@ -101,21 +101,21 @@ div#invoice-header table tr td:last-child {
   </tr>
   {% endif%}
   {% endif%}
-  
+
   {% if invoice.discount_amount > 0 %}
   <tr>
     <td></td>
     <td class="td-right">{% trans "Discount Applied (discount code" %} &nbsp;&nbsp;&nbsp;-{{ invoice.discount_amount|format_currency }}</td>
   </tr>
   {% endif %}
-  
+
   {% if invoice.gratuity %}
   <tr>
     <td></td>
     <td class="td-right">{% trans "Gratuity:" %} &nbsp;&nbsp;&nbsp;{{ invoice.graguity_in_percentage }}</td>
   </tr>
   {% endif %}
-  
+
   {% if invoice.tax %}
   <tr>
     <td></td>
@@ -145,7 +145,7 @@ div#invoice-header table tr td:last-child {
   <tr class="invoice-total-balance">
     <td></td>
     <td class="td-right"><strong>{% trans "Balance due:" %} &nbsp;&nbsp;&nbsp;{{ invoice.balance|format_currency }}</strong></td>
-  </tr> 
+  </tr>
 </table>
     </div>
   </div>

@@ -10,13 +10,13 @@
                 </div>
             </fieldset>
         {% endif %}
-        
+
         <fieldset>
             <div class="form-group">
                 <label for="{{ search_form.membership_type.id_for_label }}">{{ search_form.membership_type.label }}:</label>
                 {{ search_form.membership_type }}
             </div>
-        </fieldset>  
+        </fieldset>
 
         {% if "industry" in search_form.fields %}
             <fieldset>
@@ -33,16 +33,16 @@
                 {{ search_form.search_criteria }} {{ search_form.search_text }} {{ search_form.search_method }}
             </div>
         </fieldset>
-        
+
         <fieldset>
             <div class="form-group pull-right">
                 {{ search_form.active_only }}
                 <label for="{{ search_form.active_only.id_for_label }}">{{ search_form.active_only.label }}</label>
             </div>
         </fieldset>
-        
+
         <fieldset>
-        	<button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+            <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
         </fieldset>
     </form>
 {% endif %}

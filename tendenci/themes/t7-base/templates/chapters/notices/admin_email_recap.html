@@ -28,11 +28,11 @@
         {% endfor %}
         </ol>
     {% endif %}
-    	<ul>
-	     <li><a href="{{ site_url }}{% url 'admin:chapters_noticedefaultlogrecord_changelist' %}?notice_log__id__exact={{ notice.log.id }}">{% trans "View Log Records" %}</a> </li>
-    	</ul>
+        <ul>
+         <li><a href="{{ site_url }}{% url 'admin:chapters_noticedefaultlogrecord_changelist' %}?notice_log__id__exact={{ notice.log.id }}">{% trans "View Log Records" %}</a> </li>
+        </ul>
         <br /><br />
-    
+
 {% endfor %}
 
 {% trans "Thanks!" %}

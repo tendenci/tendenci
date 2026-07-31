@@ -53,25 +53,25 @@
                     </li>
 
                      {% if can_add_event %}
-	                     <li class="content-item">
-	                        <span class="app-name">
-	                            <a href="{% url 'event.templates_list' %}">{% trans "Event Templates" %}</a>
-	                        </span>
-	                    </li>
-                    
+                         <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.templates_list' %}">{% trans "Event Templates" %}</a>
+                            </span>
+                        </li>
+
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'event.add' %}">{% trans "Add an Event" %}</a>
                             </span>
                         </li>
-                        
+
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'event.add_template' %}">{% trans "Add an Event Template" %}</a>
                             </span>
                         </li>
                     {% else %}
-                   		{% if can_request_event %}
+                           {% if can_request_event %}
                             <li class="content-item">
                                 <span class="app-name">
                                     <a href="{% url 'event.minimal_add' %}">{% trans "Submit an Event" %}</a>
@@ -109,7 +109,7 @@
                     {% endif %}
 
 
-                        
+
 
                     {% if request.user.is_superuser %}
                         <li class="content-item">
@@ -126,7 +126,7 @@
                             </span>
                         </li>
                     {% endif %}
-                    
+
                     {% if request.user.is_superuser %}
                     {% if MODULE_EVENTS_ENABLEASSETS %}
                         <li class="content-item">
@@ -136,7 +136,7 @@
                         </li>
                     {% endif %}
                     {% endif %}
-                    
+
 
                     <li class="content-item">
                         <span class="app-name">
@@ -182,7 +182,7 @@
                                 <a href="{{ app_object.get_absolute_url }}">{% trans "View Event" %}</a>
                             </span>
                         </li>
-                        
+
                         {% if request.user.is_superuser %}
                         {% if MODULE_EVENTS_ENABLEASSETS %}
                         <li class="content-item">
@@ -222,7 +222,7 @@
                         </li>
                         {% endif %}
                         {% endif %}
-                        
+
                         {% if app_object.zoom_credits_ready and request.user.is_superuser %}
                         <li class="content-item">
                             <span class="app-name">
@@ -253,7 +253,7 @@
                         {% endif %}
                         {% endif %}
 
-					{% if event.status_detail != 'template' %}
+                    {% if event.status_detail != 'template' %}
                         {% if app_object.is_recurring_event %}
                             <li class="content-item">
                                 <span class="app-name">
@@ -281,8 +281,8 @@
                                 <a href="{% url 'event.ics_single' app_object.pk %}">{% trans "Add Event to my Calendar" %}</a>
                             </span>
                         </li>
-					 {% endif %}
-					 
+                     {% endif %}
+
                         {% if can_view_event or can_edit_event %}
                             {% if can_edit_event %}
                                 <li class="content-item">
@@ -320,8 +320,8 @@
                                 {% endif %}
                             {% endif %}
 
-						{% if event.status_detail != 'template' %}
-						
+                        {% if event.status_detail != 'template' %}
+
                             {% if can_add_event %}
                                 <li class="content-item">
                                     <span class="app-name">
@@ -347,21 +347,21 @@
                             {% endif %}
 
                             {% if can_edit_event or can_view_registrant %}
-                                {% if not event.parent %} 
+                                {% if not event.parent %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'event.registrant.search' app_object.pk %}">{% trans "Search Registrants" %}</a>
                                     </span>
                                 </li>
-								{% endif %}
+                                {% endif %}
 
-								{% if event.nested_events_enabled and event.parent %}
-								<li class="content-item">
+                                {% if event.nested_events_enabled and event.parent %}
+                                <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'event.registrant.sub_event.roster' app_object.pk %}">{% trans "Roster Report" %}</a>
                                     </span>
                                 </li>
-								{% else %}
+                                {% else %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'event.registrant.roster' app_object.pk %}">{% trans "Roster Report" %}</a>
@@ -385,7 +385,7 @@
                                             <a href="{% url 'event.member_register' app_object.pk %}">{% trans "Register Members" %}</a>
                                         </span>
                                     </li>
-                                
+
                                     <li class="content-item">
                                         <span class="app-name">
                                             <a href="{% url 'event.user_register' app_object.pk %}">{% trans "Register A User" %}</a>
@@ -393,14 +393,14 @@
                                     </li>
                                 {% endif %}
                             {% endif %}
-                            
+
                             <li class="content-item">
                                 <span class="app-name">
                                     <a href="{% url 'event.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
                                 </span>
                             </li>
-                       {% endif %}     
-                            
+                       {% endif %}
+
 
                             {% if can_delete_event %}
                                 <li class="divider"></li>

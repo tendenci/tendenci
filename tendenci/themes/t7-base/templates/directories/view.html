@@ -12,20 +12,20 @@
 
 {% block content %}
     <article id="t-directories-directory-{{ directory.pk }}" class="t-directories-directory">
-	{% with directory|is_directory_owner_with_membership:user as directory_owner_with_membership %}
+    {% with directory|is_directory_owner_with_membership:user as directory_owner_with_membership %}
         <div class="page-header">
             <h1>{{ directory.headline }}</h1>
-			<div class="pull-right clearfix">
-				{% trans 'Status:' %} <span class="{% if directory.status_detail == 'active' %}text-success{% else %}text-warning{% endif %}">{{ directory.status_detail }}</span>
-				{% if request.user.is_superuser or directory_owner_with_membership %}
-	           	<a href="{% url 'directory.edit' directory.id %}" class="btn btn-default">{% trans "Edit" %}</a>
-	            {% endif %}
-                {% if directory.is_pending %}
-            	{% if request.user.is_superuser %}
-	     	     <a href="{% url 'directory.approve' directory.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
-            	{% endif %}
+            <div class="pull-right clearfix">
+                {% trans 'Status:' %} <span class="{% if directory.status_detail == 'active' %}text-success{% else %}text-warning{% endif %}">{{ directory.status_detail }}</span>
+                {% if request.user.is_superuser or directory_owner_with_membership %}
+                   <a href="{% url 'directory.edit' directory.id %}" class="btn btn-default">{% trans "Edit" %}</a>
                 {% endif %}
-			</div>
+                {% if directory.is_pending %}
+                {% if request.user.is_superuser %}
+                  <a href="{% url 'directory.approve' directory.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
+                {% endif %}
+                {% endif %}
+            </div>
         </div>
 
         <div class="t-directories-directory-body">
@@ -37,36 +37,36 @@
 
             {{ directory.body|safe }}
 
-			{% if directory.corpprofile %}
-			{% if user.profile.is_superuser or user == directory.creator or user == directory.owner or directory_owner_with_membership %}
-			<p><a href="{% url 'corpmembership.view_profile' directory.corpprofile.id %}" style="text-wrap: nowrap;">{% trans "View Corp Member Profile" %}</a></p>
-			{% endif %}
-			{% endif %}
+            {% if directory.corpprofile %}
+            {% if user.profile.is_superuser or user == directory.creator or user == directory.owner or directory_owner_with_membership %}
+            <p><a href="{% url 'corpmembership.view_profile' directory.corpprofile.id %}" style="text-wrap: nowrap;">{% trans "View Corp Member Profile" %}</a></p>
+            {% endif %}
+            {% endif %}
         </div>
     {% endwith %}
 
-		{% if directory.has_social_media %}
-		{% include "directories/include/social_media_links.html" %}
-		{% endif %}
-		
-		{% if memberships %}
-		<div class="t-directory-members clearfix">
+        {% if directory.has_social_media %}
+        {% include "directories/include/social_media_links.html" %}
+        {% endif %}
+
+        {% if memberships %}
+        <div class="t-directory-members clearfix">
          <h3>{% trans "Members to View" %}</h3>
-	         <table class="table table-bordered">
-	         {% for membership in memberships %}
-	             {% with membership.user as m_user %}
-	             <tr>
-	                 <td><a href="{{ m_user.profile.get_absolute_url }}">
-	                     {% if m_user.first_name or m_user.last_name %} {{ m_user.first_name }} {{ m_user.last_name }}{% else %}{{ m_user.username }}{% endif %}
-	                        </a>
-	                  </td>
-	                  <td>{{ membership.membership_type.name }}</td>
-	             </tr>
-	             {% endwith %}
-	         {% endfor %}
-	         </table>
-     	</div>
-		{% endif %}
+             <table class="table table-bordered">
+             {% for membership in memberships %}
+                 {% with membership.user as m_user %}
+                 <tr>
+                     <td><a href="{{ m_user.profile.get_absolute_url }}">
+                         {% if m_user.first_name or m_user.last_name %} {{ m_user.first_name }} {{ m_user.last_name }}{% else %}{{ m_user.username }}{% endif %}
+                            </a>
+                      </td>
+                      <td>{{ membership.membership_type.name }}</td>
+                 </tr>
+                 {% endwith %}
+             {% endfor %}
+             </table>
+         </div>
+        {% endif %}
 
         {% include "directories/meta.html" with show_source=True show_contact=True %}
     </article>
@@ -75,7 +75,7 @@
 
 {% block extra_body %}
     {{ block.super }}
-	{% include "directories/include/affiliates_js.html" %}
+    {% include "directories/include/affiliates_js.html" %}
 {% endblock %}
 
 

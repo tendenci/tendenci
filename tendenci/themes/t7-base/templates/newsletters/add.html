@@ -49,7 +49,7 @@
           <div>
             {{ form.member_only }}
             {% trans "Members Only" %}
-            &nbsp;&nbsp; 
+            &nbsp;&nbsp;
             <span id="group-wrap">
             or &nbsp;&nbsp;
 
@@ -261,12 +261,12 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-    	$('input[id=id_member_only]').change(function() {
-    		if($(this).is(':checked')){
-        		$("#group-wrap").hide();
-        	}else{
-        		$("#group-wrap").show();
-        	}
+        $('input[id=id_member_only]').change(function() {
+            if($(this).is(':checked')){
+                $("#group-wrap").hide();
+            }else{
+                $("#group-wrap").show();
+            }
         });
     });
 </script>

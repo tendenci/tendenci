@@ -3,13 +3,13 @@
 
 <article>
   <!-- <div class="panel panel-default"> -->
-  
+
   <!--  <div class="panel-heading">
   <h3 class="panel-title"> -->
   <h3><a href="{{ article.get_absolute_url }}">{% firstof article.headline trans "Untitled" %}</a></h3>
-  
+
   <!-- </div> -->
-  
+
   <!-- <div class="panel-body"> -->
   <p class="item-content">
   {% if article.thumbnail %}
@@ -17,7 +17,7 @@
           <img class="t-articles-image img-responsive" src="{{ article.get_thumbnail_url }}" alt="{{ article.headline }}">
       </p>
   {% endif %}
-        
+
     {% if article.summary %}
     {{ article.summary|striptags|truncatewords:140|safe }}
     {% else %}
@@ -25,8 +25,8 @@
     {% endif %}
   </p>
   <!-- </div> -->
-  
+
   {% include "articles/meta.html" %}
-  
+
   <!-- </div> -->
 </article>

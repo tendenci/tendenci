@@ -23,16 +23,16 @@
                             <a href="{{ resume.resume_url|url_complete }}" target="_blank">
                                 <span class="glyphicon glyphicon-link"></span>
                                  {% if is_linkedin_url %}
-	                                {% if resume.first_name %}
-	                                    {% blocktrans with name=resume.first_name %}
-	                                        View {{ name }}'s LinkedIn
-	                                    {% endblocktrans %}
-	                                {% else %}
-	                                    {% trans "View this resume's LinkedIn" %}
-	                                {% endif %}
-	                              {% else %}
-	                        	    {% trans "View Website" %}
-	                              {% endif %}
+                                    {% if resume.first_name %}
+                                        {% blocktrans with name=resume.first_name %}
+                                            View {{ name }}'s LinkedIn
+                                        {% endblocktrans %}
+                                    {% else %}
+                                        {% trans "View this resume's LinkedIn" %}
+                                    {% endif %}
+                                  {% else %}
+                                    {% trans "View Website" %}
+                                  {% endif %}
                             </a>
                         </li>
                         {% endwith %}
@@ -57,7 +57,7 @@
         </div>
 
         <div class="t-resumes-resume-body">
-        	{% if resume.first_name or resume.last_name or resume.contact_phone or resume.contact_phone2 or resume.contact_fax or resume.contact_email %}
+            {% if resume.first_name or resume.last_name or resume.contact_phone or resume.contact_phone2 or resume.contact_fax or resume.contact_email %}
                 <section class="t-resumes-resume-contact-information">
                     <h2>{% trans "Contact Information" %}</h2>
 
@@ -88,8 +88,8 @@
                     </ul>
                 </section>
             {% endif %}
-        
-        
+
+
             {% if resume.description %}
                 <section class="t-resumes-resume-description">
                     <h2>{% trans "Description" %}</h2>
@@ -97,7 +97,7 @@
                 </section>
             {% endif %}
 
-			{% if resume.industry %}
+            {% if resume.industry %}
                 <section class="t-resumes-resume-industry">
                     <h2>{% trans "Industry" %}</h2>
                     <p>{{ resume.industry }}</p>
@@ -139,7 +139,7 @@
                     {{ resume.education|safe|linebreaks }}
                 </section>
             {% endif %}
-            
+
         </div>
 
         {% include "resumes/meta.html" %}

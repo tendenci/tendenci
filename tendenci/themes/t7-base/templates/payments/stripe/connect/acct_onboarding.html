@@ -21,16 +21,16 @@
 </p>
  <form class="form-horizontal" action="" method="post">{% csrf_token %}
         {{ onboarding_form|styled_form }}
-        
+
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-            	<div class="well stripe-info">{% trans "Click Save and continue to set up your payments on Stripe." %}</div>
+                <div class="well stripe-info">{% trans "Click Save and continue to set up your payments on Stripe." %}</div>
                 <button type="submit" class="btn btn-primary text-capitalize">
                    {% trans "SAVE AND CONTINUE" %}
                 </button>
             </div>
         </div>
-        
+
  </form>
 <br />
 {% else %}

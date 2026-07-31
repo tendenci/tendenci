@@ -7,33 +7,33 @@
     <div class="page-header">
       <h1>{{ chapter.title }}</h1>
     </div>
-	{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
-	{% if not is_chapter_member %}
-  	<div class="text-right">
-		<a href="{% url 'chapters.membership_add' chapter.id %}" class="btn btn-sm btn-info">{% trans 'Join' %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
-	</div>
-	{% endif %}
-	{% endif %}
+    {% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+    {% if not is_chapter_member %}
+      <div class="text-right">
+        <a href="{% url 'chapters.membership_add' chapter.id %}" class="btn btn-sm btn-info">{% trans 'Join' %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
+    </div>
+    {% endif %}
+    {% endif %}
     {% if chapter.featured_image %}
     <div class="chapter-featured-image">
         <img src="{% url 'file' chapter.featured_image.id %}" alt="{{ chapter.title }}" title="{{ chapter.title  }}">
     </div>
-	{% else %}
-		{% if MODULE_CHAPTERS_DEFAULTIMAGE %}
-	    <div class="chapter-featured-image">
-	        <img src="{{ MODULE_CHAPTERS_DEFAULTIMAGE }}" alt="{{ chapter.title }}" title="{{ chapter.title  }}">
-	    </div>
-	    {% endif %}
+    {% else %}
+        {% if MODULE_CHAPTERS_DEFAULTIMAGE %}
+        <div class="chapter-featured-image">
+            <img src="{{ MODULE_CHAPTERS_DEFAULTIMAGE }}" alt="{{ chapter.title }}" title="{{ chapter.title  }}">
+        </div>
+        {% endif %}
     {% endif %}
-    
+
     <div class="chapter-mission">
       {{ chapter.mission|safe }}
     </div>
-    
+
     <div class="chapter-content">
       {{ chapter.content|safe }}
     </div>
-    
+
     <div class="chapter-officers">
       <div class="label">
         <label for="officer-table">OFFICERS</label>
@@ -51,12 +51,12 @@
             {% endif %}
           </tr>
         </thead>
-        
+
         <tbody>
           {% for officer in officers %}
           <tr>
             <td class="officer-position">{{ officer.position }}</td>
-            
+
             <td class="officer-name">
               <a href="{% url 'profile' officer.user.username  %}">
                 {% if officer.user.get_full_name %}
@@ -66,7 +66,7 @@
                 {% endif %}
               </a>
             </td>
-            
+
             {% if show_officers_phone %}
             <td class="officer-phone">{% if officer.phone %}{{ officer.phone }}{% endif %}</td>
             {% endif %}
@@ -78,38 +78,38 @@
         </tbody>
       </table>
     </div>
-    
+
     <div class="chapter-sponsors">
       <p>{{ chapter.sponsors|safe }}</p>
     </div>
-    
+
     {% if admin %}
     <div class="chapter-notes">
       {{ chapter.notes|safe }}
     </div>
     {% endif %}
 
-	{% if chapter.region %}
+    {% if chapter.region %}
     <p class="chapter-region">
     <strong>{% trans 'Region:' %}</strong> {{ chapter.region }}
     </p>
     {% endif %}
-	{% if chapter.state %}
+    {% if chapter.state %}
     <p class="chapter-state">
      <strong>{% trans 'State:' %}</strong> {{ chapter.state }}
     </p>
     {% endif %}
-	{% if chapter.county %}
+    {% if chapter.county %}
     <p class="chapter-county">
      <strong>{% trans 'County:' %}</strong> {{ chapter.county }}
     </p>
     {% endif %}
-    
+
     <div class="chapter-files">
       <h2>Files {% if admin %}</h2>
-      
+
       <a class="btn btn-default" href="{% url "file.add" %}">Add a File</a>{% endif %}
-      
+
       <ul class="file-list">
         {% for file in files %}
         <li class="file-list">
@@ -118,10 +118,10 @@
         {% endfor %}
       </ul>
     </div>
-    
+
     {% include "chapters/meta.html" %}
     <br />
-    
+
   </div>
 </div>
 {% endblock %}

@@ -37,57 +37,57 @@
 
     {% autopaginate articles num_per_page %}
     {% article_search %}
-    
+
         <em>
-        	{% with obj_count=paginator.count pluralize=paginator.count|pluralize  %}
-        		{% if MODULE_ARTICLES_LABEL and MODULE_ARTICLES_LABEL_PLURAL %}
-        			{%  if obj_count == 1 %}
-        				{% blocktrans %}{{ obj_count }} {{ MODULE_ARTICLES_LABEL }} Found{% endblocktrans %}
-        			{% else %}
-        				{% blocktrans %}{{ obj_count }} {{ MODULE_ARTICLES_LABEL_PLURAL }} Found{% endblocktrans %}
-        			{% endif %}
-        		{% else %}
-	                {% blocktrans %}{{ obj_count }} Article{{ pluralize }} Found{% endblocktrans %}
-            	{% endif %}
-        	{% endwith %}
-        </em> 
+            {% with obj_count=paginator.count pluralize=paginator.count|pluralize  %}
+                {% if MODULE_ARTICLES_LABEL and MODULE_ARTICLES_LABEL_PLURAL %}
+                    {%  if obj_count == 1 %}
+                        {% blocktrans %}{{ obj_count }} {{ MODULE_ARTICLES_LABEL }} Found{% endblocktrans %}
+                    {% else %}
+                        {% blocktrans %}{{ obj_count }} {{ MODULE_ARTICLES_LABEL_PLURAL }} Found{% endblocktrans %}
+                    {% endif %}
+                {% else %}
+                    {% blocktrans %}{{ obj_count }} Article{{ pluralize }} Found{% endblocktrans %}
+                {% endif %}
+            {% endwith %}
+        </em>
    <br /><br />
 
 {% if MODULE_ARTICLES_GRIDVIEW_FOR_SEARCH %}
-		 <table class="table table-striped table-bordered">
-		 <tr>
-			 <th>{% trans "Date" %}</th>
-			 <th>{% trans "Title" %}</th>
-			 <th>{% trans "Category" %}</th>
-			 <th>{% trans "Subcategory" %}</th>
-			 <th>{% trans "Group" %}</th>
-		 </tr>
-		 {% for article in articles %}
-			<tr>
-				<td nowrap>{{ article.release_dt|date }}</td>
-				<td><a href="{% url 'article' article.slug %}">{{ article.headline }}</a>
-				 {% if user.profile.is_superuser %}
-				 &nbsp;&nbsp;<a class="t-meta-edit-link" href="{% url 'article.edit' article.pk %}" title="Edit"><span class="glyphicon glyphicon-edit"></span></a>
-				  {% endif %}
-				</td>
-				
-				{% with article.category_set as article_cat %}
-				<td>
-				   {% if article_cat.category %}
-				      <a href="{% url 'articles' %}?category={{ article_cat.category }}">{{ article_cat.category }}</a>
-				   {% endif %}
-				</td>
-				<td>
-			       {% if article_cat.sub_category %}
-			       <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category }}">{{ article_cat.sub_category }}</a>
-			       {% endif %}
-				</td>
-			   {% endwith %}
-				
-			<td>{{ article.group }}</td>
-		</tr>
-	 {% endfor %}
-		 </table>
+         <table class="table table-striped table-bordered">
+         <tr>
+             <th>{% trans "Date" %}</th>
+             <th>{% trans "Title" %}</th>
+             <th>{% trans "Category" %}</th>
+             <th>{% trans "Subcategory" %}</th>
+             <th>{% trans "Group" %}</th>
+         </tr>
+         {% for article in articles %}
+            <tr>
+                <td nowrap>{{ article.release_dt|date }}</td>
+                <td><a href="{% url 'article' article.slug %}">{{ article.headline }}</a>
+                 {% if user.profile.is_superuser %}
+                 &nbsp;&nbsp;<a class="t-meta-edit-link" href="{% url 'article.edit' article.pk %}" title="Edit"><span class="glyphicon glyphicon-edit"></span></a>
+                  {% endif %}
+                </td>
+
+                {% with article.category_set as article_cat %}
+                <td>
+                   {% if article_cat.category %}
+                      <a href="{% url 'articles' %}?category={{ article_cat.category }}">{{ article_cat.category }}</a>
+                   {% endif %}
+                </td>
+                <td>
+                   {% if article_cat.sub_category %}
+                   <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category }}">{{ article_cat.sub_category }}</a>
+                   {% endif %}
+                </td>
+               {% endwith %}
+
+            <td>{{ article.group }}</td>
+        </tr>
+     {% endfor %}
+         </table>
 {% else %}
     <section>
         {% for article in articles %}

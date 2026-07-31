@@ -17,7 +17,7 @@
             {% endif %}
         {% endif %}
  </ul>
- 
+
 {% if user.profile.is_superuser %}
 <nav class="navbar navbar-default t-meta-editor-bar">
   <div class="container-fluid">
@@ -26,7 +26,7 @@
       <li>{{ location.obj_perms }}</li>
       <li>{{ location.obj_status }}</li>
     </ul>
-    
+
     <ul class="nav navbar-nav navbar-right t-meta-options-links">
       <!-- start dropdown -->
       <li class="dropdown">
@@ -38,7 +38,7 @@
           <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?application=locations&object_id={{ location.pk }}">{% trans "Eventlogs" %}</a></li>
           <li><a class="t-meta-delete-link" href="{% url 'location.delete' location.pk %}">{% trans "Delete" %}</a></li>
         </ul>
-      </li> 
+      </li>
       <!-- end dropdown -->
     </ul>
     </div>

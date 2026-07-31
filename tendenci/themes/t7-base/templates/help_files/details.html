@@ -13,32 +13,32 @@
 {% block content %}
 
 <div id="help-files-details">
-  
-  <nav>   
+
+  <nav>
     <ol class="breadcrumb">
       <li> <a href="{% url "help_files" %}">
         {% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}
-        </a></li> 
+        </a></li>
       <li class="active">{{ help_file.question|striptags|safe }}</li>
     </ol>
   </nav>
-  
+
   {% help_file_search %}
-  
+
   <div>
-    
+
     <div class="page-header">
       <h1>{{ help_file.question|striptags|safe }}</h1>
     </div>
-    
+
     <div class="content">
       {{ help_file.answer|safe }}
     </div>
-    
+
     {% include "help_files/meta.html" %}
-    
+
   </div>
-  
+
 </div>
 <br />
 {% endblock %}

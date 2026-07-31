@@ -10,7 +10,7 @@
 
 {% if user.is_authenticated %}
     {% if user.profile.is_superuser %}
-    	<ul class="list-unstyled t-meta-data">
+        <ul class="list-unstyled t-meta-data">
         {% if corporate_membership.is_pending and corporate_membership.anonymous_creator and corporate_membership.anonymous_creathor.first_name %}
             {% blocktrans with create_date=corporate_membership.create_dt|date:"long" first_name=corporate_membership.anonymous_creator.first_name last_name=corporate_membership.anonymous_creator.last_name email=corporate_membership.anonymous_creator.email %}
                 <li><strong>Created on {{ create_date }} by:</strong> <span>{{ first_name }} {{ last_name }} ({{ email }})</span></li>
@@ -50,52 +50,52 @@
                                 <li>
                                     <a href="{% url 'corpmembership.roster_search' %}?cm_id={{ corporate_membership.id }}&active_only=1">{% trans "Roster" %}{{corporate_memberhsip.status_detail }}</a>
                                 </li>
-                                
-                                {% if corporate_membership.is_renewal_pending %}
-								    {% if request.user.is_superuser %}
-								    <li>
-								        <a href="{% url "corpmembership.approve" corporate_membership.pk %}">{% trans "Admin: Approve / Disapprove" %}</a>
-								     </li>
-								    {% endif %}
-								{% else %}
-								    {% if request.user.is_superuser and corporate_membership.is_join_pending %}
-								        <li>
-								        <a href="{% url "corpmembership.approve" corporate_membership.pk %}">{% trans "Admin: Approve / Disapprove" %}</a>
-								        </li>
-								    {% endif %}
-								
-								    {% if corporate_membership.can_renew %}
-								        <li>
-								        <a href="{% url "corpmembership.renew" corporate_membership.id %}">{% trans "Renew" %}</a>
-								        </li>
-								    {% else %}
-								        {% if corporate_membership.is_expired and request.user.is_superuser %}
-								        <li>
-								         <a href="{% url "corpmembership.renew" corporate_membership.id %}">{% trans "Admin: Renew" %}</a>
-										</li>
-								        {% endif %}
-								    {% endif %}
-								{% endif %}
 
-								{% if corporate_membership.is_active and not corporate_membership.is_expired %}
+                                {% if corporate_membership.is_renewal_pending %}
+                                    {% if request.user.is_superuser %}
+                                    <li>
+                                        <a href="{% url "corpmembership.approve" corporate_membership.pk %}">{% trans "Admin: Approve / Disapprove" %}</a>
+                                     </li>
+                                    {% endif %}
+                                {% else %}
+                                    {% if request.user.is_superuser and corporate_membership.is_join_pending %}
+                                        <li>
+                                        <a href="{% url "corpmembership.approve" corporate_membership.pk %}">{% trans "Admin: Approve / Disapprove" %}</a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if corporate_membership.can_renew %}
+                                        <li>
+                                        <a href="{% url "corpmembership.renew" corporate_membership.id %}">{% trans "Renew" %}</a>
+                                        </li>
+                                    {% else %}
+                                        {% if corporate_membership.is_expired and request.user.is_superuser %}
+                                        <li>
+                                         <a href="{% url "corpmembership.renew" corporate_membership.id %}">{% trans "Admin: Renew" %}</a>
+                                        </li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if corporate_membership.is_active and not corporate_membership.is_expired %}
                                 <li>
                                     <a href="{% url 'membership_default.add_under_corp' corporate_membership.id %}">{% trans "Join Corporation" %}</a>
-                                </li> 
-	                                {% if user.profile.is_superuser %}
-	                                <li>
-	                                    <a href="{% url 'corpmembership.upgrade' corporate_membership.id %}">{% trans "Upgrade" %}</a>
-	                                </li>
-			                        {% endif %}
-			                        
-			                     	{% if MODULE_TRAININGS_ENABLED %}
-			                     	{% if request.user.is_superuser or corporate_membership.corp_profile|is_rep:request.user %}
-			                     	<li>
-			                     		<a href="{% url 'trainings.transcripts_corp' corporate_membership.corp_profile.id %}">{% trans "View Transcripts" %}</a>
-			                     	</li>
-			                     	{% endif %}
-			                     	{% endif %}
-		                        {% endif %}
-		                        {% if can_delete %}
+                                </li>
+                                    {% if user.profile.is_superuser %}
+                                    <li>
+                                        <a href="{% url 'corpmembership.upgrade' corporate_membership.id %}">{% trans "Upgrade" %}</a>
+                                    </li>
+                                    {% endif %}
+
+                                     {% if MODULE_TRAININGS_ENABLED %}
+                                     {% if request.user.is_superuser or corporate_membership.corp_profile|is_rep:request.user %}
+                                     <li>
+                                         <a href="{% url 'trainings.transcripts_corp' corporate_membership.corp_profile.id %}">{% trans "View Transcripts" %}</a>
+                                     </li>
+                                     {% endif %}
+                                     {% endif %}
+                                {% endif %}
+                                {% if can_delete %}
                                 <li>
                                     <a class="t-meta-delete-link" href="{% url 'corpmembership.delete' corporate_membership.pk %}">{% trans "Delete" %}</a>
                                 </li>

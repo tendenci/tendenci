@@ -1,8 +1,8 @@
 <form class="form-inline t-search-form" action="{% url 'projects.search' %}" method="get">
 <div class="form-group">
     {{ form.q.label }}
-	{{ form.q }}
-	{% if form.q.errors %}
+    {{ form.q }}
+    {% if form.q.errors %}
        <p class="help-block">
            <ul class="list-unstyled">
                {% for error in form.q.errors %}

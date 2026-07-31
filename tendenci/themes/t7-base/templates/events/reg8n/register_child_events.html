@@ -30,7 +30,7 @@
       margin-bottom: 10px;
   }
 
-  
+
 </style>
 {% endblock %}
 
@@ -44,7 +44,7 @@
   {% endif %}
 </div>
 <div class="form-wrap">
-           
+
   <form id="sub_event_form" action="" method="post">{% csrf_token %}
     {% for form, registrant in forms|zip:registrants %}
     <div class="{% cycle 'odd-registrant' 'event-registrant' %}">
@@ -83,10 +83,10 @@
     {% endfor %}
     {% if payment_required and registration.is_credit_card_payment %}
     <div class="well" style="margin-top: 1em;">
-    	<p class="text-danger"><strong>{% trans 'Note: Your registration will not be completed until payment is received.' %}</strong></p>
-    	{% if registration.is_credit_card_payment %}
-    	<div>{% trans "Click Save & Continue to continue with the payment." %}</div>
-    	{% endif %}
+        <p class="text-danger"><strong>{% trans 'Note: Your registration will not be completed until payment is received.' %}</strong></p>
+        {% if registration.is_credit_card_payment %}
+        <div>{% trans "Click Save & Continue to continue with the payment." %}</div>
+        {% endif %}
     </div>
     {% endif %}
     <input class="btn btn-success" title='{% trans "Register for Sub-Events" %}' type="submit" value="{% if payment_required and registration.is_credit_card_payment %}{% trans "Save & Continue" %}{% else %}Complete Registration{% endif %}" id="register_sub_events" >

@@ -14,33 +14,33 @@
   <div class="page-header">
     <h1>{% firstof MODULE_FORMS_LABEL trans 'Forms' %} {% trans 'Search' %}</h1>
   </div>
-  
+
   {% forms_search %}
   {% autopaginate forms 10 %}
-  
+
   <section>
   {% for form in forms %}
   <article class="panel panel-default t-news-search-result t-search-result">
-    
+
     <div class="panel-heading t-search-result-heading">
       <h1 class="panel-title"><a href="{{ form.get_absolute_url }}">{{ form.title }}</a></h1>
     </div>
-    
+
      <div class="panel-body t-search-result-body">
-     	<div>{{ form.intro|striptags|truncatewords:20|safe }}</div>
+         <div>{{ form.intro|striptags|truncatewords:20|safe }}</div>
      </div>
-    
+
     <div class="t-search-result-footer">
     {% forms_options request.user form %}
     </div>
-  </article> 
+  </article>
   {% empty %}
   <div>{% trans "0 Results Found" %}</div>
-  
+
   {% endfor %}
   </section>
-  
+
   {% paginate %}
-  
+
 
 {% endblock %}

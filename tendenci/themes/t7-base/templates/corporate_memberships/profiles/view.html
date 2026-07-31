@@ -25,13 +25,13 @@
     text-decoration: none;
 }
 .corp-active{
-	color: green;
+    color: green;
 }
 .corp-expired{
-	color: red;
+    color: red;
 }
 #corp-branches .row{
-	margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 </style>
 
@@ -97,8 +97,8 @@
             {{ corp_profile.phone }}
             </div>
         </div>
-		{% if corp_profile.phone2 %}
-		<div class="row">
+        {% if corp_profile.phone2 %}
+        <div class="row">
             <div class="col-xs-4">
                 {% trans 'Phone2' %}
             </div>
@@ -106,8 +106,8 @@
             {{ corp_profile.phone2 }}
             </div>
         </div>
-		{% endif %}
-		{% if corp_profile.url %}
+        {% endif %}
+        {% if corp_profile.url %}
         <div class="row">
             <div class="col-xs-4">
                 {% trans 'Website' %}
@@ -132,8 +132,8 @@
             <br />
             <small><em>{{ corp_membership.join_dt|date:"M j, Y" }}
             {% if not corp_membership.is_pending %} - {% firstof corp_membership.expiration_dt|date:"M j, Y" "Forever" %} {% endif %}</em></small>
-           
-           	{% if corp_membership and corp_membership.status %}
+
+               {% if corp_membership and corp_membership.status %}
             {% include "corporate_memberships/action_options.html" %}
             {% endif %}
         </div>
@@ -185,20 +185,20 @@
     {% if members_count > 10 %}
     <div><a href="{% url 'corpmembership.roster_search' %}?cm_id={{ corp_membership.id }}">{% trans 'View All Members' %}</a></div>
     {% endif %}
-    
+
     {% if members_count > 0 and MODULE_TRAININGS_ENABLED %}
     {% if request.user.is_superuser or corp_profile|is_rep:request.user %}
     <div>
-    	<a href="{% url 'trainings.transcripts_corp' corp_profile.id %}">{% trans "View Transcripts" %}</a>
+        <a href="{% url 'trainings.transcripts_corp' corp_profile.id %}">{% trans "View Transcripts" %}</a>
     </div>
     {% endif %}
     {% endif %}
-                        
+
 
     {% else %}
     <div><em>{% trans "No members joined yet" %}</em></div>
     {% endif %}
-    
+
     {% if MODULE_CORPORATE_MEMBERSHIPS_USEPRODUCTS %}
     <h3>{% trans 'Products' %}</h3>
     <table class="table table-striped">
@@ -210,7 +210,7 @@
         </thead>
 
         <tbody>
-        	{% with corp_profile.products.all as products %}
+            {% with corp_profile.products.all as products %}
             {% for product in products %}
                 <tr>
                     <td>{{ product.name }}</td>
@@ -221,34 +221,34 @@
         </tbody>
     </table>
   {% endif %}
-  
+
   {% with corp_profile.branches.all as branches %}
   {% if branches %}
   <h3>{% trans 'Branches' %}</h3>
   <div id="corp-branches">
-	  {% for branch in branches %}
-	  {% if forloop.counter0|divisibleby:"2"%}
-	  	{% if not forloop.first %}
-	  	</div>
-	  	{% endif %}
-	  	<div class="row">
-	  {% endif %} 
-	  	<div class="col-xs-6">
-		  	<div><strong>{{ branch.name }}</strong></div>
-		  	<div>{{ branch.address }}</div>
-		  	<div>{{ branch.city_state_zip }} {{ branch.country }}</div>
-		  	{% if branch.phone %}
-		  	<div><strong>{% trans 'Phone:' %}</strong> {{ branch.phone }}</div>
-		  	{% endif %}
-		  	{% if branch.fax %} 
-		  	<div><strong>{% trans 'Fax:' %}</strong> {{ branch.fax }}</div>
-		  	{% endif %}
-	  	</div>
-	  {% endfor %}
-	  </div>
+      {% for branch in branches %}
+      {% if forloop.counter0|divisibleby:"2"%}
+          {% if not forloop.first %}
+          </div>
+          {% endif %}
+          <div class="row">
+      {% endif %}
+          <div class="col-xs-6">
+              <div><strong>{{ branch.name }}</strong></div>
+              <div>{{ branch.address }}</div>
+              <div>{{ branch.city_state_zip }} {{ branch.country }}</div>
+              {% if branch.phone %}
+              <div><strong>{% trans 'Phone:' %}</strong> {{ branch.phone }}</div>
+              {% endif %}
+              {% if branch.fax %}
+              <div><strong>{% trans 'Fax:' %}</strong> {{ branch.fax }}</div>
+              {% endif %}
+          </div>
+      {% endfor %}
+      </div>
   </div>
-  {% endif %} 
-  {% endwith %} 
+  {% endif %}
+  {% endwith %}
 
     <h3>{% trans 'Representatives' %}</h3>
     {% if reps %}
@@ -285,12 +285,12 @@
 {% include "corporate_memberships/directory_link.html" %}
 {% endwith %}
   </div>
-</div> 
+</div>
   {% if request.user.is_superuser or is_rep %}
   {% with corp_membership as corporate_membership %}
   <p>
   {% if corporate_membership %}
-  {% include "corporate_memberships/applications/meta.html" %} 
+  {% include "corporate_memberships/applications/meta.html" %}
   {% endif %}
   </p>
   {% endwith %}

@@ -68,19 +68,19 @@
                 {% endif %}
                 {% endif %}
                  {% if request.user.is_superuser %}
-	                <li>
-	                    <a href="{% url "profile.edit_perms" profile.user_id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
-	                </li>
-	                
-	                {% if MODULE_IMPERSONATION_ENABLED %}
-	                <li>
-	                    <a href ="{{ request.path }}?_impersonate={{ profile.user.username }}" title="Impersonate">{% trans "Impersonate" %}</a>
-	                </li>
-	                {% endif %}
-	                
-	                <li>
-	                    <a href="{% url "admin:auth_user_delete" profile.user_id %}" class="delete" title="Delete User">{% trans "Delete" %}</a>
-	                </li>
+                    <li>
+                        <a href="{% url "profile.edit_perms" profile.user_id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
+                    </li>
+
+                    {% if MODULE_IMPERSONATION_ENABLED %}
+                    <li>
+                        <a href ="{{ request.path }}?_impersonate={{ profile.user.username }}" title="Impersonate">{% trans "Impersonate" %}</a>
+                    </li>
+                    {% endif %}
+
+                    <li>
+                        <a href="{% url "admin:auth_user_delete" profile.user_id %}" class="delete" title="Delete User">{% trans "Delete" %}</a>
+                    </li>
                 {% endif %}
             </ul>
         </div>

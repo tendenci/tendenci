@@ -2,7 +2,7 @@
 {% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="form-inline" action="." method="get" role="search">
   <div class="form-group">
-    <div class="input-group add-on">      
+    <div class="input-group add-on">
       <input class="form-control" type="text" name="q" value="{{ request.GET.q|striptags }}" placeholder="Search" />
       <div class="input-group-btn">
         <button class="btn btn-default" type="submit">
@@ -11,7 +11,7 @@
       </div>
     </div>
   </div>
-  
+
   <div style="margin-top: 5px;">
   {% if form.department %}
   <div class="form-group">
@@ -26,7 +26,7 @@
      {% endif %}
  </div>
  {% endif %}
- 
+
  <div class="form-group">
      {{ form.position }}
 
@@ -39,6 +39,6 @@
      {% endif %}
  </div>
  </div>
-  
+
 </form>
 {% endif %}

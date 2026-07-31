@@ -36,7 +36,7 @@
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right t-meta-options-links">
-                	{% if can_view_eventlog %}
+                    {% if can_view_eventlog %}
                     <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ group.pk }}&source={{ group.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
                     {% endif %}
                     <li><a class="edit-link" href="{% url "group.edit" group.slug %}">{% trans "Edit" %}</a></li>

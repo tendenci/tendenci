@@ -15,20 +15,20 @@
 
     <style>
     .corp-active{
-	color: green;
-	}
-	.corp-expired{
-		color: red;
-	}
-	.label-td-left{
-		text-align:right; width:50%;
-	}
-	.value-td-right{
-		text-align:left; width:50%;
-	}
-	table.t-corpmemberships-corpmembership-body > tbody > tr > th, table.t-corpmemberships-corpmembership-body > tbody > tr > td {
-    	border: none;
-	}
+    color: green;
+    }
+    .corp-expired{
+        color: red;
+    }
+    .label-td-left{
+        text-align:right; width:50%;
+    }
+    .value-td-right{
+        text-align:left; width:50%;
+    }
+    table.t-corpmemberships-corpmembership-body > tbody > tr > th, table.t-corpmemberships-corpmembership-body > tbody > tr > td {
+        border: none;
+    }
     </style>
 {% endblock %}
 
@@ -38,13 +38,13 @@
         <div class="page-header">
             <h1>{% trans "Corporate Membership" %}<br />&nbsp;<small> {{ corp_profile.name }} (<a title="View Corporate Profile" target="_blank" rel="noopener" href="{{ corp_profile.get_absolute_url }}">{% trans "View Profile" %}</a>)  &nbsp; &nbsp; &nbsp;{% if corporate_membership.status_detail == 'pending' or corporate_membership.status_detail == 'paid - pending approval'  %}<span class="text-warning">{{ corporate_membership.status_detail|capfirst }}</span>{% endif %}</small> </h1>
         </div>
-		{% if request.user.is_authenticated %}
+        {% if request.user.is_authenticated %}
         {% with corporate_membership as corp_membership %}
         <div class="pull-right">
         {% include "corporate_memberships/action_options.html" %}
         </div>
         {% endwith %}
-		{% endif %}
+        {% endif %}
 
         {% if corp_profile.logo %}
          <div class="t-corp-membership-logo">
@@ -144,7 +144,7 @@
 
             {% if user_can_edit and MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
                 <tr class="t-corpmemberships-free-passes">
-				<td colspan="2">
+                <td colspan="2">
                     <h3 class="t-field-sectionlabel t-corpmemberships-free-passes-label">{% trans "Free Passes" %}</h3>
 
                     <div class="t-field-sectionrow t-corpmemberships-free-passes-row">
@@ -204,14 +204,14 @@
                             </table>
                         </div>
                     {% endif %}
-				</td>
+                </td>
                 </tr>
             {% endif %}
-    
+
         </table>
 
-		{% include "corporate_memberships/directory_link.html" %}
-		{% include "corporate_memberships/timeline.html" %}
+        {% include "corporate_memberships/directory_link.html" %}
+        {% include "corporate_memberships/timeline.html" %}
         {% include "corporate_memberships/applications/meta.html" %}
     </article>
     <br />

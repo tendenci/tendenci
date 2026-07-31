@@ -21,25 +21,25 @@
 {% block content %}
 
 <div class="col-md-12">
-  
+
   <ol class="breadcrumb">
-	  <li><a href="{% url "photoset_latest" %}">{% trans "Albums" %}</a></li>
-	  {% if cat.parent %}
-	  <li><a href="{% url "photoset_latest" %}?cat={{ cat.parent.id }}">{{ cat.parent.name }}</a></li>
-	  {% endif %}
-	  <li class="active">{{ cat.name }}</li>
- </ol> 
+      <li><a href="{% url "photoset_latest" %}">{% trans "Albums" %}</a></li>
+      {% if cat.parent %}
+      <li><a href="{% url "photoset_latest" %}?cat={{ cat.parent.id }}">{{ cat.parent.name }}</a></li>
+      {% endif %}
+      <li class="active">{{ cat.name }}</li>
+ </ol>
 
   <div class="page-header">
     <h1 class="set-name">{{ cat.name }}</h1>
   </div>
-      
+
     <div id="photos-wrap">
       {% if photos %}
       {% autopaginate photos 48 %}
       <div class="thumb-row clearfix">
           <div class="grid">
-            
+
             {% for photo in photos %}
             <div class="grid-item col-md-4 col-sm-4 col-xs-4">
               <div class="thumbnail">
@@ -48,10 +48,10 @@
                 </a>
               </div>
             </div>
-            
+
             {% endfor %}
           </div>
-        
+
       </div>
       <div style="clear:both; height:10px;"></div>
       {% paginate %}
@@ -61,11 +61,11 @@
     </div>
 
     {% if cat.parent %}
-    <nav>  
+    <nav>
      <ul class="pager">
        <li class="previous"><a href="{% url "photoset_latest" %}?cat={{ cat.parent.id }}"><span aria-hidden="true">&larr;</span> {% trans "Back to " %} {{ cat.parent.name }}</a></li>
      </ul>
-   </nav> 
+   </nav>
    {% endif %}
 </div>
 
@@ -75,7 +75,7 @@
 {{ block.super }}
 <script type="text/javascript">
   $(document).ready(function(){
-  
+
   });
 </script>
 {% endblock %}

@@ -61,7 +61,7 @@
   .certificate .row.address {
       margin-top: 20px;
   }
-  
+
   .certificate .row.staff {
       margin-bottom: 50px;
       height: 50px;
@@ -181,7 +181,7 @@
       width: 47px;
   }
   .certificate.credits .col-166px {
-      width: 166px; 
+      width: 166px;
       text-align: left;
   }
   @media print {
@@ -189,7 +189,7 @@
           size: landscape;
           margin: .1in 0 .1in 0 !important;
       }
-  }  
+  }
 </style>
 {% endblock %}
 
@@ -204,15 +204,15 @@
         <div class="logo align-left" style="text-align: center;">
         {% with registrant.event.groups.all.0 as event_group %}
       {% if event_group %}
-	      {% if event_group.logo %}
-	      <div style="margin-bottom: 1em;">
-	      <img src="{{ event_group.logo.url }}" title="{{ event_group.name }}" alt="{{ event_group.name }}"/>
-	      </div>
-	      {% endif %}
-	      <div class="formatted-text">
-	        <div class="name">{{ event_group.name }}</div>
-	          {{ event_group.description|safe }}
-	      </div>
+          {% if event_group.logo %}
+          <div style="margin-bottom: 1em;">
+          <img src="{{ event_group.logo.url }}" title="{{ event_group.name }}" alt="{{ event_group.name }}"/>
+          </div>
+          {% endif %}
+          <div class="formatted-text">
+            <div class="name">{{ event_group.name }}</div>
+              {{ event_group.description|safe }}
+          </div>
       {% else %}
           &nbsp;
       {% endif %}
@@ -223,7 +223,7 @@
         <div class="logo align-right">
           {% if registrant.event.organizer and registrant.event.organizer.image %}
           <img src="{% image_url registrant.event.organizer.image %}" title="{{ registrant.event.organizer.name }}" alt="{{ registrant.event.organizer.name }}"/>
-		  {% endif %}
+          {% endif %}
         </div>
         <div class="formatted-text align-right">
           {% if registrant.event.organizer %}
@@ -237,7 +237,7 @@
     </div>
     <div class="row heading">
       <div class="col-md-3">
-      	{% if registrant.event.image %}
+          {% if registrant.event.image %}
         <img src="{% image_url registrant.event.image %}" title="{{ registrant.event.title }}" alt="{{ registrant.event.title }}"/>
         {% else %}
         <span class="img-blank">&nbsp;</span>
@@ -248,7 +248,7 @@
         {% trans "CERTIFICATE OF CONTINUING EDUCATION" %}
       </div>
       <div class="col-md-3 align-right">
-      	{% if registrant.event.certificate_image %}
+          {% if registrant.event.certificate_image %}
         <img src="{{ registrant.event.certificate_image.url }}" title="{{ registrant.event.title }}" alt="{{ registrant.event.title }}"/>
         {% else %}
         <span class="img-blank"></span>
@@ -272,17 +272,17 @@
         <span class="dates">{{ registrant.event_dates_display }}</span> <br />
         {% if registrant.event.delivery_method %}{{ registrant.event.delivery_method }}{% endif %} <br />
         {% if registrant.event.place.virtual %}
-	        {% trans "Online" %}
+            {% trans "Online" %}
         {% else %}
-        	{% if registrant.event.place.name %}
-        	{{ registrant.event.place.name  }},
-        	{% endif %}
-        	{% if registrant.event.place.city %} 
-        	{{ registrant.event.place.city  }},
-        	{% endif %}
-        	{% if registrant.event.place.state %} 
-        	{{ registrant.event.place.state  }}
-        	{% endif %}
+            {% if registrant.event.place.name %}
+            {{ registrant.event.place.name  }},
+            {% endif %}
+            {% if registrant.event.place.city %}
+            {{ registrant.event.place.city  }},
+            {% endif %}
+            {% if registrant.event.place.state %}
+            {{ registrant.event.place.state  }}
+            {% endif %}
         {% endif %}
       </div>
       <div class="col-md-3">&nbsp;</div>
