@@ -7,15 +7,15 @@ from django.core.management.base import BaseCommand, CommandError
 class Command(BaseCommand):
     """
     Populate BV courseID to the external_id field of course table.
-    
+
     Usage: python manage.py populate_bluevolt_courseid
-    
+
     """
     def handle(self, *args, **options):
         from tendenci.apps.trainings.models import Course
         if not hasattr(settings, 'BLUEVOLT_API_KEY'):
             print('Bluevolt API is not set up. Exiting...')
-            return 
+            return
         api_key = settings.BLUEVOLT_API_KEY
         api_endpoint_base_url = settings.BLUEVOLT_API_ENDPOINT_BASE_URL
         courses_url = api_endpoint_base_url + '/devapi2/webapi/v2/GetAllCourses'
@@ -41,4 +41,4 @@ class Command(BaseCommand):
                     print(external_id)
                 else:
                     print(f'course with course code "{course_code}" does not exist.')
-                
+

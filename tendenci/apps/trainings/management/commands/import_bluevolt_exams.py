@@ -15,17 +15,17 @@ RATE_LIMIT = 30
 class Command(BaseCommand):
     """
     Import BV exams data through BV API.
-    
+
     Per Astro Whang at BlueVolt, there is no credits field, no grade/score can be looked up to
-    determine if a user has passed a course. Instead, we should utilize the enrollment status of 
+    determine if a user has passed a course. Instead, we should utilize the enrollment status of
     "Complete".
-    Astro Whang: There is no “credit” field and instead you’ll be utilizing the enrollment 
+    Astro Whang: There is no “credit” field and instead you’ll be utilizing the enrollment
     status of “Complete” to credit the learners who have completed the course.
-    
+
     Usage: python manage.py import_bluevolt_exams --import_id 1
-    
+
     """
-    
+
     def add_arguments(self, parser):
         parser.add_argument('--import_id',
             dest='import_id',
@@ -44,7 +44,7 @@ class Command(BaseCommand):
         from tendenci.apps.trainings.models import BluevoltExamImport, Course, Transcript, Exam, Certification
         if not hasattr(settings, 'BLUEVOLT_API_KEY'):
             print('Bluevolt API is not set up. Exiting...')
-            return 
+            return
         api_key = settings.BLUEVOLT_API_KEY
         api_endpoint_base_url = settings.BLUEVOLT_API_ENDPOINT_BASE_URL
         #enrollment_url = api_endpoint_base_url + 'GetUserCourseEnrollment'
@@ -70,7 +70,7 @@ class Command(BaseCommand):
             [bv_import] = BluevoltExamImport.objects.filter(id=import_id)[:1] or [None]
             if not bv_import:
                 raise CommandError(f'BluevoltExamImport with id {import_id} not found!')
-            
+
             if bv_import.status_detail == 'Pending':
                 bv_import.status_detail = 'Running'
                 bv_import.run_start_date = datetime.now()
@@ -83,7 +83,7 @@ class Command(BaseCommand):
         # date_from = date.today() - timedelta(days=2)
         # date_to = date.today()
         # ----------------
-        
+
         # STEP 1: Get a list of enrollments - pull the Completed only
         headers = {'ocp-apim-subscription-key': settings.BLUEVOLT_PRIMARY_KEY}
         payload = {'apiKey': api_key ,
@@ -108,7 +108,7 @@ class Command(BaseCommand):
                 if dparser.parse(completion_date) < datetime(date_from.year, 1, 1, 0, 0, 0):
                     print('completion_date not current')
                     continue
-                
+
                 # STEP 2: Get course detail to course code
                 # Check if we can find the course by course_id (maps to the external_id
                 course = Course.objects.filter(external_id=course_id).first()
@@ -122,7 +122,7 @@ class Command(BaseCommand):
                                       'courseId': course_id}
                     course_r = requests.get(course_url, headers=headers, params=course_payload)
                     limit_count += 1
-                    
+
                     if course_r.status_code == 200:
                         course_result = course_r.json()
                         course_code = course_result['ExternalCourseCode']
@@ -141,7 +141,7 @@ class Command(BaseCommand):
                         print('courseId=', course_id, course_r.text)
                         messages.append(course_r.text)
                         continue
-                        
+
 
                 # STEP 3: Get user info to find username
                 profile = Profile.objects.filter(external_id=user_id).first()
@@ -156,7 +156,7 @@ class Command(BaseCommand):
                                     'userID': user_id}
                     user_r = requests.get(user_url, headers=headers, params=user_payload)
                     limit_count += 1
-                    
+
                     if user_r.status_code == 200:
                         user_result = user_r.json()[0]
                         username = user_result['UserName']
@@ -174,14 +174,14 @@ class Command(BaseCommand):
                         continue
 
                 # STEP 3: Insert into transcripts if not already in there
-                #         and user has completed the course          
+                #         and user has completed the course
 
                 # check if already exists, but would someone take same courses again?
                 [transcript] = Transcript.objects.filter(course=course,
                                                          user=user,
                                                          location_type='online')[:1] or [None]
                 if not transcript:
-                    
+
                     exam = Exam(user=user,
                                 course=course,
                                 grade=100)
@@ -221,10 +221,10 @@ class Command(BaseCommand):
                 bv_import.status_detail = 'Finished'
                 bv_import.run_finish_date = datetime.now()
                 bv_import.save()
-                       
+
         else:
             print(f'ERROR: Got {r.status_code} from API')
-        print('Done!')             
+        print('Done!')
 
     def handle(self, *args, **options):
         from tendenci.apps.site_settings.utils import get_setting
@@ -237,6 +237,6 @@ class Command(BaseCommand):
             url = get_setting('site', 'global', 'siteurl')
             if import_id:
                 url += reverse('admin:trainings_bluevoltexamimport_change', args=[import_id])
-            
+
             logger.error(f'Error importing training exams from BV {url}...\n\n{traceback.format_exc()}')
-        
+

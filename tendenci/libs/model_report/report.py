@@ -38,7 +38,7 @@ def apply_limit_choices_to_to_formfield(formfield):
             formfield.queryset = formfield.queryset.complex_filter(limit_choices_to)
 
 
-   
+
 def fields_for_model(model, fields=None, exclude=None, widgets=None,
                      formfield_callback=None, localized_fields=None,
                      labels=None, help_texts=None, error_messages=None,

@@ -327,7 +327,7 @@ class DirectoryForm(TendenciBaseForm):
                 self.logo_extension_error_message = _('The photo must be of jpg, gif, or png image type.')
                 self.logo_mime_error_message = _('The photo is an invalid image. Try uploading another photo.')
         self.fields['logo'].validators = [FileValidator(allowed_extensions=ALLOWED_LOGO_EXT)]
-            
+
 
         if not self.user.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
@@ -349,7 +349,7 @@ class DirectoryForm(TendenciBaseForm):
         # cat and sub_cat
         self.fields['sub_cats'].queryset = DirectoryCategory.objects.exclude(parent=None)
         self.fields['sub_cats'].choices = _get_sub_cats_choices(directory=self.instance)
-        
+
         if self.user.profile.is_superuser:
             self.fields['sub_cats'].help_text = mark_safe('<a href="{}">{}</a>'.format(
                                         reverse('admin:directories_category_changelist'),
@@ -396,11 +396,11 @@ class DirectoryForm(TendenciBaseForm):
                 self.fields['cats'].help_text += mark_safe('<br /><a href="{}">{}</a>'.format(
                             reverse('admin:directories_category_changelist'),
                             _('Manage Categories'),))
- 
+
         # not to show list_type field if no premium price
         if not DirectoryPricing.objects.filter(status=True).filter(premium_price__gt=0).exists():
             if 'list_type' in self.fields:
-                del self.fields['list_type']      
+                del self.fields['list_type']
 
         if get_setting('site', 'global', 'stateusesdropdown'):
             self.fields['state'] = StateSelectField(label=self.fields['state'].label,

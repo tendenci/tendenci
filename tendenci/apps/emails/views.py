@@ -44,7 +44,7 @@ def view(request, id, template_name="emails/view.html"):
 def _move_style_to_body(email):
     """
     Move the <style> block from html header to body.
-    
+
     This is because html header will be removed by tinymce editor.
     This process will preserve the style for the newsletters
     that were created prior to tinymce version 6.
@@ -78,7 +78,7 @@ def edit(request, id, form_class=EmailForm, template_name="emails/edit.html"):
         if email.newsletter_set.exists():
             if email.body.find('<html>') != -1 and email.body.find('<style>') != -1:
                 email = _move_style_to_body(email)
-            
+
         form = form_class(instance=email)
 
     return render_to_resp(request=request, template_name=template_name,

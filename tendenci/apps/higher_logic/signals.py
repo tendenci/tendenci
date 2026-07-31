@@ -15,7 +15,7 @@ def save_unpushed_items(sender, **kwargs):
     """
     instance = kwargs['instance']
     deleted = kwargs.get('deleted', False)
-    if sender in (User, Profile, Registrant, MembershipDefault, Staff, GroupMembership):        
+    if sender in (User, Profile, Registrant, MembershipDefault, Staff, GroupMembership):
         if sender is User:
             user = instance
         elif sender is Profile:
@@ -33,7 +33,7 @@ def save_unpushed_items(sender, **kwargs):
             profile = None
 
         if profile and profile.account_id:
-            identifier = profile.account_id       
+            identifier = profile.account_id
 
             params = {
                 'user_id': user.id,
@@ -70,4 +70,4 @@ def init_signals():
         # When a user or an event is deleted from db, they need to be deleted at HL
         pre_delete.connect(save_unpushed_items_for_delete, sender=model, weak=False)
 
-    
+

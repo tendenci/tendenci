@@ -80,7 +80,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     if not has_view_perm(request.user, 'files.view_file', file):
         # check if this user has the perm to view the associated object.
         # if they can view the associated object, they should be able to view this file.
-        if not file.has_obj_view_perm(request.user):     
+        if not file.has_obj_view_perm(request.user):
             raise Http403
 
     # extra permission
@@ -354,7 +354,7 @@ class FileTinymceCreateView(CreateView):
         context['accept_file_types'] = '|'.join(x[1:] for x in get_allowed_upload_file_exts(context['upload_type']))
 
         return context
-    
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update(request_data=self.request)

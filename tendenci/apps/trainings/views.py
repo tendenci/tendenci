@@ -23,7 +23,7 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.decorators import is_enabled
 from .models import (TeachingActivity, OutsideSchool,
-             CertCat, Certification, CorpTranscriptsZipFile, Course)        
+             CertCat, Certification, CorpTranscriptsZipFile, Course)
 from .forms import (TeachingActivityForm,
                     OutsideSchoolForm,
                     ParticipantsForm,
@@ -46,7 +46,7 @@ class TeachingActivityCreateView(LoginRequiredMixin, SuccessMessageMixin, Create
 
         # log an event
         EventLog.objects.log(action='teaching_activity_add')
-        
+
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -218,7 +218,7 @@ def transcripts(request, user_id=None, corp_profile_id=None,
 
                 if 'step2' in request.POST:
                     step = 'step3'
-    
+
                     users = User.objects.filter(id__in=participants)
         else: # GET
             if 'transcripts_c' in request.session:
@@ -241,7 +241,7 @@ def transcripts(request, user_id=None, corp_profile_id=None,
                                          request=request,
                                          corp_profile=corp_profile,
                                          hidden=True)
-  
+
     certs = Certification.objects.all()
     for cert in certs:
         cert.certcats = []
@@ -283,14 +283,14 @@ def transcripts(request, user_id=None, corp_profile_id=None,
             # redirect to the status page
             messages.add_message(request, messages.INFO, _("The system is now generating all transcript PDFs and zip to a file. Please reload in a few seconds to check if it's ready."))
             return redirect('trainings.corp_pdf_download_list')
-        elif user_id:  
+        elif user_id:
             params['customer'] = get_object_or_404(User, pk=user_id)
             file_name = f"transcript_{params['customer'].username}.pdf"
             response = HttpResponse(content_type='application/pdf')
             response['Content-Disposition'] = f'attachment; filename={ file_name }'
             return generate_transcript_pdf(response, **params)
-    
-    params['qs'] = urlparse(request.get_full_path()).query   
+
+    params['qs'] = urlparse(request.get_full_path()).query
     return render_to_resp(request=request,
                           template_name=template_name,
             context=params)

@@ -19,7 +19,7 @@ class Command(BaseCommand):
 #         import mimetypes
 #         import boto
 #         from boto.s3.key import Key
-# 
+#
 #         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
 #             bucket_name = settings.AWS_STORAGE_BUCKET_NAME
 #             bucket_site_folder_name = settings.AWS_LOCATION
@@ -27,11 +27,11 @@ class Command(BaseCommand):
 #                                    settings.AWS_SECRET_ACCESS_KEY)
 #             bucket = conn.get_bucket(bucket_name)
 #             k = Key(bucket)
-# 
+#
 #             static_root = settings.STATIC_ROOT
 #             static_url_to_find = settings.LOCAL_STATIC_URL
 #             static_url_replace_with = settings.STATIC_URL
-# 
+#
 #             if os.path.isdir(static_root):
 #                 # walk through the directory
 #                 for dirpath, dirnames, filenames in os.walk(static_root):
@@ -41,7 +41,7 @@ class Command(BaseCommand):
 #                             if os.path.splitext(filename)[1] in ['.js', '.css', '.less']:
 #                                 file_path = (os.path.join(dirpath, filename)
 #                                              ).replace('\\', '/')
-# 
+#
 #                                 with open(file_path) as f:
 #                                     content = f.read()
 #                                     if content.find(static_url_to_find) != -1:
@@ -51,9 +51,9 @@ class Command(BaseCommand):
 #                                         # upload to s3
 #                                         key = '%s/%s/%s' % (bucket_site_folder_name,
 #                                                             dirpath.replace(static_root, 'static'), filename)
-# 
+#
 #                                         k.key = key
-# 
+#
 #                                         content_type = mimetypes.guess_type(filename)[0] or k.DefaultContentType
 #                                         k.set_metadata('Content-Type', content_type)
 #                                         myfile = BytesIO(new_content)
@@ -62,6 +62,6 @@ class Command(BaseCommand):
 #                                         #k.set_contents_from_string(new_content, replace=True)
 #                                         k.set_acl('public-read')
 #                                         print(file_path)
-# 
+#
 #         else:
 #             print('Site is not using S3 Storage.')

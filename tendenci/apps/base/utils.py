@@ -83,7 +83,7 @@ def is_ajax(request):
 
 def get_us_state_name(state_abbr):
     """
-    Given a state abbreiation, 
+    Given a state abbreiation,
     returns a state name
     """
     return dict(US_STATES).get(state_abbr, state_abbr)
@@ -114,10 +114,10 @@ def escape_csv(payload):
     """
     Escape the begining character in ('@','+','-', '=', '|')
     to prevent CSV Injection.
-    
+
     This function is based on the gist https://gist.github.com/ZephrFish/ab951ca43d95f68e557c9c2e5ca6f2cc
     """
-    if payload and isinstance(payload, str): 
+    if payload and isinstance(payload, str):
         if payload[0] in ('@','+','-', '=', '|'):
             payload = "'" + payload
             payload = payload.replace("|", r"\|")
@@ -285,7 +285,7 @@ def tcurrency(mymoney):
     """
     if mymoney is None:
         return 'n/a'
-    
+
     currency_symbol = get_setting("site", "global", "currencysymbol")
     allow_commas = get_setting("site", "global", "allowdecimalcommas")
 
@@ -297,15 +297,15 @@ def tcurrency(mymoney):
             # tax usually has 4 number of digits after the decimal point,
             # make it 2
             mymoney = Decimal(f'{mymoney:.2f}')
-        
+
         if mymoney >= 0:
             fmt = '%s%s'
         else:
             fmt = '%s(%s)'
         if allow_commas:
             mymoney = intcomma(mymoney)
-            
-        # Remove redundant '-' if present 
+
+        # Remove redundant '-' if present
         return (fmt % (currency_symbol, mymoney)).replace('-', '')
     else:
         return mymoney
@@ -651,10 +651,10 @@ def apply_orientation(im):
     -----------
     im : Image
         An Image instance
-    
+
     Returns
     -------
-    Image 
+    Image
         A rotated or original image instance
     """
 
@@ -671,7 +671,7 @@ def apply_orientation(im):
                     if image_orientation == 8:
                         return im.rotate(90)
     except:
-        pass 
+        pass
     return im
 
 def image_rescale(img, size, force=True):

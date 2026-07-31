@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 class Command(BaseCommand):
     """
     Push unpushed items (users and events) to Higher Logic.
-    
+
     Usage: python manage.py push_items_to_hl --verbosity=2
     """
 
@@ -29,7 +29,7 @@ class Command(BaseCommand):
                         hc.remove_user(item.identifier)
                         if verbosity >= 2:
                             print(f'Removed user with account_id {item.identifier} from HL')
-                        
+
                 if item.event_id and item.identifier:
                     [event] = Event.objects.filter(id=item.event_id)[:1] or [None]
                     if event:
@@ -48,6 +48,6 @@ class Command(BaseCommand):
                             print(f'Removed event {item.identifier} from HL')
 
                 item.delete()
-                
-        print('Done.')      
-                
+
+        print('Done.')
+

@@ -110,8 +110,8 @@ class Page(BasePage):
     class Meta:
 #         permissions = (("view_page", _("Can view page")),)
         app_label = 'pages'
-        
-    def save(self, *args, **kwargs): 
+
+    def save(self, *args, **kwargs):
         if not self.group:
             self.group_id = get_default_group()
 

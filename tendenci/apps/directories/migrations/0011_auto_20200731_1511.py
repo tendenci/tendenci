@@ -40,7 +40,7 @@ def assign_entity_to_directory(apps, schema_editor):
                           }
                 new_entity = Entity.objects.create(**params)
                 Directory.objects.filter(id=directory.id).update(entity=new_entity)
-            
+
 
 class Migration(migrations.Migration):
 

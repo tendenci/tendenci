@@ -20,11 +20,11 @@ class Command(BaseCommand):
         from tendenci.apps.events.utils import (render_event_email,
                                   get_default_reminder_template,
                                   replace_qr_code)
-        
-        
+
+
         def get_reminder_conf_body(event):
             template_name = 'events/reminder_conf_email.html'
-    
+
             return render_to_string(template_name=template_name,
                            context={'event': event,
                             'site_url': get_setting('site', 'global',
@@ -35,7 +35,7 @@ class Command(BaseCommand):
                                                      'sitedisplayname')
                             })
 
-        def send_organizer_confirmation(event):    
+        def send_organizer_confirmation(event):
             email = Email()
             if event.organizer_first and event.organizer_first.user \
                 and event.organizer_first.user.email:
@@ -45,19 +45,19 @@ class Command(BaseCommand):
                 if not email.recipient:
                     email.recipient = get_setting('site', 'global',
                                                   'sitecontactemail')
-    
+
             email.subject = '{} Event Reminders Distributed for: {}'.format(
                                     get_setting('site', 'global',
                                                 'sitedisplayname'),
                                     event.title
                                     )
             email.body = get_reminder_conf_body(event)
-    
+
             email.send()
 
         def send_reminders(event, registrants, email_rendered=True, verbosity=0):
             email = event.email
-    
+
             count = 0
             for registrant in registrants:
                 if registrant.email:
@@ -81,7 +81,7 @@ class Command(BaseCommand):
                     else:
                         email.send()
                     count += 1
-    
+
             if count > 0:
                 # notify event organizer that reminders have been
                 # distributed to all registrants requesting reminders.
@@ -141,7 +141,7 @@ class Command(BaseCommand):
                     if not email.sender_display:
                         if organizer.name:
                             email.sender_display = organizer.name
-    
+
                     if not email.reply_to:
                         if organizer.user and organizer.user.email:
                             email.reply_to = organizer.user.email

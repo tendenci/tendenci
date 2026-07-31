@@ -120,7 +120,7 @@ def broadcast_email(request):
     else:
         form = BroadcastForm(request.POST or None, initial={})
         step2 = True
-        
+
     if request.method == "POST":
         if form.is_valid():
             if 'continue' in request.POST:
@@ -151,10 +151,10 @@ def broadcast_email(request):
                               "run_broadcast_email",
                               str(bce.pk) ])
                 messages.add_message(request, messages.INFO, _("Your email is being sent. Please reload in a few seconds to check if it's done."))
-                
-        
+
+
                 # retn_content = broadcast_emails_to_corp(email,
-                #                                        corp_members=corp_members, 
+                #                                        corp_members=corp_members,
                 #                                         request=request)
                 corp_names = ', '.join([corp_member.corp_profile.name for corp_member in corp_members[:5]])
                 if len(corp_members) > 5:
@@ -165,8 +165,8 @@ def broadcast_email(request):
                 return redirect(reverse('corpmembership.broadcast_email_conf',
                                         kwargs={'bce_id': bce.id, 'guid': bce.guid}))
                 #return StreamingHttpResponse(streaming_content=retn_content)
-            
-     
+
+
     if step2:
         # get a list of corp types that are associated with corp memberships
         corp_types = CorporateMembershipType.objects.filter(status_detail='active').order_by('name')
@@ -181,7 +181,7 @@ def broadcast_email(request):
                 corporate_membership_type=corp_type.id)
         template_name='corporate_memberships/message/broadcast/step2.html'
     else:
-        template_name='corporate_memberships/message/broadcast/step1.html'  
+        template_name='corporate_memberships/message/broadcast/step1.html'
 
     return render_to_resp(request=request, template_name=template_name,
                           context={'form': form,
@@ -227,7 +227,7 @@ def free_passes_list(request,
 
 @is_enabled('corporate_memberships')
 @staff_member_required
-def corp_members_donated(request, 
+def corp_members_donated(request,
                     template_name='corporate_memberships/reports/corp_members_donated.html'):
     corp_members = CorpMembership.objects.filter(donation_amount__gt=0
                                    ).order_by('-donation_amount', 'corp_profile__name')
@@ -356,7 +356,7 @@ def corpmembership_add(request, slug='',
         # handle anonymous user
         if not has_perm(request.user, 'corporate_memberships.view_corpmembershipapp', app):
             raise Http403
-        
+
         if hash:
             [creator] = Creator.objects.filter(hash=hash)[:1] or [None]
         if not creator:
@@ -445,7 +445,7 @@ def corpmembership_add(request, slug='',
             # if authentication_method == 'secret_code'
 
             # send notification to user
-            if get_setting('module', 'corporate_memberships', 'notificationson'):    
+            if get_setting('module', 'corporate_memberships', 'notificationson'):
                 # if Notice.objects.filter(
                 #                      notice_time='attimeof',
                 #                      notice_type='join',
@@ -772,10 +772,10 @@ def corp_membership_add_directory(request, id):
     corp_membership = corp_profile.corp_membership
     if not corp_membership or not corp_membership.is_active:
         raise Http404
-    
+
     if not get_setting('module',  'corporate_memberships', 'adddirectory'):
         raise Http404
-    
+
     if request.user.profile.is_superuser:
         corp_profile.add_directory()
 
@@ -1041,7 +1041,7 @@ def corpmembership_search(request, my_corps_only=False,
         search_text = None
         search_method = None
         active_only = False
-  
+
     if active_only:
         corp_members = corp_members.filter(status_detail='active')
 
@@ -1162,7 +1162,7 @@ def corpmembership_approve(request, id,
     if request.method == "POST":
         if approve_form.is_valid():
             mark_invoice_as_paid = approve_form.cleaned_data.get('mark_invoice_as_paid', False)
-            
+
             msg = ''
             if 'approve' in request.POST:
                 if corporate_membership.renewal:
@@ -1294,7 +1294,7 @@ def corp_renew(request, id,
             if 'update_summary' in request.POST:
                 pass
             else:
-                
+
                 members = form.cleaned_data['members']
                 # create a new corp_membership entry
                 new_corp_membership = form.save()
@@ -1351,7 +1351,7 @@ def corp_renew(request, id,
                             new_corp_membership.donation_amount = donation_amount
                             new_corp_membership.save()
                             opt_d['donation_amount'] = donation_amount
-                
+
                 # create an invoice
                 inv = corp_memb_inv_add(request.user,
                                         new_corp_membership,
@@ -1425,7 +1425,7 @@ def corp_renew(request, id,
                     if not notice_sent:
                         send_email_notification('corp_memb_renewed_user',
                                                 recipients, extra_context)
-    
+
                 return HttpResponseRedirect(reverse(
                                             'corpmembership.renew_conf',
                                             args=[new_corp_membership.id]))
@@ -1455,7 +1455,7 @@ def corp_renew(request, id,
         except CorporateMembershipType.DoesNotExist:
             pass
         summary_data['total_individual_count'] = len(request.POST.getlist('members'))
-        
+
         # donation amount
         if corpmembership_app.donation_enabled:
             if request.POST.get('donation_option_value_0') == 'default':
@@ -1495,7 +1495,7 @@ def corp_renew(request, id,
     payment_credits = 0
     if get_setting('module', 'invoices', 'cancarryover'):
         if corp_membership.invoice and corp_membership.invoice.balance < 0:
-            payment_credits = corp_membership.invoice.balance * (-1)  
+            payment_credits = corp_membership.invoice.balance * (-1)
     context = {"corp_membership": corp_membership,
                'corp_profile': corp_membership.corp_profile,
                'show_app_form': show_app_form,
@@ -2054,7 +2054,7 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 
             msg_string = _('Representative added successfully')
             messages.add_message(request, messages.SUCCESS, msg_string)
-            
+
             if (request.POST.get('submit', '')).lower() == 'save':
                 return HttpResponseRedirect(reverse('corpmembership.view',
                                                     args=[corp_memb.id]))
@@ -2315,7 +2315,7 @@ def report_corp_members_by_status(request,
                 active_corp_membership = corp_profile.active_corp_membership
                 if active_corp_membership:
                     exclude_list.append(corp_mem.id)
-    
+
         if exclude_list:
             corp_mems = corp_mems.exclude(id__in=exclude_list)
 

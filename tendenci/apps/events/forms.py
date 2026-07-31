@@ -146,7 +146,7 @@ class EventFileForm(FormControlWidgetMixin, BetterModelForm):
         #              ('', {
         #               'fields': [
         #                   'file',
-        #                   'file_url',                  
+        #                   'file_url',
         #               ],
         #               'legend': _('Upload a file or add a URL'),
         #               }),
@@ -212,7 +212,7 @@ class EventMonthForm(ProhibitNullCharactersValidatorMixin, forms.Form):
     search_text = forms.CharField(label=_('Search'), required=False,)
     group = forms.ChoiceField(required=False, choices=[])
     event_type = forms.ChoiceField(label=_('Type'), required=False, choices=[])
-    
+
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
@@ -229,7 +229,7 @@ class EventMonthForm(ProhibitNullCharactersValidatorMixin, forms.Form):
                                                         'class': 'form-control input-sm'})
         self.fields['group'].widget.attrs.update({'class': 'form-control input-sm'})
         self.fields['event_type'].widget.attrs.update({'class': 'form-control input-sm'})
-    
+
 
 class EventSearchForm(forms.Form):
     start_dt = forms.CharField(label=_('Start Date'), required=False,
@@ -274,10 +274,10 @@ class EventSearchForm(forms.Form):
             self.fields['state'] = StateSelectField(label=_('Select a State'),
                                                     empty_label=_('Select a State'),
                                                     required=False)
-        
+
         for field in self.fields:
             if field not in ['registration', 'national_only']:
-                widget_attrs = self.fields[field].widget.attrs 
+                widget_attrs = self.fields[field].widget.attrs
                 if 'class' in widget_attrs:
                     class_attr = widget_attrs['class'] + ' form-control-custom'
                 else:
@@ -414,7 +414,7 @@ class AttendanceDatesMixin:
                 pricing.available
         ):
             return list()
- 
+
         # Allow people to register for LESS dates covered, but not more
         total_available_days = len(self.event.full_event_days)
         if pricing.days_price_covers > total_available_days:
@@ -465,10 +465,10 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
             self.default_pricing = getattr(self.event, 'default_pricing', None)
 
         super().__init__(*args, **kwargs)
-        
+
         max_length_dict = {field.name: field.max_length for field in Registrant._meta.fields\
                                 if hasattr(field, 'max_length')}
-        
+
         for field in self.form_fields:
             if field.map_to_field:
                 field_key = field.map_to_field
@@ -603,7 +603,7 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
         self.price = Decimal('0.00')
         self.saved_data = {}
         # -------------------------
-        
+
         self.add_form_control_class()
 
     def get_user(self, email=None):
@@ -666,7 +666,7 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
                         currency_symbol, pricing.price, pricing.title)
                 else:
                     if pricing.allow_user:
-                        if User.objects.filter(email__iexact=email, is_active=False).exists():  
+                        if User.objects.filter(email__iexact=email, is_active=False).exists():
                             activation_link = _('<a href="{activate_link}?email={email}&next={next_path}">HERE</a>').format(
                                                     activate_link=reverse('profile.activate_email'),
                                                     email=requests.utils.quote(email),
@@ -759,7 +759,7 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
     def get_file_path(self, filename, field_id):
         filename = correct_filename(filename)
         return f'events/reg/fieldentry/{field_id}/{str(uuid4())}/{filename}'
-    
+
     def handle_uploaded_file(self, f, field_id):
         return default_storage.save(self.get_file_path(f.name, field_id), f)
 
@@ -1110,7 +1110,7 @@ class EventForm(TendenciBaseForm):
 
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
             #self.fields['groups'].initial = Group.objects.get_or_create_default()
-            
+
         if 'repeat_of' in self.fields:
             if self.instance.pk and self.instance.parent and self.instance.repeat_of: # on event edit, repeat_of already set
                 self.fields['repeat_of'].queryset = Event.objects.filter(pk=self.instance.repeat_of.pk)
@@ -1208,10 +1208,10 @@ class EventForm(TendenciBaseForm):
             #     primary_group = self.instance.primary_group
             #     if primary_group:
             #         self.fields['primary_group'].queryset = self.fields['groups'].queryset.filter(id=primary_group.id)
-                    
+
         else:
             del self.fields['primary_group']
-        
+
         self.fields['type'].required = True
 
         # check if course field is needed
@@ -1223,7 +1223,7 @@ class EventForm(TendenciBaseForm):
                 self.fields['course'].queryset = self.fields['course'].queryset.filter(
                     location_type='onsite',
                     status_detail='enabled').order_by('name') # onsite courses only
-        
+
         # If nested events is not enabled, remove it from the form
         if not nested_events:
             if 'event_relationship' in self.fields:
@@ -1654,7 +1654,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
             self.fields['days_price_covers'].widget = forms.HiddenInput()
 
         self.fields['groups'].queryset = default_groups
-        
+
         # tax rate
         if get_setting('module', 'invoices', 'taxrateuseregions'):
             if self.user and self.user.is_superuser:
@@ -1700,7 +1700,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
             'allow_anonymous',
             'allow_user',
             'allow_member',
-            
+
          ]
 
         fieldsets = [(_('Registration Pricing'), {
@@ -1722,7 +1722,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
                     'allow_anonymous',
                     'allow_user',
                     'allow_member',
-                   
+
                     ],
           'legend': '',
           'classes': ['boxy-grey'],
@@ -1929,7 +1929,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
         if self.recurring_edit:
             del self.fields['use_custom_reg']
 
-        # 
+        #
         if not settings.EVENTS_GRATUITY_ENABLED:
             del self.fields['gratuity_enabled']
             del self.fields['gratuity_options']
@@ -1940,7 +1940,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
         # make reply_to a required field
         # Commenting it out because this doesn't work when Registration is not enabled
         #self.fields['reply_to'].required = True
-         
+
         self.add_form_control_class()
 
     def clean_use_custom_reg(self):
@@ -1958,7 +1958,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
 
     def clean_gratuity_options(self):
         value = self.cleaned_data['gratuity_options']
-        
+
         for opt in value.split(','):
             is_valid = True
             negative_number = False
@@ -1981,8 +1981,8 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                                             params={'value': opt})
             if negative_number:
                 raise forms.ValidationError(_("Invalid Gratuity option '%(value)s'. It should be a positive number."),
-                                            params={'value': opt}) 
-                
+                                            params={'value': opt})
+
         return value
 
     def clean_reminder_days(self):
@@ -2180,7 +2180,7 @@ class GratuityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.reg_conf = kwargs.pop('reg_conf')
         super().__init__(*args, **kwargs)
-        
+
         if not self.reg_conf.gratuity_enabled:
             del self.fields['gratuity']
             del self.fields['gratuity_preferred']
@@ -2194,7 +2194,7 @@ class GratuityForm(forms.Form):
                 del self.fields['gratuity_preferred']
             else:
                 self.fields['gratuity_preferred'].widget = PercentWidget()
-            
+
             # add form-control class
             for k in self.fields.keys():
                 self.fields[k].widget.attrs['class'] = 'form-control'
@@ -2209,7 +2209,7 @@ class EventTitleChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         event_name = obj.short_name if obj.short_name else obj.title
         return f"{event_name} {obj.start_dt.strftime('%I:%M %p').lstrip('0').replace(':00', '')} - {obj.end_dt.strftime('%I:%M %p').lstrip('0').replace(':00', '')}"
-    
+
 
 class EventCheckInForm(forms.Form):
     """
@@ -2308,7 +2308,7 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
         super().__init__(*args, **kwargs)
 
         reg_conf=self.event.registration_configuration
-        
+
         max_length_dict = {field.name: field.max_length for field in Registrant._meta.fields\
                                 if hasattr(field, 'max_length') and field.name in self.FIELD_NAMES}
 
@@ -2479,7 +2479,7 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
                 else:
                     if pricing.allow_user:
                         # found an inactive user account
-                        if User.objects.filter(email__iexact=email, is_active=False).exists():  
+                        if User.objects.filter(email__iexact=email, is_active=False).exists():
                             activation_link = _('<a href="{activate_link}?email={email}&next={next_path}">HERE</a>').format(
                                                     activate_link=reverse('profile.activate_email'),
                                                     email=requests.utils.quote(email),
@@ -2638,8 +2638,8 @@ class RegistrantBaseFormSet(BaseFormSet):
                 # check if this user can register
                 if not self.user.is_superuser:
                     if self.user.is_authenticated and self.user.email.lower() != email.lower():
-                        raise forms.ValidationError(_(f"{email} is NOT your email address."))       
-                
+                        raise forms.ValidationError(_(f"{email} is NOT your email address."))
+
                 # check if this email address is already used
                 if not self.edit_mode and Registrant.objects.filter(user__email__iexact=email,
                                              registration__event=self.event,
@@ -2647,7 +2647,7 @@ class RegistrantBaseFormSet(BaseFormSet):
                     if self.user.is_authenticated and email == self.user.email:
                         raise forms.ValidationError(_('You have already registered.'))
                     raise forms.ValidationError(_(f'User {email} has already registered.'))
-  
+
     def clean(self):
         return_data = super().clean()
         # check if we have enough available spaces for price options
@@ -2663,8 +2663,8 @@ class RegistrantBaseFormSet(BaseFormSet):
         for p in pricings:
             if p.spots_available() < pricings[p]:
                 raise forms.ValidationError(_('{currency_symbol} {title} - space left {space_available}, but registering {num_registrants}.'.format(
-                                                currency_symbol=tcurrency(p.price), 
-                                                title=p.title, 
+                                                currency_symbol=tcurrency(p.price),
+                                                title=p.title,
                                                 space_available=p.spots_available(),
                                                 num_registrants=pricings[p])))
 
@@ -2699,7 +2699,7 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
         if hasattr(self, 'user'):
             kwargs['user'] = self.user
         return super()._construct_form(i, **kwargs)
-        
+
 
     def clean(self):
         return_data = super().clean()

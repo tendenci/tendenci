@@ -7,11 +7,11 @@ from django.contrib.auth.models import User
 class Command(BaseCommand):
     """
     Calculate and grant diamond certifications.
-    
+
     Set a daily cron job:
     1 20 * * * /src/venv/bin/python /var/www/tendenci_site/manage.py check_and_grant_diamonds
     """
-    
+
     def handle(self, *args, **options):
         from tendenci.apps.trainings.models import (Certification,
                                                     Transcript, UserCertData)
@@ -33,7 +33,7 @@ class Command(BaseCommand):
                         cert_data.save()
                     continue
                 continue # skip the diamond for now
-                
+
                 d_number = cert_data.get_next_d_number()
                 if cert.is_requirements_met(user, diamond_number=d_number):
                     if d_number == 1:

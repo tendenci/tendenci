@@ -4,11 +4,11 @@ from django.core.management.base import BaseCommand
 class Command(BaseCommand):
     """
     Populate the usercertdata.
-    
+
     Usage:
           python manage.py populate_usercertdata
     """
-    
+
     def handle(self, *args, **options):
         from django.contrib.auth.models import User
         from tendenci.apps.trainings.models import (Certification,

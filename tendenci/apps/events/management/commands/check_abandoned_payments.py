@@ -8,7 +8,7 @@ class Command(BaseCommand):
     """
     Check for abandoned payments for event registration.
     Then email users if meet the criteria.
-    
+
     Abandoned payments:
         Non-paid registrations for the events that Payment is required
         and Credit Card is the only payment option.
@@ -21,19 +21,19 @@ class Command(BaseCommand):
             dest='event_id',
             default=None,
             help='The id of the event to be processed')
-    
+
     def email_notice(self, event, registration, verbosity=0, **kwargs):
         from tendenci.apps.notifications import models as notification
         from tendenci.apps.base.utils import validate_email
         registrant = registration.registrant
- 
+
         if registrant and registrant.email and validate_email(registrant.email):
             recipient = registrant.email
-                        
+
             if recipient:
                 if verbosity == 2:
                     print('Sending notice email to {}'.format(recipient))
-                    
+
                 context = {'event': event,
                    'invoice': registration.invoice,
                    'reg8n': registration,
@@ -55,7 +55,7 @@ class Command(BaseCommand):
         if admin_emails:
             if verbosity == 2:
                 print('Sending confirmation to {}'.format(', '.join(admin_emails)))
-                
+
             context = {'event': event,
                        'reg8n_list': reg8n_list,}
             context.update(kwargs)
@@ -68,12 +68,12 @@ class Command(BaseCommand):
 
         verbosity = options['verbosity']
         event_id = options['event_id']
-        
+
         if not get_setting('module', 'events', 'enable_notice_abandoned'):
             if verbosity == 2:
                 print('Notification to registrants who abandoned payments .. Not enabled')
             return
-        
+
         check_days = get_setting('module', 'events', 'days_notice_abandoned')
         days_list = []
         for day in check_days.split(','):
@@ -82,13 +82,13 @@ class Command(BaseCommand):
             except:
                 continue
         if not days_list:
-            if verbosity >=2: 
+            if verbosity >=2:
                 print('Notification to registrants who abandoned payments .. Not specified')
             return
-        
+
         kwargs = {'site_url': get_setting('site', 'global', 'siteurl'),
                   'site_name': get_setting('site', 'global', 'sitedisplayname')}
-        
+
         now = timezone.now()
         today_tuple = (datetime(now.year, now.month, now.day, 0, 0, 0),
                        datetime(now.year, now.month, now.day, 23, 59, 59))
@@ -102,28 +102,28 @@ class Command(BaseCommand):
         events = events.filter(registration_configuration__external_payment_link='')
         if event_id:
             events = events.filter(id=event_id)
-        
+
         if events:
             for event in events:
                 reg8n_list = []
                 if event.registration_configuration.payment_method.filter(is_online=False).exists():
                     # skip if there is any non-online payment method
                     continue
-                
+
                 [organizer] = Organizer.objects.filter(event=event)[:1] or [None]
                 event.organizer = organizer
-                
-                
+
+
                 if organizer:
                     if organizer.name:
                         kwargs.update({'sender_display': organizer.name})
                     if organizer.user and organizer.user.email:
                             kwargs.update({'reply_to': organizer.user.email})
-                
+
                 registrations = Registration.objects.filter(event=event,
                                                 canceled=False,
                                                 invoice__balance__gt=0)
-                
+
                 for registration in registrations:
                     create_dt = registration.create_dt
                     for day in days_list:
@@ -131,14 +131,14 @@ class Command(BaseCommand):
                         if today_tuple[0] <= check_dt and check_dt <= today_tuple[1]:
                             # send notice
                             sent = self.email_notice(event, registration, verbosity=verbosity, **kwargs)
-                            
+
                             if sent:
                                 reg8n_list.append(registration)
 
                 if 'sender_display' in kwargs:
                     kwargs.pop('sender_display')
                 if 'reply_to' in kwargs:
-                    kwargs.pop('reply_to') 
+                    kwargs.pop('reply_to')
 
                 if reg8n_list:
                     # email event admin

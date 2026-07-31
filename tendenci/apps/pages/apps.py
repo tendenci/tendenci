@@ -6,7 +6,7 @@ from django.utils.translation import gettext_noop as _
 def create_notice_types(sender, **kwargs):
     from tendenci.apps.notifications import models as notification
     verbosity = kwargs.get('verbosity', 2)
-    
+
     notification.create_notice_type("page_added",
                                     _("Page Added"),
                                     _("A page has been added."),

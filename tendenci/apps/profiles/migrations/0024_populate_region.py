@@ -10,7 +10,7 @@ def populate_region(apps, schema_editor):
         if hasattr(profile, 'membership') and profile.membership and profile.membership.region:
             profile.region = profile.membership.region
             profile.save(update_fields=['region'])
-    
+
 
 class Migration(migrations.Migration):
 

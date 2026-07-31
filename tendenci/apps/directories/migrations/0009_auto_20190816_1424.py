@@ -4,20 +4,20 @@ from django.db import migrations
 def remove_fb_like_from_custom_templates(apps, schema_editor):
     """
     Remove facebook like buttons from custom templates (the templates pulled down to site).
-     
+
     1) directories/meta.html
-        Remove facebook like block 
-    
+        Remove facebook like block
+
         {% if show_fb_connect|default:False %}
            {% fb_like_button_iframe directory.get_absolute_url height=20 %}
        {% endif %}
-       
+
     2) directories/view.html
       Replace
         {% include "directories/meta.html" with show_source=True show_contact=True show_fb_connect=True %}
       with
         {% include "directories/meta.html" with show_source=True show_contact=True %}
-    
+
     """
     import re
     import os
@@ -31,7 +31,7 @@ def remove_fb_like_from_custom_templates(apps, schema_editor):
             p = r'{}([\d\D\s\S\w\W]*?){}'.format(re.escape('{% if show_fb_connect|default:False %}'),
                                                                 re.escape('{% endif %}'))
             content = re.sub(p, '', content)
-            
+
         with open(file_path, 'w') as f:
             f.write(content)
 
@@ -42,7 +42,7 @@ def remove_fb_like_from_custom_templates(apps, schema_editor):
             content = f.read()
             p = r'{}'.format(re.escape('{% include "directories/meta.html" with show_source=True show_contact=True show_fb_connect=True %}'))
             content = re.sub(p, '{% include "directories/meta.html" with show_source=True show_contact=True %}', content)
-            
+
         with open(file_path, 'w') as f:
             f.write(content)
 

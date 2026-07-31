@@ -24,7 +24,7 @@ def file_directory(instance, filename):
         filename = '{}-{}{}'.format(instance.last_name,
                                     instance.first_name,
                                     os.path.splitext(filename)[1])
-        
+
     filename = correct_filename(filename)
     return 'resumes/%d/%s' % (instance.id, filename)
 
@@ -142,4 +142,4 @@ class Resume(TendenciBaseModel):
             o = urlparse(self.resume_url)
             return o.hostname and o.hostname in ('www.linkedin.com', 'linkedin.com')
         return False
-                
+

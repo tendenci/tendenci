@@ -54,7 +54,7 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
         start_dt = form.cleaned_data.get('start_dt', None)
         end_dt = form.cleaned_data.get('end_dt', None)
         # first date of the year
-        
+
         is_y2d = not (start_dt or end_dt) or (start_dt == first_date_of_year and end_dt==today)
         if not start_dt:
             start_dt = first_date_of_year
@@ -239,7 +239,7 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
                     if update_obj and request.user.is_superuser:
                         if hasattr(obj, 'auto_update_paid_object'):
                             obj.auto_update_paid_object(request, payment)
-                
+
                 EventLog.objects.log(instance=invoice)
                 messages.add_message(
                     request,
@@ -408,7 +408,7 @@ def void_invoice(request, id, form_class=AdminVoidForm, template_name="invoices/
     else:
         del form.fields['cancle_registration']
         del form.fields['delete_membership']
-    
+
     if request.method == "POST":
         if form.is_valid():
             invoice = form.save()
@@ -417,7 +417,7 @@ def void_invoice(request, id, form_class=AdminVoidForm, template_name="invoices/
                 invoice.void_payment(request.user, invoice.payments_credits)
 
             invoice.void(user=request.user)
-            
+
             # cancel corresponding event registration
             if has_registration and form.cleaned_data.get('cancle_registration', False):
                 if obj.__class__.__name__ == 'Registration':
@@ -427,18 +427,18 @@ def void_invoice(request, id, form_class=AdminVoidForm, template_name="invoices/
                         registrant.save()
                     obj.canceled = True
                     obj.save()
-            
+
             # delete corresponding memberships
             if has_memberships and form.cleaned_data.get('delete_membership', False):
                 if obj.__class__.__name__ == 'MembershipSet':
                     for membership in obj.memberships():
                         if membership.status_detail != 'archive':
                             membership.delete()
-            
+
             EventLog.objects.log(instance=invoice)
-            
+
             return redirect(invoice.get_absolute_url())
-    
+
     return render_to_resp(request=request, template_name=template_name,
         context={'invoice': invoice, 'form':form})
 
@@ -661,7 +661,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
         form = form_class(request.POST, instance=invoice)
         if form.is_valid():
             invoice = form.save()
-            
+
             variance_changed = invoice.variance - original_variance
             invoice.total += variance_changed
             invoice.balance = invoice.total - invoice.payments_credits

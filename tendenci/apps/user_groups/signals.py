@@ -13,7 +13,7 @@ def create_notice_types(sender, **kwargs):
                                     _("Group Deleted"),
                                     _("A group has been deleted"),
                                     verbosity=verbosity)
-   
+
 
 def init_signals():
     from tendenci.apps.user_groups.models import Group

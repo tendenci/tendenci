@@ -3,11 +3,11 @@ from django.core.management.base import BaseCommand, CommandError
 class Command(BaseCommand):
     """
     Send forum digest (daily or weekly) to all forum subscribers who opted in.
-    
+
     Usage:
         For daily digest, schedule the command to run daily.
             python manage.py send_forum_digest --digest_type daily
-        
+
         For weekly digest, schedule the command to run weekly.
         python manage.py send_forum_digest --digest_type weekly
     """
@@ -24,4 +24,4 @@ class Command(BaseCommand):
             raise CommandError('Exiting.. no digest_type is specified.')
         for forum in Forum.objects.all():
             forum.send_digest_to_subscribers(digest_type)
-        
+

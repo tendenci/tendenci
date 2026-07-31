@@ -328,7 +328,7 @@ def return_ticketccstring_and_show_subscribe(user, ticket):
     strings_to_check.append(assignedto_username)
     if ticket.submitter_email:
         submitter_email = ticket.submitter_email.upper()
-        strings_to_check.append(submitter_email) 
+        strings_to_check.append(submitter_email)
     if strings_to_check.__contains__(username) or strings_to_check.__contains__(useremail):
         SHOW_SUBSCRIBE = False
 
@@ -1057,7 +1057,7 @@ def run_report(request, report):
             return HttpResponseRedirect(reverse('helpdesk_report_index'))
         if not (saved_query.shared or saved_query.user == request.user):
             return HttpResponseRedirect(reverse('helpdesk_report_index'))
-    
+
         #import pickle
         from base64 import b64decode
         #query_params = pickle.loads(b64decode(str(saved_query.query).encode()))

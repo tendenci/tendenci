@@ -39,7 +39,7 @@ def add(request, form_class=VideoFrontEndForm, template_name="videos/edit.html")
             if not request.user.is_superuser:
                 msg_string += _('... Pending on Admin approval.')
             messages.add_message(request, messages.SUCCESS, msg_string)
-            
+
             # send notification to administrator(s) and module recipient(s)
             recipients = get_notice_recipients('module', 'videos', 'videorecipients')
             if recipients and notification:

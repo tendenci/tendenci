@@ -64,7 +64,7 @@ def is_newsletter_relay_set():
     if connection == "django_ses.SESBackend":
         if hasattr(settings, 'AWS_SES_ACCESS_KEY_ID') and hasattr(settings, 'AWS_SES_SECRET_ACCESS_KEY'):
             return all([settings.AWS_SES_ACCESS_KEY_ID,
-                    settings.AWS_SES_SECRET_ACCESS_KEY]) 
+                    settings.AWS_SES_SECRET_ACCESS_KEY])
         return all([settings.AWS_ACCESS_KEY_ID,
                     settings.AWS_SECRET_ACCESS_KEY])
     else:
@@ -89,7 +89,7 @@ def newsletter_articles_list(request, articles_days, simplified):
             articles = articles.filter(Q(allow_anonymous_view=True) |
                                        Q(allow_user_view=True) |
                                        Q(allow_member_view=True))
-        else:  
+        else:
             articles = articles.filter(allow_anonymous_view=True)
         articles = articles.order_by("-release_dt")
         art_content = render_to_string(template_name='newsletters/articles_list.txt',
@@ -118,7 +118,7 @@ def newsletter_news_list(request, news_days, simplified):
             news = news.filter(Q(allow_anonymous_view=True) |
                                        Q(allow_user_view=True) |
                                        Q(allow_member_view=True))
-        else:  
+        else:
             news = news.filter(allow_anonymous_view=True)
         news = news.order_by("-release_dt")
         news_content = render_to_string(template_name='newsletters/news_list.txt',
@@ -149,7 +149,7 @@ def newsletter_pages_list(request, pages_days, simplified):
             pages = pages.filter(Q(allow_anonymous_view=True) |
                                        Q(allow_user_view=True) |
                                        Q(allow_member_view=True))
-        else:  
+        else:
             pages = pages.filter(allow_anonymous_view=True)
         pages = pages.order_by("-update_dt")
         page_content = render_to_string(template_name='newsletters/pages_list.txt',
@@ -179,7 +179,7 @@ def newsletter_jobs_list(request, jobs_days, simplified):
             jobs = jobs.filter(Q(allow_anonymous_view=True) |
                                        Q(allow_user_view=True) |
                                        Q(allow_member_view=True))
-        else:  
+        else:
             jobs = jobs.filter(allow_anonymous_view=True)
         jobs = jobs.order_by('status_detail','list_type','-post_dt')
         job_content = render_to_string(template_name='newsletters/jobs_list.txt',
@@ -204,15 +204,15 @@ def newsletter_events_list(request, start_dt, end_dt, simplified):
             start_dt__lt=end_dt,
             status_detail='active',
             status=True)
-        
-        
+
+
         if get_setting('module', 'newsletters', 'allowmembercontent'):
             events = events.filter(Q(allow_anonymous_view=True) |
                                        Q(allow_user_view=True) |
                                        Q(allow_member_view=True))
-        else:  
+        else:
             events = events.filter(allow_anonymous_view=True)
-            
+
         events = events.order_by('start_dt')
 
         event_content = render_to_string(
@@ -245,7 +245,7 @@ def newsletter_directories_list(request, directories_days, simplified):
             directories = directories.filter(Q(allow_anonymous_view=True) |
                                        Q(allow_user_view=True) |
                                        Q(allow_member_view=True))
-        else:  
+        else:
             directories = directories.filter(allow_anonymous_view=True)
         directories = directories.order_by('status_detail','list_type','-activation_dt')
         directories_content = render_to_string(template_name='newsletters/directories_list.txt',
@@ -275,7 +275,7 @@ def newsletter_resumes_list(request, resumes_days, simplified):
             resumes = resumes.filter(Q(allow_anonymous_view=True) |
                                        Q(allow_user_view=True) |
                                        Q(allow_member_view=True))
-        else:  
+        else:
             resumes = resumes.filter(allow_anonymous_view=True)
         resumes = resumes.order_by('status_detail','list_type','-activation_dt')
         resumes_content = render_to_string(template_name='newsletters/resumes_list.txt',

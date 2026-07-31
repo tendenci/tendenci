@@ -24,7 +24,7 @@ class Command(BaseCommand):
         if not get_setting('module', 'corporate_memberships', 'notificationson'):
             print('Notifications is off ... exiting')
             return
-            
+
         verbosity = 1
         if 'verbosity' in options:
             verbosity = options['verbosity']

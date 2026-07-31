@@ -33,7 +33,7 @@ from tendenci.apps.base.utils import escape_csv, Echo
 def iter_users(users_queryset):
     field_labels = ['id', 'first_name', 'last_name', 'username', 'email', 'member_number',
                     'is_staff', 'is_superuser', 'is_active', 'last_login']
-    
+
     writer = csv.DictWriter(Echo(), fieldnames=field_labels)
     # write headers - labels
     yield writer.writerow(dict(zip(field_labels, field_labels)))
@@ -186,7 +186,7 @@ def spawn_username(fn='', ln='', em=''):
 
     # only letters digits underscores dashes @ + .
     em = re.sub(r'[^\w@+.-]', '', em)
-    
+
     if em:
         return make_username_unique(em[:max_length].lower())
 
@@ -230,7 +230,7 @@ def get_member_reminders(user, view_self=False):
                             reminders += ((message, '/contact/', 'Request Access.'),)
                             continue
                         elif not get_setting('module', 'memberships', 'orgmembercanrenew'):
-                            # corp membership not expired yet, but individual not allowed to renew 
+                            # corp membership not expired yet, but individual not allowed to renew
                             message = _("Please contact your company administrator to renew your membership. " + \
                                         "If you are in charge of renewing the membership, click the link below to request access")
                             reminders += ((message, '/contact/', 'Request Access.'),)
@@ -299,7 +299,7 @@ def get_corp_uc_invoices(user, corp_profile_ids):
             invoices_list.append((corp_membership.donation.invoice.id,
                                   corp_membership.donation.invoice.guid,
                                   corp_membership.donation.invoice.balance))
-         
+
     return invoices_list
 
 

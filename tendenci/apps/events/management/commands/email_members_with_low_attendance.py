@@ -3,20 +3,20 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     """
-    Check and notify the members who have to come to the next conferences in order to maintain the active status. 
+    Check and notify the members who have to come to the next conferences in order to maintain the active status.
          - Members who have attended 2 of 4 or 1 of 3 of the most recent conferences.
          (with a certain event type).
          (If you have attended 2 for the last 4, you have to come to the next one.
          If you have attended 1 for the last 3, you have to come to the next one.)
          Exclude new members.
-         
-         The goal is to have members to attend  at least 3 conferences in the 5 year period. 
+
+         The goal is to have members to attend  at least 3 conferences in the 5 year period.
          Notify them if they have the potential to miss the next one.
-    
+
     Usage:
-    
+
         ./manage.py email_members_with_low_attendance --event_type_id=<event-type-id> --exclude_m_type_id --verbosity=2
-        
+
         Example:
         ./manage.py email_members_with_low_attendance --event_type_id=1 --exclude_m_type_id=4
     """
@@ -52,7 +52,7 @@ class Command(BaseCommand):
                                          ).order_by('-start_dt')
         event_ids_last_4 = events.values_list('id', flat=True)[:4] # latest 4 events
         event_ids_last_3 = events.values_list('id', flat=True)[:3] # latest 3 events
-        
+
         # membership type id to exclude
         exclude_m_type_id = options.get('exclude_m_type_id', None)
         if exclude_m_type_id:
@@ -66,11 +66,11 @@ class Command(BaseCommand):
         memberships = memberships.order_by('user__last_name')
 
         total_sent = 0
-        
+
         site_label = get_setting('site', 'global', 'sitedisplayname')
         site_url = get_setting('site', 'global', 'siteurl')
         reply_to = get_setting('site', 'global', 'admincontactemail').split(',')[0]
-        
+
         def is_requirements_met(membership, years_period):
             # years_period - either 4 or 3
             if years_period == 4:
@@ -99,7 +99,7 @@ class Command(BaseCommand):
                     cancel_dt__isnull=True).exists()
             return False
 
-        members_list = []   
+        members_list = []
         for membership in memberships:
             # 2 of 4 or 1 or 3
             if is_requirements_met(membership, 4) or is_requirements_met(membership, 3):
@@ -129,7 +129,7 @@ class Command(BaseCommand):
                     },
                     True,  # notice saved in db
                 )
-                total_sent += 1 
+                total_sent += 1
 
         if total_sent > 0 and reply_to:
             if total_sent >= 30:

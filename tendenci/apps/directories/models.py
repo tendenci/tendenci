@@ -96,7 +96,7 @@ class Directory(TendenciBaseModel):
     expiration_dt = models.DateTimeField(_('Expiration Date/Time'), null=True, blank=True)
     invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
     payment_method = models.CharField(_('Payment Method'), max_length=50, blank=True)
-    
+
     # social media links
     linkedin = models.URLField(_('LinkedIn'), blank=True, default='')
     facebook = models.URLField(_('Facebook'), blank=True, default='')
@@ -132,7 +132,7 @@ class Directory(TendenciBaseModel):
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
-    
+
     affiliates = models.ManyToManyField("Directory", through='Affiliateship')
 
     objects = DirectoryManager()
@@ -269,7 +269,7 @@ class Directory(TendenciBaseModel):
 
     def age(self):
         return datetime.now() - self.create_dt
-    
+
     def cats_list(self):
         items = []
         for cat in self.cats.all():
@@ -294,12 +294,12 @@ class Directory(TendenciBaseModel):
             return True
         else:
             return False
-        
+
     def has_membership_with(self, this_user):
         """
         Check if this directory is associated with a membership or a corporate membership
-        that this user owns. 
-        
+        that this user owns.
+
         Return ``True`` if this directory is associated with an active membership
         or corporate membership, and this_user owns the membership or is a representative
         of the corporate membership, or is the ``creator`` or ``owner`` of this directory.
@@ -323,10 +323,10 @@ class Directory(TendenciBaseModel):
     def get_owner_emails_list(self):
         """
         Returns a list of owner's email addresses.
-        
-        It's tricky because directory doesn't have a clear owner. 
+
+        It's tricky because directory doesn't have a clear owner.
         Since the owner field can be changed to whoever last edited, we'll
-        check the creator, the email address field, member or reps if 
+        check the creator, the email address field, member or reps if
         it is created from memberships and corp memberships, respectively.
         """
         emails_list = []
@@ -334,7 +334,7 @@ class Directory(TendenciBaseModel):
         if self.creator and validate_email(self.creator.email):
             emails_list.append(self.creator.email)
 
-        # the email field  
+        # the email field
         if validate_email(self.email):
             emails_list.append(self.email)
 
@@ -394,7 +394,7 @@ class Directory(TendenciBaseModel):
         if membership:
             return membership.expire_dt
 
-        return self.activation_dt + timedelta(days=self.requested_duration)    
+        return self.activation_dt + timedelta(days=self.requested_duration)
 
     def is_pending(self):
         return self.status_detail in ('paid - pending approval', 'pending')
@@ -411,12 +411,12 @@ class Directory(TendenciBaseModel):
         if hasattr(self, 'corpprofile'):
             if self.corpprofile.reps.filter(user__in=[user_this]):
                 return True
-        
+
         # member
         membership = self.get_membership()
         if membership and membership.user == user_this:
             return True
-        
+
         return False
 
     @staticmethod
@@ -440,7 +440,7 @@ class Directory(TendenciBaseModel):
         affliated_cats = self.get_affliated_cats()
         if directory_from_cat:
             return directory_from_cat in affliated_cats
-        
+
         if directory_from:
             for cat in directory_from.cats.all():
                 if cat in affliated_cats:
@@ -472,7 +472,7 @@ class Directory(TendenciBaseModel):
 
     def get_list_affiliates(self):
         """
-        Return a sorted list of list of affiliate directories, 
+        Return a sorted list of list of affiliate directories,
         grouped by category.
         ex: [(category_name, [d1, d2, ..]),...]
         """
@@ -492,8 +492,8 @@ class Directory(TendenciBaseModel):
 
     def get_list_parent_directories(self):
         """
-        Return a sorted list of list of parent directories, 
-        grouped by category, 
+        Return a sorted list of list of parent directories,
+        grouped by category,
         ex: [(category_name, [d1, d2, ..]),...]
         """
         parents_dict = {}
@@ -514,10 +514,10 @@ class Directory(TendenciBaseModel):
     def allow_associate_by(self, user_this):
         """
         Check if user_this is allowed to submit affiliate requests.
-        
-        If the connection is limited to the allowed connection, 
+
+        If the connection is limited to the allowed connection,
         this user will need to have a valid membership with the
-        membership type is in the allowed types. 
+        membership type is in the allowed types.
         """
         affliated_cats = self.get_affliated_cats()
 
@@ -533,7 +533,7 @@ class Directory(TendenciBaseModel):
     def allow_approve_affiliations_by(self, user_this):
         """
         Check if user_this is allowed to approve affiliate requests.
-        
+
         Superuser or the directory owner can approve.
         The directory owners include creator, owner, and associated corp reps.
         """
@@ -557,7 +557,7 @@ class Directory(TendenciBaseModel):
     def allow_reject_affiliations_by(self, user_this):
         """
         Check if user_this is allowed to reject affiliate requests.
-        
+
         Superuser or the directory owner can reject.
         The directory owners include creator, owner, and associated corp reps.
         """
@@ -576,7 +576,7 @@ class Affiliateship(models.Model):
     creator = models.ForeignKey(User, null=True, default=None,
                                 on_delete=models.SET_NULL,
                                 editable=False)
- 
+
     class Meta:
         unique_together = ('directory', 'affiliate', 'connected_as')
         verbose_name = _("Directory Affiliateship")

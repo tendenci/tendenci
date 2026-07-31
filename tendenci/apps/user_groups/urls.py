@@ -45,6 +45,6 @@ urlpatterns = [
     re_path(r'^%s/(?P<group_slug>[\w\-\/]+)/newsletters/subscribe/interactive/$' % urlpath, views.subscribe_to_newsletter_interactive, name='group.newsletter_subscribe_interactive'),
     re_path(r'^%s/(?P<group_slug>[\w\-\/]+)/newsletters/unsubscribe/interactive/$' % urlpath, views.unsubscribe_to_newsletter_interactive, name='group.newsletter_unsubscribe_interactive'),
     re_path(r'^%s/(?P<group_slug>[\w\-\/]+)/(?P<newsletter_key>[-.\w]+)/newsletters/unsubscribe/noninteractive/$' % urlpath, views.unsubscribe_to_newsletter_noninteractive, name='group.newsletter_unsubscribe_noninteractive'),
-    
+
     re_path(r'^%s/(?P<group_slug>[\w\-\/]+)/$' % urlpath, views.group_detail, name='group.detail'),
 ]

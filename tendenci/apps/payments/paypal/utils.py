@@ -115,7 +115,7 @@ def verify_no_fraud(response_d, payment):
     # Does receiver_email match?
     receiver_email = response_d.get('receiver_email')
     if not receiver_email:
-        return False  
+        return False
     if receiver_email.lower() != settings.PAYPAL_MERCHANT_LOGIN.lower():
         return False
 

@@ -14,7 +14,7 @@ class DonationAdmin(admin.ModelAdmin):
                    )
     autocomplete_fields = ('user',)
     form = DonationAdminForm
-    
+
     @mark_safe
     def show_user(self, instance):
         if instance.user:

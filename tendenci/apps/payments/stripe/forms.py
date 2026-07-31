@@ -22,7 +22,7 @@ class StripeAccountForm(forms.ModelForm):
     class Meta:
         model = StripeAccount
         fields = ('stripe_user_id', 'scope',
-                  'account_name', 'email', 
+                  'account_name', 'email',
                   'entity',
                 'default_currency',
                 'status_detail')

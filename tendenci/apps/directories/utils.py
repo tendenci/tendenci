@@ -109,14 +109,14 @@ def directory_set_inv_payment(user, directory, pricing):
             amount = get_directory_price(user, directory, pricing)
             inv.estimate = True
             inv.status_detail = 'estimate'
-            
+
             if pricing.include_tax:
                 inv.assign_tax([(amount, pricing.tax_rate)], user)
 
             inv.subtotal = amount
             inv.total = amount + inv.tax + inv.tax_2
             inv.balance = inv.total
-            
+
 
             if user and not user.is_anonymous:
                 inv.set_creator(user)

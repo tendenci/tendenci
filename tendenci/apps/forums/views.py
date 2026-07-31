@@ -141,7 +141,7 @@ class ForumView(IsEnabledMixin, RedirectToLoginMixin, PaginatorMixin, generic.Li
         if self.request.user.is_authenticated:
             try:
                 ctx['subscription'] = ForumSubscription.objects.get(
-                    user=self.request.user, 
+                    user=self.request.user,
                     forum=self.forum
                 )
             except ForumSubscription.DoesNotExist:
@@ -226,7 +226,7 @@ class ForumSubscriptionView(IsEnabledMixin, LoginRequiredMixin, generic.FormView
         self.forum = get_object_or_404(Forum.objects.all(), pk=self.kwargs['pk'])
         try:
             self.forum_subscription = ForumSubscription.objects.get(
-                user=self.request.user, 
+                user=self.request.user,
                 forum=self.forum
             )
         except ForumSubscription.DoesNotExist:

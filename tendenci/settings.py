@@ -156,7 +156,7 @@ TEMPLATES = [
 def disable_template_cache():  # For use in site-specific settings.py
     if TEMPLATES[0]['OPTIONS']['loaders'][0][0] == 'tendenci.apps.theme.template_loaders.CachedLoader':
         TEMPLATES[0]['OPTIONS']['loaders'] = TEMPLATES[0]['OPTIONS']['loaders'][0][1]
-        
+
 # The form renderer does not use the TEMPLATES setting by default.  Configure it to use the
 # TEMPLATES setting so that form widget templates can be overridden in themes.
 # This requires either adding 'django.forms' to INSTALLED_APPS or adding
@@ -591,7 +591,7 @@ NEWSLETTER_SCHEDULE_ENABLED = False
 
 # If True, it allows members to send emails to corporate membership reps
 # (default to False).
-# Why here not in site settings? Because we don't want this feature to be 
+# Why here not in site settings? Because we don't want this feature to be
 # turned on lightly. Extra caution is needed.
 BROADCAST_EMAIL_ENABLED = False
 
@@ -603,7 +603,7 @@ PYBB_MARKUP = 'markdown'
 PYBB_NICE_URL = True
 
 # If forum digest is enabled, make sure to set up 2 cron jobs
-# to run management command send_forum_digest daily and weekly. 
+# to run management command send_forum_digest daily and weekly.
 ENABLE_FORUM_DIGEST = False
 
 # HelpDesk App
@@ -671,7 +671,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'tinymce_version': '6.8.2',
     'theme': "silver",
     'plugins': ["image", 'advlist', 'autolink', 'lists', 'link', 'charmap',
-                'preview', 'anchor', 'searchreplace', 'visualblocks', 'code',  
+                'preview', 'anchor', 'searchreplace', 'visualblocks', 'code',
                  'emoticons', 'quickbars', 'importcss',
                 'insertdatetime', 'media', 'table', 'fullscreen',],
     'toolbar': 'code undo redo | bold italic underline | forecolor backcolor emoticons | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | fullscreen',
@@ -759,7 +759,7 @@ STRIPE_API_VERSION = '2019-08-14'
 
 # List of merchant accounts you can set up.
 # If you want to set up multiple payment methods (gateways) for memberships,
-# the machine name of the payment methods specified should be in this list. 
+# the machine name of the payment methods specified should be in this list.
 MERCHANT_ACCOUNT_NAMES = ('stripe', 'authorizenet', 'firstdatae4', 'paypal')
 
 

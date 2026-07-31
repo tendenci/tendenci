@@ -6,7 +6,7 @@ from django.db import migrations
 def migrate_categories_for_templates():
     """
     Migrate categories for templates pulled down to the site.
-    
+
     directories/meta.html
     ============================================
     Replace:
@@ -29,7 +29,7 @@ def migrate_categories_for_templates():
         {% if directory_cats %}
             <li>
                 <ul class="list-inline">
-                    <li><strong>{% trans "Category:" %}</strong> 
+                    <li><strong>{% trans "Category:" %}</strong>
                        {% for cat in directory_cats %}
                        <a href="{% url 'directories' %}?cat={{ cat.pk }}">{{ cat.name }}</a>{% if not forloop.last %}, {% endif %}
                        {% endfor %}
@@ -37,7 +37,7 @@ def migrate_categories_for_templates():
                      {% with directory.sub_cats.all as directory_sub_cats %}
                      {% if directory_sub_cats %}
                         <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> 
+                        <li><strong>{% trans "Subcategory:" %}</strong>
                            {% for sub_cat in directory_sub_cats %}
                            <a href="{% url 'directories' %}?sub_cat={{ sub_cat.pk }}">{{ sub_cat.name }}</a>{% if not forloop.last %}, {% endif %}
                            {% endfor %}
@@ -48,7 +48,7 @@ def migrate_categories_for_templates():
             </li>
         {% endif %}
     {% endwith %}
-    
+
     """
     import re
     from tendenci.apps.theme.utils import get_theme_root
@@ -60,12 +60,12 @@ def migrate_categories_for_templates():
         <li>
            {% for cat, sub_cats in cats_list %}
                <ul class="list-inline">
-                <li><strong>{% trans "Category:" %}</strong> 
+                <li><strong>{% trans "Category:" %}</strong>
                    <a href="{% url 'directories' %}?cat={{ cat.pk }}">{{ cat.name }}</a>
                  </li>
                  {% if sub_cats %}
                     <li>|</li>
-                    <li><strong>{% trans "Subcategory:" %}</strong> 
+                    <li><strong>{% trans "Subcategory:" %}</strong>
                        {% for sub_cat in sub_cats %}
                        <a href="{% url 'directories' %}?sub_cat={{ sub_cat.pk }}">{{ sub_cat.name }}</a>{% if not forloop.last %}, {% endif %}
                        {% endfor %}
@@ -82,9 +82,9 @@ def migrate_categories_for_templates():
         print('Updating categories for file directories/meta.html' )
         with open(file_path) as f:
             content = f.read()
-    
+
             content = re.sub(p, replace_with, content)
-            
+
         with open(file_path, 'w') as f:
             f.write(content)
 
@@ -95,7 +95,7 @@ def cat_to_cats(apps, schema_editor):
         (from ForeignKey to ManyToManyField)
     """
     Directory = apps.get_model('directories', 'Directory')
- 
+
     for directory in Directory.objects.all():
         if directory.cat:
             directory.cats.add(directory.cat)

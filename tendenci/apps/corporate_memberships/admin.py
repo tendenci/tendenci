@@ -814,13 +814,13 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
     def iter_reps(self, corp_reps):
         import csv
         from tendenci.apps.base.utils import Echo
-        field_names = ['ID', 'Corp Profile', 'Rep Name', 'Rep Email', 
+        field_names = ['ID', 'Corp Profile', 'Rep Name', 'Rep Email',
                        'Is dues rep?', 'Is member rep?',
                        'Expiration Date', 'Status detail']
         writer = csv.DictWriter(Echo(), fieldnames=field_names)
         # write headers
         yield writer.writerow(dict(zip(field_names, field_names)))
-    
+
         for corp_rep in corp_reps:
             rep_name = corp_rep.user.get_full_name()
             if not rep_name:
@@ -842,13 +842,13 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
         """
         import time as ttime
         from django.http import StreamingHttpResponse
-    
+
         response = StreamingHttpResponse(
             streaming_content=(self.iter_reps(queryset)),
             content_type='text/csv',)
         response['Content-Disposition'] = f'attachment;filename=corp_reps_export_{ttime.time()}.csv'
         return response
-    
+
     export_selected.short_description = 'Export selected'
 
     def get_queryset(self, request):
@@ -888,7 +888,7 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
             return corp_membership.status_detail.capitalize()
         return ''
     status_detail.short_description = 'Status Detail'
-    
+
     def expiration_date(self, instance):
         corp_membership = instance.corp_profile.corp_membership
         if not corp_membership or not corp_membership.expiration_dt:

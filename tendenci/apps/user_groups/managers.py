@@ -98,7 +98,7 @@ class GroupManager(TendenciBaseManager):
             owner=kwargs.get('owner', None),
             owner_username=kwargs.get('owner_username', ''),
             entity=kwargs.get('entity', Entity.objects.first()),
-        )      
+        )
 
 
 class OldGroupManager(Manager):

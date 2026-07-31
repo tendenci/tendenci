@@ -171,7 +171,7 @@ class EmailChapterMemberForm(FormControlWidgetMixin, forms.ModelForm):
         for token in self.VALID_TOKENS:
             help_text += f'<li>{{{{ {token} }}}}</li>'
         help_text += "</ul>"
-        
+
     def clean_body(self):
         body = self.cleaned_data['body']
         err_msg = ''
@@ -593,10 +593,10 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
         self.chapter = chapter
         self.app_field_objs = app_field_objs
         super().__init__(*args, **kwargs)
-        
+
         from tendenci.apps.memberships.forms import assign_fields
         assign_fields(self, self.app_field_objs)
-        
+
         # handle file upload on edit
         if self.edit_mode:
             for field_obj in  self.app_field_objs:
@@ -698,23 +698,23 @@ class ChapterMembershipForm(FormControlWidgetMixin, forms.ModelForm):
             else:
                 chapter_membership.user = self.request_user
             chapter_membership.renewal = self.is_renewal
-            
+
             if self.renew_from_id:
                 chapter_membership.renew_from_id = self.renew_from_id
             chapter_membership.app = self.app
             chapter_membership.chapter = self.chapter
             chapter_membership.save()
-    
+
             chapter_membership.set_member_number()
             chapter_membership.save()
         else:
             chapter_membership.save()
-            
+
         for field_obj in  self.app_field_objs:
             field_key = field_obj.field_name
-            
+
             if field_key in self.fields and self.fields[field_key].widget.needs_multipart_form:
-                
+
                 # handle file upload
                 # save file to the value field of ChapterMembershipFile
                 # and assign the id of ChapterMembershipFile to the value of the field
@@ -992,7 +992,7 @@ class UserModelChoiceField(forms.ModelChoiceField):
 
 
 class OfficerBaseFormSet(BaseInlineFormSet):
-    def __init__(self,  *args, **kwargs): 
+    def __init__(self,  *args, **kwargs):
         self.chapter = kwargs.pop("chapter", None)
         super().__init__(*args, **kwargs)
 
@@ -1041,7 +1041,7 @@ class ChapterSearchForm(FormControlWidgetMixin, forms.Form):
             self.fields['region'].choices = [('', _('All Regions'))] + [(region.id, region.region_name) for region in regions]
         else:
             del self.fields['region']
-            
+
         if Chapter.objects.exclude(state='').exists():
             states = Chapter.objects.exclude(state='').values_list('state', flat=True).distinct()
             self.fields['state'].choices = [('', _('All States'))] + [(state, state) for state in states]
@@ -1099,7 +1099,7 @@ class ChapterMembershipUploadForm(FormControlWidgetMixin, forms.ModelForm):
 
         # check for valid key
         key = cleaned_data['key']
-        
+
 
         key_list = [k for k in key.split(',')]
         missing_columns = [item for item in key_list if item not in header_row]

@@ -66,9 +66,9 @@ class AuthorizeView(View):
         if 'state' in request.GET and 'code' in request.GET and \
             request.GET['state'] == request.session.get('oauth2_login_state'):
             del  request.session['oauth2_login_state']
-    
+
             token = myclient.authorize_access_token(request)
-            
+
             #user = get_user(user_info, create=True)
             user = auth.authenticate(request, myclient=myclient, token=token)
             if user:
@@ -86,12 +86,12 @@ class AuthorizeView(View):
                 # Set session to expire in session_expires_in
                 request.session.set_expiry(session_expires_in)
                 EventLog.objects.log(instance=request.user, application="oauth2")
-    
+
                 redirect_to = request.session.pop('next', settings.LOGIN_REDIRECT_URL)
 
                 return HttpResponseRedirect(redirect_to)
-    
-        return HttpResponseRedirect(settings.LOGIN_URL) 
+
+        return HttpResponseRedirect(settings.LOGIN_URL)
 
 
 class Oauth2LogoutView(LogoutView):
@@ -99,7 +99,7 @@ class Oauth2LogoutView(LogoutView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             auth_logout(request)
-            
+
             if hasattr(settings, 'OAUTH2_LOGOUT_REDIRECT_URL') and settings.OAUTH2_LOGOUT_REDIRECT_URL:
                 # Log out from oauth2 logout endpoint provider
                 next_page = '{url}?client_id={client_id}&logout_uri={site_url}{logout_url}'.format(
@@ -109,4 +109,4 @@ class Oauth2LogoutView(LogoutView):
                                 logout_url=reverse('oauth2_logout'))
 
                 return HttpResponseRedirect(next_page)
-        return super().dispatch(request, *args, **kwargs)    
+        return super().dispatch(request, *args, **kwargs)

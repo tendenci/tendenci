@@ -118,7 +118,7 @@ class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
             self.fields['industry'].widget.attrs.update({'class': 'form-control'})
         else:
             del self.fields['industry']
-            
+
 #         for field in self.fields:
 #             if field not in ['search_criteria', 'search_text', 'search_method', 'member_only']:
 #                 self.fields[field].widget.attrs.update({'class': 'form-control'})
@@ -324,7 +324,7 @@ class ProfileForm(TendenciBaseForm):
 
             if self.user_current.profile.is_superuser and self.user_current == self.user_this:
                 self.fields['security_level'].choices = (('superuser',_('Superuser')),)
-            
+
             if self.user_current == self.user_this:
                 del self.fields['interactive']
 
@@ -797,7 +797,7 @@ class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
                 self.password_help_text = self.fields['new_password1'].help_text
             else:
                 self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
-            
+
         self.fields['new_password1'].help_text = self.password_help_text
 
     def clean_new_password1(self):

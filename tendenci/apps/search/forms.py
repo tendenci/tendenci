@@ -77,7 +77,7 @@ class SearchForm(forms.Form):
         for m in self.registered_models:
             choices.append(("{}.{}".format(m._meta.app_label, m._meta.model_name),
                             capfirst(str(m._meta.verbose_name_plural))))
-    
+
         return sorted(choices, key=lambda x: x[1])
 
     def search(self, order_by='newest'):
@@ -87,10 +87,10 @@ class SearchForm(forms.Form):
             query = self.cleaned_data['q']
         else:
             query = ''
-        
+
         if not query:
             return sqs.none()
-        
+
         if not order_by:
             order_by = 'newest'
 

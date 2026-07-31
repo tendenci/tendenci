@@ -174,7 +174,7 @@ class OembedlyCache(models.Model):
                             height=height,
                             url=get_embed_ready_url(url))
         else:
-        
+
             try:
                 instance = OembedlyCache.objects.filter(url=url, width=width, height=height)[0]
                 code = instance.code
@@ -182,7 +182,7 @@ class OembedlyCache(models.Model):
                 if 'http:' in code:
                     code = code.replace('http:', 'https:')
                 code = code.replace('src="//cdn.embedly.com', 'src="https://cdn.embedly.com')
-    
+
                 instance.code = code
                 instance.save()
             except IndexError:
@@ -191,7 +191,7 @@ class OembedlyCache(models.Model):
                     result = client.oembed(url, format='json', maxwidth=width, maxheight=height)
                     thumbnail = result['thumbnail_url']
                     code = result['html']
-    
+
                     if 'http:' in code:
                         code = code.replace('http:', 'https:')
                     code = code.replace('src="//cdn.embedly.com', 'src="https://cdn.embedly.com')
@@ -210,11 +210,11 @@ class OembedlyCache(models.Model):
                     return 'Unable to embed code for <a href="{}">{}</a><br>Error: {}'.format(url, url, e)
                 obj = OembedlyCache(url=url, width=width, height=height, code=code, thumbnail=thumbnail)
                 obj.save()
-    
+
             # Strip the obsolete attributes from iframe to avoid html validation errors
             code = code.replace('scrolling="no" ', '')
             code = code.replace('frameborder="0" ', '')
-    
+
             return code
 
 def get_embed_ready_url(url):

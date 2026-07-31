@@ -48,7 +48,7 @@ class Donation(models.Model):
     from_object = GenericForeignKey('object_type', 'object_id')
 
     objects = DonationManager()
-    
+
     def __str__(self):
         return f'Donation {tcurrency(self.donation_amount)} by {self.first_name} {self.last_name}'
 
@@ -63,7 +63,7 @@ class Donation(models.Model):
             field_name = field.name
             if getattr(self, field_name) is None and field.null and field.get_internal_type() in ['CharField', 'CharField']:
                 setattr(self,field_name, field.get_default())
-            
+
         if not self.id:
             self.guid = str(uuid.uuid4())
             if user and user.id:
@@ -81,7 +81,7 @@ class Donation(models.Model):
         The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
-        label = get_setting('module', 'donations', 'label') 
+        label = get_setting('module', 'donations', 'label')
         description = f'Invoice {inv.id} Payment for {label} ({inv.object_id})'
         if self.from_object:
             description += f" from {str(self.from_object)}"
@@ -173,10 +173,10 @@ class Donation(models.Model):
         inv.ship_date = timezone.now()
         inv.message = 'Thank You.'
         inv.status = True
-        
+
         if self.donate_to_entity:
             inv.entity = self.donate_to_entity
-    
+
         inv.estimate = True
         inv.status_detail = 'tendered'
         inv.object_type = ContentType.objects.get(app_label=self._meta.app_label,
@@ -185,11 +185,11 @@ class Donation(models.Model):
         inv.subtotal = self.donation_amount
         inv.total = self.donation_amount
         inv.balance = self.donation_amount
-    
+
         inv.save(user)
         self.invoice = inv
         self.save()
-    
+
         return inv
 
     @property

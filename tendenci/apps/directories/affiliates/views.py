@@ -40,7 +40,7 @@ def request_associate(request, to_directory_id, form_class=RequestAssociateForm,
     warning_msg_string = ''
     directory_initial = None
     initial_opts = None
-    # get a list of directories that can be connected by this user 
+    # get a list of directories that can be connected by this user
     directories = Directory.get_my_directories_filter(request.user, my_directories_only=True
                                     ).filter(status_detail='active').filter(cats__in=allowed_affliated_cats
                                                                             ).distinct()
@@ -68,7 +68,7 @@ def request_associate(request, to_directory_id, form_class=RequestAssociateForm,
         initial_opts = {'from_directory_url': f'{site_url}{directory_initial.get_absolute_url()}'}
         if directory_initial.cats.all().exists():
             initial_opts.update({'request_as': directory_initial.cats.all()[0]})
-    
+
     request_form = form_class(request.POST or None, request=request,
                               to_directory=to_directory, initial=initial_opts)
 
@@ -84,7 +84,7 @@ def request_associate(request, to_directory_id, form_class=RequestAssociateForm,
             msg_string = _('Successfully submitted the affiliate request to the owner of %s') \
                     % str(request_email.affiliate_request.to_directory)
             messages.add_message(request, messages.SUCCESS, msg_string)
-            
+
             return redirect("directory.search")
 
     return render_to_resp(request=request, template_name=template_name,
@@ -125,7 +125,7 @@ def approve(request, affiliate_request_id):
                 affiliate=from_directory,
                 connected_as=request_as,
                 creator=request.user)
-    
+
             # Email to the submitter of the affiliate request
             site_display_name = get_setting('site', 'global', 'sitedisplayname')
             site_url = get_setting('site', 'global', 'siteurl')
@@ -145,14 +145,14 @@ def approve(request, affiliate_request_id):
             description = _('Approved affiliate request from {from_directory} to {to_directory}.').format(
                     from_directory=from_directory, to_directory=directory)
             EventLog.objects.log(instance=affiliate_request, description=description)
-    
+
             msg_string = _(f'Successfully accepted the affiliate request from {str(from_directory)} as {request_as}')
 
             messages.add_message(request, messages.SUCCESS, msg_string)
-        
+
         # Remove the request
         affiliate_request.delete()
-        
+
         if 'ajax' in request.POST:
             return HttpResponse('Ok')
 
@@ -179,7 +179,7 @@ def reject(request, affiliate_request_id):
     if request.method in ["POST"]:
         from_directory = affiliate_request.from_directory
         if not Affiliateship.objects.filter(directory=directory, affiliate=from_directory).exists():
-    
+
             # Email to the submitter of the affiliate request rejected
             #site_display_name = get_setting('site', 'global', 'sitedisplayname')
             #site_url = get_setting('site', 'global', 'siteurl')
@@ -193,7 +193,7 @@ def reject(request, affiliate_request_id):
             #    'reply_to': request.user.email,
             #}
 
-            # Let's not send a decline message. If the company wants to reach out 
+            # Let's not send a decline message. If the company wants to reach out
             # they have the individual's contact info and they can do so directly.
             #notification.send_emails([affiliate_request.creator.email],
             #        'affiliate_rejected_to_submitter', params)
@@ -209,10 +209,10 @@ def reject(request, affiliate_request_id):
             msg_string = _('%s us already associated.') \
                     % str(from_directory)
         messages.add_message(request, messages.SUCCESS, msg_string)
-        
+
         # Remove the request
         affiliate_request.delete()
-        
+
         if 'ajax' in request.POST:
             return HttpResponse('Ok')
 
@@ -236,7 +236,7 @@ def cancel(request, affiliate_request_id):
     if not any([request.user.is_superuser,
                 from_directory.is_owner(request.user)]):
         raise Http403
-    
+
     if request.method in ["POST"]:
         # log an event
         description = _('Canceled affiliate request from {from_directory} to {to_directory}.').format(
@@ -260,7 +260,7 @@ def cancel(request, affiliate_request_id):
 @login_required
 def delete_affiliate(request, directory_id, affiliate_id):
     """
-    Delete an affiliate. 
+    Delete an affiliate.
     """
     if not get_setting('module', 'directories', 'affiliates_enabled'):
         raise Http404
@@ -268,12 +268,12 @@ def delete_affiliate(request, directory_id, affiliate_id):
     # Get the affiliate_request and directory
     directory = get_object_or_404(Directory, id=directory_id)
     from_directory = get_object_or_404(Directory, id=affiliate_id)
-    
+
     # Check user permission
     if not any([request.user.is_superuser,
                 directory.is_owner(request.user)]):
         raise Http403
-    
+
     if request.method in ["POST"]:
         # log an event
         description = _('Deleted the affiliate {from_directory} from {to_directory}.').format(
@@ -283,7 +283,7 @@ def delete_affiliate(request, directory_id, affiliate_id):
         msg_string = _('Successfully removed the affiliate %s') \
                     % str(from_directory)
         messages.add_message(request, messages.SUCCESS, msg_string)
-    
+
         # delete the request
         directory.affiliates.remove(from_directory)
 
@@ -297,16 +297,16 @@ def delete_affiliate(request, directory_id, affiliate_id):
 def requests_list(request, directory_id, template_name="directories/affiliates/requests_list.html"):
     if not get_setting('module', 'directories', 'affiliates_enabled'):
         raise Http404
-    
+
     directory = get_object_or_404(Directory, pk=directory_id)
 
     # Check user permission
     if not any([request.user.is_superuser,
                 directory.is_owner(request.user)]):
         raise Http403
-    
+
     affiliate_requests = AffiliateRequest.objects.filter(to_directory=directory)
-    
+
     return render_to_resp(request=request, template_name=template_name,
         context={
             'directory': directory,

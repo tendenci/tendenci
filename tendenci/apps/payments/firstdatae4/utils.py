@@ -94,14 +94,14 @@ def firstdatae4_thankyou_processing(request, response_d, **kwargs):
             api_login_id = settings.MERCHANT_LOGIN
             t_id = response_d.get('x_trans_id', '')
             amount = response_d.get('x_amount', 0)
-    
+
             s = '{}{}{}{}'.format(response_key, api_login_id, t_id, amount)
             my_md5_hash = hashlib.md5(s.encode()).hexdigest()
-    
+
             #if settings.FIRSTDATA_USE_RELAY_RESPONSE:
             if my_md5_hash.lower() != md5_hash.lower():
                 raise Http404
-    
+
             payment_update_firstdatae4(request, response_d, payment)
             payment_processing_object_updates(request, payment)
 
@@ -110,7 +110,7 @@ def firstdatae4_thankyou_processing(request, response_d, **kwargs):
 
             # send payment recipients notification
             send_payment_notice(request, payment)
-    
+
         return payment
 
 def payment_update_firstdatae4(request, response_d, payment, **kwargs):

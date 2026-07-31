@@ -304,7 +304,7 @@ def photo_original(request, id):
     # check permissions
     if not has_perm(request.user, 'photos.view_image', photo):
         raise Http403
-    
+
     # get image extension
     try:
         ext = photo.image.file.name.split('.')[-1]
@@ -315,7 +315,7 @@ def photo_original(request, id):
     #ext = 'png'
     if ext in ["jpg", 'JPG']:
         ext = "jpeg"
-    
+
     if photo.exif_data and photo.exif_data.get('Orientation', 1) in (3, 6, 8):
         img = PILImage.open(photo.image)
         # rotate image if needed

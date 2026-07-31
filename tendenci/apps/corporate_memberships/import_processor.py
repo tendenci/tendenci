@@ -99,7 +99,7 @@ class CorpMembershipImportProcessor:
                         id=int(cmemb_data['directory']))[:1] or [None]
                 except ValueError:
                     cmemb_data['directory'] = None
-    
+
     def clean_corporate_membership_type(self, cmemb_data, **kwargs):
         """
         Ensure we have a valid corporate membership type.

@@ -17,7 +17,7 @@ class Command(BaseCommand):
         from tendenci.apps.exports.models import Export
 
         directory_cleanup('export', 7)
-        
+
         # delete old exports from db
         for export in Export.objects.filter(date_created__lt=(timezone.now() - timedelta(days=7))):
             export.delete()

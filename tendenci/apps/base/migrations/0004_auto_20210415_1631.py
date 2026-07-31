@@ -9,7 +9,7 @@ def update_jquery_3_6_in_theme(apps, schema_editor):
     """
     import os
     from tendenci.apps.theme.utils import get_theme_root
-    
+
     theme_dir = get_theme_root()
     # Check base.html
     file_path = '{}/templates/base.html'.format(theme_dir)
@@ -21,12 +21,12 @@ def update_jquery_3_6_in_theme(apps, schema_editor):
             str_to_replace = '//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'
             if content.find(str_find) != -1:
                 content = content.replace(str_find, str_to_replace)
-                
+
                 str_find = 'https://code.jquery.com/jquery-migrate-3.1.0.min.js'
                 str_to_replace = 'https://code.jquery.com/jquery-migrate-3.3.2.min.js'
                 content = content.replace(str_find, str_to_replace)
-                
-                file_changed = True 
+
+                file_changed = True
 
         if file_changed:
             with open(file_path, 'w') as f:

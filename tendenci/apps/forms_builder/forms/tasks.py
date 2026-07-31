@@ -147,7 +147,7 @@ class FormEntriesExportTask(celery.Task):
             zip = zipfile.ZipFile(temp_zip, 'w', compression=zipfile.ZIP_DEFLATED)
         else:
             csv_writer = csv.writer(response, delimiter=',')
-            
+
         form_entries_to_csv_writer(csv_writer, form_instance)
 
         # handle files

@@ -50,7 +50,7 @@ def details(request, slug=None, template_name="directories/view.html"):
     if has_view_perm(request.user, 'directories.view_directory', directory) \
          or directory.has_membership_with(request.user):
         EventLog.objects.log(instance=directory)
-        
+
         if get_setting('module', 'directories', 'affiliates_enabled'):
             affiliates_list = directory.get_list_affiliates()
             parents_list = directory.get_list_parent_directories()
@@ -68,7 +68,7 @@ def details(request, slug=None, template_name="directories/view.html"):
                 if corp_profile:
                     # individual memberships - only the first 50
                     memberships = corp_profile.get_active_indiv_memberships()[:50]
-        
+
         return render_to_resp(request=request, template_name=template_name,
             context={'directory': directory,
                      'affiliates_list': affiliates_list,
@@ -317,7 +317,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                 except OSError:
                     pass
                     #directory.logo = None
-            
+
             # set the expiration date in case activation date and/or requested_duration have changed
             if directory.activation_dt and directory.requested_duration:
                 directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
@@ -560,10 +560,10 @@ def pending(request, template_name="directories/pending.html"):
 #         directory.status_detail = 'active'
 #         directory.allow_anonymous_view = True
 #         directory.save()
-# 
+#
 #         msg_string = 'Successfully published %s' % directory
 #         messages.add_message(request, messages.SUCCESS, _(msg_string))
-# 
+#
 #     return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
 
 
@@ -603,7 +603,7 @@ def approve(request, id, template_name="directories/approve.html"):
         # send email notification to user
         recipients = directory.get_owner_emails_list()
         if recipients:
-            notification.send_emails(recipients, 
+            notification.send_emails(recipients,
                 'directory_approved_user_notice', {
                         'object': directory,
                         'request': request,})

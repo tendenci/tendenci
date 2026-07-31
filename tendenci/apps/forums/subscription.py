@@ -48,7 +48,7 @@ def get_email_headers(sender_display_user):
     sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
     site_name = get_setting('site', 'global', 'sitedisplayname')
     if sender_display_user:
-        sender_display = f'{sender_display_user.get_full_name()} via {site_name} Forums' 
+        sender_display = f'{sender_display_user.get_full_name()} via {site_name} Forums'
     else:
         sender_display = site_name
     headers['From'] = f'{sender_display} <{sender}>'
@@ -68,9 +68,9 @@ def notify_forum_subscribers(topic):
             'site_url': get_setting('site', 'global', 'siteurl'),
             'site_name': get_setting('site', 'global', 'sitedisplayname')
         }
-        
+
         headers = get_email_headers(topic.user)
-        
+
         send_notification(users, 'forum_subscription_email', headers, context)
     subscriptions = qs.filter(type=ForumSubscription.TYPE_SUBSCRIBE)
     if subscriptions.count():

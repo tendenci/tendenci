@@ -291,7 +291,7 @@ class ForumSubscriptionForm(forms.Form):
         type_choices = list(ForumSubscription.TYPE_CHOICES)
         if instance :
             type_choices.append((
-                'unsubscribe', 
+                'unsubscribe',
                 _('be unsubscribe from this forum')
             ))
         digest_type_choices = list(ForumSubscription.DIGEST_TYPE_CHOICES)
@@ -317,7 +317,7 @@ class ForumSubscriptionForm(forms.Form):
                 label=_('Apply digest type to'), choices=digest_apply_to_choices,
                 initial='this',
                 widget=forms.RadioSelect())
-    
+
     def process(self):
         """
         saves or deletes the ForumSubscription's instance
@@ -335,7 +335,7 @@ class ForumSubscriptionForm(forms.Form):
             self.instance.type = int(self.cleaned_data.get('type'))
             self.instance.digest_type = self.cleaned_data.get('digest_type', '')
             self.instance.save(all_topics=all_topics)
-            # 
+            #
             if self.cleaned_data.get('digest_type_apply_to') == 'all':
                 for forum_subscription in ForumSubscription.objects.filter(
                     user=self.user).exclude(id=self.instance.id):

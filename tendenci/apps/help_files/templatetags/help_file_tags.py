@@ -71,8 +71,8 @@ def list_helpfiles(parser, token):
         ``random``
            Use this with a value of true to randomize the items included.
         ``filters``
-            Use only single quotes for text where needed. These will be placed inside Q() tags. 
-            Use &, |, and commas to separate values. 
+            Use only single quotes for text where needed. These will be placed inside Q() tags.
+            Use &, |, and commas to separate values.
             Only one operator is allowed per comma separated group.
             Each comma separated group will be applied in a single statement.
             If more is required a custom function should be made.

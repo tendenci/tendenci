@@ -344,7 +344,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     emails = [e for e in emails if not Email.is_blocked(e)]
     if not emails:
         return
-    
+
     if extra_context is None:
         extra_context = {}
 
@@ -443,7 +443,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
                 email = EmailMessage(subject, body, sender,
                                      recipients, headers=headers)
             email.content_subtype = content_type
-    
+
             try:
                 email.send(fail_silently=True)  # should we raise exception or not?
             except UnicodeError:

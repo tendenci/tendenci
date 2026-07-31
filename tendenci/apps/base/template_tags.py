@@ -91,7 +91,7 @@ class ListNode(Node):
         tag_queries += [Q(tags__icontains=", " + t.strip() + ",") for t in tags]
         tag_queries += [Q(tags__icontains="," + t.strip() + ",") for t in tags]
         return tag_queries
-    
+
     def render(self, context):
         tags = ''
         query = ''
@@ -259,7 +259,7 @@ class ListNode(Node):
 
                     # just filter on each find
                     items = items.filter(f_query)
-                    
+
                 else:
                     if "&" in f:
                         f = f.split('&')
@@ -279,7 +279,7 @@ class ListNode(Node):
                     else:
                         fxi = f.split('=')
                         f_query = Q(**{fxi[0].strip(): fxi[1].strip() })
-                        items = items.filter(f_query)          
+                        items = items.filter(f_query)
 
         # exclude certain primary keys
         if exclude:

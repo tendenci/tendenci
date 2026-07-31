@@ -19,7 +19,7 @@ def post_saved(sender, instance, created, **kwargs):
 
     if created:
         pybb_profile = util.get_pybb_profile(instance.user)
-            
+
         if pybb_profile:
             pybb_profile.post_count = instance.user.posts.count()
             pybb_profile.save()
@@ -28,7 +28,7 @@ def post_saved(sender, instance, created, **kwargs):
             if pybb_profile and pybb_profile.autosubscribe and \
             perms.may_subscribe_topic(instance.user, instance.topic):
                 instance.topic.subscribers.add(instance.user)
-            
+
             #notify_forum_subscribers(instance.topic)
             NotifyThread(instance.topic, post_type='topic').start()
         else:

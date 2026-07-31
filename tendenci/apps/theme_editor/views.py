@@ -136,7 +136,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     # Add a space for the blank template to make it editable.
     content = get_file_content(theme_root, selected_theme, current_file_path) or ' '
     file_form = form_class({'content': content})
-    
+
     # if template caching is on, a site reload is required
     reload_required = 'CachedLoader' in settings.TEMPLATES[0]['OPTIONS']['loaders'][0][0]
 

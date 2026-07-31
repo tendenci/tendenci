@@ -192,7 +192,7 @@ class RecurringPayment(models.Model):
         if customer_profile_id and customer_payment_profile_id_list:
             self.customer_profile_id = customer_profile_id
             self.save()
-            
+
             for customer_payment_profile_id in customer_payment_profile_id_list:
                 payment_profile = PaymentProfile(customer_profile_id=self.customer_profile_id,
                                              payment_profile_id=customer_payment_profile_id,
@@ -271,12 +271,12 @@ class RecurringPayment(models.Model):
         for customer_payment_profile in customer_payment_profiles:
             # payment_profile is a dictionary. example,
             # {'customerPaymentProfileId': '87', 'payment': {'creditCard': {'cardNumber': 'XXXX1111', 'expirationDate': 'XXXX', 'cardType': 'Visa', 'issuerNumber': '411111'}}, 'originalNetworkTransId': '0TN1VE648DFCJSHQ81GZH9F', 'originalAuthAmount': 0, 'billTo': {'phoneNumber': '000-000-0000', 'firstName': 'John', 'lastName': 'Doe', 'address': '123 Main St.', 'city': 'Bellevue', 'state': 'WA', 'zip': '98004', 'country': 'US'}}
-            # 
+            #
             customer_payment_profile_id = customer_payment_profile['customerPaymentProfileId']
             # validate this payment profile
             #is_valid = authnet_api.validate_customer_payment_profile(self.customer_profile_id,
             #                                              customer_payment_profile_id)
-            is_valid = True              
+            is_valid = True
             if is_valid:
                 valid_customer_payment_profile_ids.append(customer_payment_profile_id)
             else:
@@ -632,7 +632,7 @@ class RecurringPaymentInvoice(models.Model):
                        'description': description,
                        'customer': self.recurring_payment.customer_profile_id
                       }
-            
+
             # Check if this transaction should be made to a connected account
             connected_account_id, scope = payment.invoice.stripe_connected_account()
             if connected_account_id:
@@ -693,7 +693,7 @@ class RecurringPaymentInvoice(models.Model):
                 payment.save()
                 payment.invoice.make_payment(self.recurring_payment.user, Decimal(payment.amount))
 
-        else:           
+        else:
             # make a transaction
             authnet_api = AuthNetAPI()
             success, code, text, res_dict = authnet_api.charge_customer_profile(payment,

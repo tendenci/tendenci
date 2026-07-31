@@ -28,7 +28,7 @@ class Command(BaseCommand):
         if not bce_id:
             msg = 'Please pass id of BroadcastEmail'
             raise CommandError(msg)
-        
+
         try:
             bce = BroadcastEmail.objects.get(pk=bce_id)
         except BroadcastEmail.DoesNotExist:
@@ -59,7 +59,7 @@ class Command(BaseCommand):
                 if email.recipient:
                     email.send(connection=connection)
                     total_sent += 1
-        
+
         bce.status = "completed"
         bce.total_sent = total_sent
         bce.finish_dt = timezone.now()
