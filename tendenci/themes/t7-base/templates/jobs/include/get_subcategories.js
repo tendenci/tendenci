@@ -1,7 +1,7 @@
 // get sub categories based on category
 $.ajaxSetup({beforeSend: function(xhr, settings){
-	 xhr.setRequestHeader('X-CSRFToken',
-	                      '{{ csrf_token }}');
+     xhr.setRequestHeader('X-CSRFToken',
+                          '{{ csrf_token }}');
 }});
 (function($) {
 $(document).ready(function(){

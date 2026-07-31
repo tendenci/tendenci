@@ -23,11 +23,11 @@ $("#editorForm").on("submit", function() {
             console.error(error);
             const contentType = xhr.getResponseHeader('Content-Type');
             if (contentType && contentType.indexOf('application/json') == -1){
-				console.log("Content-Type does not indicate JSON:", contentType);
-				window.location.reload();
-	
-			}
-            
+                console.log("Content-Type does not indicate JSON:", contentType);
+                window.location.reload();
+
+            }
+
         }
     });
     return false;

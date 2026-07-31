@@ -17,7 +17,7 @@ $('select#id_place-place').on("change", function() {
                     $('input#id_place-city').val(json["city"]);
                     $('input#id_place-state').val(json["state"]);
                     $('input#id_place-zip').val(json["zip"]);
-                    $('select#id_place-country option[value="' + json["country"] + '"]').prop('selected', true); 
+                    $('select#id_place-country option[value="' + json["country"] + '"]').prop('selected', true);
                     $('input#id_place-url').val(json["url"]);
                 }
             }
@@ -49,28 +49,28 @@ function toggleZoomMeetingInfo(show_zoom_options) {
 }
 
 function hideShowAddressFields(action="show") {
-	const address_fields = [$('#id_place-place'),
-							$('#id_place-address'), 
-							$('#id_place-city'),
-							$('#id_place-state'),
-							$('#id_place-zip'),
-							$('#id_place-county'),
-							$('#id_place-country')];
-	if (action =='show'){
-		for (let i = 0; i < address_fields.length; i++) {
-		  address_fields[i].closest('.form-group').show();
-		}
-	}else{
-		for (let i = 0; i < address_fields.length; i++) {
-		  address_fields[i].closest('.form-group').hide();
-		}
-	}
+    const address_fields = [$('#id_place-place'),
+                            $('#id_place-address'),
+                            $('#id_place-city'),
+                            $('#id_place-state'),
+                            $('#id_place-zip'),
+                            $('#id_place-county'),
+                            $('#id_place-country')];
+    if (action =='show'){
+        for (let i = 0; i < address_fields.length; i++) {
+          address_fields[i].closest('.form-group').show();
+        }
+    }else{
+        for (let i = 0; i < address_fields.length; i++) {
+          address_fields[i].closest('.form-group').hide();
+        }
+    }
 }
 function processVirtual(virtual_field){
-	if($(virtual_field).prop('checked')) {
-		hideShowAddressFields(action="hide");
+    if($(virtual_field).prop('checked')) {
+        hideShowAddressFields(action="hide");
     } else {
-		hideShowAddressFields(action="show");
+        hideShowAddressFields(action="show");
     }
 
     toggleZoomIntegration($(virtual_field).is(':checked'));
@@ -79,11 +79,11 @@ function processVirtual(virtual_field){
 var virtual_field = $('#id_place-virtual');
 processVirtual(virtual_field);
 virtual_field.on("change", function() {
-	processVirtual(virtual_field);
+    processVirtual(virtual_field);
     /*if($(this).prop('checked')) {
-		hideShowAddressFields(action="hide");
+        hideShowAddressFields(action="hide");
     } else {
-		hideShowAddressFields(action="show");
+        hideShowAddressFields(action="show");
     }*/
 });
 
