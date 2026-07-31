@@ -312,9 +312,13 @@
       {% endfor %}
   </div>
   <div class="row address">
-    {{ registrant.event.group_location.location_name }} <br />
-    {{ registrant.event.group_location.address }} <br />
-    {{ registrant.event.group_location.city }}, {{ registrant.event.group_location.state }} {{ registrant.event.group_location.zipcode }}
+    {% with registrant.event.group_location as group_location %} 
+    {% if group_location %}
+    {{ group_location.location_name }} <br />
+    {{ group_location.address }} <br />
+    {{ group_location.city }}, {{ group_location.state }} {{ group_location.zipcode }}
+	{% endif %}
+	{% endwith %}
   </div>
 </div>
 </div>

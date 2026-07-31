@@ -3113,7 +3113,9 @@ class Event(TendenciBaseModel):
     @property
     def group_location(self):
         """Location tied to group"""
-        return self.groups.first().entity.locations_location_entity.first()
+        group = self.groups.first()
+        return group and group.entity.locations_location_entity.first()
+        
 
     @property
     def can_configure_credits(self):
