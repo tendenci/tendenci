@@ -20,9 +20,9 @@
   <!-- User -->
   <td>
    {% if invoice.bill_to_first_name and invoice.bill_to_last_name %}
-            {{ invoice.bill_to_first_name }} {{ invoice.bill_to_last_name }}
+   		 {{ invoice.bill_to_first_name }} {{ invoice.bill_to_last_name }}
    {% elif invoice.bill_to %}
-           {{ invoice.bill_to }}
+   		{{ invoice.bill_to }}
    {% endif %}
   </td>
   <td>
@@ -31,13 +31,13 @@
 
   <!-- Item -->
   <td>
-    {% if obj %}
+	{% if obj %}
     {% if obj.get_absolute_url %}
     <a href="{{ obj.get_absolute_url }}">{{ object_display }}</a>
     {% else %}
     {{ object_display }}
     {% endif %}
-     {% endif %}
+ 	{% endif %}
   </td>
 
   <!-- <td>{{ invoice.bill_to_email }}</td> -->
@@ -57,12 +57,12 @@
   <!-- Status -->
   <td {% if invoice.balance %}class="body-copy-yellow"{% endif %}>
     {% if invoice.balance == 0 %}
-        {% if invoice.is_void %}
-        {% comment %}Translators: Void adjective {% endcomment %}
-        <span class="text-warning">{% trans 'Void' %}</span>
-        {% else %}
-        {% trans 'Paid' %}
-        {% endif %}
+    	{% if invoice.is_void %}
+    	{% comment %}Translators: Void adjective {% endcomment %}
+    	<span class="text-warning">{% trans 'Void' %}</span>
+    	{% else %}
+    	{% trans 'Paid' %}
+    	{% endif %}
     {% else %}
     <span class="text-danger">Balance:
       {{ invoice.balance|format_currency }}</span>

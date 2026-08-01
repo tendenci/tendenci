@@ -26,27 +26,27 @@
 {% block content %}
 
 <div class="col-md-12">
-
-  <nav>
+  
+  <nav>  
     <ul class="pager">
       <li class="previous"><a href="{% url "photoset_latest" %}"><span aria-hidden="true">&larr;</span> {% trans "Back to Albums" %}</a></li>
     </ul>
-  </nav>
+  </nav>  
 
   <div class="page-header">
     <h1 class="set-name">{{ photo_set.name }} {{ photo_set.obj_lock }}</h1>
-
-    <div class="set-description">
+	
+	<div class="set-description">
         {{ photo_set.description|safe|urlize|linebreaks }}
     </div>
   </div>
-
+        
     <div id="photos-wrap">
       {% if photos %}
       {% autopaginate photos 48 %}
       <div class="thumb-row clearfix">
           <div class="grid">
-
+            
             {% for photo in photos %}
             <div class="grid-item col-md-4 col-sm-4 col-xs-4">
               <div class="thumbnail">
@@ -55,10 +55,10 @@
                 </a>
               </div>
             </div>
-
+            
             {% endfor %}
           </div>
-
+        
       </div>
       <div style="clear:both; height:10px;"></div>
       {% paginate %}
@@ -80,7 +80,7 @@
 {{ block.super }}
 <script type="text/javascript">
   $(document).ready(function(){
-
+  
   // delete confirmation
   $('.delete-set').on("click", function(){
   var delete_item = confirm('{% trans "Permenantly delete photo set?" %}');    // confirm

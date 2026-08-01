@@ -50,7 +50,7 @@
 
     <form action="" method="post">{% csrf_token %}
     <div class="forms">
-       {% if form.errors.values %}
+   	{% if form.errors.values %}
         <div class="alert alert-danger" role="alert">
             <p>{% trans 'Unable to process your request, see below.' %}</p>
             {% for error in form.non_field_errors %}
@@ -66,7 +66,7 @@
             {% endfor %}
         </div>
     {% endif %}
-
+    
     {% for field in form %}
         {% if field.is_hidden %}
             {{ field }}
@@ -100,14 +100,14 @@
             </div>
         {% endif %}
     {% endfor %}
-
-       <div class="form-group">
+    
+   	<div class="form-group">
         <div class="col-sm-offset-3 col-sm-9">
             <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Save and Continue Add Another' %}" />
             <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Save' %}" />
         </div>
     </div>
-
+    
     </div>
 
     </form>

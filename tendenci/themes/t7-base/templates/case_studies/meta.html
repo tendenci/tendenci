@@ -2,7 +2,7 @@
 {% load base_filters %}
 
 {% if user.profile.is_superuser %}
-    <ul class="list-unstyled {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+    <ul class="list-unstyled {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}"> 
       {% if case_study.tags %}
       <span><small>
         <strong>Tags: </strong>
@@ -10,29 +10,29 @@
         <a href="{% url "case_study" %}?q=tag:{{ tag|lower|urlencode }}">{{ tag }}</a>
         {% if not forloop.last %}, {% endif %}
         {% endfor %}
-
-
+        
+        
         {% endif %}
-
+        
         {% if user.is_authenticated %}
         {% if user.profile.is_superuser or user == case_study.creator or user == case_study.owner %}
         {% meta_creator_owner case_study %}
-        {% endif %}
-        </small></span>
+        {% endif %} 
+        </small></span>            
         {% endif %}
     </ul>
-
+    
   <nav class="navbar-default t-meta-editor-bar">
         <div class="container-fluid">
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav t-meta-options-links">
-                  <li>{{ case_study.obj_perms }}</li>
-                  <li>{{ case_study.obj_status }}</li>
-
+			      <li>{{ case_study.obj_perms }}</li>
+			      <li>{{ case_study.obj_status }}</li>
+      
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
           {% trans "Options" %}<span class="caret"></span></a>
-
+        
         <ul class="dropdown-menu">
           <li><a href="{% url "admin:case_studies_casestudy_change" case_study.pk %}?next={{ request.path }}">
             {% trans "Edit" %}</a></li>

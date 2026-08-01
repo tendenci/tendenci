@@ -4,23 +4,23 @@
 
 <div class="t-message-pending">
     <h1>{% trans "Email to Members Confirmation" %}</h1>
-    <div>{% trans "Total sent:" %} {{ total_sent }}</div>
-    <div>&nbsp;</div>
-
-    <ol>
+	<div>{% trans "Total sent:" %} {{ total_sent }}</div>
+	<div>&nbsp;</div>
+	
+	<ol>
     {% for membership in memberships %}
-    <li>
-        <a href="{{ membership.get_absolute_url }}">{{ membership.user.get_full_name }} ({{ membership.user.username }})</a>
-    </li>
-    {% endfor %}
-    </ol>
+	<li>
+		<a href="{{ membership.get_absolute_url }}">{{ membership.user.get_full_name }} ({{ membership.user.username }})</a>
+	</li>
+	{% endfor %}
+	</ol>
 </div>
 {% endblock %}
 
 {% block extra_body %}
     {{ block.super }}
-
-<script type="text/javascript">
+    
+<script type="text/javascript">  
     (function($) {
         $('#m-streaming-content').remove();
      })(jQuery);

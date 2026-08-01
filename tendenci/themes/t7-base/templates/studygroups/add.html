@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="{% static 'chosen/chosen.css' %}">
 <style>
 #add-studygroups .label{
-    color: initial;
+	color: initial;
 }
 </style>
 {% endblock %}
@@ -18,14 +18,14 @@
 {% block content %}
 
 <div id="add-studygroups">
-
+  
   <div class="page-header">
     <h1>{% firstof MODULE_STUDYGROUPS_LABEL "Study Group" %} {% trans "Add" %}</h1>
   </div>
-
+  
     <div>
       <form action="{% url 'studygroups.add' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-
+        
       <div class="forms">
           {% studygroup_form form %}
 
@@ -35,7 +35,7 @@
                     {{ categoryform|styled_form }}
                 </div>
             </fieldset>
-
+        
       <fieldset class="boxy-grey">
                 <legend id="meta-title" style="cursor: pointer"><span>+</span> {% trans "SEO Meta" %}</legend>
                 <div id="meta-form">

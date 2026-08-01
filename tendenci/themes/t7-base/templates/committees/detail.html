@@ -7,21 +7,21 @@
     <div class="page-header">
       <h1>{{ committee.title }}</h1>
     </div>
-
+    
     {% if committee.featured_image %}
     <div class="committee-featured-image">
         <img src="{% url 'file' committee.featured_image.id %}" alt="{{ committee.title }}" title="{{ committee.title  }}">
     </div>
-    {% endif %}
-
+	{% endif %}
+    
     <div class="committee-mission">
       {{ committee.mission|safe }}
     </div>
-
+    
     <div class="committee-content">
       {{ committee.content|safe }}
     </div>
-
+    
     <div class="committee-officers">
       <div class="label">
         <label for="officer-table">OFFICERS</label>
@@ -39,12 +39,12 @@
             {% endif %}
           </tr>
         </thead>
-
+        
         <tbody>
           {% for officer in officers %}
           <tr>
             <td class="officer-position">{{ officer.position }}</td>
-
+            
             <td class="officer-name">
               <a rel="nofollow" href="{% url 'profile' officer.user.username  %}">
                 {% if officer.user.get_full_name %}
@@ -66,22 +66,22 @@
         </tbody>
       </table>
     </div>
-
+    
     <div class="committee-sponsors">
       <p>{{ committee.sponsors|safe }}</p>
     </div>
-
+    
     {% if admin %}
     <div class="committee-notes">
       {{ committee.notes|safe }}
     </div>
     {% endif %}
-
+    
     <div class="committee-files">
       <h2>Files {% if admin %}</h2>
-
+      
       <a class="btn btn-default" href="{% url "file.add" %}">Add a File</a>{% endif %}
-
+      
       <ul class="file-list">
         {% for file in files %}
         <li class="file-list">
@@ -90,10 +90,10 @@
         {% endfor %}
       </ul>
     </div>
-
+    
     {% include "committees/meta.html" %}
     <br />
-
+    
   </div>
 </div>
 {% endblock %}

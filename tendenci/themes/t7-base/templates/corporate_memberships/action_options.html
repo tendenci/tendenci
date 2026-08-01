@@ -15,7 +15,7 @@
 
 {% with corp_membership.latest_renewed_in_pending as pending_corp_mem %}
 {% if pending_corp_mem %}
-    <br />{% blocktrans with pending_corp_mem.renew_dt|date:"d-M-Y" as renew_dt %} Renewed on {{ renew_dt }} {% endblocktrans %} <span class="t-status-pending">{{ pending_corp_mem.real_time_status_detail|capfirst }}</span> <br /><a href="{% url 'corpmembership.view' pending_corp_mem.id %}">{% trans "View Renewed Application" %}</a><br />
+	<br />{% blocktrans with pending_corp_mem.renew_dt|date:"d-M-Y" as renew_dt %} Renewed on {{ renew_dt }} {% endblocktrans %} <span class="t-status-pending">{{ pending_corp_mem.real_time_status_detail|capfirst }}</span> <br /><a href="{% url 'corpmembership.view' pending_corp_mem.id %}">{% trans "View Renewed Application" %}</a><br />
 {% else %}
 {% if corp_membership.is_renewal_pending %}
     {% blocktrans with corp_membership.renew_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %}<br />
@@ -30,7 +30,7 @@
     {% if corp_membership.can_renew  %}
     {% if allow_edit or corp_membership.corp_profile|is_rep:request.user %}
         <a class="btn btn-warning" href="{% url "corpmembership.renew" corp_membership.id %}" title="Renew">{% trans "Renew" %}</a>
-    {% endif %}
+	{% endif %}
     {% else %}
         {% if corp_membership.is_expired and request.user.is_superuser %}
          <a class="btn btn-warning" href="{% url "corpmembership.renew" corp_membership.id %}" title="Admin: Renew">{% trans "Admin: Renew" %}</a>

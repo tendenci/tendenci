@@ -15,26 +15,26 @@
     <h1>{% trans "Purchase Recording and Materials" %}</h1>
     <div>&nbsp;</div>
     <div class="well">
-        <div class="event-title"><a href="{% url "event" event.id %}">{{ event.title }}</a></div>
-        <div class="event-time">
+    	<div class="event-title"><a href="{% url "event" event.id %}">{{ event.title }}</a></div>
+    	<div class="event-time">
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
             <div class="line"> {% if not event.all_day %}
             {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}</div>
         </div>
     </div>
-
+    
     <div class="form-wrap">
         <form class="form-horizontal" action="" method="post">{% csrf_token %}
             <div class="forms">
                 {{ form|styled_form }}
-
-                <div class="form-group">
-                    <div class="col-sm-offset-3 col-sm-9">
-                        <button type="submit" class="btn btn-primary text-capitalize">
-                                {% trans "Submit" %}
-                        </button>
-                    </div>
-                </div>
+                
+	            <div class="form-group">
+		            <div class="col-sm-offset-3 col-sm-9">
+		                <button type="submit" class="btn btn-primary text-capitalize">
+		                        {% trans "Submit" %}
+		                </button>
+		            </div>
+	        	</div>
             </div>
         </form>
     </div>

@@ -155,7 +155,7 @@
                                     </span>
                                 </li>
                             {% endif %}
-
+                            
                             {% if request.user == user_this and user_this.profile.use_two_factor_auth %}
                             <li class="content-item">
                                     <span class="app-name">
@@ -165,7 +165,7 @@
                                     </span>
                                 </li>
                             {% endif %}
-
+                            
 
                             {% if can_delete_profile %}
                                 {% if request.user != user_this %}

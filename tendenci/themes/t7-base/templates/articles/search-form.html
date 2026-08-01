@@ -55,7 +55,7 @@
                  </ul>
                 {% endif %}
             </div>
-
+            
             <div class="form-group{% if form.group.errors %} has-error{% endif %}">
                 {{ form.group.label }}: {{ form.group }}
 
@@ -68,12 +68,12 @@
                 {% endif %}
             </div>
        </div>
-
-
+        
+       
        {% if can_add_article %}
-      <div class="form-group pull-right">
-        <a class="btn btn-primary" href="{% url "article.add" %}">{% trans "Add" %} {% firstof MODULE_ARTICLES_LABEL trans 'Article' %}</a>
-      </div>
-      {% endif %}
+	  <div class="form-group pull-right">
+	    <a class="btn btn-primary" href="{% url "article.add" %}">{% trans "Add" %} {% firstof MODULE_ARTICLES_LABEL trans 'Article' %}</a>
+	  </div>
+	  {% endif %}
     </form>
 {% endif %}

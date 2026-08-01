@@ -8,20 +8,20 @@
     {{ block.super }}
     <link rel="alternate" type="application/rss+xml" title="{% firstof trans MODULE_CHAPTERS_LABEL_PLURAL 'Chapters' %}" href="{% url "chapters.feed" %}" />
 <style>
-    .t-search-form .form-group{
-        margin-bottom: 15px !important;
-    }
+	.t-search-form .form-group{
+		margin-bottom: 15px !important;
+	}
 </style>
 {% endblock %}
 
 {% block content %}
 {% autopaginate chapters 10 %}
 <div id="chapters">
-
+  
   <div class="page-header">
     <h1>{% firstof trans MODULE_CHAPTERS_LABEL_PLURAL 'Chapters' %} {% trans 'List' %}</h1>
   </div>
-
+  
     {% chapter_search %}
 
     <div class="chapters-wrap clearfix">

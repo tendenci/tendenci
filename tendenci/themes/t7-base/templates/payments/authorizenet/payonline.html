@@ -22,9 +22,9 @@
 <div class="forms">
 
 <div>
-    <a href="https://www.authorize.net/" target="_blank">{% trans 'Payment via' %} <img src="https://www.authorize.net/content/dam/anet-redesign/reseller/authorizenet-200x50.png" border="0" alt="Authorize.net Logo" width="200" height="50"/></a>
+	<a href="https://www.authorize.net/" target="_blank">{% trans 'Payment via' %} <img src="https://www.authorize.net/content/dam/anet-redesign/reseller/authorizenet-200x50.png" border="0" alt="Authorize.net Logo" width="200" height="50"/></a>
 </div>
-
+	
 <p>
 <form id="paymentForm" method="POST" action=""> {% csrf_token %}
     <input type="hidden" name="dataValue" id="dataValue" />
@@ -33,12 +33,12 @@
     <input type="hidden" name="lastName" id="customerInformation_lastName" />
     <button type="button"
         class="AcceptUI btn btn-success"
-        data-billingAddressOptions='{"show":true, "required":true}'
-        data-apiLoginID="{{ api_login }}"
+        data-billingAddressOptions='{"show":true, "required":true}' 
+        data-apiLoginID="{{ api_login }}" 
         data-clientKey="{{ public_client_key }}"
-        data-acceptUIFormBtnTxt="Submit"
+        data-acceptUIFormBtnTxt="Submit" 
         data-acceptUIFormHeaderTxt="Card Information"
-        data-paymentOptions='{"showCreditCard": true, "showBankAccount": false'
+        data-paymentOptions='{"showCreditCard": true, "showBankAccount": false' 
         data-responseHandler="responseHandler">{% trans 'Click Here to Pay' %}
     </button>
 </form>
@@ -82,7 +82,7 @@ function paymentFormUpdate(response) {
     var opaqueData = response.opaqueData;
     document.getElementById("dataDescriptor").value = opaqueData.dataDescriptor;
     document.getElementById("dataValue").value = opaqueData.dataValue;
-
+    
     var customerInformation = response.customerInformation;
     document.getElementById("customerInformation_firstName").value = customerInformation.firstName;
     document.getElementById("customerInformation_lastName").value = customerInformation.lastName;

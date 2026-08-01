@@ -22,18 +22,18 @@
     {% for event in events %}
     <div class="panel panel-default">
         <div class="panel-body">
-            <a href="{% url "event" event.pk %}"><big>{{ event.title }}</big></a>
-            <div class="description">
+        	<a href="{% url "event" event.pk %}"><big>{{ event.title }}</big></a>
+        	<div class="description">
             {{ event.description|striptags|safe|truncatewords:40 }}
-                </div>
+       		 </div>
         </div>
         <div class="panel-footer">
-            <a href="{% url "event.add_from_template" event.pk %}"><span class="glyphicon glyphicon-plus" title="{% trans 'Add an event using this template' %}"></span>{% trans 'Add an event using this template' %}</a>
-            <div class="pull-right">
-                <a href="{% url "event.edit" event.pk %}"><span class="glyphicon glyphicon-pencil"></span>{% trans 'Edit' %}</a>&nbsp;&nbsp;
-                <a href="{% url "event.delete" event.pk %}"><span class="glyphicon glyphicon-trash"></span>{% trans 'Delete' %}</a>
-            </div>
-        </div>
+			<a href="{% url "event.add_from_template" event.pk %}"><span class="glyphicon glyphicon-plus" title="{% trans 'Add an event using this template' %}"></span>{% trans 'Add an event using this template' %}</a>
+			<div class="pull-right">
+				<a href="{% url "event.edit" event.pk %}"><span class="glyphicon glyphicon-pencil"></span>{% trans 'Edit' %}</a>&nbsp;&nbsp;
+				<a href="{% url "event.delete" event.pk %}"><span class="glyphicon glyphicon-trash"></span>{% trans 'Delete' %}</a>
+			</div>
+		</div>
     </div>
     {% empty %}
     <div>No event templates. <a href="{% url 'event.add_template' %}">{% trans "Add an event template" %}</a></div>

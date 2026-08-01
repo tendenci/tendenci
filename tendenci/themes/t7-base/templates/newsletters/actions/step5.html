@@ -11,10 +11,10 @@
 <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}">
 <style>
 #id_schedule_type, #id_schedule_send_dt_0, #id_schedule_send_dt_1{
-    width: 200px;
+	width: 200px;
 }
 #id_repeats{
-    width: 100px;
+	width: 100px;
 }
 </style>
 {% endblock %}
@@ -26,34 +26,34 @@
       <h1>{% trans 'Ready to Send!' %}</h1>
     </div>
 
-    {% if form.errors.values %}
-    <div class="alert alert-danger" role="alert">
-    <p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>
-         <ul>
-        {% if form.non_field_errors %}
-            {% for error in form.non_field_errors %}
-            <li>{{error}}</li>
-            {% endfor %}
-        {% endif %}
-        {% for field in form %}
-            {% if field.errors %}
-                  {% for error in field.errors %}
-                      <li><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{{ error }}</a></li>
-                  {% endfor %}
-            {% endif %}
-        {% endfor %}
-        </ul>
-     </div>
-    {% endif %}
+	{% if form.errors.values %}
+	<div class="alert alert-danger" role="alert">
+	<p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>
+	     <ul>
+	    {% if form.non_field_errors %}
+	        {% for error in form.non_field_errors %}
+	        <li>{{error}}</li>
+	        {% endfor %}
+	    {% endif %}
+		{% for field in form %}
+	        {% if field.errors %}
+	              {% for error in field.errors %}
+	                  <li><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{{ error }}</a></li>
+	              {% endfor %}
+	        {% endif %}
+	    {% endfor %}
+		</ul>
+	 </div>
+	{% endif %}
 
   <p>
-    <strong>{% trans 'Newsletter Recipients: ' %}</strong>
-    {% if object.member_only %}
-    {% trans 'ALL members' %}
-    {% elif object.group %}
-    {% trans 'Usergroup ' %} <a href="{% url 'group.detail' object.group.slug %}">{{ object.group }}</a>
-    {% endif %}
-    ({% trans 'total:' %} {{ object.get_recipients.count }})
+	<strong>{% trans 'Newsletter Recipients: ' %}</strong>
+	{% if object.member_only %}
+	{% trans 'ALL members' %}
+	{% elif object.group %}
+	{% trans 'Usergroup ' %} <a href="{% url 'group.detail' object.group.slug %}">{{ object.group }}</a>
+	{% endif %}
+	({% trans 'total:' %} {{ object.get_recipients.count }})
   </p>
 
     <form action="" method="POST">{% csrf_token %}
@@ -138,18 +138,18 @@
             {{ form.create_article }} &nbsp; <label>{{ form.create_article.label }}</label>
           </div>
 
-    {% if schedule_enabled %}
+	{% if schedule_enabled %}
           <div class="form-group">
             {{ form.schedule_send }} &nbsp; <label for="id_schedule_send">{{ form.schedule_send.label }}</label>
           </div>
 
-        <div id="schedule-fields">
-            <div class="form-group">
-                <label for="id_schedule_send_dt" class="col-sm-3 control-label">{{ form.schedule_send_dt.label }}</label>
-                <div class="col-sm-9">
-                  {{ form.schedule_send_dt }}
+		<div id="schedule-fields">
+			<div class="form-group">
+			    <label for="id_schedule_send_dt" class="col-sm-3 control-label">{{ form.schedule_send_dt.label }}</label>
+			    <div class="col-sm-9">
+			      {{ form.schedule_send_dt }}
 
-                    {% if form.schedule_send_dt.errors %}
+					{% if form.schedule_send_dt.errors %}
                         {% for error in form.schedule_send_dt.errors %}
                             <span class="text-danger">{{ error }}</span>
                         {% endfor %}
@@ -158,13 +158,13 @@
                     {% if form.schedule_send_dt.help_text %}
                         <span class="help-block">{{ form.schedule_send_dt.help_text|safe }}</span>
                     {% endif %}
-                </div>
-             </div>
-            <div class="form-group">
-                <label for="id_schedule_type" class="col-sm-3 control-label">{{ form.schedule_type.label }}</label>
-                <div class="col-sm-9">
-                  {{ form.schedule_type }}
-                    {% if form.schedule_type.errors %}
+			    </div>
+			 </div>
+			<div class="form-group">
+			    <label for="id_schedule_type" class="col-sm-3 control-label">{{ form.schedule_type.label }}</label>
+			    <div class="col-sm-9">
+			      {{ form.schedule_type }}
+					{% if form.schedule_type.errors %}
                         {% for error in form.schedule_type.errors %}
                             <span class="text-danger">{{ error }}</span>
                         {% endfor %}
@@ -173,13 +173,13 @@
                     {% if form.schedule_type.help_text %}
                         <span class="help-block">{{ form.schedule_type.help_text|safe }}</span>
                     {% endif %}
-                </div>
-             </div>
-            <div class="form-group">
-                <label for="id_repeats" class="col-sm-3 control-label">{{ form.repeats.label }}</label>
-                <div class="col-sm-9">
-                  {{ form.repeats }}
-                    {% if form.repeats.errors %}
+			    </div>
+			 </div>
+			<div class="form-group">
+			    <label for="id_repeats" class="col-sm-3 control-label">{{ form.repeats.label }}</label>
+			    <div class="col-sm-9">
+			      {{ form.repeats }}
+					{% if form.repeats.errors %}
                         {% for error in form.repeats.errors %}
                             <span class="text-danger">{{ error }}</span>
                         {% endfor %}
@@ -188,20 +188,20 @@
                     {% if form.repeats.help_text %}
                         <span class="help-block">{{ form.repeats.help_text|safe }}</span>
                     {% endif %}
-                </div>
-             </div>
-        </div>
-    {% endif %}
+			    </div>
+			 </div>
+		</div>
+	{% endif %}
 
           <div class="form-group">
             <div class="form-control">
               <input type="checkbox" name="send_status" value="queued" />&nbsp; &nbsp;<label> *Confirm Send (Check box to Continue) </label>
             </div>
-            {% if form.send_status.errors %}
-                {% for error in form.send_status.errors %}
-                    <span class="text-danger">{{ error }}</span>
-                {% endfor %}
-            {% endif %}
+			{% if form.send_status.errors %}
+	            {% for error in form.send_status.errors %}
+	                <span class="text-danger">{{ error }}</span>
+	            {% endfor %}
+	        {% endif %}
           </div>
 
 
@@ -223,21 +223,21 @@
 {% if schedule_enabled %}
 <script>
     (function($) {
-        function toggle_schedule_fields(this_chk){
-            if($(this_chk).is(":checked")){
-                $('#schedule-fields').show();
-            }else{
-                $('#schedule-fields').hide();
-            }
-        }
+		function toggle_schedule_fields(this_chk){
+			if($(this_chk).is(":checked")){
+	            $('#schedule-fields').show();
+	        }else{
+				$('#schedule-fields').hide();
+			}	
+		}
         $(document).ready(function() {
-            toggle_schedule_fields($('#id_schedule_send'));
+			toggle_schedule_fields($('#id_schedule_send'));
             $('#id_schedule_send').click(function () {
-                toggle_schedule_fields(this);
+				toggle_schedule_fields(this);
             });
 
-            // date and time pickers
-            $('#id_schedule_send_dt_0').datepicker({ dateFormat: 'yy-mm-dd', minDate: 0 });
+			// date and time pickers
+			$('#id_schedule_send_dt_0').datepicker({ dateFormat: 'yy-mm-dd', minDate: 0 });
             $('#id_schedule_send_dt_1').timepicker({'timeFormat': 'h:i A'});
         });
     }(jQuery));

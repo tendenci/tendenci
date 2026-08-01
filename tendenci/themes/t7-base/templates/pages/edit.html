@@ -18,11 +18,11 @@
 {% block content %}
 
 <div id="page-edit">
-
+  
   <div class="page-header">
     <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% trans "Edit" %}</h1>
   </div>
-
+  
     <div class="page-wrap">
         <form action="{% url "page.edit" page.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
@@ -39,20 +39,20 @@
                     {{ metaform|styled_form }}
                 </div>
             </fieldset>
-
+          
           <div class="form-group">
             <input class="btn btn-default" type="hidden" id="id_preview_for" name="preview_for"/>
             <input class="btn btn-default" type="submit" value="{% trans 'Save Page Changes' %}" />
             <input class="btn btn-default previewButton" type="button" value="Preview"/>
-
+            
             {% if page.status %}
-
+            
               <a class="btn btn-danger pull-right" title="{% trans 'Link to delete confirmation page' %}" href="{% url "page.delete" page.pk %}">
                 {% trans "Delete" %}
               </a>
             <br /><br />
           </div>
-
+          
             {% endif %}
         </div>
         </form>

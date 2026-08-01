@@ -49,9 +49,9 @@
 
     {% include "two_factor/_wizard_actions.html" %}
   </form>
-
-
+  
+  
   {% if wizard.steps.current == 'auth' %}
-      {% include "accounts/reset_register_links.html" %}
+  	{% include "accounts/reset_register_links.html" %} 
   {% endif %}
 {% endblock %}

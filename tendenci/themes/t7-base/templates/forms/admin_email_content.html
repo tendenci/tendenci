@@ -73,11 +73,11 @@
     <strong>{% trans 'Method' %}:</strong> {{ entry.payment_method }}<br />
     <strong>{% trans 'Pricing' %}:</strong> {{ entry.pricing.label }}<br />
     <strong>{% trans 'Price' %}:</strong> {% if entry.pricing.price %}{{ entry.pricing.price|format_currency }}{% else %}{{ custom_price|format_currency }}{% endif %}<br />
-    {% with entry.get_invoice as invoice %}
-    {% if invoice %}
-    <a href="{{ site_url }}{% url "invoice.view" invoice.id %}">{% trans "View Invoice" %}</a><br />
-    {% endif %}
-    {% endwith %}
+	{% with entry.get_invoice as invoice %}
+	{% if invoice %}
+	<a href="{{ site_url }}{% url "invoice.view" invoice.id %}">{% trans "View Invoice" %}</a><br />
+	{% endif %}
+	{% endwith %}
     </p>
 {% endif %}
 

@@ -13,7 +13,7 @@
             {% elif field.name == "pricing" %}
                 {% if not event.free_event %}
                     {% if not registrant.cleaned_data.override %}
-                        {% with registrant.cleaned_data.pricing as pricing %}
+                    	{% with registrant.cleaned_data.pricing as pricing %}
                         <li>{% trans 'Price:' %}  {{ currency_symbol }}{{ registrant.cleaned_data.pricing.price }}
                         {% if pricing.include_tax %}
                         {% if MODULE_INVOICES_TAXRATEUSEREGIONS %}
@@ -21,18 +21,18 @@
                         {% else %}
                         {% if MODULE_INVOICES_TAXMODEL == 'Tax Added' %}
                             (+ {{ currency_symbol }}{{ pricing.tax_amount }}{% if MODULE_INVOICES_TAXLABEL %}
-                                {{ MODULE_INVOICES_TAXLABEL }}
+                                {{ MODULE_INVOICES_TAXLABEL }} 
                             {% else %}
                                 {% trans 'Tax' %}
                             {% endif %})
                         {% else %}
-                            ({% trans 'includes: ' %} {{ currency_symbol }}{{ pricing.tax_amount }}
+                            ({% trans 'includes: ' %} {{ currency_symbol }}{{ pricing.tax_amount }} 
                             {% if MODULE_INVOICES_TAXLABEL %}
-                                {{ MODULE_INVOICES_TAXLABEL }}
+                                {{ MODULE_INVOICES_TAXLABEL }} 
                             {% else %}
                                 {% trans 'Tax' %}
                             {% endif %})
-                        {% endif %}
+                        {% endif %} 
                         {% endif %}
                         {% endif %}
                         </li>
@@ -44,8 +44,8 @@
                     <li>{{ price_label }}:  {{ currency_symbol }}{{ field.value }}</li>
                 {% endif %}
             {% else %}
-                <li>{{ field.label }}:
-                {% if field.field.widget.input_type == 'file' %}
+                <li>{{ field.label }}: 
+                {% if field.field.widget.input_type == 'file' %} 
                   {{ field.data }}
                 {% else %}
                   {{ field.value|field_to_string }}

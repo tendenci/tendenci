@@ -18,8 +18,8 @@
   {{ invoice.region.invoice_header|safe }}
   {% else %}
   {% include "invoices/include/default_invoice_header.html" %}
- {% endif %}
-
+ {% endif %} 
+ 
   {% if invoice.balance > 0 and can_pay %}
   {% if SITE_GLOBAL_MERCHANTACCOUNT and SITE_GLOBAL_MERCHANTACCOUNT != 'asdf asdf asdf' %}
   <div class="invoice-options">
@@ -80,7 +80,7 @@
     </ul>
   </div>
   {% if not invoice.is_void %}
-
+  
   {% if request.user.is_authenticated %}
   <div class="invoice-options">
     <ul>
@@ -96,7 +96,7 @@
     </ul>
   </div>
   {% endif %}
-
+  
    {% endif %}
 
   {% if request.user.is_superuser or can_edit %}
@@ -126,7 +126,7 @@
     <div class="invoice-total">
       {% invoice_total_display request invoice %}
     </div>
-
+    
     {% if invoice.is_void %}
     <div class="void-stamp"><span>VOIDED</span></div>
     {% endif %}
@@ -135,13 +135,13 @@
   <div class="payment-table">
     {% payment_history_display request invoice %}
   </div>
-
+  
   {% if request.user.is_superuser %}
   {% if invoice.admin_notes %}
   <p><strong>{% trans "Admin notes: " %}</strong> {{ invoice.admin_notes|safe }}</p>
   {% endif %}
   {% endif %}
-
+  
    {% if invoice.region and invoice.region.invoice_footer %}
    {{ invoice.region.invoice_footer|safe  }}
    {% else %}

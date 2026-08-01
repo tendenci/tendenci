@@ -4,7 +4,7 @@
 <form id="t-photosets-search-form" class="form-inline" action="{% url "photoset_latest" %}" method="get" role="search">
  {% if not form.cat %}
   <div class="form-group">
-    <div class="input-group add-on">
+    <div class="input-group add-on">      
       {{ form.q }}
       <div class="input-group-btn">
         <button class="btn btn-default" type="submit">
@@ -14,8 +14,8 @@
     </div>
   </div>
  {% else %}
-        {% if form.q.errors %}
-        <div class="form-group{% if form.q.errors %} has-error{% endif %}">
+    	{% if form.q.errors %}
+    	<div class="form-group{% if form.q.errors %} has-error{% endif %}">
            <p class="help-block">
                <ul class="list-unstyled">
                    {% for error in form.q.errors %}
@@ -26,7 +26,7 @@
         </div>
         {% endif %}
 
-        <div class="form-group{% if form.q.errors %} has-error{% endif %}">
+		<div class="form-group{% if form.q.errors %} has-error{% endif %}">
             {{ form.q }}
 
             {% if form.q.errors %}
@@ -39,8 +39,8 @@
             </p>
             {% endif %}
         </div>
-
-        <div class="form-group{% if form.cat.errors %} has-error{% endif %}">
+    
+    	<div class="form-group{% if form.cat.errors %} has-error{% endif %}">
             {{ form.cat }}
 
             {% if form.cat.errors %}
@@ -54,18 +54,18 @@
             {% endif %}
         </div>
 
-        <div class="form-group">
-            <button class="btn btn-success" type="submit">
-                <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i> {% trans 'Search' %}
-              </button>
-        </div>
-
+		<div class="form-group">
+			<button class="btn btn-success" type="submit">
+		        <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i> {% trans 'Search' %}
+		      </button>
+		</div>
+    
  {% endif %}
+    
 
-
-
+  
 {% has_perm user photos.add_photoset as can_add_photoset %}
-
+  
   {% if can_add_photoset %}
   <div class="form-group pull-right">
     <a href="{% url "photoset_add" %}">
@@ -73,7 +73,7 @@
     </a>
   </div>
   {% endif %}
-
-
+  
+  
 </form>
 <br />

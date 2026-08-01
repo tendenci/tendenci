@@ -11,7 +11,7 @@
 <body bgcolor="#ffffff" text="#000000">
 
     <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Chapter Membership Renewal" %}</div>
-    <div>{% trans "Chapter:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{{ chapter_membership.chapter.get_absolute_url }}">{{ chapter_membership.chapter.title }}</a></div>
+	<div>{% trans "Chapter:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{{ chapter_membership.chapter.get_absolute_url }}">{{ chapter_membership.chapter.title }}</a></div>
 
     {% if chapter_membership.membership_type.renewal_price %}
         <div style="margin-bottom:20px;">{% trans "Membership Type:"%} {{ chapter_membership.membership_type }} {{ chapter_membership.membership_type.renewal_price|format_currency }}</div>
@@ -21,7 +21,7 @@
 
     <div>{{ chapter_membership.user.first_name }} {{ chapter_membership.user.last_name }}</div>
     <div>{{ chapter_membership.user.email }}</div>
-    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' chapter_membership.user.username %}">
+	<div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' chapter_membership.user.username %}">
         {% trans "View Profile" %}
     </a></div>
     <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ chapter_membership.get_absolute_url }}">

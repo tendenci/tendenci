@@ -70,26 +70,26 @@
     </script>
     <script>
     $(document).ready(function() {
-      $('#addFileForm').submit(function(event) {
-        let isValid = true;
-
-        // Iterate over all required inputs within the form
-        $(this).find('[required]').each(function() {
-          if ($(this).val().trim() === '') {
-            isValid = false;
-          }
-        });
-
-        if (!isValid) {
-          event.preventDefault(); // Prevent form submission
-        }else{
-             $.blockUI({
+	  $('#addFileForm').submit(function(event) {
+	    let isValid = true;
+	
+	    // Iterate over all required inputs within the form
+	    $(this).find('[required]').each(function() {
+	      if ($(this).val().trim() === '') { 
+	        isValid = false;
+	      }
+	    });
+	
+	    if (!isValid) {
+	      event.preventDefault(); // Prevent form submission
+	    }else{
+	    	 $.blockUI({
                 message: $('.loading-message')
             });
-        }
-      });
-    });
-
+	    }
+	  });
+	});
+    
     </script>
     {% include 'tags/autocomplete.html' %}
 {% endblock %}

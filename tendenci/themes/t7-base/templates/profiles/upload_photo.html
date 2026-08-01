@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.css" />
 <style>
 img.cr-image{
-    max-width: none !important;
+	max-width: none !important;
 }
 </style>
 {% endblock %}
@@ -22,17 +22,17 @@ img.cr-image{
 {% else %}
  <h1>{% trans 'Change Profile Photo for '%} <a href="{% url 'profile' profile_upload.user.username %}">{{ profile_upload.user.username }}</a></h1>
 {% endif %}
+	
+	<form method="post" enctype="multipart/form-data">{% csrf_token %}
 
-    <form method="post" enctype="multipart/form-data">{% csrf_token %}
-
-    {{ upload_form|styled_form }}
-
-    <div>&nbsp;</div>
-    <div class="row">
+	{{ upload_form|styled_form }}
+ 
+	<div>&nbsp;</div>
+	<div class="row">
         <div id="cropper"></div>
     </div>
 
-    <div>&nbsp;</div>
+	<div>&nbsp;</div>
     <div class="form-group">
         <div class="col-xs-offset-9 col-xs-3">
             <button type="submit" class="btn btn-primary text-capitalize crop_image">{% trans "Submit" %}</button>

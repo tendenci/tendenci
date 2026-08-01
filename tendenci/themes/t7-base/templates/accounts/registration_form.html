@@ -11,7 +11,7 @@
 {% block content %}
     <h2>{% trans "Fill out the form below to create your account" %}</h2>
     <form class="form-horizontal" id="t-accounts-registration-form" method="post" action=".">{% csrf_token %}
-
+    
     {% if form.errors.values %}
     <div class="alert alert-danger" role="alert">
         <p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>
@@ -19,7 +19,7 @@
         {% for error in form.non_field_errors %}
             <p><a href="#" class="alert-link">{{ error }}</a></p>
         {% endfor %}
-
+        
         {% for field in form %}
             {% if field.errors %}
                   {% for error in field.errors %}
@@ -33,7 +33,7 @@
             <label for="{{ form.username.id_for_label }}" class="col-sm-3 control-label required">{{ form.username.label }}</label>
             <div class="col-sm-6">
                 {{ form.username }}
-                <p class="help-block">
+				<p class="help-block">
                  {{ form.username.help_text }}
                 </p>
                 {% if form.username.errors %}

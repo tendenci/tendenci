@@ -21,7 +21,7 @@
     </div>
     {% endif %}
 
-    {% if form.state %}
+	{% if form.state %}
     <div class="form-group{% if form.state.errors %} has-error{% endif %}">
        {{ form.state }}
 
@@ -37,7 +37,7 @@
     </div><br />
     {% endif %}
 
-    {% if form.county %}
+	{% if form.county %}
     <div class="form-group{% if form.county.errors %} has-error{% endif %}">
        {{ form.county }}
 
@@ -53,7 +53,7 @@
     </div><br />
     {% endif %}
 
-    <div class="form-group{% if form.q.errors %} has-error{% endif %}">
+	<div class="form-group{% if form.q.errors %} has-error{% endif %}">
         {{ form.q }}
 
         {% if form.q.errors %}
@@ -67,13 +67,13 @@
         {% endif %}
     </div>
 
-    <div class="form-group">
-        <button class="btn btn-success" type="submit">
-            <i class="glyphicon glyphicon-search" alt="{% trans 'Search Chapters' %}"></i> {% trans 'Search' %}
-          </button>
-    </div>
+	<div class="form-group">
+		<button class="btn btn-success" type="submit">
+	        <i class="glyphicon glyphicon-search" alt="{% trans 'Search Chapters' %}"></i> {% trans 'Search' %}
+	      </button>
+	</div>
 
-
+  
   {% if can_add_chapters %}
   <div class="form-group pull-right">
      {% if request.user.is_superuser %}
@@ -83,7 +83,7 @@
     {% endif %}
   </div>
   {% endif %}
-
+  
 </form>
 <br />
 {% endif %}

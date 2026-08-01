@@ -54,7 +54,7 @@
                         <ul class="dropdown-menu" role="menu">
                         <li><a class="edit-link" href="{% url "help_files.edit" help_file.pk %}">{% trans 'Edit' %}</a></li>
                          <li><a class="eventlog-link" href="{% url "event_log.search" %}?object_id={{ help_file.pk }}&source={{ help_file.opt_app_label }}">{% trans 'Eventlogs' %}</a></li>
-
+                        
                         <li>
                             <a class="delete" href="{% url "admin:help_files_helpfile_change" help_file.pk %}">{% trans 'Delete' %}</a>
                         </li>

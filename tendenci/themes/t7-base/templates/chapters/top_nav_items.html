@@ -60,40 +60,40 @@
                         </li>
                     {% endif %}
 
-                    {% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
-                    {% if request.user.profile.is_chapter_coordinator %}
-                    <li class="content-item">
+					{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+					{% if request.user.profile.is_chapter_coordinator %}
+					<li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'chapters.coordinating_group_list' %}">{% trans "My State Members" %}</a>
                             </span>
                      </li>
-                    <li class="content-item">
+					<li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'chapters.memberships_search' %}">{% trans "Chapter Members in my State" %}</a>
                             </span>
                      </li>
-                    {% endif %}
-                    {% endif %}
+					{% endif %}
+					{% endif %}
 
-                    {% if request.user.is_superuser %}
-                    {% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
-                    <li class="content-item">
+					{% if request.user.is_superuser %}
+					{% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
+					<li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'chapters.memberships_search' %}">{% trans "Search Chapter Members" %}</a>
                             </span>
                      </li>
-                    <li class="content-item">
+					<li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'chapters.memberships_import' %}">{% trans "Import Chapter Memberships" %}</a>
                         </span>
                     </li>
                     {% endif %}
-                    <li class="content-item">
+					<li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'admin:app_list' 'chapters' %}">{% trans 'Admin Backend' %}</a>
                         </span>
                     </li>
-                    {% endif %}
+                	{% endif %}
 
                 </ul>
 
@@ -111,13 +111,13 @@
                                         <a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
                                     </span>
                                 </li>
-                                {% if can_add_chapter %}
-                                    <li class="content-item">
-                                        <span class="app-name">
-                                            <a href="{% url "chapters.copy_from" app_object.pk %}">{% trans "Clone" %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
-                                        </span>
-                                    </li>
-                                {% endif %}
+	                            {% if can_add_chapter %}
+	                                <li class="content-item">
+	                                    <span class="app-name">
+	                                        <a href="{% url "chapters.copy_from" app_object.pk %}">{% trans "Clone" %} {% firstof MODULE_CHAPTERS_LABEL trans "Chapter" %}</a>
+	                                    </span>
+	                                </li>
+	                            {% endif %}
                             {% endif %}
 
                             {% if can_edit_chapter or is_chapter_leader %}
@@ -158,7 +158,7 @@
                                     </span>
                              </li>
 
-                            <li class="content-item">
+							<li class="content-item">
                                 <span class="app-name">
                                     <a href="{% url 'chapters.memberships_import_single_chapter' app_object.pk %}">{% trans "Import Chapter Memberships" %}</a>
                                 </span>

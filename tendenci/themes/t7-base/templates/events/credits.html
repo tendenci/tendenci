@@ -33,7 +33,7 @@
       margin-left: 10px;
   }
   .credits input[type=checkbox] {
-      width: 40%;
+      width: 40%;      
   }
   .credits textarea[readonly="readonly"] {
       border: 0px;
@@ -47,14 +47,14 @@
       .credits input[type=text] {
           width: 20%;
           margin-left: 10px;
-      }
+      }      
   }
   @media screen and (max-width: 1000px) {
     .credits input[type=text] {
         margin-left: 5px;
     }
     .credits input[type=checkbox] {
-      width: 32%;
+      width: 32%;      
     }
 
     .credits .category {
@@ -65,13 +65,13 @@
         font-size: .8em;
     }
     .credits .subtable {
-        margin-left: 30px;
+        margin-left: 30px;   
     }
   }
   @media screen and (max-width: 767px) {
     .credits input[type=checkbox] {
-      width: 48%;
-    }
+      width: 48%;      
+    }      
   }
   @media screen and (max-width: 767px) {
       .credits input[type=checkbox] {
@@ -80,15 +80,15 @@
   }
   @media screen and (max-width: 668px) {
     .credits input[type=checkbox] {
-      width: 40%;
-    }
+      width: 40%;      
+    }      
   }
   @media screen and (max-width: 560px) {
     .credits input[type=text] {
         margin-left: 1px;
     }
     .credits input[type=checkbox] {
-      width: 32%;
+      width: 32%;      
     }
     .credits textarea[readonly="readonly"] {
       width: 105px;
@@ -146,7 +146,7 @@ credits should be added at the sub-event level in the
 </div>
 {% endif %}
 {% if credit_forms and user.is_superuser %}
- <p>
- <input type="checkbox" id="sync_credits" name="sync_credits"> <label for="sync_credits">{% trans 'Update Credits for Checked-in Registrants' %}</label>
+ <p> 
+ <input type="checkbox" id="sync_credits" name="sync_credits"> <label for="sync_credits">{% trans 'Update Credits for Checked-in Registrants' %}</label> 
  </p>
 {% endif %}

@@ -13,7 +13,7 @@
 <div class="t">
     <h1>{% trans "Redirects Add" %}</h1>
 
-    {% include 'redirects/cache_warning.html' %}
+	{% include 'redirects/cache_warning.html' %}
     <div class="redirect-wrap">
         <form action="{% url "redirect.add" %}" method="post">{% csrf_token %}
         <div class="forms">

@@ -7,8 +7,8 @@
 
 <style>
 .form-group{
-    margin-left: 0px !important;
-    }
+	margin-left: 0px !important;
+	}
 </style>
 
 {% endblock %}
@@ -18,26 +18,26 @@
 <div class="t-broadcase">
     <h1>{% trans "Broadcast E-mail" %}</h1>
     {% include "corporate_memberships/message/broadcast/terms_conditions.html" %}
-
+	
     <form id="t-broadcase-form" class="form-horizontal" action="." method="post">{% csrf_token %}
-        <fieldset>
-        <div class="form-group">
-             <div class="checkbox">
-                <label class="required control-label">
-                  {{ form.terms_conditions }} {{ form.terms_conditions.label }}
-                </label>
-             </div>
-        </div>
+    	<fieldset>
+	    <div class="form-group">
+		     <div class="checkbox">
+		        <label class="required control-label">
+		          {{ form.terms_conditions }} {{ form.terms_conditions.label }}
+		        </label>
+		     </div>
+	    </div> 
 
         </fieldset>
-
-        <div class="form-group">
+        
+		<div class="form-group">
             <div>
                 <input type="submit" name="continue" value="Continue" class="btn btn-primary text-uppercase">
             </div>
         </div>
-
-
+	
+		
     </form>
 </div>
 {% endblock %}
@@ -48,7 +48,7 @@
     <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
-<script type="text/javascript">
+<script type="text/javascript">  
     (function($) {
 
      })(jQuery);

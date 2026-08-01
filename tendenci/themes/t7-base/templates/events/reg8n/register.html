@@ -18,23 +18,23 @@
         float: left;
     }
     .addon-forms .label{
-        color: #000;
+    	color: #000;
     }
     ul.registrant-pricing, .registrant-form ul{
-        list-style: none;
+    	list-style: none;
     }
     .input-group-addon{
-        width: auto;
+    	width: auto;
     }
     .gratuity-section{
-        margin: 2em;
-        padding: 1em;
-        border: 1px solid #999;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px #eee;
+    	margin: 2em;
+    	padding: 1em;
+    	border: 1px solid #999;
+    	border-radius: 5px;
+    	box-shadow: 0 2px 5px #eee;
     }
     #id_gratuity, #id_gratuity_preferred{
-        text-align: center;
+    	text-align: center;
     }
 </style>
 {% endblock %}
@@ -57,25 +57,25 @@
 
     </div>
 
-    {% if request.user.is_authenticated %}
-        {% if event|is_registrant:request.user %}
-            <div class="alert alert-warning alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              {% trans "You have already registered" %}
-            </div>
-        {% endif %}
-    {% else %}
-        {% if active_user_may_required %}
-        <div class="alert alert-warning">
-        {% trans "To register this event, an active user account is needed." %}<br />
-        {% if request.user.inactive_user_err_msg %}
-            {{ request.user.inactive_user_err_msg|safe }}
-        {% else %}
-        {% blocktrans with this_url=request.path %}Please <a class="btn btn-default btn-sm" href="/accounts/login/?next={{this_url}}">LOG IN</a> or <a class="btn btn-primary btn-sm" href="/accounts/register/?next={{this_url}}">SIGN UP</a> (if you're new to the site or don't have an account), then come back to this page!{% endblocktrans %}
-        {% endif %}
-        </div>
-        {% endif %}
-    {% endif %}
+	{% if request.user.is_authenticated %}
+		{% if event|is_registrant:request.user %}
+			<div class="alert alert-warning alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  		{% trans "You have already registered" %}
+			</div>
+		{% endif %}
+	{% else %}
+		{% if active_user_may_required %}
+		<div class="alert alert-warning">
+		{% trans "To register this event, an active user account is needed." %}<br />
+		{% if request.user.inactive_user_err_msg %}
+			{{ request.user.inactive_user_err_msg|safe }}
+		{% else %}
+		{% blocktrans with this_url=request.path %}Please <a class="btn btn-default btn-sm" href="/accounts/login/?next={{this_url}}">LOG IN</a> or <a class="btn btn-primary btn-sm" href="/accounts/register/?next={{this_url}}">SIGN UP</a> (if you're new to the site or don't have an account), then come back to this page!{% endblocktrans %}
+		{% endif %}
+		</div>
+		{% endif %}
+	{% endif %}
 
     {% if not event.registration_configuration.require_guests_info and event.anony_setting == 'open'  or event.is_table %}
     <div class="event-info well" style="background-color:#FFFFEB;">
@@ -101,10 +101,10 @@
     {% if reg_form.errors.values or registrant.non_form_errors or has_registrant_form_errors or not within_available_spots %}
         <div class="errors-box">
             <ul>
-                {% for error in registrant.non_form_errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-
+            	{% for error in registrant.non_form_errors %}
+			        <li>{{ error }}</li>
+			    {% endfor %}
+            
                 {% if not within_available_spots %}
                 <li>{% blocktrans with spots_available=event.spots_available %}Only {{ spots_available }} spot{{ spots_available|pluralize }} available. No more {{ spots_available }} registrant{{ spots_available|pluralize }} please!{% endblocktrans %}</li>
                 {% endif %}
@@ -272,12 +272,12 @@
                                 <div class="form-field{% if field.name == 'override' %} admin-override{% endif %}">
                                     {% if field|is_checkbox %}
                                     <div class="checkbox-input">
-                                        {% if field.errors %}
+                                    	{% if field.errors %}
                                         <div class="error">{{ field.errors }}</div>
                                         {% endif %}
                                         <div class="field">
-                                            <div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
-                                            {{ field }}
+                                        	<div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
+                                        	{{ field }}
                                         </div>
                                         {% if field.help_text %}
                                         <div class="help-text">{{ field.help_text }}</div>
@@ -301,7 +301,7 @@
                                     {% endif %}
                                     {% endif %}
                                 </div>
-
+                                
                                 {% if field.name == 'attendance_dates' and event.requires_attendance_dates %}
                                 <div class="form-field attendance_dates">
                                     {% if field.errors %}
@@ -373,7 +373,7 @@
                 <div class="add-addons-box">
                 {% include 'events/addons/addon-add-box.html' %}
                 </div>
-
+                
                 <div class="addon-forms">
                     <div>{% trans "Addons Added:" %}</div>
                     {% include 'events/addons/formset.html' %}
@@ -455,82 +455,82 @@
                     <p>Disclaimer: The availability of discount code is subject to
                     change without any warranty before confirming your registration.</p>
                 {% endif %}
-
+                
                 {% if addons and addon_formset.has_addon_selected %}
                 <div>{% trans "Addon(s)" %}</div>
                 <ul>
-                {% for form in addon_formset.forms %}
-                    {% if form.chosen_addon %}
-                    <li>{{ form.chosen_addon.title }}: {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ form.chosen_addon.price|floatformat:2 }}</li>
-                    {% endif %}
-                {% endfor %}
-                </ul>
-                {% endif %}
-
-
+	            {% for form in addon_formset.forms %}
+	            	{% if form.chosen_addon %}
+	            	<li>{{ form.chosen_addon.title }}: {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ form.chosen_addon.price|floatformat:2 }}</li>
+	            	{% endif %}
+				{% endfor %}
+				</ul>
+	            {% endif %}
+                           
+                           
                 {% if gratuity_form.gratuity or gratuity_form.gratuity_preferred %}
                 <div class="gratuity-section clearfix">
-
-                    {% if gratuity_form.errors.values %}
-                        <div class="errors-box">
-                            <ul>
-                                {{ gratuity_form.non_field_errors }}
-                                {% for field in gratuity_form %}
-                                    {% if field.errors %}
-                                        {% for error in field.errors %}
-                                        <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
-
-                    {% if gratuity_form.gratuity %}
-                    <div class="form-group">
-                        <label for="id_gratuity" class="col-xs-6 control-label" style="text-align: right !important;">{{gratuity_form.gratuity.label}}</label>
-                        <div class="col-xs-6">
-                          {{ gratuity_form.gratuity }}
-                          </div>
-                    </div>
-                    {% endif %}
-                    {% if gratuity_form.gratuity_preferred %}
-                    <div class="form-group">
-                        <label for="id_gratuity_preferred" class="col-xs-6 control-label" style="text-align: right !important;">{% trans "*OR*" %} {{gratuity_form.gratuity_preferred.label}}</label>
-                        <div class="col-xs-6">
-                          {{ gratuity_form.gratuity_preferred }}
+                
+	                {% if gratuity_form.errors.values %}
+				        <div class="errors-box">
+				            <ul>
+				                {{ gratuity_form.non_field_errors }}
+				                {% for field in gratuity_form %}
+				                    {% if field.errors %}
+				                        {% for error in field.errors %}
+				                        <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
+				                        {% endfor %}
+				                    {% endif %}
+				                {% endfor %}
+				            </ul>
+				        </div>
+				    {% endif %}
+                
+                	{% if gratuity_form.gratuity %}
+                	<div class="form-group">
+                		<label for="id_gratuity" class="col-xs-6 control-label" style="text-align: right !important;">{{gratuity_form.gratuity.label}}</label>
+                	    <div class="col-xs-6">
+      					{{ gratuity_form.gratuity }}
+      					</div>
+                	</div>
+                	{% endif %}
+                	{% if gratuity_form.gratuity_preferred %}
+                	<div class="form-group">
+                		<label for="id_gratuity_preferred" class="col-xs-6 control-label" style="text-align: right !important;">{% trans "*OR*" %} {{gratuity_form.gratuity_preferred.label}}</label>
+                	    <div class="col-xs-6">
+      					{{ gratuity_form.gratuity_preferred }}
                          <div class="help-text">{{ gratuity_form.gratuity_preferred.help_text }}</div>
                          <br />
-                      </div>
-                    </div>
-                    {% endif %}
-
-                    <div id="tbl-gratuity-summary" class="col-sm-6 pull-right">
-                    <table class="table">
-                        <tr>
-                            <td>{% trans "Subtotal:" %}</td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="tbl-gratuity-subtotal" data-subtotal="{{ subtotal }}">{{ subtotal }}</span></td>
-                        </tr>
-                        <tr>
-                            <td>{% trans "Gratuity:" %}</td><td><span id="tbl-gratuity">0</span>%</td>
-                        </tr>
-
-                        <tr{% if not total_tax %} class="hidden"{% endif %}>
-                            <td>{% trans "Tax:" %}</td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="tbl-total_tax" data-total_tax="{{ total_tax }}">{{ total_tax }}</span></td>
-                        </tr>
-
-                        <tr>
-                            <td>{% trans "Total:" %}</td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="tbl-gratuity-total">{{ grand_total }}</span></td>
-                        </tr>
-                    </table>
-                    </div>
+                	  </div>
+                	</div>
+                	{% endif %}
+                	
+                	<div id="tbl-gratuity-summary" class="col-sm-6 pull-right">
+                	<table class="table">
+                		<tr>
+                			<td>{% trans "Subtotal:" %}</td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="tbl-gratuity-subtotal" data-subtotal="{{ subtotal }}">{{ subtotal }}</span></td>
+                		</tr>
+                		<tr>
+                			<td>{% trans "Gratuity:" %}</td><td><span id="tbl-gratuity">0</span>%</td>
+                		</tr>
+                		
+                		<tr{% if not total_tax %} class="hidden"{% endif %}>
+                			<td>{% trans "Tax:" %}</td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="tbl-total_tax" data-total_tax="{{ total_tax }}">{{ total_tax }}</span></td>
+                		</tr>
+                		
+                		<tr>
+                			<td>{% trans "Total:" %}</td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="tbl-gratuity-total">{{ grand_total }}</span></td>
+                		</tr>
+                	</table>
+                	</div>
                 </div>
                 {% endif %}
             </div>
-
+            
             <input type="hidden" name="confirmed" />
             {% with event.registration_configuration.guest_limit as guest_limit %}
-            {% if not event.is_table and event.registration_configuration.allow_guests %}
-            {% if guest_limit == 0 or flat_registrants|length <= guest_limit %}
+			{% if not event.is_table and event.registration_configuration.allow_guests %}
+			{% if guest_limit == 0 or flat_registrants|length <= guest_limit %}
             <input class="btn btn-default" type="submit" name="addmore" value="{% trans "Add Another Registrant" %}" />
              <br /><br />
              {% endif %}
@@ -560,39 +560,39 @@
     {% if do_confirmation %}
     $(document).ready(function(){
         $('#fillup-div').addClass('event-registration-hidden');
-
+        
         {% if gratuity_form.gratuity or gratuity_form.gratuity_preferred %}
         var total_tax = $("#tbl-total_tax").data('total_tax');
-
+        
         var calc_total = function(subtotal, gratuity){
             grand_total = parseFloat(subtotal) + parseFloat(total_tax) + parseFloat(subtotal) * parseFloat(gratuity)/100.0;
             return grand_total.toFixed(2);
         };
-
+        
         var assign_total = function(subtotal){
-            var gratuity = $("select#id_gratuity").val();
-            var gratuity_preferred = $("#id_gratuity_preferred").val();
-            var total;
-            if (isNaN(gratuity_preferred) || gratuity_preferred == '' || parseFloat(gratuity_preferred) < 0){
-                total = calc_total(subtotal, gratuity);
-                $('#tbl-gratuity').html(gratuity);
-            }else{
-                total = calc_total(subtotal, gratuity_preferred);
-                $('#tbl-gratuity').html(gratuity_preferred);
-            }
-            $('#tbl-gratuity-total').html(total);
+        	var gratuity = $("select#id_gratuity").val();
+        	var gratuity_preferred = $("#id_gratuity_preferred").val();
+        	var total;
+        	if (isNaN(gratuity_preferred) || gratuity_preferred == '' || parseFloat(gratuity_preferred) < 0){
+        		total = calc_total(subtotal, gratuity);
+        		$('#tbl-gratuity').html(gratuity);
+        	}else{
+        		total = calc_total(subtotal, gratuity_preferred);
+        		$('#tbl-gratuity').html(gratuity_preferred);
+        	}	        	
+        	$('#tbl-gratuity-total').html(total);
         };
-
+    
         var subtotal = $("#tbl-gratuity-subtotal").data('subtotal');
         assign_total(subtotal);
         $('select#id_gratuity').on("change", function(e){
-            assign_total(subtotal);
+        	assign_total(subtotal);
         });
         $('input#id_gratuity_preferred').on("change", function(e){
-            assign_total(subtotal);
+        	assign_total(subtotal);
         });
     {% endif %}
-
+    
     });
     {% endif %}
     {% if add_more_registrants %}
@@ -610,35 +610,35 @@
 <script type="text/javascript">
 {# process default yes addons #}
 $(function () {
-    var i;
-    var myid;
-    var has_checked_addon = false;
+	var i;
+	var myid;
+	var has_checked_addon = false;
+	
+	// hide the checkbox in front of the addons
+	$("input[name=add-addons]").hide();
 
-    // hide the checkbox in front of the addons
-    $("input[name=add-addons]").hide();
-
-     if ($('input[id="id_addon-TOTAL_FORMS"]').attr('value') == "0") {
-       $('input[name="add-addons"]').each(function() {
-          i = $(this).attr('value');
-          myid = "add-addon-" + i + "-count";
-          //$('input[id="' + myid + '"]').attr('value', 1);
-          if (this.checked == true && $('input[id="' + myid + '"]').attr('value') != "0"){
-              if (!has_checked_addon){
-                  has_checked_addon = true
-              }
-          }
-       });
-       if (has_checked_addon){
-           $("#add-addons-button").trigger("click");
-
-           $('input[name="add-addons"]').each(function() {
-              this.checked = false;
-              i = $(this).attr('value');
-              myid = "add-addon-" + i + "-count";
-              $('input[id="' + myid + '"]').attr('value', 0);
-           });
-       }
-    }
+ 	if ($('input[id="id_addon-TOTAL_FORMS"]').attr('value') == "0") {
+	   $('input[name="add-addons"]').each(function() {
+	      i = $(this).attr('value');
+	      myid = "add-addon-" + i + "-count";
+	      //$('input[id="' + myid + '"]').attr('value', 1);
+	      if (this.checked == true && $('input[id="' + myid + '"]').attr('value') != "0"){
+	    	  if (!has_checked_addon){
+	    		  has_checked_addon = true
+	    	  }
+	      }
+	   });
+	   if (has_checked_addon){
+		   $("#add-addons-button").trigger("click");
+			
+		   $('input[name="add-addons"]').each(function() {
+		      this.checked = false;
+		      i = $(this).attr('value');
+		      myid = "add-addon-" + i + "-count";
+		      $('input[id="' + myid + '"]').attr('value', 0);
+		   });  
+	   }
+	} 
 });
 </script>
 

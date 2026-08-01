@@ -57,7 +57,7 @@
       height: 110px;
       margin-bottom: 10px;
   }
-
+  
   .certificate .row.heading {
       height: 50px;
       margin-bottom: 10px;
@@ -80,7 +80,7 @@
       margin-top: 10px;
       text-align: center;
   }
-  .certificate .row.credits.small-font {
+  .certificate .row.credits.small-font {      
       width: 100%;
       text-align: left;
       font-size: .75em;
@@ -113,7 +113,7 @@
   .certificate .awarded div.awarded strong {
       font-size: 2em;
   }
-
+  
   .certificate .event div.event {
       text-align: center;
       font-size: 1.2em;
@@ -168,13 +168,13 @@
           size: letter;
       }
   }
-
+  
   .certificate.credits {
       font-weight: normal;
   }
   .certificate.credits .heading div {
       float: left;
-
+      
   }
   .certificate.credits .heading div.heading {
       width: 40%;
@@ -226,10 +226,10 @@
       width: 47px;
   }
   .certificate.credits .col-166px {
-      width: 166px;
+      width: 166px; 
       text-align: left;
   }
-
+  
 
 </style>
 {% endblock %}
@@ -240,15 +240,15 @@
     <div class="row logos">
     {% with registrant.event.groups.all.0 as event_group %}
       {% if event_group %}
-          {% if event_group.logo %}
-          <div style="margin-bottom: 1em;">
-          <img src="{{ event_group.logo.url }}" title="{{ event_group.name }}" alt="{{ event_group.name }}"/>
-          </div>
-          {% endif %}
-          <div class="formatted-text">
-            <div class="name">{{ event_group.name }}</div>
-              {{ event_group.description|safe }}
-          </div>
+	      {% if event_group.logo %}
+	      <div style="margin-bottom: 1em;">
+	      <img src="{{ event_group.logo.url }}" title="{{ event_group.name }}" alt="{{ event_group.name }}"/>
+	      </div>
+	      {% endif %}
+	      <div class="formatted-text">
+	        <div class="name">{{ event_group.name }}</div>
+	          {{ event_group.description|safe }}
+	      </div>
       {% else %}
           &nbsp;
       {% endif %}
@@ -288,10 +288,10 @@
               <div class="right">{{ registrant.event.place.name }}</div>
             </div>
             {% endif %}
-
+       
             <div class="row">
               <div class="left">{% trans "CPE Credits Earned: " %}</div>
-              <div class="right">{{ registrant.credits_earned }} ({{ registrant.credits_earned_by_code }})</div>
+              <div class="right">{{ registrant.credits_earned }} ({{ registrant.credits_earned_by_code }})</div>   
             </div>
         </div>
       </div>

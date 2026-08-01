@@ -49,7 +49,7 @@
     {{ form.media }}
     <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
+	<script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
     <script type="text/javascript" src="{% static 'chosen/chosen.jquery.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/dynamic-formset.js' %}?v=2"></script>
     <script type="text/javascript">
@@ -97,7 +97,7 @@
             cloned_row = addFormWithCloned(this, 'officers', clone);
             // Handle chosen jquery plugin
             var current_officer_user = $(cloned_row).find(".officer-user select");
-            current_officer_user.chosen();
+			current_officer_user.chosen();
             return false;
         });
     </script>

@@ -112,7 +112,7 @@
       var display_cancellation_fees = {{ invoice.total_cancellation_fees }} || '{{ is_canceled }}' == 'true';
 
       toggle_cancellation($('#id_cancel_registration').is(':checked'), display_cancellation_fees);
-
+      
       $('#id_cancel_registration').on("change", function() {
           toggle_cancellation($(this).is(':checked'), display_cancellation_fees);
       });

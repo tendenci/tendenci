@@ -4,29 +4,29 @@
 {% block content %}
 <div id="study-group-detail">
   <div class="studygroup-wrap">
-
+    
     <div class="page-header">
       <h1>{{ study_group.title }}</h1>
     </div>
-
+    
     {% if study_group.header_image %}
     <div class="studygroup-featured-image">
         <img src="{% url 'file' study_group.header_image.id %}" alt="{{ study_group.title }}" title="{{ study_group.title  }}">
     </div>
-    {% endif %}
-
+	{% endif %}
+    
     <div class="studygroup-mission">
       <p>{{ study_group.mission|safe }}</p>
     </div>
-
+    
     <div class="studygroup-content">
       <p>{{ study_group.content|safe }}</p>
     </div>
-
+    
     <div class="studygroup-officers">
-
+      
       <h2>{% trans 'OFFICERS' %}</h2>
-
+      
       <table class="table" id="officer-table">
         <thead>
           <tr>
@@ -35,12 +35,12 @@
             <th class="officer-phone">{% trans 'Phone' %}</th>
           </tr>
         </thead>
-
+        
         <tbody>
           {% for officer in officers %}
           <tr>
             <td class="officer-position">{{ officer.position }}</td>
-
+            
             <td class="officer-name">
               <a rel="nofollow" href="{% url 'profile' officer.user.username %}">
                 {% if officer.user.get_full_name %}
@@ -50,30 +50,30 @@
                 {% endif %}
               </a>
             </td>
-
+            
             <td class="officer-phone">{{ officer.phone }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-
+    
     <div class="studygroup-sponsors">
       <p>{{ study_group.sponsors|safe }}</p>
     </div>
-
+    
     {% if admin %}
     <div class="studygroup-notes">
       {{ study_group.notes|safe }}
     </div>
     {% endif %}
-
+    
     <div class="studygroup-files">
       <h2>{% trans 'Files' %} {% if admin %}</h2>
-
+      
       <a class="btn btn-default" href="{% url 'file.add' %}">{% trans 'Add a File' %}</a>
       {% endif %}
-
+      
       <ul class="file-list">
         {% for file in files %}
         <li class="file-list">
@@ -82,7 +82,7 @@
         {% endfor %}
       </ul>
     </div>
-
+    
     {% include "studygroups/meta.html" %}
   </div>
 </div>

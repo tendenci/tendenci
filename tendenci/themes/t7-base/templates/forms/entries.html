@@ -19,7 +19,7 @@
   <div class="page-header">
     <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %} {% trans 'Entries' %}</h1>
   </div>
-
+  
   <ul class="nav nav-pills">
     <li role="presentation"><h2>{{ form.title }}</h2></li>
     <li class="pull-right" role="presentation">
@@ -32,46 +32,46 @@
     {% endif %}
     {% autopaginate entries 10 %}
   </ul>
-
+  
   {% for entry in entries %}
-  <div class="panel panel-default">
+  <div class="panel panel-default">  
     <div class="panel-body">
       <ul class="list-inline">
-
+        
         <li class="pull-left">
           <a href="{{ entry.get_absolute_url }}">
-              {% for row in entry.summary %}
-                {{ row }}<br>
-              {% endfor %}
+          	{% for row in entry.summary %}
+            	{{ row }}<br>
+          	{% endfor %}
           </a>
         </li>
-
+        
         <!-- edit/delete form -->
-        {% if can_edit or can_delete %}
-            <li class="pull-right">
-              <div class="form-group">
-                {% if can_edit and not form.custom_payment and not form.recurring_payment %}
-                    <a class="btn btn-sm btn-warning" method="POST" title="{% trans 'Edit this form entry' %}" href="{% url 'form_entry_edit' entry.pk %}">
-                      {% trans "Edit" %}
-                    </a>
-                {% endif %}
-                {% if can_delete %}
-                    <a class="btn btn-sm btn-danger" method="POST" title="{% trans 'Link to delete confirmation page' %}" href="{% url 'form_entry_delete' entry.pk %}">
-                      {% trans "Delete" %}
-                    </a>
-                {% endif %}
-              </div>
-            </li>
-        {% endif %}
-
+	    {% if can_edit or can_delete %}
+	        <li class="pull-right">
+	          <div class="form-group">
+			    {% if can_edit and not form.custom_payment and not form.recurring_payment %}
+		            <a class="btn btn-sm btn-warning" method="POST" title="{% trans 'Edit this form entry' %}" href="{% url 'form_entry_edit' entry.pk %}">
+		              {% trans "Edit" %}
+		            </a>
+	    		{% endif %}
+			    {% if can_delete %}
+		            <a class="btn btn-sm btn-danger" method="POST" title="{% trans 'Link to delete confirmation page' %}" href="{% url 'form_entry_delete' entry.pk %}">
+		              {% trans "Delete" %}
+		            </a>
+			    {% endif %}
+	          </div>
+	        </li>
+		{% endif %}
+        
       </ul>
     </div>
   </div>
-
+  
   {% empty %}
-
+  
   <div>{% trans "0 Entries Found" %}</div>
-
+  
   {% endfor %}
 </div>
 

@@ -25,7 +25,7 @@
                             <span class="content-head text-content-head">{% trans "All" %} {% firstof MODULE_PROJECTS_LABEL_PLURAL trans "Projects" %}</span>
                         </li>
                     {% endif %}
-
+                    
                     {% if can_edit_setting %}
                         <li class="content-item">
                             <span class="app-name">
@@ -33,7 +33,7 @@
                             </span>
                         </li>
                     {% endif %}
-
+                    
                     {% if request.user.is_superuser %}
                        <li class="content-item">
                            <span class="app-name">
@@ -41,13 +41,13 @@
                            </span>
                        </li>
                     {% endif %}
-
+                    
                     <li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'projects' %}">{% firstof MODULE_PROJECTS_LABEL trans "Project" %} {% trans "List" %}</a>
                         </span>
                     </li>
-
+                    
 
                     {% if can_add_project %}
                         <li class="content-item">
@@ -57,8 +57,8 @@
                         </li>
                     {% endif %}
 
-
-
+                    
+                   
                 </ul>
 
                 {% if app_object %}

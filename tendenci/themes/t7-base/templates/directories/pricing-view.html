@@ -19,7 +19,7 @@
 
         <div class="clear"></div>
 
-        <div class="row">
+		<div class="row">
             <div class="col-xs-5 col-md-3 align-right text-right">{% trans "Label:" %}</div>
             <div><b>{{ directory_pricing.label }}</b></div>
         </div>
@@ -48,7 +48,7 @@
             <div class="col-xs-5 col-md-3 text-right">{% trans "Member Premium Price:" %}</div>
             <div><b>{{ directory_pricing.premium_price_member|format_currency }}</b></div>
         </div>
-
+        
         <div class="row">
             <div class="col-xs-5 col-md-3 text-right">{% trans "Include Tax:" %}</div>
             <div><b>{{ directory_pricing.include_tax|yesno }}</b></div>

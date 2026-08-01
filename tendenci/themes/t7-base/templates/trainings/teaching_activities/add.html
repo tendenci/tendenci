@@ -13,7 +13,7 @@
 
     <form id="teaching-activity-form" class="form-horizontal" action="" method="post">{% csrf_token %}
         {{ form|styled_form }}
-
+        
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
                 <button type="submit" class="btn btn-primary text-capitalize">
@@ -27,9 +27,9 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-
+    
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function () {       
             // date
             $('#id_date').datepicker({ dateFormat: 'yy-mm-dd' });
         });

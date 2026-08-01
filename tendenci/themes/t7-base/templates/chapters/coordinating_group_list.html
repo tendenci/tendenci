@@ -12,13 +12,13 @@
 {% block content %}
     <h1>{% trans 'My Coordinating State Groups' %}</h1>
 
-    {% if coordinating_agencies %}
-        <ol>
-        {% for agency in coordinating_agencies %}
-        <li><a href="{% url 'group.detail' agency.group.slug %}">{{ agency.group.name }}</a></li>
-        {% endfor %}
-        </ol>
-    {% endif %}
+	{% if coordinating_agencies %}
+		<ol>
+		{% for agency in coordinating_agencies %}
+		<li><a href="{% url 'group.detail' agency.group.slug %}">{{ agency.group.name }}</a></li>
+		{% endfor %}
+		</ol>
+	{% endif %}
 
 {% endblock %}
 

@@ -15,9 +15,9 @@
     <h1>{% firstof MODULE_PROJECTS_LABEL 'Project' %} {% trans "Add" %}</h1>
 
     <form id="t-projects-form" class="form-horizontal" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
-
+        
       {{ multi_project_forms|styled_multi_forms }}
-
+      
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
                 <button type="submit" class="btn btn-primary text-capitalize">
@@ -47,7 +47,7 @@
  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
  <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
  <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
-
+ 
  <script type="text/javascript">
         $(document).ready(function () {
             // Slugify
@@ -65,5 +65,5 @@
 
         });
     </script>
-
+ 
 {% endblock %}

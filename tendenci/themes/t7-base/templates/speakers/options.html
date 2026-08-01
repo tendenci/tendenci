@@ -6,7 +6,7 @@
 
 <nav class="navbar navbar-default">
   <div class="container-fluid">
-
+    
     <ul class="nav navbar-nav">
       {% if can_edit %}
       <li><a href="{% url "admin:speakers_speaker_change" opt_object.pk %}?next={{ request.path }}">
@@ -17,6 +17,6 @@
         {% trans 'Delete' %}</a></li>
       {% endif %}
     </ul>
-
+    
   </div>
 </nav>

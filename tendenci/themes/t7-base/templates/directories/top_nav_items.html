@@ -12,7 +12,7 @@
 {% has_perm user directories.view_directory as can_view_directories %}
 {% has_perm user directories.change_directory as can_edit_directories %}
 {% has_perm user directories.view_directorypricing as can_view_directorypricing %}
-
+ 
 
 
 <ul id="t-admin-megamenu-directories-dd" class="dropdown-menu" role="menu">
@@ -41,17 +41,17 @@
                     </li>
 
                     {% if user.is_authenticated %}
-                        <li class="content-item">
+						<li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'directory.my_directories_only' %}">{% trans "My" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "directories" %}</a>
                             </span>
-                        </li>
+                        </li> 
 
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'directory.add' %}">{% trans "Add" %} {% firstof MODULE_DIRECTORIES_LABEL trans "Directory" %}</a>
                             </span>
-                        </li>
+                        </li>	
                     {% endif %}
 
                     {% if can_view_directories and can_edit_directories %}
@@ -62,7 +62,7 @@
                         </li>
                     {% endif %}
 
-                    {% if user.profile.is_superuser %}
+					{% if user.profile.is_superuser %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'directory.export' %}">{% trans "Export" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "directories" %}</a>
@@ -70,7 +70,7 @@
                         </li>
                     {% endif %}
 
-                    {% if not MODULE_DIRECTORIES_HIDEPRICINGTAB %}
+					{% if not MODULE_DIRECTORIES_HIDEPRICINGTAB %}
                     {% if can_view_directorypricing %}
                         <li class="content-item">
                             <span class="app-name">

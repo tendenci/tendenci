@@ -11,34 +11,34 @@
 {% block content %}
 <div class="t">
 
-    <h1>{% trans 'Event Files' %}</h1>
-    <strong>{% trans 'Event:' %} <a href="{% url 'event' event.id %}" title="Back to events">{{ event.title }}</a></strong>
-
-    {% if request.user.is_superuser %}
-    <div class="pull-right"><a href="{% url "event.file_add_only" event.pk %}" class="btn btn-default btn-sm">{% trans "Add File" %}</a></div>
-    {% endif %}
-    <div class="clearfix">&nbsp;</div>
-
-    {% include "events/files/search-form.html" %}
-
-    {% autopaginate event_files 10 %}
-
-    <div class="files-found">{{ paginator.count }} {% trans 'File' %}{{ paginator.count|pluralize }} {% trans "Found" %}</div>
-
-    <div class="files-wrap clearfix">
-    {% for event_file in event_files %}
-        {% include "events/files/search-result.html" %}
-    {% endfor %}
-    </div>
-
-    {% paginate %}
+	<h1>{% trans 'Event Files' %}</h1>
+	<strong>{% trans 'Event:' %} <a href="{% url 'event' event.id %}" title="Back to events">{{ event.title }}</a></strong>
+	
+	{% if request.user.is_superuser %}
+	<div class="pull-right"><a href="{% url "event.file_add_only" event.pk %}" class="btn btn-default btn-sm">{% trans "Add File" %}</a></div>
+	{% endif %}
+	<div class="clearfix">&nbsp;</div>
+	
+	{% include "events/files/search-form.html" %}
+	
+	{% autopaginate event_files 10 %}
+	
+	<div class="files-found">{{ paginator.count }} {% trans 'File' %}{{ paginator.count|pluralize }} {% trans "Found" %}</div>
+	
+	<div class="files-wrap clearfix">
+	{% for event_file in event_files %}
+	    {% include "events/files/search-result.html" %}
+	{% endfor %}
+	</div>
+	
+	{% paginate %}
 
 </div>
 {% endblock %}
 
 {% block extra_body %}
     {{ block.super }}
+    
+  	{% include 'events/include/event_file_js.html' %}
 
-      {% include 'events/include/event_file_js.html' %}
-
-{% endblock %}
+{% endblock %}  

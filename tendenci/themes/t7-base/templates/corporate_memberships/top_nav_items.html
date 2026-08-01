@@ -36,7 +36,7 @@
                             </span>
                         </li>
                     {% endif %}
-
+                    
                     <li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'corpmembership.search' %}">{% trans "Search" %}</a>
@@ -44,7 +44,7 @@
                     </li>
 
                     {% if user.profile.is_superuser %}
-                        <li class="content-item">
+                    	<li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'admin:corporate_memberships_corpmembership_changelist' %}">{% trans 'Search (Admin)' %}</a>
                             </span>
@@ -55,7 +55,7 @@
                             </span>
                         </li>
                     {% endif %}
-
+                    
                     <li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'corpmembership.mycorps' %}">{% trans "My Corporate Members" %}</a>
@@ -67,29 +67,29 @@
                             <a href="{% url 'corpmembership.add' %}">{% trans "Add Corporate Member" %}</a>
                         </span>
                     </li>
-
+                    
                     <li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'membership_default.corp_pre_add' %}">{% trans "Add an Individual Corporate Member" %}</a>
                         </span>
                     </li>
 
-                    {% if can_approve_corpmemb %}
+					{% if can_approve_corpmemb %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'corpmembership.pending_list' %}">{% trans "View Pending" %}</a>
                             </span>
                         </li>
-                     {% endif %}
+					 {% endif %}
 
                     {% if user.profile.is_superuser %}
-                        <li class="divider"></li>
-                        <li class="content-item">
+                    	<li class="divider"></li>
+                    	<li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'corp_membership.overview' %}">{% trans "Overview" %}</a>
                             </span>
                         </li>
-
+                    	
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'corpmembership.cap_status' %}">{% trans "View Cap Status" %}</a>
@@ -156,7 +156,7 @@
                                         <a href="{% url 'corpmembership.edit' app_object.pk %}">{% trans "Edit Corporate Member" %}</a>
                                     </span>
                                 </li>
-
+                                
                                 {% if request.user.is_superuser %}
                                 <li class="content-item">
                                     <span class="app-name">
@@ -193,14 +193,14 @@
                                     </li>
                                 {% endif %}
                             {% endif %}
-
+                            
                             {% if MODULE_TRAININGS_ENABLED %}
-                            {% if request.user.is_superuser or app_object.corp_profile|is_rep:request.user %}
-                            <div>
-                                <a href="{% url 'trainings.transcripts_corp' app_object.corp_profile.id %}">{% trans "View Transcripts" %}</a>
-                            </div>
-                            {% endif %}
-                            {% endif %}
+						    {% if request.user.is_superuser or app_object.corp_profile|is_rep:request.user %}
+						    <div>
+						    	<a href="{% url 'trainings.transcripts_corp' app_object.corp_profile.id %}">{% trans "View Transcripts" %}</a>
+						    </div>
+						    {% endif %}
+						    {% endif %}
 
                             {% if can_delete %}
                                 <li class="divider"></li>

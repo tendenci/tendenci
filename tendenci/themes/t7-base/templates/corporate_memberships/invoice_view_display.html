@@ -4,8 +4,8 @@
     <td>
         {% if obj %}
             {% trans 'Corporate Membership for' %}
-            {{ obj|truncatewords:10 }}
-            #<a href="{% url "corpmembership.view" obj.id %}" title="Corporate Membership">{{ obj.id }}</a>
+        	{{ obj|truncatewords:10 }}
+        	#<a href="{% url "corpmembership.view" obj.id %}" title="Corporate Membership">{{ obj.id }}</a>
             ({% if obj.renewal %}
              {% with obj.get_previous_expire_dt as previous_expire_dt %}
                 {% if previous_expire_dt > obj.renew_dt %}
@@ -16,7 +16,7 @@
              {% endwith %}
              {% else %}
                {{ obj.join_dt|date:'N d, Y' }}
-             {% endif %} -
+             {% endif %} - 
              {% if obj.expiration_dt %}{{ obj.expiration_dt|date:'N d, Y' }}{% endif %})
         {% else %}
             {% trans "Corporate Membership information not available" %}
@@ -27,7 +27,7 @@
         {{ invoice.total|subtract:obj.donation_amount|format_currency }}
          {% else %}
            {{ invoice.total|format_currency }}
-         {% endif%}
+ 		{% endif%}
     </td>
 </tr>
 

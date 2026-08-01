@@ -15,7 +15,7 @@
          {{ form.end_dt }}
          </div>
     </div>
-
+    
 </div>
 <div class="row">
     <div class="col-sm-6 form-group">
@@ -32,41 +32,41 @@
     </div>
 </div>
 
-{% if form.event_place_type or form.national_only %}
+{% if form.event_place_type or form.national_only %}  
 <div class="row">
-    {% if form.event_place_type %}
-      <div class="col-sm-6 form-group">
-        <label for="id_event_place_type" class="col-sm-4 control-label">{{ form.event_place_type.label }}</label>
-           <div class="col-sm-8">
-           {{ form.event_place_type }}
-           </div>
-       </div>
-    {% endif %}
-    {% if form.national_only %}
-      <div class="col-sm-6 form-group">
-            <div class="checkbox">
-              <label>
-                {{ form.national_only }} {{ form.national_only.label }}
-              </label>
-           </div>
-        </div>
-    {% endif %}
+	{% if form.event_place_type %} 
+	  <div class="col-sm-6 form-group">
+		<label for="id_event_place_type" class="col-sm-4 control-label">{{ form.event_place_type.label }}</label>
+	       <div class="col-sm-8">
+	       {{ form.event_place_type }}
+	       </div>
+	   </div>
+	{% endif %} 
+	{% if form.national_only %} 
+	  <div class="col-sm-6 form-group">
+	        <div class="checkbox">
+	          <label>
+	            {{ form.national_only }} {{ form.national_only.label }}
+	          </label>
+	       </div>
+	    </div>
+	{% endif %} 
 </div>
-{% endif %}
+{% endif %} 
 
 <div class="row">
      <div class="col-md-12 col-sm-12 form-group">
-      <label for="id_search_category" class="col-sm-2 control-label">{% trans 'Search By'%}</label>
-      <div class="col-sm-10">
-          <div>{{ form.q.errors }}</div>
-              {{ form.search_category }} &nbsp;
-              {{ form.q }} &nbsp;
-              <input class="btn btn-primary" type="submit" name="search" value="{% trans 'Search' %}" />
-        </div>
-      </div>
+	  <label for="id_search_category" class="col-sm-2 control-label">{% trans 'Search By'%}</label>
+	  <div class="col-sm-10">
+	      <div>{{ form.q.errors }}</div>
+	          {{ form.search_category }} &nbsp;
+	          {{ form.q }} &nbsp;
+	          <input class="btn btn-primary" type="submit" name="search" value="{% trans 'Search' %}" />
+	    </div>
+	  </div>
   </div>
 
-{% if request.user.is_authenticated and form.registration %}
+{% if request.user.is_authenticated and form.registration %}  
 <div class="row">
   <div class="col-sm-12 form-group">
         <div class="checkbox">
@@ -76,7 +76,7 @@
        </div>
     </div>
 </div>
-{% endif %}
+{% endif %} 
 
 </div>
 

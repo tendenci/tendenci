@@ -3,35 +3,35 @@
 
 <br />
  <ul class="list-unstyled t-meta-data">
-
+   
    {% if show_source|default:False and article.source %}
    <li><strong>{% trans "Source:" %}</strong> <span>{{ article.source|urlize }}</span></li>
    {% endif %}
-
+   
    <li><strong>{% trans "Released:" %}</strong> <span>{{ article.release_dt|date:"long" }}</span></li>
-
+   
    {% if article.first_name or article.last_name or article.phone or article.fax or article.email or article.website %}
    {% if article.first_name or article.last_name %}
    <li><strong>{% trans "Author:" %}</strong> <span>{{ article.first_name }} {{ article.last_name }}</span></li>
    {% endif %}
-
+   
    {% if article.phone %}
    <li><strong>{% trans "Phone:" %}</strong> <span>{{ article.phone|phonenumber }}</span></li>
    {% endif %}
-
+   
    {% if article.fax %}
    <li><strong>{% trans "Fax:" %}</strong> <span>{{ article.fax }}</span></li>
    {% endif %}
-
+   
    {% if article.email %}
    <li><strong>{% trans "Email:" %}</strong> <span>{{ article.email|obfuscate_email }}</span></li>
    {% endif %}
-
+   
    {% if article.website %}
    <li><strong>{% trans "Website:" %}</strong> <span>{{ article.website|urlize }}</span></li>
    {% endif %}
    {% endif %}
-
+   
    {% with article.category_set as article_cat %}
    {% if article_cat.category %}
    <li>
@@ -44,7 +44,7 @@
    </li>
    {% endif %}
    {% endwith %}
-
+   
    {% if article.tags %}
    <li>
      <strong>{% trans "Tag(s):" %}</strong>
@@ -54,7 +54,7 @@
      {% endfor %}
    </li>
    {% endif %}
-
+   
    {% if user.is_authenticated %}
    {% if not user.profile.is_superuser %}
    {% if user == article.creator or user == article.owner %}
@@ -66,7 +66,7 @@
    {% endif %}
    {% endif %}
  </ul>
-
+    
  {% if user.profile.is_superuser %}
   <nav class="navbar navbar-default t-meta-editor-bar">
   <div class="container-fluid">
@@ -75,7 +75,7 @@
       <li>{{ article.obj_perms }}</li>
       <li>{{ article.obj_status }}</li>
     </ul>
-
+    
     <ul class="nav navbar-nav navbar-right t-meta-options-links">
       <!-- start dropdown -->
       <li class="dropdown">
@@ -90,7 +90,7 @@
           <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?application=articles&object_id={{ article.pk }}">{% trans "Eventlogs" %}</a></li>
           <li><a class="t-meta-delete-link" href="{% url 'article.delete' article.pk %}">{% trans "Delete" %}</a></li>
         </ul>
-      </li>
+      </li> 
       <!-- end dropdown -->
     </ul>
     </div>

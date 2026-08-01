@@ -5,13 +5,13 @@
 <div class="row">
     <div class="col-sm-6 form-group">
     <label for="id_first_name" class="col-sm-4 control-label">{{ form.first_name.label }}</label>
-        <div class="col-sm-8">
+    	<div class="col-sm-8">
          {{ form.first_name }}
          </div>
     </div>
     <div class="col-sm-6 form-group">
     <label for="id_last_name" class="col-sm-4 control-label">{{ form.last_name.label }}</label>
-        <div class="col-sm-8">
+    	<div class="col-sm-8">
         {{ form.last_name }}
         </div>
     </div>
@@ -19,44 +19,44 @@
 <div class="row">
      <div class="col-sm-6 form-group">
      <label for="id_email" class="col-sm-4 control-label">{{ form.email.label }}</label>
-         <div class="col-sm-8">
+     	<div class="col-sm-8">
        {{ form.email }}
        </div>
     </div>
     <div class="col-sm-6 form-group">
-        <div class="col-sm-offset-4 col-sm-8">
-             <div class="checkbox">
-            <label>
-              {{ form.grid_view }} {{ form.grid_view.label }}
-            </label>
-         </div>
+    	<div class="col-sm-offset-4 col-sm-8">
+	         <div class="checkbox">
+	        <label>
+	          {{ form.grid_view }} {{ form.grid_view.label }}
+	        </label>
+	     </div>
       </div>
-    </div>
+    </div>  
 </div>
 
 {% if form.industry %}
 <div class="row">
     <div class="col-sm-6 form-group">
     <label for="id_industry" class="col-sm-4 control-label">{{ form.industry.label }}</label>
-        <div class="col-sm-8">
+    	<div class="col-sm-8">
          {{ form.industry }}
          </div>
     </div>
 </div>
 {% endif %}
-
+  
 <div class="row">
-    <div class="col-md-12 form-group">
-    <label class="col-sm-2 control-label">{% trans 'Search By'%}</label>
-    <div class="col-sm-10">
-                {{ form.search_criteria }} &nbsp;
-                {{ form.search_text }} &nbsp;
-                {{ form.search_method }}
-                <button class="btn btn-success" type="submit">
-            <i class="glyphicon glyphicon-search" alt="{% trans 'Search Resumes' %}"></i> {% trans 'Search' %}
+	<div class="col-md-12 form-group">
+	<label class="col-sm-2 control-label">{% trans 'Search By'%}</label>
+	<div class="col-sm-10">
+   	 		{{ form.search_criteria }} &nbsp;
+   	 		{{ form.search_text }} &nbsp;
+   	 		{{ form.search_method }}
+   	 		<button class="btn btn-success" type="submit">
+	        <i class="glyphicon glyphicon-search" alt="{% trans 'Search Resumes' %}"></i> {% trans 'Search' %}
              </button>
 
-      </div>
+  	</div>
 </div>
 </div>
 

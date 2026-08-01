@@ -18,15 +18,15 @@
 <article id="t-pages-page-{{ page.pk }}" class="t-pages-page">
   {% if page.title %}
   <div class="page-header">
-
-    <!-- UNCOMMENT FOR HEADER IMAGE TO DISPLAY ABOVE HEADER TITLE
-    - THIS IS COMMENTED OUT B/C IT CAN BE ADDED INTO DEFAULT TEMPLATE AS A BANNER
-
+    
+    <!-- UNCOMMENT FOR HEADER IMAGE TO DISPLAY ABOVE HEADER TITLE 
+    - THIS IS COMMENTED OUT B/C IT CAN BE ADDED INTO DEFAULT TEMPLATE AS A BANNER 
+    
     {% if page.header_image %}
     <img src="{{ page.get_header_image_url }}" alt="page header" title="page header" class="img-responsive" />
-    {% endif %}
+    {% endif %} 
     -->
-
+    
     <h1>
       {{ page.title }}
       {% if request.user.is_authenticated %}
@@ -38,12 +38,12 @@
     </h1>
   </div>
   {% endif %}
-
+  
   <div class="t-pages-page-body">
     {{ page.content|safe }}
   </div>
 
   {% include "pages/meta.html" %}
-
+  
 </article>
 {% endblock %}

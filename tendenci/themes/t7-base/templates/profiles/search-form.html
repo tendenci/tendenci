@@ -5,13 +5,13 @@
 <div class="row">
     <div class="col-sm-6 form-group">
     <label for="id_first_name" class="col-sm-4 control-label">{{ search_form.first_name.label }}</label>
-        <div class="col-sm-8">
+    	<div class="col-sm-8">
          {{ search_form.first_name }}
          </div>
     </div>
     <div class="col-sm-6 form-group">
     <label for="id_last_name" class="col-sm-4 control-label">{{ search_form.last_name.label }}</label>
-        <div class="col-sm-8">
+    	<div class="col-sm-8">
         {{ search_form.last_name }}
         </div>
     </div>
@@ -19,82 +19,82 @@
 <div class="row">
      <div class="col-sm-6 form-group">
      <label for="id_email" class="col-sm-4 control-label">{{ search_form.email.label }}</label>
-         <div class="col-sm-8">
+     	<div class="col-sm-8">
        {{ search_form.email }}
        </div>
     </div>
 
-    <div class="col-sm-6 form-group">
+	<div class="col-sm-6 form-group">
     <label for="id_group" class="col-sm-4 control-label">{{ search_form.group.label }}</label>
-        <div class="col-sm-8">
+    	<div class="col-sm-8">
         {{ search_form.group }}
         </div>
-    </div>
+    </div>	
 </div>
 
 
 {% if show_member_option %}
 
-    <div class="row">
-        <div class="col-sm-6 form-group">
-        <label for="id_membership_type" class="col-sm-4 control-label">{{ search_form.membership_type.label }}</label>
-            <div class="col-sm-8">
-            {{ search_form.membership_type }}
-            </div>
-        </div>
-        {% if show_industry %}
-        <div class="col-sm-6 form-group">
-        <label for="id_industry" class="col-sm-4 control-label">{{ search_form.industry.label }}</label>
-            <div class="col-sm-8">
-            {{ search_form.industry }}
-            </div>
-        </div>
+	<div class="row">	
+	    <div class="col-sm-6 form-group">
+	    <label for="id_membership_type" class="col-sm-4 control-label">{{ search_form.membership_type.label }}</label>
+	    	<div class="col-sm-8">
+	        {{ search_form.membership_type }}
+	        </div>
+	    </div>
+		{% if show_industry %}
+	    <div class="col-sm-6 form-group">
+	    <label for="id_industry" class="col-sm-4 control-label">{{ search_form.industry.label }}</label>
+	    	<div class="col-sm-8">
+	        {{ search_form.industry }}
+	        </div>
+	    </div>
 
-        {% else %}
-            {% if not memberships_search %} {# put the checkbox here if the industry field is NOT presented #}
-            <div class="row">
-                <div class="col-sm-6 form-group">
-                    <div class="col-sm-offset-4 col-sm-8">
-                         <div class="checkbox">
-                        <label>
-                          {{ search_form.member_only }} {{ search_form.member_only.label }}
-                        </label>
-                     </div>
-                  </div>
-                </div>
-            </div>
-            {% endif %}
+		{% else %} 
+			{% if not memberships_search %} {# put the checkbox here if the industry field is NOT presented #}
+			<div class="row">
+			    <div class="col-sm-6 form-group">
+			    	<div class="col-sm-offset-4 col-sm-8">
+				         <div class="checkbox">
+				        <label>
+				          {{ search_form.member_only }} {{ search_form.member_only.label }}
+				        </label>
+				     </div>
+			      </div>
+			    </div> 
+			</div>
+			{% endif %} 
+			
+	    {% endif %} 
+	</div>
+	
+	{% if show_industry and not memberships_search %} {# put the checkbox here if the industry field is presented #}
+	<div class="row">
+	    <div class="col-sm-6 form-group">
+	    	<div class="col-sm-offset-4 col-sm-8">
+		         <div class="checkbox">
+		        <label>
+		          {{ search_form.member_only }} {{ search_form.member_only.label }}
+		        </label>
+		     </div>
+	      </div>
+	    </div> 
+	</div>
+	{% endif %} 
 
-        {% endif %}
-    </div>
-
-    {% if show_industry and not memberships_search %} {# put the checkbox here if the industry field is presented #}
-    <div class="row">
-        <div class="col-sm-6 form-group">
-            <div class="col-sm-offset-4 col-sm-8">
-                 <div class="checkbox">
-                <label>
-                  {{ search_form.member_only }} {{ search_form.member_only.label }}
-                </label>
-             </div>
-          </div>
-        </div>
-    </div>
-    {% endif %}
-
-{% endif %}
+{% endif %} 
 
 <div class="row form-inline">
     <div class="col-md-12 form-group">
-        <label class="col-sm-2 control-label">{% trans 'Search By'%}</label>
-        <div class="col-sm-10">
-                    {{ search_form.search_criteria }} &nbsp;
-                    {{ search_form.search_text }}
-                    <button class="btn btn-success" type="submit">
-                <i class="glyphicon glyphicon-search" alt="{% trans 'Search Users' %}"></i> {% trans 'Search' %}
-                 </button>
-
-          </div>
+		<label class="col-sm-2 control-label">{% trans 'Search By'%}</label>
+		<div class="col-sm-10">
+	   	 		{{ search_form.search_criteria }} &nbsp;
+	   	 		{{ search_form.search_text }} 
+	   	 		<button class="btn btn-success" type="submit">
+		        <i class="glyphicon glyphicon-search" alt="{% trans 'Search Users' %}"></i> {% trans 'Search' %}
+	             </button>
+	
+	  	</div>
     </div>
 </div>
 

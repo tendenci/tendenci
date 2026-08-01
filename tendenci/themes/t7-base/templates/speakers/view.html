@@ -52,13 +52,13 @@ speaker {{ speaker.name }}
 
 {% block content %}
 <div id="speaker-details">
-
+  
   <div class="page-header">
     <h1>{{ speaker.name }}</h1>
   </div>
-
+  
   <div class="view-speaker-member">
-
+    
     <div class="row">
       <div class="col-md-3">
         <div class="member-photo">
@@ -94,7 +94,7 @@ speaker {{ speaker.name }}
         {% endif %}
       </div>
     </div> <!-- Close row -->
-
+    
     <div class="speaker-media">
       {% if speaker.facebook %}
       <a href="{{ speaker.facebook }}"><img src="{% static 'images/icons/facebook-24x24.png' %}" title="Follow {{ speaker.name }} on Facebook" alt="Follow {{ speaker.name }} on Facebook" /></a>
@@ -105,7 +105,7 @@ speaker {{ speaker.name }}
       {% if speaker.linkedin %}
       <a href="{{ speaker.linkedin }}"><img src="{% static 'images/icons/linkedin-24x24.png' %}" title="Follow {{ speaker.name }} on Linkedin" alt="Follow {{ speaker.name }} on Linkedin" /></a>
       {% endif %}
-
+      
       {% if speaker.get_satisfaction %}
       <div>
         {% trans 'Get Satisfaction:' %} <a href="{{ speaker.get_satisfaction }}">{{ speaker.get_satisfaction }}</a>
@@ -123,21 +123,21 @@ speaker {{ speaker.name }}
       {% endif %}
     </div>
     <div>&nbsp;</div>
-
-
-    <nav aria-label="speaker-meta-search">
+    
+    
+    <nav aria-label="speaker-meta-search">  
       <ul class="pager">
-        <li class="previous"><a href="/speakers/"><span aria-hidden="true">&larr;
+        <li class="previous"><a href="/speakers/"><span aria-hidden="true">&larr; 
           {% trans 'Search other speakers' %}</span> </a></li>
       </ul>
     </nav>
-
-    <!-- START: EDITING FOOTER -->
+    
+    <!-- START: EDITING FOOTER -->  
     {% if user.is_authenticated %}
     {% speaker_options request.user speaker %}
     {% endif %}
-    <!-- END: EDITING FOOTER -->
-
+    <!-- END: EDITING FOOTER -->  
+    
   </div>
 </div>
 {% endblock %}

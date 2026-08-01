@@ -24,8 +24,8 @@
 {% autopaginate staff_members 9 %}
 {% has_perm user staff.add_staff as can_add_staff %}
 <div id="case-studies-search">
-
-
+  
+  
   <div>
     <ul class="nav nav-pills">
       <li>
@@ -39,29 +39,29 @@
     <!-- NOTE: this is a styling inconsistency and should be updated to carry the Add button in "search-form.html" -->
     </ul>
   </div>
-
+  
   <br />
-
-
+  
+  
   <div class="staff-search-wrap-list clearfix">
     {% for staff in staff_members %}
-
+    
     {% if forloop.first %}<div class="row">{% endif %}
-
+    
     <div class="col-md-4">
       {% search_result staff %}
     </div>
-
+    
     {% if forloop.counter|divisibleby:3 %}</div><div class="row">{% endif %}
-    {% if forloop.last %}</div>{% endif %}
-
+    {% if forloop.last %}</div>{% endif %}    
+    
     {% empty %}
     <p>0 {% firstof MODULE_STAFF_LABEL_PLURAL 'Staff' %} {% trans "Found" %}</p>
     {% endfor %}
-
+    
   </div>
   {% paginate %}
-
+  
 </div>
 
 

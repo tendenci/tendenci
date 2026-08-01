@@ -17,21 +17,21 @@
 
 <div class="t">
     <div class="group-view" style="text-align: center;">
-        {% if unsubscribed %}
+    	{% if unsubscribed %}
         <h3>{% trans "You've successfully unsubscribed!" %}</h3>
-            {% if can_view_group %}
-                <p>{% blocktrans with name=group.name %}You won't receive any newsletters from the group "{{ name }}".{% endblocktrans %}</p>
-                {% else %}
-                <p>{% blocktrans %}You won't receive any newsletters from this group.{% endblocktrans %}</p>
-                {% endif %}
+        	{% if can_view_group %}
+       		 <p>{% blocktrans with name=group.name %}You won't receive any newsletters from the group "{{ name }}".{% endblocktrans %}</p>
+       		 {% else %}
+       		 <p>{% blocktrans %}You won't receive any newsletters from this group.{% endblocktrans %}</p>
+       		 {% endif %}
         {% else %}
         <h3>{% trans 'Unsubscribe Newsletters' %}</h3>
         <p>
-            {% if can_view_group %}
-            {% blocktrans with name=group.name %}Are you sure you want to unsubscribe Newsletters from the group "{{ name }}"?{% endblocktrans %}
-            {% else %}
-            {% blocktrans %}Are you sure you want to unsubscribe Newsletters from this group?{% endblocktrans %}
-            {% endif %}
+        	{% if can_view_group %}
+        	{% blocktrans with name=group.name %}Are you sure you want to unsubscribe Newsletters from the group "{{ name }}"?{% endblocktrans %}
+        	{% else %}
+        	{% blocktrans %}Are you sure you want to unsubscribe Newsletters from this group?{% endblocktrans %}
+        	{% endif %}
         </p>
         <p>&nbsp;</p>
         <div class="delete-form">
@@ -41,7 +41,7 @@
             </form>
         </div>
         {% endif %}
-
+        
         <br><br><br><br><br>
     </div>
 </div>

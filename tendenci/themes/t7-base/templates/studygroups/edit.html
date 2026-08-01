@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="{% static 'chosen/chosen.css' %}">
 <style>
 .edit-studygroups .label{
-    color: initial;
+	color: initial;
 }
 </style>
 {% endblock %}
@@ -39,10 +39,10 @@
                     {{ metaform|styled_form }}
                 </div>
             </fieldset>
-        <div class="form-group">
+        <div class="form-group">  
           <input class="btn btn-default" type="submit" value="{% trans 'Save Study Group Changes' %}" />
           {% if study_group.status %}
-
+          
           <a class="btn btn-danger pull-right" title="{% trans 'Link to delete confirmation page' %}" href="{% url "studygroups.delete" study_group.pk %}">
             {% trans "Delete" %}
           </a>
@@ -101,7 +101,7 @@
     <script type="text/javascript">
         var clone = $('.dynamic-form:first').clone(true);
         $('.add-row').on("click", function() {
-          cloned_row = addFormWithCloned(this, 'officers', clone);
+	      cloned_row = addFormWithCloned(this, 'officers', clone);
           // Handle chosen jquery plugin
           var current_officer_user = $(cloned_row).find(".officer-user select");
           current_officer_user.chosen();

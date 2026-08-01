@@ -21,25 +21,25 @@
     <h2>{{ form.title }}</h2>
     <p>{{ memories | length }} memories in total.</p>
   </div>
-
+  
 {% autopaginate memories 10 %}
-
+  
  {% for memory in memories %}
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <ul class="list-inline">
-
-            <li class="pull-left">
-    {#        Consider linking to the last form entry detail that matches  #}
-    {#          <a href="{{ entry.get_absolute_url }}">#}
-                  {% for field, value in memory.items %}
-                    <b>{{ field }}</b>: {{ value }}<br>
-                  {% endfor %}
-    {#          </a>#}
-            </li>
-          </ul>
-        </div>
-      </div>
+	  <div class="panel panel-default">  
+	    <div class="panel-body">
+	      <ul class="list-inline">
+	        
+	        <li class="pull-left">
+	{#        Consider linking to the last form entry detail that matches  #}
+	{#          <a href="{{ entry.get_absolute_url }}">#}
+	          	{% for field, value in memory.items %}
+	            	<b>{{ field }}</b>: {{ value }}<br>
+	          	{% endfor %}
+	{#          </a>#}
+	        </li>
+	      </ul>
+	    </div>
+	  </div>
   {% endfor %}
 </div>
 

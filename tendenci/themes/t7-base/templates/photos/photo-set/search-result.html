@@ -4,45 +4,45 @@
 {% load humanize %}
 
 <div class="grid-item-content panel panel-default">
-
+  
   <!-- START: PANEL BODY -->
   <div class="panel-body">
-
+    
     <a title="{{ photo_set.image_set.count }} Photo{{ photo_set.image_set.count|pluralize }}"
     href="{{ photo_set.get_absolute_url }}">
-
+      
       {% if photo_set.get_cover_photo %}
       <img class="img-responsive" style="width:100%;" src="{{ photo_set.get_cover_photo.get_medium_500_url }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" />
       {% else %}
       <img class="img-responsive" style="width:100%;" src="{{ photo_set.get_default_cover_photo }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" />
       {% endif %}
-
+      
     </a>
-
+    
     <h4><a href="{{ photo_set.get_absolute_url }}">{{ photo_set.name }}
       <span class="badge pull-right">{{ photo_set.image_set.count|intcomma }}</span></a></h4>
-
+    
     <div class="description">
       {{ photo_set.description|striptags|truncatewords_html:25|safe }}
     </div>
-
+    
     {% if photo_set.cat %}
      <ul class="list-inline">
          <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'photoset_latest' %}?cat={{ photo_set.cat.pk }}">{{ photo_set.cat.name }}</a></li>
      </ul>
     {% endif %}
-
+    
   </div>
   <!-- END: PANEL BODY -->
-
+  
   {% if user.profile.is_superuser %}
   <!-- START: META/FOOTER -->
-   <nav class="navbar navbar-default">
+   <nav class="navbar navbar-default">  
     <div class="container-fluid">
       <ul class="nav navbar-nav navbar-right">
         <li><a>{{ photo_set.obj_perms }}</a></li>
         <li><a>{{ photo_set.obj_status }}</a></li>
-
+        
         <li class="dropup">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                <span class="t-status">Options <span class="caret"></span></span></a>
@@ -55,5 +55,5 @@
   </nav>
   <!-- END: META/FOOTER -->
   {% endif %}
-
+  
 </div>

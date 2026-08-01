@@ -10,41 +10,41 @@
 
 {% block content %}
 <div class="t clearfix">
-    <h1>{% trans "Request to Associate" %}</h1>
-    <h3>{% trans "To: " %}<a href="{% url 'directory' directory.slug %}">{{ directory }}</a> {% if cats %}<small>
+	<h1>{% trans "Request to Associate" %}</h1>
+	<h3>{% trans "To: " %}<a href="{% url 'directory' directory.slug %}">{{ directory }}</a> {% if cats %}<small>
     {% for cat in cats %}
-    ({{ cat }}){% if not forloop.last %}, {% endif %}
-    {% endfor %}
-    </small>{% endif %}</h3>
+	({{ cat }}){% if not forloop.last %}, {% endif %}
+	{% endfor %}
+	</small>{% endif %}</h3>
+	
+	{% if warning_msg_string %}
+	<div class="alert alert-warning alert-dismissible" role="alert">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  {{ warning_msg_string|safe }}
+	</div>
+	{% endif %}
 
-    {% if warning_msg_string %}
-    <div class="alert alert-warning alert-dismissible" role="alert">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      {{ warning_msg_string|safe }}
-    </div>
-    {% endif %}
-
-    <div class="well">Fill out the form below. <br />
-    {% if cats %}
-    Note that only marketplaces with
-    {% for cat in allowed_affliated_cats %}
-    {{ cat }}{% if not forloop.last %}, {% endif %}
-    {% endfor %}
-    can request to associate.
-    {% endif %}
-    </div>
-    <div class="news-wrap">
+	<div class="well">Fill out the form below. <br />
+	{% if cats %}
+	Note that only marketplaces with
+	{% for cat in allowed_affliated_cats %}
+	{{ cat }}{% if not forloop.last %}, {% endif %}
+	{% endfor %}
+	can request to associate.
+	{% endif %}
+	</div>
+	<div class="news-wrap">
         <form action="." class="form-horizontal" method="post">{% csrf_token %}
         <div class="forms">
             {{ request_form|styled_form }}
 
             <div class="form-group">
-                <div class="col-sm-offset-3 col-sm-9">
-                    <button type="submit" class="btn btn-primary text-capitalize">
+            	<div class="col-sm-offset-3 col-sm-9">
+                	<button type="submit" class="btn btn-primary text-capitalize">
                     {% trans 'Submit Request' %}
-                    </button>
-                   </div>
-                </div>
+                	</button>
+           		</div>
+       		 </div>
         </div>
         </form>
     </div>

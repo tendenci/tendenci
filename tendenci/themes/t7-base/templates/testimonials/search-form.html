@@ -6,8 +6,8 @@
 {% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="form-inline" action="{% url 'testimonials' %}" method="get" role="search">
   <div class="form-group">
-
-    <div class="input-group add-on">
+    
+    <div class="input-group add-on">      
       <input class="form-control" type="text" name="q" value="{{ request.GET.q|striptags }}" placeholder="Search" />
       <div class="input-group-btn">
         <button class="btn btn-default" type="submit">
@@ -15,15 +15,15 @@
         </button>
       </div>
     </div>
-
+    
   </div>
-
+  
   {% if can_add_testimonial %}
   <div class="form-group pull-right">
     <a class="btn btn-primary" href="{% url 'admin:testimonials_testimonial_add' %}">Add Testimonial</a>
   </div>
   {% endif %}
-
+  
 </form>
 <br />
 {% endif %}
