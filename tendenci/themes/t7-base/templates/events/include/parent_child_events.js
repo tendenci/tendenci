@@ -84,12 +84,12 @@ $('#id_repeat_of').on('change', function() {
 
 
 $('form#event-form').submit(function(event) {
-    var repeat_of_val = $("#id_repeat_of").val();
-    if (repeat_of_selected == true && repeat_of_val != ""){
-        var repeat_of_text = $( "#id_repeat_of option:selected" ).text();
-        if (!confirm('Are you sure you want to overwrite this event by copying an event from: ' + repeat_of_text)){
-            event.preventDefault();
-        }
-    }
+	var repeat_of_val = $("#id_repeat_of").val();
+	if (repeat_of_selected == true && repeat_of_val != ""){
+		var repeat_of_text = $( "#id_repeat_of option:selected" ).text();
+		if (!confirm('Are you sure you want to overwrite this event by copying an event from: ' + repeat_of_text)){
+			event.preventDefault();
+		}
+	}	
 });
 

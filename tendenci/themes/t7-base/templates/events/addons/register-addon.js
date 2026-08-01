@@ -92,7 +92,7 @@ function addAddon(prefix, addon, container){
             option_title_display = ': ' + option_title;
         }
     addon_input.parent().parent().find('label').html(addon['title'] + ': ' + option_title_display + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + addon['price']  + ')');
-    addon_input.hide();
+	addon_input.hide();
     // insert as last element into form list
     $(container).append(row);
 
@@ -132,7 +132,7 @@ $(document).ready(function(){
                 var addon = $(addons[i]);
                 var addon_num = parseInt($("#add-addon-"+ addon.val() +"-count").val());
                 if(addon.val() && addon_num > 0){
-                    $(addons[i]).prop("checked", true); // check the checkbox
+	                $(addons[i]).prop("checked", true); // check the checkbox
                     var addon_d = {};
                     addon_d['quantity'] = addon.attr('quantity');
                     addon_d['price'] = addon.attr('price');
@@ -143,7 +143,7 @@ $(document).ready(function(){
                     addon_d['option'] = parseInt(selected_option.val());
                     addon_d['option_title'] = $(selected_option).attr('title');
                    // console.log(addon_d);
-
+                    
                     for(var j=0; j<addon_num; j++){
                         addAddon('addon', addon_d, container);
                     }
