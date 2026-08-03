@@ -12,7 +12,7 @@ urlpatterns = [
     re_path(r'^%s/$' % urlpath, views.search, name="directories"),
     re_path(r'^%s/affiliates/' % urlpath, include('tendenci.apps.directories.affiliates.urls')),
     re_path(r'^%s/search/$' % urlpath, views.search_redirect, name="directory.search"),
-    re_path(r"^%s/mylist/$" % urlpath, views.search, 
+    re_path(r"^%s/mylist/$" % urlpath, views.search,
         {'my_directories_only': True}, name="directory.my_directories_only"),
     re_path(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, views.print_view, name="directory.print_view"),
     re_path(r'^%s/add/$' % urlpath, views.add, name="directory.add"),

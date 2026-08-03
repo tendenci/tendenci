@@ -5,7 +5,7 @@ from datetime import date
 import time as ttime
 import math
 import subprocess
-from dateutil.parser import parse as dparse, ParserError 
+from dateutil.parser import parse as dparse, ParserError
 import os
 import mimetypes
 
@@ -124,7 +124,7 @@ def search(request, template_name="chapters/search.html"):
         region = form.cleaned_data.get('region')
         state = form.cleaned_data.get('state')
         county = form.cleaned_data.get('county')
-        
+
         if query:
             chapters = Chapter.objects.search(query, user=request.user)
         else:
@@ -284,7 +284,7 @@ def edit(request, id, form_class=ChapterForm, meta_form_class=MetaForm, category
     if request.method == "POST":
         form = form_class(request.POST, request.FILES, instance=chapter, user=request.user)
         metaform = meta_form_class(request.POST, instance=chapter.meta, prefix='meta')
-        categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category') 
+        categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
 
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid() and formset.is_valid():
             chapter = form.save()
@@ -294,7 +294,7 @@ def edit(request, id, form_class=ChapterForm, meta_form_class=MetaForm, category
 
             #save meta
             meta = metaform.save()
-            chapter.meta = meta         
+            chapter.meta = meta
 
             ## update the category of the chapter
             category_removed = False
@@ -426,10 +426,10 @@ def delete(request, id, template_name="chapters/delete.html"):
 def coordinating_group_list(request, template_name="chapters/coordinating_group_list.html"):
     coordinating_agencies = request.user.chapter_coordinators.all()
     if not coordinating_agencies:
-        raise Http404 
+        raise Http404
     if coordinating_agencies.count() == 1:
         return HttpResponseRedirect(reverse('group.detail', args=[coordinating_agencies[0].group.slug]))
-    
+
     return render_to_resp(request=request,
                           template_name=template_name,
         context={'coordinating_agencies': coordinating_agencies})
@@ -512,16 +512,16 @@ def chapter_memberships_search(request, chapter_id=0,
         for field_name, field_value in form.cleaned_data.items():
             if field_value and field_name in membership_fieldnames:
                 if isinstance(field_value, list):
-                    chapter_memberships = chapter_memberships.filter(reduce(operator.or_, 
+                    chapter_memberships = chapter_memberships.filter(reduce(operator.or_,
                         [Q(**{f'{field_name}__icontains': value}) for value in field_value]))
                 elif isinstance(field_value, str):
                     chapter_memberships = chapter_memberships.filter(Q(**{f'{field_name}__icontains': field_value}))
                 elif isinstance(field_value, bool):
                     chapter_memberships = chapter_memberships.filter(Q(**{f'{field_name}': field_value}))
-                    
-                    
+
+
         chapter_memberships = chapter_memberships.order_by('user__last_name', 'user__first_name')
-    
+
         if 'export' in request.GET:
             EventLog.objects.log(description="chapter memberships export")
             import csv
@@ -537,11 +537,11 @@ def chapter_memberships_search(request, chapter_id=0,
                 field_labels += [_('Create Date'), _('Join Date'), _('Renew Date'),
                                 _('Expire Date'), _('Status Detail')]
                 field_labels.insert(0, _('Chapter'))
-                
+
                 writer = csv.DictWriter(Echo(), fieldnames=field_labels)
                 # write headers - labels
                 yield writer.writerow(dict(zip(field_labels, field_labels)))
-            
+
                 for chapter_membership in chapter_memberships:
                     values_list = [chapter_membership.user.first_name,
                                    chapter_membership.user.last_name,
@@ -585,11 +585,11 @@ def chapter_memberships_search(request, chapter_id=0,
                     else:
                         values_list.append('')
                     values_list.append(chapter_membership.status_detail)
-                    
+
                     values_list.insert(0, chapter_membership.chapter.title)
-            
+
                     yield writer.writerow(dict(zip(field_labels, values_list)))
-    
+
             response = StreamingHttpResponse(
             streaming_content=(iter_chapter_memberships(chapter_memberships, app_fields)),
             content_type='text/csv',)
@@ -632,7 +632,7 @@ def chapter_memberships_search(request, chapter_id=0,
             retn_content = email_chapter_members(email,
                                                  chapter_memberships,
                                                  request=request)
-    
+
             EventLog.objects.log(instance=email)
             return StreamingHttpResponse(streaming_content=retn_content)
     else:
@@ -695,7 +695,7 @@ def edit_app_fields(request, id, form_class=AppFieldCustomForm, template_name="c
     if request.method == "POST":
         if formset_app_fields.is_valid():
             cfields = formset_app_fields.save()
-            
+
             msg_string = _('Successfully saved fields: ') + \
                 ', '.join([cfield.app_field.label for cfield in cfields])
             messages.add_message(request, messages.SUCCESS, _(msg_string))
@@ -745,7 +745,7 @@ def edit_membership_types(request, id, form_class=CustomMembershipTypeForm,
     if request.method == "POST":
         if formset_membership_types.is_valid():
             c_membership_types = formset_membership_types.save()
-            
+
             msg_string = _('Successfully saved membership types: ') + \
                 ', '.join([c_membership_type.membership_type.name for c_membership_type in c_membership_types])
             messages.add_message(request, messages.SUCCESS, _(msg_string))
@@ -871,7 +871,7 @@ def chapter_membership_add(request, chapter_id=0,
 
     # app fields
     app_fields = app.get_app_fields(chapter, request.user)
-    
+
     params = {
         'request_user': request.user,
         'is_renewal': False,
@@ -907,7 +907,7 @@ def chapter_membership_add(request, chapter_id=0,
 
             # log an event
             EventLog.objects.log(instance=chapter_membership)
-            
+
             # email notification to admin
             chapter_membership.email_admin_join_notice(request)
 
@@ -955,7 +955,7 @@ def chapter_membership_edit(request, chapter_membership_id=0,
     """
     Chapter membership edit.
     """
-    
+
     chapter_membership = get_object_or_404(ChapterMembership, id=chapter_membership_id)
     if not chapter_membership.allow_edit_by(request.user):
         raise Http403
@@ -965,7 +965,7 @@ def chapter_membership_edit(request, chapter_membership_id=0,
 
     # app fields
     app_fields = app.get_app_fields(chapter, request.user)
-    
+
     params = {
         'request_user': request.user,
         'is_renewal': False,
@@ -1021,7 +1021,7 @@ def chapter_membership_renew(request, chapter_membership_id=0,
     app = chapter_membership.app
     chapter = chapter_membership.chapter
     renew_from_id = chapter_membership.id
-    
+
     # app fields
     app_fields = app.get_app_fields(chapter, request.user)
     membership_initial = {}
@@ -1029,8 +1029,8 @@ def chapter_membership_renew(request, chapter_membership_id=0,
         field_name = app_field.field_name
         if field_name and hasattr(chapter_membership, field_name):
             membership_initial[field_name] = getattr(chapter_membership, field_name)
-        
-    
+
+
     params = {
         'request_user': request.user,
         'renew_from_id': renew_from_id,
@@ -1306,22 +1306,22 @@ def chapter_memberships_import_preview(request, mimport_id,
             for f in ['join_dt', 'expire_dt', 'membership_type']:
                 if f in idata.row_data:
                     user_display[f] = idata.row_data[f]
-            
+
             users_list.append(user_display)
             if not fieldnames:
                 fieldnames = list(idata.row_data.keys())
-                
+
         # DateTime fields are sensitive to parse failures
-        # They are not parsed in the preview yet, in fact all 
-        # data travens as strings to be cleaned and parsd just 
-        # before being saved to the respecive models. Datetimes 
+        # They are not parsed in the preview yet, in fact all
+        # data travens as strings to be cleaned and parsd just
+        # before being saved to the respecive models. Datetimes
         # and dates are parsed with dateutil.parser, so we do
         # that here specifically so that someone importing dates
-        # sees a preview of the parse success/failure before 
+        # sees a preview of the parse success/failure before
         # committing.
         #
-        # We elect join_dt and expire_dt as the two most likely 
-        # dates of interest to someone importing members en 
+        # We elect join_dt and expire_dt as the two most likely
+        # dates of interest to someone importing members en
         # masse.
         for dt in ['join_dt', 'expire_dt']:
             if dt in fieldnames:
@@ -1334,8 +1334,8 @@ def chapter_memberships_import_preview(request, mimport_id,
                     else:
                         u[dt] = "None"
 
-        # Similarly membership_type if imported must be 
-        # imported as the id of a membership_type and it's 
+        # Similarly membership_type if imported must be
+        # imported as the id of a membership_type and it's
         # useful to get feedback on integrity at the preview
         # before committing the import.
         # TODO: This could generalize to all ID type imports supported
@@ -1347,7 +1347,7 @@ def chapter_memberships_import_preview(request, mimport_id,
                     mt = int(str(u['membership_type_id']))
                 except ValueError:
                     mt = 'Value Error'
-                    
+
                 u['membership_type_id'] = mts.get(mt, 'None')
         if not mimport.chapter:
             if 'chapter_id' in fieldnames:

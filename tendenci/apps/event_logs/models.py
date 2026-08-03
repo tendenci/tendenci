@@ -54,7 +54,7 @@ class EventLog(models.Model):
             self.uuid = str(uuid.uuid4())
         self.verifydata()
         super().save(*args, **kwargs)
-        
+
     def verifydata(self):
         # verify each field
         for field in EventLog._meta.fields:

@@ -98,7 +98,7 @@ def process_export(
     field_dict = OrderedDict([(label.lower().replace(" ", "_"), ''
                                ) for label in labels])
 
-    with default_storage.open(file_path_temp, 'w') as csvfile:        
+    with default_storage.open(file_path_temp, 'w') as csvfile:
         csv_writer = csv.DictWriter(csvfile, fieldnames=list(field_dict.keys()))
         csv_writer.writeheader()
 

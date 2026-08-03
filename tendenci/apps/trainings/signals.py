@@ -33,7 +33,7 @@ def reg_save_transcript(sender, **kwargs):
             transcript.status = 'cancelled'
         transcript.save()
 
-   
+
 def outside_school_save_transcript(sender, **kwargs):
     """
     Add or update an transcript entry on outside school add or edit.
@@ -49,7 +49,7 @@ def outside_school_save_transcript(sender, **kwargs):
                                 parent_id=outside_school.id,
                                 location_type='outside',
                                 creator=outside_school.creator)
-    
+
     transcript.school_category = outside_school.school_category
     if outside_school.certification_track:
         transcript.certification_track = outside_school.certification_track
@@ -64,4 +64,4 @@ def outside_school_save_transcript(sender, **kwargs):
 def init_signals():
     post_save.connect(reg_save_transcript, sender=Registrant, weak=False)
     post_save.connect(outside_school_save_transcript, sender=OutsideSchool, weak=False)
-    
+

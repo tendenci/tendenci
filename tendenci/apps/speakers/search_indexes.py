@@ -16,6 +16,6 @@ class SpeakerIndex(TendenciBaseSearchIndex, indexes.Indexable):
     @classmethod
     def get_model(self):
         return Speaker
-     
+
     def prepare_order(self, obj):
         return obj.update_dt

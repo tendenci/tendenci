@@ -142,7 +142,7 @@ class RegionForm(FormControlWidgetMixin, forms.Form):
                                       queryset=Region.objects.filter(status_detail='active').order_by('region_name'),
                                       empty_label="All",
                                       required=False)
-  
+
 
 class MemberSearchForm(FormControlWidgetMixin, forms.Form):
     def __init__(self, *args, **kwargs):
@@ -885,14 +885,14 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                 # we didn't find user, check if email address is already in use
                 if email:
                     # Fixing an issue here - when an email address in the db has a trailing space,
-                    # a match cannot be found with the same email address. As an result, 
+                    # a match cannot be found with the same email address. As an result,
                     # an IntegrityError could occur when a new user record is being created.
                     if User.objects.filter(username=email).exists():
                         u = User.objects.get(username=email)
                         if u.email.strip().replace(' ', '') != u.email:
                             u.email = u.email.strip().replace(' ', '')
                             u.save()
-  
+
                     if User.objects.filter(email__iexact=email).exists():
                         if self.request.user.is_authenticated:
                             # user is logged in
@@ -1058,7 +1058,7 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
         if app_field_objs:
             assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields]
-        
+
         # If none Education fields are presented on the form, clear fields from the
         # EducationForm to prevent the existing education data from being wipped out.
         if app_field_objs and app_field_objs.filter(field_name__in=['school1', 'major1', 'degree1', 'graduation_dt1',
@@ -1149,7 +1149,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
         self.request = kwargs.pop('request', None)
         self.membership = kwargs.pop('membership', None)
         super().__init__(*args, **kwargs)
-        
+
         self.field_names = [name for name in self.fields]
         # change the default widget to TextInput instead of TextArea
         for key, field in self.fields.items():
@@ -1195,7 +1195,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                         self.fields[field_name].initial = getattr(self.demographics, field_name)
 
         self.add_form_control_class()
-        
+
     def assign_file_perms(self, file_instance):
         """
         Assign permissions for the uploaded file.
@@ -1206,7 +1206,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
         file_instance.allow_user_view = False
         file_instance.allow_member_view = False
         file_instance.is_public = False
-        
+
         if member_protection == 'public':
             file_instance.allow_anonymous_view = True
             file_instance.is_public = True
@@ -1323,7 +1323,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             self.corp_app_authentication_method = ''
 
         super().__init__(*args, **kwargs)
-        
+
         if 'industry' in self.fields:
             # the industry has been moved to profile
             del self.fields['industry']
@@ -2174,7 +2174,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             membership.set_member_number()
             membership.user.profile.member_number = membership.member_number
             membership.user.profile.save()
-    
+
             # save application fields
             # save join, renew, and expire dt
             membership.save()

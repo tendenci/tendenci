@@ -76,7 +76,7 @@ def acct_onboarding(request, template_name='payments/stripe/connect/acct_onboard
                 err_msg += str(e)
             except Exception as e:
                 err_msg += str(e)
-            
+
             if not err_msg:
                 # save the stripe account to db
                 sa = onboarding_form.save(commit=False)
@@ -85,7 +85,7 @@ def acct_onboarding(request, template_name='payments/stripe/connect/acct_onboard
                 sa.creator = sa.owner = request.user
                 sa.creator_username = sa.owner_username = request.user.username
                 sa.save()
-                
+
                 # generate an account link
                 # TODO: need to track errors
                 site_url = get_setting('site', 'global', 'siteurl')
@@ -95,13 +95,13 @@ def acct_onboarding(request, template_name='payments/stripe/connect/acct_onboard
                           return_url=site_url+reverse('stripe_connect.acct_onboarding_done', args=[sa.id]),
                           type="account_onboarding",
                         )
-                
+
                 # redirect user to the account link URL
                 return HttpResponseRedirect(acct_link.url)
-    
+
     if err_msg:
         messages.add_message(request, messages.ERROR, err_msg)
-   
+
     return render_to_resp(request=request,
                           template_name=template_name,
                         context={'onboarding_form': onboarding_form})
@@ -112,7 +112,7 @@ def acct_onboarding_refresh(request, sa_id):
     # superuser only
     if not request.user.is_superuser:
         raise Http403
-    
+
     sa = get_object_or_404(StripeAccount, pk=sa_id)
     site_url = get_setting('site', 'global', 'siteurl')
     err_msg = ''
@@ -125,7 +125,7 @@ def acct_onboarding_refresh(request, sa_id):
                           return_url=site_url+reverse('stripe_connect.acct_onboarding_done', args=[sa.id]),
                           type="account_onboarding",
                         )
-                
+
             # redirect user to the account link URL
             return HttpResponseRedirect(acct_link.url)
         except stripe.error.InvalidRequestError as e:
@@ -141,9 +141,9 @@ def acct_onboarding_refresh(request, sa_id):
 def acct_onboarding_done(request, sa_id, template_name='payments/stripe/connect/acct_onboarding_done.html'):
     if not request.user.is_superuser:
         raise Http403
-    
+
     sa = get_object_or_404(StripeAccount, pk=sa_id)
-    
+
     # retriever the stripe account
     stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
     acct = stripe.Account.retrieve(sa.stripe_user_id)
@@ -156,10 +156,10 @@ def acct_onboarding_done(request, sa_id, template_name='payments/stripe/connect/
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     site_url = get_setting('site', 'global', 'siteurl')
-    refresh_url= site_url + reverse('stripe_connect.acct_onboarding_refresh', args=[sa.id])   
+    refresh_url= site_url + reverse('stripe_connect.acct_onboarding_refresh', args=[sa.id])
     return render_to_resp(request=request,
                           template_name=template_name,
-                        context={'sa': sa, 
+                        context={'sa': sa,
                                  'refresh_url': refresh_url})
 
 
@@ -173,14 +173,14 @@ class AuthorizeView(TemplateView):
 
 class DeauthorizeView(View):
     template_name = 'payments/stripe/connect/deauthorize.html'
-    
+
     @method_decorator(login_required)
     def dispatch(self, request, sa_id, *args, **kwargs):
         self.sa = get_object_or_404(StripeAccount, pk=sa_id, status_detail='active')
         if not has_perm(request.user, 'stripe.delete_stripeaccount', self.sa):
             raise Http403
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name, {'sa': self.sa})
 
@@ -211,7 +211,7 @@ class WebhooksView(View):
     @method_decorator(require_POST)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
         payload = request.body.decode()
         sig_header = request.META['HTTP_STRIPE_SIGNATURE']
@@ -301,7 +301,7 @@ class FetchAccessToken(View):
             sa.owner_username = request.user.username
             sa.status_detail='active'
             sa.save()
-            
+
             # retrieve account info
             stripe.api_key = settings.STRIPE_SECRET_KEY
             stripe.api_version = settings.STRIPE_API_VERSION
@@ -311,14 +311,14 @@ class FetchAccessToken(View):
             if not sa.account_name:
                 business_profile = account.get('business_profile')
                 if business_profile:
-                    sa.account_name = business_profile.get('name') or '' 
+                    sa.account_name = business_profile.get('name') or ''
             sa.email = account.get('email', '')
             if sa.email is None:
                 sa.email = ''
             sa.default_currency = account.get('default_currency', '')
             sa.country = account.get('country', '')
             sa.save()
-        
+
             msg_string = _('Success!')
         else:
             sa = None
@@ -337,13 +337,13 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
             msg_string += str(_('Please follow the guide {0} to complete the setup process for {1}, then try again.').format(url_setup_guide, merchant_provider))
         else:
             msg_string += str(_('Please contact the site administrator to complete the setup process.'))
-            
+
         messages.add_message(request, messages.ERROR, _(msg_string))
-        
+
         payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
-    
+
         return HttpResponseRedirect(reverse('invoice.view', args=[payment.invoice.id]))
-            
+
     with transaction.atomic():
         payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id, guid=guid)
         form = StripeCardForm(request.POST or None)
@@ -423,7 +423,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
                 message = err and err['message']
                 charge_response = '{message} status={status}, code={code}'.format(
                             message=message, status=e.http_status, code=code)
-                
+
             except Exception as e:
                 if hasattr(e, 'message'):
                     charge_response = e.message
@@ -500,7 +500,7 @@ def update_card(request, rp_id):
         msg_string = 'Error updating payment method: {}'.format(e)
 
     messages.add_message(request, message_status, _(msg_string))
-    
+
     next_page = get_next_url(request)
     if next_page:
         return HttpResponseRedirect(next_page)

@@ -312,7 +312,7 @@ class Field(OrderingBaseModel):
             choices = [(val.strip(), val.strip()) for val in self.choices.split(",")]
             if not self.default and self.field_type == 'ChoiceField':
                 choices = [('', '-----------'),] + choices
-                
+
         return choices
 
     def execute_function(self, entry, value, user=None):

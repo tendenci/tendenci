@@ -12,10 +12,10 @@ from tendenci.apps.files.validators import FileValidator
 
 
 class OfficerBaseFormSet(BaseInlineFormSet):
-    def __init__(self,  *args, **kwargs): 
+    def __init__(self,  *args, **kwargs):
         self.study_group = kwargs.pop("study_group", None)
         super().__init__(*args, **kwargs)
- 
+
     def _construct_form(self, i, **kwargs):
         if hasattr(self, 'study_group'):
             kwargs['study_group'] = self.study_group

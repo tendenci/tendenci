@@ -64,7 +64,7 @@ class ProjectForm(TendenciBaseForm):
                 'featured',
                 'status_detail',
         )
-        
+
         fieldsets = (
         (None,
             {'fields': (
@@ -145,7 +145,7 @@ class ProjectForm(TendenciBaseForm):
                 del self.fields['group_perms']
                 del self.fields['status_detail']
                 del self.fields['featured']
-            
+
         if self.instance.pk:
             self.fields['project_description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['video_description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -204,7 +204,7 @@ class DocumentsForm(FormControlWidgetMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['file'].label = _("File")
         self.fields['file'].validators = [FileValidator()]
-        
+
 
 class DocumentsFrontForm(DocumentsForm):
 

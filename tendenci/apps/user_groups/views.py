@@ -193,7 +193,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         print('form errors', list(form.errors.items()))
 
     if membership_type:
-        available_tokens = '[membership_link], [membership_type], [directory_url], [directory_edit_url], [invoice_link]' 
+        available_tokens = '[membership_link], [membership_type], [directory_url], [directory_edit_url], [invoice_link]'
     else:
         available_tokens = ''
 
@@ -1122,7 +1122,7 @@ def subscribe_to_newsletter_interactive(request, group_slug):
     next_url = get_next_url(request)
     if next_url:
         return redirect(next_url)
-        
+
 
     return redirect(reverse('group.detail', kwargs={'group_slug': group_slug}))
 

@@ -84,15 +84,15 @@ def save_file_to_s3(file_path, dirpath=None, public=False, dest_path=None):
 #                                settings.AWS_SECRET_ACCESS_KEY)
 #         bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
 #         k = Key(bucket)
-# 
+#
 #         filename = os.path.split(file_path)[1]
-# 
+#
 #         if not dirpath:
 #             dirpath = settings.ORIGINAL_THEMES_DIR
-# 
+#
 #         if not dest_path:
 #             dest_path = file_path.replace(os.path.dirname(dirpath), '')
-# 
+#
 #         key = '%s%s' % (settings.AWS_LOCATION, dest_path)
 #         k.key = key
 #         if os.path.splitext(filename)[1] == '.less':
@@ -101,7 +101,7 @@ def save_file_to_s3(file_path, dirpath=None, public=False, dest_path=None):
 #             content_type = mimetypes.guess_type(filename)[0] or k.DefaultContentType
 #         k.set_metadata('Content-Type', content_type)
 #         k.set_contents_from_filename(file_path, replace=True)
-# 
+#
 #         if public:
 #             k.set_acl('public-read')
 
@@ -116,11 +116,11 @@ def set_s3_file_permission(file, public=False):
 #                                settings.AWS_SECRET_ACCESS_KEY)
 #         bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
 #         k = Key(bucket)
-# 
+#
 #         file_path = str(file)
-# 
+#
 #         k.key = '%s%s' % (settings.MEDIA_ROOT, file)
-# 
+#
 #         if default_storage.exists(file_path):
 #             if public:
 #                 k.set_acl('public-read')
@@ -162,7 +162,7 @@ def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=Fals
 #     if not os.path.isdir(to_dir):
 #         print('Destination directory does not exist.')
 #         return
-# 
+#
 #     if all([settings.AWS_ACCESS_KEY_ID,
 #             settings.AWS_SECRET_ACCESS_KEY,
 #             settings.AWS_STORAGE_BUCKET_NAME,
@@ -171,7 +171,7 @@ def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=Fals
 #         conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
 #                                settings.AWS_SECRET_ACCESS_KEY)
 #         bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
-# 
+#
 #         for item in bucket.list(prefix=name):
 #             s3_file_relative_path = item.name.replace(name, '').lstrip('/')
 #             copy_to_fullpath = os.path.join(to_dir, s3_file_relative_path)
@@ -179,7 +179,7 @@ def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=Fals
 #             if not os.path.isdir(copy_to_dir):
 #                 # directory not exists, create it
 #                 os.makedirs(copy_to_dir)
-# 
+#
 #             if update_only and os.path.isfile(copy_to_fullpath):
 #                 # check if this file from s3 has been modified.
 #                 # if not modified, no need to update.
@@ -195,11 +195,11 @@ def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=Fals
 #                     # source is current, no need to update
 #                     print('Not modified %s' % s3_file_relative_path)
 #                     continue
-# 
+#
 #                 elif dst_modified_dt > src_modified_dt:
 #                     print("Not updated. %s is current." % s3_file_relative_path)
 #                     continue
-# 
+#
 #             if dry_run:
 #                 print('Pretended to download %s' % s3_file_relative_path)
 #             else:

@@ -47,7 +47,7 @@ class TendenciExportTask(celery.Task):
                     start_dt = datetime.strptime(start_dt, '%m/%d/%Y')
                 except:
                     raise Exception('Please use the following date format MM/DD/YYYY.\n')
-    
+
             if end_dt:
                 try:
                     end_dt = datetime.strptime(end_dt, '%m/%d/%Y')
@@ -93,7 +93,7 @@ class TendenciExportTask(celery.Task):
                 data_row.append(value)
 
             data_row_list.append(data_row)
-            
+
         if include_files:
             if model._meta.model_name == 'resume':
                 temp_csv = NamedTemporaryFile(mode='w', delete=False)
@@ -102,7 +102,7 @@ class TendenciExportTask(celery.Task):
                 for data_row in data_row_list:
                     csv_writer.writerow(data_row)
                 temp_csv.close()
-                
+
                 temp_zip = NamedTemporaryFile(mode='wb', delete=False)
                 zip_fp = zipfile.ZipFile(temp_zip, 'w', compression=zipfile.ZIP_DEFLATED)
                 # handle files
@@ -112,18 +112,18 @@ class TendenciExportTask(celery.Task):
                 zip_fp.write(temp_csv.name, 'resumes.csv', zipfile.ZIP_DEFLATED)
                 zip_fp.close()
                 temp_zip.close()
-                
+
                 # set the response for the zip files
                 with open(temp_zip.name, 'rb') as f:
                     content = f.read()
-            
+
                 response = HttpResponse(content, content_type='application/zip')
                 response['Content-Disposition'] = 'attachment; filename="export_resumes_%d.zip"' % time()
-    
+
                 # remove the temporary files
                 unlink(temp_zip.name)
                 unlink(temp_csv.name)
-                
+
                 return response
-                
+
         return render_csv(file_name, fields, data_row_list)

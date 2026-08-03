@@ -81,7 +81,7 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
     def __init__(self, *args, **kwargs):
         is_superuser = kwargs.pop('is_superuser', None)
         super().__init__(*args, **kwargs)
-        
+
         # group
         group_choices = get_search_group_choices()
         self.fields['group'].choices = [('','All Groups')] + list(group_choices)
@@ -140,7 +140,7 @@ class ArticleForm(TendenciBaseForm):
             label=_('Thumbnail'),
             validators=[FileValidator(allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],
             required=False,
-            help_text=_('Only jpg, gif, or png images.'))        
+            help_text=_('Only jpg, gif, or png images.'))
     syndicate = forms.BooleanField(label=_('Include in RSS feed'), required=False, initial=True)
     status_detail = forms.ChoiceField(
         choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending')),))
@@ -225,7 +225,7 @@ class ArticleForm(TendenciBaseForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['group'].initial = Group.objects.get_initial_group_id()
         default_groups = Group.objects.filter(status=True, status_detail="active")
-        
+
         if self.instance.thumbnail:
             self.initial['thumbnail_file'] = self.instance.thumbnail.file
 

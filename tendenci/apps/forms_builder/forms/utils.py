@@ -118,7 +118,7 @@ def make_invoice_for_entry(entry, **kwargs):
     inv.due_date = now
     inv.ship_date = now
 
-    if entry.pricing and entry.pricing.taxable:        
+    if entry.pricing and entry.pricing.taxable:
         inv.assign_tax([(amount, entry.pricing.tax_rate)], entry.creator)
         inv.subtotal = amount
         if get_setting('module', 'invoices', 'taxmodel') == 'Tax Added': #tax added
@@ -217,7 +217,7 @@ def form_entries_to_csv_writer(csv_writer, form):
 def iter_form_entries(form):
     """
     Write form entries to csv_writer.
-    
+
     Write out the column names and store the index of each field
     against its ID for building each entry row. Also store the IDs of
     fields with a type of FileField for converting their field values

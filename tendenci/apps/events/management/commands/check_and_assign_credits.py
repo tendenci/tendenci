@@ -4,9 +4,9 @@ from django.core.management.base import BaseCommand
 class Command(BaseCommand):
     """
     Check and assign credits to registrants for a nested event.
-    
+
     Usage:
-    
+
         ./manage.py check_and_assign_credits --event_id=<event-id> --verbosity=2
     """
     def add_arguments(self, parser):

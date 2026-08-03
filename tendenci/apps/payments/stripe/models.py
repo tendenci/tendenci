@@ -17,7 +17,7 @@ class StripeAccount(TendenciBaseModel):
     country = models.CharField(max_length=5, default='US')
     stripe_user_id = models.CharField(_('Stripe user id'), max_length=200, unique=True)
     entity = models.OneToOneField(Entity, blank=True, null=True, on_delete=models.SET_NULL)
-    
+
     scope = models.CharField(_('Account Type'), max_length=20,
                              choices=(('standard', _('Standard')), ('express', _('Express'))))
 #     token_type = models.CharField(max_length=20)

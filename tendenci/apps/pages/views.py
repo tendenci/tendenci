@@ -334,7 +334,7 @@ def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
 
             if 'preview_for' not in request.POST:
                 page.save()
- 
+
                 if metaform.is_valid():
                     #save meta
                     meta = metaform.save()
@@ -365,7 +365,7 @@ def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
                             notification.send_emails(recipients,
                                                      'page_edited',
                                                      extra_context)
-    
+
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))
 
             return render_to_resp(request=request, template_name=template,

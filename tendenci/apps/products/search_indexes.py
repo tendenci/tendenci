@@ -29,4 +29,4 @@ class ProductIndex(TendenciBaseSearchIndex, indexes.Indexable):
     def prepare_order(self, obj):
         return obj.update_dt
 
- 
+

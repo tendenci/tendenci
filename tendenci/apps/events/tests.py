@@ -11,29 +11,29 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.utils import timezone
 # from django.contrib.auth.models import User
 # from django.urls import reverse
-# 
+#
 from tendenci.apps.events.models import RegConfPricing, Event, Addon
 from tendenci.apps.events.utils import copy_event
-# 
-# 
+#
+#
 # handler = logging.StreamHandler()
 # formatter = logging.Formatter('%(message)s')
 # handler.setFormatter(formatter)
-# 
-# 
+#
+#
 # logger = logging.getLogger(__name__)
 # logger.addHandler(handler)
 # logger.setLevel(logging.DEBUG)
-# 
-# 
+#
+#
 # class EventTest(TestCase):
-# 
+#
 #     def setUp(self):
 #         self.pricing = RegConfPricing()
-# 
+#
 #     def tearDown(self):
 #         self.pricing = None
-# 
+#
 #     def test_pricing_description(self):
 #         self.pricing.title = "Test Pricing"
 #         self.pricing.price = 10.00
@@ -41,22 +41,22 @@ from tendenci.apps.events.utils import copy_event
 #         self.pricing.allow_user = True
 #         self.pricing.allow_member = True
 #         self.pricing.save()
-# 
+#
 #         logger.info('Testing existence of description field')
 #         self.assertTrue(hasattr(self.pricing, 'description'))
 #         logger.info('Complete.')
-# 
+#
 #         sample_description = "Test Description"
 #         self.pricing.description = sample_description
 #         self.pricing.save()
-# 
+#
 #         logger.info('Testing description field update')
 #         self.assertTrue(self.pricing.description == sample_description)
 #         logger.info('Complete.')
-# 
-# 
+#
+#
 # class AdddonDeleteTest(TestCase):
-# 
+#
 #     def create_test_superuser(self):
 #         self.client = Client()
 #         self.username = 'tester'
@@ -64,11 +64,11 @@ from tendenci.apps.events.utils import copy_event
 #         self.password = 'test'
 #         User.objects.create_superuser(self.username, self.email, self.password)
 #         self.client.login(username=self.username, password=self.password)
-# 
+#
 #     def setUp(self):
 #         self.event = Event()
 #         self.addon = Addon()
-# 
+#
 #     def tearDown(self):
 #         self.event = None
 #         self.addon = None
@@ -76,18 +76,18 @@ from tendenci.apps.events.utils import copy_event
 #         self.username = None
 #         self.email = None
 #         self.password = None
-# 
+#
 #     def create_instances(self):
 #         self.event.title = 'Test Event'
 #         self.event.save()
 #         self.addon.title = 'Test Addon'
 #         self.addon.event = self.event
 #         self.addon.save()
-# 
+#
 #     def test_delete_addon_method(self):
 #         self.create_instances()
 #         addon_pk = self.addon.pk
-# 
+#
 #         logger.info('Testing new delete method of Addon model.')
 #         self.addon.delete(from_db=True)
 #         with self.assertRaises(Addon.DoesNotExist):
@@ -95,7 +95,7 @@ from tendenci.apps.events.utils import copy_event
 #         with self.assertRaises(Addon.DoesNotExist):
 #             Addon.objects.get(title='Test Addon')
 #         logger.info('Complete.')
-# 
+#
 #     def test_delete_addon_view(self):
 #         self.create_instances()
 #         self.create_test_superuser()
@@ -103,7 +103,7 @@ from tendenci.apps.events.utils import copy_event
 #         delete_addon_link = reverse(
 #             'event.delete_addon',
 #             kwargs={'event_id': self.event.id, 'addon_id': addon_pk})
-# 
+#
 #         response = self.client.get(delete_addon_link)
 #         logger.info('Testing new delete addon view.')
 #         self.assertEqual(response.status_code, 302)
@@ -121,7 +121,7 @@ class EventTest(TestCase):
         # Initialize session middleware
         def get_response():
             return
-        
+
         middleware = SessionMiddleware(get_response=get_response)
         # Process the request to add a session
         middleware.process_request(request)
@@ -139,7 +139,7 @@ class EventTest(TestCase):
         new_event = baker.make('events.Event')
         self.assertNotEqual(original_event.repeat_uuid, new_event.repeat_uuid)
         another_repeat_event = copy_event(original_event, user, set_repeat_of=True, copy_to=new_event)
-    
+
         self.assertEqual(original_event, another_repeat_event.repeat_of)
         self.assertEqual(original_event.repeat_uuid, another_repeat_event.repeat_uuid)
 
@@ -147,7 +147,7 @@ class EventTest(TestCase):
     def test_check_in_validation(self, mock_add_message):
         # Setup the scenario
         user = baker.make('auth.User', is_superuser=True)
-        
+
         event = baker.make('events.Event')
         child_event = baker.make('events.Event', parent=event, start_dt=timezone.now(), end_dt=timezone.now())
         registrant = baker.make('events.Registrant')
@@ -184,7 +184,7 @@ class EventTest(TestCase):
         registrant_child_event.checked_in = False
         registrant_child_event.save()
         error_level, _ = registrant.is_valid_check_in(request, child_event.pk)
-        self.assertEqual(error_level, messages.ERROR)        
+        self.assertEqual(error_level, messages.ERROR)
 
 
     @patch('tendenci.apps.events.models.Event.nested_events_enabled', True)

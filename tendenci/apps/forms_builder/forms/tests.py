@@ -1,12 +1,12 @@
-# 
+#
 # from django.contrib.auth.models import User
 # from django.test import TestCase
-# 
+#
 # from tendenci.apps.forms_builder.forms.models import Form, FIELD_CHOICES
-# 
-# 
+#
+#
 # class Tests(TestCase):
-# 
+#
 #     def test_form_fields(self):
 #         """
 #         Simple 200 status check against rendering and posting to forms with
@@ -23,7 +23,7 @@
 #             data = dict([("field_%s" % f.id, "test") for f in fields])
 #             response = self.client.post(form.get_absolute_url(), data=data)
 #             self.assertEqual(response.status_code, 200)
-# 
+#
 #     def test_draft_form(self):
 #         """
 #         Test that a form with draft status is only visible to staff.

@@ -5,7 +5,7 @@ from django.conf import settings
 class Command(BaseCommand):
     """
     If the Django setting 'KEEP_EVENT_LOG_FOR_DAYS' is not zero,
-    then delete all event_logs_eventlog records older than 
+    then delete all event_logs_eventlog records older than
     'KEEP_EVENT_LOG_FOR_DAYS' days
 
     Usage: python manage.py prune_event_log_records

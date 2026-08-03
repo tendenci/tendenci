@@ -195,7 +195,7 @@ class Newsletter(models.Model):
         (MONTHLY, _("Monthly")),
         (YEARLY, _("Yearly")),
         )
-    
+
     schedule_send_dt = models.DateTimeField(
         verbose_name=_("Starts On"), null=True, blank=True,)
     schedule_type = models.CharField(
@@ -318,7 +318,7 @@ class Newsletter(models.Model):
             newsletter_new.email = email_new
 
         newsletter_new.save()
-        
+
         # replace browser_view_url with the new one
         newsletter_new.email.body = newsletter_new.email.body.replace(
                                     self.get_browser_view_url(),
@@ -480,7 +480,7 @@ class Newsletter(models.Model):
             if len(slug) > 100 or Article.objects.filter(slug=slug).exists():
                 count = str(Article.objects.count())
                 slug = '{}-{}'.format(slug[:99-len(count)], count)
-            
+
             article = Article.objects.create(
                 creator=user,
                 creator_username=user.username,

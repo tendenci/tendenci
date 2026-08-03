@@ -12,11 +12,11 @@ from .models import Course, Certification, TeachingActivity, OutsideSchool, Tran
 
 class UpdateTranscriptActionForm(ActionForm):
     cert = forms.ChoiceField(required=False, label=_(' '),  choices=())
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         certs = Certification.objects.all().order_by('name')
-            
+
         self.fields['cert'].choices = [(0,  '--- Select a Certification Track ---')] + [
                         (cert.id, cert.name) for cert in certs]
 
@@ -166,7 +166,7 @@ class CoursesInfoForm(FormControlWidgetMixin, forms.Form):
                                 ).values_list('course__id', flat=True))
         # if self.hide_courses:
         #     online_qs = online_qs.none()
-            
+
         self.fields['l'].queryset = online_qs
 
         onsite_qs = Course.objects.filter(

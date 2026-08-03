@@ -43,11 +43,11 @@ def search(request, slug=None, template_name="staff/search.html"):
         department = get_object_or_404(Department, slug=slug)
     else:
         department = None
-     
+
     query = ''
     department_id = 0
     position = 0
-   
+
     form = StaffSearchForm(request.GET)
     if department:
         del form.fields['department']
@@ -80,7 +80,7 @@ def search(request, slug=None, template_name="staff/search.html"):
         if department_id:
             staff = staff.filter(department__id=department_id)
             [department] = Department.objects.filter(id=department_id)[:1] or [None]
-            
+
     if position:
         staff = staff.filter(positions__in=[position])
 

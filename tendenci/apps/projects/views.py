@@ -106,7 +106,7 @@ class ProjectInline():
         content_type = ContentType.objects.get_for_model(self.object)
 
         photos = formset.save(commit=False)
-        
+
         for obj in formset.deleted_objects:
             obj.delete()
 
@@ -131,7 +131,7 @@ class ProjectInline():
         content_type = ContentType.objects.get_for_model(self.object)
 
         documents = formset.save(commit=False)
-        
+
         for obj in formset.deleted_objects:
             obj.delete()
 
@@ -156,7 +156,7 @@ class ProjectInline():
         content_type = ContentType.objects.get_for_model(self.object)
 
         teammembers = formset.save(commit=False)
-        
+
         for obj in formset.deleted_objects:
             obj.delete()
 
@@ -248,7 +248,7 @@ def approve(request, id, template_name="projects/approve.html"):
 
         # send email notification to user
         if project.creator and validate_email(project.creator.email):
-            notification.send_emails([project.creator.email], 
+            notification.send_emails([project.creator.email],
                 'project_approved_user_notice', {
                         'object': project,
                         'request': request,
@@ -279,7 +279,7 @@ def detail(request, slug=None, template_name="projects/detail.html"):
     project_photos = project.projects_photo_related.all()
     team_members = project.projects_teammembers_related.all()
     documents = project.projects_documents_related.all().order_by('-document_dt')
-    
+
     log_defaults = {
         'event_id': 1180500,
         'event_data': '%s (%d) viewed by %s' % (project._meta.object_name, project.pk, request.user),

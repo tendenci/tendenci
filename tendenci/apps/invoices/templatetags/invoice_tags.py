@@ -18,7 +18,7 @@ def invoice_nav(context, invoice=None):
 def invoices_search_results_line(request, invoice):
     obj = invoice.get_object()
     object_display = invoice.object_display(obj=obj)
-        
+
 
     # search_line_display = None
     # if invoice.object_type:

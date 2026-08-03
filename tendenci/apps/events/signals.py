@@ -50,7 +50,7 @@ def create_notice_types(sender, **kwargs):
         _('Recap of end of event registration'),
         _('Notify administrators that registration for the event has ended.'),
         verbosity=verbosity)
-    
+
     notification.create_notice_type(
         'event_email_abandoned',
         _('Notice to registrants who abandoned payments'),

@@ -184,7 +184,7 @@ class DonationForm(FormControlWidgetMixin, BetterModelForm):
             except:
                 pass
         payment_method_choices = get_payment_method_choices(self.user)
-        self.fields['payment_method'] = forms.ChoiceField(choices=payment_method_choices, widget=forms.RadioSelect()) 
+        self.fields['payment_method'] = forms.ChoiceField(choices=payment_method_choices, widget=forms.RadioSelect())
         if len(payment_method_choices) == 1:
             self.fields['payment_method'].initial = payment_method_choices[0][0]
             self.fields['payment_method'].widget = forms.HiddenInput()
@@ -228,7 +228,7 @@ class DonationForm(FormControlWidgetMixin, BetterModelForm):
             self.fields['state'].widget.attrs.update({'class': 'form-control'})
 
         self.fields['email_receipt'].widget = forms.HiddenInput()
-        
+
         # check required fields
         required_fields = get_setting('module', 'donations', 'requiredfields')
         if required_fields:

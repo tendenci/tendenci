@@ -38,8 +38,8 @@ class LogoutView(DjangoLogoutView):
     @method_decorator(csrf_protect)
     def post(self, request, *args, **kwargs):
         """Logout may be done via POST."""
-        return super().post(request, *args, **kwargs)   
-    
+        return super().post(request, *args, **kwargs)
+
 
 @ssl_required
 def login(request, form_class=LoginForm, template_name="account/login.html"):
@@ -54,7 +54,7 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
         elif 'membership-referer-url' in request.session:
             if request.session['membership-referer-url'].startswith('/events/'):
                 next_url = request.session.pop('membership-referer-url')
-            
+
     if settings.USE_TWO_FACTOR_AUTH:
         if not request.user.is_authenticated:
             # redirect to two factor login

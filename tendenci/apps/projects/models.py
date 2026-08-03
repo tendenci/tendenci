@@ -171,12 +171,12 @@ class TeamMembers(File):
     title = models.CharField(_('Title'), max_length=200, blank=True)
     email = models.EmailField(_('email address'), blank=True)
     phone = models.CharField(_('phone'), max_length=50, blank=True)
-    
+
     role = models.CharField(_('Role'), max_length=200, blank=True)
     team_description = models.TextField(_('Description'), null=True, blank=True)
 
     objects = FileManager()
-    
+
     class Meta:
         verbose_name = _("Team Member")
         verbose_name_plural = _("Team Members")

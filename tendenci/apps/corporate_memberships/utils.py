@@ -28,7 +28,7 @@ def broadcast_emails_to_corp(email, **kwargs):
     """
     from django.template.loader import get_template
     from tendenci.apps.theme.shortcuts import _strip_content_above_doctype
-    
+
     request = kwargs.get('request')
     corp_members = kwargs['corp_members']
     total_sent = 0
@@ -37,7 +37,7 @@ def broadcast_emails_to_corp(email, **kwargs):
 
     msg = '<div class="hide" id="m-streaming-content" style="margin: 2em 5em;text-align: left; line-height: 1.3em;">'
     msg += '<h1>Processing ...</h1>'
-    
+
     for corp_member in corp_members:
         corp_profile = corp_member.corp_profile
         reps = corp_member.corp_profile.reps.all()
@@ -69,7 +69,7 @@ def broadcast_emails_to_corp(email, **kwargs):
     msg += f'DONE!<br /><br />Successfully sent email "{subject}" to <strong>{total_sent}</strong> organization members.'
     msg += '</div>'
     yield msg
-    
+
     template_name='corporate_memberships/message/broadcast/email-conf.html'
     template = get_template(template_name)
     context={'total_sent': total_sent,

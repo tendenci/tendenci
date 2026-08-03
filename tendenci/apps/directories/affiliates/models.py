@@ -1,10 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
- 
+
 from tendenci.apps.directories.models import Directory, Category
 
- 
+
 class AffiliateRequest(models.Model):
     to_directory = models.ForeignKey(Directory, related_name='to_directory',
                                        on_delete=models.CASCADE)
@@ -16,11 +16,11 @@ class AffiliateRequest(models.Model):
     creator = models.ForeignKey(User, null=True, default=None,
                                 on_delete=models.SET_NULL,
                                 editable=False)
- 
+
     class Meta:
         app_label = 'directories'
- 
- 
+
+
 class RequestEmail(models.Model):
     """
     The emails for request to associate.
@@ -48,12 +48,12 @@ class RequestEmail(models.Model):
 class Connection(models.Model):
     """
     This model defines the connections for marketplace listings (directories).
-    
+
     Each category can have multiple categories to be associated with.
     """
     cat = models.OneToOneField(Category, verbose_name=_("Category"), related_name='connections', on_delete=models.CASCADE)
     affliated_cats = models.ManyToManyField(Category, verbose_name=_("Affliated Categories"), related_name='allowed_connections')
-    
+
     class Meta:
         verbose_name = _("Allowed Connection")
         verbose_name_plural = _("Allowed Connections")

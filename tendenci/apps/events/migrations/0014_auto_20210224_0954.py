@@ -7,7 +7,7 @@ def remove_urlize_filter(apps, schema_editor):
     """
     The urlize filter breaks the links in the description generated with wysiwyg editor.
     The issue has been fixed in core.
-    
+
     This migration is to fix for the event template pulled down to the site.
     """
     from tendenci.apps.theme.utils import get_theme_root

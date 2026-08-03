@@ -12,10 +12,10 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         from tendenci.apps.payments.stripe.models import StripeAccount, Charge
-        
+
         stripe.api_key = settings.STRIPE_SECRET_KEY
         stripe_set_app_info(stripe)
-        
+
         stripe_accounts = StripeAccount.objects.filter(status_detail='active')
         for stripe_account in stripe_accounts:
             #The charges are returned in sorted order, with the most recent charges
@@ -24,7 +24,7 @@ class Command(BaseCommand):
             starting_after = None
             [stop_point] = Charge.objects.filter(account=stripe_account
                                     ).values_list('charge_id', flat=True).order_by('-charge_dt')[:1] or [None]
-            
+
             while has_more:
                 if starting_after:
                     stripe_charges = stripe.Charge.list(stripe_account=stripe_account.stripe_user_id,
@@ -48,4 +48,4 @@ class Command(BaseCommand):
                                   'charge_dt': datetime.fromtimestamp(stripe_charge.created),
                                   }
                         charge = Charge(**params)
-                        charge.save()         
+                        charge.save()

@@ -112,7 +112,7 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
 
             if merchant_account == "authorizenet":
                 return HttpResponseRedirect(reverse('authorizenet.pay_online', args=[payment.id, payment.guid]))
-                
+
                 #form = prepare_authorizenet_sim_form(request, payment)
                 #post_url = settings.AUTHNET_POST_URL
             elif merchant_account == 'firstdata':

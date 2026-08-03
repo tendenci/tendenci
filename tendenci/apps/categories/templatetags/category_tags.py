@@ -77,7 +77,7 @@ def get_categories_for_model(parser, token):
         context = bits[3]
     except:
         context = None
-        
+
     if not (name[0] == name[-1] and name[0] in ('"', "'")):
         raise template.TemplateSyntaxError(
             "%r tag's argument should be in quotes" % bits[0])

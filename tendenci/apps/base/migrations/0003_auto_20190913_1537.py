@@ -11,7 +11,7 @@ def update_jquery_in_theme(apps, schema_editor):
     import sys
     from collections import OrderedDict
     from tendenci.apps.theme.utils import get_theme_root
-    
+
     theme_dir = get_theme_root()
     # Check base.html
     file_path = '{}/templates/base.html'.format(theme_dir)
@@ -28,7 +28,7 @@ def update_jquery_in_theme(apps, schema_editor):
                 content = re.sub(p, r'\1{}\4'.format('src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>' + \
                                                      '\n\t<script src="https://code.jquery.com/jquery-migrate-3.1.0.min.js"></script>'),
                                  content)
-                file_changed = True 
+                file_changed = True
 
         if file_changed:
             with open(file_path, 'w') as f:
@@ -75,7 +75,7 @@ def update_jquery_in_theme(apps, schema_editor):
                                 break
                         for k, v in items_find_replace.items():
                             content = content.replace(k, v)
-                            
+
                     if file_changed:
                         with open(file_path, 'w') as f:
                             f.write(content)

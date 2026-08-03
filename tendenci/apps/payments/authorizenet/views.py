@@ -29,11 +29,11 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
             msg_string += str(_('Please follow the guide {0} to complete the setup process for {1}, then try again.').format(url_setup_guide, merchant_provider))
         else:
             msg_string += str(_('Please contact the site administrator to complete the setup process.'))
-            
+
         messages.add_message(request, messages.ERROR, _(msg_string))
-        
+
         payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
-    
+
         return HttpResponseRedirect(reverse('invoice.view', args=[payment.invoice.id]))
 
     if payment.is_approved:
@@ -86,7 +86,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/authorizene
             template_name = 'payments/receipt.html'
             return render_to_resp(request=request, template_name=template_name,
                               context={'payment':payment})
-        
+
     return render_to_resp(request=request, template_name=template_name,
                               context={
                                   'payment': payment,

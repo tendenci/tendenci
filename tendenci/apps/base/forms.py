@@ -33,7 +33,7 @@ class NextURLForm(forms.Form):
 class ProhibitNullCharactersValidatorMixin:
     """
     Mixin to validate if any of the strings in cleaned_data contain the null character.
-    
+
     This issue has been addressed in django 2.2 or later.
     """
     def clean(self, *args, **kwargs):

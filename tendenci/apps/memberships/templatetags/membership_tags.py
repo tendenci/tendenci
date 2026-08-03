@@ -114,7 +114,7 @@ def get_membership_app(context, app_id):
     """
     from tendenci.apps.memberships.models import MembershipApp
     from tendenci.apps.perms.utils import has_perm
-    
+
     request = context.get('request')
     if not has_perm(request.user, 'memberships.view_membershipapp'):
         return None
@@ -169,7 +169,7 @@ class ListMembershipNode(Node):
                 allow_view_members = True
         else:
             if membership_view_perms == 'public':
-                allow_view_members = True   
+                allow_view_members = True
 
         if allow_view_members:
 
@@ -200,7 +200,7 @@ class ListMembershipNode(Node):
 
             if 'new_member_only' in self.kwargs:
                 new_member_only = bool(self.kwargs['new_member_only'])
-    
+
             if 'exclude_expired' in self.kwargs:
                 exclude_expired = bool(self.kwargs['exclude_expired'])
 

@@ -99,7 +99,7 @@ def search(request, template_name="articles/search.html"):
             # Handle legacy tag links
             if "tag:" in query:
                 return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('articles'), query.replace('tag:', '')))
-    
+
             # Handle legacy category links
             if "category:" in query or "sub_category:" in query:
                 key, name = query.split(':', 1)
@@ -303,15 +303,15 @@ def add(request, form_class=ArticleForm,
                 article = form.save()
                 article.creator = request.user
                 article.creator_username = request.user.username
-                
+
                 # add all permissions
                 update_perms_and_save(request, form, article)
-                
+
                 article.update_category_subcategory(
                                     categoryform.cleaned_data['category'],
                                     categoryform.cleaned_data['sub_category']
                                     )
-                
+
                 msg_string = 'Successfully added %s' % str(article)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 

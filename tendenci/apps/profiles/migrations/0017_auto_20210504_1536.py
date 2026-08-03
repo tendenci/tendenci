@@ -6,17 +6,17 @@ from django.db import migrations
 
 def change_profile_photo_update_url(apps, schema_editor):
     """
-    Update two templates, top_menu/_profile_dropdown.html and profiles/index.html, 
+    Update two templates, top_menu/_profile_dropdown.html and profiles/index.html,
     that are pulled down to the site.
 
     Change the URL for profile photo update from gravatar.com to the upload url on the site
-    as users now can upload profile photos. 
-    
+    as users now can upload profile photos.
+
     In the templates/top_menu/_profile_dropdown.html, update from //gravatar.com/ to
     {% url 'profile.upload_photo' user.id %}
-    
-    In the templates/profiles/index.html, update from //gravatar.com/ to 
-    {% url 'profile.upload_photo' user_this.id %}, and from "Create / update your gravatar" 
+
+    In the templates/profiles/index.html, update from //gravatar.com/ to
+    {% url 'profile.upload_photo' user_this.id %}, and from "Create / update your gravatar"
     to "Change profile photo"
 
     """

@@ -22,12 +22,12 @@ def search(request, template_name="redirects/search.html"):
     This page lists out all redirects from newest to oldest.
     """
     query = request.GET.get('q', None)
-    
+
     # check permission - users without the add or change premissions don't need to see it
     if not any([has_perm(request.user, 'redirects.add_redirect'),
                 has_perm(request.user,'redirects.change_redirect')]):
         raise Http403
-    
+
     redirects = Redirect.objects.all()
 
     if query:

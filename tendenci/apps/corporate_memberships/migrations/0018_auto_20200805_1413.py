@@ -18,7 +18,7 @@ def add_missing_parent_entity(apps, schema_editor):
                 label='Parent Entity',
                 position=3,
                 display=False)
-    
+
 
 class Migration(migrations.Migration):
 

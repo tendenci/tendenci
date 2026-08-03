@@ -200,7 +200,7 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
     if request.method == "POST":
         form = form_class(request.POST, request.FILES, instance=committee, user=request.user)
         metaform = meta_form_class(request.POST, instance=committee.meta, prefix='meta')
-        categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category') 
+        categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
 
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid() and formset.is_valid():
             committee = form.save(commit=False)
@@ -209,7 +209,7 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
 
             #save meta
             meta = metaform.save()
-            committee.meta = meta         
+            committee.meta = meta
 
             ## update the category of the committee
             category_removed = False

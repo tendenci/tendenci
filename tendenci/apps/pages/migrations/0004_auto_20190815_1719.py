@@ -7,7 +7,7 @@ from django.db import migrations
 def remove_google_profile_from_page_view(apps, schema_editor):
     """
     Remove the google_profile block from pages/view.html
-    
+
         {% if page.google_profile %}
           {% if page.has_google_author %}
           <a href="{{ page.google_profile }}?rel=author">{% trans "View Author's Google+ Profile" %}</a>
@@ -15,7 +15,7 @@ def remove_google_profile_from_page_view(apps, schema_editor):
           <a href="{{ page.google_profile }}" rel="publisher">{% trans "View Publisher's Google+ Page" %}</a>
           {% endif %}
         {% endif %}
-    
+
     """
     import re
     import os
@@ -29,7 +29,7 @@ def remove_google_profile_from_page_view(apps, schema_editor):
                                                                 re.escape('{% endif %}'),
                                                                 re.escape('{% endif %}'))
             content = re.sub(p, '', content)
-            
+
         with open(file_path, 'w') as f:
             f.write(content)
 

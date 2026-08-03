@@ -212,10 +212,10 @@ def get_theme_search_order(theme=None):
 
 def get_raw_content(relative_path, type=''):
     """
-    Get the raw contents of a file. 
+    Get the raw contents of a file.
 
-    :param relative_path: The relative path with respect to the themes directory (either built-in or customised) 
-    :param type: The type such as template or static. 
+    :param relative_path: The relative path with respect to the themes directory (either built-in or customised)
+    :param type: The type such as template or static.
     """
     raw_content = ''
     for theme in get_theme_search_order():
@@ -227,7 +227,7 @@ def get_raw_content(relative_path, type=''):
             file_path = os.path.join(theme_root, relative_path)
         else:
             file_path = os.path.join(theme_root, type, relative_path)
-        
+
         if os.path.isfile(file_path):
             with open(file_path) as fp:
                 raw_content = fp.read()
@@ -240,7 +240,7 @@ def get_raw_content(relative_path, type=''):
 def get_template_content_raw(template_relative_path):
     """
     Get the raw (not rendered) content from a template.
-    
+
     Example: get_template_content_raw('chapters/memberships/message/email-chapter-members-body.txt')
     """
     return get_raw_content(template_relative_path, 'templates')
@@ -251,6 +251,6 @@ def get_static_content_raw(static_relative_path):
     """
     return get_raw_content(static_relative_path, 'static')
 
-    
-    
-    
+
+
+

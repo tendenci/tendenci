@@ -54,7 +54,7 @@ class ResumeSearchForm(forms.Form):
         self.fields['first_name'].widget.attrs.update({'placeholder': _('Enter first name')})
         self.fields['last_name'].widget.attrs.update({'placeholder': _('Enter last name')})
         self.fields['email'].widget.attrs.update({'placeholder': _('Enter email')})
-        
+
         if Industry.objects.filter(status=True, status_detail='active').exists():
             industry_choices = [(0, _('SELECT ONE'))] + list(Industry.objects.filter(
                             status=True, status_detail="active").order_by('position', '-update_dt'
@@ -63,7 +63,7 @@ class ResumeSearchForm(forms.Form):
                                     choices=industry_choices)
         else:
             del self.fields['industry']
-        
+
         for field in self.fields:
             if field not in ['search_criteria', 'search_text', 'search_method', 'grid_view']:
                 self.fields[field].widget.attrs.update({'class': 'form-control'})
@@ -270,7 +270,7 @@ class ResumeForm(TendenciBaseForm):
             self.fields['contact_fax'].initial = self.user.profile.fax
             self.fields['contact_email'].initial = self.user.email
             self.fields['contact_website'].initial = self.user.profile.url
-            
+
         for f in list(set(fields_to_pop)):
             if f in self.fields: self.fields.pop(f)
 

@@ -12,9 +12,9 @@ RATE_LIMIT = 30
 class Command(BaseCommand):
     """
     Import BV exams data for the specified user or all active members.
-    
+
     Usage: python manage.py import_bluevolt_exams_for_user --user_id 1
-    
+
     """
     def add_arguments(self, parser):
         parser.add_argument('--user_id',
@@ -34,7 +34,7 @@ class Command(BaseCommand):
         from tendenci.apps.trainings.models import Course, Transcript, Exam, Certification
         if not hasattr(settings, 'BLUEVOLT_API_KEY'):
             print('Bluevolt API is not set up. Exiting...')
-            return 
+            return
         api_key = settings.BLUEVOLT_API_KEY
         api_endpoint_base_url = settings.BLUEVOLT_API_ENDPOINT_BASE_URL
 
@@ -59,7 +59,7 @@ class Command(BaseCommand):
         # default certification_track
         [certification_track] = Certification.objects.filter(enable_diamond=True)[:1] or [None]
         limit_count = 0 # for rate limit (30/minute)
-        
+
         # STEP 1: Get a list of enrollments - pull the Completed only
         for profile in profiles:
             print('Processing for user ', profile)
@@ -80,7 +80,7 @@ class Command(BaseCommand):
                 enrollment_results = r.json()
                 total_records = len(enrollment_results)
                 print('total=', total_records)
-                
+
                 for enrollment_result in enrollment_results:
                     course_id = enrollment_result['CourseId']
                     completion_date = enrollment_result['CompletionDate']
@@ -90,22 +90,22 @@ class Command(BaseCommand):
                     if dparser.parse(completion_date) < datetime(2025, 1, 1, 0, 0, 0):
                         print('completion_date not current')
                         continue
-                    
+
                     # STEP 2: Get course by external_id
                     course = Course.objects.filter(external_id=course_id).first()
                     if not course:
                         print(f'CourseId {course_id} not exist on site')
-                        continue      
-    
+                        continue
+
                     # STEP 3: Insert into transcripts if not already in there
-                    #         and user has completed the course          
-    
+                    #         and user has completed the course
+
                     # check if already exists, but would someone take same courses again?
                     [transcript] = Transcript.objects.filter(course=course,
                                                              user=user,
                                                              location_type='online')[:1] or [None]
                     if not transcript:
-                        
+
                         exam = Exam(user=user,
                                     course=course,
                                     grade=100)
@@ -125,14 +125,14 @@ class Command(BaseCommand):
                         transcript.save()
                         num_inserted += 1
                         print(transcript, f'{transcript.id}... added')
-    
-      
+
+
                 print('num_inserted=', num_inserted)
-    
-                           
+
+
             else:
                 print(f'ERROR: Got {r.text}')
-        print('Done!')             
+        print('Done!')
 
     def handle(self, *args, **options):
         user_id = options.get('user_id', None)
@@ -141,4 +141,4 @@ class Command(BaseCommand):
         except:
             print(traceback.format_exc())
 
-        
+

@@ -25,7 +25,7 @@ class ProductForm(TendenciBaseForm):
             'status',
             'status_detail',
         )
-    
+
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style': 'width:100%'},

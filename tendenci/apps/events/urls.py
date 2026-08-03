@@ -77,7 +77,7 @@ urlpatterns = [
 
     # event check-in
     re_path(r'^%s/(?P<event_id>\d+)/set-checkin/' % urlpath, views.set_current_check_in, name='event.set_current_check_in'),
-    
+
     # event badges
     re_path(r'^%s/(?P<event_id>\d+)/badges/$' % urlpath, views.event_badges, name='event.badges'),
 

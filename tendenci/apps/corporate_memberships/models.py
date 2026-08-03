@@ -161,7 +161,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
     number_passes = models.PositiveIntegerField(_('Number Passes'),
                                                default=0,
                                                blank=True)
-    require_approval = models.CharField(_('Require Approval'), 
+    require_approval = models.CharField(_('Require Approval'),
                                         choices=REQUIRE_APPROVAL_CHOICES,
                                         default='for_non_paid_only',
                                         max_length=20)
@@ -428,26 +428,26 @@ class CorpProfile(TendenciBaseModel):
                                             '-expiration_dt'
                                             )[:1] or [None]
         return corp_membership
-    
+
     def sync_type_reps_groups(self, reps_list=None, remove=False):
         """
         Sync reps for this corp membership to the reps groups based on this
         corp membership type.
-        
+
         If remove is True, just remove the reps from those groups if they're
         not reps for other corporate memberships.
         """
         corp_memb = self.corp_membership
         if not corp_memb:
             return
-        
+
         corp_type = corp_memb.corporate_membership_type
         pending_group = corp_type.pending_group
         active_group = corp_type.active_group
 
         if corp_memb.status_detail not in ['active', 'pending', 'paid - pending approval']:
             remove = True
-        
+
         if pending_group or active_group:
             if not reps_list:
                 reps_list = CorpMembershipRep.objects.filter(
@@ -473,14 +473,14 @@ class CorpProfile(TendenciBaseModel):
                     other_active_reps_list = CorpMembershipRep.objects.filter(
                                                 corp_profile__in=other_active_corp_profiles_list
                                                 ).values_list('user', flat=True)
-    
+
                 for u in reps_list:
                     # check if this user is also the rep for other corp memberships
                     if pending_group:
                         is_rep_for_other_pending = u in other_pending_reps_list
                     if active_group:
                         is_rep_for_other_active = u in other_active_reps_list
-        
+
                     if pending_group:
                         if remove and not is_rep_for_other_pending:
                             pending_group.members.remove(u)
@@ -489,13 +489,13 @@ class CorpProfile(TendenciBaseModel):
                                 if not pending_group.members.filter(id=u).exists():
                                     # add rep to pending group
                                     pending_group.members.add(u)
-            
+
                                 # remove from active group
                                 if active_group and active_group.members.filter(id=u).exists():
                                     if not is_rep_for_other_active:
                                         active_group.members.remove(u)
-        
-        
+
+
                     if active_group:
                         if remove and not is_rep_for_other_active:
                             active_group.members.remove(u)
@@ -504,7 +504,7 @@ class CorpProfile(TendenciBaseModel):
                                 if not active_group.members.filter(id=u).exists():
                                     # add rep to active group
                                     active_group.members.add(u)
-            
+
                                 # remove from pending group
                                 if pending_group and pending_group.members.filter(id=u).exists():
                                     if not is_rep_for_other_pending:
@@ -1064,7 +1064,7 @@ class CorpMembership(TendenciBaseModel):
                         params['create_new'] = False
                     else:
                         params['create_new'] = True
-    
+
                 self.approve_join(request, **params)
 
         # send notification to administrators
@@ -1189,10 +1189,10 @@ class CorpMembership(TendenciBaseModel):
                     membership.save()
                     # archive old memberships
                     membership.archive_old_memberships()
-    
+
                     # show member_number on profile
                     membership.profile_refresh_member_number()
-    
+
                     # check and add member to the group if not exist
                     [gm] = GroupMembership.objects.filter(group=group,
                                                         member=membership.user
@@ -1267,7 +1267,7 @@ class CorpMembership(TendenciBaseModel):
                                      status=True,
                                      status_detail='active'
                                      ).exists():
-    
+
                 if self.anonymous_creator:
                     login_url = '{}{}'.format(
                             get_setting('site', 'global', 'siteurl'),
@@ -1283,7 +1283,7 @@ class CorpMembership(TendenciBaseModel):
                          'request': request})
                 else:
                     login_info = ''
-    
+
                 self.send_notice_email(request, 'approve_join',
                                     anonymous_join_login_info=login_info)
             else:
@@ -1333,7 +1333,7 @@ class CorpMembership(TendenciBaseModel):
                                         join_dt=self.join_dt,
                                         renew_dt=self.renew_dt,
                                         previous_expire_dt=self.get_previous_expire_dt())
-        
+
 
     def approve_renewal(self, request, **kwargs):
         """
@@ -1358,10 +1358,10 @@ class CorpMembership(TendenciBaseModel):
                 self.owner = request_user
                 self.owner_username = request_user.username
             self.save()
-            
+
             # archive old corp_memberships
             self.archive_old()
-            
+
             # directory
             if self.corp_profile.directory:
                 directory = self.corp_profile.directory
@@ -1530,7 +1530,7 @@ class CorpMembership(TendenciBaseModel):
             self.owner = assign_to_user
             self.owner_username = assign_to_user.username
             self.save()
-            
+
             self.corp_profile.creator = self.creator
             self.corp_profile.creator_username = self.creator_username
             self.corp_profile.owner = self.owner
@@ -1613,7 +1613,7 @@ class CorpMembership(TendenciBaseModel):
                 if this_user.id == self.owner.id:
                     return True
 
-        # if they can approve, they can edit the pending corporate membership             
+        # if they can approve, they can edit the pending corporate membership
         if self.is_pending and has_perm(this_user, 'corporate_memberships.approve_corpmembership'):
             return True
 
@@ -1659,7 +1659,7 @@ class CorpMembership(TendenciBaseModel):
         new_corp_membership.owner = request.user
         new_corp_membership.owner_username = request.user.username
         new_corp_membership.expiration_dt = new_corp_membership.get_expiration_dt()
-        
+
         # calculate the total price for invoice
         corp_memb_type = self.corporate_membership_type
         corp_renewal_price = corp_memb_type.renewal_price
@@ -1709,7 +1709,7 @@ class CorpMembership(TendenciBaseModel):
                             corp_membership=new_corp_membership,
                             membership_id=member_id,
                             )
-            ind_memb_renew_entry.save()        
+            ind_memb_renew_entry.save()
 
 
         if request.user.is_superuser and inv.balance <= 0:
@@ -2052,7 +2052,7 @@ class CorpMembershipApp(TendenciBaseModel):
         name = kwargs.get('name')
         if Group.objects.filter(name=name).exists():
             return Group.objects.get(name=name)
-        
+
         return Group.objects.create(
                     name=name,
                     label=name,
@@ -2618,7 +2618,7 @@ class Notice(models.Model):
             invoice_link = f'{site_url}{invoice_link}'
         else:
             invoice_link = ''
-            
+
         if corporate_membership.corp_profile.directory:
             directory_url = '{}{}'.format(site_url, reverse('directory',
                                     args=[corporate_membership.corp_profile.directory.slug]))
@@ -2756,9 +2756,9 @@ class Notice(models.Model):
             'status': True,
             'status_detail': 'active',
         }
-        
+
         notices = Notice.objects.filter(**field_dict)
-        
+
         region = corporate_membership.corp_profile.region
 
         is_sent = False
@@ -2770,7 +2770,7 @@ class Notice(models.Model):
             if region and region in regions_to_exclude:
                 continue
 
-            # skip if this the region specifed for the notice is not the region associated with this corp. 
+            # skip if this the region specifed for the notice is not the region associated with this corp.
             if notice.region and notice.region != region:
                 continue
 
@@ -2796,7 +2796,7 @@ class Notice(models.Model):
                         }
                         if notice.sender:
                             extra_context.update({'reply_to': notice.sender})
-    
+
                         notification.send_emails(
                             [recipient.user.email],
                             'corp_memb_notice_email', extra_context)
@@ -2815,7 +2815,7 @@ class Notice(models.Model):
                         }
                         if notice.sender:
                             extra_context.update({'reply_to': notice.sender})
-    
+
                         notification.send_emails(
                             [corporate_membership.anonymous_creator.email],
                             'corp_memb_notice_email', extra_context)

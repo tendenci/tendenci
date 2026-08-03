@@ -32,17 +32,17 @@ def user_transcripts(user, location_type='online',
     return None
 
 
-def user_outside_schools(user):       
+def user_outside_schools(user):
     if isinstance(user, User):
-        return OutsideSchool.objects.filter(user=user) 
- 
+        return OutsideSchool.objects.filter(user=user)
+
     return None
 
 
-def user_teaching_activities(user):       
+def user_teaching_activities(user):
     if isinstance(user, User):
-        return TeachingActivity.objects.filter(user=user) 
- 
+        return TeachingActivity.objects.filter(user=user)
+
     return None
 
 

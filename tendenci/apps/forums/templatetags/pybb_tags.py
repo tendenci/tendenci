@@ -232,7 +232,7 @@ def pybb_get_latest_topics(context, cnt=5, user=None):
     if not user:
         user = context['user']
     qs = perms.filter_topics(user, qs)
-    
+
     return qs[:cnt]
 
 

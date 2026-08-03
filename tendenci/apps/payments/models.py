@@ -310,13 +310,13 @@ class RefundQuerySet(models.QuerySet):
             stripe_connected_account, scope = instance.invoice.stripe_connected_account()
 
             if stripe_connected_account:
-                
+
                 if scope == "express":
                     params.update({'refund_application_fee':True})
                     params.update({'reverse_transfer':True})
                 else:
                     # stripe_account only needs to be specified for standard account,
-                    # not for express account 
+                    # not for express account
                     params.update({'stripe_account': stripe_connected_account})
 
             self.connect_to_stripe()

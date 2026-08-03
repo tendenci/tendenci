@@ -110,7 +110,7 @@ class Chapter(BasePage):
 
     def officers(self):
         return Officer.objects.filter(chapter=self).order_by('pk')
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             setattr(self, 'entity', None)
@@ -158,7 +158,7 @@ class Chapter(BasePage):
                     t_list = [g.name[len(group.name):] for g in tmp_groups]
                     num = 1
                     while str(num) in t_list:
-                        num += 1                    
+                        num += 1
                     group.name = f'{group.name}{str(num)}'
 
             group.label = self.title
@@ -193,17 +193,17 @@ class Chapter(BasePage):
 
     def update_group_perms(self, **kwargs):
         """
-        Update the associated group perms for the officers of this chapter. 
+        Update the associated group perms for the officers of this chapter.
         Grant officers the view and change permissions for their own group.
-        
+
         Note: this group is unique among chapters, but might be shared by committees.
 
         """
         if not self.group:
             return
- 
+
         ObjectPermission.objects.remove_all(self.group)
-    
+
         perms = ['view', 'change']
 
         officer_users = [officer.user for officer in self.officers(
@@ -220,17 +220,17 @@ class Chapter(BasePage):
 
     def update_newsletter_group_perms(self, **kwargs):
         """
-        Update the associated newsletter_group perms for the officers of this chapter. 
+        Update the associated newsletter_group perms for the officers of this chapter.
         Grant officers the view and change permissions for their own group.
 
-        Note: this newsletter group could be shared by chapters, 
+        Note: this newsletter group could be shared by chapters,
                and by committees.
         """
         if not self.newsletter_group:
             return
- 
+
         ObjectPermission.objects.remove_all(self.newsletter_group)
-    
+
         perms = ['view', 'change']
 
         officer_users = [officer.user for officer in self.officers(
@@ -298,7 +298,7 @@ class Officer(models.Model):
     def __str__(self):
         return "%s" % self.pk
 
- 
+
 class CoordinatingAgency(models.Model):
     state = models.CharField(_('state'), max_length=50, unique=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE,
@@ -330,15 +330,15 @@ class CoordinatingAgency(models.Model):
         if not self.group:
             self._auto_generate_group()
         self._populate_group()
-        
+
     def _auto_generate_group(self):
         if not self.group:
             if self.state:
                 state_name = get_us_state_name(self.state)
                 name = f'State {state_name}'
                 kwargs = {
-                 'description': "Auto-generated with the chapter coordinating agency.", 
-                 'notes': "Auto-generated with the chapter coordinating agency. Used for chapter coordinators only",  
+                 'description': "Auto-generated with the chapter coordinating agency.",
+                 'notes': "Auto-generated with the chapter coordinating agency. Used for chapter coordinators only",
                  'creator': self.creator,
                  'creator_username': self.creator_username,
                  'owner': self.creator,
@@ -354,17 +354,17 @@ class CoordinatingAgency(models.Model):
                           "sync_chapter_coord_groups",
                           "--coord_agency_id",
                           str(self.pk)])
-                
+
     def update_group_perms(self, **kwargs):
         """
-        Update the associated group perms for the coordinators of this agency. 
+        Update the associated group perms for the coordinators of this agency.
         Grant coordinators the view and change permissions for their own group.
         """
         if not self.group:
             return
- 
+
         ObjectPermission.objects.remove_all(self.group)
-    
+
         perms = ['view', 'change']
 
         coordinator_users = [coordinator for coordinator in self.coordinators.all()]
@@ -376,14 +376,14 @@ class CoordinatingAgency(models.Model):
 class CoordinatorUser(models.Model):
     coordinating_agency = models.ForeignKey(CoordinatingAgency, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    
+
     def __str__(self):
-        return f'{self.user.first_name} {self.user.last_name}' 
-    
+        return f'{self.user.first_name} {self.user.last_name}'
+
     def get_absolute_url(self):
         return reverse('profile', args=[self.user.username])
 
-            
+
 class ChapterMembershipType(OrderingBaseModel, TendenciBaseModel):
     PRICE_FORMAT = '%s - %s'
     ADMIN_FEE_FORMAT = ' (+%s admin fee)'
@@ -477,7 +477,7 @@ class ChapterMembershipType(OrderingBaseModel, TendenciBaseModel):
             if customized_type:
                 price = customized_type.price
                 renewal_price = customized_type.renewal_price
-                    
+
         if renew_mode:
             price_display = f'{self.name} - {tcurrency(renewal_price)} Renewal'
         else:
@@ -628,7 +628,7 @@ class ChapterMembership(TendenciBaseModel):
     social_media_links = models.CharField(max_length=500, blank=True, default='')
     school_type = models.CharField(max_length=50, blank=True)
     school_name = models.CharField(max_length=200, blank=True, default='')
-    
+
     ud1 = models.TextField(blank=True, default='')
     ud2 = models.TextField(blank=True, default='')
     ud3 = models.TextField(blank=True, default='')
@@ -737,7 +737,7 @@ class ChapterMembership(TendenciBaseModel):
         if membership:
             return membership.membership_type.name
         return ''
-    
+
     @property
     def national_membership_invoice(self):
         membership = self.national_membership
@@ -811,7 +811,7 @@ class ChapterMembership(TendenciBaseModel):
     def get_actions(self, user):
         """
         Returns a list of tuples with (link, label)
- 
+
         Possible actions:
             approve
             disapprove
@@ -820,23 +820,23 @@ class ChapterMembership(TendenciBaseModel):
         """
         actions = []
         status = self.get_status()
- 
+
         is_superuser = user.is_superuser
         is_chapter_leader = self.chapter.is_chapter_leader(user)
- 
+
         renew_link = reverse('chapters.membership_renew', args=[self.pk])
- 
+
         details_link = reverse('chapters.membership_details', args=[self.pk])
         approve_link = f'{details_link}?approve'
         disapprove_link = f'{details_link}?disapprove'
         expire_link = f'{details_link}?expire'
- 
+
         if self.can_renew() and renew_link:
             actions.append((renew_link, _('Renew')))
         elif (is_superuser or is_chapter_leader) and renew_link:
             if self.is_active() or self.is_expired():
                 actions.append((renew_link, _('Admin: Renew')))
- 
+
         if is_superuser or is_chapter_leader:
             if status == 'active':
                 actions.append((expire_link, _('Expire Chapter Membership')))
@@ -846,7 +846,7 @@ class ChapterMembership(TendenciBaseModel):
                 #actions.append((expire_link, _('Expire Chapter Membership')))
             elif status == 'expired':
                 actions.append((approve_link, _('Approve Chapter Membership')))
- 
+
         return actions
 
     def get_price(self):
@@ -880,7 +880,7 @@ class ChapterMembership(TendenciBaseModel):
             invoice.ship_to_user(self.user)
             invoice.set_creator(creator)
             invoice.set_owner(self.user)
-    
+
             # price information ----------
             price = self.get_price()
             invoice.assign_tax([(price, 0)], self.user)
@@ -890,10 +890,10 @@ class ChapterMembership(TendenciBaseModel):
             else: #Tax Included
                 invoice.total = price
             invoice.balance = invoice.total
-    
+
             invoice.due_date = timezone.now()
             invoice.ship_date = timezone.now()
-    
+
             invoice.save()
             self.invoice = invoice
             self.save()
@@ -1095,7 +1095,7 @@ class ChapterMembership(TendenciBaseModel):
 
         # new invoice; bound via ct and object_id
         self.save_invoice(status_detail='tendered')
-        
+
         # if external payment, mark as paid on approval
         if self.use_third_party_payment:
             if self.invoice.balance > 0:
@@ -1425,7 +1425,7 @@ class ChapterMembership(TendenciBaseModel):
 
     def email_admin_renew_notice(self, request, notie_type='renew'):
         self.email_admin_join_notice(request, notie_type=notie_type)
-             
+
 
     def auto_update_paid_object(self, request, payment):
         """
@@ -1578,7 +1578,7 @@ class ChapterMembershipAppField(OrderingBaseModel):
         """
             Generate the form field class for this field.
         """
-        FIELD_MAX_LENGTH = 2000 
+        FIELD_MAX_LENGTH = 2000
         if self.field_type and self.id:
             if "/" in self.field_type:
                 field_class, field_widget = self.field_type.split("/")
@@ -2195,7 +2195,7 @@ class ChapterMembershipImport(BaseImport):
             header_row.extend(['action', 'error'])
             with default_storage.open(file_path, 'w') as f:
                 recap_writer = csv.DictWriter(f, fieldnames=header_row)
-            
+
                 data_list = ChapterMembershipImportData.objects.filter(
                     mimport=self).order_by('row_num')
                 for idata in data_list:

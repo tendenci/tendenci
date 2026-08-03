@@ -25,10 +25,10 @@ class HigherLogicAPI:
         self.headers = {'ApiKey': hasattr(settings, 'HIGHERLOGIC_API_KEY') and settings.HIGHERLOGIC_API_KEY}
         self.api_base_url = hasattr(settings, 'HIGHERLOGIC_API_BASE_URL') and settings.HIGHERLOGIC_API_BASE_URL
         # Alpha-2 code country code only
-        # ToDo: Include more countries 
+        # ToDo: Include more countries
         self.country_code_d = {'United States': 'US',
                           'United States of America': 'US',
-                          'US': 'US', 
+                          'US': 'US',
                           'Canada': 'CA',
                           'Mexico': 'MX'}
 
@@ -116,14 +116,14 @@ class HigherLogicAPI:
                         "GroupName": committee.title,
                         "GroupType": "Committee",
                         "Role": officer and officer.position.title or ''})
-        
+
         # event registrations - unique identifier is: event-[id] (where [id] is the value of the event id field
         regs = Registrant.objects.filter(user=user, cancel_dt__isnull=True)
         for registrant in regs:
-            reg8n = registrant.registration 
+            reg8n = registrant.registration
             event = reg8n.event
             # skip the past events
-            #if event.start_dt > now - timedelta(days=1): 
+            #if event.start_dt > now - timedelta(days=1):
             if event.registration_configuration.enabled:
                 community_groups.append({"GroupId": f'event-{event.id}',
                     "GroupName": event.title,
@@ -139,7 +139,7 @@ class HigherLogicAPI:
                         "GroupName": event.title,
                         "GroupType": "Event",
                         "Role": ''})
-        
+
         return community_groups
 
     def get_user_address_list(self, profile):
@@ -173,7 +173,7 @@ class HigherLogicAPI:
                     "IsBill": profile.is_billing_address_2,
                     "IsPrimary": False
                   })
-        return addresses  
+        return addresses
 
     def format_phone_number(self, phone):
         """
@@ -192,7 +192,7 @@ class HigherLogicAPI:
             x = phonenumbers.parse(phone, 'US')
         except phonenumbers.phonenumberutil.NumberParseException:
             return phone
- 
+
         formatted_phone = phonenumbers.format_number(x, phonenumbers.PhoneNumberFormat.NATIONAL)
         match = p2.search(formatted_phone)
         if match:
@@ -261,7 +261,7 @@ class HigherLogicAPI:
         """
         request_list = []
         site_url = get_setting('site', 'global', 'siteurl')
-        
+
         for user in users_list:
             if hasattr(user, 'profile'):
                 profile = user.profile
@@ -274,7 +274,7 @@ class HigherLogicAPI:
             photo_url = profile.get_photo_url()
             if photo_url:
                 photo_url = site_url + photo_url
-            
+
             contact_dict = {'ContactDetails': {
                             'ContactId': str(profile.account_id),
                             'FirstName': user.first_name,
@@ -356,7 +356,7 @@ class HigherLogicAPI:
         api_url = self.api_base_url + '/contactinfo'
         res = self.post_requests(api_url, request_list)
         self.process_response(res)
-              
+
     def push_events(self, events_list):
         """
         Push one or more events (meetings) via /meeting endpoint
@@ -389,7 +389,7 @@ class HigherLogicAPI:
                 reg_end_dt = event.reg_end_dt()
                 if reg_end_dt:
                     event_dict['RegistrationCloseDate'] = self.dt_isoformat(reg_end_dt)
-            
+
             prices_list = reg_conf.regconfpricing_set.filter(
                     Q(allow_anonymous=True) | \
                     Q(allow_user=True) | \
@@ -424,7 +424,7 @@ class HigherLogicAPI:
         api_url = self.api_base_url + '/meeting'
         res = self.post_requests(api_url, request_list)
         self.process_response(res)
-   
+
     def email_support_errors(self, error_message):
         """if there is an error other than transaction not being approved, notify us.
         """

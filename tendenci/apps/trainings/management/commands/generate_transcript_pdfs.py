@@ -32,7 +32,7 @@ class Command(BaseCommand):
         if not tz_id:
             msg = 'Please pass id of CorpTranscriptsZipFile'
             raise CommandError(msg)
-        
+
         try:
             tz = CorpTranscriptsZipFile.objects.get(pk=tz_id)
         except CorpTranscriptsZipFile.DoesNotExist:
@@ -75,7 +75,7 @@ class Command(BaseCommand):
 
         dt = datetime.datetime.now().strftime('%Y_%m%d_%H%M%S_%f')
         zip_name = f'transcripts_{dt}.zip'
-        
+
         # Generating zip file for each user in the corp
 
         temp_zip = NamedTemporaryFile(mode='wb', delete=False)

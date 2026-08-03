@@ -28,10 +28,10 @@ register = Library()
 def remove_styles(value):
     # A "striptags" replacement. It removes html tags but keeps the style tags.
     # The "striptags" removes <style> tag but doesn't remove
-    # the content between <style> and </style>. As a result, 
-    # it leaves the CSS rules in there, which looks garbled for 
-    # articles created from newsletters that include <style> tags 
-    # with css rules. 
+    # the content between <style> and </style>. As a result,
+    # it leaves the CSS rules in there, which looks garbled for
+    # articles created from newsletters that include <style> tags
+    # with css rules.
     return bleach.clean(value, tags=['style'], strip=True)
 
 
@@ -105,7 +105,7 @@ def date(value, arg=None):
     if not value:
         return ''
     if arg is None:
-        arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT 
+        arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT
     else:
         if arg == 'long':
             return date_long(value)
@@ -501,7 +501,7 @@ def phonenumber(value):
             number = '+{} {}'.format(number_object.country_code, number)
 
         return number
-        
+
 @register.filter
 def timezone_label(value):
     try:

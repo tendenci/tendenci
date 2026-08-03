@@ -64,7 +64,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from tendenci.apps.events.utils import do_events_financial_export
-        
+
         identifier = options['identifier']
         if not identifier:
             identifier = int(time.time())
@@ -85,5 +85,5 @@ class Command(BaseCommand):
             sort_direction=sort_direction,
             user_id=user_id,
             )
- 
+
         print('Event financial export done %s.' % identifier)

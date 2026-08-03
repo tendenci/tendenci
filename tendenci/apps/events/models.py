@@ -2885,7 +2885,7 @@ class Event(TendenciBaseModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.private_slug = self.private_slug or self.make_slug()
-            
+
         # Commenting it out - This line of code is causing an error on dumpdata:
         # "RecursionError: maximum recursion depth exceeded while calling a Python object"
         #self._original_repeat_of = self.repeat_of
@@ -3975,7 +3975,7 @@ class Event(TendenciBaseModel):
                     end_dt = end_dt.astimezone(self.timezone)
 
         return start_dt.date() == end_dt.date()
-            
+
 
     def date_spans(self):
         """

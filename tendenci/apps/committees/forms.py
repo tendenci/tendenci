@@ -192,7 +192,7 @@ class UserModelChoiceField(forms.ModelChoiceField):
 
 
 class OfficerBaseFormSet(BaseInlineFormSet):
-    def __init__(self,  *args, **kwargs): 
+    def __init__(self,  *args, **kwargs):
         self.committee = kwargs.pop("committee", None)
         super().__init__(*args, **kwargs)
 

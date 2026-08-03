@@ -7,7 +7,7 @@ DURATION_CHOICES = (
     (120,_('120 Days from Activation date')),
     (365,_('1 Year from Activation date')),
     (1826,_('5 Years from Activation date')),
-    
+
 )
 ADMIN_DURATION_CHOICES = (
     (0, _('Unlimited')),

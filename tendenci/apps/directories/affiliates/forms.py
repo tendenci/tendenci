@@ -18,8 +18,8 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
     request_as = forms.ModelChoiceField(queryset=None, required=True)
     message = forms.CharField(max_length=1000,
                                widget=forms.Textarea(attrs={'rows':'3'}))
-    
-    
+
+
     class Meta:
         model = RequestEmail
         fields = (
@@ -44,7 +44,7 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
         self.cleaned_data = super().clean()
         from_directory_url = self.cleaned_data['from_directory_url']
         request_as = self.cleaned_data['request_as']
-        
+
         # check if this request to associate is allowed
         o = urlparse(from_directory_url)
         url_path = o.path
@@ -86,12 +86,12 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
                 creator= self.request.user,)
         self.instance.affiliate_request = affiliate_request
         self.instance.sender = self.request.user
-        
+
         # get recipients emails
         self.instance.recipients = self.to_directory.get_owner_emails_list()
-        
+
         self.instance.save()
-        
+
         self.send_emails(self.instance)
 
         return self.instance
@@ -112,7 +112,7 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
                 'last_name': request_email.sender.last_name,
                 'affiliate_request': self.instance.affiliate_request,
             }
-            
+
             # to to_directory owner
             params['reply_to'] = request_email.sender.email
             notification.send_emails(request_email.recipients,

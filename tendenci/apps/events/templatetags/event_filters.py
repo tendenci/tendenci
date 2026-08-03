@@ -45,7 +45,7 @@ def event_speakers(event, position=None):
         except ValueError:
             position = None
     if position is not None:
-        return event.speaker_set.filter(position=position)   
+        return event.speaker_set.filter(position=position)
     return event.speaker_set.all()
 
 @register.filter

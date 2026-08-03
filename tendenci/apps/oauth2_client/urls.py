@@ -11,7 +11,7 @@ urlpatterns = [
 
         re_path(r'^auth/$',
             AuthorizeView.as_view(), name='oauth2_auth'),
-        
+
         re_path(r'^logout/$',
             Oauth2LogoutView.as_view(template_name='accounts/logout.html'),
              name='oauth2_logout'),

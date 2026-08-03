@@ -60,7 +60,7 @@ class Email(TendenciBaseModel):
         email_to_test = email_to_test.lower()
         email_domain = email_to_test.split('@')[1]
         email_domain_p2 = email_domain.split('.')[-1]
-        return EmailBlock.objects.filter(Q(email=email_to_test) 
+        return EmailBlock.objects.filter(Q(email=email_to_test)
                                          | Q(email_domain=email_domain)
                                          | Q(email_domain=email_domain_p2)
                                          ).exists()

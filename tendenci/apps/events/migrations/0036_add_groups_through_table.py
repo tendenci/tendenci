@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('events', '0035_addon_description'),
     ]
-    
+
     operations = [
         migrations.SeparateDatabaseAndState(
             database_operations=[
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ),
             ],
         ),
-        
+
         migrations.AddField(
             model_name="eventgroup",
             name="is_primary",

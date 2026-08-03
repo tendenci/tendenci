@@ -40,7 +40,7 @@ def get_chapter_membership_field_values(chapter_membership, app_fields):
         profile = user.profile
     else:
         profile = None
-    
+
     for field in app_fields:
         field_name = field.field_name
         value = ''
@@ -145,7 +145,7 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
     site_url = get_setting('site', 'global', 'siteurl')
     site_display_name = get_setting('site', 'global', 'sitedisplayname')
     tmp_body = email.body
-    
+
     # if possible, use the email backend set up for newsletters
     if is_newsletter_relay_set():
         connection = get_newsletter_connection()
@@ -155,7 +155,7 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
     request = kwargs.get('request')
     total_sent = 0
     subject = email.subject
-    
+
     msg = '<div class="hide" id="m-streaming-content" style="margin: 2em 5em;text-align: left; line-height: 1.3em;">'
     msg += '<h1>Processing ...</h1>'
 
@@ -183,7 +183,7 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
                                'renew_link': view_url,
                                'chapter_name': member.chapter.title})
             email.body = template.render(context)
-            
+
             # replace relative to absolute urls
             email.body = email.body.replace("src=\"/", f"src=\"{site_url}/")
             email.body = email.body.replace("href=\"/", f"href=\"{site_url}/")
@@ -221,7 +221,7 @@ def email_chapter_members(email, chapter_memberships, **kwargs):
     msg += f'DONE!<br /><br />Successfully sent email "{subject}" to <strong>{total_sent}</strong> pending members.'
     msg += '</div>'
     yield msg
-    
+
     template_name='chapters/memberships/message/email-chapter-members-conf.html'
     template = get_template(template_name)
     context={'total_sent': total_sent,
@@ -361,10 +361,10 @@ class ImportChapterMembership:
                 else:
                     missing_items_str = ', '.join(missing_items)
                     missing_field_msg = f"Missing keys '{missing_items_str}'"
-    
+
         if missing_field_msg:
             is_valid = False
-    
+
         return is_valid, missing_field_msg
 
     def process_chapter_membership(self, idata, **kwargs):

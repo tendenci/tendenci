@@ -35,7 +35,7 @@ class Command(BaseCommand):
                     if os.path.isfile(file_full_path_from):
                         print('from: ', file_name_from, 'to: ', file_name_to)
                         os.renames(file_full_path_from, file_full_path_to)
-                    
+
                         f.file.name = file_name_to
                         f.save()
 

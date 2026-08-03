@@ -2,15 +2,15 @@
 # from django.urls import reverse
 # from django.test import TestCase
 # from django.test.client import Client
-# 
+#
 # from tendenci.apps.helpdesk.models import Queue, Ticket, QueueMembership
 # from tendenci.apps.helpdesk import settings
-# 
-# 
+#
+#
 # class PerQueueStaffMembershipTestCase(TestCase):
-# 
+#
 #     IDENTIFIERS = (1, 2)
-# 
+#
 #     def setUp(self):
 #         """
 #         Create user_1 with access to queue_1 containing 1 ticket
@@ -21,7 +21,7 @@
 #         settings.HELPDESK_ENABLE_PER_QUEUE_STAFF_MEMBERSHIP = True
 #         self.client = Client()
 #         User = get_user_model()
-# 
+#
 #         self.superuser = User.objects.create(
 #             username='superuser',
 #             is_staff=True,
@@ -29,26 +29,26 @@
 #         )
 #         self.superuser.set_password('superuser')
 #         self.superuser.save()
-# 
+#
 #         for identifier in self.IDENTIFIERS:
 #             queue = self.__dict__['queue_%d' % identifier] = Queue.objects.create(
 #                 title='Queue %d' % identifier,
 #                 slug='q%d' % identifier,
 #             )
-# 
+#
 #             user = self.__dict__['user_%d' % identifier] = User.objects.create(
 #                 username='User_%d' % identifier,
 #                 is_staff=True,
 #             )
 #             user.set_password(str(identifier))
 #             user.save()
-# 
+#
 #             queue_membership = self.__dict__['queue_membership_%d' % identifier] = QueueMembership.objects.create(
 #                 user=user,
 #             )
 #             queue_membership.queues.add(queue)
 #             queue_membership.save()
-# 
+#
 #             for ticket_number in range(1, identifier + 1):
 #                 Ticket.objects.create(
 #                     title='Unassigned Ticket %d in Queue %d' % (ticket_number, identifier),
@@ -59,20 +59,20 @@
 #                     queue=queue,
 #                     assigned_to=user,
 #                 )
-# 
+#
 #     def tearDown(self):
 #         """
 #         Reset HELPDESK_ENABLE_PER_QUEUE_STAFF_MEMBERSHIP to original value
 #         """
 #         settings.HELPDESK_ENABLE_PER_QUEUE_STAFF_MEMBERSHIP = self.HELPDESK_ENABLE_PER_QUEUE_STAFF_MEMBERSHIP
-# 
+#
 #     def test_dashboard_ticket_counts(self):
 #         """
 #         Check that the regular users' dashboard only shows 1 of the 2 queues,
 #         that user_1 only sees a total of 1 ticket, that user_2 sees a total of 2
 #         tickets, but that the superuser's dashboard shows all queues and tickets.
 #         """
-# 
+#
 #         # Regular users
 #         for identifier in self.IDENTIFIERS:
 #             self.client.login(username='User_%d' % identifier, password=str(identifier))
@@ -97,7 +97,7 @@
 #                 identifier * 2,
 #                 'Basic ticket stats were not properly limited by queue membership'
 #             )
-# 
+#
 #         # Superuser
 #         self.client.login(username='superuser', password='superuser')
 #         response = self.client.get(reverse('helpdesk_dashboard'))
@@ -123,7 +123,7 @@
 #             6,
 #             'Basic ticket stats were limited by queue membership for a superuser'
 #         )
-# 
+#
 #     def test_ticket_list_per_queue_user_restrictions(self):
 #         """
 #         Ensure that while the superuser can list all tickets, user_1 can only
@@ -149,7 +149,7 @@
 #                 Queue.objects.get(title="Queue %d" % identifier),
 #                 'Queue choices were not properly limited by queue membership'
 #             )
-# 
+#
 #         # Superuser
 #         self.client.login(username='superuser', password='superuser')
 #         response = self.client.get(reverse('helpdesk_list'))
@@ -158,7 +158,7 @@
 #             6,
 #             'Ticket list was limited by queue membership for a superuser'
 #         )
-# 
+#
 #     def test_ticket_reports_per_queue_user_restrictions(self):
 #         """
 #         Ensure that while the superuser can generate reports on all queues and
@@ -196,7 +196,7 @@
 #                 "Queue %d" % identifier,
 #                 'Queue choices were not properly limited by queue membership'
 #             )
-# 
+#
 #         # Superuser
 #         self.client.login(username='superuser', password='superuser')
 #         response = self.client.get(

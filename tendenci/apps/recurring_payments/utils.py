@@ -263,7 +263,7 @@ def run_a_recurring_payment(rp, verbosity=0):
                     # to customer
                     rp_email_notice.email_customer_no_payment_profile(rp)
                     return
-                
+
                 require_payment_profile = False
 
             if require_payment_profile:

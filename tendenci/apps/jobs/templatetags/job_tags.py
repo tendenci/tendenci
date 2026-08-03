@@ -102,7 +102,7 @@ def job_pricing_current_app(context, user, job_pricing=None):
 class ListJobCategoriesNode(ListNode):
     model = Job
     perms = 'jobs.view_job'
-    
+
     def render(self, context):
         user = AnonymousUser()
 

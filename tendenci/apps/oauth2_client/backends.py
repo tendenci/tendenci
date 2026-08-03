@@ -18,11 +18,11 @@ class AuthenticationBackend(ObjectPermBackend):
     def authenticate(self, request=None, myclient=None, token=None, **kwargs):
         if myclient and token:
             user_info = myclient.userinfo(token=token)
-    
+
             user = self.get_user_by_user_info(user_info=user_info)
-    
+
             return user if self.user_can_authenticate(user) else None
-    
+
     def get_user_by_user_info(self, user_info, create=True):
         if user_info:
             if 'Profile' in user_info and user_info['Profile']:
@@ -35,7 +35,7 @@ class AuthenticationBackend(ObjectPermBackend):
                 if user and not user.is_active:
                     user.is_active = True
                     user.save()
-        
+
                 if not user and create:
                     user = UserModel(username=username)
                     user.set_unusable_password()
@@ -52,7 +52,7 @@ class AuthenticationBackend(ObjectPermBackend):
                 return user if self.user_can_authenticate(user) else None
 
         return None
-    
+
     def sync_user(self, user, user_info, ObjModel=UserModel):
         """
         Updated other user and/or profile fields if needed.
@@ -61,7 +61,7 @@ class AuthenticationBackend(ObjectPermBackend):
         for field in ObjModel._meta.fields:
             if field.name in settings.OAUTH2_USER_ATTR_MAPPING and hasattr(field, 'max_length'):
                 fields_dict[field.name] = field
-        
+
         updated = False
         for user_attr in settings.OAUTH2_USER_ATTR_MAPPING.keys():
             user_info_attr = settings.OAUTH2_USER_ATTR_MAPPING[user_attr]

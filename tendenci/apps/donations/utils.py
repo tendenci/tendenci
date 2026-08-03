@@ -42,7 +42,7 @@ def donation_inv_add(user, donation, **kwargs):
     inv.ship_date = timezone.now()
     inv.message = 'Thank You.'
     inv.status = True
-    
+
     if donation.donate_to_entity:
         inv.entity = donation.donate_to_entity
 
@@ -54,7 +54,7 @@ def donation_inv_add(user, donation, **kwargs):
 
     inv.subtotal = donation.donation_amount
     inv.total = inv.subtotal
-    
+
     # tax
     if get_setting('module', 'donations', 'apply_tax'):
         region = donation.get_region

@@ -29,7 +29,7 @@ class Product(TendenciBaseModel):
     name = models.CharField(blank=False, max_length=200, default='',)
     slug = models.SlugField(unique=True, blank=False, max_length=200,)
     brand = models.CharField(blank=True, max_length=200, default='',)
-    url = models.URLField(help_text=_('URL outside of this site for the product.'), 
+    url = models.URLField(help_text=_('URL outside of this site for the product.'),
                           blank=True, max_length=200, default='',)
     item_number = models.CharField(blank=True, max_length=200, default='',)
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL,)

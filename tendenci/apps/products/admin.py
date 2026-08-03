@@ -42,7 +42,7 @@ class ProductAdmin(TendenciBaseModelAdmin):
     search_fields = ['name', 'description', 'category__name',]
     inlines = [ProductFileAdmin,]
     fieldsets = (
-        (None, 
+        (None,
             {'fields': (
                 'name',
                 'slug',
@@ -83,7 +83,7 @@ class ProductAdmin(TendenciBaseModelAdmin):
                 file.creator = request.user
                 file.owner = request.user
                 file.save(log=False)
-        
+
         formset.save()
 
 admin.site.register(Product, ProductAdmin)

@@ -10,7 +10,7 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **kwargs):
         """
-        Prints a summary of current site settings in format "scope/category/name = value"    
+        Prints a summary of current site settings in format "scope/category/name = value"
         """
         string_io = StringIO()
         call_command('dumpdata', 'site_settings', stdout=string_io)

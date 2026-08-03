@@ -256,8 +256,8 @@ def get_groups_query_filters(user, **kwargs):
     This function generates the query filters for a list of groups that
     the user has the CHANGE (EDIT) permission.
 
-    For example, for the group dropdown on newsletters generator, 
-      only those groups that the user can change will show up. 
+    For example, for the group dropdown on newsletters generator,
+      only those groups that the user can change will show up.
     """
     if not isinstance(user, User) or user.is_anonymous:
         return Q()

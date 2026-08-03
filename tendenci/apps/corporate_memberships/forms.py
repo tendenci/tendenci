@@ -77,11 +77,11 @@ def _get_product_choices(user=None, empty_label=''):
 
 class CorpProductForm(forms.ModelForm):
     product = forms.ModelChoiceField(queryset=Product.objects.all())
-                               
+
     class Meta:
         model = CorpProduct
         fields = ('product', )
-        
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['product'].choices = _get_product_choices()
@@ -89,12 +89,12 @@ class CorpProductForm(forms.ModelForm):
 
 class BranchAdminForm(forms.ModelForm):
     country = CountrySelectField(label=_("Country"), required=False)
-                               
+
     class Meta:
         model = Branch
         fields = ('name', 'address', 'city', 'state', 'zip',
               'country', 'phone', 'fax')
-        
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # state
@@ -116,13 +116,13 @@ class BroadcastForm(FormControlWidgetMixin, forms.ModelForm):
                            required=True)
     corp_members = forms.ModelMultipleChoiceField(required=True, queryset=None,
                             widget=forms.CheckboxSelectMultiple,)
-    
+
 
     class Meta:
         model = Email
         fields = ('subject',
                   'body',)
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['corp_members'].queryset = CorpMembership.objects.select_related(
@@ -187,7 +187,7 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                 if pending_group.members.count() > 0:
                     raise forms.ValidationError(_("This group is not empty. Please select another one or add a new group."))
         return pending_group
-    
+
     def clean_active_group(self):
         active_group = self.cleaned_data['active_group']
         if active_group:
@@ -378,7 +378,7 @@ def assign_fields(form, app_field_objs, instance=None):
                     obj.display_content = instance.payment_method
                 else:
                     obj.display_only = False
-                
+
                 if instance.invoice:
                     obj.display_content = """{} - <a href="{}">View Invoice</a>
                                         """.format(obj.display_content,
@@ -403,7 +403,7 @@ def assign_fields(form, app_field_objs, instance=None):
                 field = obj.get_field_class(
                         initial=form.fields[obj.field_name].initial,
                         max_length=max_length)
-                        
+
                 form.fields[obj.field_name] = field
             else:
                 field = form.fields[obj.field_name]
@@ -458,13 +458,13 @@ class CorpProfileBaseForm(FormControlWidgetMixin, forms.ModelForm):
                                  'owner': request_user,
                                  'creator_username': request_user.username,
                                  'owner_username': request_user.username})
-                
+
             file_object, created = File.objects.get_or_create(
                 file=logo_file,
                 content_type=content_type,
                 object_id=corp_profile.pk,
                 defaults=defaults)
-                
+
             corp_profile.logo = file_object
             corp_profile.save(log=False)
         else:
@@ -538,7 +538,7 @@ class CorpProfileForm(CorpProfileBaseForm):
         if app_field_objs.filter(field_name='logo_file').exists():
             if self.instance.logo:
                 self.initial['logo_file'] = self.instance.logo.file
-        
+
         self.add_form_control_class()
 
         if self.corpmembership_app.authentication_method == 'email':
@@ -591,7 +591,7 @@ class CorpProfileForm(CorpProfileBaseForm):
             _("This secret code is already taken. Please use a different one.")
             )
         return self.cleaned_data['secret_code']
-    
+
     def clean_name(self):
         name = self.cleaned_data['name']
         if name:
@@ -782,7 +782,7 @@ class CorpMembershipRenewForm(forms.ModelForm):
         self.fields['members'].choices = members_choices
         self.fields['members'].label = _("Select the individual members you " +
                                         "want to renew")
-        
+
         if self.corpmembership_app.donation_enabled:
             self.fields['donation_option_value'] = DonationOptionAmountField(required=False)
             self.fields['donation_option_value'].label = self.corpmembership_app.donation_label
@@ -890,7 +890,7 @@ class RosterSearchAdvancedForm(forms.Form):
         super().__init__(*args, **kwargs)
         choices = CorpMembership.get_my_corporate_profiles_choices(request_user)
         self.fields['cm_id'].choices = choices
-        
+
         for field in self.fields:
             if field not in ['search_criteria', 'search_text', 'search_method', 'active_only']:
                 self.fields[field].widget.attrs.update({'class': 'form-control'})
@@ -1355,7 +1355,7 @@ class NoticeForm(forms.ModelForm):
             'sender_display',
             'email_content',
             'status_detail',)
-        
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

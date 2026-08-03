@@ -13,7 +13,7 @@ from tendenci.apps.base.forms import FormControlWidgetMixin
 
 
 class PhotoBaseFormSet(BaseModelFormSet):
-    def __init__(self,  *args, **kwargs): 
+    def __init__(self,  *args, **kwargs):
         self.photo_set = kwargs.pop("photo_set", None)
         super().__init__(*args, **kwargs)
 

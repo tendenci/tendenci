@@ -9,8 +9,8 @@ from tendenci.apps.site_settings.utils import get_setting
 
 class ReCaptchaV2(ReCaptchaV2Checkbox):
     input_type = None
-    
-    def build_attrs(self, base_attrs, extra_attrs=None):    
+
+    def build_attrs(self, base_attrs, extra_attrs=None):
         attrs = super().build_attrs(base_attrs, extra_attrs)
         if 'class' in attrs:
             # strip the 'form-control' from attrs because it messes up the format
@@ -129,6 +129,6 @@ class PercentWidget(TextInput):
         input_group_addon_html = '<div class="input-group-addon">%</div>'
         input_group_html = '<div class="input-group">{}{}</div>'.format(html, input_group_addon_html)
         return mark_safe(input_group_html)
-    
+
         return mark_safe(html + '%')
 

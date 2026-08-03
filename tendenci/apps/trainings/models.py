@@ -16,7 +16,7 @@ from tendenci.apps.site_settings.utils import get_setting
 class BluevoltExamImport(models.Model):
     date_from = models.DateField()
     date_to = models.DateField()
-    
+
     num_inserted = models.PositiveIntegerField(blank=True, null=True,)
     status_detail = models.CharField(_('Status'),
                              max_length=10,
@@ -26,7 +26,7 @@ class BluevoltExamImport(models.Model):
         editable=False)
     run_start_date = models.DateTimeField(blank=True, null=True,)
     run_finish_date = models.DateTimeField(blank=True, null=True,)
-    
+
     class Meta:
         verbose_name = _("Bluevolt Exam Import")
         verbose_name_plural = _("Bluevolt Exam Imports")
@@ -67,7 +67,7 @@ class TeachingActivity(models.Model):
                              max_length=15,
                              default='pending',
                              choices=STATUS_CHOICES)
-    
+
     def __str__(self):
         return self.activity_name
 
@@ -104,7 +104,7 @@ class OutsideSchool(models.Model):
                              max_length=15,
                              default='pending',
                              choices=STATUS_CHOICES)
-    
+
     def __str__(self):
         return self.school_name
 
@@ -156,7 +156,7 @@ class Certification(models.Model):
                                                    blank=True,
                                     max_digits=5, decimal_places=2, default=0)
     diamond_required_online_credits = models.DecimalField(_("Required Online Credits"),
-                                                          blank=True, 
+                                                          blank=True,
                                     max_digits=5, decimal_places=2, default=0)
     diamond_period = models.PositiveSmallIntegerField(_("Period"), blank=True, default=12)
     diamond_required_activity = models.PositiveSmallIntegerField(_("Required Teaching Activity"),
@@ -179,16 +179,16 @@ class Certification(models.Model):
         transcripts = user.transcript_set.filter(
                             certification_track=self,
                              status='approved')
-        
+
         if diamond_number is not None:
             transcripts = transcripts.filter(apply_to=diamond_number,)
 
         if category:
             transcripts = transcripts.filter(school_category=category)
-    
+
         if online_only:
             transcripts = transcripts.filter(location_type='online')
-        
+
         return transcripts.aggregate(
                         Sum('credits'))['credits__sum'] or 0
 
@@ -227,7 +227,7 @@ class Certification(models.Model):
                                          diamond_number=diamond_number)
                 if earned_credits < required_credits:
                     return False
-    
+
                 # check required online credits for diamond
                 required_online_credits = self.diamond_required_online_credits
                 earned_online_credits = self.get_earned_credits(user,
@@ -235,11 +235,11 @@ class Certification(models.Model):
                                          online_only=True)
                 if earned_online_credits < required_online_credits:
                     return False
-    
+
                 # check teaching activity is enough
                 if self.diamond_required_activity:
                     count_teaching_activities = TeachingActivity.objects.filter(user=user).count()
-    
+
                     if count_teaching_activities < self.diamond_required_activity * diamond_number:
                         # not enough teaching activities
                         return False
@@ -272,7 +272,7 @@ class Certification(models.Model):
         if self.required_credits != total_credits_required:
             self.required_credits = total_credits_required
             self.save(update_fields=['required_credits'])
-       
+
     # def credits_earned_by_user(self, user, category=None, d_num=0, for_diamond_number=False):
     #     """
     #     Get credits earned and required by category for user
@@ -282,7 +282,7 @@ class Certification(models.Model):
     #                                             'credits_required': 20,},
     #                                    cat2_id: {'credits_earned': 30,
     #                                             'credits_required': 5,}
-    #                                    } 
+    #                                    }
     #     """
     #     res = {}
     #
@@ -301,12 +301,12 @@ class Certification(models.Model):
     def diamonds_earned(self, user):
         """
         Check how many diamonds this user qualifies
-        
+
         return num_diamonds, extra_credits_earned (for diamonds)
         """
         if not self.enable_diamond:
             return 0, 0
-    
+
         cert_data, created = UserCertData.objects.get_or_create(
                                         user=user,
                                         certification=self)
@@ -317,7 +317,7 @@ class Certification(models.Model):
                         Sum('credits'))['credits__sum'] or 0
 
         return num_diamonds, diamond_credits
-        
+
 
     # def diamonds_earned0(self, user):
     #     """
@@ -350,7 +350,7 @@ class Certification(models.Model):
     #         count_teaching_activities = TeachingActivity.objects.filter(user=user).count()
     #         rc, roc, ra = 9, 9, 9 # why 9? because the maxmium diamonds one can get is 9
     #         if self.diamond_required_credits:
-    #             # number of potential diamonds if required_credits meets 
+    #             # number of potential diamonds if required_credits meets
     #             rc = extra_credits_earned // self.diamond_required_credits
     #         if self.diamond_required_online_credits:
     #             # number of potential diamonds if required_online_credits meets
@@ -363,7 +363,7 @@ class Certification(models.Model):
     #
     #         return num_diamonds, extra_credits_earned
     #
-    #     return 0, 0   
+    #     return 0, 0
 
 
 class CertCat(models.Model):
@@ -384,14 +384,14 @@ class CertCat(models.Model):
         """
         Get the user earned credits for this certification category.
         """
-        return self.certification.get_earned_credits(user, 
+        return self.certification.get_earned_credits(user,
                                                      diamond_number=d_num,
                                                      category=self.category)
 
     def save(self, *args, **kwargs):
         self.certification.cal_required_credits()
         super().save(*args, **kwargs)
-    
+
 
 class Course(TendenciBaseModel):
     LOCATION_TYPE_CHOICES = (
@@ -419,7 +419,7 @@ class Course(TendenciBaseModel):
                              max_length=10,
                              default='enabled',
                              choices=STATUS_CHOICES)
-    
+
     def __str__(self):
         return self.name
 
@@ -427,7 +427,7 @@ class Course(TendenciBaseModel):
         verbose_name = _("Course")
         verbose_name_plural = _("Courses")
         app_label = 'trainings'
-    
+
 
 class Exam(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -440,7 +440,7 @@ class Exam(models.Model):
         related_name="trainings_exams_created", editable=False)
     owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
         related_name="trainings_exams_updated")
-    
+
     def __str__(self):
         return f'Exam for {self.user} on {self.course}'
 
@@ -499,7 +499,7 @@ class Transcript(models.Model):
         related_name="trainings_transcripts_created", editable=False)
     owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
         related_name="trainings_transcripts_updated")
-    
+
     def __str__(self):
         return f'transcript for {self.user}'
 
@@ -536,13 +536,13 @@ class Transcript(models.Model):
     #         transcripts = transcripts.exclude(id=self.id)
     #
     #     return transcripts.aggregate(Sum('credits'))['credits__sum'] or 0
-    
+
     def get_earned_credits(self, d_num=0, category_only=True, online_only=False, exclude_self=True):
         """
         Calculate the user earned credits.
          If category is provided, for the certification category.
         Exclude the current entry.
-        
+
         Called by caculate_apply_to below
         """
         #TODO: may need to include the credits from outside schools
@@ -558,7 +558,7 @@ class Transcript(models.Model):
 
         if exclude_self:
             transcripts = transcripts.exclude(id=self.id)
-    
+
         return transcripts.aggregate(Sum('credits'))['credits__sum'] or 0
 
     def caculate_apply_to(self):
@@ -567,9 +567,9 @@ class Transcript(models.Model):
         Due to lots of uncontrollable facts, this is just a best guess we can make.
 
 
-        It first checks the largest diamond number that this user has earned so far 
+        It first checks the largest diamond number that this user has earned so far
         for this category. If the number is less than what's already recorded in the
-         User Certification Data's table (UCD), use the one from UCD. Based on this 
+         User Certification Data's table (UCD), use the one from UCD. Based on this
          number, it then checks if credits earned is greater than credits required
          to determine whether this number should be added 1 before applying to the
          current entry.
@@ -577,7 +577,7 @@ class Transcript(models.Model):
         if self.certification_track and self.certification_track.enable_diamond:
             if not self.apply_to:
                 # Check what value to assign to among 0 - 9
-                
+
                 # if we're editing an old entry
                 if self.apply_to == 0:
                     earned_credits = self.get_earned_credits(d_num=self.apply_to, category_only=True, online_only=False)
@@ -616,13 +616,13 @@ class Transcript(models.Model):
                     else:
                         earned_credits = self.get_earned_credits(d_num=max_apply_to, category_only=False, online_only=False)
                         required_credits = self.certification_track.diamond_required_credits
-    
+
                         if earned_credits >= required_credits:
                             # user has earned more credits than required for this diamond (with d_num=max_apply_to)
                             # also check online credits
                             if self.location_type == 'online':
                                 earned_online_credits = self.get_earned_credits(d_num=max_apply_to, category_only=False, online_only=True)
-                            
+
                                 required_online_credits = self.certification_track.diamond_required_online_credits
                                 # and user has earned more online credits than required
                                 if earned_online_credits >= required_online_credits and max_apply_to < 9:
@@ -643,9 +643,9 @@ class Transcript(models.Model):
             assign_diamond_number = kwargs.pop('assign_diamond_number', True)
             if assign_diamond_number and not self.apply_to:
                 self.apply_to = self.caculate_apply_to()
-        
+
         for cert in Certification.objects.all():
-            user_cert_data = UserCertData.objects.filter(user=self.user, certification=cert).first()      
+            user_cert_data = UserCertData.objects.filter(user=self.user, certification=cert).first()
             if not user_cert_data:
                 # add the user to UserCertData
                 user_cert_data = UserCertData.objects.create(user=self.user, certification=cert)
@@ -768,7 +768,7 @@ class CorpTranscriptsZipFile(models.Model):
         site_url = get_setting('site', 'global', 'siteurl')
         download_url = reverse('trainings.transcripts_corp_pdf_download', args=[self.pk])
         return f"{site_url}{download_url}"
-    
+
     def get_corp_profile(self):
         from tendenci.apps.corporate_memberships.models import CorpProfile
         if CorpProfile.objects.filter(id=self.corp_profile_id).exists():
@@ -778,4 +778,4 @@ class CorpTranscriptsZipFile(models.Model):
     def delete(self, *args, **kwargs):
         if self.zip_file:
             self.zip_file.delete(save=False)
-        super().delete(*args, **kwargs)  
+        super().delete(*args, **kwargs)

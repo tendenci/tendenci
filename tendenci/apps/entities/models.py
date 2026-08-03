@@ -37,7 +37,7 @@ class Entity(models.Model):
     summary = models.TextField(blank=True)
     notes = models.TextField(blank=True)
     admin_notes = models.TextField(_('Admin Notes'), blank=True)
-    
+
     show_for_donation = models.BooleanField(_('Use for Donation Allocation'), default=False,
             help_text=_('If checked, it will appear as an option for donation allocation on the donation form.'),)
     #donation_default_amount = models.CharField(max_length=30, blank=True, default='',

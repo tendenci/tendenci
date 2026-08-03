@@ -89,14 +89,14 @@ class Committee(BasePage):
 
     def update_group_perms(self, **kwargs):
         """
-        Update the associated group perms for the officers of this chapter. 
+        Update the associated group perms for the officers of this chapter.
         Grant officers the view and change permissions for their own group.
         """
         if not self.group:
             return
- 
+
         ObjectPermission.objects.remove_all(self.group)
-    
+
         perms = ['view', 'change']
 
         officer_users = [officer.user for officer in self.officers(
@@ -108,7 +108,7 @@ class Committee(BasePage):
         if officer_users:
             ObjectPermission.objects.assign(officer_users,
                                         self.group, perms=perms)
-        
+
 
     def is_committee_leader(self, user):
         """
@@ -139,7 +139,7 @@ class Officer(models.Model):
     email = models.EmailField(max_length=120, null=True, blank=True)
     expire_dt = models.DateField(_('Expire Date'), blank=True, null=True,
                                  help_text=_('Leave it blank if never expires.'))
-                                 
+
 
     class Meta:
         app_label = 'committees'

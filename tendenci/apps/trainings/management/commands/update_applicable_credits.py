@@ -4,9 +4,9 @@ from django.core.management.base import BaseCommand
 class Command(BaseCommand):
     """
     Populate the applicable credits for each UserCertData.
-    
+
     """
-    
+
     def handle(self, *args, **options):
         from tendenci.apps.trainings.models import (Certification, UserCertData)
 

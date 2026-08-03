@@ -155,9 +155,9 @@ class Invoice(models.Model):
     def assign_tax(self, price_tax_rate_list, user, module_tax_rate_use_regions=False, corp_profile=None, region=None):
         """
         Calculate and assign tax to this invoice.
-        
-        If site uses regions for tax, 
-        
+
+        If site uses regions for tax,
+
         price_tax_rate_list is a list of (price, default_tax_rate) tuples,
         example: [(10.50, 0.0825), ..]
         """
@@ -230,7 +230,7 @@ class Invoice(models.Model):
                 self.bill_to_zip_code = profile.zipcode
                 self.bill_to_country = profile.country
             else:
-                
+
                 self.bill_to_address = profile.address_2
                 self.bill_to_address2 = profile.address2_2
                 self.bill_to_city = profile.city_2
@@ -249,7 +249,7 @@ class Invoice(models.Model):
         self.ship_to_first_name = user.first_name
         self.ship_to_last_name = user.last_name
         self.ship_to_email = user.email
-        
+
         if hasattr(user, 'profile'):
             profile = user.profile
             self.ship_to_company = profile.company
@@ -264,7 +264,7 @@ class Invoice(models.Model):
                 self.ship_to_zip_code = profile.zipcode
                 self.ship_to_country = profile.country
             else:
-                
+
                 self.ship_to_address = profile.address_2
                 self.ship_to_address2 = profile.address2_2
                 self.ship_to_city = profile.city_2
@@ -786,7 +786,7 @@ class Invoice(models.Model):
             return 0
 
         return self.registration.registrant_set.filter(cancel_dt__isnull=True).count()
-    
+
     def object_display(self, obj=None):
         if not obj:
             obj = self.get_object()
@@ -945,7 +945,7 @@ class Invoice(models.Model):
 
         if not get_setting('module', 'payments', 'stripe_connect_client_id'):
             return None, None
-        
+
         stripe_accounts = StripeAccount.objects.filter(
                             entity=self.entity,
                             status_detail='active')
@@ -955,7 +955,7 @@ class Invoice(models.Model):
 
         [stripe_account] = stripe_accounts[:1] or [None]
         if stripe_account:
-            return stripe_account.stripe_user_id, stripe_account.scope 
+            return stripe_account.stripe_user_id, stripe_account.scope
 
         return None, None
 

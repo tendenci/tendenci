@@ -13,7 +13,7 @@ def populate_default_group(apps, schema_editor):
 #         File = apps.get_model("files", "File")
 #         File.objects.filter(group=None).update(group_id=group_id)
 #     except:
-#         pass  
+#         pass
 
 
 class Migration(migrations.Migration):

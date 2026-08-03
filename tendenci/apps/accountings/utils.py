@@ -95,15 +95,15 @@ def make_acct_entries_sale(user, obj, acct_entry, amount, **kwargs):
 def make_acct_entries_refund(user, invoice, amount, **kwargs):
     """
         Make account entries for refund
-        
+
         DEBIT Sales returns and allowance (C)
         CREDIT Undeposited Funds (A)
-        
-        Refund is processed only to the paid invoices, 
+
+        Refund is processed only to the paid invoices,
         otherwise, it should credit to Account receivable.
     """
     acct_entry = AcctEntry.objects.create_acct_entry(user, 'invoice', invoice.id)
-        
+
     # debit to Sales Returns and Allowances
     acct = Acct.objects.get(account_number=558000)
     AcctTran.objects.create_acct_tran(user,
@@ -177,11 +177,11 @@ def make_acct_entries_initial_reversing(user, invoice, amount, **kwargs):
        all credits will be a negative number.
     """
     ae = AcctEntry.objects.create_acct_entry(user, 'invoice', invoice.id)
-    
-    # debit to unearned revenue 
+
+    # debit to unearned revenue
     acct = Acct.objects.get(account_number=220000)
     AcctTran.objects.create_acct_tran(user, ae, acct, amount)
-    
+
     # credit to accounts receivable
     acct = Acct.objects.get(account_number=120000)
     AcctTran.objects.create_acct_tran(user,

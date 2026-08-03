@@ -8,17 +8,17 @@ from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from .models import StripeAccount, Charge
 from .forms import StripeAccountForm
 
-       
+
 class StripeAccountAdmin(TendenciBaseModelAdmin):
     list_display = ('stripe_user_id', 'account_name',
-                    'show_entity', 
+                    'show_entity',
                     'email', 'default_currency', 'scope',
                      'status_detail', 'action')
     list_filter = ('status_detail',)
     search_fields = ('account_name', 'email')
     readonly_fields=('stripe_user_id', 'scope', 'status_detail')
     fields = ('stripe_user_id', 'scope',
-              'account_name', 'email', 
+              'account_name', 'email',
               'entity',
             'default_currency',
             'status_detail')
@@ -37,7 +37,7 @@ class StripeAccountAdmin(TendenciBaseModelAdmin):
         return '-'
     show_entity.short_description = _('Entity')
     show_entity.admin_order_field = 'entity__entity_name'
-    
+
     @mark_safe
     def action(self, instance):
         if instance and instance.status_detail == 'not completed':
@@ -50,7 +50,7 @@ class ChargeAdmin(admin.ModelAdmin):
     list_display = ('id', 'account', 'amount', 'charge_dt')
     list_filter = ('account',)
     ordering = ['-charge_dt']
-    
+
     actions = None
 
     def has_add_permission(self, request):

@@ -73,19 +73,19 @@ class EventManager(TendenciBaseManager):
             sqs = sqs.filter(content='"%s"' % filter)
 
         return sqs.models(self.model)
-    
+
     def get_queryset(self):
         """
         Exclude events with status_detail 'template'.
         """
         return super().get_queryset().exclude(status_detail='template')
-    
+
     def get_queryset_templates(self):
         """
         Returns events with status_detail 'template'.
         """
         return super().get_queryset().filter(status_detail='template')
-    
+
     def get_all(self):
         """
         Gets all events including status_detail 'template'.

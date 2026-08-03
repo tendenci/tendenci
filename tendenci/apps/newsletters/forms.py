@@ -90,7 +90,7 @@ class OldGenerateForm(forms.ModelForm):
         self.fields['group'].empty_label = _('SELECT ONE')
         self.fields['event_start_dt'].initial = datetime.date.today()
         self.fields['event_end_dt'].initial = datetime.date.today() + datetime.timedelta(days=30)
-        
+
         default_groups = Group.objects.filter(status=True, status_detail="active",
                                               sync_newsletters=True)
         if not self.request.user.is_superuser:

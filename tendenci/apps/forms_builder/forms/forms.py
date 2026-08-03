@@ -65,7 +65,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         self.auto_fields = form.fields.auto_fields().order_by('position')
         if self.edit_mode:
             self.auto_fields = self.auto_fields.none()
-        
+
         self.session = {} if session is None else session
         super().__init__(*args, **kwargs)
 
@@ -221,7 +221,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 )
                 if len(pricing_options) == 1:
                     form.fields['pricing_option'].initial = pricing_options[0][0]
-                
+
                 if formforform.qty_enabled:
                     form.fields['quantity'] = forms.IntegerField(max_value=100, min_value=1, initial=1)
                     form.fields['quantity'].widget.attrs.update({'style': 'width: 50%;'})
@@ -281,7 +281,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         filename = correct_filename(filename)
 
         return f'forms/{str(uuid4())}/{filename}'
-    
+
     def handle_uploaded_file(self, f):
         return default_storage.save(self.get_file_path(f.name), f)
 

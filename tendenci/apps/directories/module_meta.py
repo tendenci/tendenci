@@ -26,9 +26,9 @@ class DirectoryMeta():
         directories_url = get_setting('module', 'directories', 'url')
 
         ### Build string -----------------------
-        
+
         value = site_name + ' | '
-        
+
         # start w/ headline
         if object.headline:
             value += object.headline

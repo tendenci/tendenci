@@ -19,7 +19,7 @@ def convert_pickled_query(apps, schema_editor):
         query = b64encode(bytes(simplejson.dumps(query), encoding='utf-8')).decode('utf-8')
         saved_search.query = query
         saved_search.save()
-    
+
 
 class Migration(migrations.Migration):
 

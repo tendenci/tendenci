@@ -22,7 +22,7 @@ class StaffSearchForm(FormControlWidgetMixin, forms.Form):
     q = forms.CharField(required=False)
     department = forms.ChoiceField(label=_('department'), required=False, choices=[])
     position = forms.ChoiceField(label=_('Position'), required=False, choices=[])
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -33,7 +33,7 @@ class StaffSearchForm(FormControlWidgetMixin, forms.Form):
         # position
         position_choices = Position.objects.values_list('id', 'name').order_by('name')
         self.fields['position'].choices = [('','All Position')] + list(position_choices)
-    
+
 
 
 class StaffForm(TendenciBaseForm):

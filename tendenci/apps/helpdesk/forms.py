@@ -114,7 +114,7 @@ class EditTicketForm(CustomFieldMixin, forms.ModelForm):
 
 class SavedSearchForm(forms.ModelForm):
     query_encoded = forms.CharField()
-    
+
     class Meta:
         model = SavedSearch
         fields = ('title', 'shared',)
@@ -131,7 +131,7 @@ class SavedSearchForm(forms.ModelForm):
         for k in query_dict.keys():
             if k not in valid_keys:
                 raise forms.ValidationError(_(f'{k} is not a valid parameter.'))
-        
+
         return query_encoded
 
 

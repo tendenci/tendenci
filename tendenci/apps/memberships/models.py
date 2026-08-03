@@ -399,8 +399,8 @@ class MembershipSet(models.Model):
                 invoice.discount_amount = discount_amount
                 price -= discount_amount
 
-        if is_positive_and_not_zerotype(donation_amount) and donation_apply_tax: 
-            # add the donation amount to the price so that 
+        if is_positive_and_not_zerotype(donation_amount) and donation_apply_tax:
+            # add the donation amount to the price so that
             # it can calculate the tax for donation as well
             price += donation_amount
 
@@ -423,7 +423,7 @@ class MembershipSet(models.Model):
             invoice.subtotal += donation_amount
             invoice.total += donation_amount
             invoice.balance += donation_amount
-        
+
         membership = memberships[0]
         if membership.renewal:
             membership.assign_payment_credits(invoice)
@@ -434,7 +434,7 @@ class MembershipSet(models.Model):
         invoice.save()
         self.invoice = invoice
         self.save()
-        
+
         self.invoice.object_id = self.pk
         self.invoice.save()
 
@@ -664,7 +664,7 @@ class MembershipDefault(TendenciBaseModel):
             value = t % ('inactive','Inactive')
 
         return mark_safe(value)
-    
+
     def delete(self, **kwargs):
         # Make sure profile member number and group are removed before deleting this membership
         self.expire(self.user)
@@ -932,7 +932,7 @@ class MembershipDefault(TendenciBaseModel):
                 if renewed_chapter_membership:
                     renewed_chapter_membership.approve(request_user=request.user)
                     renewed_chapter_membership.email_admin_renew_notice(request)
-            
+
 
     def auto_apply_chapter_memberships(self, request):
         """
@@ -1048,7 +1048,7 @@ class MembershipDefault(TendenciBaseModel):
                 # no need to check if group.is_member because group.add_user will check it
                 if group:
                     group.add_user(self.user)
-                
+
             if get_setting('module',  'memberships', 'adddirectory'):
                 # add a directory entry for this membership
                 self.add_directory()
@@ -2267,7 +2267,7 @@ class MembershipDefault(TendenciBaseModel):
             invoice_link = ''
         return {'membership_link': '{}{}'.format(site_url, self.get_absolute_url()),
                   'directory_url': directory_url,
-                  'directory_edit_url': directory_edit_url, 
+                  'directory_edit_url': directory_edit_url,
                   'membership_type': self.membership_type.name,
                   'invoice_link':  invoice_link,}
 
@@ -2769,22 +2769,22 @@ class MembershipApp(TendenciBaseModel):
         params['slug'] = params['slug'][:200]
         params['name'] = params['name'][:155]
         app_cloned = self.__class__.objects.create(**params)
-        
+
         # ud fields - avoid using the same ud fields for cloned app
         all_ud_names = ['ud%d' % (x+1) for x in range(30)]
         used_ud_field_names = [field.field_name for field in MembershipAppField.objects.filter(field_name__in=all_ud_names, display=True)]
         available_ud_field_names = [name for name in all_ud_names if name not in used_ud_field_names]
-        
+
         this_app_ud_names = [field.field_name for field in self.fields.filter(field_name__in=all_ud_names, display=True)]
         ud_replace_with = available_ud_field_names[:len(this_app_ud_names)]
-        
+
         # clone fiellds
         fields = self.fields.all()
         for field in fields:
             if field.field_name in this_app_ud_names:
                 field.display = False
             elif field.field_name in ud_replace_with:
-                field.display = True 
+                field.display = True
             field.clone(app_cloned)
 
         return app_cloned

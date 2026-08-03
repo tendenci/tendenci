@@ -138,10 +138,10 @@ class Forum(models.Model):
                                                       ).order_by('-created')
             if posts.count() > 0:
                 topics_dict[topic.name] = posts
-  
+
         if not topics_dict:
             return None
-            
+
         template_name = 'pybb/mail_templates/forum_digest_email_body.html'
         context_vars = {'site_url': get_setting('site', 'global', 'siteurl'),
                         'site_name': get_setting('site', 'global', 'sitedisplayname'),
@@ -218,11 +218,11 @@ class ForumSubscription(models.Model):
         ('weekly', _('Weekly')),
     )
 
-    user = models.ForeignKey(get_user_model_path(), 
+    user = models.ForeignKey(get_user_model_path(),
                             related_name='forum_subscriptions+',
                             verbose_name=_('Subscriber'),
                             on_delete=models.CASCADE)
-    forum = models.ForeignKey(Forum, 
+    forum = models.ForeignKey(Forum,
                               related_name='subscriptions+',
                               verbose_name=_('Forum'),
                               on_delete=models.CASCADE)
@@ -245,7 +245,7 @@ class ForumSubscription(models.Model):
         unique_together = ('user', 'forum',)
 
     def __str__(self):
-        return '{user}\'s subscription to "{forum}"'.format(user=self.user, 
+        return '{user}\'s subscription to "{forum}"'.format(user=self.user,
                                                             forum=self.forum)
 
     def save(self, all_topics=False):

@@ -265,10 +265,10 @@ class PasswordResetForm(forms.Form):
                                                     activate_link=reverse('profile.activate_email'),
                                                     email=requests.utils.quote(email))
                     err_msg =  mark_safe(_('''That e-mail address doesn\'t have an active user account.
-                    Would you like to activate your account? If so, please click {activation_link} and 
+                    Would you like to activate your account? If so, please click {activation_link} and
                     we'll send you an email to activate your account.''').format(activation_link=activation_link))
                     raise forms.ValidationError(err_msg)
-                    
+
                 raise forms.ValidationError(mark_safe(_('That e-mail address doesn\'t have an active user account. Are you sure you\'ve <a href="/accounts/register" >registered</a>?')))
             else:
                 raise forms.ValidationError(_("That e-mail address doesn't have an active user account."))

@@ -71,7 +71,7 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
 
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))
         else:
-            form = form_class(user=request.user, 
+            form = form_class(user=request.user,
                               initial={'allow_anonymous_view': False,
                                         'allow_user_view': False,
                                         'allow_member_view': False})

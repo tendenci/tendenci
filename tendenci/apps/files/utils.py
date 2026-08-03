@@ -84,7 +84,7 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
                 raise Http404
         else:
             raise Http404
-        
+
     image = apply_orientation(image)
 
     image_options = {'quality': quality}
@@ -131,7 +131,7 @@ def get_image_binary(image, **options):
     output = BytesIO()
     if image.format.lower() == 'tiff' and 'quality' in options:
         options.pop('quality')
-        
+
     image.save(output, image.format, **options)
     binary = output.getvalue()
     output.close()
@@ -571,7 +571,7 @@ def get_allowed_mimetypes(file_exts):
     '.odt': 'application/vnd.oasis.opendocument.text',
     '.ods': 'application/vnd.oasis.opendocument.spreadsheet',
     '.odp': 'application/vnd.oasis.opendocument.presentation'}
-    # Add some mimetypes for ms office. For example, mime type for .xlsx files can be either 
+    # Add some mimetypes for ms office. For example, mime type for .xlsx files can be either
     # application/ms-excel or application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
     ms_types_map = {
     '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

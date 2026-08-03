@@ -102,8 +102,8 @@ def event_current_app(context, user, event=None):
 @register.inclusion_tag("events/reg8n/check_in_modal.html", takes_context=True)
 def event_check_in_modal(context, registrant_id, form, message, is_session_set):
     context.update({
-        "registrant_id": registrant_id, 
-        "form": form, 
+        "registrant_id": registrant_id,
+        "form": form,
         "message": message,
         "is_session_set": is_session_set
         })
@@ -313,7 +313,7 @@ class EventListNode(Node):
                 if event.has_any_child_events:
                     continue
                 events_to_display.append(event)
-    
+
             context[self.context_var] = events_to_display
         else:
             context[self.context_var] = events
@@ -353,7 +353,7 @@ def event_list(parser, token):
         type_slug = bits[2]
         ordering = bits[3]
         context_var = bits[5]
-        
+
     if len(bits) == 7:
         day = bits[1]
         type_slug = bits[2]
@@ -747,7 +747,7 @@ def dict_event_speakers(context, event_id, order_by='name'):
     speakers = Speaker.objects.filter(Q(event=event) | Q(event__parent=event))
     speakers = speakers.order_by(order_by)
     # Make a distinct list of speakers, but we can't filter with distinct
-    # because speakers are individually entered for each event. 
+    # because speakers are individually entered for each event.
     # Even though two sub-events have the same speaker in terms of name, there is
     # no relationship between them and will be treated as two different speakers
     # by the system. However, they're most likely the same speaker.

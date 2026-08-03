@@ -47,7 +47,7 @@ class AuthNetAPI:
         request_dict = {
             "getMerchantDetailsRequest": {
                 "merchantAuthentication": self.merchant_authentication
-            }  
+            }
         }
         res = self.post_requests(request_dict)
         success, code, text, res_dict = self.process_response(res)
@@ -58,7 +58,7 @@ class AuthNetAPI:
     def create_customer_profile_from_trans(self, trans_id):
         """
         Create customer profile from a transaction (for membership auto renewal)
-        
+
         return (customer_profile_id, customer_payment_profile_id_list)
         """
         request_dict = {
@@ -76,7 +76,7 @@ class AuthNetAPI:
         """
         Authorize and capture a payment using a stored customer payment profile.
         return (success, code, text, res_dict)
-    
+
         https://developer.authorize.net/api/reference/index.html#payment-transactions-charge-a-customer-profile
         """
         request_dict = {
@@ -96,7 +96,7 @@ class AuthNetAPI:
                         "description": payment.description
                     }
                 }
-            }    
+            }
         }
         res = self.post_requests(request_dict)
         return self.process_response(res)
@@ -135,19 +135,19 @@ class AuthNetAPI:
         success, code, text, res_dict = self.process_response(res)
         if success:
             direct_response = res_dict['directResponse'].split(',')
-            # response_code == response_reason_code == 1 
+            # response_code == response_reason_code == 1
             if direct_response[0] == direct_response[1] == '1':
                 # approved == valid
                 return True
 
         return False
-   
+
 
     def get_token(self, customer_profile_id):
         """
         Get token using getHostedProfilePageRequest method
         Return a tuple: (token, error message or '')
-        
+
         https://developer.authorize.net/api/reference/index.html#customer-profiles-get-accept-customer-profile-page
         """
         iframe_communicator_url = get_setting('site', 'global', 'siteurl') + \
@@ -178,8 +178,8 @@ class AuthNetAPI:
 
         if code:
             return '', f'{code}:{text}'
-    
-        return '', str(res.status_code)  
+
+        return '', str(res.status_code)
 
     def delete_customer_profile(self, customer_profile_id):
         request_dict = {
@@ -225,14 +225,14 @@ class AuthNetAPI:
         """
         if res_dict['messages']['resultCode'] == 'Ok':
             return True, res_dict['customerProfileId'], res_dict['messages']['message']
-        
+
         # check if a customer profile already exist
         if res_dict['messages']['message'][0]['code'] == 'E00039':
             text = res_dict['messages']['message'][0]['text']
             p = re.compile(r'A duplicate record with ID (\d+) already exists.', re.I)
             match = p.search(text)
             if match:
-                return True, match.group(1), res_dict['messages']['message'] 
+                return True, match.group(1), res_dict['messages']['message']
         return False, None, res_dict['messages']['message']
 
     def create_txn_request(self, payment, opaque_value, opaque_descriptor):
@@ -267,7 +267,7 @@ class AuthNetAPI:
             }
         }
         return self.post_requests(request_dict)
-    
+
     def process_txn_response(self, user, res_dict, payment):
         """
         1. Update payment (equivalent to the old payment_update_authorizenet)
@@ -291,7 +291,7 @@ class AuthNetAPI:
                 payment.account_number = ''
                 payment.auth_code = tran_response['authCode']
                 payment.avs_code = tran_response['authCode']
-                
+
                 if payment.response_code == '1': # Approved
                     payment.mark_as_paid()
                     payment.save()
@@ -443,7 +443,7 @@ def prepare_authorizenet_sim_form(request, payment):
 def verify_hash(signature_key, response_d):
     if not signature_key:
         return False
-    
+
     sha2_hash = response_d.get('x_SHA2_Hash', '')
 
     text_to_hash = ''
@@ -462,7 +462,7 @@ def verify_hash(signature_key, response_d):
                     text_to_hash.encode('utf-8'), hashlib.sha512).hexdigest().upper()
     return sha2_hash == computed_hash
 
-    
+
 # delete later
 def authorizenet_thankyou_processing(request, response_d, **kwargs):
     from django.shortcuts import get_object_or_404
