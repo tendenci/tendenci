@@ -565,7 +565,7 @@ class FormDateTimes:
         self.get_date_times()
     def get_date_times(self):
         if self.start_dt is None:
-            self.start_dt = datetime.now()
+            self.start_dt = timezone.now()
 
         # remove the seconds and microseconds
         self.start_dt = self.start_dt.replace(second=00,microsecond=00)
@@ -964,7 +964,7 @@ def directory_cleanup(dir_path, ndays):
             continue
         file_path = os.path.join(dir_path, filename)
         modified_dt = default_storage.get_modified_time(file_path)
-        if modified_dt + timedelta(days=ndays) < datetime.now():
+        if modified_dt + timedelta(days=ndays) < timezone.now():
             # the file is older than ndays, delete it
             default_storage.delete(file_path)
     for foldername in foldernames:

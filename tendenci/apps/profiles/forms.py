@@ -1,4 +1,3 @@
-import datetime
 import re
 import chardet
 
@@ -8,6 +7,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.forms.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 from django.db.models import Q
 
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, StateSelectField
@@ -26,7 +26,7 @@ from tendenci.apps.industries.models import Industry
 from tendenci.apps.files.validators import FileValidator
 
 attrs_dict = {'class': 'required' }
-THIS_YEAR = datetime.date.today().year
+THIS_YEAR = timezone.now().year
 # this is the list of apps whose permissions will be displayed on the permission edit page
 APPS = ('profiles', 'user_groups', 'articles',
         'news', 'pages', 'jobs', 'locations',
@@ -813,7 +813,7 @@ class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
 
 class UserMembershipForm(TendenciBaseForm):
     join_dt = forms.SplitDateTimeField(label=_('Subscribe Date/Time'),
-        initial=datetime.datetime.now())
+        initial=timezone.now())
     expire_dt = forms.SplitDateTimeField(label=_('Expire Date/Time'), required=False)
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))

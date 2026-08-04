@@ -14,7 +14,7 @@ from tendenci.apps.base.fields import PriceField
 from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.base.utils import currency_check
 
-END_DT_INITIAL = datetime.now() + timedelta(weeks=4)
+END_DT_INITIAL = timezone.now() + timedelta(weeks=4)
 
 class DiscountForm(TendenciBaseForm):
 
@@ -62,7 +62,7 @@ class DiscountForm(TendenciBaseForm):
                     })
                     ]
 
-    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=timezone.now())
     end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))

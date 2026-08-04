@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.db import models
 from django.utils.text import unescape_string_literal
 from django.urls import re_path
@@ -13,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.site_settings.utils import get_setting
@@ -167,7 +166,7 @@ class FormAdmin(TendenciBaseModelAdmin):
         response = StreamingHttpResponse(
             streaming_content=(iter_form_entries(form)),
             content_type='text/csv',)
-        csvname = '{}-{}.csv'.format(form.slug, slugify(datetime.now().ctime()))
+        csvname = '{}-{}.csv'.format(form.slug, slugify(timezone.now().ctime()))
         response['Content-Disposition'] = 'attachment; filename="%s"' % csvname
 
         return response

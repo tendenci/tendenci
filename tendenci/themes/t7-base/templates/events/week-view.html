@@ -23,7 +23,7 @@
 
       <div class="page-header">
         <ul class="list-inline text-center">
-          <li><h1>{% trans "Week of " %}{{ cur_date|date:"n/j/Y" }}</h1></li>
+          <li><h1>{% trans "Week of " %}{{ cur_date|date:"SHORT_DATE_FORMAT" }}</h1></li>
           <li class="pull-left"><h1><a href="{{ prev_week_url }}"> <i class="fa fa-angle-left"></i></a></h1></li>
           <li class="pull-right"><h1><a href="{{ next_week_url }}"><i class="fa fa-angle-right"></i></a></h1></li>
         </ul>
@@ -65,9 +65,9 @@
                 <a href="{{ event.get_absolute_url }}" class="time-stamp">
                   {% if not event.all_day %}{{ event.start_dt|date:"f A" }} - {{ event.end_dt|date:"f A" }}<br/>{% endif %}
                 </a>
-                <time style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</time>
+                <time style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l" }}, {{ event.start_dt|date:"DATETIME_FORMAT" }}</time>
                 {% if event.parent %}
-                	<span itemprop="name">{{ event.parent.title|truncatechars:15 }}</span>
+                    <span itemprop="name">{{ event.parent.title|truncatechars:15 }}</span>
                 {% endif %}
                 <a href="{{ event.get_absolute_url }}" class="event-title" itemprop="url">
                   <span itemprop="name">{{ event.title }}</span>

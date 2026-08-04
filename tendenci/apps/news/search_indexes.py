@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from haystack import indexes
 from django.utils import timezone
 

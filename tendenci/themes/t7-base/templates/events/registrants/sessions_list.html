@@ -4,7 +4,7 @@
 {% load base_tags %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}{{ event.title }} {{ event.start_dt|date:"M j, Y" }} - {% trans "Sessions and Times" %}{% endblock %}
+{% block title %}{{ block.super }}{{ event.title }} {{ event.start_dt|date:"DATE_FORMAT" }} - {% trans "Sessions and Times" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}

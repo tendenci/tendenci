@@ -464,25 +464,25 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     get_invoice.short_description = 'Invoice'
 
     def get_create_dt(self, instance):
-        return instance.create_dt.strftime('%b %d, %Y, %I:%M %p')
-    get_create_dt.short_description = 'Created On'
+        return instance.create_dt.strftime(settings.STRFTIME_DATETIME_FORMAT)
+    get_create_dt.short_description = u'Created On'
 
     def get_approve_dt(self, instance):
         dt = instance.application_approved_dt
 
         if dt:
-            return dt.strftime('%b %d, %Y, %I:%M %p')
-        return ''
-    get_approve_dt.short_description = 'Approved On'
+            return dt.strftime(settings.STRFTIME_DATETIME_FORMAT)
+        return u''
+    get_approve_dt.short_description = u'Approved On'
     get_approve_dt.admin_order_field = 'application_approved_dt'
 
     def get_expire_dt(self, instance):
         dt = instance.expire_dt
 
         if dt:
-            return dt.strftime('%m/%d/%Y')
-        return ''
-    get_expire_dt.short_description = 'Expire Date'
+            return dt.strftime(settings.STRFTIME_DATE_FORMAT)
+        return u''
+    get_expire_dt.short_description = u'Expire Date'
     get_expire_dt.admin_order_field = 'expire_dt'
 
     def get_actions(self, request):

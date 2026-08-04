@@ -18,9 +18,9 @@
 
          <div class="time-period">
             {% if event.all_day %}
-            {{ event.start_dt|date:"l, M j, Y" }} - {{ event.end_dt|date:"l, M j, Y" }}
+            {{ event.start_dt|date:"l" }}, {{ event.start_dt|date:"DATE_FORMAT" }}  - {{ event.end_dt|date:"l" }}, {{ event.end_dt|date:"DATE_FORMAT" }}
             {% else %}
-             {{ event.start_dt|date:"l, M j, Y P" }} - {{ event.end_dt|date:"l, M j, Y P" }}
+             {{ event.start_dt|date:"DATETIME_FORMAT" }}  - {{ event.end_dt|date:"l" }}, {{ event.end_dt|date:"DATETIME_FORMAT" }}
             {% endif %}
          </div>
 

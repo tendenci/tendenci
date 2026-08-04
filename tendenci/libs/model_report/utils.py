@@ -1,10 +1,19 @@
+import sys
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
+
 from decimal import Decimal
 from string import capwords
 from datetime import datetime
+from django.conf import settings
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.utils.encoding import force_str
 from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.entities.models import Entity
+
 
 DEFAULT_OBJ_TYPES = ('registration', 'membershipdefault',
                      'membershipset', 'makepayment',
@@ -85,11 +94,16 @@ def round_format(value, instance):
     """
     return Decimal('%.2f' % Decimal(value))
 
+@deprecated('Use local_date_format(django.utils.timezone) instead')
 def us_date_format(value, instance):
     if isinstance(value, datetime):
         return value.strftime("%m/%d/%Y")
     return value
 
+def local_date_format(value, instance):
+    if isinstance(value, timezone):
+        return value.strftime(settings.STRFTIME_DATE_FORMAT)
+    return value
 
 def date_label(report, field):
     return _("Date")

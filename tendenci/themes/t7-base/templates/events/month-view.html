@@ -31,7 +31,7 @@
 <div class="month-view">
   <div class="row">
     <div class="col-md-12 col-xs-12">
-	
+
       <div class="page-header">
         <ul class="list-inline text-center">
           <li><h1>{{ month_names.1 }} {{ year }}</h1></li>
@@ -42,12 +42,12 @@
 
       <div style="clear:both;"></div>
       <div class="calendar-wrap">
-      
-      	<div class="text-center">
-      	
-		<form id="calendar-search-form" action="{% url 'event.month' %}" method="post">{% csrf_token %}
-		
-		<nav class="navbar navbar-default">
+
+        <div class="text-center">
+
+        <form id="calendar-search-form" action="{% url 'event.month' %}" method="post">{% csrf_token %}
+
+        <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#events-search-navbar-collapse" aria-expanded="false">
@@ -60,45 +60,45 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="events-search-navbar-collapse">
-    
-	 <div class="row">
-	 	 <div class="form-group col-sm-2 text-left">
-		    <label for="id_events_in">{{ form.events_in.label }}</label>
-		    {{ form.events_in }}
-		 </div>
-		 <div class="form-group col-sm-2 text-left">
-		    <label for="id_search_text">{{ form.search_text.label }}</label>
-		    {{ form.search_text }}
-		 </div>
-		 <div class="form-group col-sm-3 text-left">
-		    <label for="id_group">{{ form.group.label }}</label>
-		    {{ form.group }}
-		  </div>
-		  <div class="form-group col-sm-2 text-left">
-		    <label for="id_event_type">{{ form.event_type.label }}</label>
-		    {{ form.event_type }}
-		  </div>
-		  <div class="col-sm-2 text-left">
-			<div>&nbsp;</div>
-			<input class="btn btn-primary btn-sm form" type="submit" value="{% trans 'Find Events' %}" />
-		</div>
-		<div class="col-sm-1 text-right">
+
+     <div class="row">
+         <div class="form-group col-sm-2 text-left">
+            <label for="id_events_in">{{ form.events_in.label }}</label>
+            {{ form.events_in }}
+         </div>
+         <div class="form-group col-sm-2 text-left">
+            <label for="id_search_text">{{ form.search_text.label }}</label>
+            {{ form.search_text }}
+         </div>
+         <div class="form-group col-sm-3 text-left">
+            <label for="id_group">{{ form.group.label }}</label>
+            {{ form.group }}
+          </div>
+          <div class="form-group col-sm-2 text-left">
+            <label for="id_event_type">{{ form.event_type.label }}</label>
+            {{ form.event_type }}
+          </div>
+          <div class="col-sm-2 text-left">
+            <div>&nbsp;</div>
+            <input class="btn btn-primary btn-sm form" type="submit" value="{% trans 'Find Events' %}" />
+        </div>
+        <div class="col-sm-1 text-right">
             <div>&nbsp;</div>
              <a href="{% url "event.search" %}" class="btn btn-primary btn-sm">{% trans "List View" %}</a>
         </div>
-	 </div>
-		
-	</div>
+     </div>
+
+    </div>
 </div>
-</nav>	
-		
-		
-		</form>
-		
-		</div>
-		
-		
-		<p></p>
+</nav>
+
+
+        </form>
+
+        </div>
+
+
+        <p></p>
 
         <div class="month-wrap">
 
@@ -134,9 +134,9 @@
                 <a href="{{ event.get_absolute_url }}" class="time-stamp">
                   {% if not event.all_day %}{{ event.start_dt|date:"f A" }} - {{ event.end_dt|date:"f A" }}<br/>{% endif %}
                 </a>
-                <time style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</time>
+                <time style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l" }}, {{ event.start_dt|date:"DATE_FORMAT" }}</time>
                 {% if event.parent %}
-                	<span itemprop="name">{{ event.parent.title|truncatechars:15 }}</span>
+                    <span itemprop="name">{{ event.parent.title|truncatechars:15 }}</span>
                 {% endif %}
                 <a href="{{ event.get_absolute_url }}" class="event-title" itemprop="url">
                   <span itemprop="name">{{ event.title|truncatechars:15 }}</span>
@@ -168,10 +168,10 @@
   </div> <!-- END row -->
   <br />
   <div class="pull-right">
-  	<span class="glyphicon glyphicon-calendar"></span>
+    <span class="glyphicon glyphicon-calendar"></span>
   <a href="{% url "event.ics" %}" title="Download ICS-file">{% trans "Export Calendar" %}</a>
   </div>
-  
+
 </div> <!-- END month-view -->
 
 <br/><br/>

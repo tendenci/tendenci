@@ -1,10 +1,10 @@
-from datetime import datetime
 from dateutil import tz
 
 from django.core.management.base import BaseCommand
 from django.apps import apps
 from django.db import connection
 from django.conf import settings
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -32,7 +32,7 @@ class Command(BaseCommand):
 
             updated_field_count = 0
             total_values_updated = 0
-            start_dt = datetime.now()
+            start_dt = timezone.now()
             print("START: %s" % start_dt)
 
             models = apps.get_models()
@@ -61,7 +61,7 @@ class Command(BaseCommand):
                         if field_type == 1114 and field.db_type(connection=connection) == "timestamp with time zone":
 
                             print("Updating {}.{} data".format(model._meta.db_table, field.name))
-                            print("%s\n" % datetime.now())
+                            print("%s\n" % timezone.now())
                             try:
                                 objects = model.objects.all()
                                 print(objects)
@@ -101,7 +101,7 @@ class Command(BaseCommand):
                     if field.name in ['update_dt', 'date_done', 'action_time', 'date_changed']:
                         field.auto_now = True
 
-            print("FINISH at : %s" % datetime.now())
+            print("FINISH at : %s" % timezone.now())
             print("Started at: %s" % start_dt)
             print("Updated %s timestamp fields to utc with timezone support." % updated_field_count)
             print("Updated %s timestamp values." % total_values_updated)
