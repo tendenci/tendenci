@@ -71,7 +71,7 @@ def search(request, template_name="studygroups/search.html"):
         filters = get_query_filters(request.user, 'studygroups.view_studygroup')
         studygroups = StudyGroup.objects.filter(filters).distinct()
 
-    studygroups = studygroups.order_by('-create_dt')
+    studygroups = studygroups.order_by('title')
 
     EventLog.objects.log()
 
