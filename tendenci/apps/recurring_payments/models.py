@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Sum
@@ -475,8 +476,8 @@ class RecurringPayment(models.Model):
                                                   model=self._meta.model_name)
         inv.object_id = self.id
         inv.title = "Recurring Payment Invoice for Billing Cycle {} - {}".format(
-                                           billing_cycle['start'].strftime('%m/%d/%Y'),
-                                           billing_cycle['end'].strftime('%m/%d/%Y'))
+                                           date_format(billing_cycle['start'].date(), settings.SHORT_DATE_FORMAT),
+                                           date_format(billing_cycle['end'].date(), settings.SHORT_DATE_FORMAT))
         inv.bill_to_user(self.user)
         inv.status = True
 
@@ -616,8 +617,8 @@ class RecurringPaymentInvoice(models.Model):
         if self.billing_cycle_start_dt and self.billing_cycle_end_dt:
             description = self.recurring_payment.description
             description += '(billing cycle from {} to {})'.format(
-                            self.billing_cycle_start_dt.strftime('%m/%d/%Y'),
-                            self.billing_cycle_end_dt.strftime('%m/%d/%Y'))
+                            date_format(self.billing_cycle_start_dt.date(), settings.SHORT_DATE_FORMAT),
+                            date_format(self.billing_cycle_end_dt.date(), settings.SHORT_DATE_FORMAT))
         else:
             description = payment.description
 

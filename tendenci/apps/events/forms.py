@@ -1243,7 +1243,7 @@ class EventForm(TendenciBaseForm):
     def clean_end_recurring(self):
         end_recurring = self.cleaned_data.get('end_recurring', None)
         if end_recurring:
-            return datetime.combine(end_recurring, datetime.max.time(), zoneinfo=DEFAULT_ZONEINFO)
+            return datetime.combine(end_recurring, datetime.max.time(), tzinfo=DEFAULT_ZONEINFO)
         return end_recurring
 
     def clean(self):

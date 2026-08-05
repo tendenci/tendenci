@@ -1,3 +1,4 @@
+from django.utils.formats import date_format
 from django.utils.html import strip_tags
 from django.conf import settings
 from html import unescape
@@ -33,8 +34,7 @@ class NewsMeta():
         if obj.headline and obj.release_dt:
             values_list.append('-')
         if obj.release_dt:
-            # values_list.append(obj.release_dt.strftime('%m-%d-%Y'))
-            values_list.append(obj.release_dt.strftime(settings.SHORT_DATE_FORMAT))
+            values_list.append(date_format(obj.release_dt.date, settings.SHORT_DATE_FORMAT))
 
         if primary_keywords:
             if values_list:

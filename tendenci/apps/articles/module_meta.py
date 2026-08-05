@@ -1,4 +1,6 @@
 from html import unescape
+from django.conf import settings
+from django.utils.formats import date_format
 from django.utils.html import strip_tags
 from tendenci.apps.meta.utils import generate_meta_keywords
 from tendenci.apps.site_settings.utils import get_setting
@@ -40,7 +42,7 @@ class ArticleMeta():
         if obj.headline and obj.release_dt:
             values_list.append('-')
         if obj.release_dt:
-            values_list.append(obj.release_dt.strftime('%m-%d-%Y'))
+            values_list.append(format_date(obj.release_dt.date(), settings.SHORT_DATE_FORMAT))
 
         if primary_keywords:
             if values_list:

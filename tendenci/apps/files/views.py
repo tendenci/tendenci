@@ -30,6 +30,7 @@ from django.views.generic import CreateView
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.utils import timezone
+from django.utils.formats import date_format
 
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.user_groups.models import Group
@@ -665,16 +666,14 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
     """
     Displays a table of files sorted by views/downloads.
     """
-    start_dt = timezone.datetime.today() + relativedelta(months=-2)
-    if settings.USE_TZ:
-        start_dt = timezone.make_aware(start_dt)
+    start_dt = timezone.now() + relativedelta(months=-2)
     end_dt = timezone.now()
     file_type = 'all'
 
     form = form_class(
         initial={
-            'start_dt': start_dt.strftime('%m/%d/%Y'),
-            'end_dt': end_dt.strftime('%m/%d/%Y'),
+            'start_dt': date_format(start_dt.date(), settings.DATE_FORMAT),
+            'end_dt': date_format(end_dt.date(), settings.DATE_FORMAT),
         }
     )
 
@@ -683,9 +682,6 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
         if form.is_valid():
             start_dt = form.cleaned_data['start_dt']
             end_dt = form.cleaned_data['end_dt']
-            if settings.USE_TZ:
-                start_dt = timezone.make_aware(start_dt)
-                end_dt = timezone.make_aware(end_dt)
             file_type = form.cleaned_data['file_type']
 
     event_logs = EventLog.objects.values('object_id').filter(

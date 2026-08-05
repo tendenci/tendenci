@@ -10,6 +10,7 @@ from io import BytesIO
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.core.files.storage import default_storage
 from django.core.files import File
@@ -317,8 +318,9 @@ class Profile(Person):
             event = credit.event
             if event.pk not in credits[category][year]['events']:
                 credits[category][year]['events'][event.pk] = {
-                    'start_dt': event.start_dt.strftime('%m-%d-%y'),
+                    'start_dt': date_format(event.start_dt.date(), settings.SHORT_DATE_FORMAT),
                     'credits': 0,
+                    'type': category,
                     'type': category,
                     'meeting_name': event.parent.title if event.parent else event.title,
                     'registrant_id': credit.registrant.pk,

@@ -1,8 +1,10 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.formats import date_format
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import SimpleListFilter
@@ -383,21 +385,21 @@ class ChapterMembershipAdmin(admin.ModelAdmin):
     def join_date(self, instance):
         if not instance.join_dt:
             return ''
-        return instance.join_dt.strftime('%m-%d-%Y')
+        return date_format(instance.join_dt.date(), settings.DATE_FORMAT)
     join_date.short_description = _('Join Date')
     join_date.admin_order_field = 'join_dt'
 
     def renew_date(self, instance):
         if not instance.renew_dt:
             return ''
-        return instance.renew_dt.strftime('%m-%d-%Y')
+        return date_format(instance.renew_dt.date(), settings.DATE_FORMAT)
     renew_date.short_description = _('Renew Date')
     renew_date.admin_order_field = 'renew_dt'
 
     def expire_date(self, instance):
         if not instance.expire_dt:
             return ''
-        return instance.expire_dt.strftime('%m-%d-%Y')
+        return date_format(instance.expire_dt.date(), settings.DATE_FORMAT)
     expire_date.short_description = _('Expire Date')
     expire_date.admin_order_field = 'expire_dt'
 

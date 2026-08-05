@@ -20,6 +20,7 @@ from django.db import models
 from django.urls import reverse
 from django.db.models.aggregates import Sum
 from django.utils import timezone
+from django.utils.formats import date_format
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
@@ -1065,7 +1066,7 @@ class Registration(models.Model):
             inv.id,
             self.event.pk,
             self.event.title,
-            self.event.start_dt.strftime('%Y-%m-%d'),
+            date_format(self.event.start_dt, settings.DATE_FORMAT),
             inv.object_id,
         )
 
@@ -1765,7 +1766,7 @@ class Registrant(models.Model):
                 continue
             events_visited.append(event.id)
 
-            date = event.start_dt.date().strftime(settings.DATE_FORMAT)
+            date = date_format(event.start_dt.date(), settings.DATE_FORMAT)
 
             cpe_credits = self.get_cpe_credits_by_event(event)
             irs_credits = self.get_irs_credits_by_event(event)
@@ -2645,7 +2646,7 @@ class RecurringEvent(models.Model):
             repeat_type = 'month(s)'
         elif self.repeat_type == self.RECUR_YEARLY:
             repeat_type = 'year(s)'
-        ends_on = self.ends_on.strftime(settings.DATE_FORMAT)
+        ends_on = date_format(self.ends_on.date(), settings.DATE_FORMAT)
         return _("Repeats every %(frequency)s %(repeat_type)s until %(ends_on)s" % {
                             'frequency': self.frequency,
                             'repeat_type': repeat_type,
@@ -3117,7 +3118,7 @@ class Event(TendenciBaseModel):
         """Location tied to group"""
         group = self.groups.first()
         return group and group.entity.locations_location_entity.first()
-        
+
 
     @property
     def can_configure_credits(self):
@@ -4058,7 +4059,7 @@ class Event(TendenciBaseModel):
 
     @property
     def event_dates_display(self):
-        return ' - '.join([x.strftime(settings.DATE_FORMAT) for x in self.full_event_days])
+        return ' - '.join([date_format(x.date(), settings.DATE_FORMAT) for x in self.full_event_days])
 
     def get_spots_status(self):
         """
