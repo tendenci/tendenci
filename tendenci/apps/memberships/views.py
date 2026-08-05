@@ -1283,7 +1283,8 @@ def membership_default_add(request, slug='', membership_id=None,
                 if corp_membership.members_count == membership_cap:
                     # email admin and corporate reps about this corp. has reached cap
                     # only sent when cap is reached so they don't get freaked out for too many emails
-                    email_sent = corp_membership.email_reps_cap_reached()
+                    if request.method == 'POST':
+                        email_sent = corp_membership.email_reps_cap_reached()
                 else:
                     email_sent = False
 
