@@ -1,5 +1,6 @@
 import re
 import calendar
+import zoneinfo
 from ast import literal_eval
 from os.path import splitext, basename
 from datetime import date, datetime, timedelta
@@ -13,6 +14,7 @@ from django import forms
 from django.db.models import Q
 from django.forms.widgets import RadioSelect
 from django.utils.translation import gettext_lazy as _
+from django.utils.formats import date_format
 from django.forms.formsets import BaseFormSet
 from django.forms.models import BaseModelFormSet
 from django.forms.utils import ErrorList
@@ -63,6 +65,8 @@ from tendenci.apps.base.utils import correct_filename
 from .fields import UseCustomRegField
 from .widgets import UseCustomRegWidget
 from tendenci.apps.base.http import Http403
+
+DEFAULT_ZONEINFO = zoneinfo.ZoneInfo(settings.TIME_ZONE)
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -820,7 +824,7 @@ def _get_price_labels(pricing):
     else:
         target_display = ''
 
-    end_dt = '<br/>&nbsp;(Ends ' + str(pricing.end_dt.date()) + ')'
+    end_dt = f'<br/>&nbsp;(Ends {date_format(pricing.end_dt.date(), settings.SHORT_DATE_FORMAT)})'
     description = '<br/>&nbsp;<span style="font-weight: normal;">' + str(pricing.description) + '</span>'
 
     return mark_safe('&nbsp;<strong><span data-price="{}">{} {}{}</span>{}</strong>{}'.format(
@@ -923,12 +927,12 @@ class EventForm(TendenciBaseForm):
 
     start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'),
                                   initial=timezone.now()+timedelta(days=30),
-                                  input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
-                                  input_time_formats=['%I:%M %p', '%H:%M:%S'])
+                                  input_date_formats=settings.DATE_INPUT_FORMATS,
+                                  input_time_formats=settings.TIME_INPUT_FORMATS,)
     end_dt = forms.SplitDateTimeField(label=_('End Date/Time'),
                                 initial=timezone.now()+timedelta(days=30, hours=2),
-                                input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
-                                input_time_formats=['%I:%M %p', '%H:%M:%S'])
+                                input_date_formats=settings.DATE_INPUT_FORMATS,
+                                input_time_formats=settings.TIME_INPUT_FORMATS,)
     all_day = forms.BooleanField(label=_('All Day'), required=False, initial=False)
     start_event_date = forms.DateField(
         label=_('Start Date'),
@@ -1239,7 +1243,7 @@ class EventForm(TendenciBaseForm):
     def clean_end_recurring(self):
         end_recurring = self.cleaned_data.get('end_recurring', None)
         if end_recurring:
-            return datetime.combine(end_recurring, datetime.max.time())
+            return datetime.combine(end_recurring, datetime.max.time(), tzinfo=DEFAULT_ZONEINFO)
         return end_recurring
 
     def clean(self):
@@ -1286,13 +1290,13 @@ class EventForm(TendenciBaseForm):
         # Reset time if All Day is selected
         if event.all_day:
             if self.cleaned_data.get('start_event_date'):
-                event.start_dt = datetime.combine(self.cleaned_data.get('start_event_date'), datetime.min.time())
+                event.start_dt = datetime.combine(self.cleaned_data.get('start_event_date'), datetime.min.time(), zoneinfo=DEFAULT_ZONEINFO)
             else:
-                event.start_dt = datetime.combine(event.start_dt, datetime.min.time())
+                event.start_dt = datetime.combine(event.start_dt, datetime.min.time(), zoneinfo=DEFAULT_ZONEINFO)
             if self.cleaned_data.get('end_event_date'):
-                event.end_dt = datetime.combine(self.cleaned_data.get('end_event_date'), datetime.max.time())
+                event.end_dt = datetime.combine(self.cleaned_data.get('end_event_date'), datetime.max.time(), zoneinfo=DEFAULT_ZONEINFO)
             else:
-                event.end_dt = datetime.combine(event.end_dt, datetime.max.time())
+                event.end_dt = datetime.combine(event.end_dt, datetime.max.time(), zoneinfo=DEFAULT_ZONEINFO)
 
         if self.cleaned_data.get('remove_photo'):
             event.image = None
@@ -3153,11 +3157,11 @@ def add_months(sourcedate, months):
 
 class EventReportFilterForm(FormControlWidgetMixin, forms.Form):
     start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), required=False,
-                                        input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
-                                        input_time_formats=['%I:%M %p', '%H:%M:%S'])
+                                        input_date_formats=settings.DATE_INPUT_FORMATS,
+                                        input_time_formats=settings.TIME_INPUT_FORMATS,)
     end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), required=False,
-                                      input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
-                                      input_time_formats=['%I:%M %p', '%H:%M:%S'])
+                                      input_date_formats=settings.DATE_INPUT_FORMATS,
+                                      input_time_formats=settings.TIME_INPUT_FORMATS,)
     event_type = forms.CharField(required=False,)
     sort_by = forms.ChoiceField(required=False, choices=[('start_dt', _('Start Date')),
                                                          ('groups__name', _('Group Name')),],

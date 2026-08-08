@@ -1,7 +1,7 @@
-from datetime import datetime
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.payments.models import Payment, PaymentMethod
 
@@ -18,7 +18,7 @@ class MarkAsPaidForm(forms.ModelForm):
 
     submit_dt = forms.SplitDateTimeField(
         label=_('Submit Date and Time'),
-        initial=datetime.now())
+        initial=timezone.now())
 
     class Meta:
         model = Payment

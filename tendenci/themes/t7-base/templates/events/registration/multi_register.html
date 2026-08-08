@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}{% blocktrans with title=event.title dt=event.start_dt|date:"M j, Y" %}Registration {{ title }} {{ dt }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ block.super }}{% blocktrans with title=event.title dt=event.start_dt|date:"DATE_FORMAT" %}Registration {{ title }} {{ dt }}{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -20,7 +20,7 @@
         <div class="event-title"><a href="{% url "event" event.id %}">{{  }}</a></div>
         <div class="event-price">{{ event_price|format_currency }}</div>
         <div class="event-time">
-            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
+            <div class="line">{{ event.start_dt|date:"DATE_FORMAT" }}</div>
             <div class="line">
             {% if not event.all_day %}
             {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}

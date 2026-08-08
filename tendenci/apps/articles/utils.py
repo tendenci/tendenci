@@ -5,6 +5,7 @@ import csv
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.urls import reverse
+from django.utils import timezone
 from django.template.loader import render_to_string
 
 from tendenci.apps.articles.models import Article
@@ -83,7 +84,7 @@ def process_export(identifier, user_id):
             'user': user,
             'site_url': site_url,
             'site_display_name': site_display_name,
-            'date_today': datetime.now()}
+            'date_today': timezone.now()}
 
         subject = render_to_string(
             template_name='articles/notices/export_ready_subject.html', context=parms)

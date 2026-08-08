@@ -8,6 +8,7 @@ from django.forms.utils import ErrorList
 from django.template.defaultfilters import filesizeformat
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from django.urls import reverse
 
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -166,8 +167,8 @@ class DirectoryForm(TendenciBaseForm):
                                                               ('premium', _('Premium')),))
     payment_method = forms.CharField(error_messages={'required': _('Please select a payment method.')})
 
-    activation_dt = forms.SplitDateTimeField(initial=datetime.now())
-    expiration_dt = forms.SplitDateTimeField(initial=datetime.now())
+    activation_dt = forms.SplitDateTimeField(initial=timezone.now())
+    expiration_dt = forms.SplitDateTimeField(initial=timezone.now())
 
     email = EmailVerificationField(label=_("Email"), required=False)
     email2 = EmailVerificationField(label=_("Email 2"), required=False)

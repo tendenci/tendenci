@@ -135,6 +135,29 @@ class SavedSearchForm(forms.ModelForm):
         return query_encoded
 
 
+class SavedSearchForm(forms.ModelForm):
+    query_encoded = forms.CharField()
+    
+    class Meta:
+        model = SavedSearch
+        fields = ('title', 'shared',)
+
+    def clean_query_encoded(self):
+        """Validate the json serialized query"""
+        query_encoded = self.cleaned_data['query_encoded']
+        try:
+            query_dict = simplejson.loads(b64decode(str(query_encoded).encode()))
+        except simplejson.errors.JSONDecodeError:
+            raise forms.ValidationError(_('Invalid query_encoded.'))
+        # validate the content of the query
+        valid_keys = ['filtering', 'sorting', 'sortreverse', 'keyword', 'other_filter', 'search_string']
+        for k in query_dict.keys():
+            if k not in valid_keys:
+                raise forms.ValidationError(_(f'{k} is not a valid parameter.'))
+        
+        return query_encoded
+
+
 class EditFollowUpForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         "Filter not openned tickets here."

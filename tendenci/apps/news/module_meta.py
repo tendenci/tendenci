@@ -1,4 +1,6 @@
+from django.utils.formats import date_format
 from django.utils.html import strip_tags
+from django.conf import settings
 from html import unescape
 from tendenci.apps.meta.utils import generate_meta_keywords
 from tendenci.apps.site_settings.utils import get_setting
@@ -32,7 +34,7 @@ class NewsMeta():
         if obj.headline and obj.release_dt:
             values_list.append('-')
         if obj.release_dt:
-            values_list.append(obj.release_dt.strftime('%m-%d-%Y'))
+            values_list.append(date_format(obj.release_dt.date, settings.SHORT_DATE_FORMAT))
 
         if primary_keywords:
             if values_list:

@@ -102,19 +102,19 @@ def iter_memberships(memberships, app_fields):
     for membership in memberships:
         values_list = get_membership_field_values(membership, app_fields)
         if membership.create_dt:
-            values_list.append(membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
+            values_list.append(membership.create_dt.strftime(settings.STRFTIME_DATETIME_FORMAT))
         else:
             values_list.append('')
         if membership.join_dt:
-            values_list.append(membership.join_dt.strftime('%Y-%m-%d %H:%M:%S'))
+            values_list.append(membership.join_dt.strftime(settings.STRFTIME_DATETIME_FORMAT))
         else:
             values_list.append('')
         if membership.renew_dt:
-            values_list.append(membership.renew_dt.strftime('%Y-%m-%d %H:%M:%S'))
+            values_list.append(membership.renew_dt.strftime(settings.STRFTIME_DATETIME_FORMAT))
         else:
             values_list.append('')
         if membership.expire_dt:
-            values_list.append(membership.expire_dt.strftime('%Y-%m-%d %H:%M:%S'))
+            values_list.append(membership.expire_dt.strftime(settings.STRFTIME_DATETIME_FORMAT))
         else:
             values_list.append('')
         values_list.append(membership.status_detail)
@@ -586,11 +586,11 @@ def process_export(
                         if item.year < 1900:
                             item = '1900-1-1 00:00:00'
                         else:
-                            item = item.strftime('%Y-%m-%d %H:%M:%S')
+                            item = item.strftime(settings.STRFTIME_DATETIME_FORMAT)
                     elif isinstance(item, date):
-                        item = item.strftime('%Y-%m-%d')
+                        item = item.strftime(settings.STRFTIME_DATE_FORMAT)
                     elif isinstance(item, time):
-                        item = item.strftime('%H:%M:%S')
+                        item = item.strftime(settings.STRFTIME_TIME_FORMAT)
                     elif field_name == 'membership_type' and item in membership_ids_dict:
                         # display membership type name instead of id
                         item = membership_ids_dict[item]

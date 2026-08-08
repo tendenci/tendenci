@@ -1,8 +1,8 @@
-from datetime import datetime
 from django.utils.translation import gettext_lazy as _
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 
 from tendenci.apps.perms.utils import update_perms_and_save
 
@@ -106,8 +106,8 @@ class TopicAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj=obj, **kwargs)
         form.base_fields['user'].initial = request.user
-        form.base_fields['created'].initial = datetime.now()
-        form.base_fields['updated'].initial = datetime.now()
+        form.base_fields['created'].initial = timezone.now()
+        form.base_fields['updated'].initial = timezone.now()
         return form
 
 

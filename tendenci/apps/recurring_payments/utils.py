@@ -6,6 +6,7 @@ from django.template import TemplateDoesNotExist
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
@@ -304,8 +305,8 @@ def run_a_recurring_payment(rp, verbosity=0):
                     if verbosity > 1:
                         if rp_invoice.billing_cycle_start_dt and rp_invoice.billing_cycle_end_dt:
                             print('...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...'
-                                    % (rp_invoice.billing_cycle_start_dt.strftime('%m-%d-%Y'),
-                                       rp_invoice.billing_cycle_end_dt.strftime('%m-%d-%Y'),
+                                    % (date_format(rp_invoice.billing_cycle_start_dt.date(), settings.SHORT_DATE_FORMAT),
+                                       date_format(rp_invoice.billing_cycle_end_dt.date(), settings.SHORT_DATE_FORMAT),
                                        currency_symbol,
                                        rp_invoice.invoice.balance))
                         else:

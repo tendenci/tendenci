@@ -63,8 +63,8 @@
 
 ### 15.3.12 [2026-1-18]
 
-* **SECURITY**: Fixed an UnpicklingError in helpdesk module, which also patches a security vulnerability that could potentially be exploited by a staff user with carefully crafted malicious data (Thanks to @nedlir for reporting the issue). The helpdesk module is not enabled by default, if you have it enabled, be sure to update tendenci for your site immediately. 
-* Other bugfixes. 
+* **SECURITY**: Fixed an UnpicklingError in helpdesk module, which also patches a security vulnerability that could potentially be exploited by a staff user with carefully crafted malicious data (Thanks to @nedlir for reporting the issue). The helpdesk module is not enabled by default, if you have it enabled, be sure to update tendenci for your site immediately.
+* Other bugfixes.
 
 
 ### 15.3.11 [2026-1-8]
@@ -107,15 +107,15 @@
 
 ### 15.3.6 [2025-10-8]
 
-* New feature: Forum digest. Forum subscribers can opt in to receive daily and/or weekly digest. 
+* New feature: Forum digest. Forum subscribers can opt in to receive daily and/or weekly digest.
 * Added 3 custom admin actions for corporate memberships: 1) renewed selected. 2) export invoices for the selected. 3) print invoices for the selected.
 * Added the "print selected invoices" admin action for memberships.
 * Updated list_events template tag to allow multiple groups.
 * Allowed admin to cancel an event registration with no cancellation deadline.
 * Added the option to hide non-member pricing from members on event registration.
-* Included the sponsor and organizer sections to event minimal add. 
+* Included the sponsor and organizer sections to event minimal add.
 * Added the option to exclude tags for list_directories template tag. (Thanks to @rob-hills)
-* Updated events monthly and weekly views to handle events with child events. 
+* Updated events monthly and weekly views to handle events with child events.
 * Added the option to allow member content to be pulled in to the newsletter templates.
 * Assorted bugfixes.
 
@@ -204,10 +204,10 @@
 ### 15.3 [2024-11-21]
 
 * Updated add/edit corp reps to remove the auto-complete with a list of possible email addresses.
-* Added a setting "REDIRECT_403_TO_LOGIN" to allow your site to turn off the "403 to login redirection" for anonymous users. If this setting is turned off (default on), whenever a permission is required, anonymous users will see the 403 page immediately instead of being redirected to the login page. 
+* Added a setting "REDIRECT_403_TO_LOGIN" to allow your site to turn off the "403 to login redirection" for anonymous users. If this setting is turned off (default on), whenever a permission is required, anonymous users will see the 403 page immediately instead of being redirected to the login page.
 * Updated directory expiration date after directory edit. (Thanks to @rob-hills)
 * Added a check to avoid the "disable_template_cache" from crashing the site. (Thanks to @bernd-wechner)
-* Upgraded zoom to the latest SDK (v3.9.0). 
+* Upgraded zoom to the latest SDK (v3.9.0).
 * Added an unsubscribe button to group view if user is allowed to remove themselves from the group.
 * Resolved some issues in invoice view.
 * Removed the interactive field from profile edit as the regular users should not change their interactive status.
@@ -237,11 +237,11 @@
 * Updated forums view to raise HttpResponseForbidden to avoid a blank page when an authenticated user gets permission denied. (Thanks to @CraigeHales)
 * Suppressed captcha for logged users on embeded forms. (Thanks to @CraigeHales)
 * Updated digital check-in process so that the user scanning in registrants doesn't have to select a session and click "confirm". (Thanks to @ssimmons42)
-* Added 'Powered by Stripe' logo to Stripe payments page. (Thanks to @b-davies24) 
+* Added 'Powered by Stripe' logo to Stripe payments page. (Thanks to @b-davies24)
 * Updated events credits report - Added a filter by credit name and added export feature to the report.
 * Corrected the roster report link on child event view to point to child event roster.
 * Updated 403 and 404 pages to include error codes. (Thanks to @b-davies24)
-* Added the filter by "Last Login" at users admin backend. 
+* Added the filter by "Last Login" at users admin backend.
 * Made "Registration email reply to" a required field on events add/edit.
 * Added the description field to event Addon.
 * Added Event Place admin facility to allow sorting and mergeing event places. (Thanks to @rob-hills)
@@ -260,7 +260,7 @@
 
 
 ### 15.0 [2024-3-30]
- 
+
 * **Breaking Changes: Requires Django 4.2 LTS**. Django 3.2 LTS is not supported. For migrating T14 sites to T15, please follow the guide in https://tendenci.readthedocs.io/en/latest/upgrade/upgrade-to-tendenci.html.
 * Implemented json-ld as structured data on event view for events to show in Google events search.
 * Added bulk checkout feature on events roster report.
@@ -268,7 +268,7 @@
 * Fixed an error on skillset edit due to openstreetmap search requires user agent specified.
 * Fixed an issue regarding photo size too large for photos batch edit.
 * Fixed some broken links in tendenci default fixtures.
-* Fixed a format issue for profile top menu. 
+* Fixed a format issue for profile top menu.
 * Removed "\r" from ical description to prevent it from showing in google calendar.
 * Other minor fixes.
 
@@ -278,16 +278,16 @@
 * Added Region filter option to member_quick_list report. (Thanks to @rob-hills)
 * Updated addons on event registration:  1) Removed the checkbox in front of the addons. 2) Added help text in the addons section. 3) Cleared qty after being processed.
 * Added an itemized list on payonline for event registration.
-* Added the ability to sync credits on event credits edit. 
+* Added the ability to sync credits on event credits edit.
 * Updated event reminder edit to include QR code in reminder test.
 * Added an option to block renewal for individual members under corp /settings/module/memberships/#id_orgmembercanrenew.
-* linked "Join Zoom Meeting" in registration confirmation email and updated launching zoom meeting to redirect to event view if meeting is not ready or already over.  
-* Fixed a format issue on directories search 
+* linked "Join Zoom Meeting" in registration confirmation email and updated launching zoom meeting to redirect to event view if meeting is not ready or already over.
+* Fixed a format issue on directories search
 * iCal update: 1) Resolved an issue that made "Add to calendar" act as “meeting update” in outlook. 2) Ensured lines of text are less than 75 octets https://icalendar.org/iCalendar-RFC-5545/3-1-content-lines.html
 * Fixed pages search not working for tags
 * Fixed an issue for event view that the RSVP button doesn't show for non-member users, even though they are in the selected group(s) for a pricing.
 * Fixed an issue that the default selected addons can't be deleted.
-* Selected addons now show on registration review page. 
+* Selected addons now show on registration review page.
 * Resolved code scanning alerts
 * Other miscellaneous fixes
 
@@ -298,8 +298,8 @@
 * Fixed the issue about creator and owner not being able to search their own news items.
 * Fixed a bug in invoices search that didn't take account into blank email address.
 * Resolved an issue about forms not being redirected to payment.
-* Other small fixes. 
- 
+* Other small fixes.
+
 
 ### 14.8 [2023-12-10]
 
@@ -308,14 +308,14 @@
 * ** Event Cancellation and Refund:** 1) Added the ability to charge a cancellation fee when an event registration is cancelled.  2) Added the refund capability to either automatically or manually refund when users cancel their registrations. Currently this feature is only available with Stripe payment. To enable it, you can turn on the setting "Allow refunds" https://www.example.com/settings/module/events/#id_allow_refunds
 * **Nested Events:** Nested events functionality allows you to host events with sessions or sub-events. To enable the nested events, turn on the setting "Enable Nested Events" https://www.example.com/settings/module/events/#id_nested_events.
 * Added an option to not allow users who already registered to register an event again https://www.example.com/settings/module/events/#id_canregisteragain
-* More new features in events: Attendants can earn credits and be granted with certificates. QR code and badges can be used for digital check-in. Zoom integration, etc... 
+* More new features in events: Attendants can earn credits and be granted with certificates. QR code and badges can be used for digital check-in. Zoom integration, etc...
 * Added the "Register A User" functionality for admin to easily search and register a user for an event.
 * Updated Stripe Connect onboarding process https://tendenci.readthedocs.io/en/latest/topic-guides/payments.html#how-to-use-stripe-connect.
-* Updated custom forms to allow users to specify the quantity of the item(s) purchased. 
+* Updated custom forms to allow users to specify the quantity of the item(s) purchased.
 
 **Backward Incompatible**
 
-* Dropped Python 3.6 support. 
+* Dropped Python 3.6 support.
 
 **More updates and bugfixes**
 
@@ -324,12 +324,12 @@
 
 * Fixed an issue about reps could be removed from dues reps and member reps groups when they're removed from a corp but still associated with other corps.
 * Merged HL integration.
- 
+
 
 ### 14.5 [2023-06-27]
 
 * **New Feature:** Added Trainings module that allows a Tendenci site to offer certificate programs to users. https://tendenci.readthedocs.io/en/latest/topic-guides/trainings.html
-* Besides the standard accounts, express accounts can also be added to stripe connect in Tendenci. For info how to set up stripe connect, please see https://tendenci.readthedocs.io/en/latest/topic-guides/payments.html#how-to-use-stripe-connect. 
+* Besides the standard accounts, express accounts can also be added to stripe connect in Tendenci. For info how to set up stripe connect, please see https://tendenci.readthedocs.io/en/latest/topic-guides/payments.html#how-to-use-stripe-connect.
 * Members list is now viewable to users who have the membership view permission. Previously, it requires change permission. However, the export and email abilities in the members list still require change permission.
 * Allowed users with news view and change perms to view un-released news so that they can edit. https://github.com/tendenci/tendenci/issues/1176
 * Resolved the issue about guest info is required on event registration form when only first registrant is required.
@@ -341,16 +341,16 @@
 * Updated Authorize.Net payment gateway integration. 1) Switched SIM to Accept Hosted beause SIM is deprecated https://developer.authorize.net/api/upgrade_guide.html. 2) Removed xml.etree.ElementTree that was used by CIM in recurring payments. The xml.etree.ElementTree module is no longer supported. https://docs.python.org/3/library/xml.etree.elementtree.html
 * Integrated stripe connect to payments. https://tendenci.readthedocs.io/en/latest/topic-guides/payments.html#how-to-use-stripe-connect
 * Updated forums to not send notifications to those listed in the emailblocks.
-* Set the default value for enforce_direct_mail_flag to True on newsletter add. 
+* Set the default value for enforce_direct_mail_flag to True on newsletter add.
 * Other small fixes.
 
 
 ### 14.3.6 [2023-03-28]
 
 * Chapter leaders are now not allowed to renew their chapter memberships that are not in renewal period.
-* Included membership_type field to chapter memberships export. 
+* Included membership_type field to chapter memberships export.
 * Updated memberships search to display links for files uploaded via ud fields.
-* Fixed a bug that causes files uploaded via ud fields not being saved. 
+* Fixed a bug that causes files uploaded via ud fields not being saved.
 * More bug fixes.
 
 
@@ -382,9 +382,9 @@
 * Added an option for corporate members to show their products on their corp profiles.
 * Activities logged in eventlogs previously only work for IPv4, it now supports IPv6 as well.
 * Made the notifitions go to chapter contacts (specified in the contact email field) when a new member joins a chapter.
-* Avoided a redundant admin notification from being sent for auto-approved membership types. 
-* Included more basic user info to chapter memberships exports. 
-* Bugfixes: Resolved an AttributeError at event delete. Fixed a photo upload issue. Resolved some issues for form entry edit. 
+* Avoided a redundant admin notification from being sent for auto-approved membership types.
+* Included more basic user info to chapter memberships exports.
+* Bugfixes: Resolved an AttributeError at event delete. Fixed a photo upload issue. Resolved some issues for form entry edit.
 
 
 ### 14.3.2 [2022-11-19]
@@ -399,9 +399,9 @@
 
 ### 14.3.1 [2022-11-01]
 
-* Forums update: added an option to subscribe a forum for users. 
+* Forums update: added an option to subscribe a forum for users.
 * Made Youtube shorts URLs work for videos.
-* Granted chapter officers the view and change permissions for their own newsletter group. 
+* Granted chapter officers the view and change permissions for their own newsletter group.
 * Renamed the setting "Google Analytics UA Number" to "Google Analytics Tracking (Measurement) ID".
 * Refactored file upload process for forms to resolve the possible issue about file not being saved, also sanitized file name.
 * Resolved recaptcha v3 timeout issue.
@@ -419,13 +419,13 @@
 * Listed the chapter memberships (if exists) on user profile.
 * Added the option to allow non-interactive user to activate their accounts if self registration is enabled.
 * Added the option to NOT override interactive/non-interactive status for existing users on users import.
-* Added the confirmation step for newsletters unsubscription. 
+* Added the confirmation step for newsletters unsubscription.
 * Updated the groups section on user profiles to indicate if newsletter is unsubscribed, and if so, link to re-subscribe.
 * Added the setting "Member Can View Corporate Membership Roster" (default to False).
-* Changed the default value from True to False for the setting "Minimal Event Add Enabled". 
+* Changed the default value from True to False for the setting "Minimal Event Add Enabled".
 
 **Fixes**
-* Fixed an issue in Forums about time at front end not matching with the admin back end. 
+* Fixed an issue in Forums about time at front end not matching with the admin back end.
 * More bugfixes.
 
 
@@ -446,7 +446,7 @@
 * Added the option to display members on the associated directory.
 * Added the option to use state dropdown for the state field on membership and profile forms.
 * Appended the non-us choice to the state dropdown.
-* Fixed articles category links not working. 
+* Fixed articles category links not working.
 * Fixed the issue about the “paragraph" filed type not showing TextArea field on membership forms
 * More bugfixes.
 
@@ -479,7 +479,7 @@
 * Upgraded Pytz version to fix dependency conflict resulting from Celery upgrade to version 5.2.3. (Thanks @rob-hills)
 * Fixed a format issue for events speakers list.
 * Fixed a potential IntegrityError on membership applications where username is not included on the form.
-* Avoided a potential DataError for jobs add due to slug is not presented.  
+* Avoided a potential DataError for jobs add due to slug is not presented.
 
 
 ### 14.0.2 [2022-01-13]
@@ -488,7 +488,7 @@
 * Bumped celery from 4.4.7 to 5.2.3 .
 * Added a new email to members feature on members search.
 * Excluded irrelevant tables (event_logs, sessions...) from database dump.
-* Changed to company name (instead of site display name) in "Invoice For" for the invoice PDF. 
+* Changed to company name (instead of site display name) in "Invoice For" for the invoice PDF.
 * Resolved some RemovedInDjango40Warning.
 
 
@@ -499,11 +499,11 @@
 * Resolved an installation error with python 3.8 due to Embedly package not compatible with python 3.8.
 * Added a new feature "email to chapter members" to chapter memberships.
 * Added front-end videos add/edit pages.
-* Other minor fixes. 
+* Other minor fixes.
 
 
 ### 14.0 [2021-12-15]
- 
+
 * **Requires Django 3.2 LTS**. Django 2.2 LTS is not supported.
 * T12 sites can be smoothly migrated to T14. For migration, please follow the guide in docs/source/upgrade/upgrade-to-tendenci14.txt.
 * Added memberships search/filter that can search fields based on each app. It also includes the export feature. Linked at /admin/memberships/membershipapp/.
@@ -583,7 +583,7 @@
 
 ### 12.5.5 [2021-06-23]
 
-* Bugfix a FieldError at /donations/. 
+* Bugfix a FieldError at /donations/.
 
 ### 12.5.4 [2021-06-22]
 
@@ -603,7 +603,7 @@
 * The entity and group are now automatically created (instead of manually assigned) on chapters add.
 * Added radio buttons to the event pricing list.
 * Restored back the /reports/ link.
-* Videos list page shows thumbnail for youtube videos if no images specified. 
+* Videos list page shows thumbnail for youtube videos if no images specified.
 * Fixed a TypeError in the discounts.
 * Fixed an error on updating index for recurring_payments.
 
@@ -621,7 +621,7 @@
 * Fixed "Required field has no asterisk" (issue #1014).
 * Made slug field unique for chapters and committees to avoid the MultipleObjectsReturned error.
 * Resolved the issue on soft deleting users from the front end.
-* Resolved the issue regarding invoice logo not showing on PDF. 
+* Resolved the issue regarding invoice logo not showing on PDF.
 * Fixed an InvalidOperation error for discounts.
 * Fixed a TypeError on event registration when admin override is selected but override price is not entered.
 * Fixed the issue about not being able to add officers to studygroups.
@@ -646,7 +646,7 @@
 * Moved the industry field from memberships to profiles.
 * Users can view a list of their own directories.
 * Added filters to ListNode (Thanks @theox26)
-* Added newsletter recipients on "Ready to Send" confirmation page 
+* Added newsletter recipients on "Ready to Send" confirmation page
 * Fixed a potential IntegrityError on user groups add.
 * Fixed a TypeError on tickets search.
 * Fixed a NoReverseMatch error in the photos view.
@@ -655,8 +655,8 @@
 ### 12.4.12 [2021-04-07]
 
 * Bumped Django to 2.2.20.
-* Added a link to chapters under the community tab. 
-* Added an "Add Event" link to the Apps menu. 
+* Added a link to chapters under the community tab.
+* Added an "Add Event" link to the Apps menu.
 * Fixed an AttributeError for forums post deletion.
 * Updated invoice reports overview to display default date range and to handle invoices without object type.
 * Updated translation for pt_BR (Thanks @farribeiro)
@@ -671,17 +671,17 @@
 * Added an invoice reports overview.
 * Fixed photo upload crash with GPS info.
 * Resolved the issue regarding free corp memberships that are not required approval should be approved automatically.
-* Fixed a issue for event location summary formatting. 
+* Fixed a issue for event location summary formatting.
 
 
 ### 12.4.8 [2021-03-23]
 
 * **SECURITY**: Bumped Pillow from 8.1.0 to 8.1.2 https://pillow.readthedocs.io/en/stable/releasenotes/8.1.1.html https://pillow.readthedocs.io/en/stable/releasenotes/8.1.2.html
 * **SECURITY**: Tightened security check for the password change page.
-* Added a warning message on theme editor to indicate site reload is needed if template caching is on. 
+* Added a warning message on theme editor to indicate site reload is needed if template caching is on.
 * Ordering fix for helpfiles FAQ (Thanks @bernd-wechner)
 * Removed the word "test" from default fixtures
-* Extended max_length for user_display field on corp reps add/edit 
+* Extended max_length for user_display field on corp reps add/edit
 * Updated the description for the setting "Create User on Form Submissions" and forms default fixtures.
 * Membership view improvements on members search (Thanks @bernd-wechner)
 * Resolved an error RelatedObjectDoesNotExist in helpdesk
@@ -700,13 +700,13 @@
 
 ### 12.4.6 [2021-03-03]
 
-* Fixed a KeyError for resumes add at admin backend 
+* Fixed a KeyError for resumes add at admin backend
 * Adjusted video description on videos search to resolve a layout issue.
 * The associated recurrent payments, if any, now shows on user profiles.
-* Avoided users with recurrent payments being deleted 
+* Avoided users with recurrent payments being deleted
 * Tracked errors with logging for the management command `make_recurring_payment_transactions`.
-* Removed wp_importer and wp_exporter 
-* Fixed an AttributeError in newsletters. 
+* Removed wp_importer and wp_exporter
+* Fixed an AttributeError in newsletters.
 
 
 ### 12.4.5 [2021-03-01]
@@ -719,7 +719,7 @@
 * Removed the `urlize` filter from the template events/view.html that is pulled down to the sites.
 * Made `name` to be the default category selection (Thanks @lgm527).
 * Changed both imageMaxWidth and imageMaxHeight to 2400 (was 1200 as the default) for image upload in wysiwyg editor.
-* Added django-admin-rangefilter. 
+* Added django-admin-rangefilter.
 * Added an option to directories search to display search results without search (Thanks @lgm527).
 * Removed `urlize` filter from forms/form_sent.html
 * Fixed a js issue about not being able to add officers to chapters and committees.
@@ -727,9 +727,9 @@
 
 ### 12.4.3 [2021-02-09]
 
-* Updated user profile to show corporation(s) a user is a representative of. 
-* Added Apply Date and Renewal Date to options for When to Send on the corporate memberships member notice. 
-* Fixed some issues for redirects. 
+* Updated user profile to show corporation(s) a user is a representative of.
+* Added Apply Date and Renewal Date to options for When to Send on the corporate memberships member notice.
+* Fixed some issues for redirects.
 
 
 ### 12.4.2 [2021-02-05]
@@ -761,26 +761,26 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 
 * Added the chapters module
 * Removed the "exact match" from profiles search and updated search form format.
-* Created the template tag list_jobs_categories. 
+* Created the template tag list_jobs_categories.
 * Added title, location and skills fields to jobs search.
-* Added sender_display and reply_to to email to pending members. 
-* Added canonical url to /news/, /articles/ and /events/. 
-* Updated dashboard to show the last three Tendenci blog posts. 
+* Added sender_display and reply_to to email to pending members.
+* Added canonical url to /news/, /articles/ and /events/.
+* Updated dashboard to show the last three Tendenci blog posts.
 * Added tokens to email sent via groups and newsletters.
 * Added the option to have pending and/or active reps groups based on corp membership types.
 * Updated Help files: 1) Set to pending for help files added by regular user. 2) Added email notification if added by non-superuser. 3) Fixed top menu for add/edit pages (was showing Articles instead of Help Files).
 * Restricted corp profile link on directory view to owner and admins only
 * Enabled user to edit directory they are member of (Thanks @yehuda-elementryx)
-* Fixed category and subcategory for directories meta title and description 
+* Fixed category and subcategory for directories meta title and description
 * Made email fail mode configurable (Thanks @bernd-wechner)
 * Removed directory creator from metadata (Thanks @robbierobs and @evanspaeder)
 * Allowed superuser or reps or users with view_corpprofile perms to view their corp profile
-* Resolved timing out for email to pending members 
-* Updated boto3 version to 1.16.43 
+* Resolved timing out for email to pending members
+* Updated boto3 version to 1.16.43
 * Removed unnecessary duplication in forms menu (Thanks @bernd-wechner)
 * Made the officers table headings bold by default for committees. (Thanks @bernd-wechner)
 * Added the default fixture for industries
-* Fixed search not working for committees and chapters 
+* Fixed search not working for committees and chapters
 * Fixed the issue about default not working in custom forms for boolean field
 * Fixed a bug for users with userid 0 (Thanks @bernd-wechner)
 * Updated the select boxes on member add for user groups (Thanks @bernd-wechner)
@@ -792,16 +792,16 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Added membership type to member cards (Thanks @bernd-wechner)
 * Fixed unrestricted deserialization for helpdesk
 * Fixed members search showing Users menu instead of Membership menu.
-* Updated the description of the Primary Keywords setting 
+* Updated the description of the Primary Keywords setting
 * Updated email to pending members to allow for segmenting based on membership types.
 * Allowed users with directories change permissions to view pending directories.
 * Allowed users with profiles change permissions to access users search and similar users list.
 * Extended truncated summary and body for directories/marketplace search results (Thanks @robbierobs)
 * Fixed some issues in recurring payment for authorizenet.
 * Changed h1 tags to h3 tags for news headline on news search page.
-* Updated recurring payment details page. 
+* Updated recurring payment details page.
 * Fixed import username limit (Thanks @evanspaeder)
-* Fixed some issues for event minimal_add 
+* Fixed some issues for event minimal_add
 * Resolved permission bits not being saved for membership apps
 * Fixed a bug in forms module
 
@@ -825,11 +825,11 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 
 * **SECURITY**: Fixed a potential HTML Injection and XSS vulnerability in a few area of admin backend.
 * Fixed a ValueError for directory add.
- 
+
 
 ### 12.3 [2020-10-26]
 
-* Added the functionality to allow admin to email pending members or pending corp members.  
+* Added the functionality to allow admin to email pending members or pending corp members.
 * Enabled multiple categories and sub-categories for directories.
 * Added the sort ability to directory categories with drag-and-drop.
 * Added the approve_corpmembership perm so that users can be assigned to approve corporate memberships without granting them the superuser privilege.
@@ -866,7 +866,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Updated memberships and corporate membership imports to use detected encoding instead of hard-coded utf-8
 * Updated the corporate membership add to redirect anonymous user to login instead of add_pre if "public can view" is unchecked
 * Formated the pricing end date to also show year  #889
-* Resolved corporate membership types not being imported along with their associated corporate memberships 
+* Resolved corporate membership types not being imported along with their associated corporate memberships
 
 ### 12.2.6 [2020-09-28]
 
@@ -893,7 +893,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Directory owners can view and edit their directories, but only admin can publish directories that are created with memberships and corporate memberships.
 * Updated memberships to have email address take precedence over first name and last name when assigning a username.
 * Added the link to directory listing, if any, on user profile and at the bottom of corp member profile.
-* Added the link to corp member profile, if any, on directory listing. 
+* Added the link to corp member profile, if any, on directory listing.
 * Updated post-install-checklist.txt for newsletters settings.
 * Updated boto3 to 1.12.8 and django-ses to 1.0.3.
 * Fixed the issue about pricing 0.00 not working for custom forms.
@@ -925,7 +925,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 ### 12.1.1 [2020-08-21]
 
 * Adjusted MEMCACHE_MAX_KEY_LENGTH 247 to resolve the InvalidCacheKey error
-* Added the exclude_expired option to the list_corporate_memberships 
+* Added the exclude_expired option to the list_corporate_memberships
 
 ### 12.1 [2020-08-14]
 
@@ -934,7 +934,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Fixed an InvalidCacheKey error
 * Resolved the issue regarding multiple tags cannot be searched in files search
 * Updated the memberships list at admin backend to include the view and profile columns
-* Updated group slug pattern to fix a potential NoReverseMatch error when a forward slash (/) is included in the slug. 
+* Updated group slug pattern to fix a potential NoReverseMatch error when a forward slash (/) is included in the slug.
 
 ### 12.0.14 [2020-08-09]
 
@@ -949,7 +949,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Added an option to add a directory for corporate memberships on join
 * Added the missing parent_entity field to corp app 1
 * Fixed an error in email send due to None Reply-To
-* Fixed a AttributeError: 'NoneType' object has no attribute 'email' 
+* Fixed a AttributeError: 'NoneType' object has no attribute 'email'
 * Made file perms match with the setting "Member Protection"
 
 ### 12.0.12 [2020-07-30]
@@ -967,7 +967,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Avoided corp memberships approval email being sent twice
 * Updated tendenci_default_boxes.json
 * Resolved the issue on corporate membership add when the company name entered exists but soft deleted
-* Fixed top menu unreadable in mobile 
+* Fixed top menu unreadable in mobile
 * Fixed tag not working in files search
 * Fixed the issue about the enabled zip code field not displaying in the event registrant edit
 * Updaed and fixed some issues for iCalendar
@@ -981,13 +981,13 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 ### 12.0.11 [2020-06-24]
 
 * Added tendenci console script for nice install command  (Thanks @iokiwi)
-* Restrict non-admins from sending newsletters to certain groups 
+* Restrict non-admins from sending newsletters to certain groups
 * Avoided a potential KeyError on memberships export
 * Updated T12 upgrade guide
 
 ### 12.0.10 [2020-06-17]
 
-* Resolved the issue about Password requirements text incorrectly populating on account register (Thanks @rob-hills) 
+* Resolved the issue about Password requirements text incorrectly populating on account register (Thanks @rob-hills)
 * Tightened password requirements - 1) Ensured a default password regex is used if not set up in site settings. 2) Added password requirements check on profile add and change password forms.
 * Fixed KeyError: 'MODULE_PAGES_LABEL_PLURAL'
 * Fixed a KeyError on membership change page at admin backend.
@@ -1005,7 +1005,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 
 * Resolved the issue about redirects not working for forums
 * Fixed a ResourceWarning: unclosed file for command precache_photo
-* Tweaked the submit button for /photos/set/edit/ 
+* Tweaked the submit button for /photos/set/edit/
 * Fixed a FieldError for /memberships/reports/expired_members/
 * Users with permissions can now access forms link in the top nav
 * Reverted back plain text email to html (to make email format consistent for logged in and non-logged users)
@@ -1026,29 +1026,29 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Resolved the issue about tinymce menu not showing on fullscreen for events add/edit
 * Fixed an error in exports regarding 'Options' object has no attribute 'virtual_fields'
 * Fixed the issue about newsletters automatically include events content
-* Fixed a ValueError at studygroups edit 
+* Fixed a ValueError at studygroups edit
 * Fixed a KeyError at membership export
 
 
 ### 12.0.5 [2020-05-01]
 
-* Removed .doc and .xls from the allowed file upload extensions for the security reason. Besides the general threats, determining the mime type for the .doc and .xls files (generated by old MS Word and MS Excel) requires feeding the entire file content due to their format not complying with the standard. 
+* Removed .doc and .xls from the allowed file upload extensions for the security reason. Besides the general threats, determining the mime type for the .doc and .xls files (generated by old MS Word and MS Excel) requires feeding the entire file content due to their format not complying with the standard.
 * Resolved an issue "No module named 'django.forms.extras'" for memberships, corporate memberships and custom forms that could occur when 'django.forms.extras...' is still stored in the field_type but   django.forms.extras has been moved to django.forms.widgets since Django 1.9.
 
 ### 12.0.4 [2020-04-29]
 
 * Resolved some issues in memberships edit
 * Fixed a TypeError at clone event
-* Resolved the issue about creator not being assigned on pages and articles add 
+* Resolved the issue about creator not being assigned on pages and articles add
 
 ### 12.0.3 [2020-04-21]
 
 * Updated membership backend UX
 * Meta title update for articles and news - removed the 100 characters limit and the silly "..."
-* Removed the themes dropdown on theme editor 
+* Removed the themes dropdown on theme editor
 * Fixed a IllegalMonthError at events month view (ex: /events/2020/0/)
 * Fixed a AttributeError at photos zip
-* Avoided a DataError at get_email command 
+* Avoided a DataError at get_email command
 * Fixed a TypeError for forms
 
 ### 12.0.2 [2020-04-09]
@@ -1056,12 +1056,12 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Updated django version to 2.2.12
 * Some bugfixes for profiles and groups permission edit
 * Fixed a TypeError when payment is not fully set up
-* Updated format for the groups perms edit 
+* Updated format for the groups perms edit
 * Appended ?rel=0 to avoid unrelated youtube videos being displayed when video finishes
 
 ### 12.0.1 [2020-04-03]
 
-* Renamed tendenci2018 theme to tendenci2020 
+* Renamed tendenci2018 theme to tendenci2020
 * Replaced http:// with https:// for urls
 * Corrected batchsize option for process_unindexed command
 * Fixed a DataError for event_logs
@@ -1069,7 +1069,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Resolved some migration warnings
 
 ### 12.0 [2020-03-30]
- 
+
 * Requires Django 2.2. Django 1.11 is no longer supported.
 * T11 sites can be smoothly migrated to T12. For migration, please follow the guide in docs/source/upgrade/upgrade-to-tendenci12.txt.
 
@@ -1085,7 +1085,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 
 ### 11.4.9 [2020-01-26]
 
-* Handled the case in event registrations when management forms are tampered maliciously 
+* Handled the case in event registrations when management forms are tampered maliciously
 
 ### 11.4.8 [2020-01-25]
 
@@ -1151,7 +1151,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Removed control chars from rss feeds to avoid UnserializableContentError
 * Fixed AttributeError for projects feed
 * Fixed a TypeError on membership delete (from corporate roster)
-* Added release date and stripped away tags like <html>, <head>, <body>... when an article was generated from a newsletter. 
+* Added release date and stripped away tags like <html>, <head>, <body>... when an article was generated from a newsletter.
 
 
 ### 11.4.2 [2019-10-08]
@@ -1160,12 +1160,12 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Refactored RemoveNullByteMiddleware.
 * Fixed a typo in profiles/meta.html.
 * Stripped control chars from staff feeds to avoid the UnserializableContentError.
-* Replaced UnicodeWriter with the builtin csv for group members, users and memberships export to avoid Null chars being included in exported files. 
-* Fixed a JavaScript error on dashboard when member info is not available. 
+* Replaced UnicodeWriter with the builtin csv for group members, users and memberships export to avoid Null chars being included in exported files.
+* Fixed a JavaScript error on dashboard when member info is not available.
 
 ### 11.4.1 [2019-10-07]
 
-* Updated membership delete to ensure member number is cleaned up from profile and user is removed from associated membership group. 
+* Updated membership delete to ensure member number is cleaned up from profile and user is removed from associated membership group.
 * Fixed invalid date/time error on jobs add/edit at admin backend
 * Filtered out expired and not activated jobs from public jobs list.
 * Included comments field on event registrants export.
@@ -1174,7 +1174,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 ### 11.4 [2019-10-02]
 
 * Upgrade jQuery from 2.1.1 to 3.4.1 (latest)
-***Important*: Back up your site first before running tendenci update! Any third party jQuery plugins you use that are not compatible with the latest version of jQuery will potentially break your site.** 
+***Important*: Back up your site first before running tendenci update! Any third party jQuery plugins you use that are not compatible with the latest version of jQuery will potentially break your site.**
 * Resolve the issue about django-admin-bootstrapped not compatible with Django 1.11
 * Added none option to image_class_list for tinymce editor
 * Added a setting to control whether or not to create user on form submission (default false)
@@ -1195,13 +1195,13 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 ### 11.3 [2019-08-09]
 
 * Set app info for stripe
-* Added fullpage plugin to WYSIWYG editor for newsletters 
+* Added fullpage plugin to WYSIWYG editor for newsletters
 
 ### 11.2.12 [2019-08-07]
 
 * SECURITY: striped null byte to avoid null byte injection attack
 * Fixed "masonry is not a function" js error for photos
-* Resolved issue not being able to delete users who posted on forum 
+* Resolved issue not being able to delete users who posted on forum
 * Prevented tickets from being cascade deleted with user deletion
 * Allowed to specify both name and display name separated by a colon in the choices field
 * Allowed to set back to the default field type for membership app fields
@@ -1216,7 +1216,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Added the group option on articles search
 * Added the option to pull past events for list_events template tag
 * Added the options 'file_cat_id' and 'file_sub_cat_name' to the list_files template tag
-* Made some changes for files/search-results.html 
+* Made some changes for files/search-results.html
 * Removed "t-files-title" unused class in files.css
 * Changed the default sort order for entities and user groups in the admin backend to sort by id ascending
 * Fixed format issue on profile view when membership is disabled
@@ -1237,7 +1237,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 
 ### 11.2.9 [2019-06-17]
 
-* Update django version to 1.11.21 
+* Update django version to 1.11.21
 * Fixed issue not being able to edit /admin/entities/entity/
 * Specified the aspect ratio for the video_embed
 * Fixed ValidationError on helpdesk query save
@@ -1258,7 +1258,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Fixed boolean settings for forms
 * Fixed KeyError at /admin/pages/page/
 * Fixed error on indexing directories when activation_dt is not set
-* Updated credits based on @goetzk feedback 
+* Updated credits based on @goetzk feedback
 
 ### 11.2.7 [2019-05-03]
 
@@ -1337,14 +1337,14 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 ### 11.1 [2019-02-07]
 
 * Resumes update
-	- Separated contact_name into first_name and last_name
-	- Changed file name to be lastname-firstname.xxx if available
-	- Updated search and view
-	- Populated contact fields for non-superuser on resumes add
+    - Separated contact_name into first_name and last_name
+    - Changed file name to be lastname-firstname.xxx if available
+    - Updated search and view
+    - Populated contact fields for non-superuser on resumes add
 * Events update
-	- Added the grid view option for event list (can be turned on/off via setting `/settings/module/events/#id_gridview_for_listview`)
-	- Updated month view
-	- Added notice for events to check for abandoned payments
+    - Added the grid view option for event list (can be turned on/off via setting `/settings/module/events/#id_gridview_for_listview`)
+    - Updated month view
+    - Added notice for events to check for abandoned payments
 * Made global search default to not return anything if user didn't enter anything in the search box
 * Added event title field to the model report and fixed some js errors
 * Updated all social media icons in profiles to dark gray
@@ -1370,8 +1370,8 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Event template functionality
 * Added option to default the event Add-on to yes so the registrant has to purposefully opt-out
 * Added option to include uploaded files on resumes export
-* Add the sponsors field to committees and studygroups 
-* The list_events template tag can now take comma separated multiple types 
+* Add the sponsors field to committees and studygroups
+* The list_events template tag can now take comma separated multiple types
 * Updated the list_events tag to include 'priority' in order_by
 * Made the event priority checkbox available to superusers only
 * Updated the command to clean up old exports from db
@@ -1380,21 +1380,21 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 
 * Made the groups list to show the groups only in the selected date range on events monthly view
 * Fixed an error on study-group edit due to inline formset
-* Fixed group not preserving on Event edit 
+* Fixed group not preserving on Event edit
 * Fixed a javascript error in model-report
 
 ### 11.0.7 [2018-12-14]
 
 **Improvements**
 
-* Added date range to resumes export 
-* Added sponsor to events 
-* Added a new field "show_for_event" to the user groups, and used it to filter groups for the group dropdown on events add/edit 
-* Added an option to filter by group on calendar view 
-* Updated events export to show date range 
-* Included the group field to events export 
+* Added date range to resumes export
+* Added sponsor to events
+* Added a new field "show_for_event" to the user groups, and used it to filter groups for the group dropdown on events add/edit
+* Added an option to filter by group on calendar view
+* Updated events export to show date range
+* Included the group field to events export
 * Updated events financial report 1) Added Group Name column 2) Added an option to sort by Group Name 3) Changed Filter button to say Filter by Date
-* Added the form entries list view at admin backend 
+* Added the form entries list view at admin backend
 * Added the date picker to events add/edit
 * Updated jQuery File Upload to the latest version 9.28.0
 * Updated Fine Uploader to the latest version 5.16.2
@@ -1402,8 +1402,8 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 **Fixes**
 
 * Fixed some issues, including the performance issue, in events financial
-* Fixed several issues in model_report 
-* Resolved some issues in /events/types/ 
+* Fixed several issues in model_report
+* Resolved some issues in /events/types/
 * Fixed an error on adding a recurring event
 * Updated the event admin list view to direct edit link to the proper edit view
 * Corrected the profile link on education edit
@@ -1411,9 +1411,9 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Fixed an issue in stripe to ensure token is received before creating charge
 * Fixed issue about exports (for jobs and resumes) missing main fields
 * Avoided sender being entered as a non-email address on email edit
-* Fixed an issue about search button not functioning 
-* Fixed an error for committee edit in inlineformset 
-* Changed regex pattern for youtube videos 
+* Fixed an issue about search button not functioning
+* Fixed an error for committee edit in inlineformset
+* Changed regex pattern for youtube videos
 * Used the dateformat setting for forums
 
 ### 11.0.6 [2018-11-06]
@@ -1464,7 +1464,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 
 * Rotated images if needed when displaying original images.
 * Updated invoice pdf to allow invoice owners to download.
-* Fixed unicode issues for paypal 
+* Fixed unicode issues for paypal
 
 ### 11.0.2 [2018-09-07]
 
@@ -1482,14 +1482,14 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 ### 11.0 [2018-08-31]
 
 #### Compatibility
-* Support Python 3.6 or newer. Python 2.7 is no longer supported. 
+* Support Python 3.6 or newer. Python 2.7 is no longer supported.
 * Requires Django 1.11. Django 1.8 is no longer supported.
 * T7 sites can be smoothly migrated from the previous version (7.5.x) if you follow the guide in docs/source/upgrade/upgrade-to-tendenci11.txt.
- 
+
 
 #### Special Thanks
 * A quick shout-out to Paul Donohue @PaulSD, who has made tremendous contributions on converting Tendenci to Python 3 and making it compatible with Django 1.11. Thanks Paul!
-* And to those who have been working diligently to constantly improve Tendenci, we appreciate you!  
+* And to those who have been working diligently to constantly improve Tendenci, we appreciate you!
 
 
 ### 7.5.1 [2018-06-26]
@@ -1516,7 +1516,7 @@ Removed the `urllize` filter from the description of event speakers, organizer a
 * Added the option on_delete=models.SET_NULL to avoid data loss for lots of OneToOneField and ForeignKey fields.
 * Allow reps to renew their corporate memberships.
 * Applied orientation to retain intended position for photos.
-* Fixed queryset filter for "disapprove" admin action. 
+* Fixed queryset filter for "disapprove" admin action.
 * Fixed spacing in "From:" header causing spamminess for notifications.
 * Checked if email domain is valid before sending email.
 * Lots of other minor fixes.

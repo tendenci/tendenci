@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 from timezone_field import TimeZoneField
 
@@ -79,7 +80,7 @@ class Contact(TendenciBaseModel):
     further communication.
     """
     guid = models.CharField(max_length=40)
-    timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
+    timezone = TimeZoneField(verbose_name=_('Time Zone'), default=settings.TIME_ZONE, choices=get_timezone_choices(), max_length=100)
     user = models.ForeignKey(User, null=True, related_name='contact_user', on_delete=models.CASCADE)
 
     first_name = models.CharField(max_length=100, blank=True)

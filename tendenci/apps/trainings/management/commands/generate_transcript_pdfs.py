@@ -18,9 +18,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         import zipfile
-        import datetime
         from tempfile import NamedTemporaryFile
         from django.contrib.auth.models import User
+        from django.utils import timezone
         from tendenci.apps.emails.models import Email
         from tendenci.apps.trainings.models import CorpTranscriptsZipFile, Certification, CertCat, Course
         from tendenci.apps.corporate_memberships.models import CorpProfile
@@ -73,7 +73,7 @@ class Command(BaseCommand):
         params['include_outside_schools'] = tz.params_dict['include_outside_schools']
         params['include_teaching_activities'] = tz.params_dict['include_teaching_activities']
 
-        dt = datetime.datetime.now().strftime('%Y_%m%d_%H%M%S_%f')
+        dt = timezone.now().strftime('%Y_%m%d_%H%M%S_%f')
         zip_name = f'transcripts_{dt}.zip'
 
         # Generating zip file for each user in the corp
@@ -94,7 +94,7 @@ class Command(BaseCommand):
             tz.zip_file.save(zip_name, temp_zip_f)
 
         tz.status = "completed"
-        tz.finish_dt = datetime.datetime.now()
+        tz.finish_dt = timezone.now()
         tz.save()
 
         # Sending email to the creator

@@ -4109,9 +4109,9 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
                 latest_day = latest_event.start_dt.day
                 latest_month = latest_event.start_dt.month
                 latest_year = latest_event.start_dt.year
-                current_date = current_date.strftime('%x')
-                latest_date = latest_event.start_dt.strftime('%x')
-                msg_string = 'No {} Events were found for {}. The next {} event is on {}, shown below.'.format(str(current_type[0]), current_date, str(current_type[0]), latest_date)
+                current_date = current_date.strftime(settings.STRFTIME_DATE_FORMAT)
+                latest_date = latest_event.start_dt.strftime(settings.STRFTIME_DATE_FORMAT)
+                msg_string = u'No %s Events were found for %s. The next %s event is on %s, shown below.' % (str(current_type[0]), current_date, str(current_type[0]), latest_date)
                 messages.add_message(request, messages.INFO, _(msg_string))
                 return HttpResponseRedirect(reverse('event.week', args=[latest_year, latest_month, latest_day, current_type[0].slug]))
 
@@ -4133,7 +4133,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
                 latest_event = Event.objects.filter(start_dt__gte=tgtdate).order_by('start_dt').first()
                 if latest_event is not None:
                     latest_date = latest_event.start_dt
-                    msg_string = 'No Events were found for {}. The next event is on {}, shown below.'.format(tgtdate.strftime('%x'), latest_date.strftime('%x'))
+                    msg_string = f'No Events were found for {tgtdate.strftime(settings.STRFTIME_DATE_FORMAT)}. The next event is on {latest_date.strftime(settings.STRFTIME_DATE_FORMAT)}, shown below.'
                     messages.add_message(request, messages.INFO, _(msg_string))
                     return HttpResponseRedirect(reverse('event.week', args=[latest_date.year, latest_date.month, latest_date.day]))
             # Try to redirect far future dates to the latest event
@@ -4141,7 +4141,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
                 latest_event = Event.objects.filter(end_dt__lte=tgtdate).order_by('-end_dt').first()
                 if latest_event is not None:
                     latest_date = latest_event.end_dt
-                    msg_string = 'No Events were found for {}. The next event is on {}, shown below.'.format(tgtdate.strftime('%x'), latest_date.strftime('%x'))
+                    msg_string = f'No Events were found for {tgtdate.strftime(settings.STRFTIME_DATE_FORMAT)}. The next event is on {latest_date.strftime(settings.STRFTIME_DATE_FORMAT)}, shown below.'
                     messages.add_message(request, messages.INFO, _(msg_string))
                     return HttpResponseRedirect(reverse('event.week', args=[latest_date.year, latest_date.month, latest_date.day]))
 
@@ -4166,7 +4166,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
 def day_view(request, year=None, month=None, day=None, template_name='events/day-view.html'):
     # set min and max constraints
     MIN_YEAR = 1900
-    MAX_YEAR = datetime.now().year + 2
+    MAX_YEAR = timezone.now().year + 2
 
     year = int(year)
     if year <= MIN_YEAR or year > MAX_YEAR:
@@ -4220,7 +4220,7 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
                     latest_day = latest_event.start_dt.day
                     latest_month = latest_event.start_dt.month
                     latest_year = latest_event.start_dt.year
-                    msg_string = 'No Events were found for {}. The next event is on {}, shown below.'.format(day_date.strftime('%x'), latest_event.start_dt.strftime('%x'))
+                    msg_string = f'No Events were found for {day_date.strftime(settings.STRFTIME_DATE_FORMAT)}. The next event is on {latest_event.start_dt.strftime(settings.STRFTIME_DATE_FORMAT)}, shown below.'
                     messages.add_message(request, messages.INFO, _(msg_string))
                     return HttpResponseRedirect(reverse('event.day', args=[latest_year, latest_month, latest_day]))
             # Try to redirect far future dates to the latest event
@@ -4230,7 +4230,7 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
                     latest_month = latest_event.end_dt.month
                     latest_year = latest_event.end_dt.year
                     latest_day = latest_event.end_dt.day
-                    msg_string = 'No Events were found for {}. The next event is on {}, shown below.'.format(day_date.strftime('%x'), latest_event.end_dt.strftime('%x'))
+                    msg_string = f'No Events were found for {day_date.strftime(settings.STRFTIME_DATE_FORMAT)}. The next event is on {latest_event.end_dt.strftime(settings.STRFTIME_DATE_FORMAT)}, shown below.'
                     messages.add_message(request, messages.INFO, _(msg_string))
                     return HttpResponseRedirect(reverse('event.day', args=[latest_year, latest_month, latest_day]))
 
@@ -4789,7 +4789,7 @@ def registrant_check_in(request):
                             registrant.child_event.assign_credits(registrant.registrant)
                     response_d['checked_in_dt'] = registrant.checked_in_dt
                     if isinstance(response_d['checked_in_dt'], datetime):
-                        response_d['checked_in_dt'] = response_d['checked_in_dt'].strftime('%m/%d %I:%M%p')
+                        response_d['checked_in_dt'] = response_d['checked_in_dt'].strftime(settings.STRFTIME_DATE_FORMAT)
                 elif checked_in == 'false':
                     if registrant.checked_in:
                         registrant.checked_in = False
@@ -4815,7 +4815,7 @@ def registrant_check_in(request):
                         registrant.event.assign_credits(registrant)
                     response_d['checked_out_dt'] = registrant.checked_out_dt
                     if isinstance(response_d['checked_out_dt'], datetime):
-                        response_d['checked_out_dt'] = response_d['checked_out_dt'].strftime('%m/%d %I:%M%p')
+                        response_d['checked_out_dt'] = response_d['checked_out_dt'].strftime(settings.STRFTIME_DATE_FORMAT)
                 elif checked_out == 'false':
                     if registrant.checked_out:
                         registrant.checked_out = False
@@ -4937,7 +4937,7 @@ def sample_certificate(request, event_id=0):
                 'alternate_ceu': '123423423487'
             })
 
-    credits_by_sub_events = {timezone.now().date().strftime('%B %d, %Y'): sub_event_credits}
+    credits_by_sub_events = {timezone.now().date().strftime(settings.STRFTIME_DATE_FORMAT): sub_event_credits}
 
     registrant = {
         'event': event,
@@ -6158,9 +6158,9 @@ def export(request, template_name="events/export.html"):
         if by_type:
             process_options.append("--type=%s" % by_type.pk)
         if start_dt:
-            process_options.append("--start_dt=%s" % start_dt.strftime('%m/%d/%Y'))
+            process_options.append("--start_dt=%s" % start_dt.strftime(settings.STRFTIME_DATE_FORMAT))
         if end_dt:
-            process_options.append("--end_dt=%s" % end_dt.strftime('%m/%d/%Y'))
+            process_options.append("--end_dt=%s" % end_dt.strftime(settings.STRFTIME_DATE_FORMAT))
 
         # start the process
         subprocess.Popen(process_options)

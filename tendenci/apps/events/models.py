@@ -19,10 +19,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 from django.db.models.aggregates import Sum
+from django.utils import timezone
+from django.utils.formats import date_format
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
+from django.template.defaultfilters import date as template_format_date
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.fields import AutoField
@@ -1063,7 +1066,7 @@ class Registration(models.Model):
             inv.id,
             self.event.pk,
             self.event.title,
-            self.event.start_dt.strftime('%Y-%m-%d'),
+            date_format(self.event.start_dt, settings.DATE_FORMAT),
             inv.object_id,
         )
 
@@ -1763,7 +1766,7 @@ class Registrant(models.Model):
                 continue
             events_visited.append(event.id)
 
-            date = event.start_dt.date().strftime('%B %d, %Y')
+            date = date_format(event.start_dt.date(), settings.DATE_FORMAT)
 
             cpe_credits = self.get_cpe_credits_by_event(event)
             irs_credits = self.get_irs_credits_by_event(event)
@@ -1870,7 +1873,7 @@ class Registrant(models.Model):
         """
         return self.child_events.filter(
             checked_in=False,
-            child_event__start_dt__date=datetime.today()
+            child_event__start_dt__date=timezone.localdate()
         )
 
     @property
@@ -2643,11 +2646,11 @@ class RecurringEvent(models.Model):
             repeat_type = 'month(s)'
         elif self.repeat_type == self.RECUR_YEARLY:
             repeat_type = 'year(s)'
-        ends_on = self.ends_on.strftime("%b %d %Y")
-        return _("Repeats every {frequency} {repeat_type} until {ends_on}".format(
-                            frequency=self.frequency,
-                            repeat_type=repeat_type,
-                            ends_on=ends_on))
+        ends_on = date_format(self.ends_on.date(), settings.DATE_FORMAT)
+        return _("Repeats every %(frequency)s %(repeat_type)s until %(ends_on)s" % {
+                            'frequency': self.frequency,
+                            'repeat_type': repeat_type,
+                            'ends_on': ends_on})
 
 
 class EventPhoto(File):
@@ -2839,7 +2842,7 @@ class Event(TendenciBaseModel):
     all_day = models.BooleanField(default=False)
     start_dt = models.DateTimeField()
     end_dt = models.DateTimeField()
-    timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
+    timezone = TimeZoneField(verbose_name=_('Time Zone'), default=settings.TIME_ZONE, choices=get_timezone_choices(), max_length=100)
     place = models.ForeignKey('Place', null=True, on_delete=models.SET_NULL)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False, on_delete=models.CASCADE)
     mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
@@ -2923,7 +2926,7 @@ class Event(TendenciBaseModel):
         """
         Child events available that are upcoming today.
         """
-        return self.child_events.filter(start_dt__date=datetime.today())
+        return self.child_events.filter(start_dt__date=timezone.localdate())
 
     def sessions_availble_to_switch_to(self, request):
         """Sessions available for check-in other than the one currently selected"""
@@ -3115,7 +3118,7 @@ class Event(TendenciBaseModel):
         """Location tied to group"""
         group = self.groups.first()
         return group and group.entity.locations_location_entity.first()
-        
+
 
     @property
     def can_configure_credits(self):
@@ -3664,7 +3667,10 @@ class Event(TendenciBaseModel):
             set_s3_file_permission(self.image.file, public=self.is_public())
 
     def __str__(self):
-        return f'{self.title} ({self.start_dt.strftime("%m/%d/%Y")} - {self.end_dt.strftime("%m/%d/%Y")})'
+        if self.start_dt.date() == self.end_dt.date():
+            return f'{self.title} ({template_format_date(self.start_dt, settings.DATE_FORMAT)})'
+        else:
+            return f'{self.title} ({template_format_date(self.start_dt, settings.DATE_FORMAT)} - {template_format_date(self.end_dt, settings.DATE_FORMAT)})'
 
     @property
     def can_edit_attendance_dates_admin(self):
@@ -3957,7 +3963,7 @@ class Event(TendenciBaseModel):
     @property
     def display_start_date(self):
         """Start date formatted for confirmation messages"""
-        return self.start_dt.strftime("%m/%d/%Y")
+        return template_format_date(self.start_dt, settings.SHORT_DATE_FORMAT)
 
     def date_range(self, start_date, end_date):
         for n in range((end_date - start_date).days):
@@ -4018,11 +4024,11 @@ class Event(TendenciBaseModel):
 
             for span in spans:
                 if span['same_date']:
-                    days.add(datetime.date(span['start_dt']))
+                    days.add(timezone.localdate(span['start_dt']))
                 else:
                     date_range = self.date_range(
                         span['start_dt'], span['end_dt'] + timedelta(days=1))
-                    date_range = [datetime.date(x) for x in date_range]
+                    date_range = [timezone.localdate(x) for x in date_range]
                     days.update(date_range)
 
         return sorted(days)
@@ -4053,7 +4059,7 @@ class Event(TendenciBaseModel):
 
     @property
     def event_dates_display(self):
-        return ' - '.join([x.strftime('%b %d, %Y') for x in self.full_event_days])
+        return ' - '.join([date_format(x.date(), settings.DATE_FORMAT) for x in self.full_event_days])
 
     def get_spots_status(self):
         """

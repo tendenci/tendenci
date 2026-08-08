@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}{% trans "Registration" %} {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+{% block title %}{{ block.super }}{% trans "Registration" %} {{ event.title }} {{ event.start_dt|date:"DATE_FORMAT" }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -49,7 +49,7 @@
         {% if pricing.description %}{{ pricing.description|safe }}{% endif %}
         {% endif %}
         <div class="event-time">
-            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
+            <div class="line">{{ event.start_dt|date:"DATE_FORMAT" }}</div>
             <div class="line"> {% if not event.all_day %}
             {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}</div>
         </div>

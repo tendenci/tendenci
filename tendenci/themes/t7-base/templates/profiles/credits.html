@@ -87,7 +87,7 @@
       </div>
       <div class="row">
         <div class="col-md-1">
-          {{ event.start_dt }}
+          {{ event.start_dt|date:'DATE_FORMAT' }}
         </div>
         <div class="col-md-1">
           {{ event.credits}}

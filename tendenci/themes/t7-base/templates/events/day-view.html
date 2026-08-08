@@ -68,8 +68,8 @@
                 <div class="time-stamp">
                   {% if not event.all_day %}{{ event.start_dt|date:"f A" }} - {{ event.end_dt|date:"f A" }}{% endif %}
                 </div>
-                <time style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</time>
-            {% if event.start_dt|date:"D, M. j, Y" != event.end_dt|date:"D, M. j, Y" %}
+                <time style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l" }}, {{ event.start_dt|date:"DATETIME_FORMAT" }}</time>
+            {% if event.start_dt|date:"SHORT_DATE_FORMAT" != event.end_dt|date:"SHORT_DATE_FORMAT" %}
                 <div class="ongoing-event">{% trans 'Multi-day Event' %}</div>
             {% endif %}
             {% if event.type %}
@@ -184,7 +184,7 @@
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-           $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+           $(".datepicker").datepicker({ dateFormat: '{{ DATEPICKER_DATE_FORMAT }}' });
         });
     </script>
 {% endblock %}
