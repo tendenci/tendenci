@@ -4181,7 +4181,10 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
         cat = None
         query = ''
 
-    day_date = datetime(year=int(year), month=int(month), day=int(day))
+    try:
+        day_date = datetime(year=int(year), month=int(month), day=int(day))
+    except ValueError:
+        raise Http404
     yesterday = day_date - timedelta(days=1)
     if yesterday.year > MIN_YEAR:
         yesterday_url = reverse('event.day', args=(
