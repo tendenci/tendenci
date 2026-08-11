@@ -1,3 +1,5 @@
+import importlib
+
 from datetime import datetime
 from django.utils import timezone
 
@@ -37,10 +39,16 @@ def get_all_feeds():
         _try_import(app + '.feeds')
     return SubFeed.__subclasses__()
 
-
 def _try_import(module):
     try:
         __import__(module)
     except ImportError:
         pass
         #print("Failed to import feeds file: %s" % e)
+
+def get_app_feed(app):
+    try:
+        return importlib.import_module(f'tendenci.apps.{app}.feeds').LatestEntriesFeed
+    except ImportError:
+        return None
+
