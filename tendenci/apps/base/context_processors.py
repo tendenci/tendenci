@@ -54,7 +54,7 @@ def user_classification(request):
     }
     if hasattr(request.user, 'profile') and request.user.profile.is_superuser:
         data.update({'USER_IS_SUPERUSER': True})
-    elif hasattr(request.user, 'memberships'):
+    elif hasattr(request.user, 'membershipdefault_set'):
         active_memberships = request.user.membershipdefault_set.filter(
             status=True, status_detail__iexact='active'
         )
@@ -62,11 +62,10 @@ def user_classification(request):
             status=True, status_detail__iexact='inactive'
         )
         data.update({'USER_IS_MEMBER':True})
-        if inactive_memberships.exists() > 0:
+        if inactive_memberships.exists():
             data.update({'USER_IS_MEMBER_EXPIRED': True})
-        elif active_memberships.exists() > 0:
+        elif active_memberships.exists():
             data.update({'USER_IS_MEMBER_ACTIVE': True})
-
     return data
 
 
