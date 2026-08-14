@@ -381,21 +381,21 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     def join_date(self, instance):
         if not instance.join_dt:
             return ''
-        return date_format(instance.join_dt.date(), settings.DATE_FORMAT)
+        return date_format(instance.join_dt, settings.DATE_FORMAT)
     join_date.short_description = _('Join Date')
     join_date.admin_order_field = 'join_dt'
 
     def renew_date(self, instance):
         if not instance.renew_dt:
             return ''
-        return date_format(instance.renew_dt.date(), settings.DATE_FORMAT)
+        return date_format(instance.renew_dt, settings.DATE_FORMAT)
     renew_date.short_description = _('Renew Date')
     renew_date.admin_order_field = 'renew_dt'
 
     def expire_date(self, instance):
         if not instance.expiration_dt:
             return ''
-        return date_format(instance.expiration_dt.date(), settings.DATE_FORMAT)
+        return date_format(instance.expiration_dt, settings.DATE_FORMAT)
     expire_date.short_description = _('Expiration Date')
     expire_date.admin_order_field = 'expiration_dt'
 
@@ -895,7 +895,7 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
         corp_membership = instance.corp_profile.corp_membership
         if not corp_membership or not corp_membership.expiration_dt:
             return ''
-        return date_format(corp_membership.expiration_dt.date(), settings.DATE_FORMAT)
+        return date_format(corp_membership.expiration_dt, settings.DATE_FORMAT)
     expiration_date.short_description = _('Expiration Date')
 
 

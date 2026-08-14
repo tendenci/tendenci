@@ -1766,7 +1766,7 @@ class Registrant(models.Model):
                 continue
             events_visited.append(event.id)
 
-            date = date_format(event.start_dt.date(), settings.DATE_FORMAT)
+            date = date_format(event.start_dt, settings.DATE_FORMAT)
 
             cpe_credits = self.get_cpe_credits_by_event(event)
             irs_credits = self.get_irs_credits_by_event(event)
@@ -2646,7 +2646,7 @@ class RecurringEvent(models.Model):
             repeat_type = 'month(s)'
         elif self.repeat_type == self.RECUR_YEARLY:
             repeat_type = 'year(s)'
-        ends_on = date_format(self.ends_on.date(), settings.DATE_FORMAT)
+        ends_on = date_format(self.ends_on, settings.DATE_FORMAT)
         return _("Repeats every %(frequency)s %(repeat_type)s until %(ends_on)s" % {
                             'frequency': self.frequency,
                             'repeat_type': repeat_type,
@@ -4059,7 +4059,7 @@ class Event(TendenciBaseModel):
 
     @property
     def event_dates_display(self):
-        return ' - '.join([date_format(x.date(), settings.DATE_FORMAT) for x in self.full_event_days])
+        return ' - '.join([date_format(x, settings.DATE_FORMAT) for x in self.full_event_days])
 
     def get_spots_status(self):
         """
