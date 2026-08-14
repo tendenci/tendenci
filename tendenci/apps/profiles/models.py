@@ -318,7 +318,7 @@ class Profile(Person):
             event = credit.event
             if event.pk not in credits[category][year]['events']:
                 credits[category][year]['events'][event.pk] = {
-                    'start_dt': date_format(event.start_dt.date(), settings.SHORT_DATE_FORMAT),
+                    'start_dt': date_format(event.start_dt, settings.SHORT_DATE_FORMAT),
                     'credits': 0,
                     'type': category,
                     'type': category,

@@ -2117,7 +2117,7 @@ class NoticeLog(models.Model):
         app_label = 'chapters'
 
     def __str__(self):
-        sent_dt = date_format(self.notice_sent_dt.date(), settings.SHORT_DATE_FORMAT)
+        sent_dt = date_format(self.notice_sent_dt, settings.SHORT_DATE_FORMAT)
         return f'Log for {self.notice} ({sent_dt})'
 
 

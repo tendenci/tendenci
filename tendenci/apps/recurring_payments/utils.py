@@ -305,8 +305,8 @@ def run_a_recurring_payment(rp, verbosity=0):
                     if verbosity > 1:
                         if rp_invoice.billing_cycle_start_dt and rp_invoice.billing_cycle_end_dt:
                             print('...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...'
-                                    % (date_format(rp_invoice.billing_cycle_start_dt.date(), settings.SHORT_DATE_FORMAT),
-                                       date_format(rp_invoice.billing_cycle_end_dt.date(), settings.SHORT_DATE_FORMAT),
+                                    % (date_format(rp_invoice.billing_cycle_start_dt, settings.SHORT_DATE_FORMAT),
+                                       date_format(rp_invoice.billing_cycle_end_dt, settings.SHORT_DATE_FORMAT),
                                        currency_symbol,
                                        rp_invoice.invoice.balance))
                         else:
