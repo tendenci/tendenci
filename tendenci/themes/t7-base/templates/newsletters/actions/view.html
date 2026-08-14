@@ -44,7 +44,7 @@
         <a class="btn btn-primary" href="{% url 'email.viewbody' object.email.pk %}">
           {% trans 'View Newsletter' %}
         </a>
-        <a class="btn btn-warning" href="{% url 'email.edit' object.email.pk %}">
+        <a class="btn btn-warning" href="{% url 'email.edit' object.email.pk %}?next={{ request.path }}">
           {% trans 'Edit Newsletter Contents' %}
         </a>
 
