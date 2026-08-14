@@ -385,21 +385,21 @@ class ChapterMembershipAdmin(admin.ModelAdmin):
     def join_date(self, instance):
         if not instance.join_dt:
             return ''
-        return date_format(instance.join_dt.date(), settings.DATE_FORMAT)
+        return date_format(instance.join_dt, settings.SHORT_DATE_FORMAT)
     join_date.short_description = _('Join Date')
     join_date.admin_order_field = 'join_dt'
 
     def renew_date(self, instance):
         if not instance.renew_dt:
             return ''
-        return date_format(instance.renew_dt.date(), settings.DATE_FORMAT)
+        return date_format(instance.renew_dt, settings.SHORT_DATE_FORMAT)
     renew_date.short_description = _('Renew Date')
     renew_date.admin_order_field = 'renew_dt'
 
     def expire_date(self, instance):
         if not instance.expire_dt:
             return ''
-        return date_format(instance.expire_dt.date(), settings.DATE_FORMAT)
+        return date_format(instance.expire_dt, settings.SHORT_DATE_FORMAT)
     expire_date.short_description = _('Expire Date')
     expire_date.admin_order_field = 'expire_dt'
 
