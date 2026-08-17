@@ -2202,6 +2202,10 @@ class ChapterMembershipImport(BaseImport):
                     mimport=self).order_by('row_num')
                 for idata in data_list:
                     data_dict = idata.row_data
+                    if 'status' in data_dict:
+                        del data_dict['status']
+                    if 'status_detail' in data_dict:
+                        del data_dict['status_detail']
                     data_dict['action'] = idata.action_taken
                     data_dict['error'] = idata.error
 
