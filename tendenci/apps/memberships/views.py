@@ -29,6 +29,7 @@ from django.utils import timezone
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import ForeignKey, OneToOneField
+from django.template.defaultfilters import date as date_format
 from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
 from django.core.files.storage import default_storage
@@ -2161,8 +2162,8 @@ def membership_join_report(request):
                 memberships = memberships.filter(status_detail=membership_status)
     else:
         form = ReportForm(initial={
-            'start_date': start_date.strftime(settings.STRFTIME_DATE_FORMAT),
-            'end_date': end_date.strftime(settings.STRFTIME_DATE_FORMAT)})
+            'start_date': date_format(start_date, settings.SHORT_DATE_FORMAT),
+            'end_date': date_format(end_date, settings.SHORT_DATE_FORMAT)})
 
     end_date_time = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59)
     if settings.USE_TZ:

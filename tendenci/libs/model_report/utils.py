@@ -8,6 +8,7 @@ from decimal import Decimal
 from string import capwords
 from datetime import datetime
 from django.conf import settings
+from django.template.defaultfilters import date as date_format
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.utils.encoding import force_str
@@ -67,13 +68,6 @@ def count_column(values):
 count_column.caption = _('Count')
 
 
-def date_format(value, instance):
-    """
-    Format cell value to friendly date string
-    """
-    return value.strftime("%d/%m/%Y")
-
-
 def usd_format(value, instance):
     """
     Format cell value to money
@@ -94,15 +88,10 @@ def round_format(value, instance):
     """
     return Decimal('%.2f' % Decimal(value))
 
-@deprecated('Use local_date_format(django.utils.timezone) instead')
-def us_date_format(value, instance):
-    if isinstance(value, datetime):
-        return value.strftime("%m/%d/%Y")
-    return value
 
 def local_date_format(value, instance):
     if isinstance(value, timezone):
-        return value.strftime(settings.STRFTIME_DATE_FORMAT)
+        return date_format(value, settings.SHORT_DATE_FORMAT)
     return value
 
 def date_label(report, field):

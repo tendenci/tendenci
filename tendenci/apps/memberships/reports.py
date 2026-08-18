@@ -23,13 +23,14 @@ from geraldo import Report, ReportBand, ObjectValue,\
 from reportlab.lib.units import cm
 from reportlab.lib.pagesizes import A5
 from django.conf import settings
+from django.template.defaultfilters import date as date_format
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 # ReportLab does not support gettext_lazy() translations, so use gettext() instead
 from django.utils.translation import gettext as _
 from tendenci.libs.model_report.report import reports, ReportAdmin
-from tendenci.libs.model_report.utils import us_date_format
+from tendenci.libs.model_report.utils import local_date_format
 from tendenci.apps.memberships.models import MembershipDefault, MembershipType
 
 MEMBERSHIPTYPE_DICT = None
@@ -72,9 +73,9 @@ class ReportNewMems(Report):
                     get_value=lambda instance: instance.get_invoice().total if instance.get_invoice() else ''),
                 #ObjectValue(attribute_name='payment_method', left=15*cm),
                 ObjectValue(attribute_name='join_dt', left=14.5*cm,
-                    get_value=lambda instance: instance.join_dt.strftime(settings.STRFTIME_DATE_FORMAT)),
+                    get_value=lambda instance: date_format(instance.join_dt, settings.SHORT_DATE_FORMAT)),
                 ObjectValue(attribute_name='expire_dt', left=17.5*cm,
-                    get_value=lambda instance: instance.expire_dt.strftime(settings.STRFTIME_DATE_FORMAT) if instance.expire_dt else ''),
+                    get_value=lambda instance: date_format(instance.expire_dt, settings.SHORT_DATE_FORMAT) if instance.expire_dt else ''),
             )
 
 def id_format(value, instance):
@@ -134,7 +135,7 @@ class MembershipReport(ReportAdmin):
     # override field formats by referencing a function
     override_field_formats = {
         'membership_type': membership_type_format,
-        'expire_dt': us_date_format,
+        'expire_dt': local_date_format,
         'id': id_format,
     }
 

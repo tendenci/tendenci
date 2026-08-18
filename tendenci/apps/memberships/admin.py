@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
 from django.urls import path, re_path
 from django.template.defaultfilters import slugify
+from django.template.defaultfilters import date as date_format
 from django.utils.encoding import iri_to_uri
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -464,14 +465,14 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     get_invoice.short_description = 'Invoice'
 
     def get_create_dt(self, instance):
-        return instance.create_dt.strftime(settings.STRFTIME_DATETIME_FORMAT)
+        return date_format(instance.create_dt, settings.DATETIME_FORMAT)
     get_create_dt.short_description = 'Created On'
 
     def get_approve_dt(self, instance):
         dt = instance.application_approved_dt
 
         if dt:
-            return dt.strftime(settings.STRFTIME_DATETIME_FORMAT)
+            return date_format(dt, settings.DATETIME_FORMAT)
         return ''
     get_approve_dt.short_description = 'Approved On'
     get_approve_dt.admin_order_field = 'application_approved_dt'
@@ -480,7 +481,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         dt = instance.expire_dt
 
         if dt:
-            return dt.strftime(settings.STRFTIME_DATE_FORMAT)
+            return date_format(dt, settings.SHORT_DATE_FORMAT)
         return ''
     get_expire_dt.short_description = 'Expire Date'
     get_expire_dt.admin_order_field = 'expire_dt'
