@@ -509,17 +509,17 @@ YEAR_MONTH_FORMAT = "M Y" # October 2006
 
 # Used by the Bootstrap (Javascript) datepicker in templates
 # See http://www.eyecon.ro/bootstrap-datepicker for formatting
-DATEPICKER_DATE_FORMAT = "mm/dd/yy"
-DATEPICKER_TIME_FORMAT = "h:i A"
+DATEPICKER_DATE_FORMAT = 'yy-mm-dd'
+DATEPICKER_TIME_FORMAT = 'h:i A'
 
 DATE_INPUT_FORMATS = [
-    "%m/%d/%Y",  # '10/25/2006'
+    '%Y-%m-%d', # '2006-10-25'
+    '%m/%d/%Y' # '10/25/2006'
     "%m/%d/%y",  # '10/25/06'
     "%b %d %Y",  # 'Oct 25 2006'
     "%b %d, %Y",  # 'Oct 25, 2006'
     "%B %d %Y",  # 'October 25 2006'
     "%B %d, %Y",  # 'October 25, 2006'
-    "%Y-%m-%d",  # '2006-10-25'
     "%d/%m/%Y",  # '25/10/2006'
     "%d/%m/%y",  # '25/10/06'
     "%d %b %Y",  # '25 Oct 2006'
@@ -541,11 +541,9 @@ DATETIME_INPUT_FORMATS = [
 ]
 
 TIME_INPUT_FORMATS = [
-    "%H:%M",  # '14:30'
-    "%H:%M:%S",  # '14:30:59'
-    "%H:%M:%S.%f",  # '14:30:59.000200'
+    '%I:%M %p', # '01:17 PM'
+    '%H:%M:%S' # '13:17:04'
 ]
-
 
 
 # ---------------------------------------------------------------------------- #
