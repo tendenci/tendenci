@@ -29,6 +29,7 @@ import simplejson
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
 from django.utils import timezone
+from django.utils.formats import date_format
 
 # from pytz import UnknownTimeZoneError
 
