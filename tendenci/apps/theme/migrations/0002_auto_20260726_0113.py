@@ -67,6 +67,7 @@ REPLACEMENTS = [
     Replace("|date:'M. j, Y'", "|date:'DATE_FORMAT'"),
     Replace('|date:"D, M. j"', '|date:"DATE_FORMAT"'),
     Replace('|date:"D, M. j, Y"', '|date:"DATE_FORMAT"'),
+    Replace("|date:'N j, Y h:i a'", "|date:'DATETIME_FORMAT'"),
 ]
 
 
