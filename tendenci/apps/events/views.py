@@ -4789,7 +4789,7 @@ def registrant_check_in(request):
                             registrant.child_event.assign_credits(registrant.registrant)
                     response_d['checked_in_dt'] = registrant.checked_in_dt
                     if isinstance(response_d['checked_in_dt'], datetime):
-                        response_d['checked_in_dt'] = date_format(response_d['checked_in_dt'],settings.SHORT_DATE_FORMAT)
+                        response_d['checked_in_dt'] = date_format(response_d['checked_in_dt'],settings.SHORT_DATETIME_FORMAT)
                 elif checked_in == 'false':
                     if registrant.checked_in:
                         registrant.checked_in = False
@@ -4815,7 +4815,7 @@ def registrant_check_in(request):
                         registrant.event.assign_credits(registrant)
                     response_d['checked_out_dt'] = registrant.checked_out_dt
                     if isinstance(response_d['checked_out_dt'], datetime):
-                        response_d['checked_out_dt'] = date_format(response_d['checked_out_dt'],settings.SHORT_DATE_FORMAT)
+                        response_d['checked_out_dt'] = date_format(response_d['checked_out_dt'],settings.SHORT_DATETIME_FORMAT)
                 elif checked_out == 'false':
                     if registrant.checked_out:
                         registrant.checked_out = False
@@ -4937,7 +4937,7 @@ def sample_certificate(request, event_id=0):
                 'alternate_ceu': '123423423487'
             })
 
-    credits_by_sub_events = {date_format(timezone.now(),settings.SHORT_DATE_FORMAT): sub_event_credits}
+    credits_by_sub_events = {date_format(timezone.now(),settings.DATE_FORMAT): sub_event_credits}
 
     registrant = {
         'event': event,

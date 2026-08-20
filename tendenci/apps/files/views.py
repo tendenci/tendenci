@@ -672,8 +672,8 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
 
     form = form_class(
         initial={
-            'start_dt': date_format(start_dt, settings.DATE_FORMAT),
-            'end_dt': date_format(end_dt, settings.DATE_FORMAT),
+            'start_dt': date_format(start_dt, settings.SHORT_DATE_FORMAT),
+            'end_dt': date_format(end_dt, settings.SHORT_DATE_FORMAT),
         }
     )
 
