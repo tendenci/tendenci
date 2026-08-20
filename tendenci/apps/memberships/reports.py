@@ -1,27 +1,3 @@
-# This file is no longer used.
-#
-# This was originally called by membership_join_report_pdf() in views.py, which
-# was used by the "Memberships by Join Date" report to generate a downloadable
-# PDF version of the report.
-#
-# Unfortunately, the generated PDF was ugly and unreadable (text in adjacent
-# columns within a single row overlap each other).  All of the information in
-# this report is also available via the "Active Memberships Report", which
-# supports a downloadable CSV version.
-#
-# In addition, Geraldo is abandoned and does not support Python 3.  reportlab
-# can technically implement the same functionality under Python 3, but its API
-# for handling this use case is much more complex than Geraldo, so converting
-# would involve significant effort.
-#
-# Therefore, this file has been abandoned, and is kept only for historical
-# reference.
-
-
-from geraldo import Report, ReportBand, ObjectValue,\
-     Label, landscape
-from reportlab.lib.units import cm
-from reportlab.lib.pagesizes import A5
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
@@ -32,49 +8,6 @@ from tendenci.libs.model_report.utils import us_date_format
 from tendenci.apps.memberships.models import MembershipDefault, MembershipType
 
 MEMBERSHIPTYPE_DICT = None
-
-
-class ReportBandNewMems(ReportBand):
-    def __init__(self, *args, **kwargs):
-        kwargs.pop('days_ago')
-        super().__init__(*args, **kwargs)
-
-class ReportNewMems(Report):
-    title = _("New Memberships")
-    author = _("John Smith  Corporation")
-
-    page_size = landscape(A5)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    class band_page_header(ReportBand):
-        height = 1.2*cm
-        elements = [
-                Label(text=_("Name"), top=0.8*cm, left=0*cm),
-                Label(text=_("Email"), top=0.8*cm, left=2.5*cm),
-                Label(text=_("Type"), top=0.8*cm, left=5.5*cm),
-                Label(text=_("Price Paid"), top=0.8*cm, left=11.5*cm),
-                Label(text=_("Start Date"), top=0.8*cm, left=14.5*cm),
-                Label(text=_("End Date"), top=0.8*cm, left=17.5*cm),
-            ]
-
-    class band_detail(ReportBand):
-        height = 0.5*cm
-        elements = (
-                ObjectValue(attribute_name='user', left=0*cm,
-                    get_value=lambda instance: instance.user.last_name + ', ' + instance.user.first_name),
-                ObjectValue(attribute_name='user', left=2.5*cm,
-                    get_value=lambda instance: instance.user.email),
-                ObjectValue(attribute_name='membership_type', left=5.5*cm),
-                ObjectValue(attribute_name='invoice', left=11.5*cm,
-                    get_value=lambda instance: instance.get_invoice().total if instance.get_invoice() else ''),
-                #ObjectValue(attribute_name='payment_method', left=15*cm),
-                ObjectValue(attribute_name='join_dt', left=14.5*cm,
-                    get_value=lambda instance: instance.join_dt.strftime('%b %d, %Y')),
-                ObjectValue(attribute_name='expire_dt', left=17.5*cm,
-                    get_value=lambda instance: instance.expire_dt.strftime('%b %d, %Y') if instance.expire_dt else ''),
-            )
 
 def id_format(value, instance):
     link = reverse('membership.details', args=[value])
@@ -98,9 +31,9 @@ class MembershipReport(ReportAdmin):
     # fields in the specified model to display in the report table
     fields = [
         'id',
-        'user__first_name',
-        'user__last_name',
-        'user__email',
+        'user.first_name',
+        'user.last_name',
+        'user.email',
         'expire_dt',
         'membership_type',
         'status_detail',
@@ -121,7 +54,7 @@ class MembershipReport(ReportAdmin):
     # type = report for report only, type = chart for report and charts. default is report.
     type = 'chart'
     chart_types = ('pie', 'column')
-    list_serie_fields = ('id', )
+    list_serie_fields = ('membership_type', 'status_detail')
     list_serie_ops = ('len',)   # count
     # hide the show only totals field
     hide_show_only_totals = True
