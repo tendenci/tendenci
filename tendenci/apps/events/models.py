@@ -1873,7 +1873,7 @@ class Registrant(models.Model):
         """
         return self.child_events.filter(
             checked_in=False,
-            child_event__start_dt__date=timezone.localdate()
+            child_event__start_dt__date=timezone.localdate() if settings.USE_TZ else datetime.today()
         )
 
     @property
