@@ -321,7 +321,6 @@ class Profile(Person):
                     'start_dt': date_format(event.start_dt, settings.SHORT_DATE_FORMAT),
                     'credits': 0,
                     'type': category,
-                    'type': category,
                     'meeting_name': event.parent.title if event.parent else event.title,
                     'registrant_id': credit.registrant.pk,
                     'event': event.title if event.parent else None,
