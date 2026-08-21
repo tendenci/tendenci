@@ -6,10 +6,9 @@ else:
 
 from decimal import Decimal
 from string import capwords
-from datetime import datetime
+from datetime import datetime, date
 from django.conf import settings
 from django.template.defaultfilters import date as date_format
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.utils.encoding import force_str
 from django.contrib.contenttypes.models import ContentType
@@ -90,7 +89,7 @@ def round_format(value, instance):
 
 
 def local_date_format(value, instance):
-    if isinstance(value, timezone):
+    if isinstance(value, (date, datetime)):
         return date_format(value, settings.SHORT_DATE_FORMAT)
     return value
 
