@@ -59,12 +59,12 @@ def story_expiration(obj):
 
     if obj.expires:
         if obj.end_dt < timezone.now():
-            value = t % ('inactive', ("Expired on %s" % date_format(obj.end_dt.date(), settings.DATETIME_FORMAT)))
+            value = t % ('inactive', f'Expired on {date_format(obj.end_dt, "SHORT_DATETIME_FORMAT")}')
         else:
             if obj.start_dt > timezone.now():
-                value = t % ('inactive',("Starts on %s" % date_format(obj.start_dt.date(), settings.DATETIME_FORMAT)))
+                value = t % ('inactive',f'Starts on {date_format(obj.start_dt, "SHORT_DATETIME_FORMAT")}')
             else:
-                value = t % ('active', ("Expires on %s" % date_format(obj.end_dt.date(), settings.DATETIME_FORMAT)))
+                value = t % ('active', f'Expires on {date_format(obj.end_dt, "SHORT_DATETIME_FORMAT")}')
     else:
         value = t % ('active', "Never Expires")
 
