@@ -17,7 +17,7 @@ from decimal import Decimal
 from django.template import Library
 from django.conf import settings
 from django.template.defaultfilters import stringfilter
-from django.utils import formats
+from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape, strip_tags, urlize
 from django.contrib.auth.models import AnonymousUser
@@ -72,9 +72,9 @@ def date_short(value, arg=None):
         if s_date_format:
             arg = s_date_format
         else:
-            arg = settings.SHORT_DATETIME_FORMAT if value.time() != time() else settings.SHORT_DATE_FORMAT
+            arg = "SHORT_DATETIME_FORMAT" if value.time() != time() else "SHORT_DATE_FORMAT"
     try:
-        return formats.date_format(value, arg)
+        return date_format(value, arg)
     except AttributeError:
         try:
             return format(value, arg)
@@ -94,9 +94,9 @@ def date_long(value, arg=None):
         if s_date_format:
             arg = s_date_format
         else:
-            arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT
+            arg = "DATETIME_FORMAT" if value.time() != time() else "DATE_FORMAT"
     try:
-        return formats.date_format(value, arg)
+        return date_format(value, arg)
     except AttributeError:
         try:
             return format(value, arg)
@@ -111,14 +111,14 @@ def date(value, arg=None):
     if not value:
         return ''
     if arg is None:
-        arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT
+        arg = "DATETIME_FORMAT" if value.time() != time() else "DATE_FORMAT"
     else:
         if arg == 'long':
             return date_long(value)
         elif arg == 'short':
             return date_short(value)
     try:
-        return formats.date_format(value, arg)
+        return date_format(value, arg)
     except AttributeError:
         try:
             return format(value, arg)
@@ -262,7 +262,6 @@ def first_chars(string, arg):
 @register.filter
 def rss_date(value, arg=None):
     """Formats a date according to the given format."""
-    from django.utils import formats
     from django.utils.dateformat import format
     from datetime import datetime
 
@@ -271,9 +270,9 @@ def rss_date(value, arg=None):
     else:
         value = datetime(*value[:-3])
     if arg is None:
-        arg = settings.DATE_FORMAT
+        arg = "DATE_FORMAT"
     try:
-        return formats.date_format(value, arg)
+        return date_format(value, arg)
     except AttributeError:
         try:
             return format(value, arg)

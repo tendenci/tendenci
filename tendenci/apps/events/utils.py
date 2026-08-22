@@ -24,7 +24,6 @@ from django.db.models import Max, Count, Q
 from django.template import engines
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
-from django.template.defaultfilters import date as format_date
 import simplejson
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
@@ -605,7 +604,7 @@ def build_ical_text(event, d):
     ical_text += "Event Title: %s\n" % strip_tags(event.title)
 
     # start_dt
-    ical_text += f'Start Date / Time: {format_date(event.start_dt, settings.DATETIME_FORMAT)} {event.timezone}\n'
+    ical_text += f'Start Date / Time: {date_format(event.start_dt, "DATETIME_FORMAT")} {event.timezone}\n'
 
     # location
     if event.place:
@@ -715,7 +714,7 @@ def build_ical_html(event, d):
     ical_html += '<div>%s</div><br />' % d['event_url']
 
     # start_dt
-    ical_html += f'<div>When: {date_format(event.start_dt, settings.DATETIME_FORMAT)} {event.timezone}</div>'
+    ical_html += f'<div>When: {date_format(event.start_dt, "DATETIME_FORMAT")} {event.timezone}</div>'
 
 #    # sponsor
 #    sponsors = event.sponsor_set.all()

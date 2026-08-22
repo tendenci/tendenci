@@ -35,7 +35,7 @@ from django.core.validators import validate_email as _validate_email
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
-from django.template.defaultfilters import date as dj_format_date
+from django.utils.formats import date_format as dj_format_date
 from django.contrib.admin.utils import NestedObjects
 from django.utils.functional import keep_lazy_text
 from django.utils.text import capfirst, Truncator

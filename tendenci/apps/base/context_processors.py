@@ -81,10 +81,6 @@ def display_name(request):
 
 def date_formatters(request):
     data = {
-        'DATE_FORMAT' : settings.DATE_FORMAT ,
-        'DATETIME_FORMAT' : settings.DATETIME_FORMAT ,
-        'SHORT_DATE_FORMAT' : settings.SHORT_DATE_FORMAT ,
-        'SHORT_DATETIME_FORMAT' : settings.SHORT_DATETIME_FORMAT ,
         'DATEPICKER_DATE_FORMAT' : settings.DATEPICKER_DATE_FORMAT ,
         'DATEPICKER_TIME_FORMAT' : settings.DATEPICKER_TIME_FORMAT,
     }

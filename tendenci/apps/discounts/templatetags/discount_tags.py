@@ -46,12 +46,12 @@ def discount_expiration(obj):
 
     if not obj.never_expires:
         if obj.end_dt < timezone.now():
-            value = t % ('inactive', ("Expired %s" % date_format(obj.end_dt, settings.DATETIME_FORMAT)))
+            value = t % ('inactive', f'Expired {date_format(obj.end_dt, "DATETIME_FORMAT")}')
         else:
             if obj.start_dt > timezone.now():
-                value = t % ('inactive',("Starts %s" % date_format(obj.start_dt, settings.DATETIME_FORMAT)))
+                value = t % ('inactive',f'Starts {date_format(obj.start_dt, "DATETIME_FORMAT")}' )
             else:
-                value = t % ('active', ("Expires %s" % date_format(obj.end_dt, settings.DATETIME_FORMAT)))
+                value = t % ('active', f'Expires {date_format(obj.end_dt, "DATETIME_FORMAT")}')
     else:
         value = t % ('active', "Never Expires")
 

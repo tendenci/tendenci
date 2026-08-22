@@ -15,7 +15,6 @@ from django.conf import settings
 import simplejson
 from django.contrib.auth.models import User
 from django.template import loader
-from django.template.defaultfilters import date as date_format
 from django.template.defaultfilters import slugify
 from django.db.models import Q
 from django.core.files.storage import default_storage
@@ -29,6 +28,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.files.base import ContentFile
 from django.template import Context, Template
 from django.template.loader import get_template
+from django.utils.formats import date_format
 from django.utils.html import escape
 from django.utils import timezone
 
@@ -2249,7 +2249,7 @@ def email_membership_members(email, memberships, **kwargs):
             view_url = '{}{}'.format(site_url, reverse('membership.details', args=[member.id]))
             edit_url = '{}{}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
             if member.expire_dt:
-                expire_dt = date_format(member.expire_dt, settings.SHORT_DATE_FORMAT)
+                expire_dt = date_format(member.expire_dt, "SHORT_DATE_FORMAT")
             else:
                 expire_dt = ''
             renew_link = '{}{}'.format(site_url, member.get_absolute_url())

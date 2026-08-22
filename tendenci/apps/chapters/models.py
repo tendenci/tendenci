@@ -1814,7 +1814,7 @@ class Notice(models.Model):
         site_contact_email = get_setting('site', 'global', 'sitecontactemail')
         site_url = get_setting('site', 'global', 'siteurl')
         now = timezone.now()
-        nowstr = date_format(now, settings.DATETIME_FORMAT)
+        nowstr = date_format(now, "DATETIME_FORMAT")
         global_context = {'site_display_name': site_display_name,
                           'site_contact_name': site_contact_name,
                           'site_contact_email': site_contact_email,

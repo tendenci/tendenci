@@ -25,7 +25,6 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
-from django.template.defaultfilters import date as template_format_date
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.fields import AutoField
@@ -1066,7 +1065,7 @@ class Registration(models.Model):
             inv.id,
             self.event.pk,
             self.event.title,
-            date_format(self.event.start_dt, settings.DATE_FORMAT),
+            date_format(self.event.start_dt, "DATE_FORMAT"),
             inv.object_id,
         )
 
@@ -1766,7 +1765,7 @@ class Registrant(models.Model):
                 continue
             events_visited.append(event.id)
 
-            date = date_format(event.start_dt, settings.DATE_FORMAT)
+            date = date_format(event.start_dt, "DATE_FORMAT")
 
             cpe_credits = self.get_cpe_credits_by_event(event)
             irs_credits = self.get_irs_credits_by_event(event)
@@ -2646,7 +2645,7 @@ class RecurringEvent(models.Model):
             repeat_type = 'month(s)'
         elif self.repeat_type == self.RECUR_YEARLY:
             repeat_type = 'year(s)'
-        ends_on = date_format(self.ends_on, settings.DATE_FORMAT)
+        ends_on = date_format(self.ends_on, "DATE_FORMAT")
         return _("Repeats every %(frequency)s %(repeat_type)s until %(ends_on)s" % {
                             'frequency': self.frequency,
                             'repeat_type': repeat_type,
@@ -3668,9 +3667,11 @@ class Event(TendenciBaseModel):
 
     def __str__(self):
         if self.start_dt.date() == self.end_dt.date():
-            return f'{self.title} ({template_format_date(self.start_dt, settings.DATE_FORMAT)})'
+            return f'{self.title} ({date_format(self.start_dt, "DATE_FORMAT")})'
         else:
-            return f'{self.title} ({template_format_date(self.start_dt, settings.DATE_FORMAT)} - {template_format_date(self.end_dt, settings.DATE_FORMAT)})'
+            return (f'{self.title} '
+                    f'({date_format(self.start_dt, "DATE_FORMAT")} - '
+                    f'{date_format(self.end_dt, "DATE_FORMAT")})')
 
     @property
     def can_edit_attendance_dates_admin(self):
@@ -3963,7 +3964,7 @@ class Event(TendenciBaseModel):
     @property
     def display_start_date(self):
         """Start date formatted for confirmation messages"""
-        return template_format_date(self.start_dt, settings.SHORT_DATE_FORMAT)
+        return date_format(self.start_dt, "SHORT_DATE_FORMAT")
 
     def date_range(self, start_date, end_date):
         for n in range((end_date - start_date).days):
@@ -4059,7 +4060,7 @@ class Event(TendenciBaseModel):
 
     @property
     def event_dates_display(self):
-        return ' - '.join([date_format(x, settings.DATE_FORMAT) for x in self.full_event_days])
+        return ' - '.join([date_format(x, "DATE_FORMAT") for x in self.full_event_days])
 
     def get_spots_status(self):
         """
