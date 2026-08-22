@@ -1,10 +1,19 @@
+import sys
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
+
 from decimal import Decimal
 from string import capwords
-from datetime import datetime
+from datetime import datetime, date
+from django.conf import settings
+from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.utils.encoding import force_str
 from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.entities.models import Entity
+
 
 DEFAULT_OBJ_TYPES = ('registration', 'membershipdefault',
                      'membershipset', 'makepayment',
@@ -58,13 +67,6 @@ def count_column(values):
 count_column.caption = _('Count')
 
 
-def date_format(value, instance):
-    """
-    Format cell value to friendly date string
-    """
-    return value.strftime("%d/%m/%Y")
-
-
 def usd_format(value, instance):
     """
     Format cell value to money
@@ -85,11 +87,11 @@ def round_format(value, instance):
     """
     return Decimal('%.2f' % Decimal(value))
 
-def us_date_format(value, instance):
-    if isinstance(value, datetime):
-        return value.strftime("%m/%d/%Y")
-    return value
 
+def local_date_format(value, instance):
+    if isinstance(value, (date, datetime)):
+        return date_format(value, "SHORT_DATE_FORMAT")
+    return value
 
 def date_label(report, field):
     return _("Date")

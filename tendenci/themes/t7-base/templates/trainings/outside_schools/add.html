@@ -30,10 +30,10 @@
     
     <script type="text/javascript">
         $(document).ready(function () {
-        	// date picker
-            $('#id_date').datepicker({ dateFormat: 'yy-mm-dd' });
-            
-        	// select all / unselect all 
+            // date picker
+            $('#id_date').datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}' });
+
+            // select all / unselect all
            var select_unselect = '<a onclick="$(this).parent().find(\':checkbox\').prop(\'checked\', true);">Select All</a> / <a onclick="$(this).parent().find(\':checkbox\').prop(\'checked\', false);">Unselect All</a>';
            var first_checkbox = $("form#outside-schools-form").find("input[name='participants']").closest('div.checkbox');
            // wrap the checkboxes in the well

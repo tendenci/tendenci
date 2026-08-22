@@ -10,6 +10,7 @@ from io import BytesIO
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.core.files.storage import default_storage
 from django.core.files import File
@@ -77,7 +78,7 @@ class Person(TendenciBaseModel):
 
     url = models.CharField(_('url'), max_length=100, blank=True)
 
-    time_zone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
+    time_zone = TimeZoneField(verbose_name=_('Time Zone'), default=settings.TIME_ZONE, choices=get_timezone_choices(), max_length=100)
     language = models.CharField(_('language'), max_length=10, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
 
     perms = GenericRelation(ObjectPermission,
@@ -317,7 +318,7 @@ class Profile(Person):
             event = credit.event
             if event.pk not in credits[category][year]['events']:
                 credits[category][year]['events'][event.pk] = {
-                    'start_dt': event.start_dt.strftime('%m-%d-%y'),
+                    'start_dt': date_format(event.start_dt, settings.SHORT_DATE_FORMAT),
                     'credits': 0,
                     'type': category,
                     'meeting_name': event.parent.title if event.parent else event.title,

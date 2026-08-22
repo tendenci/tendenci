@@ -15,7 +15,7 @@
     {{ date_range.0|date:"M Y" }}
     <a href="./?{% month_url next %}">{% trans "Next" %}</a>
     <br>
-    {{ date_range.0|date:"M d, Y" }}:{{ date_range.1|date:"M d, Y" }}
+    {{ date_range.0|date:'DATE_FORMAT' }}:{{ date_range.1|date:'DATE_FORMAT' }}
 </div>
 
 <form>{% csrf_token %}

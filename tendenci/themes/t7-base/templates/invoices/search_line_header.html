@@ -14,7 +14,7 @@
     {% else %}
     <a href="{% url "invoice.view" invoice.pk %}" class="links">
       <img src="{% static 'images/icons/tendered65x12.gif' %}" border="0" width="65"
-      height="12" alt="{% trans 'Tendered' %} {{ invoice.tender_date|date:'N j, Y h:i a'}}"
+      height="12" alt="{% trans 'Tendered' %} {{ invoice.tender_date|date:'DATETIME_FORMAT'}}"
       title="{% trans 'Tendered' %}" />
     </a>&nbsp;
     {% endif %}

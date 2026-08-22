@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -12,6 +10,7 @@ from django.conf import settings
 import simplejson
 from django.http import HttpResponse, Http404
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -228,7 +227,7 @@ def customers(request, template_name="recurring_payments/customers.html"):
     # get total amount past due
     d = RecurringPaymentInvoice.objects.filter(
                                 invoice__balance__gt=0,
-                                billing_dt__lte=datetime.now()
+                                billing_dt__lte=timezone.now()
                                 ).aggregate(total_amount_past_due=Sum('invoice__balance'))
     total_amount_past_due = d['total_amount_past_due']
     if not total_amount_past_due:

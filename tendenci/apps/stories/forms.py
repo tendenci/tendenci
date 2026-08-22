@@ -1,9 +1,9 @@
 from os.path import splitext, basename
-from datetime import datetime
 from datetime import timedelta
 
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from tendenci.apps.stories.models import Story
 from tendenci.apps.perms.forms import TendenciBaseForm
@@ -18,12 +18,12 @@ ALLOWED_LOGO_EXT = (
     '.png'
 )
 
-END_DT_INITIAL = datetime.now() + timedelta(weeks=2)
+END_DT_INITIAL = timezone.now() + timedelta(weeks=2)
 
 
 class StoryForm(TendenciBaseForm):
     fullstorylink = forms.CharField(label=_("Full Story Link"), required=False, max_length=300)
-    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=timezone.now())
     end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
     expires = forms.BooleanField(
         label=_('Expires'),
@@ -151,7 +151,7 @@ class StoryForm(TendenciBaseForm):
 
 
 class StoryAdminForm(TendenciBaseForm):
-    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=timezone.now())
     end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
     expires = forms.BooleanField(
         label=_('Expires'),

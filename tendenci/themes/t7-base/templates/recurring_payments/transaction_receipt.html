@@ -36,8 +36,8 @@
         <div class="clear-left"></div>
 
         <div class="rp-receipt-label">{% trans 'Billing Cycle' %}</div>
-        <div class="rp-receipt-field">{{ payment_transaction.recurring_payment_invoice.billing_cycle_start_dt|date:"n/j/Y" }}
-        - {{ payment_transaction.recurring_payment_invoice.billing_cycle_end_dt|date:"n/j/Y" }}
+        <div class="rp-receipt-field">{{ payment_transaction.recurring_payment_invoice.billing_cycle_start_dt|date:'SHORT_DATE_FORMAT' }}
+        - {{ payment_transaction.recurring_payment_invoice.billing_cycle_end_dt|date:'SHORT_DATE_FORMAT' }}
         </div>
 
         <div class="rp-receipt-label">&nbsp;</div>

@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}{% trans "Sub-Event Registration" %} {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+{% block title %}{{ block.super }}{% trans "Sub-Event Registration" %} {{ event.title }} {{ event.start_dt|date:"DATE_FORMAT" }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}

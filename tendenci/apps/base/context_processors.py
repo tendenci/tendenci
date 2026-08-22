@@ -77,3 +77,12 @@ def display_name(request):
             return {'DISPLAY_NAME': request.user.username}
 
     return {'DISPLAY_NAME': ''}
+
+
+def date_formatters(request):
+    data = {
+        'DATEPICKER_DATE_FORMAT' : settings.DATEPICKER_DATE_FORMAT ,
+        'DATEPICKER_TIME_FORMAT' : settings.DATEPICKER_TIME_FORMAT,
+    }
+
+    return data

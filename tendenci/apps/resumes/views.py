@@ -1,11 +1,13 @@
 import os
 from datetime import timedelta, datetime
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib import messages
+from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 
@@ -364,8 +366,8 @@ def export(request, template_name="resumes/export.html"):
         end_dt = form.cleaned_data['end_dt']
         include_files = form.cleaned_data['include_files']
         if start_dt and end_dt:
-            start_dt = start_dt.strftime('%m/%d/%Y')
-            end_dt = end_dt.strftime('%m/%d/%Y')
+            start_dt = date_format(start_dt, settings.SHORT_DATE_FORMAT)
+            end_dt = date_format(end_dt, settings.SHORT_DATE_FORMAT)
             kwargs = {'start_dt': start_dt, 'end_dt': end_dt}
         else:
             kwargs = {}

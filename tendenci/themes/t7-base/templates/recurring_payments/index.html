@@ -216,10 +216,10 @@
             <tbody>
             {% for rp_invoice in  rp_invoices %}
                 <tr>
-                    <td>{{ rp_invoice.billing_cycle_start_dt|date:"n/j/Y" }} - {{ rp_invoice.billing_cycle_end_dt|date:"n/j/Y" }}</td>
+                    <td>{{ rp_invoice.billing_cycle_start_dt|date:'SHORT_DATE_FORMAT' }} - {{ rp_invoice.billing_cycle_end_dt|date:'SHORT_DATE_FORMAT' }}</td>
                     <td>{{ rp_invoice.invoice.total|format_currency }} </td>
-                    <td>{{ rp_invoice.billing_dt|date:"n/j/Y" }}</td>
-                    <td>{% if rp_invoice.payment_received_dt %}{{ rp_invoice.payment_received_dt|date:"n/j/Y" }}{% endif %}</td>
+                    <td>{{ rp_invoice.billing_dt|date:'SHORT_DATE_FORMAT' }}</td>
+                    <td>{% if rp_invoice.payment_received_dt %}{{ rp_invoice.payment_received_dt|date:'SHORT_DATE_FORMAT' }}{% endif %}</td>
                     <td>{% if rp_invoice.invoice.balance <= 0 %}Y{% else %}N{% endif %}</td>
                     <td><a href="{% url "invoice.view" rp_invoice.invoice.id rp_invoice.invoice.guid   %}" title="view invoice" target="_blank">{{ rp_invoice.invoice.id }}</a></td>
                 </tr>
@@ -249,7 +249,7 @@
             {% for pt in  payment_transactions %}
             {% with pt.recurring_payment_invoice as rp_invoice %}
                 <tr>
-                    <td>{{ pt.create_dt|date:"n/j/Y" }}</td>
+                    <td>{{ pt.create_dt|date:'SHORT_DATE_FORMAT' }}</td>
                     <td><a href="{% url "invoice.view" rp_invoice.invoice.id rp_invoice.invoice.guid  %}" title="view invoice" target="_blank">{{ pt.recurring_payment_invoice.invoice.id }}</a></td>
                     <td>{{ pt.amount|format_currency }} </td>
                     <td>{% if pt.status  %}<span class="transaction-success">{% trans 'Success' %}</span>{% else %}<span class="transaction-failed">{% trans 'Failed' %}</span>{% endif %}</td>

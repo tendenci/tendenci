@@ -95,10 +95,10 @@
         $(document).ready(function() {
             
         	// Date and time picker for start_dt and end_dt
-            $('#id_start_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
-            $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
-            $('#id_end_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
-            $('#id_end_dt_1').timepicker({'timeFormat': 'h:i A'});
+            $('#id_start_dt_0').datepicker({ dateFormat: '{{ DATEPICKER_DATE_FORMAT }}' });
+            $('#id_start_dt_1').timepicker({'timeFormat': '{{ DATEPICKER_TIME_FORMAT }}' });
+            $('#id_end_dt_0').datepicker({ dateFormat: '{{ DATEPICKER_DATE_FORMAT }}' });
+            $('#id_end_dt_1').timepicker({'timeFormat': '{{ DATEPICKER_TIME_FORMAT }}' });
 
             allDay = $('#id_all_day');
             start_dt_field = $('input#id_start_dt_0').closest('.form-group');

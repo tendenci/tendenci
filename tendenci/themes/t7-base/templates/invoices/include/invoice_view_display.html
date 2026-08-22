@@ -48,7 +48,7 @@
         {% endif %}
         <tr>
           <td>{% trans "Invoice Date" %}</td>
-          <td class="td-right">{{ invoice.create_dt|date:'N j, Y h:i a' }}</td>
+          <td class="td-right">{{ invoice.create_dt|date:'DATETIME_FORMAT' }}</td>
         </tr>
         <tr>
           <td>{% trans "Invoice Status" %}</td>
@@ -68,7 +68,7 @@
         {% if invoice.void_date %}
         <tr>
           <td>{% trans "Void Date" %}</td>
-          <td class="td-right">{{ invoice.void_date|date:'N j, Y h:i a' }}</td>
+          <td class="td-right">{{ invoice.void_date|date:'DATETIME_FORMAT' }}</td>
         </tr>
         {% endif %}
         {% if invoice.void_reason %}

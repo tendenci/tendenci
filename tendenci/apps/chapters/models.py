@@ -9,11 +9,13 @@ from csv import reader
 import hashlib
 import subprocess
 
+from django.conf import settings
 from django.db.models import Q
 from django.db import models
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, AnonymousUser
+from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.text import slugify
@@ -1812,7 +1814,7 @@ class Notice(models.Model):
         site_contact_email = get_setting('site', 'global', 'sitecontactemail')
         site_url = get_setting('site', 'global', 'siteurl')
         now = timezone.now()
-        nowstr = time.strftime("%d-%b-%y %I:%M %p", now.timetuple())
+        nowstr = date_format(now, "DATETIME_FORMAT")
         global_context = {'site_display_name': site_display_name,
                           'site_contact_name': site_contact_name,
                           'site_contact_email': site_contact_email,
@@ -2115,7 +2117,7 @@ class NoticeLog(models.Model):
         app_label = 'chapters'
 
     def __str__(self):
-        sent_dt = self.notice_sent_dt.strftime("%m/%d/%y")
+        sent_dt = date_format(self.notice_sent_dt, settings.SHORT_DATE_FORMAT)
         return f'Log for {self.notice} ({sent_dt})'
 
 

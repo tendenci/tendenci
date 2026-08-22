@@ -9,15 +9,15 @@
             ({% if obj.renewal %}
              {% with obj.get_previous_expire_dt as previous_expire_dt %}
                 {% if previous_expire_dt > obj.renew_dt %}
-                  {{ previous_expire_dt|date:'N d, Y' }}
+                  {{ previous_expire_dt|date:'DATE_FORMAT' }}
                 {% else %}
-                  {{ obj.renew_dt|date:'N d, Y' }}
+                  {{ obj.renew_dt|date:'DATE_FORMAT' }}
                 {% endif %}
              {% endwith %}
              {% else %}
-               {{ obj.join_dt|date:'N d, Y' }}
+               {{ obj.join_dt|date:'DATE_FORMAT' }}
              {% endif %} - 
-             {% if obj.expiration_dt %}{{ obj.expiration_dt|date:'N d, Y' }}{% endif %})
+             {% if obj.expiration_dt %}{{ obj.expiration_dt|date:'DATE_FORMAT' }}{% endif %})
         {% else %}
             {% trans "Corporate Membership information not available" %}
         {% endif%}

@@ -20,8 +20,8 @@
   </div>
   {% else %}
   {% if reg_ended and not event.is_over %}
-  
-  
+
+
   <div class="registration-red">
     <meta itemprop="availability" content="{% trans "Registration has ended" %}">
     {% trans "Registration has ended" %}
@@ -37,7 +37,7 @@
   {% if pricing %}
   <div class="pricing-list-wrap">
     <form action="{% url "event.register" event.pk %}" method="get">
-      
+
       {% if pricing|length == 1 and pricing.0.price == 0 and pricing.0|can_register_by:request.user %}
       <input class="btn btn-success" type="submit" name="submit" value="{% trans 'RSVP Now' %}" />
       {% else %}
@@ -49,56 +49,56 @@
 		   <input style="vertical-align:top;" type="radio" name="pricing_id" value="{{ price.id }}" />
 			{% endif %}
           <span for="price-{{ price.id }}">
-		{% endif %}
-				{{ price.title }}{% if price.target_display %} ({{ price.target_display }}) {% endif %}
-	          <div class="event-price" itemprop="price" content="{{ price.price }}">
-	            <strong>{{ price.price|format_currency }}</strong><br>
-	            {% include "events/include/pricing_spots_status.html" %}
-	          </div>
-         
-	          ({% trans "Ends" %} 
-	          {{ price.end_dt|date:"m/d/Y" }})
-	          <span itemprop="priceCurrency" content="{{ SITE_GLOBAL_CURRENCY }}" />
-		{% if MODULE_EVENTS_RBONPRICINGLIST %}
+        {% endif %}
+                {{ price.title }}{% if price.target_display %} ({{ price.target_display }}) {% endif %}
+              <div class="event-price" itemprop="price" content="{{ price.price }}">
+                <strong>{{ price.price|format_currency }}</strong><br>
+                {% include "events/include/pricing_spots_status.html" %}
+              </div>
+
+              ({% trans "Ends" %}
+              {{ price.end_dt|date:"SHORT_DATE_FORMAT" }})
+              <span itemprop="priceCurrency" content="{{ SITE_GLOBAL_CURRENCY }}" />
+        {% if MODULE_EVENTS_RBONPRICINGLIST %}
           </span>
-		{% endif %}
+        {% endif %}
         </li>
         {% endfor %}
       </ul>
       {% if not MODULE_EVENTS_CANREGISTERAGAIN and registrant and not user.is_superuser %}
-       	{% if registrant.reg8n_status == 'payment-required' and event.registration_configuration.can_pay_online %}
-       	<a class="btn btn-lg btn-warning" href="{% url "payment.pay_online" registrant.registration.invoice.pk registrant.registration.invoice.guid %}">
+        {% if registrant.reg8n_status == 'payment-required' and event.registration_configuration.can_pay_online %}
+        <a class="btn btn-lg btn-warning" href="{% url "payment.pay_online" registrant.registration.invoice.pk registrant.registration.invoice.guid %}">
               {% trans "Complete registration!" %}</a>
-       	{% else %}
-      	<a class="btn btn-success" href="{% url 'event.registration_confirmation' event.id registrant.registration.id %}">{% trans "View/Update My Registration" %}</a>
-      	{% endif %}
+        {% else %}
+        <a class="btn btn-success" href="{% url 'event.registration_confirmation' event.id registrant.registration.id %}">{% trans "View/Update My Registration" %}</a>
+        {% endif %}
       {% else %}
       <meta itemprop="availability" content="Register now!">
       <input class="btn btn-success" {% if event.status_detail == "template" %}disabled="disabled"{% endif %} type="submit" name="submit" value="{% trans 'Register' %}" />
-	 {% endif %}
+     {% endif %}
       {% endif %}
-      
+
       {% if event.registration_configuration.has_member_price %}
       {% if not request.user.profile.is_member %}
       <a class="become-a-member" href="{% url "membership-referer-url" %}?next={% url "membership-applications" %}">{% trans "Become a member" %}</a>
       {% endif %}
       {% endif %}
-      
+
     </form>
-    
+
     {% if is_registrant %}
     <div id="is-registrant"><a href="{% url "profile" user.username %}">
         {% trans "You have already registered" %}</a>
         {% if request.user.is_superuser %}
-    	<br />{% trans "Admin: the Register button above allow you to register somebody else." %}
-    	{% endif %}
+        <br />{% trans "Admin: the Register button above allow you to register somebody else." %}
+        {% endif %}
         {% if not MODULE_EVENTS_CANREGISTERAGAIN and registrant and user.is_superuser %}
-	     <br /> <a href="{% url 'event.registration_confirmation' event.id registrant.registration.id %}">{% trans "View/Update My Registration" %}</a>
-	    {% endif %}
+         <br /> <a href="{% url 'event.registration_confirmation' event.id registrant.registration.id %}">{% trans "View/Update My Registration" %}</a>
+        {% endif %}
     </div>
-    
+
     {% endif %}
-    
+
   </div>
   {% endif %}
   {% endif %}

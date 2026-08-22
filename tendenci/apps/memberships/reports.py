@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 # ReportLab does not support gettext_lazy() translations, so use gettext() instead
 from django.utils.translation import gettext as _
 from tendenci.libs.model_report.report import reports, ReportAdmin
-from tendenci.libs.model_report.utils import us_date_format
+from tendenci.libs.model_report.utils import local_date_format
 from tendenci.apps.memberships.models import MembershipDefault, MembershipType
 
 MEMBERSHIPTYPE_DICT = None
@@ -66,7 +66,7 @@ class MembershipReport(ReportAdmin):
     # override field formats by referencing a function
     override_field_formats = {
         'membership_type': membership_type_format,
-        'expire_dt': us_date_format,
+        'expire_dt': local_date_format,
         'id': id_format,
     }
 

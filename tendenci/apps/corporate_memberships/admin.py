@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.contrib import admin
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.admin import SimpleListFilter
+from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.urls import path, re_path
 from django.shortcuts import get_object_or_404, redirect
@@ -379,21 +381,21 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     def join_date(self, instance):
         if not instance.join_dt:
             return ''
-        return instance.join_dt.strftime('%m-%d-%Y')
+        return date_format(instance.join_dt, settings.SHORT_DATE_FORMAT)
     join_date.short_description = _('Join Date')
     join_date.admin_order_field = 'join_dt'
 
     def renew_date(self, instance):
         if not instance.renew_dt:
             return ''
-        return instance.renew_dt.strftime('%m-%d-%Y')
+        return date_format(instance.renew_dt, settings.SHORT_DATE_FORMAT)
     renew_date.short_description = _('Renew Date')
     renew_date.admin_order_field = 'renew_dt'
 
     def expire_date(self, instance):
         if not instance.expiration_dt:
             return ''
-        return instance.expiration_dt.strftime('%m-%d-%Y')
+        return date_format(instance.expiration_dt, settings.SHORT_DATE_FORMAT)
     expire_date.short_description = _('Expiration Date')
     expire_date.admin_order_field = 'expiration_dt'
 
@@ -893,7 +895,7 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
         corp_membership = instance.corp_profile.corp_membership
         if not corp_membership or not corp_membership.expiration_dt:
             return ''
-        return corp_membership.expiration_dt.strftime('%Y-%m-%d')
+        return date_format(corp_membership.expiration_dt, settings.SHORT_DATE_FORMAT)
     expiration_date.short_description = _('Expiration Date')
 
 

@@ -1,18 +1,23 @@
 import re
 import os
+import sys
 import pytz
 import codecs
 import phonenumbers
+import bleach
+
 from PIL import Image
 from dateutil.parser import parse
 from datetime import datetime, time
-import bleach
-
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
 from decimal import Decimal
 from django.template import Library
 from django.conf import settings
 from django.template.defaultfilters import stringfilter
-from django.utils import formats
+from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape, strip_tags, urlize
 from django.contrib.auth.models import AnonymousUser
@@ -54,6 +59,7 @@ def localize_date(value, to_tz=None):
         return ''
 localize_date.is_safe = True
 
+@deprecated('Use the Django SHORT_DATE_FORMAT or SHORT_DATETIME_FORMAT instead')
 @register.filter_function
 def date_short(value, arg=None):
     """Formats a date according to the given format."""
@@ -66,9 +72,9 @@ def date_short(value, arg=None):
         if s_date_format:
             arg = s_date_format
         else:
-            arg = settings.SHORT_DATETIME_FORMAT if value.time() != time() else settings.SHORT_DATE_FORMAT
+            arg = "SHORT_DATETIME_FORMAT" if value.time() != time() else "SHORT_DATE_FORMAT"
     try:
-        return formats.date_format(value, arg)
+        return date_format(value, arg)
     except AttributeError:
         try:
             return format(value, arg)
@@ -76,6 +82,7 @@ def date_short(value, arg=None):
             return ''
 date_short.is_safe = False
 
+@deprecated('Use the Django DATE_FORMAT or DATETIME_FORMAT instead')
 @register.filter_function
 def date_long(value, arg=None):
     """Formats a date according to the given format."""
@@ -88,9 +95,9 @@ def date_long(value, arg=None):
         if s_date_format:
             arg = s_date_format
         else:
-            arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT
+            arg = "DATETIME_FORMAT" if value.time() != time() else "DATE_FORMAT"
     try:
-        return formats.date_format(value, arg)
+        return date_format(value, arg)
     except AttributeError:
         try:
             return format(value, arg)
@@ -98,6 +105,7 @@ def date_long(value, arg=None):
             return ''
 date_long.is_safe = False
 
+@deprecated('Use the Django DATE_FORMAT or DATETIME_FORMAT instead')
 @register.filter(expects_localtime=True, is_safe=False)
 def date(value, arg=None):
     """Formats a date according to the given format."""
@@ -105,14 +113,14 @@ def date(value, arg=None):
     if not value:
         return ''
     if arg is None:
-        arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT
+        arg = "DATETIME_FORMAT" if value.time() != time() else "DATE_FORMAT"
     else:
         if arg == 'long':
             return date_long(value)
         elif arg == 'short':
             return date_short(value)
     try:
-        return formats.date_format(value, arg)
+        return date_format(value, arg)
     except AttributeError:
         try:
             return format(value, arg)
@@ -256,7 +264,6 @@ def first_chars(string, arg):
 @register.filter
 def rss_date(value, arg=None):
     """Formats a date according to the given format."""
-    from django.utils import formats
     from django.utils.dateformat import format
     from datetime import datetime
 
@@ -265,9 +272,9 @@ def rss_date(value, arg=None):
     else:
         value = datetime(*value[:-3])
     if arg is None:
-        arg = settings.DATE_FORMAT
+        arg = "DATE_FORMAT"
     try:
-        return formats.date_format(value, arg)
+        return date_format(value, arg)
     except AttributeError:
         try:
             return format(value, arg)

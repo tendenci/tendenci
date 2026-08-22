@@ -1,8 +1,8 @@
-from datetime import datetime
 import traceback
 from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -54,7 +54,7 @@ class Command(BaseCommand):
             uimport.save()
 
         uimport.status = 'completed'
-        uimport.complete_dt = datetime.now()
+        uimport.complete_dt = timezone.now()
         uimport.save()
 
         # generate a recap file

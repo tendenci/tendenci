@@ -35,6 +35,7 @@ from django.core.validators import validate_email as _validate_email
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
+from django.utils.formats import date_format as dj_format_date
 from django.contrib.admin.utils import NestedObjects
 from django.utils.functional import keep_lazy_text
 from django.utils.text import capfirst, Truncator
@@ -324,15 +325,15 @@ def currency_check(mymoney):
     return mymoney
 
 
-def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_time='%I:%M %p'):
+def format_datetime_range(start_dt, end_dt, format_date='DATE_FORMAT', format_time='TIME_FORMAT'):
     """
         takes datetime objects, start_dt, end_dt and format (for date and time)
         returns a formated datetime string with range.
-        ex:
+        eg:
             dt_str = format_datetime_range(datetime(2010, 8, 12, 8, 30, 0),
                                            datetime(2010, 8, 12, 17, 30, 0))
             # returns: Thursday, August 12, 2010 8:30 AM - 05:30 PM
-                                                                    - GJQ 8/12/2010
+            (With default US Date/time formatting settings)
     """
     if isinstance(start_dt, datetime) and isinstance(end_dt, datetime):
         # convert into current active timezone before formating (for
@@ -342,14 +343,14 @@ def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_
         if not timezone.is_naive(start_dt):
             end_dt = timezone.localtime(end_dt)
         if start_dt.date() == end_dt.date():
-            return '{} {} - {}'.format(start_dt.strftime(format_date),
-                                   start_dt.strftime(format_time),
-                                   end_dt.strftime(format_time))
+            return (f'{dj_format_date(start_dt, format_date)} '
+                    f'{dj_format_date(start_dt, format_time)} - '
+                    f'{dj_format_date(end_dt, format_time)}')
         else:
-            return '{} {} - {} {}'.format(start_dt.strftime(format_date),
-                                      start_dt.strftime(format_time),
-                                      end_dt.strftime(format_date),
-                                      end_dt.strftime(format_time))
+            return (f'{dj_format_date(start_dt, format_date)} '
+                    f'{dj_format_date(start_dt, format_time)} - '
+                    f'{dj_format_date(end_dt, format_date)} '
+                    f'{dj_format_date(end_dt, format_time)}')
 
 
 def day_validate(dt, day):
@@ -565,7 +566,7 @@ class FormDateTimes:
         self.get_date_times()
     def get_date_times(self):
         if self.start_dt is None:
-            self.start_dt = datetime.now()
+            self.start_dt = timezone.now()
 
         # remove the seconds and microseconds
         self.start_dt = self.start_dt.replace(second=00,microsecond=00)
@@ -964,7 +965,7 @@ def directory_cleanup(dir_path, ndays):
             continue
         file_path = os.path.join(dir_path, filename)
         modified_dt = default_storage.get_modified_time(file_path)
-        if modified_dt + timedelta(days=ndays) < datetime.now():
+        if modified_dt + timedelta(days=ndays) < timezone.now():
             # the file is older than ndays, delete it
             default_storage.delete(file_path)
     for foldername in foldernames:

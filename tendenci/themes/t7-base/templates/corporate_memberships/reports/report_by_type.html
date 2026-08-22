@@ -90,7 +90,7 @@
       <td><a href="{% url 'corpmembership.view_profile' corp_profile.id %}">{{ corp_profile.name }}</a></td>
       <td>{{ corp_profile.parent_entity.entity_name }}</td>
       <td>{{ corp_mem.corporate_membership_type.name }}</td>
-      <td>{{ corp_mem.join_dt|date:"N j, Y" }}</td>
+      <td>{{ corp_mem.join_dt|date:'DATE_FORMAT' }}</td>
       {% with corp_profile.get_member_rep as member_rep  %}
       {% if member_rep %}
       <td><a href="{% url 'profile' member_rep.user.username %}">{% if member_rep.user.get_full_name %}{{ member_rep.user.get_full_name }}{% else %}{{ member_rep.user.username }}{% endif %}</a></td>

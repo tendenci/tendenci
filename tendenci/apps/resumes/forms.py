@@ -1,9 +1,9 @@
-from datetime import datetime
 from datetime import timedelta
 from os.path import splitext
 
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 # from captcha.fields import CaptchaField
 from tendenci.apps.resumes.models import Resume
@@ -110,10 +110,10 @@ class ResumeForm(TendenciBaseForm):
     contact_website = forms.CharField(label=_("Website"), required=False)
 
     activation_dt = forms.SplitDateTimeField(label=_('Activation Date/Time'),
-        initial=datetime.now())
+        initial=timezone.now())
 
     expiration_dt = forms.SplitDateTimeField(label=_('Expriation Date/Time'),
-        initial=(datetime.now() + timedelta(days=30)))
+        initial=(timezone.now() + timedelta(days=30)))
 
     syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
 
@@ -308,11 +308,11 @@ class ResumeForm(TendenciBaseForm):
 class ResumeExportForm(FormControlWidgetMixin, forms.Form):
     start_dt = forms.DateField(
                 label=_('From'),
-                initial=datetime.now()-timedelta(days=365))
+                initial=timezone.now()-timedelta(days=365))
 
     end_dt = forms.DateField(
                 label=_('To'),
-                initial=datetime.now())
+                initial=timezone.now())
     include_files = forms.BooleanField(initial=False, required=False)
 
     def clean_start_dt(self):
