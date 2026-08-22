@@ -82,6 +82,7 @@ def date_short(value, arg=None):
             return ''
 date_short.is_safe = False
 
+@deprecated('Use the Django DATE_FORMAT or DATETIME_FORMAT instead')
 @register.filter_function
 def date_long(value, arg=None):
     """Formats a date according to the given format."""
@@ -104,6 +105,7 @@ def date_long(value, arg=None):
             return ''
 date_long.is_safe = False
 
+@deprecated('Use the Django DATE_FORMAT or DATETIME_FORMAT instead')
 @register.filter(expects_localtime=True, is_safe=False)
 def date(value, arg=None):
     """Formats a date according to the given format."""
