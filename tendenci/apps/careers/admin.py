@@ -22,6 +22,10 @@ class CareerAdmin(TendenciBaseModelAdmin):
             'fields': ('user',
                         'company',
                         'company_description',
+                        'sec',
+                        'level',
+                        'annual_salary',
+                        'salary_increase',
                         'position_title',
                         'position_description',
                         'position_type',
@@ -37,11 +41,14 @@ class CareerAdmin(TendenciBaseModelAdmin):
             'group_perms',
             )}),
         (_('Status'), {'fields': (
-            'status',
             'status_detail',
             )}),
         )
     form = CareerForm
     ordering = ['-update_dt']
+
+    class Media:
+        pass
+
 
 admin.site.register(Career, CareerAdmin)

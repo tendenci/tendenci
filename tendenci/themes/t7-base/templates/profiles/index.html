@@ -521,6 +521,7 @@
         {% endif %}
         {% endif %}
         
+        {% if request.user.is_superuser %}
         {% if MODULE_ACTIVITIES_ENABLED %}
         {% with user_this.activities.all as user_activities %}
         <h3>{{ MODULE_ACTIVITIES_LABEL }}</h3>
@@ -541,6 +542,45 @@
         {% endwith %}
         <div><a href="{% url 'admin:auth_user_change' user_this.pk %}" target="_blank">{% trans "Add Activity" %}</a></div>
         {% endif %}
+        {% endif %}
+        
+        
+        {% if request.user.is_superuser %}
+		{% if MODULE_CAREERS_ENABLED %}
+        {% with user_this.careers.all as user_careers %}
+        <h3>{% trans "Employment History" %}</h3>
+        <table class="table table-bordered">
+        <tr>
+            <th>{% trans "Date" %}</th>
+            <th>{% trans "Sec" %}</th>
+            <th>{% trans "Level" %}</th>
+            <th>{% trans "Annual Salary" %}</th>
+            <th>{% trans "Salary Incr" %}</th>
+            <th>{% if MODULE_CAREERS_POSITIONTITLELABEL %}{{ MODULE_CAREERS_POSITIONTITLELABEL }}{% else %}{% trans "Position Title" %}{% endif %}</th>
+            <th>{% if MODULE_CAREERS_POSITIONDESCLABEL %}{{ MODULE_CAREERS_POSITIONDESCLABEL }}{% else %}{% trans "Position Description" %}{% endif %}</th>
+            <th>{% if MODULE_CAREERS_POSITIONTYPELABEL %}{{ MODULE_CAREERS_POSITIONTYPELABEL }}{% else %}{% trans "Position Type" %}{% endif %}</th>
+        </tr>
+        {% for career in user_careers %}
+          {% if career.status_detail == "active" %}
+        <tr>
+            <td>{% if career.start_dt %}{{ career.start_dt|date:"SHORT_DATE_FORMAT" }}{% endif %}</td>
+            <td>{{ career.sec }}</td>
+            <td>{{ career.level }}</td>
+            <td>{{ career.annual_salary|format_currency }}</td>
+            <td>{{ career.salary_increase|format_currency }}</td>
+            <td>{{ career.position_title }}</td>
+            <td>{{ career.position_description }}</td>
+            <td>{{ career.position_type }}</td>
+        </tr>
+          {% endif %}
+        {% endfor %}
+        </table>
+        {% endwith %}
+        <div><a href="{% url 'admin:careers_career_changelist' %}?user__id__exact={{ user_this.id }}" target="_blank">{% trans "Add Employment History" %}</a></div>
+        <p>&nbsp;</p>
+        {% endif %}
+        {% endif %}
+        
         
         {% latest_contributions user_this as contributions %}
         {% if  contributions %}
