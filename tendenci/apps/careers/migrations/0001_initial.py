@@ -43,6 +43,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Career',
                 'verbose_name_plural': 'Careers',
+                'ordering': ('user__first_name', 'user__last_name', 'start_dt'),
             },
         ),
     ]
