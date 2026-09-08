@@ -2,16 +2,16 @@
   <div class="child">
     <h4 class="time-period">{% trans "Sub-Event(s)" %}</h4>
   </div>
-  
+
   <div class="desc-short">
   <table class="table table-striped">
     {% for child in child_events %}
-    	<tr>
+        <tr>
       <td width="30%">
-        {{ child.start_dt|date:"m/d/y" }} {{ child.start_dt|time:"g:i A"}}
+        {{ child.start_dt|date:"SHORT_DATE_FORMAT" }} {{ child.start_dt|time:"g:i A"}}
       </td>
       <td width="20%">
-        {{ child.event_code }}      
+        {{ child.event_code }}
       </td>
       {% if is_admin %}
       <td width="20%">

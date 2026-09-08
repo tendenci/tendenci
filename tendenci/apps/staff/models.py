@@ -1,9 +1,9 @@
 import re
-from datetime import datetime
 
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import User
 
@@ -76,7 +76,7 @@ class Staff(OrderingBaseModel, TendenciBaseModel):
         return reverse('staff.view', args=[self.slug])
 
     def years(self):
-        delta = datetime.now().date() - self.start_date
+        delta = timezone.now().date() - self.start_date
         years = abs(round((delta.days / (365.25)), 2))
         return years
 

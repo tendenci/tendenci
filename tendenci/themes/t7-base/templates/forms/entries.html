@@ -22,13 +22,19 @@
   
   <ul class="nav nav-pills">
     <li role="presentation"><h2>{{ form.title }}</h2></li>
-    <li class="pull-right" role="presentation">
-      <a class="btn btn-primary" href="{% url "admin:forms_form_export" form.pk %}">{% trans "Export All Entries" %}</a>
-    </li>
-    {% if form.has_files %}
-    <li class="pull-right" role="presentation">
-      <a class="btn btn-primary" href="{% url 'form_entries_export_full' form.pk %}">{% trans "Export All Entries (Including uploaded files)" %}</a>
-    </li>
+    {% if request.user.is_staff %}
+	    <li class="pull-right" role="presentation">
+	      <a class="btn btn-primary" href="{% url "admin:forms_form_export" form.pk %}">{% trans "Export All Entries" %}</a>
+	    </li>
+	    {% if form.has_files %}
+	    <li class="pull-right" role="presentation">
+	      <a class="btn btn-primary" href="{% url 'form_entries_export_full' form.pk %}">{% trans "Export All Entries (Including uploaded files)" %}</a>
+	    </li>
+	    {% endif %}
+    {% else %}
+    	<li class="pull-right" role="presentation">
+	      <a class="btn btn-primary" href="{% url 'form_entries_export_full' form.pk %}">{% trans "Export All Entries" %}</a>
+	    </li>
     {% endif %}
     {% autopaginate entries 10 %}
   </ul>

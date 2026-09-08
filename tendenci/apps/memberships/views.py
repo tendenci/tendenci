@@ -25,12 +25,14 @@ from django.shortcuts import redirect, get_object_or_404
 from django.http import Http404, HttpResponseRedirect, HttpResponse, StreamingHttpResponse
 from django.db.models.fields import AutoField
 from django.utils.encoding import smart_str
+from django.utils import timezone
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import ForeignKey, OneToOneField
 from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
 from django.core.files.storage import default_storage
+from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
@@ -2160,8 +2162,8 @@ def membership_join_report(request):
                 memberships = memberships.filter(status_detail=membership_status)
     else:
         form = ReportForm(initial={
-            'start_date': start_date.strftime('%m/%d/%Y'),
-            'end_date': end_date.strftime('%m/%d/%Y')})
+            'start_date': date_format(start_date, "SHORT_DATE_FORMAT"),
+            'end_date': date_format(end_date, "SHORT_DATE_FORMAT")})
 
     end_date_time = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59)
     if settings.USE_TZ:
@@ -2181,48 +2183,6 @@ def membership_join_report(request):
         'memberships': memberships,
         'form': form,
         })
-
-
-# See the comments in reports.py
-#@staff_member_required
-#def membership_join_report_pdf(request):
-#    TODAY = date.today()
-#    mem_type = request.GET.get('mem_type', u'')
-#    mem_stat = request.GET.get('mem_stat', u'')
-#    start_date = request.GET.get('start_date', u'')
-#    end_date = request.GET.get('end_date', u'')
-#
-#    mems = MembershipDefault.objects.all()
-#
-#    if mem_type:
-#        mems = mems.filter(membership_type=mem_type)
-#
-#    if mem_stat:
-#        mems = mems.filter(status_detail=mem_stat.lower())
-#
-#    if start_date:
-#        start_date = parse(start_date)  # make date object
-#    else:
-#        start_date = TODAY - timedelta(days=30)
-#
-#    if end_date:
-#        end_date = parse(end_date)  # make date object
-#    else:
-#        end_date = TODAY
-#
-#    mems = mems.filter(
-#        join_dt__gte=start_date, join_dt__lte=end_date).order_by('join_dt')
-#
-#    if not mems:
-#        raise Http404
-#
-#    report = ReportNewMems(queryset=mems)
-#    response = HttpResponse(content_type='application/pdf')
-#    report.generate_by(PDFGenerator, filename=response)
-#
-#    EventLog.objects.log()
-#
-#    return response
 
 
 @staff_member_required

@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}{% trans "Registration" %} {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+{% block title %}{{ block.super }}{% trans "Registration" %} {{ event.title }} {{ event.start_dt|date:"DATE_FORMAT" }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -22,9 +22,9 @@
             {% for span in event.date_spans %}
 
                                 {% if span.same_date %}
-                                    <div class="line">{{ span.start_dt|date:"D, M. j, Y" }}</div>{% if not forloop.last %} and {% endif %}
+                                    <div class="line">{{ span.start_dt|date:"DATE_FORMAT" }}</div>{% if not forloop.last %} and {% endif %}
                                 {% else %}
-                                    <div class="line">{{ span.start_dt|date:"D, M. j" }} - {{ span.end_dt|date:"D, M. j, Y" }}</div>{% if not forloop.last %} and {% endif %}
+                                    <div class="line">{{ span.start_dt|date:"DATE_FORMAT" }} - {{ span.end_dt|date:"DATE_FORMAT" }}</div>{% if not forloop.last %} and {% endif %}
                                 {% endif %}
 
                             {% endfor %}

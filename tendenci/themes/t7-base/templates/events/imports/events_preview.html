@@ -48,7 +48,7 @@
             {% endif %}
             </div>
             <div class="details">
-                {% trans "Date" %}: {{ event.start_dt }} - {{ event.end_dt }}<br/>
+                {% trans "Date" %}: {{ event.start_dt|date:'DATE_FORMAT' }} - {{ event.end_dt }}<br/>
                 {% trans "Place" %}: {{ event.place__name }}<br/>
                 {% trans "Description" %}: {{ event.description }}<br/>
             </div>

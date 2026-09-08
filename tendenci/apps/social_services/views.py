@@ -1,10 +1,9 @@
-from datetime import datetime
-
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import fromstr
 from django.contrib.gis.measure import D
 from django.shortcuts import get_object_or_404, redirect
+from django.utils import timezone
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.social_services.forms import SkillSetForm, ReliefAssessmentForm, AddressForm
@@ -47,7 +46,7 @@ def skill_list(request, username, edit=False, template_name="social_services/ski
 
 def relief_form(request, template_name="social_services/relief_form.html"):
     form = ReliefAssessmentForm(request.POST or None)
-    now = datetime.now()
+    now = timezone.now()
 
     if request.method == 'POST' and form.is_valid():
         form.save()

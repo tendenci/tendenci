@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.template import Library
+from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
 from django.utils import timezone
 
@@ -44,12 +46,12 @@ def discount_expiration(obj):
 
     if not obj.never_expires:
         if obj.end_dt < timezone.now():
-            value = t % ('inactive', ("Expired on %s" % obj.end_dt.strftime("%m/%d/%Y at %I:%M %p")))
+            value = t % ('inactive', f'Expired {date_format(obj.end_dt, "DATETIME_FORMAT")}')
         else:
             if obj.start_dt > timezone.now():
-                value = t % ('inactive',("Starts on %s" % obj.start_dt.strftime("%m/%d/%Y at %I:%M %p")))
+                value = t % ('inactive',f'Starts {date_format(obj.start_dt, "DATETIME_FORMAT")}' )
             else:
-                value = t % ('active', ("Expires on %s" % obj.end_dt.strftime("%m/%d/%Y at %I:%M %p")))
+                value = t % ('active', f'Expires {date_format(obj.end_dt, "DATETIME_FORMAT")}')
     else:
         value = t % ('active', "Never Expires")
 

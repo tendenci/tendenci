@@ -61,7 +61,7 @@
                 </td>
                 <td>{{ file.get_name|truncatechars:20 }}</td>
                 <td>{{ size|filesizeformat }}</td>
-                <td>{{ file.create_dt|date:'M j, Y' }}</td>
+                <td>{{ file.create_dt|date:"DATE_FORMAT" }}</td>
                 {% if file.allow_anonymous_view and file.status_detail == 'active' %}
                 <td>{% trans 'Yes' %}</td>
                 {% else %}

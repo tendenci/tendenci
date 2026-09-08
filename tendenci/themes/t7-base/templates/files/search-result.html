@@ -60,7 +60,7 @@
             <a href="{% url "event_log.search" %}?source=files&object_id={{ file.pk }}">
             {% trans "Updated" %}
             {% if layout == "list" %}{{ file.update_dt|date:"D d M Y P" }}
-            {% else %}{{ file.update_dt|date:"m/d/y P" }}<br>
+            {% else %}{{ file.update_dt|date:"SHORT_DATE_FORMAT" }}<br>
             {% endif %}
             {% if file.owner %}
             {% trans "by" %} {{ file.owner }}

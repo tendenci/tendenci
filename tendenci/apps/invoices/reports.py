@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.urls import reverse
 
 from tendenci.libs.model_report.report import reports, ReportAdmin
-from tendenci.libs.model_report.utils import (sum_column, us_date_format, date_label,
+from tendenci.libs.model_report.utils import (sum_column, local_date_format, date_label,
                                               obj_type_format, date_from_datetime,
                                               entity_format)
 
@@ -65,7 +65,7 @@ class InvoiceReport(ReportAdmin):
 
     # override field formats by referencing a function
     override_field_formats = {
-        'create_dt': us_date_format,
+        'create_dt': local_date_format,
         'object_type': obj_type_format,
         'title': title_format,
         'id': id_format,

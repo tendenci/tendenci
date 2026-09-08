@@ -23,7 +23,7 @@
 {% if item.article %}
     <td><a href="{% url 'article' item.article.slug %}">{{ item.article }}</a></td>
     <td>{{ item.per_day|floatformat:2 }}</td>
-    <td>{{ item.article.create_dt|date:"short" }}</td>
+    <td>{{ item.article.create_dt|date:"SHORT_DATE_FORMAT" }}</td>
 {% else %}
     <td>{{ item.headline }}</td>
     <td><small>&lt;deleted&gt;</small></td>

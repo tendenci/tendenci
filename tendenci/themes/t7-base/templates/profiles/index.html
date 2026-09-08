@@ -330,9 +330,9 @@
                   {% endif %}
                 </td>
                 <td>
-                  {{ membership.join_dt|date:"M j, Y" }}
+                  {{ membership.join_dt|date:"DATE_FORMAT" }}
                   
-                  {% if not membership.is_pending %} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
+                  {% if not membership.is_pending %} - {% firstof membership.expire_dt|date:"DATE_FORMAT" "Forever" %}
                   
                   &#43; (grace period:
                   {{ membership.membership_type.expiration_grace_period }} days)
@@ -436,7 +436,7 @@
                   <a href="{{ reg.registration.event.get_absolute_url }}">{{ reg.registration.event.title }}</a>
                 </td>
                 <td>
-                  {{ reg.registration.event.start_dt }} - {{ reg.registration.event.end_dt }}
+                  {{ reg.registration.event.start_dt|date:"DATE_FORMAT" }} - {{ reg.registration.event.end_dt|date:"DATE_FORMAT" }}
                 </td>
               </tr>
               {% endwith %}
@@ -463,7 +463,7 @@
             <table class="table table-striped table-condensed">
               {% for event in upcoming_events %}
               <tr>
-                <td>{{ event.date }}</td>
+                <td>{{ event.date|date:'DATE_FORMAT' }}</td>
                 <td>
                   <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
                 </td>
@@ -491,9 +491,9 @@
                   </a>
                 </td>
                 <td>
-                  {{ membership.join_dt|date:"M j, Y" }}
+                  {{ membership.join_dt|date:"DATE_FORMAT" }}
                   
-                  {% if not membership.is_pending %} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
+                  {% if not membership.is_pending %} - {% firstof membership.expire_dt|date:"DATE_FORMAT" "Forever" %}
                   
                   &#43; (grace period:
                   {{ membership.membership_type.expiration_grace_period }} days)
@@ -521,10 +521,29 @@
         {% endif %}
         {% endif %}
         
+        {% if MODULE_ACTIVITIES_ENABLED %}
+        {% with user_this.activities.all as user_activities %}
+        <h3>{{ MODULE_ACTIVITIES_LABEL }}</h3>
+        <table class="table table-bordered">
+        <tr>
+        	<th>{% trans "Start Date" %}</th>
+        	<th>{% trans "End Date" %}</th>
+        	<th>{% trans "Activity" %}</th>
+        </tr>
+        {% for activity in user_activities %}
+        <tr>
+        	<td>{% if activity.start_date %}{{ activity.start_date|date:"SHORT_DATE_FORMAT" }}{% endif %}</td>
+        	<td>{% if activity.end_date %}{{ activity.end_date|date:"SHORT_DATE_FORMAT" }}{% endif %}</td>
+        	<td>{{ activity.activity_name }}</td>
+        </tr>
+        {% endfor %}
+        </table>
+        {% endwith %}
+        <div><a href="{% url 'admin:auth_user_change' user_this.pk %}" target="_blank">{% trans "Add Activity" %}</a></div>
+        {% endif %}
+        
         {% latest_contributions user_this as contributions %}
         {% if  contributions %}
-        
-        
         <h3>{% trans "Contributions" %}</h3>
         <ul class="list-unstyled">
           {% for contribution in contributions|slice:":5" %}
@@ -538,17 +557,18 @@
         <div class="pager">
           <li class="next"> <a href="{% url "contribution.search" %}?q={{ user_this.username }}">{% trans 'View More' %} &rarr;</a></li>
         </div>
+        
+        {% else %}
+	      {% if user.profile.is_superuser %}
+	      <div>
+	        {% firstof request.user.first_name request.user.username %}, {% trans 'this person has not made any contributions yet.' %}
+	      </div>
+	      {% endif %}
+      	{% endif %}
+        
       </div>
       
-      {% else %}
       
-      {% if user.profile.is_superuser %}
-      <div>
-        {% firstof request.user.first_name request.user.username %}, {% trans 'this person has not made any contributions yet.' %}
-      </div>
-      {% endif %}
-      
-      {% endif %}
       
 	  {% if can_edit %}
       {% profile_meta %}

@@ -8,6 +8,7 @@ from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.http import HttpRequest
+from django.utils import timezone
 
 class Command(BaseCommand):
     """
@@ -41,8 +42,8 @@ class Command(BaseCommand):
         #    'title': 'Some Event',
         #    'description': 'Some description',
         #    'all_day': True,
-        #    'start_dt': datetime.datetime.now(),
-        #    'end_dt': datetime.datetime.now(),
+        #    'start_dt': timezone.now(),
+        #    'end_dt': timezone.now(),
         #    'timezone': 1,
         #    'place': 1,
         #}

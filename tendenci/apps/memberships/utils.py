@@ -28,6 +28,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.files.base import ContentFile
 from django.template import Context, Template
 from django.template.loader import get_template
+from django.utils.formats import date_format
 from django.utils.html import escape
 from django.utils import timezone
 
@@ -51,6 +52,8 @@ from tendenci.apps.educations.models import Education
 from tendenci.apps.regions.models import Region
 from tendenci.apps.base.utils import escape_csv, Echo
 
+
+CSV_OUTPUT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 def get_membership_field_values(membership, app_fields):
     """
@@ -102,19 +105,19 @@ def iter_memberships(memberships, app_fields):
     for membership in memberships:
         values_list = get_membership_field_values(membership, app_fields)
         if membership.create_dt:
-            values_list.append(membership.create_dt.strftime('%Y-%m-%d %H:%M:%S'))
+            values_list.append(membership.create_dt.strftime(CSV_OUTPUT_DATETIME_FORMAT))
         else:
             values_list.append('')
         if membership.join_dt:
-            values_list.append(membership.join_dt.strftime('%Y-%m-%d %H:%M:%S'))
+            values_list.append(membership.join_dt.strftime(CSV_OUTPUT_DATETIME_FORMAT))
         else:
             values_list.append('')
         if membership.renew_dt:
-            values_list.append(membership.renew_dt.strftime('%Y-%m-%d %H:%M:%S'))
+            values_list.append(membership.renew_dt.strftime(CSV_OUTPUT_DATETIME_FORMAT))
         else:
             values_list.append('')
         if membership.expire_dt:
-            values_list.append(membership.expire_dt.strftime('%Y-%m-%d %H:%M:%S'))
+            values_list.append(membership.expire_dt.strftime(CSV_OUTPUT_DATETIME_FORMAT))
         else:
             values_list.append('')
         values_list.append(membership.status_detail)
@@ -586,11 +589,11 @@ def process_export(
                         if item.year < 1900:
                             item = '1900-1-1 00:00:00'
                         else:
-                            item = item.strftime('%Y-%m-%d %H:%M:%S')
+                            item = item.strftime(CSV_OUTPUT_DATETIME_FORMAT)
                     elif isinstance(item, date):
-                        item = item.strftime('%Y-%m-%d')
+                        item = item.strftime(CSV_OUTPUT_DATETIME_FORMAT)
                     elif isinstance(item, time):
-                        item = item.strftime('%H:%M:%S')
+                        item = item.strftime(CSV_OUTPUT_DATETIME_FORMAT)
                     elif field_name == 'membership_type' and item in membership_ids_dict:
                         # display membership type name instead of id
                         item = membership_ids_dict[item]
@@ -2246,7 +2249,7 @@ def email_membership_members(email, memberships, **kwargs):
             view_url = '{}{}'.format(site_url, reverse('membership.details', args=[member.id]))
             edit_url = '{}{}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
             if member.expire_dt:
-                expire_dt = ttime.strftime("%b %d, %Y", member.expire_dt.timetuple())
+                expire_dt = date_format(member.expire_dt, "SHORT_DATE_FORMAT")
             else:
                 expire_dt = ''
             renew_link = '{}{}'.format(site_url, member.get_absolute_url())

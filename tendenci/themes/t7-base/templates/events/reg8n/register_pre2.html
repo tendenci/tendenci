@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}{% trans "Registration Pre" %} {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+{% block title %}{{ block.super }}{% trans "Registration Pre" %} {{ event.title }} {{ event.start_dt|date:"DATE_FORMAT" }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -17,7 +17,7 @@
     <div>
         <div class="event-title"><a href="{% url "event" event.id %}">{{ event.title }}</a></div>
         <div class="event-time">
-            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
+            <div class="line">{{ event.start_dt|date:"DATE_FORMAT" }}</div>
             <div class="line">
             {% if not event.all_day %}
             {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}
@@ -40,7 +40,7 @@
                     <strong>{{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}</strong></p>
                 <div class="pricing-info">
                     <p><strong>{% trans "Available Before" %}:</strong>
-                       {{ pricing.end_dt|date:'M j Y g:i A' }}</p>
+                       {{ pricing.end_dt|date:'SHORT_DATETIME_FORMAT' }}</p>
                     <p>{{ pricing.description|safe }}</p>
                     <p><strong>{% trans "Price" %}:</strong> {{ pricing.price|format_currency }}</p>
                     {% with pricing as price %}

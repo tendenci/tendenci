@@ -9,7 +9,7 @@
   <!-- Date -->
   <td>
     {% if invoice.create_dt %}
-    {{ invoice.create_dt|date:"F j, Y"}}
+    {{ invoice.create_dt|date:'DATE_FORMAT'}}
     {% else  %}
     &nbsp;
     {% endif %}

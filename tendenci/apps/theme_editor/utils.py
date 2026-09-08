@@ -2,7 +2,6 @@ import os
 import shutil
 import boto3
 from urllib.request import urlopen
-from datetime import datetime
 from dateutil.parser import parse as parse_date
 from operator import itemgetter
 from functools import reduce
@@ -11,6 +10,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.utils._os import safe_join
+from django.utils import timezone
 from django.core.exceptions import SuspiciousFileOperation
 from importlib import import_module
 
@@ -63,7 +63,7 @@ class ThemeInfo:
         self.author = ''
         self.author_uri = ''
         self.version = ''
-        self.create_dt = datetime.now()
+        self.create_dt = timezone.now()
 
         for label, value in get_theme_info(theme).get('General', {}).items():
             label = label.strip().replace(' ', '_').lower()

@@ -7,8 +7,9 @@ import math
 import time as ttime
 from datetime import datetime, timedelta
 from datetime import date
+from zoneinfo import ZoneInfo
 import csv
-from dateutil_rs.rrule import rrule, DAILY, WEEKLY, MONTHLY, YEARLY
+from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY, YEARLY
 from decimal import Decimal
 import dateutil.parser as dparser
 
@@ -26,8 +27,10 @@ from django.template.loader import render_to_string
 import simplejson
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
-from pytz import UnknownTimeZoneError
 from django.utils import timezone
+from django.utils.formats import date_format
+
+# from pytz import UnknownTimeZoneError
 
 from tendenci.apps.events.models import (Event, Place, Speaker, Organizer, Sponsor,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
@@ -52,7 +55,6 @@ except:
     notification = None
 
 
-VALID_DATE_FORMAT = "%m/%d/%Y %H:%M:%S"
 EVENT_FIELDS = [
     "type",
     "title",
@@ -76,6 +78,9 @@ PLACE_FIELDS = [
     "place__url",
 ]
 
+VALID_DATE_FORMAT = settings.SHORT_DATETIME_FORMAT
+LOCAL_TIMEZONE = ZoneInfo(settings.TIME_ZONE)
+ICAL_DATE_TIME_FORMAT = '%Y%m%dT%H%M%SZ'
 
 def iter_child_event_registrants(child_event_registrants):
     field_labels = [_('First Name'),
@@ -440,6 +445,21 @@ def get_ics_defaults():
 
     return ics_str
 
+def format_event_date_as_utc(event_date, tz):
+    if tz:
+        time_zone = ZoneInfo(f'{tz}')
+    else:
+        time_zone = LOCAL_TIMEZONE
+
+    # check if the event_date is timezone aware
+    if event_date.tzinfo is None or event_date.tzinfo.utcoffset(event_date) is None:
+        # not aware
+        event_date_time_utc = timezone.localtime(timezone.make_aware(event_date, time_zone), timezone.utc)
+    else:
+        event_date_time_utc = timezone.localtime(event_date, timezone.utc)
+
+    return event_date_time_utc.strftime(ICAL_DATE_TIME_FORMAT)
+
 def get_ievent(request, d, event_id):
     site_url = get_setting('site', 'global', 'siteurl')
 
@@ -472,18 +492,14 @@ def get_ievent(request, d, event_id):
         time_zone = settings.TIME_ZONE
 
     if event.start_dt:
-        start_dt = adjust_datetime_to_timezone(event.start_dt, time_zone, 'UTC')
-        start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
-        e_str += "DTSTART:%s\r\n" % (start_dt)
+        e_str += "DTSTART:%s\r\n" % (format_event_date_as_utc(event.start_dt, event.timezone))
     if event.end_dt:
-        end_dt = adjust_datetime_to_timezone(event.end_dt, time_zone, 'UTC')
-        end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
-        e_str += "DTEND:%s\r\n" % (end_dt)
+        e_str += "DTEND:%s\r\n" % (format_event_date_as_utc(event.end_dt, event.timezone))
 
     e_str += "CLASS:PUBLIC\r\n"
     e_str += "PRIORITY:5\r\n"
 
-    e_str += "DTSTAMP:{}\r\n".format(adjust_datetime_to_timezone(datetime.now(), time_zone, 'UTC').strftime('%Y%m%dT%H%M%SZ'))
+    e_str += "DTSTAMP:{}\r\n".format(datetime.now(timezone.utc).strftime(ICAL_DATE_TIME_FORMAT))
 
     e_str += "TRANSP:OPAQUE\r\n"
 
@@ -517,7 +533,7 @@ def get_vevents(user, d):
     events = Event.objects.filter(filters).filter(end_dt__gte=timezone.now())
     events = events.order_by('start_dt')
 
-    dtstamp = adjust_datetime_to_timezone(datetime.now(), settings.TIME_ZONE, 'UTC').strftime('%Y%m%dT%H%M%SZ')
+    dtstamp = datetime.now(timezone.utc).strftime(ICAL_DATE_TIME_FORMAT)
 
     for event in events:
         e_str += "BEGIN:VEVENT\r\n"
@@ -531,18 +547,11 @@ def get_vevents(user, d):
             e_str += "\r\n"
 
         # date time
-        time_zone = event.timezone
-        if not time_zone:
-            time_zone = settings.TIME_ZONE
 
         if event.start_dt:
-            start_dt = adjust_datetime_to_timezone(event.start_dt, time_zone, 'GMT')
-            start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
-            e_str += "DTSTART:%s\r\n" % (start_dt)
+            e_str += "DTSTART:%s\r\n" % (format_event_date_as_utc(event.start_dt, event.timezone))
         if event.end_dt:
-            end_dt = adjust_datetime_to_timezone(event.end_dt, time_zone, 'GMT')
-            end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
-            e_str += "DTEND:%s\r\n" % (end_dt)
+            e_str += "DTEND:%s\r\n" % (format_event_date_as_utc(event.end_dt, event.timezone))
 
         # location
         if event.place:
@@ -595,7 +604,7 @@ def build_ical_text(event, d):
     ical_text += "Event Title: %s\n" % strip_tags(event.title)
 
     # start_dt
-    ical_text += 'Start Date / Time: {} {}\n'.format(event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
+    ical_text += f'Start Date / Time: {date_format(event.start_dt, "DATETIME_FORMAT")} {event.timezone}\n'
 
     # location
     if event.place:
@@ -705,7 +714,7 @@ def build_ical_html(event, d):
     ical_html += '<div>%s</div><br />' % d['event_url']
 
     # start_dt
-    ical_html += '<div>When: {} {}</div>'.format(event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
+    ical_html += f'<div>When: {date_format(event.start_dt, "DATETIME_FORMAT")} {event.timezone}</div>'
 
 #    # sponsor
 #    sponsors = event.sponsor_set.all()
@@ -2000,8 +2009,8 @@ def event_import_process(import_i, preview=True):
                 invalid_reason = "INVALID DATE FORMAT. SHOULD BE: %s" % VALID_DATE_FORMAT
 
             try:
-                timezone(event_object_dict["timezone"])
-            except UnknownTimeZoneError as e:
+                ZoneInfo(event_object_dict["timezone"])
+            except ValueError as e:
                 invalid = True
                 invalid_reason = "UNKNOWN TIMEZONE %s" % event_object_dict["timezone"]
 

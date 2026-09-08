@@ -126,6 +126,7 @@ TEMPLATES = [
         'tendenci.apps.base.context_processors.site_admin_email',
         'tendenci.apps.base.context_processors.user_classification',
         'tendenci.apps.base.context_processors.display_name',
+        'tendenci.apps.base.context_processors.date_formatters',
         'tendenci.apps.registry.context_processors.registered_apps',
         'tendenci.apps.registry.context_processors.enabled_addons',
         'tendenci.apps.forums.context_processors.processor',
@@ -491,6 +492,31 @@ if not sys.warnoptions:
 
 
 # ---------------------------------------------------------------------------- #
+# Localisation Settings
+# ---------------------------------------------------------------------------- #
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'US/Central'
+DATE_FORMAT = "M d Y" # Oct 25 2006
+DATETIME_FORMAT = "M d Y, h:i A" # Oct 25, 2006 02:40pm
+SHORT_DATE_FORMAT = "m/d/Y" # 10/25/2006
+SHORT_DATETIME_FORMAT = "m/d/Y h:i A" # 10/25/2006 02:40pm
+FIRST_DAY_OF_WEEK = 1 # Monday
+MONTH_DAY_FORMAT = "M d" # Oct 25
+TIME_FORMAT = "h:i A" # 02:40pm
+YEAR_MONTH_FORMAT = "M Y" # October 2006
+
+# Used by the Bootstrap (Javascript) datepicker in templates
+# See http://www.eyecon.ro/bootstrap-datepicker for formatting
+DATEPICKER_DATE_FORMAT = 'yy-mm-dd'
+DATEPICKER_TIME_FORMAT = 'h:i A'
+
+TIME_INPUT_FORMATS = [
+    '%I:%M %p', # '01:17 PM'
+    '%H:%M:%S' # '13:17:04'
+]
+
+
+# ---------------------------------------------------------------------------- #
 # Languages
 # ---------------------------------------------------------------------------- #
 
@@ -849,4 +875,3 @@ Q_CLUSTER = {
     "timeout": 35000,
     "max_attempts": 1
 }
-

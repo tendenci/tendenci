@@ -7,6 +7,8 @@ from django.db.models import Q
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import AnonymousUser
@@ -61,7 +63,7 @@ class Directory(TendenciBaseModel):
     slug = SlugField(_('URL Path'), unique=True)
     entity = models.OneToOneField(Entity, blank=True, null=True,
                                   on_delete=models.SET_NULL,)
-    timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
+    timezone = TimeZoneField(verbose_name=_('Time Zone'), default=settings.TIME_ZONE, choices=get_timezone_choices(), max_length=100)
     headline = models.CharField(_('Company/Organization name'), max_length=200, blank=True)
     summary = models.TextField(blank=True)
     body = tinymce_models.HTMLField(_('Description'))
@@ -268,7 +270,7 @@ class Directory(TendenciBaseModel):
             self.save()
 
     def age(self):
-        return datetime.now() - self.create_dt
+        return timezone.now() - self.create_dt
 
     def cats_list(self):
         items = []

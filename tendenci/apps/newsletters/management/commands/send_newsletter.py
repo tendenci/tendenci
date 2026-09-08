@@ -1,4 +1,3 @@
-import datetime
 import traceback
 import re
 from logging import getLogger
@@ -6,6 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.cache import cache
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils import timezone
 #from django.template import Context, Template
 
 
@@ -98,7 +98,7 @@ class Command(BaseCommand):
             # save start_dt and status for the recurring
             nr_data = NewsletterRecurringData(
                         newsletter=newsletter,
-                        start_dt=datetime.datetime.now(),
+                        start_dt=timezone.now(),
                         send_status=newsletter.send_status)
             nr_data.save()
             newsletter.nr_data = nr_data
@@ -190,11 +190,11 @@ class Command(BaseCommand):
 
         if newsletter.send_status == 'sending':
             newsletter.send_status = 'sent'
-            newsletter.date_email_sent = datetime.datetime.now()
+            newsletter.date_email_sent = timezone.now()
 
         elif newsletter.send_status == 'resending':
             newsletter.send_status = 'resent'
-            newsletter.date_last_resent = datetime.datetime.now()
+            newsletter.date_last_resent = timezone.now()
             if not newsletter.resend_count:
                 newsletter.resend_count = 0
             newsletter.resend_count += 1
@@ -204,7 +204,7 @@ class Command(BaseCommand):
         newsletter.save()
         if newsletter.schedule and newsletter.nr_data:
             # save the finish_dt and email_sent_count for the recurring
-            newsletter.nr_data.finish_dt = datetime.datetime.now()
+            newsletter.nr_data.finish_dt = timezone.now()
             newsletter.nr_data.email_sent_count = newsletter.email_sent_count
             newsletter.nr_data.send_status = newsletter.send_status
             newsletter.nr_data.save()

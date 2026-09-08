@@ -3,9 +3,9 @@
 <!--<a href="">{% trans 'View Assets Purchase' %}</a>-->
 
   {% if obj %}
-  	<tr>
-  		<td>{% blocktrans with event_title=obj.event.title event_start_dt=obj.event.start_dt|date:'N d, Y' %}Assets Purchase for: "{{ event_title }}" held on {{ event_start_dt }}{% endblocktrans %}</td>
-  	</tr>
+    <tr>
+        <td>{% blocktrans with event_title=obj.event.title event_start_dt=obj.event.start_dt|date:'DATE_FORMAT' %}Assets Purchase for: "{{ event_title }}" held on {{ event_start_dt }}{% endblocktrans %}</td>
+    </tr>
     <tr>
         <td>
             {% if obj.user %}
@@ -13,7 +13,7 @@
             {% else %}
                 {{ obj.first_name }} {{ obj.last_name }}
             {% endif %}
-            
+
             {% with obj.pricing as price_title  %}
             {% if price_title %}
              <br />{% trans "Purchased for:" %} {{ price_title}}

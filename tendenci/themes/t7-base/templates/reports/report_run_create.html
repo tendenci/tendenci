@@ -31,7 +31,7 @@
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript">
        $("#id_range_start_dt, #id_range_end_dt").live('focus', function() {
-            $(this).datepicker({ dateFormat: 'mm/dd/yy' });
+            $(this).datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}' });
        });
     </script>
 {% endblock %}

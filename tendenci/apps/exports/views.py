@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -22,7 +21,7 @@ def status(request, export_id, template_name='exports/export_status.html'):
 
     return render_to_resp(request=request, template_name=template_name, context={
         'export': export,
-        'now': datetime.now(),
+        'now': timezone.now(),
     })
 
 

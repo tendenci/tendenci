@@ -70,7 +70,7 @@
                     <td><a href="{% url "recurring_payment.view_account" rp.id %}">{% if not rp.user.get_full_name %}{{ rp.user.username }}{% else %}{{ rp.user.get_full_name }}{% endif %}</a></td>
                     <td>{{ rp.description }}</td>
                     <td>{{ rp.payment_amount }}</td>
-                    <td>{{ rp.billing_start_dt|date:"n/j/Y" }}</td>
+                    <td>{{ rp.billing_start_dt|date:'SHORT_DATE_FORMAT' }}</td>
                     <td class="total-paid">{{ rp.total_paid }}</td>
                     <td class="balance">{{ rp.get_outstanding_balance }}</td>
                     <td {% if rp.status_detail != 'active' %}class="not-active"{% endif %}>{{ rp.status_detail }} </td>

@@ -26,6 +26,7 @@ from django.utils.encoding import smart_str, force_str
 from functools import partial as curry
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 import simplejson
 import requests
 
@@ -351,7 +352,7 @@ class ImageModel(models.Model):
             except:
                 pass
         if self.date_taken is None:
-            self.date_taken = datetime.now()
+            self.date_taken = timezone.now()
         if self._get_pk_val():
             self.clear_cache()
         super().save(*args, **kwargs)
@@ -1055,7 +1056,7 @@ class Pool(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
-    created_at = models.DateTimeField(_('created_at'), default=datetime.now)
+    created_at = models.DateTimeField(_('created_at'), default=timezone.now)
 
     class Meta:
         # Enforce unique associations per object

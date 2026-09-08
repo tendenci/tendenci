@@ -1,0 +1,36 @@
+[
+    {
+        "default_value": "false",
+        "description": "Module is enabled or not.",
+        "data_type": "boolean",
+        "update_dt": "2026-08-24 14:30:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "enabled",
+        "value": "false",
+        "label": "enabled",
+        "input_value": "true, false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "activities",
+        "store": true,
+        "updated_by": ""
+    },
+    {
+        "default_value": "Activity",
+        "description": "The singular name of the module.",
+        "data_type": "string",
+        "update_dt": "2026-08-24 14:30:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "label",
+        "value": "Activity",
+        "label": "Label",
+        "input_value": " ",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "activities",
+        "store": false,
+        "updated_by": ""
+    }
+]

@@ -16,9 +16,9 @@
               </a>
             </td>
             <td>
-              {{ chapter_membership.join_dt|date:"M j, Y" }}
+              {{ chapter_membership.join_dt|date:"DATE_FORMAT" }}
               
-              {% if not chapter_membership.is_pending %} - {% firstof chapter_membership.expire_dt|date:"M j, Y" "Forever" %}
+              {% if not chapter_membership.is_pending %} - {% firstof chapter_membership.expire_dt|date:"DATE_FORMAT" "Forever" %}
               
               &#43; (grace period:
               {{ chapter_membership.membership_type.expiration_grace_period }} days)

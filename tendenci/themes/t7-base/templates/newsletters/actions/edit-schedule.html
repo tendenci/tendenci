@@ -100,9 +100,9 @@
 				toggle_schedule_fields(this);
             });
 
-			// date and time pickers
-			$('#id_schedule_send_dt_0').datepicker({ dateFormat: 'yy-mm-dd', minDate: 0 });
-            $('#id_schedule_send_dt_1').timepicker({'timeFormat': 'h:i A'});
+            // date and time pickers
+            $('#id_schedule_send_dt_0').datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}', minDate: 0 });
+            $('#id_schedule_send_dt_1').timepicker({'timeFormat': '{{DATEPICKER_TIME_FORMAT}}'});
         });
     }(jQuery));
 </script>

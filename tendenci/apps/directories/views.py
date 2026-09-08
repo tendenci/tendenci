@@ -555,7 +555,7 @@ def pending(request, template_name="directories/pending.html"):
 #     directory = get_object_or_404(Directory, pk=id)
 #     if directory.has_membership_with(request.user):
 #         if not directory.activation_dt:
-#             directory.activation_dt = datetime.now()
+#             directory.activation_dt = timezone.now()
 #         directory.status = True
 #         directory.status_detail = 'active'
 #         directory.allow_anonymous_view = True

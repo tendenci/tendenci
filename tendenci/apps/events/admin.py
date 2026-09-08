@@ -1,5 +1,4 @@
 from csv import writer
-from datetime import datetime
 import time as ttime
 
 from django import forms
@@ -14,6 +13,7 @@ from django.utils.encoding import iri_to_uri
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet
 
@@ -266,7 +266,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         if not form.has_regconf:
             raise Http404
         response = HttpResponse(content_type='text/csv')
-        csvname = '{}-{}.csv'.format(form.for_event, slugify(datetime.now().ctime()))
+        csvname = '{}-{}.csv'.format(form.for_event, slugify(timezone.now().ctime()))
         response['Content-Disposition'] = 'attachment; filename="%s"' % csvname
         csv = writer(response)
         # Write out the column names and store the index of each field

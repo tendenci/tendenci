@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django import forms
 from django.core.serializers.json import DjangoJSONEncoder
+from django.conf import settings
 import json
 
 from tendenci.apps.memberships.models import MembershipType
@@ -69,8 +70,8 @@ class ReportForm(forms.ModelForm):
 
 
 class RunForm(forms.ModelForm):
-    range_start_dt = forms.CharField(widget=forms.DateTimeInput(format='%m/%d/%Y'), label="Start Date", required=False)
-    range_end_dt = forms.CharField(widget=forms.DateTimeInput(format='%m/%d/%Y'), label="End Date", required=False)
+    range_start_dt = forms.CharField(widget=forms.DateTimeInput(format=settings.DATE_INPUT_FORMATS[0]), label="Start Date", required=False)
+    range_end_dt = forms.CharField(widget=forms.DateTimeInput(format=settings.DATE_INPUT_FORMATS[0]), label="End Date", required=False)
 
     class Meta:
         model = Run
@@ -86,7 +87,7 @@ class RunForm(forms.ModelForm):
         range_start_dt = self.cleaned_data.get('range_start_dt')
         if range_start_dt:
             try:
-                range_start_dt = datetime.strptime(range_start_dt, '%m/%d/%Y')
+                range_start_dt = datetime.strptime(range_start_dt, settings.DATE_INPUT_FORMATS[0])
             except ValueError:
                 range_start_dt = None
                 self._errors['range_start_dt'] = ['Invalid date selected.']
@@ -98,7 +99,7 @@ class RunForm(forms.ModelForm):
         range_end_dt = self.cleaned_data.get('range_end_dt')
         if range_end_dt:
             try:
-                range_end_dt = datetime.strptime(range_end_dt, '%m/%d/%Y')
+                range_end_dt = datetime.strptime(range_end_dt, settings.DATE_INPUT_FORMATS[0])
             except ValueError:
                 range_end_dt = None
                 self._errors['range_end_dt'] = ['Invalid date selected.']

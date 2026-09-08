@@ -65,11 +65,11 @@
 			// Remove multi-select option from groups
             $('select#id_groups').prop('multiple', false );
             $('#id_groups').next('span.help-block').hide();
-        	// Date and time picker for start_dt and end_dt
-            $('#id_start_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
-            $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
-            $('#id_end_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
-            $('#id_end_dt_1').timepicker({'timeFormat': 'h:i A'});
+            // Date and time picker for start_dt and end_dt
+            $('#id_start_dt_0').datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}' });
+            $('#id_start_dt_1').timepicker({'timeFormat': '{{DATEPICKER_TIME_FORMAT}}'});
+            $('#id_end_dt_0').datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}' });
+            $('#id_end_dt_1').timepicker({'timeFormat': '{{DATEPICKER_TIME_FORMAT}}'});
 
             weekend = $('#id_on_weekend').closest('.form-group');
             start_dt = $('input#id_start_dt_0');

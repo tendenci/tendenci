@@ -43,7 +43,7 @@
         {% endif %}
         <tr>
           <td>{% trans "Invoice Date" %}</td>
-          <td class="td-right">{{ invoice.create_dt|date:'N j, Y h:i a' }}</td>
+          <td class="td-right">{{ invoice.create_dt|date:'DATETIME_FORMAT' }}</td>
         </tr>
         <tr>
           <td>{% trans "Invoice Status" %}</td>
@@ -52,7 +52,7 @@
           {% elif invoice.is_tendered %}
           <td class="invoice-status td-right">
             {{ invoice.get_status|title }}
-            {% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %}{{ tenddate }}{% endblocktrans %}
+            {% blocktrans with invoice.tender_date|date:'DATETIME_FORMAT' as tenddate %}{{ tenddate }}{% endblocktrans %}
           </td>
           {% else %}
           <td class="invoice-status-red td-right">{{ invoice.get_status|title }}</td>

@@ -14,6 +14,7 @@
     {% has_perm user forms.change_form as can_edit_form %}
     {% has_perm user forms.delete_form as can_delete_form %}
 {% endif %}
+{% has_perm user forms.view_formentry as can_view_formentry %}
 
 
 <ul id="t-admin-megamenu-forms-builder-dd" class="dropdown-menu" role="menu">
@@ -86,10 +87,14 @@
                                     </span>
                                 </li>
 
-                                {% if request.user.is_staff %}
+                                {% if request.user.is_staff or can_view_formentry %}
                                 <li class="content-item">
                                     <span class="app-name">
+                                    	{% if request.user.is_staff %}
                                         <a href="{% url 'admin:forms_form_export' app_object.pk %}">{% trans "Export Entries" %}</a>
+                                        {% else %}
+                                        <a href="{% url 'form_entries_export_full' app_object.pk %}">{% trans "Export Entries" %}</a>
+                                        {% endif %}
                                     </span>
                                 </li>
                                 {% endif %}

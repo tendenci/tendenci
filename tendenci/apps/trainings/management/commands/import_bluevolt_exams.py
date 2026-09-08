@@ -1,12 +1,13 @@
 import traceback
 from logging import getLogger
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 import time
 
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.urls import reverse
+from django.utils import timezone
 import requests
 
 RATE_LIMIT = 30
@@ -64,7 +65,7 @@ class Command(BaseCommand):
                                     date_from=date_from,
                                     date_to=date_to,
                                     status_detail='Running',
-                                    run_start_date = datetime.now())
+                                    run_start_date = timezone.now())
             bv_import.save()
         else:
             [bv_import] = BluevoltExamImport.objects.filter(id=import_id)[:1] or [None]
@@ -73,7 +74,7 @@ class Command(BaseCommand):
 
             if bv_import.status_detail == 'Pending':
                 bv_import.status_detail = 'Running'
-                bv_import.run_start_date = datetime.now()
+                bv_import.run_start_date = timezone.now()
                 bv_import.save()
             date_from = bv_import.date_from
             date_to = bv_import.date_to
@@ -93,7 +94,7 @@ class Command(BaseCommand):
         r = requests.get(enrollment_url, headers=headers, params=payload)
         if r.status_code == 200:
             enrollment_results = r.json()
-            messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' - STARTED')
+            messages.append(timezone.now().strftime('%Y-%m-%d %H:%M:%S') + ' - STARTED')
             total_records = len(enrollment_results['Collection'])
             print('total=', total_records)
             messages.append(f'Total: {total_records}')
@@ -201,11 +202,11 @@ class Command(BaseCommand):
                     transcript.save()
                     num_inserted += 1
                     print(transcript, f'{transcript.id}... added')
-                    #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" added')
+                    #messages.append(timezone.now().strftime('%Y-%m-%d %H:%M:%S') + f' - Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" added')
                 #else:
-                    #messages.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f' - DUBLICATE TRANSACTION: Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" already exists')
+                    #messages.append(timezone.now().strftime('%Y-%m-%d %H:%M:%S') + f' - DUBLICATE TRANSACTION: Transaction for Customer "{user.get_full_name()}" and Course "{course.name}" already exists')
 
-            end_dt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            end_dt = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
             if num_inserted == 1:
                 messages.append(end_dt + f' - INSERTED: {num_inserted} record')
             else:
@@ -219,7 +220,7 @@ class Command(BaseCommand):
                 bv_import.num_inserted = num_inserted
                 bv_import.result_detail = '\n'.join(messages)
                 bv_import.status_detail = 'Finished'
-                bv_import.run_finish_date = datetime.now()
+                bv_import.run_finish_date = timezone.now()
                 bv_import.save()
 
         else:

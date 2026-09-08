@@ -29,16 +29,16 @@
             <div class="event-date">
                 {% for span in event.date_spans %}
                     {% if span.same_date %}
-                        <div class=""><h2>{{ span.start_dt|date:"l, j-M-Y" }}
+                        <div class=""><h2>{{ span.start_dt|date:"l" }}, {{ span.start_dt|date:"SHORT_DATE_FORMAT" }}
                         {% if not event.all_day %}
                         {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}
                         {% if not event.all_day %}{{ event.timezone.key|timezone_label }}{% endif%}</h2></div>
                     {% else %}
                         <div class=""><h2>
                         {% if event.all_day %}
-                        {{ span.start_dt|date:"l, j-M-Y" }} - {{ span.end_dt|date:"l, j-M-Y" }}
+                        {{ span.start_dt|date:"l" }}, {{ span.start_dt|date:"SHORT_DATE_FORMAT" }} - {{ span.end_dt|date:"l" }}, {{ span.end_dt|date:"SHORT_DATE_FORMAT" }}
                         {% else %}
-                        {{ span.start_dt|date:"l, j-M-Y" }} {{ event.start_dt|date:"P" }} - {{ span.end_dt|date:"l, j-M-Y" }} {{ event.end_dt|date:"P" }}
+                        {{ span.start_dt|date:"l" }}, {{ span.start_dt|date:"SHORT_DATE_FORMAT" }} {{ event.start_dt|date:"P" }} - {{ span.end_dt|date:"l" }}, {{ span.end_dt|date:"SHORT_DATE_FORMAT" }} {{ event.end_dt|date:"P" }}
                         {% endif %}
                         {% if not event.all_day %}{{ event.timezone.key|timezone_label }}{% endif %}</h2></div>
                         {% if not forloop.last %} and {% endif %}
@@ -83,9 +83,9 @@
                     <div class="image-wrap">
                         {% gravatar registrant.user 80 %}
                     <span class="attendee-name">{% if registrant.first_name or registrant.last_name %}{% if registrant.first_name%}{{ registrant.first_name }}{% endif %} {% if registrant.last_name %}{{ registrant.last_name }}{% endif %}{% else %}{% trans "(Anonymous)" %}{% endif %}</span>
-					{% if request.user.is_superuser and registrant.user %}
-					<a href="{% url 'profile' registrant.user.username %}">{% trans "View" %}</a>
-					{% endif %}
+                    {% if request.user.is_superuser and registrant.user %}
+                    <a href="{% url 'profile' registrant.user.username %}">{% trans "View" %}</a>
+                    {% endif %}
                     </div>
                 </div>
                 {% endfor %}

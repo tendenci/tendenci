@@ -1,6 +1,6 @@
-from datetime import datetime
 from django import template
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 
 register = template.Library()
@@ -11,7 +11,7 @@ class MonthUrlNode(template.Node):
 
     def render(self, context):
         request = context['request']
-        now = datetime.now()
+        now = timezone.now()
         year = int(request.GET.get('year') or str(now.year))
         month = int(request.GET.get('month') or str(now.month))
         year, month = self._move(year, month)

@@ -46,7 +46,7 @@
     {% for day, day_data in sub_events.items %}
     <div class="row day heading">
        <div class="col-md-2">
-         {{ day|date:"M d, Y" }}
+         {{ day|date:"DATE_FORMAT" }}
         </div>
     </div>
     {% for time_slot, events in day_data.items %}

@@ -56,7 +56,7 @@
               {% endif %}
             </td>
             <td class="el-sh-dt">
-              {{ event_log.create_dt|date:"short" }}
+              {{ event_log.create_dt|date:"SHORT_DATE_FORMAT" }}
               <a href="{% url "event_log.search" %}?start_dt_0={{ event_log.create_dt|datedelta:'-minutes=30'|date:"Y-m-d" }}&start_dt_1={{ event_log.create_dt|datedelta:'-minutes=30'|date:"h:i A" }}&end_dt_0={{ event_log.create_dt|datedelta:'+minutes=30'|date:"Y-m-d" }}&end_dt_1={{ event_log.create_dt|datedelta:'+minutes=30'|date:"h:i A" }}">()</a>
             </td>
           </tr>
@@ -177,12 +177,12 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-	  $('#id_start_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
-	  $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
-	  $('#id_end_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
-	  $('#id_end_dt_1').timepicker({'timeFormat': 'h:i A'});
+      $('#id_start_dt_0').datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}' });
+      $('#id_start_dt_1').timepicker({'timeFormat': '{{DATEPICKER_TIME_FORMAT}}'});
+      $('#id_end_dt_0').datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}' });
+      $('#id_end_dt_1').timepicker({'timeFormat': '{{DATEPICKER_TIME_FORMAT}}'});
   });
-  
+
 
   var adv_opt_legend = $('fieldset legend');
   var adv_opt = adv_opt_legend.parent();

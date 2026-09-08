@@ -19,7 +19,10 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.forms import ProfileAdminForm
 from tendenci.apps.profiles.utils import iter_users
 from tendenci.apps.theme.templatetags.tendenci_static import static
-
+try:
+    from tendenci.apps.activities.models import Activity
+except:
+    Activity = None
 
 class ProfileAdmin(TendenciBaseModelAdmin):
     list_display = ('username', 'account_id', 'member_number', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser', 'get_last_login')
@@ -174,6 +177,17 @@ def export_selected_users(modeladmin, request, queryset):
     return response
 
 
+if Activity:
+    class ActivityInline(admin.TabularInline):
+        model = Activity
+        fk_name = 'user'
+        fields = ('activity_name', 'start_date', 'end_date', 'status_detail')
+        extra = 0
+        verbose_name = 'Activity'
+        verbose_name_plural = 'Activities'
+        ordering = ("-start_date",)
+
+
 class MyUserAdmin(UserAdmin):
     list_display = ('id', 'view_profile', 'username', 'email', 'first_name', 'last_name',
                     'show_member_number', 'is_staff', 'is_superuser', 'is_active', 'last_login')
@@ -183,13 +197,15 @@ class MyUserAdmin(UserAdmin):
         # Removing the permission part
         # (_('Permissions'), {'fields': ('is_staff', 'is_active', 'is_superuser', 'user_permissions')}),
         (_('Permissions'), {'fields': ('user_permissions',)}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        #(_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     list_filter = ("is_staff", "is_superuser", "is_active", LastLoginFilter)
     ordering = ('-id',)
     actions = [
         export_selected_users
     ]
+    if Activity:
+        inlines = (ActivityInline, )
 
     @mark_safe
     def view_profile(self, obj):

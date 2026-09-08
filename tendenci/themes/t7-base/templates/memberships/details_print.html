@@ -48,28 +48,28 @@
                     <p>{% trans 'Group' %} <strong>{{ membership.membership_type }}</strong></p>
 
                     <p title="{{ membership.get_since_dt|timesince }} ago">
-                        {% trans 'Since' %} <strong>{{ membership.get_since_dt|date:"N j, Y" }}</strong></p>
+                        {% trans 'Since' %} <strong>{{ membership.get_since_dt|date:'DATE_FORMAT' }}</strong></p>
 
                     {% if membership.renewal %}
                     <p title="{{ membership.subscribe_dt|timesince }} ago">
-                        {% trans 'Renewed' %} <strong>{{ membership.subscribe_dt|date:"N j, Y" }}</strong></p>
+                        {% trans 'Renewed' %} <strong>{{ membership.subscribe_dt|date:'DATE_FORMAT' }}</strong></p>
                     {% endif %}
 
                     {% if membership.is_approved %}
                         {% if membership.is_forever %}
                             <p>{% trans "Never expires" %}</p>
                         {% else %}
-                            <p>{% trans 'Expires' %} <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> ({% trans 'grace period' %}: {{ membership.membership_type.expiration_grace_period }} {% trans 'days' %})</p>
+                            <p>{% trans 'Expires' %} <strong>{{ membership.expire_dt|date:'DATE_FORMAT' }}</strong> ({% trans 'grace period' %}: {{ membership.membership_type.expiration_grace_period }} {% trans 'days' %})</p>
                         {% endif %}
 
                     {% else %}
                         {% if membership.is_expired %}
-                            <p>{% trans 'Expired' %} <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> ({% trans 'grace period' %}: {{ membership.membership_type.expiration_grace_period }} {% trans 'days' %})</p>
+                            <p>{% trans 'Expired' %} <strong>{{ membership.expire_dt|date:'DATE_FORMAT' }}</strong> ({% trans 'grace period' %}: {{ membership.membership_type.expiration_grace_period }} {% trans 'days' %})</p>
                         {% endif %}
                     {% endif %}
 
                     {% if membership.get_renewal_period_dt %}
-                        <p>{% trans 'Renew between' %} {{ membership.get_renewal_period_dt.0|date:"N j, Y" }} {% trans 'and' %} {{ membership.get_renewal_period_dt.1|date:"N j, Y" }}</p>
+                        <p>{% trans 'Renew between' %} {{ membership.get_renewal_period_dt.0|date:'DATE_FORMAT' }} {% trans 'and' %} {{ membership.get_renewal_period_dt.1|date:'DATE_FORMAT' }}</p>
                     {% else %}
                         <p>{% trans 'Membership type does not allow renewals.' %}</p>
                     {% endif %}

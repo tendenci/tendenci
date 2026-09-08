@@ -38,7 +38,7 @@
           {% if event.place.city and event.place.state %}, {% endif %}
             {{ event.place.state }} {{ event.place.zip }}</p>
         {% endif %}
-        <strong>Date:</strong> {{ event.start_dt }} - {{ event.end_dt }}
+        <strong>Date:</strong> {{ event.start_dt|date:'DATE_FORMAT' }} - {{ event.end_dt }}
 
           </div>
   </div>

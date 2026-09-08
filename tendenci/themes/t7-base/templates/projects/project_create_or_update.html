@@ -270,9 +270,9 @@
             });
 
             // Release Datetime
-            $('#id_start_dt').datepicker({ dateFormat: 'yy-mm-dd' });
-            $('#id_end_dt').datepicker({ dateFormat: 'yy-mm-dd' });
-            $('.documents-date').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('#id_start_dt').datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}' });
+            $('#id_end_dt').datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}' });
+            $('.documents-date').datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}' });
 
 			// Add a Photo
 			$('.add-photos').click(function(ev) {

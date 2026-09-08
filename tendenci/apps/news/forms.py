@@ -1,9 +1,9 @@
 from os.path import splitext, basename
-from datetime import datetime
 
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 from django.conf import settings
 
 from tendenci.apps.news.models import News
@@ -36,8 +36,8 @@ class NewsForm(TendenciBaseForm):
         mce_attrs={'storme_app_label': News._meta.app_label,
         'storme_model': News._meta.model_name.lower()}))
     release_dt = forms.SplitDateTimeField(label=_('Release Date/Time'),
-                        input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
-                        input_time_formats=['%I:%M %p', '%H:%M:%S'])
+                        input_date_formats=settings.DATE_INPUT_FORMATS,
+                        input_time_formats=settings.TIME_INPUT_FORMATS,)
     status_detail = forms.ChoiceField(
         choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending'))))
     email = EmailVerificationField(label=_("Email"), required=False)
@@ -156,7 +156,7 @@ class NewsForm(TendenciBaseForm):
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/{}/">{}</a>'.format(self.instance.thumbnail.pk, basename(self.instance.thumbnail.file.name))
         else:
             self.fields.pop('remove_photo')
-        self.fields['release_dt'].initial = datetime.now()
+        self.fields['release_dt'].initial = timezone.now()
 
     def clean_syndicate(self):
         """

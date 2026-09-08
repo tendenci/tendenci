@@ -98,7 +98,7 @@ select#id_event_type{
             <tr>
             	<td><a href="{% url 'event' event.id %}">{{ event.id }}</a></td>
             	<td><a href="{% url 'event' event.id %}">{{ event.title }}</a></td>
-                <td>{{ event.start_dt }}</td>
+                <td>{{ event.start_dt|date:'DATE_FORMAT' }}</td>
                 <td>
                 {% for group in event.groups.all %}
                 <a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %},{% endif %}
@@ -128,16 +128,16 @@ select#id_event_type{
     <script src="{% static 'timepicker/timepicker.js' %}" type="text/javascript"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            //$('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+            //$('.datepicker').datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}' });
             //$('.timepicker').timepicker({'step': 1});
-            $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
-            $('#id_end_dt_1').timepicker({'timeFormat': 'h:i A'});
+            $('#id_start_dt_1').timepicker({'timeFormat': '{{DATEPICKER_TIME_FORMAT}}'});
+            $('#id_end_dt_1').timepicker({'timeFormat': '{{ DATEPICKER_TIME_FORMAT}}'});
 
             $( "#id_start_dt_0" ).datepicker({
               defaultDate: "+1m",
               changeMonth: true,
               numberOfMonths: 1,
-              dateFormat: 'yy-mm-dd',
+              dateFormat: '{{DATEPICKER_DATE_FORMAT}}',
               onClose: function( selectedDate ) {
                 $( "#id_end_dt_0" ).datepicker( "option", "minDate", selectedDate );
               }
@@ -146,7 +146,7 @@ select#id_event_type{
               defaultDate: "+1m",
               changeMonth: true,
               numberOfMonths: 1,
-              dateFormat: 'yy-mm-dd',
+              dateFormat: '{{DATEPICKER_DATE_FORMAT}}',
               onClose: function( selectedDate ) {
                 $( "#id_start_dt_0" ).datepicker( "option", "maxDate", selectedDate );
               }

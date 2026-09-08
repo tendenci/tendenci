@@ -1,9 +1,8 @@
-from datetime import datetime
-
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Sum, Q
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
+from django.utils import timezone
 
 from tendenci.apps.reports.utils import get_ct_nice_name
 
@@ -19,7 +18,7 @@ class Command(BaseCommand):
 
     def end_with_error(self, run):
         run.status = "error"
-        run.complete_dt = datetime.now()
+        run.complete_dt = timezone.now()
         run.save()
         #invalidate('reports_run')
 
@@ -156,7 +155,7 @@ class Command(BaseCommand):
 
         if run.status == "unstarted":
             run.status = "running"
-            run.start_dt = datetime.now()
+            run.start_dt = timezone.now()
             run.save()
             #invalidate('reports_run')
 
@@ -172,7 +171,7 @@ class Command(BaseCommand):
             if not run.status == "error":
                 run.status = "complete"
 
-            run.complete_dt = datetime.now()
+            run.complete_dt = timezone.now()
             run.save()
             #invalidate('reports_run')
 

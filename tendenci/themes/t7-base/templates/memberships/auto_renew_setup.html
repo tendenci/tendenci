@@ -109,14 +109,14 @@
             <tr>
                 <td><input type="checkbox" class="ar-checkbox" name="selected_m" value="{{ m.id }}"/></td>
                 <td class="text-left">{{ m.membership_type.name }}</td>
-                <td class="text-center">{{ m.expire_dt|date:'m/d/Y' }}</td>
+                <td class="text-center">{{ m.expire_dt|date:'SHORT_DATE_FORMAT' }}</td>
                 <td class="text-center">{% if m.auto_renew %}
                 <span class="glyphicon glyphicon-ok-sign"></span>
                 {% else %}
                 <span class="glyphicon glyphicon-minus-sign"></span>
                 {% endif %}</td>
                 {% with m.next_auto_renew_date as next_auto_renew_date %}
-                <td class="text-center">{% if next_auto_renew_date %}{{ next_auto_renew_date|date:'m/d/Y' }}{% else %} -- {% endif %}</td>
+                <td class="text-center">{% if next_auto_renew_date %}{{ next_auto_renew_date|date:'SHORT_DATE_FORMAT' }}{% else %} -- {% endif %}</td>
                 {% endwith %}
                 <td class="text-center"><a href="{% url "membership.details" m.pk %}">{{ m.status_detail }}</a></td>
             </tr>

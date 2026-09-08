@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_GET
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import template_exists, checklist_update
@@ -34,6 +35,7 @@ from tendenci.apps.perms.utils import assign_files_perms
 
 
 @is_enabled('pages')
+@require_GET
 def index(request, slug=None, id=None, hash=None,
           template_name="pages/view.html"):
     """

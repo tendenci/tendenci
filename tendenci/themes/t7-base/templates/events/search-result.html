@@ -1,7 +1,7 @@
 {% load event_tags %}
 <div class="event-wrap" itemscope itemtype="https://schema.org/Event">
     <div class="time-stamp">
-        {{ event.start_dt|date:"D, M j, Y" }}
+        {{ event.start_dt|date:"D" }}, {{ event.start_dt|date:"DATE_FORMAT" }}
 
         {% if event.start_dt < now %}
             {% if event.end_dt < now %}
@@ -50,22 +50,22 @@
         </h3>
         {% if event.place %}
         <div class="place" itemprop="location">{{ event.place }}
-			{% if event.place.virtual %}
-				{% include 'events/include/display_virtual.html' %}
-			{% endif %}
-			{% if event.place.national %}
-				{% include 'events/include/display_national.html' %}
-			{% endif %}
-		</div>
+            {% if event.place.virtual %}
+                {% include 'events/include/display_virtual.html' %}
+            {% endif %}
+            {% if event.place.national %}
+                {% include 'events/include/display_national.html' %}
+            {% endif %}
+        </div>
         {% endif %}
 
         <div class="time-period">
             {% if event.all_day %}
-            <time itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y" }}</time> -
-            <time itemprop="endDate" datetime="{{ event.end_dt|date:'c' }}">{{ event.end_dt|date:"l, M j, Y" }}</time>
+            <time itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:'l' }}, {{ event.start_dt|date:'DATE_FORMAT' }}</time> -
+            <time itemprop="endDate" datetime="{{ event.end_dt|date:'c' }}">{{ event.end_dt|date:'l' }}, {{ event.end_dt|date:'DATE_FORMAT' }}</time>
             {% else %}
-             <time itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</time> -
-             <time itemprop="endDate" datetime="{{ event.end_dt|date:'c' }}">{{ event.end_dt|date:"l, M j, Y P" }}</time>
+             <time itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l" }}, {{ event.start_dt|date:"DATETIME_FORMAT" }}</time> -
+             <time itemprop="endDate" datetime="{{ event.end_dt|date:'c' }}">{{ event.end_dt|date:"l" }}, {{ event.end_dt|date:"DATETIME_FORMAT" }}</time>
             {% endif %}
         </div>
 

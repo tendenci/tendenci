@@ -71,9 +71,9 @@
 </script>
 <script type="text/javascript">
   $(document).ready(function() {
-	// Release Datetime
-      $('#id_release_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
-      $('#id_release_dt_1').timepicker({'timeFormat': 'h:i A'});
+    // Release Datetime
+      $('#id_release_dt_0').datepicker({ dateFormat: '{{DATEPICKER_DATE_FORMAT}}' });
+      $('#id_release_dt_1').timepicker({'timeFormat': '{{DATEPICKER_TIME_FORMAT}}'});
   });
   gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
 </script>
