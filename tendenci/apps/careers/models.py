@@ -1,7 +1,7 @@
 import uuid
 
 from django.db import models
-#from django.urls import reverse
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import User
@@ -68,8 +68,8 @@ class Career(TendenciBaseModel):
     def __str__(self):
         return '{} - {}'.format(self.company, self.user)
 
-#    def get_absolute_url(self):
-#        return reverse('career', args=[self.pk])
+    def get_absolute_url(self):
+        return reverse('profile', args=[self.user.username])
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
