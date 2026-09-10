@@ -1559,7 +1559,7 @@ def membership_default_add(request, slug='', membership_id=None,
                 # handle auto renew discount
                 auto_renew_discount = get_setting('module', 'memberships', 'autorenewdiscount')
                 if auto_renew_discount:
-                    discount_amount += discount_amount
+                    discount_amount += Decimal(auto_renew_discount)
 
             donation_amount = None
             donation_apply_tax = get_setting('module', 'donations', 'apply_tax')
