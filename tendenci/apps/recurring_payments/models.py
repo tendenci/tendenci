@@ -2,6 +2,7 @@ import uuid
 import re
 from datetime import datetime, timedelta
 from decimal import Decimal
+import math
 import stripe
 from zoneinfo import ZoneInfo
 from django.db import models
@@ -655,11 +656,15 @@ class RecurringPaymentInvoice(models.Model):
 
         # charge user
         if  self.recurring_payment.platform == "stripe":
+            # Keyed on this billing cycle's invoice and amount so a retry after
+            # a timeout reuses the original charge instead of making a new one.
             success, response_d = charge_customer_off_session(
                 stripe,
                 payment,
                 self.recurring_payment.customer_profile_id,
                 description=description,
+                idempotency_key='tendenci-rp-invoice-{}-{}'.format(
+                    self.id, math.trunc(amount * 100)),
             )
             if not payment_profile_id:
                 payment_profile_id = response_d.get('payment_method_id') or ''

@@ -17,6 +17,9 @@ from tendenci.apps.payments.stripe.utils import (
     payment_update_from_intent,
 )
 
+# Host the browser is on, deliberately different from the Site URL setting.
+BROWSED_HOST = 'payments.example.com'
+
 
 def _make_invoice(**kwargs):
     defaults = {
@@ -42,7 +45,7 @@ def _make_payment(invoice=None, **kwargs):
         'response_code': '',
         'response_reason_code': '',
         'status_detail': '',
-        'zip': '2000',
+        'zip': '12345',
         'first_name': 'Test',
         'last_name': 'User',
         'email': 'test@example.com',
@@ -60,10 +63,10 @@ class BuildPaymentIntentParamsTests(TestCase):
         payment.description = 'Membership'
         payment.invoice.stripe_connected_account.return_value = (None, None)
 
-        params = build_payment_intent_params(payment, 'aud')
+        params = build_payment_intent_params(payment, 'eur')
 
         self.assertEqual(params['amount'], 1050)
-        self.assertEqual(params['currency'], 'aud')
+        self.assertEqual(params['currency'], 'eur')
         self.assertEqual(params['description'], 'Membership')
         self.assertEqual(params['metadata']['tendenci_payment_id'], '6')
         self.assertEqual(params['metadata']['tendenci_payment_guid'], 'guid-6')
@@ -163,7 +166,7 @@ class PaymentUpdateFromIntentTests(TestCase):
 
 
 class ChargeCustomerOffSessionTests(TestCase):
-    @patch('tendenci.apps.payments.stripe.utils.get_setting', return_value='aud')
+    @patch('tendenci.apps.payments.stripe.utils.get_setting', return_value='usd')
     @patch('tendenci.apps.payments.stripe.utils.configure_stripe')
     @patch('tendenci.apps.payments.stripe.utils.customer_off_session_payment_method_id',
            return_value='pm_card')
@@ -184,7 +187,8 @@ class ChargeCustomerOffSessionTests(TestCase):
         )
 
         ok, response = charge_customer_off_session(
-            stripe_module, payment, 'cus_1', description='Renewal')
+            stripe_module, payment, 'cus_1', description='Renewal',
+            idempotency_key='tendenci-rp-invoice-3-2500')
 
         self.assertTrue(ok)
         self.assertEqual(response['status_detail'], 'approved')
@@ -193,7 +197,105 @@ class ChargeCustomerOffSessionTests(TestCase):
         self.assertTrue(create_kwargs['confirm'])
         self.assertTrue(create_kwargs['off_session'])
         self.assertEqual(create_kwargs['payment_method'], 'pm_card')
+        self.assertEqual(
+            create_kwargs['idempotency_key'], 'tendenci-rp-invoice-3-2500')
         self.assertNotIn('payment_method_types', create_kwargs)
+
+    @patch('tendenci.apps.payments.stripe.utils.get_setting', return_value='usd')
+    @patch('tendenci.apps.payments.stripe.utils.configure_stripe')
+    @patch('tendenci.apps.payments.stripe.utils.customer_off_session_payment_method_id',
+           return_value='pm_card')
+    def test_no_idempotency_key_when_not_supplied(
+            self, mock_pm, mock_configure, mock_currency):
+        payment = MagicMock()
+        payment.id = 9
+        payment.guid = 'guid-9'
+        payment.amount = Decimal('25.00')
+        payment.description = 'RP'
+        payment.invoice.stripe_connected_account.return_value = (None, None)
+
+        stripe_module = MagicMock()
+        stripe_module.PaymentIntent.create.return_value = SimpleNamespace(
+            status='succeeded', created=42, latest_charge='ch_x')
+
+        charge_customer_off_session(stripe_module, payment, 'cus_1')
+
+        self.assertNotIn(
+            'idempotency_key',
+            stripe_module.PaymentIntent.create.call_args.kwargs)
+
+    @patch('tendenci.apps.payments.stripe.utils.get_setting', return_value='usd')
+    @patch('tendenci.apps.payments.stripe.utils.configure_stripe')
+    @patch('tendenci.apps.payments.stripe.utils.customer_off_session_payment_method_id',
+           return_value='pm_card')
+    def test_standard_connect_looks_up_method_on_connected_account(
+            self, mock_pm, mock_configure, mock_currency):
+        payment = MagicMock()
+        payment.id = 9
+        payment.guid = 'guid-9'
+        payment.amount = Decimal('25.00')
+        payment.description = 'RP'
+        payment.invoice.stripe_connected_account.return_value = (
+            'acct_standard', 'standard')
+
+        stripe_module = MagicMock()
+        stripe_module.PaymentIntent.create.return_value = SimpleNamespace(
+            status='succeeded', created=42, latest_charge='ch_x')
+
+        charge_customer_off_session(stripe_module, payment, 'cus_1')
+
+        self.assertEqual(
+            mock_pm.call_args.kwargs['request_options'],
+            {'stripe_account': 'acct_standard'},
+        )
+
+    @patch('tendenci.apps.payments.stripe.utils.get_setting', return_value='usd')
+    @patch('tendenci.apps.payments.stripe.utils.configure_stripe')
+    @patch('tendenci.apps.payments.stripe.utils.customer_off_session_payment_method_id',
+           return_value='pm_card')
+    def test_no_idempotency_key_when_not_supplied(
+            self, mock_pm, mock_configure, mock_currency):
+        payment = MagicMock()
+        payment.id = 9
+        payment.guid = 'guid-9'
+        payment.amount = Decimal('25.00')
+        payment.description = 'RP'
+        payment.invoice.stripe_connected_account.return_value = (None, None)
+
+        stripe_module = MagicMock()
+        stripe_module.PaymentIntent.create.return_value = SimpleNamespace(
+            status='succeeded', created=42, latest_charge='ch_x')
+
+        charge_customer_off_session(stripe_module, payment, 'cus_1')
+
+        self.assertNotIn(
+            'idempotency_key',
+            stripe_module.PaymentIntent.create.call_args.kwargs)
+
+    @patch('tendenci.apps.payments.stripe.utils.get_setting', return_value='aud')
+    @patch('tendenci.apps.payments.stripe.utils.configure_stripe')
+    @patch('tendenci.apps.payments.stripe.utils.customer_off_session_payment_method_id',
+           return_value='pm_card')
+    def test_standard_connect_looks_up_method_on_connected_account(
+            self, mock_pm, mock_configure, mock_currency):
+        payment = MagicMock()
+        payment.id = 9
+        payment.guid = 'guid-9'
+        payment.amount = Decimal('25.00')
+        payment.description = 'RP'
+        payment.invoice.stripe_connected_account.return_value = (
+            'acct_standard', 'standard')
+
+        stripe_module = MagicMock()
+        stripe_module.PaymentIntent.create.return_value = SimpleNamespace(
+            status='succeeded', created=42, latest_charge='ch_x')
+
+        charge_customer_off_session(stripe_module, payment, 'cus_1')
+
+        self.assertEqual(
+            mock_pm.call_args.kwargs['request_options'],
+            {'stripe_account': 'acct_standard'},
+        )
 
     @patch('tendenci.apps.payments.stripe.utils.get_setting', return_value='aud')
     @patch('tendenci.apps.payments.stripe.utils.configure_stripe')
@@ -234,17 +336,19 @@ class PayOnlineViewTests(TestCase):
         )
         mock_render.return_value = HttpResponse('ok')
 
-        response = self.client.get(
-            reverse('stripe.payonline', args=[self.payment.id, self.payment.guid]),
-            HTTP_HOST='192.168.178.27',
-        )
+        with override_settings(ALLOWED_HOSTS=[BROWSED_HOST]):
+            response = self.client.get(
+                reverse('stripe.payonline',
+                        args=[self.payment.id, self.payment.guid]),
+                HTTP_HOST=BROWSED_HOST,
+            )
 
         self.assertEqual(response.status_code, 200)
         context = mock_render.call_args.kwargs['context']
         self.assertEqual(context['client_secret'], 'pi_secret_xyz')
         self.assertTrue(
             context['finalize_url'].startswith(
-                'http://192.168.178.27/payments/stripe/payonline/'))
+                'http://%s/payments/stripe/payonline/' % BROWSED_HOST))
         self.assertIn('/finalize/', context['finalize_url'])
 
     def test_pay_online_redirects_when_already_approved(self):
@@ -280,14 +384,14 @@ class SaveBillingViewTests(TestCase):
             'first_name': 'Ada',
             'last_name': 'Lovelace',
             'email': 'ada@example.com',
-            'zip': '2000',
+            'zip': '12345',
         })
 
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'ok': True})
         self.payment.refresh_from_db()
         self.assertEqual(self.payment.first_name, 'Ada')
-        self.assertEqual(self.payment.zip, '2000')
+        self.assertEqual(self.payment.zip, '12345')
 
     def test_save_billing_requires_zip(self):
         response = self.client.post(self.url, {
@@ -306,7 +410,7 @@ class SaveBillingViewTests(TestCase):
         self.payment.status_detail = 'approved'
         self.payment.save()
 
-        response = self.client.post(self.url, {'zip': '2000'})
+        response = self.client.post(self.url, {'zip': '12345'})
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error'], 'already paid')

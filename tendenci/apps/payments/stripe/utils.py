@@ -88,12 +88,27 @@ def _failed_off_session_response(message, code=''):
     }
 
 
-def customer_off_session_payment_method_id(stripe_module, customer_id):
+def connected_account_request_options(payment):
+    """
+    Request options identifying the account a PaymentIntent is created on.
+
+    Express accounts are charged on the platform (via transfer_data), so only
+    standard accounts need stripe_account.
+    """
+    connected_account_id, scope = payment.invoice.stripe_connected_account()
+    if connected_account_id and scope != 'express':
+        return {'stripe_account': connected_account_id}
+    return {}
+
+
+def customer_off_session_payment_method_id(stripe_module, customer_id,
+                                           request_options=None):
     """Return a reusable PaymentMethod or legacy source id for off-session charges."""
     if not customer_id:
         return ''
 
-    customer = stripe_module.Customer.retrieve(customer_id)
+    request_options = request_options or {}
+    customer = stripe_module.Customer.retrieve(customer_id, **request_options)
     invoice_settings = getattr(customer, 'invoice_settings', None)
     default_pm = _stripe_object_id(
         getattr(invoice_settings, 'default_payment_method', None)
@@ -102,18 +117,14 @@ def customer_off_session_payment_method_id(stripe_module, customer_id):
     if default_pm:
         return default_pm
 
-    payment_methods = []
     try:
         listed = stripe_module.PaymentMethod.list(
-            customer=customer_id, limit=10)
-        payment_methods = getattr(listed, 'data', None) or []
-    except Exception:
-        try:
-            listed = stripe_module.PaymentMethod.list(
-                customer=customer_id, type='card', limit=10)
-            payment_methods = getattr(listed, 'data', None) or []
-        except Exception:
-            payment_methods = []
+            customer=customer_id, limit=10, **request_options)
+    except stripe_module.InvalidRequestError:
+        # API versions before 2022-08-01 require an explicit type.
+        listed = stripe_module.PaymentMethod.list(
+            customer=customer_id, type='card', limit=10, **request_options)
+    payment_methods = getattr(listed, 'data', None) or []
 
     if payment_methods:
         return _stripe_object_id(payment_methods[0])
@@ -122,7 +133,7 @@ def customer_off_session_payment_method_id(stripe_module, customer_id):
 
 
 def charge_customer_off_session(stripe_module, payment, customer_id,
-                                description=None):
+                                description=None, idempotency_key=None):
     """
     Confirm an off-session PaymentIntent for a saved customer.
 
@@ -133,7 +144,8 @@ def charge_customer_off_session(stripe_module, payment, customer_id,
 
     try:
         payment_method_id = customer_off_session_payment_method_id(
-            stripe_module, customer_id)
+            stripe_module, customer_id,
+            request_options=connected_account_request_options(payment))
     except Exception as e:
         return False, _failed_off_session_response(str(e))
 
@@ -148,10 +160,13 @@ def charge_customer_off_session(stripe_module, payment, customer_id,
     params['payment_method'] = payment_method_id
     params['confirm'] = True
     params['off_session'] = True
+    # Unattended retries must not charge the member twice.
+    if idempotency_key:
+        params['idempotency_key'] = idempotency_key
 
     try:
         payment_intent = stripe_module.PaymentIntent.create(**params)
-    except stripe_module.error.CardError as e:
+    except stripe_module.CardError as e:
         json_body = getattr(e, 'json_body', None) or {}
         err = json_body.get('error') if isinstance(json_body, dict) else None
         err = err or {}
