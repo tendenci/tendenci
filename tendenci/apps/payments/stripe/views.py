@@ -444,12 +444,14 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
     save_billing_url = reverse(
         'stripe.save_billing', args=[payment.id, payment.guid])
 
+    connected_account_id = payment.invoice.stripe_connected_account(scope='standard')[0]
     return render_to_resp(
         request=request,
         template_name=template_name,
         context={
             'billing_info_form': billing_info_form,
             'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY,
+            'connected_account_id': connected_account_id,
             'payment': payment,
             'client_secret': client_secret,
             'finalize_url': finalize_url,
@@ -503,7 +505,12 @@ def finalize(request, payment_id, guid=''):
 
     configure_stripe(stripe)
     try:
-        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+        connected_account_id = payment.invoice.stripe_connected_account(scope='standard')[0]
+        if connected_account_id:
+            payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id,
+                                                           stripe_account=connected_account_id)
+        else:
+            payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
     except Exception as e:
         messages.add_message(request, messages.ERROR, str(e))
         return HttpResponseRedirect(
