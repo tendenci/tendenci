@@ -166,6 +166,8 @@ def charge_customer_off_session(stripe_module, payment, customer_id,
 
     try:
         payment_intent = stripe_module.PaymentIntent.create(**params)
+        payment.payment_intent_id = payment_intent.id
+        payment.save(update_fields=['payment_intent_id'])
     except stripe_module.CardError as e:
         json_body = getattr(e, 'json_body', None) or {}
         err = json_body.get('error') if isinstance(json_body, dict) else None
