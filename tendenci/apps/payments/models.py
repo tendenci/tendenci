@@ -96,6 +96,8 @@ class Payment(models.Model):
     cust_id = models.CharField(max_length=20, default=0)
     tax = models.CharField(max_length=16, blank=True)
     duty = models.CharField(max_length=16, blank=True)
+    # paymentIntent.id (stripe) - Standard public ID,  safe to store and share
+    payment_intent_id = models.CharField(max_length=50, default='')
     verified = models.BooleanField(blank=True, default=False)
     submit_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)

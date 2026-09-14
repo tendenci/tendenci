@@ -38,6 +38,7 @@ from tendenci.apps.recurring_payments.models import RecurringPayment
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.base.utils import get_next_url
+from tendenci.apps.event_logs.models import EventLog
 
 from .models import StripeAccount
 
@@ -428,11 +429,9 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
         payment_intent, membership, customer_id = _create_payment_intent_for_payment(
             payment, currency)
         client_secret = payment_intent.client_secret
-        # Stash customer id on session for finalize edge cases (optional aid)
-        if customer_id:
-            request.session['stripe_pi_customer_%s' % payment.id] = customer_id
-        if membership:
-            request.session['stripe_pi_membership_%s' % payment.id] = membership.id
+        # save payment_intent_id for later use
+        payment.payment_intent_id = payment_intent.id
+        payment.save(update_fields=['payment_intent_id'])
     except Exception as e:
         err_msg = str(e)
         messages.add_message(request, messages.ERROR, _(err_msg))
@@ -463,6 +462,13 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
 @require_POST
 def save_billing(request, payment_id, guid=''):
     payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
+    if not payment.payment_intent_id:
+        return HttpResponse(
+            json.dumps({'ok': False, 'error': 'not allowed'}),
+            content_type='application/json',
+            status=403,
+        )
+
     if payment.is_approved:
         return HttpResponse(
             json.dumps({'ok': False, 'error': 'already paid'}),
@@ -483,6 +489,7 @@ def save_billing(request, payment_id, guid=''):
         )
 
     billing_info_form.save()
+    EventLog.objects.log()
     return HttpResponse(
         json.dumps({'ok': True}),
         content_type='application/json',
@@ -491,9 +498,12 @@ def save_billing(request, payment_id, guid=''):
 
 def finalize(request, payment_id, guid=''):
     payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
-    if payment.is_approved:
-        return HttpResponseRedirect(
-            reverse('stripe.thank_you', args=[payment.id, payment.guid]))
+    if not payment.payment_intent_id:
+        return HttpResponse(
+            json.dumps({'ok': False, 'error': 'not allowed'}),
+            content_type='application/json',
+            status=403,
+        )
 
     payment_intent_id = request.GET.get('payment_intent')
     if not payment_intent_id:
@@ -502,6 +512,17 @@ def finalize(request, payment_id, guid=''):
             _('Missing payment confirmation. Please try again.'))
         return HttpResponseRedirect(
             reverse('stripe.payonline', args=[payment.id, payment.guid]))
+
+    if payment_intent_id != payment.payment_intent_id:
+        return HttpResponse(
+            json.dumps({'ok': False, 'error': 'Payment confirmation mismatch'}),
+            content_type='application/json',
+            status=400,
+        )
+
+    if payment.is_approved:
+        return HttpResponseRedirect(
+            reverse('stripe.thank_you', args=[payment.id, payment.guid]))
 
     configure_stripe(stripe)
     try:
