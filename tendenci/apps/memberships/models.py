@@ -2157,6 +2157,12 @@ class MembershipDefault(TendenciBaseModel):
                 # bypass the signal on save so that we can create customer profile from trans_id
                 rp.customer_profile_id = kwargs.get('customer_profile_id', '')
                 rp.save()
+            if 'customer_profile_id' in kwargs and not rp.customer_profile_id:
+                rp.customer_profile_id = kwargs['customer_profile_id']
+                rp.save(update_fields=['customer_profile_id'])
+            if 'platform' in kwargs and rp.platform != kwargs['platform']:
+                rp.platform = kwargs['platform']
+                rp.save(update_fields=['platform'])
             if rp.platform == 'authorizenet':
                 if not rp.customer_profile_id or rp.customer_profile_id == 'TBD':
                     trans_id = kwargs.get('trans_id', None)

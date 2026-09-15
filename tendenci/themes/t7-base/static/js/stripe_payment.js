@@ -1,111 +1,119 @@
 (function($) {
-	
-	var elements = stripe.elements();
-	var card = elements.create('card', {
-		  hidePostalCode: true,
-		  style: {
-		    base: {
-		      iconColor: '#F99A52',
-		      color: '#32315E',
-		      lineHeight: '48px',
-		      fontWeight: 400,
-		      fontFamily: '"Helvetica Neue", "Helvetica", sans-serif',
-		      fontSize: '15px',
-
-		      '::placeholder': {
-		        color: '#CFD7DF',
-		      }
-		    },
-		  }
-		});
-	card.mount('#card-element');
-	
-	card.on('change', function(event) {
-		  var displayError = document.getElementById('card-errors');
-		  if (event.error) {
-		    displayError.textContent = event.error.message;
-		  } else {
-		    displayError.textContent = '';
-		  }
-	});
-	
-	function stripeTokenHandler(token) {
-		  // Insert the token ID into the form so it gets submitted to the server
-		  var form = document.getElementById('payment-form');
-		  var hiddenInput = document.createElement('input');
-		  hiddenInput.setAttribute('type', 'hidden');
-		  hiddenInput.setAttribute('name', 'stripe_token');
-		  hiddenInput.setAttribute('value', token.id);
-		  form.appendChild(hiddenInput);
-	
-		  // Submit the form
-		  form.submit();
+	var form = document.getElementById('payment-form');
+	if (!form) {
+		return;
 	}
 
-	function createToken() {
-			var address_state = "";
-			try {
-			    address_state = form.querySelector('input[name=state]').value;
-			}
-			catch(err) {
-				try {
-			  		address_state = form.querySelector('select[name=state]').options[form.querySelector('select[name=state]').options.selectedIndex].value;
-			  	}
-				catch(err) {}
-			} 
-			var extraDetails = {
-				    name: form.querySelector('input[id=id_card_name]').value,
-				    address_line1: form.querySelector('input[name=address]').value,
-				    address_line2: form.querySelector('input[name=address2]').value,
-				    address_city: form.querySelector('input[name=city]').value,
-				    address_state: address_state,
-				    address_zip: form.querySelector('input[name=zip]').value,
-				    address_country: form.querySelector('input[name=country]').value,
-				    email: form.querySelector('input[name=email]').value,
-				    company: form.querySelector('input[name=company]').value,
-				    phone: form.querySelector('input[name=phone]').value
-				    
-		    };
-		    stripe.createToken(card, extraDetails).then(function(result) {
-		      if (result.error) {
-		        // Inform the user if there was an error
-		        var errorElement = document.getElementById('card-errors');
-		        errorElement.textContent = result.error.message;
-		        $('.submit-button').prop('disabled', false );
-		        $('#submit-loader').hide();
-		      } else {
-		       // Send the token to your server
-		        stripeTokenHandler(result.token);
-		      }
-		  });
-	};
-	
+	var clientSecret = form.getAttribute('data-client-secret');
+	var finalizeUrl = form.getAttribute('data-finalize-url');
+	var saveBillingUrl = form.getAttribute('data-save-billing-url');
+	var errorElement = document.getElementById('payment-errors');
+
+	if (!clientSecret || typeof stripe === 'undefined') {
+		if (errorElement) {
+			errorElement.textContent = 'Payment form is not ready. Please refresh the page.';
+		}
+		return;
+	}
+
+	var elements = stripe.elements({ clientSecret: clientSecret });
+	var paymentElement = elements.create('payment');
+	paymentElement.mount('#payment-element');
+
+	paymentElement.on('change', function(event) {
+		if (event.error) {
+			errorElement.textContent = event.error.message;
+		} else {
+			errorElement.textContent = '';
+		}
+	});
+
+	function getCsrfToken() {
+		var input = form.querySelector('input[name=csrfmiddlewaretoken]');
+		return input ? input.value : '';
+	}
+
 	function validateFields() {
-		var name = form.querySelector('input[id=id_card_name]').value;
-		var zip = form.querySelector('input[name=zip]').value;
-		
-		if (name == "" | zip == ""){
-			if (name == ""){
-				$('#id_card_name').next('.error').html("Name on Card is a required field");
-			}
-			if (zip == ""){
-				$('#id_zip').next('.error').html("Zip Code is a required field");
+		var zip = form.querySelector('input[name=zip]');
+		var zipVal = zip ? zip.value : '';
+		if (zipVal === '') {
+			if (zip) {
+				$(zip).siblings('.error').html('Zip Code is a required field');
 			}
 			return false;
-		}else{
-			return true;
 		}
-	};
+		return true;
+	}
 
-	// Create a token when the form is submitted.
-	var form = document.getElementById('payment-form');
+	function saveBilling() {
+		var formData = new FormData(form);
+		return fetch(saveBillingUrl, {
+			method: 'POST',
+			headers: {
+				'X-CSRFToken': getCsrfToken()
+			},
+			body: formData,
+			credentials: 'same-origin'
+		}).then(function(response) {
+			return response.json().then(function(data) {
+				if (!response.ok || !data.ok) {
+					var message = 'Unable to save billing information.';
+					if (data && data.errors) {
+						var parts = [];
+						Object.keys(data.errors).forEach(function(key) {
+							parts = parts.concat(data.errors[key]);
+						});
+						if (parts.length) {
+							message = parts.join(' ');
+						}
+					} else if (data && data.error) {
+						message = data.error;
+					}
+					throw new Error(message);
+				}
+				return data;
+			});
+		});
+	}
+
+	function resetSubmit() {
+		$('.submit-button').prop('disabled', false);
+		$('#submit-loader').hide();
+	}
+
 	form.addEventListener('submit', function(e) {
-		  e.preventDefault();
-		  if (validateFields()){
-			  $('.submit-button').attr("disabled", "disabled");
-			  $('#submit-loader').show();
-			  createToken();
-		  }
+		e.preventDefault();
+		if (!validateFields()) {
+			return;
+		}
+
+		$('.submit-button').attr('disabled', 'disabled');
+		$('#submit-loader').show();
+		errorElement.textContent = '';
+
+		saveBilling().then(function() {
+			return stripe.confirmPayment({
+				elements: elements,
+				confirmParams: {
+					return_url: finalizeUrl
+				},
+				redirect: 'if_required'
+			});
+		}).then(function(result) {
+			if (result.error) {
+				errorElement.textContent = result.error.message;
+				resetSubmit();
+				return;
+			}
+			if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+				var sep = finalizeUrl.indexOf('?') === -1 ? '?' : '&';
+				window.location = finalizeUrl + sep + 'payment_intent=' + encodeURIComponent(result.paymentIntent.id);
+				return;
+			}
+			// Redirect-based methods are handled by return_url
+		}).catch(function(err) {
+			errorElement.textContent = err.message || String(err);
+			resetSubmit();
+		});
 	});
-	
 }(jQuery));

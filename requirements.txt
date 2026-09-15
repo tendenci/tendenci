@@ -27,7 +27,7 @@ mimeparse>=0.1.3
 python-dateutil==2.9.0.post0
 python-dateutil-rs==0.1.4
 #pdfminer.six==20231228
-stripe==14.4.1
+stripe==15.3.0
 pycryptodome==3.23.0
 boto3==1.42.65
 django-timezone-field==7.2.1

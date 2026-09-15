@@ -24,7 +24,10 @@ from tendenci.apps.recurring_payments.managers import RecurringPaymentManager
 #from tendenci.apps.recurring_payments.authnet.utils import direct_response_dict
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.payments.stripe.utils import stripe_set_app_info
+from tendenci.apps.payments.stripe.utils import (
+    charge_customer_off_session,
+    configure_stripe,
+)
 from tendenci.apps.payments.authorizenet.utils import AuthNetAPI
 
 
@@ -163,25 +166,54 @@ class RecurringPayment(models.Model):
     def get_source_data(self):
         # https://www.pcisecuritystandards.org/pdfs/pci_fs_data_storage.pdf
         if self.platform == 'stripe':
-            stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
-            stripe.api_version = settings.STRIPE_API_VERSION
-            stripe_set_app_info(stripe)
+            configure_stripe(stripe)
             card = None
             if self.customer_profile_id:
                 customer = stripe.Customer.retrieve(self.customer_profile_id)
-                default_card_id = customer.get('default_card', None)
-                if default_card_id:
-                    card = customer.sources.retrieve(default_card_id)
-                else:
-                    default_source = customer.get('default_source', None)
-                    if default_source:
-                        sources = customer.get('sources', None)
-                        if sources:
-                            data = sources.get('data', None)
+                default_source = getattr(customer, 'default_source', None)
+                if default_source:
+                    sources = getattr(customer, 'sources', None)
+                    if sources:
+                        try:
+                            card = sources.retrieve(default_source)
+                        except Exception:
+                            data = getattr(sources, 'data', None) or []
                             for c in data:
                                 if c['id'] == default_source:
                                     card = c
                                     break
+                if not card:
+                    # Legacy field kept as a fallback for very old customers
+                    default_card_id = getattr(customer, 'default_card', None)
+                    if default_card_id and getattr(customer, 'sources', None):
+                        try:
+                            card = customer.sources.retrieve(default_card_id)
+                        except Exception:
+                            card = None
+                if not card:
+                    # Modern PaymentMethods attached to the customer
+                    payment_methods = stripe.PaymentMethod.list(
+                        customer=self.customer_profile_id,
+                        type='card',
+                    )
+                    data = getattr(payment_methods, 'data', None) or []
+                    if data:
+                        default_pm = None
+                        invoice_settings = getattr(customer, 'invoice_settings', None)
+                        default_pm_id = getattr(invoice_settings, 'default_payment_method', None) if invoice_settings else None
+                        if default_pm_id:
+                            for pm in data:
+                                if pm.id == default_pm_id:
+                                    default_pm = pm
+                                    break
+                        pm = default_pm or data[0]
+                        pm_card = getattr(pm, 'card', None)
+                        if pm_card:
+                            return {
+                                'last4': pm_card.last4,
+                                'exp_year': pm_card.exp_year,
+                                'exp_month': pm_card.exp_month,
+                            }
                 if card:
                     return {'last4': card['last4'], 'exp_year': card['exp_year'], 'exp_month': card['exp_month']}
         return None
@@ -624,65 +656,18 @@ class RecurringPaymentInvoice(models.Model):
 
         # charge user
         if  self.recurring_payment.platform == "stripe":
-            stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
-            stripe.api_version = settings.STRIPE_API_VERSION
-            stripe_set_app_info(stripe)
-            params = {
-                       'amount': math.trunc(amount * 100), # amount in cents, again
-                       'currency': get_setting('site', 'global', 'currency'),
-                       'description': description,
-                       'customer': self.recurring_payment.customer_profile_id
-                      }
-
-            # Check if this transaction should be made to a connected account
-            connected_account_id, scope = payment.invoice.stripe_connected_account()
-            if connected_account_id:
-                stripe.client_id = get_setting('module', 'payments', 'stripe_connect_client_id')
-                if scope == 'express':
-                    # is there application fee (application_fee_amount)?
-                    application_fee = payment.invoice.get_stripe_application_fee(payment.amount)
-                    params.update({
-                                    'application_fee_amount': math.trunc(application_fee * 100),
-                                    "transfer_data": {"destination": connected_account_id
-                                }},)
-                else:
-                    params.update({'stripe_account': connected_account_id})
-
-            success = False
-            response_d = {
-                          'status_detail': 'not approved',
-                          'response_code': '0',
-                          'response_reason_code': '0',
-                          'result_code': 'Error',  # Error, Ok
-                          'message_code': '',    # I00001, E00027
-                          }
-            try:
-                charge_response = stripe.Charge.create(**params)
-                success = True
-                response_d['status_detail'] = 'approved'
-                response_d['response_code'] = '1'
-                response_d['response_subcode'] = '1'
-                response_d['response_reason_code'] = '1'
-                response_d['response_reason_text'] = 'This transaction has been approved. (Created# %s)' % charge_response.created
-                response_d['trans_id'] = charge_response.id
-                response_d['result_code'] = 'Ok'
-                response_d['message_text'] = 'Successful.'
-            except stripe.error.CardError as e:
-                # it's a decline
-                json_body = e.json_body
-                err  = json_body and json_body['error']
-                code = err and err['code']
-                message = err and err['message']
-                charge_response = '{message} status={status}, code={code}'.format(
-                            message=message, status=e.http_status, code=code)
-
-                response_d['response_reason_text'] = charge_response
-                response_d['message_code'] = code
-                response_d['message_text'] = charge_response
-            except Exception as e:
-                charge_response = e.message
-                response_d['response_reason_text'] = charge_response
-                response_d['message_text'] = charge_response[:200]
+            # Keyed on this billing cycle's invoice and amount so a retry after
+            # a timeout reuses the original charge instead of making a new one.
+            success, response_d = charge_customer_off_session(
+                stripe,
+                payment,
+                self.recurring_payment.customer_profile_id,
+                description=description,
+                idempotency_key='tendenci-rp-invoice-{}-{}'.format(
+                    self.id, math.trunc(amount * 100)),
+            )
+            if not payment_profile_id:
+                payment_profile_id = response_d.get('payment_method_id') or ''
 
             # update payment
             for key in response_d:

@@ -65,27 +65,22 @@
 
 
 
-<form action="" method="POST" id="payment-form" class="form-horizontal">{% csrf_token %}
+<form action="" method="POST" id="payment-form" class="form-horizontal"
+      data-client-secret="{{ client_secret }}"
+      data-finalize-url="{{ finalize_url }}"
+      data-save-billing-url="{{ save_billing_url }}">
+  {% csrf_token %}
   <h3>{% trans 'Payment Information' %}</h3>
     <div class="form-group">
-        <label for="card-element" class="col-sm-3 control-label">
-          Credit or debit card:
+        <label for="payment-element" class="col-sm-3 control-label">
+          {% trans 'Payment method' %}:
           <br><a href="https://stripe.com" target="_blank" rel="noopener"><img src="{% static 'images/Powered-by-Stripe.png' %}" alt="Powered by Stripe" style="max-width: 100%; height: auto; display: inline-block; width: 150px;"></a>
         </label>
-        <div id="card-element" class="col-sm-9">
-          <!-- a Stripe Element will be inserted here. -->
+        <div id="payment-element" class="col-sm-9">
+          <!-- Stripe Payment Element will be inserted here. -->
         </div>
         <br />
-        <div id="card-errors"  class="col-sm-offset-3 col-sm-9" role="alert"></div>
-    </div>
-
-
-    <div class="form-group">
-        <label for="id_card_name" class="required col-sm-3  control-label">{% trans 'Name on Card' %}:</label>
-        <div class="col-sm-9">
-        <input class="card-name form-control" id="id_card_name" maxlength="100" type="text">
-        <span class="error text-danger">{{ form.card_name.errors }}</span>
-        </div>
+        <div id="payment-errors"  class="col-sm-offset-3 col-sm-9" role="alert"></div>
     </div>
 
 
@@ -103,7 +98,7 @@
     {% endfor %}
 
     <div class="col-sm-offset-3 col-sm-9">
-    <button type="submit" class="submit-button btn btn-primary">{% trans 'Submit Payment' %}</button>
+    <button type="submit" class="submit-button btn btn-primary"{% if not client_secret %} disabled{% endif %}>{% trans 'Submit Payment' %}</button>
      </div>
 
     <div class="col-sm-offset-3 col-sm-9" id="submit-loader" style="font-style:italic; font-size:0.9em; margin-top: 1em; display:none;">
@@ -120,5 +115,5 @@
 
 {% set_stripe_key %}
 
-<script type="text/javascript" src="{% static 'js/stripe_payment.js' %}?v=1.2"></script>
+<script type="text/javascript" src="{% static 'js/stripe_payment.js' %}?v=2.0"></script>
 {% endblock %}

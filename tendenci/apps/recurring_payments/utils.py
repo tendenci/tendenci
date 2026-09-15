@@ -235,7 +235,6 @@ def run_a_recurring_payment(rp, verbosity=0):
         # check and store payment profiles in local db
         if rp.platform == 'authorizenet':
             if verbosity > 1:
-                print
                 print('Processing for "%s":' % rp)
                 print('...Populating payment profiles from payment gateway...')
             rp.populate_payment_profile()
@@ -360,7 +359,7 @@ def run_a_recurring_payment(rp, verbosity=0):
                 rp_email_notice.email_customer_no_payment_profile(rp)
 
         # calculate the balance by checking for unpaid invoices
-        rp.balance = rp.get_current_balance()
+        rp.current_balance = rp.get_current_balance()
         rp.outstanding_balance = rp.get_outstanding_balance()
         rp.save()
 

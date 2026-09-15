@@ -1,8 +1,7 @@
 from datetime import datetime
 import stripe
-from django.conf import settings
 from django.core.management.base import BaseCommand
-from tendenci.apps.payments.stripe.utils import stripe_set_app_info
+from tendenci.apps.payments.stripe.utils import configure_stripe
 
 
 class Command(BaseCommand):
@@ -12,10 +11,8 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         from tendenci.apps.payments.stripe.models import StripeAccount, Charge
-
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        stripe_set_app_info(stripe)
-
+        
+        configure_stripe(stripe)   
         stripe_accounts = StripeAccount.objects.filter(status_detail='active')
         for stripe_account in stripe_accounts:
             #The charges are returned in sorted order, with the most recent charges

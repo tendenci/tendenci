@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
     re_path(r'^payonline/(?P<payment_id>\d+)/(?P<guid>[\d\w-]+)/$', views.pay_online, name="stripe.payonline"),
+    re_path(r'^payonline/(?P<payment_id>\d+)/(?P<guid>[\d\w-]+)/save-billing/$', views.save_billing, name="stripe.save_billing"),
+    re_path(r'^payonline/(?P<payment_id>\d+)/(?P<guid>[\d\w-]+)/finalize/$', views.finalize, name="stripe.finalize"),
     re_path(r'^thankyou/(?P<payment_id>\d+)/(?P<guid>[\d\w-]+)/$', views.thank_you, name="stripe.thank_you"),
     re_path(r'^update-card/(?P<rp_id>\d+)/$', views.update_card, name="stripe.update_card"),
     re_path(r'^connect/authorize/$', views.AuthorizeView.as_view(), name="stripe_connect.authorize"),
@@ -13,4 +15,3 @@ urlpatterns = [
     re_path(r'^connect/account-onboarding/refresh/(?P<sa_id>\d+)/$', views.acct_onboarding_refresh, name="stripe_connect.acct_onboarding_refresh"),
     re_path(r'^connect/account-onboarding/done/(?P<sa_id>\d+)/$', views.acct_onboarding_done, name="stripe_connect.acct_onboarding_done"),
 ]
-
