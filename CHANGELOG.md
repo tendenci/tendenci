@@ -1,3 +1,14 @@
+### 16.20 [2026-9-15]
+
+* Migrated Stripe from the legacy Charges API to the modern Payment Intents API, which now supports multiple payment methods such as Apple Pay, Google Pay, and PayTo (configurable in your Stripe dashboard) (Thanks to @rockinrobstar).
+* Added an option to edit the corporate profile upon corporate membership renewal (default: false)
+* Updated study groups to sort alphabetically instead of chronologically.
+* Created an activity module (not enabled by default).
+* Fixed hard coded date and time formats (Thanks to @rob-hills).
+* Updated groups detail page to show description (Thanks to @rob-hills).
+* Multiple other bugfixes and improvements. 
+
+
 ### 16.16 [2026-7-5]
 
 * Synced the expiration date of directories with their associated memberships or corp memberships on join and renewal.
