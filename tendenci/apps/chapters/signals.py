@@ -29,7 +29,11 @@ def add_member_to_coord_group(sender, **kwargs):
     """
     Add member to the corresponding chapter coordinator group (based on state) on member join.
     """
+    if not CoordinatingAgency.objects.exists():
+        return
     membership = kwargs['instance']
+    if not hasattr(membership.user, 'profile'):
+        return
     profile = membership.user.profile
     if profile.state:
         [c_agency] = CoordinatingAgency.objects.filter(state=profile.state)[:1] or [None]
