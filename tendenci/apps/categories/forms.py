@@ -18,6 +18,7 @@ class CategoryField(forms.ChoiceField):
 category_defaults = {
     'label':_('Category'),
     'choices': [],
+    'required': False,
     'help_text': format_html('{0}{1}{2}',
         mark_safe('''
             <span id="t-categories-add-category-help-text" class="help-block">
@@ -34,6 +35,7 @@ category_defaults = {
 sub_category_defaults = {
     'label':_('Subcategory'),
     'choices': [],
+    'required': False,
     'help_text': format_html('{0}{1}{2}',
         mark_safe('''
             <span id="t-categories-add-subcategory-help-text" class="help-block">
