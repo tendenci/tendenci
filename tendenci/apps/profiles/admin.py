@@ -8,9 +8,11 @@ from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, HttpResponseRedirect
 from django.utils.safestring import mark_safe
 from django.utils import timezone
+from django.urls import reverse
+from django.shortcuts import get_object_or_404
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -81,6 +83,27 @@ class ProfileAdmin(TendenciBaseModelAdmin):
     form = ProfileAdminForm
 
     ordering = ('user__last_name', 'user__first_name')
+
+    def delete_view(self, request, object_id, extra_context=None):
+        """
+        Redirects single profile deletion to the User deletion.
+        The auth User deletion page presents more detailed info on
+        what related items will be deleted along with the user object.
+        """
+        profile = get_object_or_404(Profile, id=object_id)
+        user_delete_url = reverse(
+                    'admin:auth_user_delete', 
+                    args=[profile.user.pk]
+                )
+        return HttpResponseRedirect(user_delete_url)
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        if 'soft_delete_selected' in actions:
+            del actions['soft_delete_selected']
+        return actions
 
     def get_object(self, request, object_id, from_field=None):
         obj = super().get_object(request, object_id, from_field=from_field)
