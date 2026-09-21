@@ -745,7 +745,12 @@ def dict_event_speakers(context, event_id, order_by='name'):
         return None
 
     speakers = Speaker.objects.filter(Q(event=event) | Q(event__parent=event))
-    speakers = speakers.order_by(order_by)
+
+    if order_by == 'name':
+        speakers = sorted(speakers, key=lambda spk: (spk.name.split(' ')[-1], spk.name.split(' ')[0]))
+    else:
+        speakers = speakers.order_by(order_by)
+
     # Make a distinct list of speakers, but we can't filter with distinct
     # because speakers are individually entered for each event.
     # Even though two sub-events have the same speaker in terms of name, there is
