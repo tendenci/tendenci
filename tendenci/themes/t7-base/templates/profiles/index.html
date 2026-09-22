@@ -251,7 +251,7 @@
                 </a>
                 {% if not gm.is_newsletter_subscribed %}
                 <small class="text-danger">{% trans 'Unsubscribed' %} 
-                {% if gm.group.allow_self_add %}
+                {% if gm.group.allow_self_add and request.user == user_this %}
                 <a href="{% url "group.newsletter_subscribe_interactive" gm.group.slug %}?next={{ request.path }}" title="Subscribe to receive newsletters">{% trans 'Subscribe' %}</a> 
                 {% endif %}
                 </small>
