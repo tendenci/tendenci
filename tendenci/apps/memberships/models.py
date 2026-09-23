@@ -921,8 +921,11 @@ class MembershipDefault(TendenciBaseModel):
                       }
             chapter_membership = ChapterMembership.objects.create(**params)
             chapter_membership.save_invoice(creator=self.creator)
-            # set pending
-            chapter_membership.pend()
+            if membership_type.require_approval:
+                # set pending
+                chapter_membership.pend()
+            else:
+                chapter_membership.approve(request_user=request.user)
             chapter_membership.save()
             # send email to admin
             chapter_membership.email_admin_join_notice(request)
