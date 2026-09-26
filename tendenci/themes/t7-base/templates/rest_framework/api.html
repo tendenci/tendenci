@@ -1,0 +1,10 @@
+{% extends "rest_framework/base.html" %}
+{% load i18n %}
+
+{% block title %}{% if name %}{{ name }} – {% endif %}Tendenci API v1.0{% endblock %}
+
+{% block branding %}
+    <div class="navbar-brand">
+        {% trans 'Tendenci API v1.0' %}
+    </div>
+{% endblock %}
