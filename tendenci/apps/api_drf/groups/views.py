@@ -7,7 +7,7 @@ from .serializers import GroupSerializer
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    Returns a list of all groups.
     """
 
     queryset = Group.objects.all().order_by("name")

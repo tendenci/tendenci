@@ -1,0 +1,41 @@
+API
+===
+
+To enable tendenci API with `Django Rest Framework <https://www.django-rest-framework.org/>`_ for your site, please follow these steps:
+
+1. Install 3 Python packages. And add those packages to your requirements/common.txt.
+::
+
+    pip install djangorestframework
+    pip install djangorestframework-api-key
+    pip install django-filter
+
+2. Add ``rest_framework``, ``rest_framework_api_key`` and ``django_filters`` to the INSTALLED_APPS in your ``conf/settings.py``:
+::
+
+    INSTALLED_APPS += ['rest_framework', 'rest_framework_api_key', 'django_filters']
+
+
+
+3. Add api urls to the urlpatterns list in your ``conf/urls.py`` (you can change the url path):
+::
+
+    urlpatterns = pre_urlpatterns + [
+
+        #url(r'^', include('example_app.urls')),
+        url(r'^api-drf/', include('tendenci.apps.api_drf.urls')),
+    ] + post_urlpatterns
+
+
+
+API keys can be created and managed at admin backend: *Api Key Permissions / API keys*.
+
+API key must be passed via the Authorization header. It must be formatted as follows:
+::
+
+    Authorization: Api-Key <API_KEY>
+
+
+.. note:: Currently this API is read only, and only available for entities, events, memberships, users and groups. It can be extended in the future. 
+
+

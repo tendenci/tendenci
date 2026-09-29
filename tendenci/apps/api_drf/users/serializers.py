@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from timezone_field.rest_framework import TimeZoneSerializerField
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.memberships.models import MembershipDemographic
@@ -8,9 +9,18 @@ from ..groups.serializers import GroupSerializer
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    time_zone = TimeZoneSerializerField()
     class Meta:
         model = Profile
-        fields = ["company", 'member_number', 'phone', 'address']
+        fields = ['salutation', 'initials', "company",
+                  'position_title', 'position_assignment',
+                  'member_number', 'phone', 'address',
+                  'address2', 'city', 'state',
+                  'zipcode', 'county', 'country',
+                  'region', 'url', 'time_zone',
+                  'department', 'direct_mail', 'notes',
+                  'linkedin', 'facebook', 'twitter',
+                  'instagram', 'youtube' ]
 
  
 class MembershipDemographicSerializer(serializers.ModelSerializer):

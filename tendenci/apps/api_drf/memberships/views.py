@@ -21,7 +21,7 @@ class MembershipFilter(filters.FilterSet):
 
 class MembershipViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API endpoint that allows memberships to be viewed.
+    Returns a list of all active memberships.
     """
 
     queryset = MembershipDefault.objects.filter(status=True,

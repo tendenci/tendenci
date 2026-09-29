@@ -7,7 +7,7 @@ from .serializers import EntitySerializer
 
 class EntityViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API endpoint that allows entities to be viewed.
+    Returns a list of all entities.
     """
 
     queryset = Entity.objects.filter(status=True,

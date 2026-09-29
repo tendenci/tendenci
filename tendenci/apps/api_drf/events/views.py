@@ -7,7 +7,7 @@ from .serializers import EventSerializer
 
 class EventViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API endpoint that allows entities to be viewed.
+    Returns a list of all active events.
     """
 
     queryset = Event.objects.filter(status=True,
