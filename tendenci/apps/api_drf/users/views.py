@@ -17,7 +17,7 @@ class UserFilter(filters.FilterSet):
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API endpoint that allows users to be viewed.
+    Returns a list of all users.
     """
 
     queryset = User.objects.all().order_by("-date_joined")
