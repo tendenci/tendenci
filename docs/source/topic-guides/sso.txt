@@ -16,8 +16,8 @@ the oAuth2 client, follow these 3 steps:
 
     urlpatterns = pre_urlpatterns + [
 
-        #url(r'^', include('example_app.urls')),
-        url(r'^oauth2/', include('tendenci.apps.oauth2_client.urls')),
+        #re_path(r'^', include('example_app.urls')),
+        re_path(r'^oauth2/', include('tendenci.apps.oauth2_client.urls')),
     ] + post_urlpatterns
 
 

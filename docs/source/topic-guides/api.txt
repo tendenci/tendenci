@@ -22,8 +22,8 @@ To enable tendenci API with `Django Rest Framework <https://www.django-rest-fram
 
     urlpatterns = pre_urlpatterns + [
 
-        #url(r'^', include('example_app.urls')),
-        url(r'^api-drf/', include('tendenci.apps.api_drf.urls')),
+        #re_path(r'^', include('example_app.urls')),
+        re_path(r'^api-drf/', include('tendenci.apps.api_drf.urls')),
     ] + post_urlpatterns
 
 
