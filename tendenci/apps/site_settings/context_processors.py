@@ -1,3 +1,5 @@
+from sys import version_info as python_version
+from django import get_version as get_django_version
 from django.core.cache import cache
 from django.conf import settings as d_settings
 from django.template import engines, TemplateDoesNotExist
@@ -49,6 +51,8 @@ def settings(request):
         contexts[context_key.upper()] = value
 
     contexts['TENDENCI_VERSION'] = version
+    contexts['DJANGO_VERSION'] = get_django_version()
+    contexts['PYTHON_VERSION'] = f'{python_version.major}.{python_version.minor}.{python_version.micro}'
 
     contexts['USE_I18N'] = d_settings.USE_I18N
     contexts['LOGIN_URL'] = d_settings.LOGIN_URL
