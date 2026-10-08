@@ -1,11 +1,7 @@
-from datetime import datetime
-from os.path import splitext
-
 from django import forms
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.forms.utils import ErrorList
-from django.template.defaultfilters import filesizeformat
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
