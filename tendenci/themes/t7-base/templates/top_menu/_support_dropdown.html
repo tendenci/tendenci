@@ -72,6 +72,14 @@
                                 </a>
                             </li>
 
+                            <li class="content-item">
+                                <span class="nav-label">{% blocktrans with django_version=DJANGO_VERSION %}Django Version: {{ django_version }}{% endblocktrans %}</span>
+                            </li>
+
+                            <li class="content-item">
+                                <span class="nav-label">{% blocktrans with python_version=PYTHON_VERSION %}Python Version: {{ python_version }}{% endblocktrans %}</span>
+                            </li>
+
                         </ul>
                     </div>
                 </div>
