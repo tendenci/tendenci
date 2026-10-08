@@ -396,6 +396,17 @@ class Directory(TendenciBaseModel):
         if membership:
             return membership.expire_dt
 
+        return self.get_duration_expiration_dt()
+
+    def get_duration_expiration_dt(self):
+        """
+        Returns the expiration date based on activation_dt and requested_duration.
+
+        A requested_duration of 0 is the "Unlimited" duration, so the directory
+        never expires and None is returned.
+        """
+        if not self.activation_dt or not self.requested_duration:
+            return None
         return self.activation_dt + timedelta(days=self.requested_duration)
 
     def is_pending(self):

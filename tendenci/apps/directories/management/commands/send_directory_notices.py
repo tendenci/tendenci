@@ -12,7 +12,9 @@ class Command(BaseCommand):
         from tendenci.apps.directories.models import Directory
 
         # Query all events that are not yet marked for checking
-        directories = Directory.objects.filter(renewal_notice_sent=False)
+        # Directories with an "Unlimited" duration have no expiration date to renew
+        directories = Directory.objects.filter(renewal_notice_sent=False,
+                                               expiration_dt__isnull=False)
 
         days = get_setting('module', 'directories', 'renewaldays')
         days = int(days)
