@@ -586,6 +586,7 @@ class MembershipDefault(TendenciBaseModel):
     promotion_code = models.CharField(max_length=50, blank=True, default='')
     directory = models.ForeignKey(Directory, blank=True, null=True, on_delete=models.SET_NULL)
     groups = models.ManyToManyField(Group)
+    status_detail = models.CharField(max_length=50, default='pending')
 
     membership_set = models.ForeignKey(MembershipSet, blank=True, null=True, on_delete=models.CASCADE)
     app = models.ForeignKey("MembershipApp", null=True, on_delete=models.SET_NULL)

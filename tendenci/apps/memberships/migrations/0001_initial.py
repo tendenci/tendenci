@@ -94,7 +94,7 @@ class Migration(migrations.Migration):
                 ('creator_username', models.CharField(max_length=50)),
                 ('owner_username', models.CharField(max_length=50)),
                 ('status', models.BooleanField(default=True, verbose_name='Active')),
-                ('status_detail', models.CharField(default='active', max_length=50)),
+                ('status_detail', models.CharField(default='pending', max_length=50)),
                 ('guid', models.CharField(max_length=50, editable=False)),
                 ('lang', models.CharField(default='eng', max_length=10, editable=False)),
                 ('member_number', models.CharField(max_length=50, blank=True)),
