@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 ('company_description', models.TextField(default='', verbose_name='Company Description', blank=True)),
                 ('position_title', models.CharField(max_length=150, verbose_name='Position Title')),
                 ('position_description', models.TextField(default='', verbose_name='Position Description', blank=True)),
-                ('position_type', models.CharField(default='full time', max_length=50, verbose_name='Position Type', choices=[('full time', 'Full Time'), ('part time', 'Part Time'), ('permanent', 'Permanent'), ('contract', 'Contract')])),
+                ('position_type', models.CharField(default='full time', max_length=50, verbose_name='Position Type')),
                 ('start_dt', models.DateTimeField(null=True, verbose_name='Start Date/Time', blank=True)),
                 ('end_dt', models.DateTimeField(null=True, verbose_name='End Date/Time', blank=True)),
                 ('experience', models.TextField(default='', verbose_name='Experience', blank=True)),
