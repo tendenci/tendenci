@@ -886,19 +886,55 @@ class UTF8Recoder:
 
 
 def get_salesforce_access():
+    """
+    Return a Salesforce connection, or None if Salesforce is not set up
+    or authentication fails.
 
+    Uses the OAuth 2.0 JWT bearer flow when SALESFORCE_USERNAME,
+    SALESFORCE_CONSUMER_KEY and SALESFORCE_PRIVATEKEY_FILE (or
+    SALESFORCE_PRIVATEKEY) are set. Otherwise falls back to
+    get_salesforce_access_legacy().
+    """
+    username = getattr(settings, 'SALESFORCE_USERNAME', None)
+    consumer_key = getattr(settings, 'SALESFORCE_CONSUMER_KEY', None)
+    privatekey_file = getattr(settings, 'SALESFORCE_PRIVATEKEY_FILE', None)
+    privatekey = getattr(settings, 'SALESFORCE_PRIVATEKEY', None)
+
+    if username and consumer_key and (privatekey_file or privatekey):
+        is_sandbox = getattr(settings, 'SALESFORCE_SANDBOX', False)
+        domain = getattr(settings, 'SALESFORCE_DOMAIN', None) or ('test' if is_sandbox else 'login')
+        try:
+            return Salesforce(username=username,
+                              consumer_key=consumer_key,
+                              privatekey_file=privatekey_file or None,
+                              privatekey=None if privatekey_file else privatekey,
+                              domain=domain)
+        except Exception as e:
+            print('Salesforce authentication failed: %s' % e)
+            return None
+
+    return get_salesforce_access_legacy()
+
+
+def get_salesforce_access_legacy():
+    """
+    Log in with username, password and security token. simple-salesforce
+    sends this through the SOAP API login() call, which Salesforce retires
+    in Summer '27. Use the JWT settings in get_salesforce_access() instead.
+    """
     required_settings = (hasattr(settings, 'SALESFORCE_USERNAME'),
                          hasattr(settings, 'SALESFORCE_PASSWORD'),
                          hasattr(settings, 'SALESFORCE_SECURITY_TOKEN'))
 
     is_sandbox = getattr(settings, 'SALESFORCE_SANDBOX', False)
+    domain = getattr(settings, 'SALESFORCE_DOMAIN', None) or ('test' if is_sandbox else 'login')
 
     if all(required_settings):
         try:
             sf = Salesforce(username=settings.SALESFORCE_USERNAME,
                             password=settings.SALESFORCE_PASSWORD,
                             security_token=settings.SALESFORCE_SECURITY_TOKEN,
-                            sandbox=is_sandbox)
+                            domain=domain)
             return sf
         except:
             print('Salesforce authentication failed')

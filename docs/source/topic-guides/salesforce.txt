@@ -1,0 +1,74 @@
+Salesforce
+==========
+
+Tendenci can send records to Salesforce. It creates Contacts for new profiles and event
+registrants, an Event for each event registration, and a Lead when a corporate membership
+join is approved. To turn on the Contact and Event updates, add this to your
+``conf/settings.py``::
+
+    SALESFORCE_AUTO_UPDATE = True
+
+Leads are sent whenever the login settings below are present.
+
+
+Logging in with the JWT bearer flow
+-----------------------------------
+
+Tendenci logs in to Salesforce with the OAuth 2.0 JWT bearer flow. You need a Salesforce
+user for Tendenci to log in as, an app in Salesforce Setup, and a private key. Follow
+these 3 steps:
+
+1. Create a private key and a certificate::
+
+       openssl req -x509 -newkey rsa:2048 -nodes -days 730 \
+           -keyout salesforce.key -out salesforce.crt -subj "/CN=tendenci"
+
+   Keep ``salesforce.key`` on the server, readable only by the user that runs Tendenci.
+   You upload ``salesforce.crt`` to Salesforce in the next step.
+
+2. In Salesforce Setup, open App Manager and create an External Client App. An existing
+   Connected App works too.
+
+   * Turn on OAuth. Salesforce asks for a callback URL, which this flow does not use.
+     ``https://login.salesforce.com/services/oauth2/success`` is fine.
+   * Add the OAuth scopes ``api`` and ``refresh_token, offline_access``.
+   * Turn on the JWT bearer flow ("Use digital signatures" in a Connected App) and upload
+     ``salesforce.crt``.
+   * In the app's policies, set "Permitted Users" to "Admin approved users are
+     pre-authorized", then add the profile or permission set of the user Tendenci logs
+     in as.
+
+3. Copy the app's Consumer Key and add these settings to your ``conf/settings.py``::
+
+       SALESFORCE_USERNAME = 'integration.user@example.org'
+       SALESFORCE_CONSUMER_KEY = 'Example Consumer Key'
+       SALESFORCE_PRIVATEKEY_FILE = '/path/to/salesforce.key'
+
+   Instead of ``SALESFORCE_PRIVATEKEY_FILE``, you can set ``SALESFORCE_PRIVATEKEY`` to the
+   text of the key. A file keeps the key out of your settings.
+
+For a sandbox, also add::
+
+    SALESFORCE_SANDBOX = True
+
+Tendenci then logs in at ``test.salesforce.com`` instead of ``login.salesforce.com``.
+
+If your org does not allow logins from those addresses, set ``SALESFORCE_DOMAIN`` to your
+My Domain name without ``.salesforce.com``, for example ``'example.my'`` for
+``example.my.salesforce.com``. ``SALESFORCE_DOMAIN`` takes priority over
+``SALESFORCE_SANDBOX``.
+
+
+Logging in with a password and security token (legacy)
+------------------------------------------------------
+
+Older sites log in with these settings::
+
+    SALESFORCE_USERNAME = 'integration.user@example.org'
+    SALESFORCE_PASSWORD = 'Example Password'
+    SALESFORCE_SECURITY_TOKEN = 'Example Security Token'
+
+They still work, but they use the SOAP API ``login()`` call, which Salesforce retires in
+the Summer ’27 release. See the `retirement announcement
+<https://help.salesforce.com/s/articleView?id=005132110&language=en_US&type=1>`_. Switch to
+the JWT settings above before then. If both sets of settings are present, Tendenci uses JWT.
