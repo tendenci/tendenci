@@ -111,9 +111,9 @@ class Command(BaseCommand):
                     continue
                 
                 [organizer] = Organizer.objects.filter(event=event)[:1] or [None]
-                event.organizer = organizer
-                
-                
+
+                # comment it out because it causes AttributeError: property 'organizer' of 'Event' object has no setter
+                #event.organizer = organizer
                 if organizer:
                     if organizer.name:
                         kwargs.update({'sender_display': organizer.name})

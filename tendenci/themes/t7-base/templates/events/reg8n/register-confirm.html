@@ -86,14 +86,14 @@
 
         {% if not registration.canceled %}
             <div>
-             <a href="{% if hash %}{% url "event.registration_edit" registration.pk hash %}{% else %}{% url "event.registration_edit" registration.pk %}{% endif %}">{% trans "Edit Registrant(s) Info" %}{% if event.nested_events_enabled and event.has_child_events %}{% trans " and Sessions" %}{% endif %}</a>
+             <a href="{% if guid %}{% url "event.registration_edit" registration.pk guid %}{% else %}{% url "event.registration_edit" registration.pk %}{% endif %}">{% trans "Edit Registrant(s) Info" %}{% if event.nested_events_enabled and event.has_child_events %}{% trans " and Sessions" %}{% endif %}</a>
 			 {% if event.can_cancel or request.user.is_superuser %}
 	            {% if registrants_count >= 1 or registration.reg_conf_price.quantity > 1 %}
 	                    &nbsp;&nbsp;
 	                  {% if user.is_authenticated %}
 	                      <a href="{% url "event.cancel_registration" event.pk registration.pk %}">{% trans "Cancel Registration" %}</a>
 	                  {% else %}
-	                      <a href="{% url "event.cancel_registration" event.pk registration.pk registration.hash %}">{% trans "Cancel Registration" %}</a>
+	                      <a href="{% url "event.cancel_registration" event.pk registration.pk registration.guid %}">{% trans "Cancel Registration" %}</a>
 	                  {% endif %}
 	             {% endif %}
 	         {% endif %}
@@ -162,7 +162,7 @@
                           {% endif %}
                           &nbsp;&nbsp;&nbsp;<a href="{% url "event.cancel_registrant" event.pk registrant.pk %}"><span class="text-danger">{% trans "Cancel" %}</span></a>
                       {% else %}
-                          <a href="{% url "event.cancel_registrant" event.pk registrant.hash %}">{% trans "Cancel" %}</a>
+                          <a href="{% url "event.cancel_registrant" event.pk registrant.pk registration.guid %}">{% trans "Cancel" %}</a>
                       {% endif %}
                     {% endif %}
                 {% endif %}
