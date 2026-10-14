@@ -58,7 +58,7 @@
             <button type="button" data-toggle="modal" data-target="#cancelModal">{% trans "Cancel Event Registration" %}</button>
             <!-- Cancellation Modal  -->
             <div id="cancelModal" class="modal fade" role="dialog">
-                {% event_cancel_modal event hash registrant %}
+                {% event_cancel_modal event guid registrant %}
             </div>
         </div>
     {% else %}

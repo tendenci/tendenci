@@ -118,7 +118,7 @@ def event_clone_modal(context, event):
 
 @register.inclusion_tag("events/reg8n/cancel_modal.html", takes_context=True)
 def event_cancel_modal(
-        context, event, hash=None, registrant=None, registrants=[], registration=None):
+        context, event, guid=None, registrant=None, registrants=[], registration=None):
     if not registrant and not registrants:
         raise Exception("Must include at least one registrant or a list of registrants")
 
@@ -137,6 +137,7 @@ def event_cancel_modal(
         "registration": registration,
         "cancellation_fee": cancellation_fee,
         "allow_refunds": allow_refunds,
+        "guid": guid
     })
     return context
 

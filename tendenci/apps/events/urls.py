@@ -91,7 +91,7 @@ urlpatterns = [
     #re_path(r'^%s/special_pricing/(?P<id>\d+)/delete/$' % urlpath, views.delete_special_pricing, name='event.delete_special_pricing'),
 
     # registration confirmation
-    re_path(r'^%s/(?P<id>\d+)/registrations/(?P<reg8n_id>\d+)/$' % urlpath,
+    re_path(r'^%s/(?P<id>\d+)/registrations/(?P<reg8n_id>\d+)/(?P<guid>[\d\w-]+)?$' % urlpath,
         views.registration_confirmation, name='event.registration_confirmation'),
     re_path(r'^%s/(?P<id>\d+)/registrations/(?P<hash>\w+)/$' % urlpath,
         views.registration_confirmation, name='event.registration_confirmation'),
@@ -117,24 +117,24 @@ urlpatterns = [
     re_path(r'^%s/register/(?P<event_id>\d+)/individual/(?P<pricing_id>\d+)/$' % urlpath, views.register, {'individual': True}, name='event.register_individual'),
     re_path(r'^%s/register/(?P<event_id>\d+)/table/(?P<pricing_id>\d+)/$' % urlpath, views.register, {'is_table': True}, name='event.register_table'),
 
-    re_path(r'^%s/registration/(?P<reg8n_id>\d+)/edit/$' % urlpath, views.registration_edit,
+    re_path(r'^%s/registration/(?P<reg8n_id>\d+)/edit/(?P<guid>[\d\w-]+)?$' % urlpath, views.registration_edit,
         name="event.registration_edit"),
-    re_path(r'^%s/registration/(?P<reg8n_id>\d+)/edit/(?P<hash>\w+)/$' % urlpath, views.registration_edit,
-        name="event.registration_edit"),
+    # re_path(r'^%s/registration/(?P<reg8n_id>\d+)/edit/(?P<hash>\w+)/$' % urlpath, views.registration_edit,
+    #     name="event.registration_edit"),
     re_path(r'^%s/registrants/(?P<registrant_id>\d+)/check-in/$' % urlpath, views.digital_check_in, name='event.digital_check_in'),
     re_path(r'^%s/registrant/checkin/' % urlpath, views.registrant_check_in, name='event.registrant_check_in'),
     re_path(r"^%s/registrant/file/(?P<id>\d+)/$" % urlpath, views.registrant_file, name="event.registrant_file"),
 
     # cancel event registration
-    re_path(r'^%s/(?P<event_id>\d+)/registrants/cancel/(?P<registrant_id>\d+)/$' % urlpath,
+    re_path(r'^%s/(?P<event_id>\d+)/registrants/cancel/(?P<registrant_id>\d+)/(?P<guid>[\d\w-]+)?$' % urlpath,
         views.cancel_registrant, name='event.cancel_registrant'),
-    re_path(r'^%s/(?P<event_id>\d+)/registrants/cancel/(?P<hash>\w+)/$' % urlpath,
-        views.cancel_registrant, name='event.cancel_registrant'),
+    # re_path(r'^%s/(?P<event_id>\d+)/registrants/cancel/(?P<hash>\w+)/$' % urlpath,
+    #     views.cancel_registrant, name='event.cancel_registrant'),
 
-    re_path(r'^%s/(?P<event_id>\d+)/registrations/cancel/(?P<registration_id>\d+)/$' % urlpath,
+    re_path(r'^%s/(?P<event_id>\d+)/registrations/cancel/(?P<registration_id>\d+)/(?P<guid>[\d\w-]+)?$' % urlpath,
         views.cancel_registration, name='event.cancel_registration'),
-    re_path(r'^%s/(?P<event_id>\d+)/registrations/cancel/(?P<registration_id>\d+)/(?P<hash>\w+)/$' % urlpath,
-        views.cancel_registration, name='event.cancel_registration'),
+    # re_path(r'^%s/(?P<event_id>\d+)/registrations/cancel/(?P<registration_id>\d+)/(?P<hash>\w+)/$' % urlpath,
+    #     views.cancel_registration, name='event.cancel_registration'),
 
     re_path(r'^%s/types/$' % urlpath, views.types, name='event.types'),
     re_path(r'^%s/reassign_type/(?P<type_id>\d+)$' % urlpath, views.reassign_type, name='event.reassign_type'),

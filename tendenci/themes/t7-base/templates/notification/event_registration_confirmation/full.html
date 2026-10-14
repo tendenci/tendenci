@@ -173,13 +173,13 @@
 <h3 style="margin-bottom:3px;">{% trans "Helpful Links" %}</h3>
 <ol style="margin-top:0;">
     <li>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registration_confirmation" event.pk reg8n.registrant.hash %}">
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registration_confirmation" event.pk reg8n.id reg8n.guid %}">
             {% trans "Registration Details" %}
         </a>
     </li>
     {% if event.can_cancel %}
     <li>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.cancel_registrant" event.pk reg8n.registrant.hash %}">
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.cancel_registration" event.pk reg8n.id reg8n.guid %}">
             {% trans "Cancel Registration" %}
         </a>
     </li>
