@@ -824,7 +824,7 @@ def _get_price_labels(pricing):
     else:
         target_display = ''
 
-    end_dt = f'<br/>&nbsp;(Ends {date_format(pricing.end_dt, 'SHORT_DATE_FORMAT')})'
+    end_dt = f"<br/>&nbsp;(Ends {date_format(pricing.end_dt, 'SHORT_DATE_FORMAT')})"
     description = '<br/>&nbsp;<span style="font-weight: normal;">' + str(pricing.description) + '</span>'
 
     return mark_safe('&nbsp;<strong><span data-price="{}">{} {}{}</span>{}</strong>{}'.format(
