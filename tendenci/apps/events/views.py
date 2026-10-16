@@ -5010,7 +5010,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='', guid='',
     elif registrant_hash:
         # hash url is no longer supported, redirect them accordingly
         if not request.user.is_authenticated:
-            msg_string = _("The URL you were trying to access is no longer supported. Please log in and try again, or contact your event organizer.")
+            msg_string = _("This registration URL is no longer supported following a security update. Your registration has not been canceled. Please log in to access your event registration, or contact your event organizer for assistance.")
             messages.add_message(request, messages.WARNING, msg_string)
             redirect_url = reverse('event', args=(id,))
         else:
@@ -5018,7 +5018,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='', guid='',
             if registrant:
                 redirect_url = reverse('event.registration_confirmation', args=[event.id, registrant.registration.id])
             else:
-                msg_string = _("The URL you were trying to access is no longer supported. We're unable to find your registration record. Please contact your event organizer.")
+                msg_string = _("This registration URL is no longer supported following a security update. Please contact your event organizer.")
                 messages.add_message(request, messages.WARNING, msg_string)
                 redirect_url = reverse('profile', args=[request.user.username])
         return HttpResponseRedirect(redirect_url)
