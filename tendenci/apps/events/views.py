@@ -5070,13 +5070,18 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='', guid='',
             messages.add_message(request, messages.WARNING, msg_string)
             redirect_url = reverse('event', args=(id,))
         else:
+            # user is logged in
             registrant = Registrant.objects.filter(user=request.user, registration__event=event).first()
-            if registrant:
+            if registrant and registrant.hash == registrant_hash:
                 redirect_url = reverse('event.registration_confirmation', args=[event.id, registrant.registration.id])
             else:
-                msg_string = _("This registration URL is no longer supported following a security update. Please contact your event organizer.")
+                if request.user.is_superuser:
+                    msg_string = _("This registration URL is no longer supported following a security update. Please search the Registrants list to find this registration.")
+                    redirect_url = reverse('event.registrant.search', args=[event.id])
+                else:
+                    msg_string = _("This registration URL is no longer supported following a security update. Please contact your event organizer.")
+                    redirect_url = reverse('profile', args=[request.user.username])
                 messages.add_message(request, messages.WARNING, msg_string)
-                redirect_url = reverse('profile', args=[request.user.username])
         return HttpResponseRedirect(redirect_url)
         # # not real time index, pull directly from db
         # #sqs = SearchQuerySet()
