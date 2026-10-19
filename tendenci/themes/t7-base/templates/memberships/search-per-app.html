@@ -114,10 +114,10 @@ h3{
                         {% endwith %}
                         {% endif %}
                         {% render_member_row membership app_fields %}
-                        <td nowrap>{{ membership.create_dt|date:DATE_FORMAT }}</td>
-                        <td nowrap>{{ membership.join_dt|date:DATE_FORMAT }}</td>
-                        <td nowrap>{% if membership.renew_dt %}{{ membership.renew_dt|date:DATE_FORMAT }}{% endif %}</td>
-                        <td nowrap>{% if membership.expire_dt %}{{ membership.expire_dt|date:DATE_FORMAT }}{% endif %}</td>
+                        <td nowrap>{{ membership.create_dt|date:'DATE_FORMAT' }}</td>
+                        <td nowrap>{{ membership.join_dt|date:'DATE_FORMAT' }}</td>
+                        <td nowrap>{% if membership.renew_dt %}{{ membership.renew_dt|date:'DATE_FORMAT' }}{% endif %}</td>
+                        <td nowrap>{% if membership.expire_dt %}{{ membership.expire_dt|date:'DATE_FORMAT' }}{% endif %}</td>
                         <td nowrap>{{ membership.status_detail }}</td>
                         {% if MODULE_CHAPTERS_MEMBERSHIPSENABLED %}
                         {% with membership.user.profile.names_of_chapters as chapter_names %}
