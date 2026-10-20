@@ -237,7 +237,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
                         # if they are renewing before expiration, the new expiration date
                         # should start from the previous expiration date instead of the renew date
                         if isinstance(previous_expire_dt, datetime):
-                            if previous_expire_dt > now:
+                            if previous_expire_dt > now or previous_expire_dt > renew_dt:
                                 return previous_expire_dt + relativedelta(years=self.period)
 
                         return renew_dt + relativedelta(years=self.period)
