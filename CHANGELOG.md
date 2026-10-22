@@ -1,3 +1,13 @@
+### 16.30 [2026-10-15]
+
+* **SECURITY**: Removed the hash URLs used in event registration confirmation, editing, and cancellation. Those hash URLs are subject to brute-force attacks. (Thanks to @kta1kri for reporting the issue.)
+* Created the Tendenci API with Django REST Framework (DRF): https://tendenci.readthedocs.io/en/latest/topic-guides/api.html.
+* Updated careers module to have some fields customizable via the settings /settings/module/careers/. 
+* Updated membership to auto approve chapter membership (added with their national membership) if “Require Approval” is unchecked.
+* Updated directories so that an "Unlimited" requested duration never expires (Thanks to @eastagiletracker).
+* Other bugfixes.
+
+
 ### 16.20 [2026-9-15]
 
 * Migrated Stripe from the legacy Charges API to the modern Payment Intents API, which now supports multiple payment methods such as Apple Pay, Google Pay, and PayTo (configurable in your Stripe dashboard) (Thanks to @rockinrobstar).

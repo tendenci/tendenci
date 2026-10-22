@@ -16,14 +16,14 @@
         <div class="modal-footer">
             <div class="form-wrap">
                 {% if registrant %}
-                    {% if hash %}
-                        <form action="{% url "event.cancel_registrant" event.pk registrant.hash %}" method="post">{% csrf_token %}
+                    {% if guid %}
+                        <form action="{% url "event.cancel_registrant" event.pk registrant.pk guid %}" method="post">{% csrf_token %}
                     {% else %}
                         <form action="{% url "event.cancel_registrant" event.pk registrant.pk %}" method="post">{% csrf_token %}
                     {% endif %}
                 {% else %}
-                    {% if hash %}
-                        <form action="{% url "event.cancel_registration" event.pk registration.pk registration.hash %}" method="post">{% csrf_token %}
+                    {% if guid %}
+                        <form action="{% url "event.cancel_registration" event.pk registration.pk registration.guid %}" method="post">{% csrf_token %}
                     {% else %}
                         <form action="{% url "event.cancel_registration" event.pk registration.pk %}" method="post">{% csrf_token %}
                     {%  endif %}

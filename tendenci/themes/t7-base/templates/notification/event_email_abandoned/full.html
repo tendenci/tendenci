@@ -15,7 +15,7 @@
 {% trans "If you are unable to attend this event, please cancel your registration." %}
 </p>
 
-<div><a href="{{ site_url }}{% url "event.registration_confirmation" event.pk reg8n.registrant.hash %}">{% trans "Cancel Registration" %}</a></div>
+<div><a href="{{ site_url }}{% url "event.registration_confirmation" event.pk reg8n.id reg8n.guid %}">{% trans "Cancel Registration" %}</a></div>
 {% endif %}
 
 <br />

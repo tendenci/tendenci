@@ -2657,9 +2657,10 @@ def register_child_events(request, registration_id, guid=None,  template_name="e
         return HttpResponseRedirect(reverse('payment.pay_online', args=(registration.invoice.id, registration.invoice.guid)))
 
 
-    redirect_url = reverse('event.registration_confirmation',
-                                       args=(registration.event.id,
-                                             registration.registrant.hash))
+    args = [registration.event.id, registration.id]
+    if guid:
+        args.append(registration.guid)
+    redirect_url = reverse('event.registration_confirmation', args=args)
 
     has_error = False
     is_admin = request.user.profile.is_superuser
@@ -3077,7 +3078,7 @@ def register(request, event_id=0,
 
                     return HttpResponseRedirect(reverse(
                                                     'event.registration_confirmation',
-                                                    args=(event_id, reg8n.registrant.hash)
+                                                    args=(event_id, reg8n.id, reg8n.guid)
 
                                                     ))
                 else:
@@ -3213,6 +3214,7 @@ def check_free_pass_eligibility(request, form_class=FreePassCheckForm):
     return HttpResponse(json.dumps(ret_dict))
 
 
+# NOT used, remove later
 @is_enabled('events')
 def multi_register(request, event_id=0, template_name="events/reg8n/multi_register.html"):
     """
@@ -3580,20 +3582,22 @@ def _validate_attendance_dates(request, reg8n, registrants, updated_attendance_d
 
 
 @is_enabled('events')
-def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/reg8n_edit.html"):
+def registration_edit(request, reg8n_id=0, guid='', template_name="events/reg8n/reg8n_edit.html"):
     from tendenci.apps.trainings.models import Certification
-    reg8n = get_object_or_404(Registration, pk=reg8n_id)
-
-    perms = (
-        has_perm(request.user, 'events.change_registration', reg8n),  # has perm
-        request.user == reg8n.registrant.user,  # main registrant
-        reg8n.registrant.hash == hash,  # has secret hash
-    )
+    if request.user.is_authenticated:
+        reg8n = get_object_or_404(Registration, pk=reg8n_id)
+        perms = (
+            has_perm(request.user, 'events.change_registration', reg8n),  # has perm
+            request.user == reg8n.registrant.user,  # main registrant
+        )
+        if not any(perms):
+            raise Http403
+    elif guid:
+        reg8n = get_object_or_404(Registration, pk=reg8n_id, guid=guid)
+    else:
+        raise Http403
 
     registrants = reg8n.registrant_set.filter(cancel_dt__isnull=True).order_by('id')
-
-    if not any(perms):
-        raise Http403
 
     custom_reg_form = None
     reg_conf = reg8n.event.registration_configuration
@@ -3756,10 +3760,11 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                             if attendance_dates_changed:
                                 break
 
-            reg8n_conf_url = reverse(
-                                    'event.registration_confirmation',
-                                    args=(reg8n.event.id, reg8n.registrant.hash)
-                                    )
+            args = [reg8n.event.id, reg8n.id]
+            if guid:
+                args.append(reg8n.guid)
+            reg8n_conf_url = reverse('event.registration_confirmation',
+                                    args=args)
 
             if updated:
                 EventLog.objects.log(instance=reg8n)
@@ -3802,32 +3807,33 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
 
 @is_enabled('events')
-def cancel_registration(request, event_id, registration_id, hash='', template_name="events/reg8n/cancel_registration.html"):
+def cancel_registration(request, event_id, registration_id, guid='', template_name="events/reg8n/cancel_registration.html"):
     event = get_object_or_404(Event, pk=event_id)
+    registration = get_object_or_404(Registration, pk=registration_id, event=event)
 
-    try:
-        registration = Registration.objects.get(
-            event=event,
-            pk=registration_id,
+    # perm check
+    if guid:
+        if registration.guid != guid:
+            raise Http403
+    elif request.user.is_authenticated:
+        perms = (
+            has_perm(request.user, 'events.change_registration', registration),  # has perm
+            request.user == registration.registrant.user,  # main registrant
         )
-    except Registration.DoesNotExist:
-        raise Http404
 
-    perms = (
-        has_perm(request.user, 'events.change_registration', registration),  # has perm
-        request.user == registration.registrant.user,  # main registrant
-        registration.registrant.hash == hash,  # has secret hash
-    )
-
-    if not any(perms):
+        if not any(perms):
+            raise Http403
+    else:
         raise Http403
+
+    args = [event.id, registration.id]
+    if guid:
+        args.append(registration.guid)
+    reg8n_conf_url = reverse('event.registration_confirmation', args=args)
 
     if registration.canceled:
         # already canceled
-        return HttpResponseRedirect(
-            reverse('event.registration_confirmation',
-            args=[event.pk, registration.registrant.hash])
-        )
+        return HttpResponseRedirect(reg8n_conf_url)
 
     registrants = registration.registrant_set.filter(cancel_dt__isnull=True)
     cancelled_registrants = registration.registrant_set.filter(cancel_dt__isnull=False)
@@ -3844,10 +3850,7 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
         if not registration.canceled:
             registration.cancel(request)
 
-        return HttpResponseRedirect(
-            reverse('event.registration_confirmation',
-            args=[event.pk, registration.registrant.hash])
-        )
+        return HttpResponseRedirect(reg8n_conf_url)
 
     for regt in registrants:
         if regt.custom_reg_form_entry:
@@ -3866,34 +3869,29 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
         'registration': registration,
         'registrants': registrants,
         'cancelled_registrants': cancelled_registrants,
-        'hash': hash,
+        'guid': guid,
         })
 
 
 @is_enabled('events')
-def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_name="events/reg8n/cancel_registrant.html"):
+def cancel_registrant(request, event_id, registrant_id, guid='', template_name="events/reg8n/cancel_registrant.html"):
     event = get_object_or_404(Event, pk=event_id)
-
-    if registrant_id:
-        registrant = get_object_or_404(Registrant,
+    registrant = get_object_or_404(Registrant,
                                        registration__event=event,
                                        pk =registrant_id,)
-        # check permission
-        if not has_perm(request.user, 'events.view_registrant', registrant):
-            if not (request.user.is_authenticated and request.user == registrant.user):
+    # check permission
+    if guid:
+        # check if guid is valid
+        if not Registration.objects.filter(id=registrant.registration.id,
+                                           guid=guid).exists():
+            raise Http403
+    elif request.user.is_authenticated:
+        if not has_perm(request.user, 'events.change_registrant', registrant):
+            if request.user != registrant.user:
                 raise Http403
-    elif hash:
-        sqs = Registrant.objects.filter(registration__event=event)
-        sqs = sqs.order_by("-update_dt")
+    else:
+        raise Http403
 
-        # if the for loop is heavy, add the hash field to the table Registrant
-        registrant = None
-        for reg in sqs:
-            if reg.hash == hash:
-                registrant = reg
-                break
-        if not registrant:
-            raise Http404
 
     if registrant.cancel_dt:
         raise Http404
@@ -3906,9 +3904,12 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                 'event.cancel_registrant', args=[event.pk, registrant.pk]))
 
         registrant.cancel(request)
-        # back to invoice
+        args = [event.id, registrant.registration.id]
+        if guid:
+            args.append(registrant.registration.guid)
+        # back to confirm
         return HttpResponseRedirect(
-            reverse('event.registration_confirmation', args=[event.pk, registrant.hash]))
+            reverse('event.registration_confirmation', args=args))
 
 
     if registrant.custom_reg_form_entry:
@@ -3920,7 +3921,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
         context={
         'event': event,
         'registrant':registrant,
-        'hash': hash,
+        'guid': guid,
         })
 
 
@@ -5034,7 +5035,7 @@ def registrant_file(request, id):
         return response
 
 @is_enabled('events')
-def registration_confirmation(request, id=0, reg8n_id=0, hash='',
+def registration_confirmation(request, id=0, reg8n_id=0, hash='', guid='',
     template_name='events/reg8n/register-confirm.html'):
     """
     Registration information.
@@ -5042,46 +5043,70 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     or administrator can see the entire registration.
     """
     event = get_object_or_404(Event, pk=id)
-    registrants_count = 1
     registrant_hash = hash
     is_registrant = False
 
     if reg8n_id:
-        registration = get_object_or_404(Registration, event=event, pk=reg8n_id)
+        if request.user.is_authenticated:
+            registration = get_object_or_404(Registration, event=event, pk=reg8n_id)
+            is_permitted = has_perm(request.user, 'events.view_registration', registration)
+            is_registrant = registration.registrant_set.filter(user=request.user).exists()
 
-        is_permitted = has_perm(request.user, 'events.view_registration', registration)
-        is_registrant = request.user in [r.user for r in registration.registrant_set.all()]
+            if not any((is_permitted, is_registrant)):
+                if not registration.allow_adjust_invoice_by(request.user):
+                    raise Http403
 
-        # permission denied; if not given explicit permission or not registrant
-        if not any((is_permitted, is_registrant)):
-            if not (request.user.is_authenticated and registration.allow_adjust_invoice_by(request.user)):
+        else:
+            if guid:
+                registration = get_object_or_404(Registration, event=event, pk=reg8n_id, guid=guid)
+            else:
                 raise Http403
-
         registrant = registration.registrant
 
     elif registrant_hash:
-        # not real time index, pull directly from db
-        #sqs = SearchQuerySet()
-        #sqs = sqs.models(Registrant)
-        #sqs = sqs.filter(event_pk=event.pk)
-        #sqs = sqs.auto_query(sqs.query.clean(registrant_hash))
-        sqs = Registrant.objects.filter(registration__event=event)
-        sqs = sqs.order_by("-update_dt")
-
-        # find the match - the for loop might be heavy. maybe add hash field later
-        registrant = None
-        for reg in sqs:
-            if reg.hash == registrant_hash:
-                registrant = reg
-                break
-        if not registrant:
-            raise Http404
-
-        try:
-            #registrant = sqs[0].object
-            registration = registrant.registration
-        except:
-            raise Http404
+        # hash url is no longer supported, redirect them accordingly
+        if not request.user.is_authenticated:
+            msg_string = _("This registration URL is no longer supported following a security update. Your registration has not been canceled. Please log in to access your event registration, or contact your event organizer for assistance.")
+            messages.add_message(request, messages.WARNING, msg_string)
+            redirect_url = reverse('event', args=(id,))
+        else:
+            # user is logged in
+            registrant = Registrant.objects.filter(user=request.user, registration__event=event).first()
+            if registrant and registrant.hash == registrant_hash:
+                redirect_url = reverse('event.registration_confirmation', args=[event.id, registrant.registration.id])
+            else:
+                if request.user.is_superuser:
+                    msg_string = _("This registration URL is no longer supported following a security update. Please search the Registrants list to find this registration.")
+                    redirect_url = reverse('event.registrant.search', args=[event.id])
+                else:
+                    msg_string = _("This registration URL is no longer supported following a security update. Please contact your event organizer.")
+                    redirect_url = reverse('profile', args=[request.user.username])
+                messages.add_message(request, messages.WARNING, msg_string)
+        return HttpResponseRedirect(redirect_url)
+        # # not real time index, pull directly from db
+        # #sqs = SearchQuerySet()
+        # #sqs = sqs.models(Registrant)
+        # #sqs = sqs.filter(event_pk=event.pk)
+        # #sqs = sqs.auto_query(sqs.query.clean(registrant_hash))
+        # sqs = Registrant.objects.filter(registration__event=event)
+        # sqs = sqs.order_by("-update_dt")
+        #
+        # # find the match - the for loop might be heavy. maybe add hash field later
+        # registrant = None
+        # for reg in sqs:
+        #     if reg.hash == registrant_hash:
+        #         registrant = reg
+        #         break
+        # if not registrant:
+        #     raise Http404
+        #
+        # try:
+        #     #registrant = sqs[0].object
+        #     registration = registrant.registration
+        # except:
+        #     raise Http404
+    else:
+        raise Http404
 
     registrants = registration.registrant_set.all().order_by('id')
     registrants_count = registration.registrant_set.count()
@@ -5104,7 +5129,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         'registrants': registrants,
         'registrants_count': registrants_count,
         'addons': addons,
-        'hash': registrant_hash,
+        'guid': guid,
         'is_registrant': is_registrant,
         'use_badges': settings.USE_BADGES,
         })
