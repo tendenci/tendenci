@@ -55,33 +55,36 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
     if obj.__class__.__name__ == 'Registration':
         block_message = ''
         event = obj.event
-        spots_available = event.get_spots_status()[1]
-        if not spots_available:
-            block_message = gettext('No seats available for this event. Please cancel your registration or contact event organizer.')
+        if obj.canceled:
+            block_message += gettext("We can't process payment for a cancelled registration.")
         else:
-            pricings = {}
-            for registrant in obj.registrant_set.filter(cancel_dt__isnull=True):
-                pricing = registrant.pricing
-                if pricing and pricing.registration_cap:
-                    if pricing not in pricings:
-                        pricings[pricing] = 1
-                    else:
-                        pricings[pricing] += 1
-            for p in pricings:
-                price_spots_available = p.spots_available()
-                if price_spots_available < pricings[p]:
-                    if not price_spots_available:
-                        block_message += gettext('No seats available for price option "{}". '.format(p.title))
-                    else:
-                        block_message += gettext('The available seats for price option "{}" is not enough for this registration. '.format(p.title))
-            if block_message:
-                block_message += gettext('Please cancel your registration and re-register at a different price.')
+            spots_available = event.get_spots_status()[1]
+            if not spots_available:
+                block_message = gettext('No seats available for this event. Please cancel your registration or contact event organizer.')
+            else:
+                pricings = {}
+                for registrant in obj.registrant_set.filter(cancel_dt__isnull=True):
+                    pricing = registrant.pricing
+                    if pricing and pricing.registration_cap:
+                        if pricing not in pricings:
+                            pricings[pricing] = 1
+                        else:
+                            pricings[pricing] += 1
+                for p in pricings:
+                    price_spots_available = p.spots_available()
+                    if price_spots_available < pricings[p]:
+                        if not price_spots_available:
+                            block_message += gettext('No seats available for price option "{}". '.format(p.title))
+                        else:
+                            block_message += gettext('The available seats for price option "{}" is not enough for this registration. '.format(p.title))
+                if block_message:
+                    block_message += gettext('Please cancel your registration and re-register at a different price.')
 
         if block_message:
             messages.add_message(request, messages.ERROR, block_message)
             return HttpResponseRedirect(reverse(
                                 'event.registration_confirmation',
-                                args=(event.id, obj.registrant.hash)))
+                                args=(event.id, obj.id, obj.guid)))
 
     # check if this invoice requires third party payment
     if invoice.use_third_party_payment:
