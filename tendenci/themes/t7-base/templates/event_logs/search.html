@@ -56,7 +56,7 @@
               {% endif %}
             </td>
             <td class="el-sh-dt">
-              {{ event_log.create_dt|date:"SHORT_DATE_FORMAT" }}
+              {{ event_log.create_dt|date:"SHORT_DATETIME_FORMAT" }}
               <a href="{% url "event_log.search" %}?start_dt_0={{ event_log.create_dt|datedelta:'-minutes=30'|date:"Y-m-d" }}&start_dt_1={{ event_log.create_dt|datedelta:'-minutes=30'|date:"h:i A" }}&end_dt_0={{ event_log.create_dt|datedelta:'+minutes=30'|date:"Y-m-d" }}&end_dt_1={{ event_log.create_dt|datedelta:'+minutes=30'|date:"h:i A" }}">()</a>
             </td>
           </tr>
