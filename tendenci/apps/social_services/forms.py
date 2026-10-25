@@ -9,14 +9,14 @@ from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.base.fields import EmailVerificationField
-
+from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.social_services.models import SkillSet, ReliefAssessment, ETHNICITY_CHOICES
 
 
 THIS_YEAR = datetime.date.today().year
 
 
-class AddressForm(BetterModelForm):
+class AddressForm(FormControlWidgetMixin, BetterModelForm):
     address = forms.CharField(label=_("Address"), max_length=150)
     address2 = forms.CharField(label=_("Address2"), max_length=100, required=False)
     city = forms.CharField(label=_("City"), max_length=50)
@@ -34,7 +34,7 @@ class AddressForm(BetterModelForm):
                   'country')
 
 
-class SkillSetForm(BetterModelForm):
+class SkillSetForm(FormControlWidgetMixin, BetterModelForm):
     class Meta:
         model = SkillSet
         exclude = ('user',)
@@ -103,7 +103,7 @@ class SkillSetForm(BetterModelForm):
                 field.widget.attrs['disabled'] = True
 
 
-class ReliefAssessmentForm(BetterModelForm):
+class ReliefAssessmentForm(FormControlWidgetMixin, BetterModelForm):
     first_name = forms.CharField(label=_("First Name"), max_length=100,
                                  error_messages={'required': 'First Name is a required field.'})
     last_name = forms.CharField(label=_("Last Name"), max_length=100,

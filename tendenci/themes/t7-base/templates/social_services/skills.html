@@ -36,7 +36,7 @@
     <form action="" method="post">{% csrf_token %}
         <div class="forms">
             {{ forms|styled_multi_forms }}
-            <input type="submit" value="{% trans 'Submit Information!' %}"/>
+            <input class="btn btn-primary" type="submit" value="{% trans 'Submit Information!' %}"/>
         </div>
     </form>
 {% else %}

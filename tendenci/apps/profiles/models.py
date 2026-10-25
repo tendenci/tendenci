@@ -722,7 +722,12 @@ class Profile(Person):
         user.save()
 
         if created:
-            profile = Profile.objects.create_profile(user)
+            profile = Profile(user=user,
+                              creator_id=user.id,
+                              creator_username=user.username,
+                              owner_id=user.id,
+                              owner_username=user.username)
+            profile.save()
             create_salesforce_contact(profile)  # Returns sf_id
 
         return user, created

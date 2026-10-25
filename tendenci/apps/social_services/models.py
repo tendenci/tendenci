@@ -177,8 +177,9 @@ class ReliefAssessment(models.Model):
                   'street': self.address,
                   'city': self.city,
                   'country': self.country}
-        url = 'http://nominatim.openstreetmap.org/search'
-        result = requests.get(url, params=params).json()
+        url = 'https://nominatim.openstreetmap.org/search'
+        headers = {'User-Agent': 'TendenciGeocodingApp/1.0'}
+        result = requests.get(url, params=params, headers=headers).json()
         if result:
             lat = result[0]['lat']
             lng = result[0]['lon']

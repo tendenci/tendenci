@@ -9,20 +9,29 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.social_services.forms import SkillSetForm, ReliefAssessmentForm, AddressForm
 from tendenci.apps.social_services.models import SkillSet, ReliefAssessment
 from tendenci.apps.social_services.utils import get_responder_skills_data
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.decorators import is_enabled
+from tendenci.apps.event_logs.models import EventLog
 
 
 @login_required
 def skill_list(request, username, edit=False, template_name="social_services/skills.html"):
 
     user_this = get_object_or_404(User, username=username)
+    
+    edit_mode = edit
+    # check permissions
+    allowed_perms = (request.user == user_this,
+                     has_perm(request.user, 'social_services.change_skillset'),
+                     not edit_mode and has_perm(request.user, 'social_services.view_skillset'))
+    if not any(allowed_perms):
+        raise Http403
+
     if not hasattr(user_this, 'skillset'):
         skills = SkillSet.objects.create(user=user_this)
     else:
         skills = user_this.skillset
-
-    edit_mode = False
-    if edit and (request.user == user_this or request.user.is_superuser):
-        edit_mode = True
 
     address_form = AddressForm(request.POST or None,
                                instance=user_this.profile)
@@ -44,19 +53,27 @@ def skill_list(request, username, edit=False, template_name="social_services/ski
     return render_to_resp(request=request, template_name=template_name, context=context)
 
 
+@is_enabled('social_services')
+@login_required
 def relief_form(request, template_name="social_services/relief_form.html"):
     form = ReliefAssessmentForm(request.POST or None)
     now = timezone.now()
 
     if request.method == 'POST' and form.is_valid():
-        form.save()
+        relief_assessment = form.save()
+        EventLog.objects.log()
         return redirect('social-services.map')
 
     context = {'form': form, 'now': now}
     return render_to_resp(request=request, template_name=template_name, context=context)
 
 
+@is_enabled('social_services')
+@login_required
 def relief_map(request, template_name="social_services/map.html"):
+    if not has_perm(request.user, 'social_services.view_reliefassessment'):
+        raise Http403
+
     responders = SkillSet.objects.filter(loc__isnull=False)
 
     center = 0
@@ -78,7 +95,12 @@ def relief_map(request, template_name="social_services/map.html"):
     return render_to_resp(request=request, template_name=template_name, context=context)
 
 
+@is_enabled('social_services')
+@login_required
 def responders_list(request, template_name="social_services/responders.html"):
+    if not has_perm(request.user, 'social_services.view_skillset'):
+        raise Http403
+ 
     lon = request.GET.get('lon', None)
     lat = request.GET.get('lat', None)
     d = request.GET.get('d', 20)
@@ -107,7 +129,12 @@ def responders_list(request, template_name="social_services/responders.html"):
     return render_to_resp(request=request, template_name=template_name, context=context)
 
 
+@is_enabled('social_services')
+@login_required
 def relief_areas_list(request, template_name="social_services/relief-areas.html"):
+    if not has_perm(request.user, 'social_services.view_reliefassessment'):
+        raise Http403
+
     lon = request.GET.get('lon', None)
     lat = request.GET.get('lat', None)
     d = request.GET.get('d', 20)
@@ -129,14 +156,21 @@ def relief_areas_list(request, template_name="social_services/relief-areas.html"
              relief_areas.filter(gas=True).count(),
              relief_areas.filter(prescription=True).count()]
 
+    EventLog.objects.log()
     context = {'relief_areas': relief_areas, 'stats': stats, 'lon': lon, 'lat': lat}
     return render_to_resp(request=request, template_name=template_name, context=context)
 
 
+@is_enabled('social_services')
+@login_required
 def relief_area_detail(request, area_id, template_name="social_services/relief-area-detail.html"):
+    if not has_perm(request.user, 'social_services.view_reliefassessment'):
+        raise Http403
+
     area = get_object_or_404(ReliefAssessment, pk=area_id)
 
     form = ReliefAssessmentForm(edit=False, instance=area)
 
     context = {'form': form}
+    EventLog.objects.log()
     return render_to_resp(request=request, template_name=template_name, context=context)
