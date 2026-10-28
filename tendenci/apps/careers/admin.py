@@ -16,7 +16,7 @@ class CareerAdmin(TendenciBaseModelAdmin):
                     'admin_perms',
                     'admin_status']
     list_filter = ['status_detail', 'user']
-    search_fields = ['user', 'company']
+    search_fields = ['user__first_name', 'user__last_name', 'user__email', 'company']
     fieldsets = (
         ('', {
             'fields': ('user',
