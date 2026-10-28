@@ -6,6 +6,7 @@ from django.core.cache import cache
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
+from django.contrib.auth.models import User
 #from django.template import Context, Template
 
 
@@ -122,7 +123,7 @@ class Command(BaseCommand):
                     profile = recipient.member.profile
                 else:
                     profile = None
-            except KeyError:
+            except (KeyError, User.DoesNotExist) as e:
                 continue
 
             # Skip if Don't Send Email is on
