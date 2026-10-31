@@ -32,7 +32,7 @@ If necessary, you may be able to run Tendenci on a VM with as little as 1 CPU co
 3GB of storage, but you will likely find that to be too slow/constrained even for testing purposes.
 
 
-Please note that Tendenci 16 requires Python 3.10 or newer. 
+Please note that Tendenci 16 requires Python 3.11 or newer. 
 
 
 System Preparation
@@ -52,7 +52,7 @@ Also ensure that Ubuntu is configured to automatically install security updates:
 
 
 
-Install the required system dependencies (Ubuntu 22.04 LTS comes with Python 3.10 and Ubuntu 24.04 LTS comes with Python 3.12. So there is no need to install Python 3):
+Install the required system dependencies (Ubuntu 24.04 LTS comes with Python 3.12. If you use Ubuntu 22.04 LTS, you'd need to install Python 3.12 as Python 3.10 reached EOL on Oct 1st, 2026.):
 ::
 
     sudo apt install build-essential \
