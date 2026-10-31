@@ -7,7 +7,7 @@
         "input_type": "select",
         "client_editable": false,
         "name": "enabled",
-        "value": "true",
+        "value": "false",
         "label": "Enabled",
         "input_value": "true,false",
         "parent_id": 0,
