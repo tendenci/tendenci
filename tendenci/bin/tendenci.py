@@ -11,7 +11,7 @@ from django.core.management import ManagementUtility
 
 
 CURRENT_PYTHON = sys.version_info[:2]
-REQUIRED_PYTHON = (3, 10)
+REQUIRED_PYTHON = (3, 11)
 
 if CURRENT_PYTHON < REQUIRED_PYTHON:
     sys.stderr.write("This version of Tendenci requires Python {}.{} or above - you are running {}.{}\n".format(*(REQUIRED_PYTHON + CURRENT_PYTHON)))
@@ -73,7 +73,7 @@ class CreateProject(Command):
         print("Creating a Tendenci project called {project_name}".format(project_name=project_name))  # noqa
 
         # First find the path to Tendenci
-        template_path = "https://github.com/tendenci/tendenci-project-template/archive/master.zip"
+        template_path = "https://github.com/tendenci/tendenci-project-template/archive/main.zip"
 
         # Call django-admin startproject
         utility_args = ['django-admin.py',
