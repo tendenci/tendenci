@@ -8,8 +8,13 @@
     });
     function recaptchaFormSubmit{{ widget_uuid }}(event) {
         event.preventDefault();
-        // get click button
-        const clickedButton = event.submitter;
+        var form = element_{{ widget_uuid }}.form;
+        // A second click while the token request is in flight must not start another submit.
+        if (form.getAttribute('data-tendenci-async-submit') === 'true') {
+            return;
+        }
+        form.setAttribute('data-tendenci-async-submit', 'true');
+        var clickedButton = event.submitter;
         {% if action %}
         grecaptcha.execute('{{ public_key }}', {action: '{{ action|escape }}'})
         {% else %}
@@ -18,14 +23,19 @@
         .then(function(token) {
             console.log("reCAPTCHA validated for 'data-widget-uuid=\"{{ widget_uuid }}\"'. Setting input value...")
             element_{{ widget_uuid }}.value = token;
-            // insert hidden input for submit button
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = clickedButton.name;
-            hiddenInput.value = clickedButton.value;
-            element_{{ widget_uuid }}.form.appendChild(hiddenInput);
-
-            element_{{ widget_uuid }}.form.submit();
+            if (clickedButton && clickedButton.name) {
+                var hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = clickedButton.name;
+                hiddenInput.value = clickedButton.value;
+                form.appendChild(hiddenInput);
+            }
+            // An input named "submit" shadows form.submit, so call the native method.
+            HTMLFormElement.prototype.submit.call(form);
+        })
+        .catch(function() {
+            form.removeAttribute('data-tendenci-async-submit');
+            form.dispatchEvent(new CustomEvent('tendenci:submit-cancelled', { bubbles: true }));
         });
     }
 </script>
