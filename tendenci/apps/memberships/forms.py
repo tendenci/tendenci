@@ -1,7 +1,7 @@
 import decimal
 from datetime import datetime
 import requests
-import chardet
+import charset_normalizer
 
 from django import forms
 from django.contrib.auth.models import User
@@ -476,7 +476,7 @@ class MembershipDefaultUploadForm(forms.ModelForm):
             raise forms.ValidationError(_('Please specify the key to identify duplicates'))
         upload_file.seek(0)
         file_content = upload_file.read()
-        encoding = chardet.detect(file_content)['encoding']
+        encoding = charset_normalizer.detect(file_content)['encoding']
         file_content = file_content.decode(encoding)
         #upload_file.seek(0)
         header_line_index = file_content.find('\n')

@@ -34,7 +34,7 @@ django-timezone-field==7.2.1
 django-ses==4.7.2
 django-tastypie==0.15.1
 docutils==0.22.4
-chardet==7.2.0
+charset-normalizer==3.5.2
 psycopg2==2.9.11
 gunicorn==25.1.0
 gevent==25.9.1

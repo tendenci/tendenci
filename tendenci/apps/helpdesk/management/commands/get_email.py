@@ -17,7 +17,7 @@ import mimetypes
 import poplib
 import re
 import socket
-import chardet
+import charset_normalizer
 
 from datetime import timedelta
 from email.utils import parseaddr, collapse_rfc2231_value
@@ -241,7 +241,7 @@ def ticket_from_message(message, queue, quiet):
                     # strip html tags
                     body_plain = striptags(body_html)
                 except DjangoUnicodeDecodeError:
-                    charset = chardet.detect(body_html)['encoding']
+                    charset = charset_normalizer.detect(body_html)['encoding']
                     body_plain = striptags(str(body_html, charset))
 
                 body_plain = unescape(body_plain)

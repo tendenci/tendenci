@@ -1,5 +1,5 @@
 import decimal
-import chardet
+import charset_normalizer
 import operator
 from uuid import uuid4
 from os.path import join
@@ -1047,7 +1047,7 @@ class CorpMembershipUploadForm(forms.ModelForm):
             raise forms.ValidationError(_('Please specify the key to identify duplicates'))
 
         file_content = upload_file.read()
-        encoding = chardet.detect(file_content)['encoding']
+        encoding = charset_normalizer.detect(file_content)['encoding']
         file_content = file_content.decode(encoding)
 
         upload_file.seek(0)

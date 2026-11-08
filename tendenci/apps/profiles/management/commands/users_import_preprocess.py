@@ -1,6 +1,6 @@
 import os
 #import chardet
-import chardet
+import charset_normalizer
 
 from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
@@ -43,7 +43,7 @@ class Command(BaseCommand):
                 default_storage.save(path2, ContentFile(b''))
                 f = default_storage.open(uimport.upload_file.name)
                 f2 = default_storage.open(path2, 'wb+')
-                char_det = chardet.detect(f.read())
+                char_det = charset_normalizer.detect(f.read())
                 encoding = char_det["encoding"]
                 confidence = char_det["confidence"]
                 if confidence < 0.6:

@@ -826,10 +826,10 @@ def normalize_newline(file_path):
 
     ```file_path``` is a relative path.
     """
-    import chardet
+    import charset_normalizer
     with default_storage.open(file_path, 'rb') as f:
         data = f.read()
-        char_det = chardet.detect(data)
+        char_det = charset_normalizer.detect(data)
         encoding = char_det["encoding"]
         confidence = char_det["confidence"]
         if confidence < 0.6:

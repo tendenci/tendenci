@@ -1,5 +1,5 @@
 import os
-import chardet
+import charset_normalizer
 
 from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
@@ -43,7 +43,7 @@ class Command(BaseCommand):
                 f = default_storage.open(mimport.upload_file.name)
                 f2 = default_storage.open(path2, 'wb+')
                 encoding_updated = False
-                encoding = chardet.detect(f.read())['encoding']
+                encoding = charset_normalizer.detect(f.read())['encoding']
                 if encoding == 'ISO-8859-1' or \
                     encoding == 'ISO-8859-2':
                     encoding = 'latin-1'
