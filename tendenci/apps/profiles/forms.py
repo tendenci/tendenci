@@ -1,5 +1,6 @@
 import re
-import chardet
+#import chardet
+import charset_normalizer
 
 from django import forms
 from django.contrib import auth
@@ -946,7 +947,7 @@ class UserUploadForm(forms.ModelForm):
         upload_file.seek(0)
         file_content = upload_file.read()
         # decode from bytes to string
-        char_det = chardet.detect(file_content)
+        char_det = charset_normalizer.detect(file_content)
         encoding = char_det["encoding"]
         confidence = char_det["confidence"]
         if confidence < 0.6:

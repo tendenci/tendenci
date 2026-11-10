@@ -1,7 +1,7 @@
 from os.path import splitext, basename, join
 import codecs
 from csv import reader
-import chardet
+import charset_normalizer
 import traceback
 
 from django import forms
@@ -1079,7 +1079,7 @@ class ChapterMembershipUploadForm(FormControlWidgetMixin, forms.ModelForm):
 
         upload_file = cleaned_data['upload_file']
         upload_file.seek(0)
-        encoding = chardet.detect(upload_file.read(10000))["encoding"]
+        encoding = charset_normalizer.detect(upload_file.read(10000))["encoding"]
         if not encoding:
             encoding = 'utf-8'
         upload_file.seek(0)

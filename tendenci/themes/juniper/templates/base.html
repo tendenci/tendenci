@@ -160,6 +160,8 @@
     {% endif %}
     
     {% block extra_body %}{% endblock %}
+
+    <script type="text/javascript" src="{% static 'js/global/prevent_double_submit.js' %}"></script>
     
     <script type="text/javascript">
         jQuery(document).on('click', '.yamm .dropdown-menu', function (e) {
