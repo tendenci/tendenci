@@ -4873,24 +4873,32 @@ def event_badges(request, event_id=0, template_name='events/badges.html'):
             has_perm(request.user,'events.change_event', event)):
         raise Http403
 
-    registrations = event.registration_set.all()
+    #registrations = event.registration_set.all()
     registrants = list()
     current_batch = list()
     payment_required = event.registration_configuration.payment_required
 
-    for registration in registrations:
-        for registrant in registration.registrant_set.filter(cancel_dt__isnull=True):
-            if payment_required and registration.not_paid():
-                # they're not paid, skip
-                continue
+    # a list of registrants that are not cancelled.
+    registrants_qry = Registrant.objects.filter(
+                            registration__event_id=event.id,
+                            registration__canceled=False,
+                            cancel_dt__isnull=True)
+    # if payment is required, make sure they're paid
+    if payment_required:
+        registrants_qry = registrants_qry.filter(
+            Q(registration__invoice=None) | Q(registration__invoice__balance=0))
 
-            has_max_badges_per_page = len(current_batch) == 3
+    # sort by name - last name, first name
+    registrants_qry = registrants_qry.order_by('last_name', 'first_name')
 
-            if not has_max_badges_per_page:
-                current_batch.append(registrant)
-            if has_max_badges_per_page:
-                registrants.append({'registrants': current_batch.copy()})
-                current_batch = [registrant]
+    for registrant in registrants_qry:                  
+        has_max_badges_per_page = len(current_batch) == 3
+
+        if not has_max_badges_per_page:
+            current_batch.append(registrant)
+        if has_max_badges_per_page:
+            registrants.append({'registrants': current_batch.copy()})
+            current_batch = [registrant]
 
     if current_batch:
         registrants.append({'registrants': current_batch.copy()})
