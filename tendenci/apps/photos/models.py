@@ -709,6 +709,9 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
             self.status_detail.lower() == "active"]
             )
 
+    def get_export_zip_file_path(self, identifier):
+        return f'export/zip_files/{identifier}/set_{self.id}.zip'
+
 
 class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     """

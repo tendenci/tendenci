@@ -2,9 +2,11 @@ import os
 import re
 import io
 from PIL import Image as PILImage
+import uuid
 
 from subprocess import Popen
 
+from celery.result import AsyncResult
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import gettext_lazy as _
@@ -845,39 +847,63 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     })
 
 
+@login_required
 def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
     """ Generate zip file for the entire photo set
     for admins only.
     """
+    #admin only
+    if not request.user.is_superuser:
+        raise Http403
 
     photo_set = get_object_or_404(PhotoSet, id=id)
 
-    #admin only
-    if not request.user.profile.is_superuser:
-        raise Http403
-
-    file_path = ""
     task_id = ""
+    identifier = str(uuid.uuid4())
     if not getattr(settings, 'CELERY_IS_ACTIVE', None):
         task = ZipPhotoSetTask()
-        file_path = task.run(photo_set)
+        task.run(photo_set, identifier)
     else:
-        task = ZipPhotoSetTask.delay(photo_set)
-        task_id = task.task_id
+        result = ZipPhotoSetTask.delay(photo_set, identifier)
+        task_id = result.id
 
     return render_to_resp(request=request, template_name=template_name, context={
         "photo_set": photo_set,
-        "task_id":task_id,
-        "file_path":file_path,
+        "task_id": task_id,
+        "identifier": identifier,
     })
 
-def photoset_zip_status(request, id, task_id):
-    try:
-        task = TaskMeta.objects.get(task_id=task_id)
-    except TaskMeta.DoesNotExist:
-        task = None
 
-    if task and task.status == "SUCCESS":
-        file_path = task.result
-        return HttpResponse(json.dumps(file_path), content_type='application/json')
+@login_required
+def photoset_zip_download(request, id, identifier):
+    if not request.user.is_superuser:
+        raise Http403
+
+    photo_set = get_object_or_404(PhotoSet, id=id)
+    path = photo_set.get_export_zip_file_path(identifier)
+    
+    if not default_storage.exists(path):
+        raise Http404
+
+    if settings.USE_S3_STORAGE:
+        return redirect(default_storage.url(path))
+
+    response = HttpResponse(content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="{os.path.split(path)[-1]}"'
+    with default_storage.open(path) as f:
+        response.content = f.read()
+    return response 
+
+
+def photoset_zip_status(request, id, task_id):
+    if not request.user.is_superuser:
+        raise Http403
+
+    from tasks import app
+    result = app.AsyncResult(task_id)
+
+    if result.ready():
+        if result.successful():
+            return HttpResponse(json.dumps(result.get()), content_type='application/json')
+
     return HttpResponse(json.dumps('DNE'), content_type='application/json')

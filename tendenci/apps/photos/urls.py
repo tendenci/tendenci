@@ -73,6 +73,7 @@ urlpatterns = [
     # /photos/set/23/zip/
     re_path(r'^%s/set/(?P<id>\d+)/zip/$' % urlpath, views.photoset_zip, name="photoset_zip"),
     re_path(r'^%s/set/(?P<id>\d+)/zip/status/(?P<task_id>[-\w]+)/$' % urlpath, views.photoset_zip_status, name="photoset_zip_status"),
+    re_path(r'^%s/set/(?P<id>\d+)/zip/download/(?P<identifier>[\d\w-]+)/$' % urlpath, views.photoset_zip_download, name="photoset_zip_download"),
 
     re_path(r'^%s/feeds/latest-albums/$' % urlpath, LatestAlbums(), name='photo.feed.latest-albums'),
 
