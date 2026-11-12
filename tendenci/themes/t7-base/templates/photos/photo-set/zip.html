@@ -25,7 +25,7 @@
 
     <div id="zip-done">
         <p>{% trans "Zip file ready for download" %}.</p>
-        {% trans "Download" %} <a id='download-link' href="{{ file_path }}">{% trans "here" %}.</a></p>
+        {% trans "Download" %} <a id='download-link' href="{% url 'photoset_zip_download' photo_set.id identifier %}">{% trans "here" %}.</a></p>
     </div>
 
 </div>
@@ -41,7 +41,7 @@
                     success: function(data){
                         if (data != "DNE"){
                             $('#zip-wait').hide();
-                            $('#download-link').attr('href', data);
+                            //$('#download-link').attr('href', data);
                             $('#zip-done').show();
                         } else {
                             setTimeout(refresh, 2000);
