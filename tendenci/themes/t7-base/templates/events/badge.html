@@ -62,7 +62,7 @@
       max-width: 190px;
   }
   .badge-section .registration {
-      margin-top: -10px;
+      margin-top: -5px;
       text-align: center;
       font-size: .8em;
       width: 100%;
@@ -116,14 +116,14 @@
 	          <div>
 	            {{ registrant.company_name }}
 	          </div>
-	          <div>
+	          <div style="margin-bottom: 5px;">
 	            {{ registrant.pricing.title }}
 	          </div>
 	        </div>
         </div>
         <div class="row">
           <div class="col-md-6 qr">
-            {% qr_from_text registrant.check_in_url size="s" %}
+            {% qr_from_text registrant.check_in_url size="t" %}
           </div>
           <div class="col-md-6 logo">
             {% with registrant.registration.event.sponsor_set.first as sponsor %}
