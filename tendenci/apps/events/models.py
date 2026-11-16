@@ -3614,12 +3614,22 @@ class Event(TendenciBaseModel):
 
     def is_registrant_user(self, user, paid_only=None):
         if hasattr(user, 'registrant_set'):
+            if self.parent: # a child event
+                qs = RegistrantChildEvent.objects.filter(
+                                registrant__user=user,
+                                child_event=self,
+                                registrant__cancel_dt__isnull=True)
+            else:
+                qs = user.registrant_set.filter(
+                    registration__event=self, cancel_dt__isnull=True)
+
             if paid_only:
-                return user.registrant_set.filter(
-                    registration__event=self, cancel_dt__isnull=True,
-                    registration__invoice__balance__lte=0).exists()
-            return user.registrant_set.filter(
-                registration__event=self, cancel_dt__isnull=True).exists()
+                if self.parent: # a child event
+                    qs = qs.filter(registrant__registration__invoice__balance__lte=0)
+                else: 
+                    qs = qs.filter(registration__invoice__balance__lte=0)
+            return qs.exists()
+            
         return False
 
     def get_absolute_url(self):
