@@ -1754,9 +1754,20 @@ def event_files_search(request, template_name="events/files/search.html"):
                             invoice__balance__lte=0,
                             id__in=Registrant.objects.filter(
                             cancel_dt__isnull=True,
-                            user_id=request.user.id)
+                            user_id=request.user.id
+                            ).values_list('registration_id', flat=True)
             ).values_list('event_id', flat=True)
-        event_files = event_files.filter(event_id__in=event_ids)
+        if get_setting('module', 'events', 'accesssubeventsfiles'):
+            # get access to files for all sub events if they are registered for the parent event
+            sub_event_ids = Event.objects.filter(parent_id__in=event_ids
+                                    ).values_list('id', flat=True)
+        else:
+            sub_event_ids = RegistrantChildEvent.objects.filter(
+                                    registrant__user=request.user,
+                                    registrant__cancel_dt__isnull=True,
+                                    registrant__registration__invoice__balance__lte=0
+                                    ).values_list('child_event_id', flat=True)
+        event_files = event_files.filter(Q(event_id__in=event_ids) | Q(event_id__in=sub_event_ids))
         event_files = event_files.filter(status_detail='active')
 
     form = EventFileSearchForm(request.GET, user=request.user)

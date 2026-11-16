@@ -1545,5 +1545,22 @@
         "scope_category": "events",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, users can access to all files for all sub events if they are registered for the parent event.",
+        "data_type": "boolean",
+        "update_dt": "2026-11-16 10:52:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "accesssubeventsfiles",
+        "value": "false",
+        "label": "Registered Users Can Access All Sub-Event Files",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
     }
 ]

@@ -3613,9 +3613,15 @@ class Event(TendenciBaseModel):
         return Registration.objects.filter(event=self, registrant=user).exists()
 
     def is_registrant_user(self, user, paid_only=None):
+        allow_access_sub_events_files = get_setting('module', 'events', 'accesssubeventsfiles')
         if hasattr(user, 'registrant_set'):
             if self.parent: # a child event
-                qs = RegistrantChildEvent.objects.filter(
+                if allow_access_sub_events_files:
+                    # get access to files for this sub event if they are registered for the parent event
+                    qs = user.registrant_set.filter(
+                            registration__event=self.parent, cancel_dt__isnull=True)
+                else:
+                    qs = RegistrantChildEvent.objects.filter(
                                 registrant__user=user,
                                 child_event=self,
                                 registrant__cancel_dt__isnull=True)
@@ -3624,7 +3630,7 @@ class Event(TendenciBaseModel):
                     registration__event=self, cancel_dt__isnull=True)
 
             if paid_only:
-                if self.parent: # a child event
+                if self.parent and not allow_access_sub_events_files: # a child event
                     qs = qs.filter(registrant__registration__invoice__balance__lte=0)
                 else: 
                     qs = qs.filter(registration__invoice__balance__lte=0)
