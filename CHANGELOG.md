@@ -1,3 +1,17 @@
+### 16.40 [2026-11-15]
+
+* **Breaking Changes:**. Dropped the support for Python 3.10.
+* Added JWT bearer login for Salesforce and fixed the legacy login. Please review the documentation to update your sites if needed: https://tendenci.readthedocs.io/en/latest/topic-guides/salesforce.html (Thanks to @saud5150).
+* Updated photoset zip functionality to support remote storage (S3).
+* Replaced chardet with charset_normalizer for user and membership imports to improve speed and accuracy.
+* Added a fix to prevent double-submits and display a loading spinner while the next page loads. (Thanks to @rockinrobstar).
+* Added permission checks for the social services module.
+* Updated online payments to block payments for canceled event registrations.
+* Bumped Pillow from 12.3.0 to 13.0.0.
+* Bumped authlib from 1.7.2 to 1.9.1.
+* Other bugfixes.
+
+
 ### 16.30 [2026-10-15]
 
 * **SECURITY**: Removed the hash URLs used in event registration confirmation, editing, and cancellation. Those hash URLs are subject to brute-force attacks. (Thanks to @kta1kri for reporting the issue.)
