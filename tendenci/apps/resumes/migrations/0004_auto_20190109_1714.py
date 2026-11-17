@@ -8,12 +8,12 @@ def populate_from_contact_name(apps, schema_editor):
     """
     Populate the first_name and last_name from the contact_name.
     """
-    from nameparser import HumanName
+    from nameparser import parse
     Resume = apps.get_model("resumes", "Resume")
     for resume in Resume.objects.all():
         if resume.contact_name:
-            name = HumanName(resume.contact_name)
-            first_name, last_name = name.first, name.last
+            name = parse(resume.contact_name)
+            first_name, last_name = name.given, name.family
             if first_name or last_name:
                 Resume.objects.filter(id=resume.id).update(first_name=first_name, last_name=last_name)
 
