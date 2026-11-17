@@ -36,8 +36,8 @@ django-tastypie==0.15.1
 docutils==0.22.4
 charset-normalizer==3.5.2
 psycopg2==2.9.11
-gunicorn==25.1.0
-gevent==25.9.1
+gunicorn==27.0.1
+gevent==26.9.0
 django-storages==1.14.6
 Whoosh==2.7.4
 simple-salesforce==1.12.9
