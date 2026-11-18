@@ -1,3 +1,10 @@
+### 16.41 [2026-11-17]
+
+* Bumped gunicorn from 25.1.0 to 27.0.1.
+* Bumped gevent from 25.9.1 to 26.9.0.
+* Fixed ImportError: cannot import name 'HumanName' from 'nameparser'.
+
+
 ### 16.40 [2026-11-15]
 
 * **Breaking Changes:**. Dropped the support for Python 3.10.
