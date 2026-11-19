@@ -581,10 +581,12 @@ class CorpMembershipImportProcessor:
                 value = field.to_python(value)
             except exceptions.ValidationError:
                 value = Decimal(0)
-        elif field_type in ['IntegerField', 'PositiveIntegerField']:
+        elif field_type in ['IntegerField', 'PositiveIntegerField',
+                            'PositiveSmallIntegerField']:
             try:
                 value = int(value)
-                if field_type == 'PositiveIntegerField' and value < 0:
+                if field_type ['PositiveIntegerField',
+                               'PositiveSmallIntegerField'] and value < 0:
                     value = 0
             except:
                 value = 0
