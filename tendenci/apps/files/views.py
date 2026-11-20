@@ -257,6 +257,7 @@ def search(request, template_name="files/search.html"):
             'form': form,
             'layout': layout,
             'base_template_path': base_template_path,
+            'USE_S3_STORAGE': hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE
         })
 
 

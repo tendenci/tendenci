@@ -20,7 +20,9 @@
 
     <div>
     <div>Secure link: <input type="text" value="{% url 'file' file.pk %}" /> </div>
+    {% if not USE_S3_STORAGE %}
     <div>Full link (no security): <input type="text" value="{{ file.get_full_url }}" /></div>
+    {% endif %}
     </div>
 
     <div class="meta">
