@@ -113,7 +113,11 @@ function addRegistrant(ele, prefix, price) {
         var $this = $(this);
         if ($this.attr('type') == 'text' || $this.attr('type') == 'email'){
          $this.val('');
-        }
+        }else{
+		  if ($this.attr('type') == 'radio'){
+			$this.prop("checked", false);
+		  }
+		}
 
         // uncheck the checkbox
         if ($this.attr('type') == 'checkbox'){
