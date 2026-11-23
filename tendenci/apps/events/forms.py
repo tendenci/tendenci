@@ -464,6 +464,7 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
 
         self.pricings = kwargs.pop('pricings', None)
         self.is_table = kwargs.pop('is_table', False)
+        self.is_primary_registrant = True
         self.default_pricing = kwargs.pop('default_pricing', False)
         if self.event and not self.default_pricing:
             self.default_pricing = getattr(self.event, 'default_pricing', None)
@@ -539,19 +540,21 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
 #                self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
 #                break
 
+        self.reg_conf=self.event.registration_configuration
         if self.event:
-            reg_conf=self.event.registration_configuration
             # make the fields in the subsequent forms as not required
-            if not reg_conf.require_guests_info:
-                if self.form_index and self.form_index > 0:
+            if self.form_index and self.form_index > 0:
+                # not primary registrant
+                self.is_primary_registrant = False
+                if not self.reg_conf.require_guests_info:
                     for key in self.fields:
                         self.fields[key].required = False
+                    self.empty_permitted = False
             else:
-                # this attr is required for form validation
                 self.empty_permitted = False
 
             # add reminder field if event opted to sending reminders to attendees
-            if reg_conf.send_reminder:
+            if self.reg_conf.send_reminder:
                 self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'),
                                                              required=False, initial=True)
 
@@ -600,7 +603,7 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
 
         if self.event:
             if hasattr(self.event, 'is_table') and hasattr(self.event, 'free_event'):
-                if not self.event.is_table and reg_conf.allow_free_pass:
+                if not self.event.is_table and self.reg_conf.allow_free_pass:
                     self.fields['use_free_pass'] = forms.BooleanField(label=_("Use Free Pass"), required=False)
 
         # initialize internal variables
@@ -634,6 +637,11 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
         # if pricing allows anonymous, let go.
         if pricing.allow_anonymous:
             return pricing
+
+        if not self.is_primary_registrant:
+            # not primary registrant
+            if self.is_table:
+                return pricing
 
         if self.validate_pricing:
             # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
@@ -2305,6 +2313,7 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
         self.pricings = kwargs.pop('pricings', None)
         self.validate_pricing = kwargs.pop('validate_pricing', True)
         self.is_table = kwargs.pop('is_table', False)
+        self.is_primary_registrant = True
         self.default_pricing = kwargs.pop('default_pricing', False)
 
         if self.event and not self.default_pricing:
@@ -2312,7 +2321,7 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
 
         super().__init__(*args, **kwargs)
 
-        reg_conf=self.event.registration_configuration
+        self.reg_conf=self.event.registration_configuration
 
         max_length_dict = {field.name: field.max_length for field in Registrant._meta.fields\
                                 if hasattr(field, 'max_length') and field.name in self.FIELD_NAMES}
@@ -2348,16 +2357,17 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
                 self.fields[field_name] = field_class(**field_args)
 
         # add reminder field if event opted to sending reminders to attendees
-        if reg_conf.send_reminder:
+        if self.reg_conf.send_reminder:
             self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'),
                                                          required=False, initial=True)
 
         # make the fields in the subsequent forms as not required
-        if not reg_conf.require_guests_info:
-            if self.form_index and self.form_index > 0:
+        if self.form_index and self.form_index > 0:
+            # not primary registrant
+            self.is_primary_registrant = False
+            if not self.reg_conf.require_guests_info:
                 for key in self.fields:
                     self.fields[key].required = False
-            if not self.event.is_table:
                 self.empty_permitted = False
         else:
             self.empty_permitted = False
@@ -2401,7 +2411,7 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
                                                             decimal_places=2,
                                                             required=False)
                 self.fields['override_price'].widget.attrs.update({'size': '8'})
-        if not self.event.is_table and reg_conf.allow_free_pass:
+        if not self.event.is_table and self.reg_conf.allow_free_pass:
             self.fields['use_free_pass'] = forms.BooleanField(label=_("Use Free Pass"),
                                                              required=False)
         self.add_form_control_class()
@@ -2452,6 +2462,11 @@ class RegistrantForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.Form):
         # if pricing allows anonymous, let go.
         if pricing.allow_anonymous:
             return pricing
+
+        if not self.is_primary_registrant:
+            # not primary registrant
+            if self.is_table:
+                return pricing
 
         if self.validate_pricing:
             # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
@@ -2589,6 +2604,7 @@ class RegistrantBaseFormSet(BaseFormSet):
         if entries:
             self.entries = entries
         self.validate_primary_only = get_setting('module', 'events', 'validateprimaryregonly')
+        self.duplicate_email_allowed = get_setting('module', 'events', 'canregisteragain')
         super().__init__(data, files, auto_id, prefix,
                  initial, error_class)
 
@@ -2609,6 +2625,7 @@ class RegistrantBaseFormSet(BaseFormSet):
         defaults['default_pricing'] =self.default_pricing
         defaults['validate_pricing'] = self.validate_pricing
         defaults['form_index'] = i
+        self.form_index = i
         if hasattr(self, 'custom_reg_form'):
             defaults['custom_reg_form'] = self.custom_reg_form
         if hasattr(self, 'entries'):
@@ -2639,12 +2656,14 @@ class RegistrantBaseFormSet(BaseFormSet):
         email = form.cleaned_data.get('email', None)
 
         if email:
-            if not get_setting('module', 'events', 'canregisteragain'):
+            if not self.duplicate_email_allowed:
                 # check if this user can register
                 if not self.user.is_superuser:
                     if self.user.is_authenticated and self.user.email.lower() != email.lower():
-                        raise forms.ValidationError(_(f"{email} is NOT your email address."))
-
+                        if not (self.form_index and self.form_index > 0):
+                            # not guest
+                            raise forms.ValidationError(_(f"{email} is NOT your email address."))      
+                
                 # check if this email address is already used
                 if not self.edit_mode and Registrant.objects.filter(user__email__iexact=email,
                                              registration__event=self.event,
@@ -2657,8 +2676,16 @@ class RegistrantBaseFormSet(BaseFormSet):
         return_data = super().clean()
         # check if we have enough available spaces for price options
         pricings = {}
+        unique_emails = []
         for form in self.forms:
             self._clean_form(form)
+            # check duplicate emails
+            if not self.duplicate_email_allowed:
+                email = form.cleaned_data.get('email', None)
+                if email and email in unique_emails:
+                    raise forms.ValidationError(_(f'User {email} can be registered once only! Please use a different email address for each registrant.'))
+                unique_emails.append(email)                               
+            
             pricing = form.cleaned_data.get('pricing', None)
             if pricing and pricing.registration_cap:
                 if pricing not in pricings:
