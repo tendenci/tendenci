@@ -11,7 +11,7 @@
             {% elif field.name in flat_ignore_fields %}
 
             {% elif field.name == "pricing" %}
-                {% if not event.free_event %}
+                {% if not event.free_event and not event.is_table %}
                     {% if not registrant.cleaned_data.override %}
                     	{% with registrant.cleaned_data.pricing as pricing %}
                         <li>{% trans 'Price:' %}  {{ currency_symbol }}{{ registrant.cleaned_data.pricing.price }}
