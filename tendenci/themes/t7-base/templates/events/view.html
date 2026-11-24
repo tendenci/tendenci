@@ -91,13 +91,17 @@ div.small-font {
         <div class="time-period">
           <h3>
             {% for span in event.date_spans %}
-            {% if span.same_date %}
-            <time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"DATE_FORMAT" }}</time>
-            {% if not forloop.last %} and {% endif %}
-            {% else %}
-            <time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"DATE_FORMAT" }}</time> -
-            <time itemprop="endDate" datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"DATE_FORMAT" }}</time>
-            {% endif %}
+              {% if span.same_date %}
+              <time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"DATE_FORMAT" }}</time>
+              {% if not forloop.last %} and {% endif %}
+              {% else %}
+              {% if span.start_dt.year == span.end_dt.year and span.start_dt.month == span.end_dt.month %}
+                  <time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"N j" }}</time>-<time itemprop="endDate" datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"j, Y" }}</time>
+              {% else %}
+              <time itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"DATE_FORMAT" }}</time> -
+              <time itemprop="endDate" datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"DATE_FORMAT" }}</time>
+              {% endif %}
+              {% endif %}
             {% endfor %}
           </h3>
         </div>
