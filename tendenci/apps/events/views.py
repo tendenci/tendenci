@@ -213,7 +213,8 @@ def event_custom_reg_form_list(request, event_id, template_name="events/event_cu
     if reg_conf.use_custom_reg_form:
         if reg_conf.bind_reg_form_to_conf_only:
             reg_conf.reg_form.form_for_form = FormForCustomRegForm(
-                custom_reg_form=reg_conf.reg_form)
+                custom_reg_form=reg_conf.reg_form,
+                event=event)
         else:
             for price in regconfpricings:
                 price.reg_form.form_for_form = FormForCustomRegForm(custom_reg_form=price.reg_form)
