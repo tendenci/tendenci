@@ -301,7 +301,8 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
 
     del form.fields['payment_method']
     if not request.user.profile.is_superuser:
-        del form.fields['pricing']
+        if 'pricing' in form.fields:
+            del form.fields['pricing']
         if 'list_type' in form.fields:
             del form.fields['list_type']
 
