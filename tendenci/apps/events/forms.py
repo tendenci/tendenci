@@ -539,9 +539,10 @@ class FormForCustomRegForm(FormControlWidgetMixin, AttendanceDatesMixin, forms.M
 #                self.email_key = "field_%s" % field.id
 #                self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
 #                break
-
-        self.reg_conf=self.event.registration_configuration
+        
         if self.event:
+            self.reg_conf=self.event.registration_configuration
+
             # make the fields in the subsequent forms as not required
             if self.form_index and self.form_index > 0:
                 # not primary registrant
