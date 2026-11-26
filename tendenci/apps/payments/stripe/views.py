@@ -1,5 +1,6 @@
 #import os
 import json
+import logging
 #from datetime import datetime
 
 from django.shortcuts import get_object_or_404
@@ -31,7 +32,9 @@ from .forms import BillingInfoForm, AccountOnBoardingForm
 from .utils import (
     build_payment_intent_params,
     configure_stripe,
+    connected_account_request_options,
     payment_update_from_intent,
+    user_facing_stripe_message,
 )
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.recurring_payments.models import RecurringPayment
@@ -41,6 +44,8 @@ from tendenci.apps.base.utils import get_next_url
 from tendenci.apps.event_logs.models import EventLog
 
 from .models import StripeAccount
+
+logger = logging.getLogger(__name__)
 
 STRIPE_TOKEN_URL = 'https://connect.stripe.com/oauth/token'
 STRIPE_DEAUTHORIZE_URL = 'https://connect.stripe.com/oauth/deauthorize'
@@ -65,6 +70,9 @@ def _create_payment_intent_for_payment(payment, currency):
     """Create Customer (if auto-renew) and PaymentIntent; return (pi, membership, customer_id)."""
     configure_stripe(stripe)
     membership = _membership_for_auto_renew(payment)
+    # A customer only exists on the account that created it, so it has to be
+    # created on whichever account the PaymentIntent is charged on.
+    request_options = connected_account_request_options(payment)
     customer_id = None
     setup_future_usage = None
     if membership and membership.user:
@@ -72,6 +80,7 @@ def _create_payment_intent_for_payment(payment, currency):
             customer = stripe.Customer.create(
                 email=membership.user.email,
                 description='For membership auto renew',
+                **request_options,
             )
             customer_id = customer.id
             setup_future_usage = 'off_session'
@@ -149,10 +158,11 @@ def acct_onboarding(request, template_name='payments/stripe/connect/acct_onboard
                           type=scope,
                           email=email,
                         )
-            except stripe.error.InvalidRequestError as e:
-                err_msg += str(e)
             except Exception as e:
-                err_msg += str(e)
+                err_msg = user_facing_stripe_message(
+                    e,
+                    _('Stripe could not create this account. Please check the details and try again.'),
+                )
 
             if not err_msg:
                 # save the stripe account to db
@@ -205,10 +215,11 @@ def acct_onboarding_refresh(request, sa_id):
 
             # redirect user to the account link URL
             return HttpResponseRedirect(acct_link.url)
-        except stripe.error.InvalidRequestError as e:
-            err_msg += str(e)
         except Exception as e:
-            err_msg += str(e)
+            err_msg = user_facing_stripe_message(
+                e,
+                _('Stripe could not continue account setup. Please try again.'),
+            )
     if err_msg:
         messages.add_message(request, messages.ERROR, err_msg)
     return HttpResponseRedirect(reverse('stripe_connect.acct_onboarding_done', args=[sa.id]))
@@ -277,8 +288,8 @@ class DeauthorizeView(View):
                 msg_string = _('Stripe Connect for "{}" Revoked'.format(self.sa.account_name or self.sa.stripe_user_id))
                 messages.add_message(request, messages.SUCCESS, msg_string)
             else:
-                # failed
-                msg_string = '{} - {}'.format(response_json['error'], response_json['error_description'])
+                logger.warning('Stripe Connect deauthorize failed: %s', response_json)
+                msg_string = _('Stripe could not revoke this connection. Please try again.')
                 messages.add_message(request, messages.ERROR, msg_string)
 
         return HttpResponseRedirect(reverse('stripe_connect.authorize'))
@@ -394,7 +405,8 @@ class FetchAccessToken(View):
             msg_string = _('Success!')
         else:
             sa = None
-            msg_string = '{} - {}'.format(response_json['error'], response_json['error_description'])
+            logger.warning('Stripe Connect token exchange failed: %s', response_json)
+            msg_string = _('Stripe could not connect this account. Please try again.')
 
         return render(request, self.template_name, {'sa': sa, 'msg_string': msg_string})
 
@@ -423,7 +435,6 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
     currency = get_setting('site', 'global', 'currency') or 'usd'
     billing_info_form = BillingInfoForm(instance=payment)
     client_secret = ''
-    err_msg = ''
 
     try:
         payment_intent, membership, customer_id = _create_payment_intent_for_payment(
@@ -433,8 +444,13 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
         payment.payment_intent_id = payment_intent.id
         payment.save(update_fields=['payment_intent_id'])
     except Exception as e:
-        err_msg = str(e)
-        messages.add_message(request, messages.ERROR, _(err_msg))
+        messages.add_message(
+            request, messages.ERROR,
+            user_facing_stripe_message(
+                e,
+                _('We could not start this payment. Please try again, or contact the site administrator.'),
+            ),
+        )
 
     # Use the request host (not siteurl) so return_url works when browsing
     # via LAN/tunnel hosts that differ from the Site URL setting.
@@ -443,7 +459,10 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
     save_billing_url = reverse(
         'stripe.save_billing', args=[payment.id, payment.guid])
 
-    connected_account_id = payment.invoice.stripe_connected_account(scope='standard')[0]
+    # Stripe.js has to be pointed at the same account the PaymentIntent was
+    # created on, otherwise the Payment Element cannot load the intent.
+    connected_account_id = connected_account_request_options(
+        payment).get('stripe_account', '')
     return render_to_resp(
         request=request,
         template_name=template_name,
@@ -498,14 +517,14 @@ def save_billing(request, payment_id, guid=''):
 
 def finalize(request, payment_id, guid=''):
     payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
-    if not payment.payment_intent_id:
-        return HttpResponse(
-            json.dumps({'ok': False, 'error': 'not allowed'}),
-            content_type='application/json',
-            status=403,
-        )
+    if payment.is_approved:
+        return HttpResponseRedirect(
+            reverse('stripe.thank_you', args=[payment.id, payment.guid]))
 
-    payment_intent_id = request.GET.get('payment_intent')
+    # Stripe returns the confirmed intent on the query string. Fall back to the
+    # id stored at creation time for redirects that arrive without it.
+    payment_intent_id = (request.GET.get('payment_intent')
+                         or payment.payment_intent_id)
     if not payment_intent_id:
         messages.add_message(
             request, messages.ERROR,
@@ -513,27 +532,21 @@ def finalize(request, payment_id, guid=''):
         return HttpResponseRedirect(
             reverse('stripe.payonline', args=[payment.id, payment.guid]))
 
-    if payment_intent_id != payment.payment_intent_id:
-        return HttpResponse(
-            json.dumps({'ok': False, 'error': 'Payment confirmation mismatch'}),
-            content_type='application/json',
-            status=400,
-        )
-
-    if payment.is_approved:
-        return HttpResponseRedirect(
-            reverse('stripe.thank_you', args=[payment.id, payment.guid]))
-
     configure_stripe(stripe)
     try:
-        connected_account_id = payment.invoice.stripe_connected_account(scope='standard')[0]
-        if connected_account_id:
-            payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id,
-                                                           stripe_account=connected_account_id)
-        else:
-            payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+        retrieve_options = connected_account_request_options(payment)
+        # Charge details say whether this was a card, a wallet, or PayTo.
+        retrieve_options['expand'] = ['latest_charge']
+        payment_intent = stripe.PaymentIntent.retrieve(
+            payment_intent_id, **retrieve_options)
     except Exception as e:
-        messages.add_message(request, messages.ERROR, str(e))
+        messages.add_message(
+            request, messages.ERROR,
+            user_facing_stripe_message(
+                e,
+                _('We could not confirm this payment. Please try again. If you were charged, contact the site administrator before paying again.'),
+            ),
+        )
         return HttpResponseRedirect(
             reverse('stripe.payonline', args=[payment.id, payment.guid]))
 
@@ -590,18 +603,17 @@ def update_card(request, rp_id):
             msg_string = 'Successfully updated payment method'
         message_status = messages.SUCCESS
     except stripe.error.CardError as e:
-        # it's a decline
-        json_body = e.json_body
-        err  = json_body and json_body['error']
-        code = err and err['code']
-        message = err and err['message']
         message_status = messages.ERROR
-        msg_string = '{message} status={status}, code={code}'.format(
-                            message=message, status=e.http_status, code=code)
+        msg_string = user_facing_stripe_message(
+            e,
+            _('Your card was declined. Please try a different payment method.'),
+        )
     except Exception as e:
-        # Something else happened, completely unrelated to Stripe
         message_status = messages.ERROR
-        msg_string = 'Error updating payment method: {}'.format(e)
+        msg_string = user_facing_stripe_message(
+            e,
+            _('We could not update the payment method. Please try again.'),
+        )
 
     messages.add_message(request, message_status, _(msg_string))
 

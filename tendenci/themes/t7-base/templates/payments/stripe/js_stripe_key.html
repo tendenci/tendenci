@@ -1,4 +1,4 @@
 
 <script type="text/javascript">
-    var stripe = Stripe('{{ STRIPE_PUBLISHABLE_KEY }}'{% if connected_account_id %}, {'stripeAccount': '{{ connected_account_id }}'}{% endif %});
+    var stripe = Stripe('{{ STRIPE_PUBLISHABLE_KEY|escapejs }}'{% if connected_account_id %}, {'stripeAccount': '{{ connected_account_id|escapejs }}'}{% endif %});
 </script>
